@@ -1,0 +1,63 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cna.sdk</groupId>
+	<artifactId>calypso-root</artifactId>
+	<version>0.0.2-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<modules>
+		<module>calypso</module>
+		<module>seproxy</module>
+		<module>smartCardIOPlugin</module>
+		<module>app</module>
+	</modules>
+
+	<!-- FACTORY. -->
+	<scm>
+		<connection>scm:git:ssh://gitixxi.noisy.ratp/calypso/sdk-calypso.git</connection>
+		<developerConnection>scm:git:ssh://gitixxi.noisy.ratp/calypso/sdk-calypso.git</developerConnection>
+		<url>scm:git:ssh://gitixxi.noisy.ratp/calypso/sdk-calypso.git</url>
+	</scm>
+	<issueManagement>
+		<system>Redmine</system>
+		<url>https://factory-ixxi.noisy.ratp/redmine/</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>https://factory-ixxi.noisy.ratp/jenkins/</url>
+	</ciManagement>
+	<properties>
+		<sonar-maven-plugin.version>2.7.1</sonar-maven-plugin.version>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>${sonar-maven-plugin.version}</version>
+			</plugin>
+		</plugins>
+	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>nexus_ixxi</id>
+			<url>${nexus.url}/content/repositories/releases</url>
+		</repository>
+
+		<snapshotRepository>
+			<id>nexus_ixxi</id>
+			<url>${nexus.url}/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+</project>
