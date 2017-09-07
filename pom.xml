@@ -1,63 +1,144 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>cna.sdk</groupId>
+	<groupId>org.keyple</groupId>
 	<artifactId>calypso-root</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
+	<description>SDK Calypso</description>
 	<modules>
 		<module>calypso</module>
 		<module>seproxy</module>
 		<module>smartCardIOPlugin</module>
-		<module>app</module>
 	</modules>
 
-	<!-- FACTORY. -->
-	<scm>
-		<connection>scm:git:ssh://gitixxi.noisy.ratp/calypso/sdk-calypso.git</connection>
-		<developerConnection>scm:git:ssh://gitixxi.noisy.ratp/calypso/sdk-calypso.git</developerConnection>
-		<url>scm:git:ssh://gitixxi.noisy.ratp/calypso/sdk-calypso.git</url>
-	</scm>
-	<issueManagement>
-		<system>Redmine</system>
-		<url>https://factory-ixxi.noisy.ratp/redmine/</url>
-	</issueManagement>
-	<ciManagement>
-		<system>Jenkins</system>
-		<url>https://factory-ixxi.noisy.ratp/jenkins/</url>
-	</ciManagement>
 	<properties>
-		<sonar-maven-plugin.version>2.7.1</sonar-maven-plugin.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.7</java.version>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
+
+		<!-- gestion des versions des artefacts -->
+		<jacoco.version>0.7.9</jacoco.version>
+
+		<!-- Sonar -->
+		<sonar.projectName>SDK Calypso</sonar.projectName>
+		<sonar-maven-plugin.version>3.0.2</sonar-maven-plugin.version>
+		<sonar.exclusions>
+			src/main/webapp/swagger/**/*.*,
+			src/main/webapp/api/**/*.*
+		</sonar.exclusions>
+		<sonar.sources>${project.basedir}/src/main/</sonar.sources>
+		<project.testresult.directory>${project.build.directory}/test-results</project.testresult.directory>
+		<sonar.jacoco.reportPath>${project.testresult.directory}/coverage/jacoco/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.jacoco.itReportPath>${project.testresult.directory}/coverage/jacoco/jacoco-it.exec</sonar.jacoco.itReportPath>
+		<sonar.java.codeCoveragePlugin>jacoco</sonar.java.codeCoveragePlugin>
+		<sonar.surefire.reportsPath>${project.testresult.directory}/surefire-reports</sonar.surefire.reportsPath>
 	</properties>
+
 	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.0.1</version>
+					<configuration>
+						<encoding>${source.encoding}</encoding>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+						<encoding>${source.encoding}</encoding>
+					</configuration>
+				</plugin>
+				<!-- To define the plugin version in your parent POM -->
+				<plugin>
+					<groupId>org.apache.tomcat.maven</groupId>
+					<artifactId>tomcat7-maven-plugin</artifactId>
+					<version>2.2</version>
+				</plugin>
+				<!-- workaround bug maven release sous git -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.5.2</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.scm</groupId>
+							<artifactId>maven-scm-provider-gitexe</artifactId>
+							<version>1.9.4</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>2.6</version>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<encoding>UTF-8</encoding>
+					<excludes>
+						<exclude>**/generated/**</exclude>
+						<exclude>**/lib/*</exclude>
+					</excludes>
+					<destFile>${sonar.jacoco.reportPath}</destFile>
+					<dataFile>${sonar.jacoco.reportPath}</dataFile>
+					<check />
 				</configuration>
+				<executions>
+					<!-- prepare agent for measuring unit tests -->
+					<execution>
+						<id>prepare-unit-tests</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>post-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>sonar-maven-plugin</artifactId>
-				<version>${sonar-maven-plugin.version}</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
-
-	<distributionManagement>
-		<repository>
-			<id>nexus_ixxi</id>
-			<url>${nexus.url}/content/repositories/releases</url>
-		</repository>
-
-		<snapshotRepository>
-			<id>nexus_ixxi</id>
-			<url>${nexus.url}/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
-
 </project>

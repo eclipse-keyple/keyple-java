@@ -2,9 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>cna.sdk</groupId>
+		<groupId>org.keyple</groupId>
 		<artifactId>calypso-root</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>seproxy</artifactId>
 	<properties>
