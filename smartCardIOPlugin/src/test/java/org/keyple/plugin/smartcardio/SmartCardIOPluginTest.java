@@ -1,56 +1,59 @@
 package org.keyple.plugin.smartcardio;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.smartcardio.CardException;
-import javax.smartcardio.CardTerminal;
-import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
+import javax.smartcardio.CardTerminals;
+import javax.smartcardio.CardTerminal;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.keyple.plugin.smartcardio.SmartCardIOPlugin;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.keyple.seproxy.exceptions.IOReaderException;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ TerminalFactory.class })
+@RunWith(MockitoJUnitRunner.class)
 public class SmartCardIOPluginTest {
     Logger logger = LoggerFactory.getLogger(SmartCardIOPluginTest.class);
 
+    @InjectMocks
+    @Spy
+    private SmartCardIOPlugin plugin;
+    
+    SmartCardIOPlugin smartCardPluginSpyied;
+    
+    @Mock
+    CardTerminals cardTerminals;
+
+    @Mock
+    CardTerminal cardTerminal;
+    
+    @Before
+    public void setUp() throws IOReaderException, CardException{
+//        smartCardPluginSpyied = spy(plugin);
+        when(plugin.getCardTerminals()).thenReturn(cardTerminals);
+        List<CardTerminal> terms = new ArrayList<CardTerminal>();
+        terms.add(cardTerminal);
+        when(cardTerminals.list()).thenReturn(terms);
+        when(cardTerminal.getName()).thenReturn("SmartCardIOPlugin");
+    }
+    
     @Test
-    public void testGetName() {
-        SmartCardIOPlugin plugin = new SmartCardIOPlugin();
+    public void testGetReaders() throws CardException, IOReaderException {
+        assertEquals(plugin.getReaders().size(), 1);
         assertEquals("SmartCardIOPlugin", plugin.getName());
     }
-
-    @Test
-    public void testGetReaders() throws CardException {
-
-        TerminalFactory factory = PowerMockito.mock(TerminalFactory.class);
-        SmartCardIOPlugin plugin = Mockito.mock(SmartCardIOPlugin.class);
-        CardTerminals cardTerminals = Mockito.mock(CardTerminals.class);
-        CardTerminal card = Mockito.mock(CardTerminal.class);
-        List<CardTerminal> cards = new ArrayList<>();
-        cards.add(card);
-        when(factory.getType()).thenReturn("test");
-        when(factory.terminals()).thenReturn(cardTerminals);
-        when(cardTerminals.list()).thenReturn(cards);
-        when(card.isCardPresent()).thenReturn(true);
-        when(plugin.getTerminalFactory()).thenReturn(factory);
-
-        logger.info(""+plugin.getReaders().size());
-//        CardTerminal cardResult = plugin.getReaders()TerminalFactory().terminals().list().get(0);
-
-
-    }
-
+    
 }
