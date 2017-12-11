@@ -1,6 +1,5 @@
 package org.keyple.seproxy;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -9,7 +8,7 @@ import java.util.Map;
  *
  * @author Ixxi
  */
-public interface ConfigurableReader extends ProxyReader{
+public interface ConfigurableReader extends ProxyReader {
 
     /**
      * allows to define proprietary settings for a plugin (contactless protocols
@@ -18,7 +17,7 @@ public interface ConfigurableReader extends ProxyReader{
      * @param settings
      *            the new parameters
      */
-    abstract void setParameters(Map<String, String> settings);
+    void setParameters(Map<String, String> settings);
 
     /**
      * allows to define proprietary settings for a plugin (contactless protocols
@@ -29,13 +28,12 @@ public interface ConfigurableReader extends ProxyReader{
      * @param value
      *            the parameter value
      */
-    abstract void setAParameters(String key, String value);
+    void setAParameter(String key, String value);
 
     /**
-     * Gets the parameters.
+     * Gets the parameters
      *
-     * @return the configuration of the selected reader.
+     * @return the configuration of the selected reader
      */
-    abstract List<String> getParameters();
-
+    Map<String, String> getParameters();
 }

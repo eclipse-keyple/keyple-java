@@ -1,6 +1,6 @@
 package org.keyple.seproxy.exceptions;
 
-public class IOReaderException extends ReaderException{
+public class IOReaderException extends Exception{
 
     /**
      *

@@ -9,55 +9,55 @@ package org.keyple.seproxy;
  */
 public class ReaderEvent {
 
-	/**
-	 * The Enum EventType.
-	 * defined with the elements: ‘IOError’, ‘SEInserted’ and ‘SERemoval’.
-	 */
-	public enum EventType {
+    /**
+     * The Enum EventType. defined with the elements: ‘IOError’, ‘SEInserted’
+     * and ‘SERemoval’.
+     */
+    public enum EventType {
 
-		/** The io error. */
-		IO_ERROR,
-		/** The se inserted. */
-		SE_INSERTED,
-		/** The se removal. */
-		SE_REMOVAL
-	}
+        /** The io error. */
+        IO_ERROR,
+        /** The se inserted. */
+        SE_INSERTED,
+        /** The se removal. */
+        SE_REMOVAL
+    }
 
-	/** the reader pushing the notification.*/
-	private NotifierReader reader;
+    /** the reader pushing the notification. */
+    private NotifierReader reader;
 
-	/** the type of the notified event. */
-	private EventType event;
+    /** the type of the notified event. */
+    private EventType event;
 
-	/**
-	 * Instantiates a new reader event.
-	 *
-	 * @param reader
-	 *            the reader
-	 * @param event
-	 *            the event
-	 */
-	public ReaderEvent(NotifierReader reader, EventType event) {
-		this.reader = reader;
-		this.event = event;
-	}
+    /**
+     * Instantiates a new reader event.
+     *
+     * @param reader
+     *            the reader
+     * @param event
+     *            the event
+     */
+    public ReaderEvent(NotifierReader reader, EventType event) {
+        this.reader = reader;
+        this.event = event;
+    }
 
-	/**
-	 * Gets the reader.
-	 *
-	 * @return the reader notifying the event.
-	 */
-	public NotifierReader getReader() {
-		return reader;
-	}
+    /**
+     * Gets the reader.
+     *
+     * @return the reader notifying the event.
+     */
+    public NotifierReader getReader() {
+        return reader;
+    }
 
-	/**
-	 * Gets the event.
-	 *
-	 * @return the type of the event.
-	 */
-	public EventType getEventType() {
-		return event;
-	}
+    /**
+     * Gets the event.
+     *
+     * @return the type of the event.
+     */
+    public EventType getEventType() {
+        return event;
+    }
 
 }
