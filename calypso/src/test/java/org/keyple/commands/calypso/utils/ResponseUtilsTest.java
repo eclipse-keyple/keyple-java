@@ -33,10 +33,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 //@RunWith(MockitoJUnitRunner.class)
 public class ResponseUtilsTest {
 
-//    @InjectMocks
-//    ResponseUtils responseUtils;
-    
-//    @Mock
+    // @InjectMocks
+    // ResponseUtils responseUtils;
+
+    // @Mock
     private byte[] apduResponse;
 
     private byte[] wrongApduResponse;
@@ -60,64 +60,6 @@ public class ResponseUtilsTest {
     private KIF kif;
 
     private KVC kvc;
-
-    @Test
-    public void TestToAID() {
-
-        // Case if
-        apduResponse = new byte[] { 0x4F, 0x08, 0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41 };
-        aid = new byte[] { 0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41 };
-
-        AID aidExpected = new AID(aid);
-        AID aidTested = ResponseUtils.toAID(apduResponse);
-
-        Assert.assertArrayEquals(aidExpected.getValue(), aidTested.getValue());
-
-        // Case else
-        wrongApduResponse = new byte[] { 0x3F, 0x08, 0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41 };
-        aidTested = ResponseUtils.toAID(wrongApduResponse);
-
-        Assert.assertNull(aidTested);
-    }
-
-    @Test
-    public void TestToEFList() {
-
-        // Case if
-        apduResponse = new byte[] { (byte) 0xC0, 0x20, (byte) 0xC1, 0x06, 0x3F, 0x04, 0x09, 0x02, 0x10, 0x01,
-                (byte) 0xC1, 0x06, 0x00, 0x03, 0x07, 0x02, 0x1D, 0x01, (byte) 0xC1, 0x06, 0x2F, 0x10, 0x08, 0x02, 0x1D,
-                0x02, (byte) 0xC1, 0x06, 0x00, 0x02, 0x1D, 0x02, 0x1D, 0x01, };
-
-        EF efFileOne = new EF((new byte[] { 0x3F, 0x04 }), (byte) 0x09, (byte) 0x02, (byte) 0x10, (byte) 0x01);
-        EF efFileTwo = new EF((new byte[] { 0x00, 0x03 }), (byte) 0x07, (byte) 0x02, (byte) 0x1D, (byte) 0x01);
-        EF efFileThree = new EF((new byte[] { 0x2F, 0x10 }), (byte) 0x08, (byte) 0x02, (byte) 0x1D, (byte) 0x02);
-        EF efFileFour = new EF((new byte[] { 0x00, 0x02 }), (byte) 0x1D, (byte) 0x02, (byte) 0x1D, (byte) 0x01);
-        List<EF> listOfEfFile = new ArrayList<EF>();
-        listOfEfFile.add(efFileOne);
-        listOfEfFile.add(efFileTwo);
-        listOfEfFile.add(efFileThree);
-        listOfEfFile.add(efFileFour);
-
-        List<EF> listOfEfFileExpected = new ArrayList<EF>(listOfEfFile);
-        List<EF> listOfEfFileTested = ResponseUtils.toEFList(apduResponse);
-
-        for (int i = 0; i < listOfEfFileExpected.size(); i++) {
-            Assert.assertArrayEquals(listOfEfFileExpected.get(i).getLid(), listOfEfFileTested.get(i).getLid());
-            Assert.assertEquals(listOfEfFileExpected.get(i).getFileType(), listOfEfFileTested.get(i).getFileType());
-            Assert.assertEquals(listOfEfFileExpected.get(i).getNumberRec(), listOfEfFileTested.get(i).getNumberRec());
-            Assert.assertEquals(listOfEfFileExpected.get(i).getRecSize(), listOfEfFileTested.get(i).getRecSize());
-            Assert.assertEquals(listOfEfFileExpected.get(i).getSfi(), listOfEfFileTested.get(i).getSfi());
-        }
-
-        // Case else
-        wrongApduResponse = new byte[] { (byte) 0xC2, 0x20, (byte) 0xC1, 0x06, 0x3F, 0x04, 0x04, 0x02, 0x10, 0x01,
-                (byte) 0xC1, 0x06, 0x00, 0x03, 0x03, 0x02, 0x1D, 0x01, (byte) 0xC1, 0x06, 0x2F, 0x10, 0x05, 0x02, 0x1D,
-                0x02, (byte) 0xC1, 0x06, 0x00, 0x02, 0x02, 0x02, 0x1D, 0x01, };
-
-        listOfEfFileTested = ResponseUtils.toEFList(wrongApduResponse);
-
-        Assert.assertNotEquals(listOfEfFileTested.size(), listOfEfFileExpected.size());
-    }
 
     @Test
     public void TestToFCI() {
@@ -247,27 +189,12 @@ public class ResponseUtilsTest {
     }
 
     @Test
-    public void TestToSamChallenge() {
-        apduResponse = new byte[] { 0x03, 0x0E, 0x01, 0x0F };
-
-        transactionCounter = new byte[] { 0x03, 0x0E, 0x01 };
-        randomNumber = new byte[] { 0x0F };
-
-        SamChallenge samChallengeExpected = new SamChallenge(transactionCounter, randomNumber);
-        SamChallenge samChallengeTested = ResponseUtils.toSamChallenge(apduResponse);
-
-        Assert.assertArrayEquals(samChallengeExpected.getRandomNumber(), samChallengeTested.getRandomNumber());
-        Assert.assertArrayEquals(samChallengeExpected.getTransactionCounter(),
-                samChallengeTested.getTransactionCounter());
-    }
-
-    @Test
     public void TestToSecureSession() {
-        apduResponse = new byte[] { (byte) 0x8F, 0x05, 0x75, 0x1A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x30, 0x7E, (byte) 0x1D, 0x00, 0x00, 0x00,
-                0x00 , 0x00 ,0x00 ,0x00 ,0x00 ,0x00 };
+        apduResponse = new byte[] { (byte) 0x8F, 0x05, 0x75, 0x1A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x30,
+                0x7E, (byte) 0x1D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
         transactionCounter = new byte[] { (byte) 0x8F, 0x05, 0x75 };
-        randomNumber = new byte[] { 0x1A, 0x00, 0x00, 0x00, 0x00};
+        randomNumber = new byte[] { 0x1A, 0x00, 0x00, 0x00, 0x00 };
         kif = new KIF((byte) 0x00);
         kvc = new KVC((byte) 0x00);
 
@@ -360,20 +287,6 @@ public class ResponseUtilsTest {
     }
 
     @Test
-    public void TestToSamHalfSessionSignature() {
-
-        apduResponse = new byte[] { (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E };
-
-        byte[] sessionSignature = new byte[] { (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E };
-
-        SamHalfSessionSignature samHalfSessionSignatureExpected = new SamHalfSessionSignature(sessionSignature);
-        SamHalfSessionSignature samHalfSessionSignatureTested = ResponseUtils.toSamHalfSessionSignature(apduResponse);
-
-        Assert.assertArrayEquals(samHalfSessionSignatureExpected.getValue(), samHalfSessionSignatureTested.getValue());
-
-    }
-
-    @Test
     public void TestToPOHalfSessionSignature() {
 
         apduResponse = new byte[] { (byte) 0x4D, (byte) 0xBD, (byte) 0xC9, 0x60 };
@@ -401,28 +314,7 @@ public class ResponseUtilsTest {
         // Case Other
         POHalfSessionSignature poHalfSessionSignatureTestedCaseThree = ResponseUtils
                 .toPoHalfSessionSignature(apduResponseCaseThree);
-        assertEquals(poHalfSessionSignatureTestedCaseThree.getValue().length,0);
-
-    }
-
-    @Test
-    public void TestToKVC() {
-
-        // Case Else
-        apduResponse = new byte[] { (byte) 0x8F, 0x05, 0x75, 0x1A, 0x00, 0x30, 0x7E, (byte) 0x1D, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-        KVC KVCExpected = new KVC((byte) 0x7E);
-        KVC KVCTested = ResponseUtils.toKVC(apduResponse);
-
-        Assert.assertEquals(KVCExpected.getValue(), KVCTested.getValue());
-
-        // Case If
-        wrongApduResponse = new byte[] { (byte) 0x8F, 0x05, 0x75 };
-        KVC KVCTestedTwo = ResponseUtils.toKVC(wrongApduResponse);
-
-        Assert.assertNull(KVCTestedTwo);
+        assertEquals(poHalfSessionSignatureTestedCaseThree.getValue().length, 0);
 
     }
 
@@ -439,179 +331,4 @@ public class ResponseUtilsTest {
 
     }
 
-    @Test
-    public void TestToKIF() {
-
-        // Case Else
-        apduResponse = new byte[] { (byte) 0x8F, 0x05, 0x75, 0x1A, 0x00, 0x30, 0x7E, (byte) 0x1D, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-        KIF KIFExpected = new KIF((byte) 0x30);
-        KIF KIFTested = ResponseUtils.toKIF(apduResponse);
-
-        Assert.assertEquals(KIFExpected.getValue(), KIFTested.getValue());
-
-        // Case If
-        wrongApduResponse = new byte[] { (byte) 0x8F, 0x05, 0x75, 0x1A, 0x00, (byte) 0xFF, 0x7E, (byte) 0x1D, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-        KIF KIFTestedTwo = ResponseUtils.toKIF(wrongApduResponse);
-
-        Assert.assertEquals(KIFExpected.getValue(), KIFTestedTwo.getValue());
-
-    }
-
-    @Test
-    public void TestIsPreviousSessionRatified() {
-
-        apduResponse = new byte[] { (byte) 0x8F, 0x05, 0x75, 0x1A, 0x00, 0x30, 0x7E, (byte) 0x1D, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-        wrongApduResponse = new byte[] { (byte) 0x8F, 0x05, 0x75, 0x1A, 0x00, 0x01, 0x7E, (byte) 0x1D, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-        revision = PoRevision.REV3_1;
-
-        Ratification isNotPreviousSessionRatifiedExpected = new Ratification(false);
-        Ratification isPreviousSessionRatifiedExpected = new Ratification(true);
-
-        // Case Rev 3.1 - Ratified
-
-        Ratification isPreviousSessionRatifiedTested31 = ResponseUtils.isPreviousSessionRatified(apduResponse,
-                revision);
-        Assert.assertEquals(isPreviousSessionRatifiedExpected.isRatified(),
-                isPreviousSessionRatifiedTested31.isRatified());
-
-        // Case Rev 3.1 - Not Ratified
-
-        Ratification isNotPreviousSessionRatifiedTested31 = ResponseUtils.isPreviousSessionRatified(wrongApduResponse,
-                revision);
-        Assert.assertEquals(isNotPreviousSessionRatifiedExpected.isRatified(),
-                isNotPreviousSessionRatifiedTested31.isRatified());
-
-        // Case Rev 3.2 - Ratified
-        revision = PoRevision.REV3_2;
-
-        Ratification isPreviousSessionRatifiedTested32 = ResponseUtils.isPreviousSessionRatified(apduResponse,
-                revision);
-        Assert.assertEquals(isPreviousSessionRatifiedExpected.isRatified(),
-                isPreviousSessionRatifiedTested32.isRatified());
-
-        // Case Rev 3.2 - Not Ratified
-        Ratification isNotPreviousSessionRatifiedTested32 = ResponseUtils.isPreviousSessionRatified(wrongApduResponse,
-                revision);
-        Assert.assertEquals(isNotPreviousSessionRatifiedExpected.isRatified(),
-                isNotPreviousSessionRatifiedTested32.isRatified());
-
-        // Case Rev 2.4 - Not Ratified
-        revision24 = PoRevision.REV2_4;
-
-        Ratification isNotPreviousSessionRatifiedTested24 = ResponseUtils.isPreviousSessionRatified(apduResponse,
-                revision24);
-        Assert.assertEquals(isNotPreviousSessionRatifiedExpected.isRatified(),
-                isNotPreviousSessionRatifiedTested24.isRatified());
-
-        // Case Rev 2.4 - Ratified
-        wrongApduResponseTwo = new byte[] { (byte) 0x8F, 0x05, 0x75, 0x1A, 0x00 };
-
-        Ratification isPreviousSessionRatifiedTested24 = ResponseUtils.isPreviousSessionRatified(wrongApduResponseTwo,
-                revision24);
-        Assert.assertEquals(isPreviousSessionRatifiedExpected.isRatified(),
-                isPreviousSessionRatifiedTested24.isRatified());
-
-    }
-
-    @Test
-    public void TestToTransactionCounter() {
-
-        apduResponse = new byte[] { (byte) 0x8F, 0x05, 0x75, 0x1A, 0x00, 0x30, 0x7E, (byte) 0x1D, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-        byte B1 = (byte) 0x05;
-        byte B2 = (byte) 0x75;
-        byte B3 = (byte) 0x1A;
-        byte B4 = (byte) 0x00;
-
-        int counter = B1 + B2 + B3;
-        int counter24 = B2 + B3 + B4;
-
-        TransactionCounter transactionCounterExpected = new TransactionCounter(counter);
-        TransactionCounter transactionCounterExpected24 = new TransactionCounter(counter24);
-
-        // Case Revision 3.1
-        revision = PoRevision.REV3_1;
-        TransactionCounter transactionCounterTested32 = ResponseUtils.toTransactionCounter(apduResponse, revision);
-        Assert.assertEquals(transactionCounterExpected.getValue(), transactionCounterTested32.getValue());
-
-        // Case Revision 3.2
-        revision = PoRevision.REV3_2;
-        TransactionCounter transactionCounterTested31 = ResponseUtils.toTransactionCounter(apduResponse, revision);
-        Assert.assertEquals(transactionCounterExpected.getValue(), transactionCounterTested31.getValue());
-
-        // Case Revision 2.4
-        revision24 = PoRevision.REV2_4;
-        TransactionCounter transactionCounterTested24 = ResponseUtils.toTransactionCounter(apduResponse, revision24);
-        Assert.assertEquals(transactionCounterExpected24.getValue(), transactionCounterTested24.getValue());
-
-    }
-
-    @Test
-    public void TestToRecordData() {
-
-        apduResponse = new byte[] { (byte) 0x8F, 0x05, 0x75, 0x1A, 0x00, 0x30, 0x7E, (byte) 0x1D, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-        revision = PoRevision.REV3_1;
-
-        byte B1 = (byte) 0x05;
-        byte B2 = (byte) 0x75;
-        byte B3 = (byte) 0x1A;
-
-        int counter = B1 + B2 + B3;
-
-        TransactionCounter transactionCounterExpected = new TransactionCounter(counter);
-        TransactionCounter transactionCounterTested = ResponseUtils.toTransactionCounter(apduResponse, revision);
-
-        Assert.assertEquals(transactionCounterExpected.getValue(), transactionCounterTested.getValue());
-
-    }
-
-    @Test
-    public void TestToPostponedData() {
-
-        apduResponse = new byte[] { 0x04, 0x05, 0x75, 0x1A, 0x00, 0x30, 0x7E, (byte) 0x1D };
-        apduResponseCaseTwo = new byte[] { 0x04, 0x05, 0x75, 0x1A };
-        apduResponseCaseThree = new byte[0];
-
-        boolean hasPostPonedDataTrue = true;
-        boolean hasPostPonedDataFalse = false;
-        byte[] postponedData = new byte[] { 0x05, 0x75, 0x1A };
-
-        // Case If
-        PostponedData postPonedDataExpected = new PostponedData(hasPostPonedDataTrue, postponedData);
-        PostponedData postPonedDataTested = ResponseUtils.toPostponedData(apduResponse);
-
-        Assert.assertArrayEquals(postPonedDataExpected.getPostponedData(), postPonedDataTested.getPostponedData());
-        Assert.assertEquals(postPonedDataExpected.getHasPostponedData(), postPonedDataTested.getHasPostponedData());
-
-        // Case Else if
-        PostponedData postPonedDataExpectedTwoThree = new PostponedData(hasPostPonedDataFalse, null);
-
-        PostponedData postPonedDataTestedTwo = ResponseUtils.toPostponedData(apduResponseCaseTwo);
-        PostponedData postPonedDataTestedThree = ResponseUtils.toPostponedData(apduResponseCaseThree);
-
-        Assert.assertNull(postPonedDataTestedTwo.getPostponedData());
-        Assert.assertEquals(postPonedDataExpectedTwoThree.getHasPostponedData(),
-                postPonedDataTestedTwo.getHasPostponedData());
-
-        Assert.assertNull(postPonedDataTestedThree.getPostponedData());
-        Assert.assertEquals(postPonedDataExpectedTwoThree.getHasPostponedData(),
-                postPonedDataTestedThree.getHasPostponedData());
-
-    }
 }

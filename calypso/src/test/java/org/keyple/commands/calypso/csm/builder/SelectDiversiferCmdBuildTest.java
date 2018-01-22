@@ -9,9 +9,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.commands.calypso.ApduCommandBuilder;
 import org.keyple.commands.calypso.InconsistentCommandException;
-import org.keyple.commands.calypso.csm.builder.SelectDiversifierCmdBuild;
 import org.keyple.commands.calypso.dto.FCI;
-import org.keyple.commands.calypso.po.PoCommandBuilder;
+import org.keyple.commands.calypso.po.PoRevision;
 import org.keyple.commands.calypso.po.builder.GetDataFciCmdBuild;
 import org.keyple.commands.calypso.utils.ResponseUtils;
 import org.keyple.seproxy.ApduRequest;
@@ -48,7 +47,7 @@ public class SelectDiversiferCmdBuildTest {
 
     private ApduResponse responseExpected = new ApduResponse(null, true, returnOK);
 
-    private ApduCommandBuilder apduCommandBuilder = new GetDataFciCmdBuild(PoCommandBuilder.defaultRevision);
+    private ApduCommandBuilder apduCommandBuilder = new GetDataFciCmdBuild(PoRevision.REV3_1);
 
     private List<ApduResponse> list = new ArrayList<ApduResponse>();
 

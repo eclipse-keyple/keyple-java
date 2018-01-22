@@ -51,6 +51,8 @@ public interface ProxyReader {
      * Checks if is SE present.
      *
      * @return true if a Secure Element is present in the reader
+     * @throws IOReaderException
+     *             Exception of type IO Reader
      */
-    boolean isSEPresent() throws IOReaderException ;
+    boolean isSEPresent() throws IOReaderException;
 }

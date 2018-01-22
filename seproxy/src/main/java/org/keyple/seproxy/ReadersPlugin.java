@@ -23,8 +23,9 @@ public interface ReadersPlugin {
      * Gets the readers.
      *
      * @return the ‘unique’ name of the readers’ plugin.
-     * @throws IOReaderException 
+     * @throws IOReaderException
+     *             Exception of type IO Reader
      */
     List<ProxyReader> getReaders() throws IOReaderException;
-    
+
 }

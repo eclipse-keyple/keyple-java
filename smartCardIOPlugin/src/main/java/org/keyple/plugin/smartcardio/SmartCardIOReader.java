@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
@@ -29,7 +28,6 @@ import org.keyple.seproxy.exceptions.UnexpectedReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class SmartCardIOReader extends NotifierReader implements ConfigurableReader {
 
     static final Logger logger = LoggerFactory.getLogger(SmartCardIOReader.class);
@@ -38,11 +36,14 @@ public class SmartCardIOReader extends NotifierReader implements ConfigurableRea
 
     private CardTerminal terminal;
     private CardChannel channel;
-
     private Card card;
-    
+
+    private byte[] aidCurrentlySelected;
+    private ApduResponse fciDataSelected;
+    private boolean atrDefaultSelected = false;
+
     private Map<String, String> settings;
-    
+
     private Thread readerThread;
 
     public SmartCardIOReader(CardTerminal terminal, String name) {
@@ -52,10 +53,10 @@ public class SmartCardIOReader extends NotifierReader implements ConfigurableRea
         this.channel = null;
         this.settings = new HashMap<String, String>();
         EventThread eventThread = new EventThread(this);
-        this.readerThread =  new Thread(eventThread);
+        this.readerThread = new Thread(eventThread);
         this.readerThread.start();
     }
-    
+
     @Override
     public String getName() {
         return name;
@@ -65,7 +66,6 @@ public class SmartCardIOReader extends NotifierReader implements ConfigurableRea
     public SeResponse transmit(SeRequest seApplicationRequest) throws ChannelStateReaderException,
             InvalidApduReaderException, IOReaderException, TimeoutReaderException, UnexpectedReaderException {
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
-        ApduResponse fciResponse = null;
 
         if (isSEPresent()) {
             try {
@@ -73,26 +73,30 @@ public class SmartCardIOReader extends NotifierReader implements ConfigurableRea
             } catch (CardException e) {
                 throw new ChannelStateReaderException(e.getMessage());
             }
-            if (seApplicationRequest.getAidToSelect() != null) {
-                fciResponse = this.connect(seApplicationRequest.getAidToSelect());
-
-            } else {
-                fciResponse = new ApduResponse(card.getATR().getBytes(), true,new byte[] { (byte) 0x90, (byte) 0x00 } );
+            // gestion du select application ou du getATR
+            if (seApplicationRequest.getAidToSelect() != null && aidCurrentlySelected == null) {
+                fciDataSelected = this.connect(seApplicationRequest.getAidToSelect());
+            } else if (!atrDefaultSelected) {
+                fciDataSelected = new ApduResponse(card.getATR().getBytes(), true,
+                        new byte[] { (byte) 0x90, (byte) 0x00 });
+                atrDefaultSelected = true;
             }
             for (ApduRequest apduRequest : seApplicationRequest.getApduRequests()) {
                 logger.info(getName() + " : Sending : " + formatLogRequest(apduRequest.getbytes()));
-                ResponseAPDU responseFciData;
+                ResponseAPDU apduResponseData;
                 try {
-                    responseFciData = channel.transmit(new CommandAPDU(apduRequest.getbytes()));
-                    byte[] statusCode = new byte[] { (byte) responseFciData.getSW1(), (byte) responseFciData.getSW2() };
-                    logger.info(getName() + " : Recept : " + DatatypeConverter.printHexBinary(responseFciData.getData())
-                            + " " + DatatypeConverter.printHexBinary(statusCode));
+                    apduResponseData = channel.transmit(new CommandAPDU(apduRequest.getbytes()));
+                    byte[] statusCode = new byte[] { (byte) apduResponseData.getSW1(),
+                            (byte) apduResponseData.getSW2() };
+                    logger.info(
+                            getName() + " : Recept : " + DatatypeConverter.printHexBinary(apduResponseData.getData())
+                                    + " " + DatatypeConverter.printHexBinary(statusCode));
 
                     // gestion du getResponse en case 4 avec reponse valide et
                     // retour vide
-                    hackCase4AndGetResponse(apduRequest.isCase4(), statusCode, responseFciData, channel);
+                    hackCase4AndGetResponse(apduRequest.isCase4(), statusCode, apduResponseData, channel);
 
-                    apduResponseList.add(new ApduResponse(responseFciData.getData(), true, statusCode));
+                    apduResponseList.add(new ApduResponse(apduResponseData.getData(), true, statusCode));
                 } catch (CardException e) {
                     throw new ChannelStateReaderException(e.getMessage());
                 } catch (NullPointerException e) {
@@ -108,7 +112,7 @@ public class SmartCardIOReader extends NotifierReader implements ConfigurableRea
             }
         }
 
-        return new SeResponse(false, fciResponse, apduResponseList);
+        return new SeResponse(false, fciDataSelected, apduResponseList);
     }
 
     private void prepareAndConnectToTerminalAndSetChannel() throws CardException {
@@ -140,24 +144,25 @@ public class SmartCardIOReader extends NotifierReader implements ConfigurableRea
     private static String formatLogRequest(byte[] request) {
         String c = DatatypeConverter.printHexBinary(request);
         String log = c;
-        
+
         if (request.length == 4) {
-            log = extractData(c,0,2) + " " + extractData(c,2,4) + " " + extractData(c,4,8);
+            log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " + extractData(c, 4, 8);
         }
         if (request.length == 5) {
-            log = extractData(c,0,2) + " " + extractData(c,2,4) + " " + extractData(c,4,8) + " " + extractData(c,8,10);
+            log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " + extractData(c, 4, 8) + " "
+                    + extractData(c, 8, 10);
         } else if (request.length > 5) {
-            log = extractData(c,0,2) + " " + extractData(c,2,4) + " " + extractData(c,4,8) + " " + extractData(c,8,10)
-                    + " " + extractData(c,10,c.length());
+            log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " + extractData(c, 4, 8) + " "
+                    + extractData(c, 8, 10) + " " + extractData(c, 10, c.length());
         }
 
         return log;
     }
-    
-    private static String extractData(String str, int pos1, int pos2){
+
+    private static String extractData(String str, int pos1, int pos2) {
         String data = "";
-        for(int i = pos1; i < pos2; i++){
-            data+=str.charAt(i);
+        for (int i = pos1; i < pos2; i++) {
+            data += str.charAt(i);
         }
         return data;
     }
@@ -183,28 +188,30 @@ public class SmartCardIOReader extends NotifierReader implements ConfigurableRea
     private ApduResponse connect(byte[] aid) throws ChannelStateReaderException {
 
         try {
-//            if (aid != null) {
-                // generate select application command
-                byte[] command = new byte[aid.length + 5];
-                command[0] = (byte) 0x00;
-                command[1] = (byte) 0xA4;
-                command[2] = (byte) 0x04;
-                command[3] = (byte) 0x00;
-                command[4] = Byte.decode("" + aid.length);
-                System.arraycopy(aid, 0, command, 5, aid.length);
-                logger.info(getName() + " : Send AID : " + formatLogRequest(command));
+            // if (aid != null) {
+            // generate select application command
+            byte[] command = new byte[aid.length + 5];
+            command[0] = (byte) 0x00;
+            command[1] = (byte) 0xA4;
+            command[2] = (byte) 0x04;
+            command[3] = (byte) 0x00;
+            command[4] = Byte.decode("" + aid.length);
+            System.arraycopy(aid, 0, command, 5, aid.length);
+            logger.info(getName() + " : Send AID : " + formatLogRequest(command));
 
-                ResponseAPDU res = channel.transmit(new CommandAPDU(command));
-                logger.info(getName() + " : Recept : " + DatatypeConverter.printHexBinary(res.getBytes()));
-                ApduResponse fciResponse = new ApduResponse(res.getData(), true,
-                        new byte[] { (byte) 0x90, (byte) 0x00 });
-                return fciResponse;
+            ResponseAPDU res = channel.transmit(new CommandAPDU(command));
+            byte[] statusCode = new byte[] { (byte) res.getSW1(), (byte) res.getSW2() };
+            hackCase4AndGetResponse(true, statusCode, res, channel);
+            logger.info(getName() + " : Recept : " + DatatypeConverter.printHexBinary(res.getBytes()));
+            ApduResponse fciResponse = new ApduResponse(res.getData(), true, new byte[] { (byte) 0x90, (byte) 0x00 });
+            aidCurrentlySelected = aid;
+            return fciResponse;
 
-//            }
+            // }
         } catch (CardException e1) {
             throw new ChannelStateReaderException(e1.getMessage());
         }
-//        return null;
+        // return null;
     }
 
     /**
@@ -217,6 +224,10 @@ public class SmartCardIOReader extends NotifierReader implements ConfigurableRea
      */
     private void disconnect() throws IOReaderException {
         try {
+            aidCurrentlySelected = null;
+            fciDataSelected = null;
+            atrDefaultSelected = false;
+
             if (this.card != null) {
                 this.channel = null;
                 this.card.disconnect(false);
@@ -243,6 +254,13 @@ public class SmartCardIOReader extends NotifierReader implements ConfigurableRea
         return this.settings;
     }
 
+    /**
+     * @author yann.herriau
+     *
+     *         To implement Notifications, SmarcardIoReader use a Thread for
+     *         card insertion or removal detection
+     *
+     */
     public class EventThread implements Runnable {
         SmartCardIOReader reader;
 
@@ -254,18 +272,17 @@ public class SmartCardIOReader extends NotifierReader implements ConfigurableRea
             while (true) {
                 try {
                     terminal.waitForCardPresent(0);
-                        reader.notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.SE_INSERTED));
-                   terminal.waitForCardAbsent(0);
-                        reader.disconnect();
-                        reader.notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.SE_REMOVAL));
+                    reader.notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.SE_INSERTED));
+                    terminal.waitForCardAbsent(0);
+                    reader.disconnect();
+                    reader.notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.SE_REMOVAL));
                 } catch (CardException e) {
                     reader.notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.IO_ERROR));
                 } catch (IOReaderException e) {
                     reader.notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.IO_ERROR));
-                } 
+                }
             }
         }
     }
 
-   
 }

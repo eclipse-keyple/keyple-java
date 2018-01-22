@@ -52,7 +52,7 @@ public class PoPlainSecureSession {
     private ProxyReader csmSessionReader;
 
     /** The poRevision. */
-    private PoRevision poRevision = PoCommandBuilder.defaultRevision;
+    private PoRevision poRevision = PoRevision.REV3_1;
 
     /** default key index. */
     private byte defaultKeyIndex;
