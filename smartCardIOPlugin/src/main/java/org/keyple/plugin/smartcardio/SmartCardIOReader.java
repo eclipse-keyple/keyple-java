@@ -94,7 +94,10 @@ public class SmartCardIOReader extends NotifierReader implements ConfigurableRea
 
                     // gestion du getResponse en case 4 avec reponse valide et
                     // retour vide
-                    hackCase4AndGetResponse(apduRequest.isCase4(), statusCode, apduResponseData, channel);
+                    if (apduRequest.isCase4() && statusCode[0] == (byte) 0x90 && statusCode[1] == (byte) 0x00
+                            && apduResponseData.getData().length == 0) {
+                        hackCase4AndGetResponse(apduRequest.isCase4(), statusCode, apduResponseData, channel);
+                    }
 
                     apduResponseList.add(new ApduResponse(apduResponseData.getData(), true, statusCode));
                 } catch (CardException e) {
@@ -126,19 +129,18 @@ public class SmartCardIOReader extends NotifierReader implements ConfigurableRea
 
     private static void hackCase4AndGetResponse(boolean isCase4, byte[] statusCode, ResponseAPDU responseFciData,
             CardChannel channel) throws CardException {
-        if (isCase4 && statusCode[0] == (byte) 0x90 && statusCode[1] == (byte) 0x00
-                && responseFciData.getData().length == 0) {
-            byte[] command = new byte[5];
-            command[0] = (byte) 0x00;
-            command[1] = (byte) 0xC0;
-            command[2] = (byte) 0x00;
-            command[3] = (byte) 0x00;
-            command[4] = (byte) 0x00;
-            logger.info(" Send GetResponse : " + formatLogRequest(command));
-            responseFciData = channel.transmit(new CommandAPDU(command));
-            statusCode[0] = (byte) responseFciData.getSW1();
-            statusCode[1] = (byte) responseFciData.getSW2();
-        }
+
+        byte[] command = new byte[5];
+        command[0] = (byte) 0x00;
+        command[1] = (byte) 0xC0;
+        command[2] = (byte) 0x00;
+        command[3] = (byte) 0x00;
+        command[4] = (byte) 0x00;
+        logger.info(" Send GetResponse : " + formatLogRequest(command));
+        responseFciData = channel.transmit(new CommandAPDU(command));
+        statusCode[0] = (byte) responseFciData.getSW1();
+        statusCode[1] = (byte) responseFciData.getSW2();
+
     }
 
     private static String formatLogRequest(byte[] request) {
@@ -188,7 +190,6 @@ public class SmartCardIOReader extends NotifierReader implements ConfigurableRea
     private ApduResponse connect(byte[] aid) throws ChannelStateReaderException {
 
         try {
-            // if (aid != null) {
             // generate select application command
             byte[] command = new byte[aid.length + 5];
             command[0] = (byte) 0x00;
@@ -201,17 +202,17 @@ public class SmartCardIOReader extends NotifierReader implements ConfigurableRea
 
             ResponseAPDU res = channel.transmit(new CommandAPDU(command));
             byte[] statusCode = new byte[] { (byte) res.getSW1(), (byte) res.getSW2() };
-            hackCase4AndGetResponse(true, statusCode, res, channel);
+            if (statusCode[0] == (byte) 0x90 && statusCode[1] == (byte) 0x00 && res.getData().length == 0) {
+                hackCase4AndGetResponse(true, statusCode, res, channel);
+            }
             logger.info(getName() + " : Recept : " + DatatypeConverter.printHexBinary(res.getBytes()));
             ApduResponse fciResponse = new ApduResponse(res.getData(), true, new byte[] { (byte) 0x90, (byte) 0x00 });
             aidCurrentlySelected = aid;
             return fciResponse;
 
-            // }
         } catch (CardException e1) {
             throw new ChannelStateReaderException(e1.getMessage());
         }
-        // return null;
     }
 
     /**
