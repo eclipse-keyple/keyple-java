@@ -37,14 +37,10 @@ public class FCI {
      */
     public FCI(byte[] dfName, byte[] fciProprietaryTemplate, byte[] fciIssuerDiscretionaryData, byte[] applicationSN,
             StartupInformation startupInformation) {
-        if (dfName != null) {
-            this.dfName = dfName.clone();
-        }
-
-        this.fciProprietaryTemplate = (fciProprietaryTemplate == null ? null : fciProprietaryTemplate.clone());
-        this.fciIssuerDiscretionaryData = (fciIssuerDiscretionaryData == null ? null
-                : fciIssuerDiscretionaryData.clone());
-        this.applicationSN = (applicationSN == null ? null : applicationSN.clone());
+        this.dfName = dfName;
+        this.fciProprietaryTemplate =fciProprietaryTemplate;
+        this.fciIssuerDiscretionaryData = fciIssuerDiscretionaryData;
+        this.applicationSN = applicationSN;
         this.startupInformation = startupInformation;
     }
 
@@ -54,7 +50,7 @@ public class FCI {
      * @return the fci proprietary template
      */
     public byte[] getFciProprietaryTemplate() {
-        return (this.fciProprietaryTemplate == null ? null : this.fciProprietaryTemplate.clone());
+        return this.fciProprietaryTemplate;
     }
 
     /**
@@ -63,7 +59,7 @@ public class FCI {
      * @return the fci issuer discretionary data
      */
     public byte[] getFciIssuerDiscretionaryData() {
-        return (this.fciIssuerDiscretionaryData == null ? null : this.fciIssuerDiscretionaryData.clone());
+        return this.fciIssuerDiscretionaryData;
     }
 
     /**
@@ -72,7 +68,7 @@ public class FCI {
      * @return the application SN
      */
     public byte[] getApplicationSN() {
-        return (this.applicationSN == null ? null : this.applicationSN.clone());
+        return this.applicationSN;
     }
 
     /**
@@ -91,7 +87,7 @@ public class FCI {
      */
     public byte[] getDfName() {
         if (dfName != null) {
-            return dfName.clone();
+            return dfName;
         } else {
             return new byte[0];
         }

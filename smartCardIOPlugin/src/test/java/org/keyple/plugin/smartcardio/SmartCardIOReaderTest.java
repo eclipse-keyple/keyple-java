@@ -42,6 +42,7 @@ import org.keyple.seproxy.SeRequest;
 import org.keyple.seproxy.SeResponse;
 import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
+import org.keyple.seproxy.exceptions.InconsistentParameterValueException;
 import org.keyple.seproxy.exceptions.InvalidApduReaderException;
 import org.keyple.seproxy.exceptions.TimeoutReaderException;
 import org.keyple.seproxy.exceptions.UnexpectedReaderException;
@@ -68,7 +69,7 @@ public class SmartCardIOReaderTest {
 
     @Mock
     CardChannel channel;
-    
+
     ATR atr;
 
     ResponseAPDU res;
@@ -79,7 +80,7 @@ public class SmartCardIOReaderTest {
     public void setUp() throws CardException{
         when(terminal.connect(any(String.class))).thenReturn(card);
         when(card.getBasicChannel()).thenReturn(channel);
-        
+
         responseApduByte = new byte[] { (byte) 0x85, 0x17, 0x00, 0x01, 0x00, 0x00, 0x00, 0x12, 0x12, 0x00, 0x00, 0x01, 0x03, 0x01,
                 0x01, 0x00, 0x7E, 0x7E, 0x7E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
         res = new ResponseAPDU(responseApduByte);
@@ -108,7 +109,7 @@ public class SmartCardIOReaderTest {
       assertTrue(readerName.equals(reader.getName()));
     }
 
-    @Test 
+    @Test
     public void testIsSEPresent() throws CardException, IOReaderException {
 
 //        this.reader = new SmartCardIOReader(terminal, readerName);
@@ -118,20 +119,20 @@ public class SmartCardIOReaderTest {
         assertFalse(reader.isSEPresent());
 
     }
-    
+
     @Test (expected=IOReaderException.class)
     public void testIsSEPresentWithException() throws CardException, IOReaderException {
 
         when(terminal.waitForCardAbsent(0)).thenReturn(false);
         doThrow(new CardException("erreur", new Exception())).when(terminal).isCardPresent();
         reader.isSEPresent();
-        
+
 
     }
 
     @Test
     public void testTransmitCardNotPresent() throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, TimeoutReaderException, UnexpectedReaderException {
+            IOReaderException, TimeoutReaderException, UnexpectedReaderException, InconsistentParameterValueException {
 
         when(terminal.isCardPresent()).thenReturn(false);
         ApduRequest apduRequestMF = new ApduRequest(
@@ -153,7 +154,7 @@ public class SmartCardIOReaderTest {
 
     @Test
     public void testTransmitToCardWithoutAidToSelect() throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, TimeoutReaderException, UnexpectedReaderException {
+            IOReaderException, TimeoutReaderException, UnexpectedReaderException, InconsistentParameterValueException {
 
         atr = new ATR(new byte[] { (byte) 0x85, 0x17, 0x00, 0x01});
         when(terminal.isCardPresent()).thenReturn(true);
@@ -186,7 +187,7 @@ public class SmartCardIOReaderTest {
 
     @Test
     public void testTransmitToCardWithAidToSelect() throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, TimeoutReaderException, UnexpectedReaderException {
+            IOReaderException, TimeoutReaderException, UnexpectedReaderException, InconsistentParameterValueException {
 
 
         when(terminal.isCardPresent()).thenReturn(true);
@@ -217,7 +218,7 @@ public class SmartCardIOReaderTest {
 
     @Test
     public void testTransmitToCardAndDisconnect() throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, TimeoutReaderException, UnexpectedReaderException {
+            IOReaderException, TimeoutReaderException, UnexpectedReaderException, InconsistentParameterValueException {
 
 
         when(terminal.isCardPresent()).thenReturn(true);

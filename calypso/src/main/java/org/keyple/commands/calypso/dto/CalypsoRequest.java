@@ -54,7 +54,7 @@ public class CalypsoRequest {
         this.ins = ins;
         this.p1 = p1;
         this.p2 = p2;
-        this.dataIn = (dataIn == null ? new byte[0] : dataIn.clone());
+        this.dataIn = dataIn;
         if (dataIn == null) {
 
             this.lc = 0x00;
@@ -85,7 +85,7 @@ public class CalypsoRequest {
         this.ins = ins;
         this.p1 = p1;
         this.p2 = p2;
-        this.dataIn = (dataIn == null ? new byte[0] : dataIn.clone());
+        this.dataIn = dataIn;
 
         if (dataIn == null) {
             this.lc = 0x00;
@@ -158,7 +158,7 @@ public class CalypsoRequest {
      * @return the data in
      */
     public byte[] getDataIn() {
-        return dataIn.clone();
+        return dataIn;
     }
 
     /**

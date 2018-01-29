@@ -21,8 +21,8 @@ public class SamChallenge {
      *            the random number
      */
     public SamChallenge(byte[] transactionCounter, byte[] randomNumber) {
-        this.transactionCounter = (transactionCounter == null ? null : transactionCounter.clone());
-        this.randomNumber = (randomNumber == null ? null : randomNumber.clone());
+        this.transactionCounter = transactionCounter;
+        this.randomNumber = randomNumber;
     }
 
     /**
@@ -31,7 +31,7 @@ public class SamChallenge {
      * @return the transaction counter
      */
     public byte[] getTransactionCounter() {
-        return transactionCounter.clone();
+        return transactionCounter;
     }
 
     /**
@@ -40,7 +40,7 @@ public class SamChallenge {
      * @return the random number
      */
     public byte[] getRandomNumber() {
-        return randomNumber.clone();
+        return randomNumber;
     }
 
 }

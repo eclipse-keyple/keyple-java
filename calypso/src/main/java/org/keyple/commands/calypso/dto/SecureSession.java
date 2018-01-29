@@ -58,8 +58,8 @@ public class SecureSession {
         this.manageSecureSessionAuthorized = manageSecureSessionAuthorized;
         this.kif = kif;
         this.kvc = kvc;
-        this.originalData = (originalData == null ? null : originalData.clone());
-        this.secureSessionData = (secureSessionData == null ? null : secureSessionData.clone());
+        this.originalData = originalData;
+        this.secureSessionData = secureSessionData;
     }
 
     /**
@@ -89,8 +89,8 @@ public class SecureSession {
         this.previousSessionRatified = previousSessionRatified;
         this.manageSecureSessionAuthorized = manageSecureSessionAuthorized;
         this.kvc = kvc;
-        this.originalData = (originalData == null ? null : originalData.clone());
-        this.secureSessionData = (secureSessionData == null ? null : secureSessionData.clone());
+        this.originalData = originalData;
+        this.secureSessionData = secureSessionData;
     }
 
     /**
@@ -147,7 +147,7 @@ public class SecureSession {
         if (originalData == null) {
             return new byte[] {};
         }
-        return originalData.clone();
+        return originalData;
     }
 
     /**
@@ -156,6 +156,6 @@ public class SecureSession {
      * @return the secure session data
      */
     public byte[] getSecureSessionData() {
-        return secureSessionData.clone();
+        return secureSessionData;
     }
 }

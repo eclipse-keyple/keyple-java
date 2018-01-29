@@ -23,7 +23,7 @@ public class PostponedData {
     public PostponedData(boolean hasPostponedData, byte[] postponedData) {
         super();
         this.hasPostponedData = hasPostponedData;
-        this.postponedData = (postponedData == null ? null : postponedData.clone());
+        this.postponedData = postponedData;
     }
 
     /**
@@ -41,7 +41,7 @@ public class PostponedData {
      * @return the postponed data
      */
     public byte[] getPostponedData() {
-        return (postponedData == null ? null : postponedData.clone());
+        return postponedData;
     }
 
 }

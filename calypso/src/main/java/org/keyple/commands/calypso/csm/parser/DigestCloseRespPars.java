@@ -43,7 +43,7 @@ public class DigestCloseRespPars extends ApduResponseParser {
      */
     public byte[] getSignature() {
         if (signature != null) {
-            return signature.clone();
+            return signature;
         } else {
             return new byte[0];
         }

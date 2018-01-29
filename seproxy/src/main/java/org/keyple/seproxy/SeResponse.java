@@ -75,10 +75,7 @@ public class SeResponse {
         this.fci = null;
         this.atr = null;
         this.fci = fci;
-        if (atr != null && atr.length > 0) {
-            this.atr = atr.clone();
-        }
-
+        this.atr = atr;
         this.apduResponses = apduResponses;
     }
 
@@ -117,6 +114,6 @@ public class SeResponse {
      * @return the ATR
      */
     public byte[] getAtr() {
-        return this.atr.clone();
+        return this.atr;
     }
 }

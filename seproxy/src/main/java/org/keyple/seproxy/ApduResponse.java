@@ -16,7 +16,7 @@ status of the command).*/
     /** The status code. */
     private byte[] statusCode;
 
-    
+
     /**
      * the constructor called by a ProxyReader in order to build the APDU command response to push to a
      * ticketing application.
@@ -25,10 +25,10 @@ status of the command).*/
      * @param successful the successful
      */
     public ApduResponse(byte[] bytes, boolean successful) {
-        this.bytes = (bytes == null ? null : bytes.clone());
+        this.bytes = bytes;
         this.successful = successful;
     }
-    
+
     /**
      * the constructor called by a ProxyReader in order to build the APDU command response to push to a
 ticketing application.
@@ -38,9 +38,9 @@ ticketing application.
      * @param statusCode the status code
      */
     public ApduResponse(byte[] bytes, boolean successful, byte[] statusCode) {
-        this.bytes = (bytes == null ? null : bytes.clone());
+        this.bytes = bytes;
         this.successful = successful;
-        this.statusCode = (statusCode == null ? null : statusCode.clone());
+        this.statusCode = statusCode;
     }
 
     /**
@@ -49,7 +49,7 @@ ticketing application.
      * @return the data of the APDU response.
      */
     public byte[] getbytes() {
-        return bytes.clone();
+        return bytes;
     }
 
     /**
@@ -67,7 +67,7 @@ ticketing application.
      * @return the status code
      */
     public byte[] getStatusCode() {
-        return statusCode.clone();
+        return statusCode;
     }
 
 }

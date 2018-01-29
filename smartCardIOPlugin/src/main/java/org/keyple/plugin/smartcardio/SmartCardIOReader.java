@@ -1,6 +1,7 @@
 package org.keyple.plugin.smartcardio;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.seproxy.exceptions.InvalidApduReaderException;
 import org.keyple.seproxy.exceptions.TimeoutReaderException;
 import org.keyple.seproxy.exceptions.UnexpectedReaderException;
+import org.keyple.seproxy.exceptions.InconsistentParameterValueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +66,7 @@ public class SmartCardIOReader extends NotifierReader implements ConfigurableRea
 
     @Override
     public SeResponse transmit(SeRequest seApplicationRequest) throws ChannelStateReaderException,
-            InvalidApduReaderException, IOReaderException, TimeoutReaderException, UnexpectedReaderException {
+            InvalidApduReaderException, IOReaderException, TimeoutReaderException, UnexpectedReaderException, InconsistentParameterValueException {
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
         if (isSEPresent()) {
@@ -118,9 +120,13 @@ public class SmartCardIOReader extends NotifierReader implements ConfigurableRea
         return new SeResponse(false, fciDataSelected, apduResponseList);
     }
 
-    private void prepareAndConnectToTerminalAndSetChannel() throws CardException {
+    private void prepareAndConnectToTerminalAndSetChannel() throws CardException, InconsistentParameterValueException {
         String protocol = "";
         if (card == null) {
+            if (settings.containsKey("protocol")
+                    && Arrays.binarySearch(new String[] { "*", "0", "1" }, settings.get("protocol")) < 0) {
+                throw new InconsistentParameterValueException("Protocol parameter not allowed : " + settings.get("protocol"));
+            }
             protocol = settings.containsKey("protocol") ? settings.get("protocol") : "*";
             this.card = this.terminal.connect(protocol);
         }

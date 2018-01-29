@@ -8,20 +8,20 @@
 	</parent>
 	<artifactId>calypso</artifactId>
 
-	<properties>
-		<junit.version>4.12</junit.version>
-	</properties>
+
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.0.0-M1</version>
+				<configuration>
+					<sourcepath>${project.basedir}/src/main/java</sourcepath>
+					<excludePackageNames>org.keyple.commands.calypso.dto:org.keyple.commands.calypso.utils</excludePackageNames>
+
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -36,31 +36,5 @@
 			<artifactId>smartCardIOPlugin</artifactId>
 			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.10</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.4</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.1.7</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-servlet</artifactId>
-			<version>2.7.0</version>
-		</dependency>
 	</dependencies>
-	<version>1.0.1-SNAPSHOT</version>
 </project>

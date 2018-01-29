@@ -5,6 +5,7 @@ import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.seproxy.exceptions.InvalidApduReaderException;
 import org.keyple.seproxy.exceptions.TimeoutReaderException;
 import org.keyple.seproxy.exceptions.UnexpectedReaderException;
+import org.keyple.seproxy.exceptions.InconsistentParameterValueException;
 
 /**
  * The Interface ProxyReader. This interface has to be implemented by each
@@ -45,7 +46,7 @@ public interface ProxyReader {
      *             Unexepected exception
      */
     SeResponse transmit(SeRequest seApplicationRequest) throws ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, TimeoutReaderException, UnexpectedReaderException;
+            IOReaderException, TimeoutReaderException, UnexpectedReaderException, InconsistentParameterValueException;
 
     /**
      * Checks if is SE present.

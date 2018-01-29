@@ -43,7 +43,7 @@ public class CsmGetChallengeRespPars extends ApduResponseParser {
      */
     public byte[] getChallenge() {
         if (challenge != null) {
-            return challenge.clone();
+            return challenge;
         } else {
             return new byte[0];
         }

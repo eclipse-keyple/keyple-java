@@ -12,12 +12,16 @@
 		<module>smartCardIOPlugin</module>
 	</modules>
 
+
+
 	<properties>
+		<junit.version>4.12</junit.version>
+		<mockito.version>1.10.19</mockito.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.7</java.version>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
+		<java.version>1.6</java.version>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 
 		<!-- gestion des versions des artefacts -->
 		<jacoco.version>0.7.9</jacoco.version>
@@ -37,9 +41,29 @@
 		<sonar.surefire.reportsPath>${project.testresult.directory}/surefire-reports</sonar.surefire.reportsPath>
 	</properties>
 
+
+
 	<build>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>cobertura-maven-plugin</artifactId>
+					<version>2.3</version>
+					<dependencies>
+						<dependency>
+							<groupId>net.sourceforge.cobertura</groupId>
+							<artifactId>cobertura</artifactId>
+							<version>1.9.4.1</version>
+						</dependency>
+						<dependency>
+							<groupId>net.sourceforge.cobertura</groupId>
+							<artifactId>cobertura-runtime</artifactId>
+							<version>1.9.4.1</version>
+							<type>pom</type>
+						</dependency>
+					</dependencies>
+				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
@@ -139,6 +163,71 @@
 					</execution>
 				</executions>
 			</plugin>
+
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>public</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>3.0.0</version>
+						<configuration>
+							<additionalOptions>public</additionalOptions>
+							<excludePackageNames>org.keyple.commands.calypso.dto:org.keyple.commands.calypso.utils</excludePackageNames>
+							<aggregate>true</aggregate>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+			<properties>
+
+			</properties>
+			<dependencies>
+
+			</dependencies>
+		</profile>
+		<profile>
+			<id>dev</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>3.0.0</version>
+						<configuration>
+							<aggregate>true</aggregate>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+			<properties>
+
+			</properties>
+			<dependencies>
+
+			</dependencies>
+		</profile>
+	</profiles>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>

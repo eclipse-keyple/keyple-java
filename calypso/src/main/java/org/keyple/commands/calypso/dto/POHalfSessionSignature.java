@@ -23,8 +23,8 @@ public class POHalfSessionSignature {
      */
     public POHalfSessionSignature(byte[] value, byte[] postponedData) {
         super();
-        this.value = (value == null) ? null : value.clone();
-        this.postponedData = (postponedData == null ? null : postponedData.clone());
+        this.value = value;
+        this.postponedData = postponedData;
     }
 
     /**
@@ -34,7 +34,7 @@ public class POHalfSessionSignature {
      */
     public byte[] getValue() {
         if (value != null) {
-            return value.clone();
+            return value;
         } else {
             return new byte[0];
         }
@@ -47,7 +47,7 @@ public class POHalfSessionSignature {
      */
     public byte[] getPostponedData() {
         if (postponedData != null) {
-            return postponedData.clone();
+            return postponedData;
         } else {
             return new byte[0];
         }

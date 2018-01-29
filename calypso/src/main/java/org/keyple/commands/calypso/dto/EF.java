@@ -45,7 +45,7 @@ public class EF {
      *            the number rec
      */
     public EF(byte[] lid, byte sfi, byte fileType, byte recSize, byte numberRec) {
-        this.lid = (lid == null ? null : lid.clone());
+        this.lid = lid;
         this.sfi = sfi;
         this.fileType = fileType;
         this.recSize = recSize;
@@ -58,7 +58,7 @@ public class EF {
      * @return the lid
      */
     public byte[] getLid() {
-        return lid.clone();
+        return lid;
     }
 
     /**
@@ -164,7 +164,7 @@ public class EF {
      *            the new lid
      */
     public void setLid(byte[] lid) {
-        this.lid = (lid == null ? null : lid.clone());
+        this.lid = lid;
     }
 
     /**

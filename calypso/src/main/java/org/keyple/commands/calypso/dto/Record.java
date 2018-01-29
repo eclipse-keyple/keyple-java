@@ -22,7 +22,7 @@ public class Record {
      */
     public Record(byte[] data, int recordNumber) {
         super();
-        this.data = (data == null ? null : data.clone());
+        this.data = data;
         this.recordNumber = recordNumber;
     }
 
@@ -32,7 +32,7 @@ public class Record {
      * @return the data
      */
     public byte[] getData() {
-        return data.clone();
+        return data;
     }
 
     /**

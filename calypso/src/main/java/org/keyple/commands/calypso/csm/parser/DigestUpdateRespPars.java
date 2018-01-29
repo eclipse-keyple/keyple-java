@@ -37,7 +37,7 @@ public class DigestUpdateRespPars extends ApduResponseParser {
 
     public byte[] getProcessedData() {
         if (processedData != null) {
-            return processedData.clone();
+            return processedData;
         } else {
             return new byte[0];
         }

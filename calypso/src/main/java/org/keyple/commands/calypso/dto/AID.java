@@ -17,7 +17,7 @@ public class AID {
      *            the byte value
      */
     public AID(byte[] value) {
-        this.value = (value == null ? null : value.clone());
+        this.value = value;
     }
 
     /**
@@ -26,7 +26,7 @@ public class AID {
      * @return the value
      */
     public byte[] getValue() {
-        return value.clone();
+        return value;
     }
 
 }

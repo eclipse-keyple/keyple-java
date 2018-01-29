@@ -3,6 +3,7 @@ package org.keyple.calypso.transaction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.keyple.commands.calypso.ApduCommandBuilder;
 import org.keyple.commands.calypso.InconsistentCommandException;
@@ -32,14 +33,15 @@ import org.keyple.seproxy.SeRequest;
 import org.keyple.seproxy.SeResponse;
 import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
+import org.keyple.seproxy.exceptions.InconsistentParameterValueException;
 import org.keyple.seproxy.exceptions.InvalidApduReaderException;
+import org.keyple.seproxy.exceptions.ParameterProcessingErrorException;
 import org.keyple.seproxy.exceptions.TimeoutReaderException;
 import org.keyple.seproxy.exceptions.UnexpectedReaderException;
 
 /**
- * A non-encrypted secure session with a Calypso
- * PO requires the management of two ProxyReader in order to communicate with
- * both a Calypso PO and a CSM
+ * A non-encrypted secure session with a Calypso PO requires the management of
+ * two ProxyReader in order to communicate with both a Calypso PO and a CSM
  *
  * @author Ixxi
  */
@@ -57,6 +59,13 @@ public class PoPlainSecureSession {
     /** default key index. */
     private byte defaultKeyIndex;
 
+    /** default key index. */
+    private Map<Byte, Byte> defaultKifMap;
+
+
+    /** default key index. */
+    private Map<Byte, Byte> defaultKvcMap;
+
     /** The csm revision. */
     private CsmRevision csmRevision = CsmRevision.S1D;
 
@@ -70,11 +79,12 @@ public class PoPlainSecureSession {
      * @param defaultKeyIndex
      *            default KIF index
      */
-    public PoPlainSecureSession(ProxyReader poReader, ProxyReader csmReader, byte defaultKeyIndex) {
+    public PoPlainSecureSession(ProxyReader poReader, ProxyReader csmReader, byte[] csmSettings) {
+
         this.poReader = poReader;
         this.csmSessionReader = csmReader;
 
-        this.defaultKeyIndex = defaultKeyIndex;
+        this.defaultKeyIndex = (csmSettings != null && csmSettings.length > 0) ? csmSettings[0] : 0x00;
 
     }
 
@@ -100,10 +110,12 @@ public class PoPlainSecureSession {
      *             the timeout reader exception
      * @throws InconsistentCommandException
      *             the inconsistent command exception
+     * @throws InconsistentParameterValueException
      */
     private SeResponse selectDiversifier(boolean keepChannelOpen, ProxyReader reader, byte[] applicationSN)
             throws UnexpectedReaderException, IOReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException,
+            InconsistentParameterValueException {
         List<ApduRequest> apduRequestList = new ArrayList<ApduRequest>();
 
         ApduCommandBuilder selectDiversifier = new SelectDiversifierCmdBuild(this.csmRevision, applicationSN);
@@ -133,10 +145,11 @@ public class PoPlainSecureSession {
      *             the timeout reader exception
      * @throws InconsistentCommandException
      *             the inconsistent command exception
+     * @throws InconsistentParameterValueException
      */
-    private SeResponse getChallenge(boolean keepChannelOpen, ProxyReader reader)
-            throws UnexpectedReaderException, IOReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+    private SeResponse getChallenge(boolean keepChannelOpen, ProxyReader reader) throws UnexpectedReaderException,
+            IOReaderException, ChannelStateReaderException, InvalidApduReaderException, TimeoutReaderException,
+            InconsistentCommandException, InconsistentParameterValueException {
         List<ApduRequest> apduRequestList = new ArrayList<ApduRequest>();
 
         ApduCommandBuilder csmGetChallenge = new CsmGetChallengeCmdBuild(this.csmRevision, (byte) 0x04);
@@ -171,10 +184,12 @@ public class PoPlainSecureSession {
      *             the timeout reader exception
      * @throws InconsistentCommandException
      *             the inconsistent command exception
+     * @throws InconsistentParameterValueException
      */
     public SeResponse processIdentification(byte[] poAid, SendableInSession[] poCommandsOutsideSession)
             throws UnexpectedReaderException, IOReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException,
+            InconsistentParameterValueException {
 
         boolean keepChannelOpen = true;
 
@@ -231,10 +246,13 @@ public class PoPlainSecureSession {
      *             the timeout reader exception
      * @throws InconsistentCommandException
      *             the inconsistent command exception
+     * @throws InconsistentParameterValueException
+     * @throws ParameterProcessingErrorException
      */
     public SeResponse processOpening(OpenSessionCmdBuild openCommand, SendableInSession[] poCommandsInsideSession)
             throws UnexpectedReaderException, IOReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException,
+            InconsistentParameterValueException, ParameterProcessingErrorException {
 
         boolean keepChannelOpen = true;
 
@@ -246,21 +264,33 @@ public class PoPlainSecureSession {
         // identifies the session PO keySet
         OpenSessionRespPars session = this.getSecureSessionBySEResponseAndRevision(responseOpenSession);
 
-        byte kif = session.getSelectedKif();
+        byte keyIndex = 0x00;
+        byte kif = 0x00;
+        byte kvc = 0x00;
+
+        kif = session.getSelectedKif();
+        kvc = session.getSelectedKvc();
         if (kif == (byte) 0xFF) {
-            if (defaultKeyIndex == (byte) 0x01) {
-                kif = (byte) 0x21;
-            } else if (defaultKeyIndex == (byte) 0x02) {
-                kif = (byte) 0x27;
-            } else if (defaultKeyIndex == (byte) 0x03) {
-                kif = (byte) 0x30;
+            Byte keyIndexByte = new Byte(this.defaultKeyIndex);
+            if (defaultKifMap.containsKey(keyIndexByte)) {
+                kif = defaultKifMap.get(keyIndexByte);
             }
+            if (defaultKvcMap.containsKey(keyIndexByte)) {
+                kif = defaultKvcMap.get(keyIndexByte);
+            }
+            if (this.defaultKeyIndex != 0x00) {
+                keyIndex = this.defaultKeyIndex;
+            }
+        }
+
+
+        if (keyIndex == 0x00 && kif == 0x00 && kvc == 0x00) {
+            throw new ParameterProcessingErrorException("Erreur de paramétrage KIF/KVC/defaultIndex");
         }
 
         // generate digestInit
         ApduCommandBuilder digestInit = new DigestInitCmdBuild(this.csmRevision, false,
-                this.poRevision.equals(PoRevision.REV3_2), defaultKeyIndex, kif, session.getSelectedKvc(),
-                session.getRecordDataRead());
+                this.poRevision.equals(PoRevision.REV3_2), keyIndex, kif, kvc, session.getRecordDataRead());
 
         SeResponse responseDigestInit = transmitApduResquests(null, csmSessionReader, keepChannelOpen,
                 Arrays.asList(digestInit.getApduRequest()));
@@ -318,10 +348,11 @@ public class PoPlainSecureSession {
      *             the unexpected reader exception
      * @throws IOReaderException
      *             the IO reader exception
+     * @throws InconsistentParameterValueException
      */
     private SeResponse transmitApduResquests(byte[] aid, ProxyReader reader, boolean keepChannelOpen,
             List<ApduRequest> apduResquestList) throws ChannelStateReaderException, InvalidApduReaderException,
-            TimeoutReaderException, UnexpectedReaderException, IOReaderException {
+            TimeoutReaderException, UnexpectedReaderException, IOReaderException, InconsistentParameterValueException {
         SeRequest seApplicationRequest = new SeRequest(aid, apduResquestList, keepChannelOpen);
 
         return reader.transmit(seApplicationRequest);
@@ -370,10 +401,11 @@ public class PoPlainSecureSession {
      *             the timeout reader exception
      * @throws InconsistentCommandException
      *             the inconsistent command exception
+     * @throws InconsistentParameterValueException
      */
-    public SeResponse processProceeding(SendableInSession[] poCommandsInsideSession)
-            throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+    public SeResponse processProceeding(SendableInSession[] poCommandsInsideSession) throws IOReaderException,
+            UnexpectedReaderException, ChannelStateReaderException, InvalidApduReaderException, TimeoutReaderException,
+            InconsistentCommandException, InconsistentParameterValueException {
 
         boolean keepChannelOpen = true;
 
@@ -457,11 +489,12 @@ public class PoPlainSecureSession {
      *             the timeout reader exception
      * @throws InconsistentCommandException
      *             the inconsistent command exception
+     * @throws InconsistentParameterValueException
      */
     public SeResponse processClosing(SendableInSession[] poCommandsInsideSession, CloseSessionCmdBuild closeCommand,
-            PoGetChallengeCmdBuild ratificationCommand)
-            throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+            PoGetChallengeCmdBuild ratificationCommand) throws IOReaderException, UnexpectedReaderException,
+            ChannelStateReaderException, InvalidApduReaderException, TimeoutReaderException,
+            InconsistentCommandException, InconsistentParameterValueException {
 
         boolean keepChannelOpen = true;
         ArrayList<ApduResponse> processClosingAPDUResponseList = new ArrayList<ApduResponse>();

@@ -52,7 +52,7 @@ public class SeRequest {
      *            the keep channel open
      */
     public SeRequest(byte[] aidToSelect, List<ApduRequest> apduRequests, boolean keepChannelOpen) {
-        this.aidToSelect = (aidToSelect == null ? null : aidToSelect.clone());
+        this.aidToSelect = aidToSelect;
         this.keepChannelOpen = keepChannelOpen;
         this.apduRequests = apduRequests;
 
@@ -80,7 +80,7 @@ public class SeRequest {
      */
     public byte[] getAidToSelect() {
         if (aidToSelect != null) {
-            return aidToSelect.clone();
+            return aidToSelect;
         }
         return null;
     }

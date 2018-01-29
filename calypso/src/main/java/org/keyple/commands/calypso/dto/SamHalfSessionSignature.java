@@ -5,7 +5,7 @@ package org.keyple.commands.calypso.dto;
  * Half session signature return by the digest close APDU command
  */
 public class SamHalfSessionSignature {
-    
+
     /** The value. */
     byte[] value;
 
@@ -15,7 +15,7 @@ public class SamHalfSessionSignature {
      * @param value the value
      */
     public SamHalfSessionSignature(byte[] value) {
-        this.value = (value == null ? null : value.clone());
+        this.value = value;
     }
 
     /**
@@ -24,6 +24,6 @@ public class SamHalfSessionSignature {
      * @return the value
      */
     public byte[] getValue() {
-        return value.clone();
+        return value;
     }
 }
