@@ -1,0 +1,26 @@
+group 'org.keyple'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
+    // compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.10.0'
+
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.10.0'
+
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+
+
+    compile project(':keyple-calypso')
+    compile project(':keyple-plugin-pcsc')
+
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.13.0'
+}

@@ -1,0 +1,65 @@
+plugins {
+    id "com.diffplug.gradle.spotless" version "3.9.0"
+}
+
+apply plugin: 'pmd'
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+
+pmd {
+    pmd { ruleSets = [
+            "java-basic",
+            "java-braces",
+            "java-strings",
+            "java-imports",
+            "java-unnecessary",
+            "java-unusedcode",
+            //"java-metrics",
+            "java-empty",
+            "java-codesize",
+            "java-clone",
+            "java-typeresolution",
+            "java-strictexception",
+            "java-finalizers",
+            "java-migrating",
+            "java-logging-java",
+            // "java-controversial"  // 8 issues
+            // "java-sunsecure"      // 1 issue
+            // "java-junit"          // 1 issue
+            // "java-optimizations"  // 44 issues
+            // "java-naming",        // 9 issues
+            // "java-coupling"       // 2 issues
+            // "java-design"         // 19 issues
+            // "java-comments"       // 87 issues --> Kind of conflicting with spotless
+    ] }
+}
+
+spotless {
+    java {
+        target '**/*.java'
+
+        licenseHeaderFile '.build/spotless.license.txt'
+
+        importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
+
+        removeUnusedImports()
+
+        eclipse().configFile '.build/spotless.eclipseformat.xml'
+    }
+
+    format 'misc', {
+        target '**/*.java', '**/*.gradle', '**/*.yml', '**/*.md'
+
+        indentWithSpaces()
+        endWithNewline()
+    }
+}
+
+subprojects {
+    version = '1.0'
+}
