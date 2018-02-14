@@ -21,7 +21,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.keyple.calypso.commands.dto.AID;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.SendableInSession;
 import org.keyple.calypso.commands.po.builder.OpenSessionCmdBuild;
@@ -62,9 +61,6 @@ public class PoSecureSessionTest {
 
     @Mock
     private GetDataFciRespPars poFciRespPars;
-
-    @Mock
-    AID selectedAID;
 
     byte[] samchallenge;
 

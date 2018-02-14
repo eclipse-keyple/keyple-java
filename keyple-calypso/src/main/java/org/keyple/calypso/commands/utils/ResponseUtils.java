@@ -8,16 +8,8 @@
 
 package org.keyple.calypso.commands.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.keyple.calypso.commands.dto.FCI;
-import org.keyple.calypso.commands.dto.KIF;
-import org.keyple.calypso.commands.dto.KVC;
-import org.keyple.calypso.commands.dto.POChallenge;
-import org.keyple.calypso.commands.dto.POHalfSessionSignature;
-import org.keyple.calypso.commands.dto.Record;
-import org.keyple.calypso.commands.dto.SecureSession;
-import org.keyple.calypso.commands.dto.StartupInformation;
+import org.keyple.calypso.commands.dto.*;
+import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 
 /**
  * This class eases the parse of APDUResponses into objects.
@@ -39,8 +31,8 @@ public class ResponseUtils {
      * @param apduResponse the apdu response
      * @return the FCI template
      */
-    public static FCI toFCI(byte[] apduResponse) {
-        StartupInformation startupInformation = null;
+    public static GetDataFciRespPars.FCI toFCI(byte[] apduResponse) {
+        GetDataFciRespPars.StartupInformation startupInformation = null;
         byte firstResponseApdubyte = apduResponse[0];
         byte[] dfName = null;
         byte[] fciProprietaryTemplate = null;
@@ -85,14 +77,14 @@ public class ResponseUtils {
             if ((byte) 0x53 == apduResponse[19 + aidLength + fixedPartOfFciTemplate]) {
                 discretionaryData = subArray(apduResponse, firstbyteDiscretionaryData,
                         firstbyteDiscretionaryData + discretionaryDataLength);
-                startupInformation = new StartupInformation(discretionaryData[0],
+                startupInformation = new GetDataFciRespPars.StartupInformation(discretionaryData[0],
                         discretionaryData[1], discretionaryData[2], discretionaryData[3],
                         discretionaryData[4], discretionaryData[5], discretionaryData[6]);
             }
         }
 
-        return new FCI(dfName, fciProprietaryTemplate, fciIssuerDiscretionaryData, applicationSN,
-                startupInformation);
+        return new GetDataFciRespPars.FCI(dfName, fciProprietaryTemplate,
+                fciIssuerDiscretionaryData, applicationSN, startupInformation);
     }
 
     /**
@@ -107,13 +99,14 @@ public class ResponseUtils {
         boolean previousSessionRatified = isBitEqualsOne(flag, 0x00);
         boolean manageSecureSessionAuthorized = isBitEqualsOne(flag, 1);
 
-        KIF kif = new KIF(apduResponse[9]);
-        KVC kvc = new KVC(apduResponse[10]);
+        byte kif = apduResponse[9];
+        byte kvc = apduResponse[10];
         int dataLength = apduResponse[11];
         byte[] data = subArray(apduResponse, 12, 12 + dataLength);
 
         return new SecureSession(
-                new POChallenge(subArray(apduResponse, 0, 3), subArray(apduResponse, 3, 8)),
+                new SecureSession.PoChallenge(subArray(apduResponse, 0, 3),
+                        subArray(apduResponse, 3, 8)),
                 previousSessionRatified, manageSecureSessionAuthorized, kif, kvc, data,
                 apduResponse);
     }
@@ -129,13 +122,14 @@ public class ResponseUtils {
         boolean previousSessionRatified = apduResponse[4] == (byte) 0x01 ? true : false;
         boolean manageSecureSessionAuthorized = false;
 
-        KIF kif = new KIF(apduResponse[5]);
-        KVC kvc = new KVC(apduResponse[6]);
+        byte kif = apduResponse[5];
+        byte kvc = apduResponse[6];
         int dataLength = apduResponse[7];
         byte[] data = subArray(apduResponse, 8, 8 + dataLength);
 
         secureSession = new SecureSession(
-                new POChallenge(subArray(apduResponse, 0, 3), subArray(apduResponse, 3, 4)),
+                new SecureSession.PoChallenge(subArray(apduResponse, 0, 3),
+                        subArray(apduResponse, 3, 4)),
                 previousSessionRatified, manageSecureSessionAuthorized, kif, kvc, data,
                 apduResponse);
         return secureSession;
@@ -150,10 +144,8 @@ public class ResponseUtils {
     public static SecureSession toSecureSessionRev2(byte[] apduResponse) {
         SecureSession secureSession;
         boolean previousSessionRatified = true;
-        boolean manageSecureSessionAuthorized = false;
 
-        KVC kvc = toKVCRev2(apduResponse);
-        byte[] data = null;
+        byte kvc = toKVCRev2(apduResponse);
 
         if (apduResponse.length < 6) {
             previousSessionRatified = false;
@@ -162,78 +154,22 @@ public class ResponseUtils {
         // TODO selecting record data without length ?
 
         secureSession = new SecureSession(
-                new POChallenge(subArray(apduResponse, 1, 4), subArray(apduResponse, 4, 5)),
-                previousSessionRatified, manageSecureSessionAuthorized, kvc, data, apduResponse);
+                new SecureSession.PoChallenge(subArray(apduResponse, 1, 4),
+                        subArray(apduResponse, 4, 5)),
+                previousSessionRatified, false, kvc, null, apduResponse);
 
         return secureSession;
-    }
-
-    /**
-     * Method to get the Records from the response.
-     *
-     * @param apduResponse the apdu response
-     * @param oneRecordOnly the one record only
-     * @return a Maps of Records
-     */
-    public static List<Record> toRecords(byte[] apduResponse, boolean oneRecordOnly) {
-        List<Record> records = new ArrayList<Record>();
-        if (oneRecordOnly) {
-            records.add(new Record(apduResponse, 0));
-        } else {
-            int i = 0;
-            while (i < apduResponse.length) {
-                if (i + 2 + apduResponse[i + 1] > apduResponse.length - 1) {
-                    records.add(new Record(subArray(apduResponse, i + 2, apduResponse.length - 1),
-                            apduResponse[i]));
-                } else {
-                    records.add(
-                            new Record(subArray(apduResponse, i + 2, i + 2 + apduResponse[i + 1]),
-                                    apduResponse[i]));
-                }
-                // add data length to iterator
-                i += apduResponse[i + 1];
-                // add byte of data length to iterator
-                i++;
-                // add byte of num record to iterator
-                i++;
-            }
-        }
-        return records;
     }
 
     /**
      * Method to get the KVC from the response in revision 2 mode.
      *
      * @param apduResponse the apdu response
-     * @return a KVC
+     * @return a KVC byte
      */
-    public static KVC toKVCRev2(byte[] apduResponse) {
-        KVC kvcValue = null;
-        if (apduResponse.length > 4) {
-            kvcValue = new KVC(apduResponse[0]);
-        }
-
-        return kvcValue;
-    }
-
-    /**
-     * Method to get the PO half session signature (the second half part of the signature necessary
-     * to close the session properly) from the response.
-     *
-     * @param response the response
-     * @return a POHalfSessionSignature
-     */
-    public static POHalfSessionSignature toPoHalfSessionSignature(byte[] response) {
-        byte[] poHalfSessionSignatureTable = null;
-        byte[] postponedData = null;
-        if (response.length == 8) {
-            poHalfSessionSignatureTable = subArray(response, 4, response.length);
-            postponedData = subArray(response, 0, 4);
-        } else if (response.length == 4) {
-            poHalfSessionSignatureTable = subArray(response, 0, response.length);
-        }
-
-        return new POHalfSessionSignature(poHalfSessionSignatureTable, postponedData);
+    public static byte toKVCRev2(byte[] apduResponse) {
+        // TODO: Check that part: I replaced a (null) KVC by a 0x00
+        return apduResponse.length > 4 ? apduResponse[0] : 0x00;
     }
 
     /**
@@ -247,7 +183,15 @@ public class ResponseUtils {
         return (1 == ((thebyte >> position) & 1));
     }
 
-    private static byte[] subArray(byte[] source, int indexStart, int indexEnd) {
+    /**
+     * Create a sub-array from an array
+     *
+     * @param source Source array
+     * @param indexStart Start index
+     * @param indexEnd End index
+     * @return
+     */
+    public static byte[] subArray(byte[] source, int indexStart, int indexEnd) {
         byte[] res = new byte[indexEnd - indexStart];
         System.arraycopy(source, indexStart, res, 0, indexEnd - indexStart);
         return res;

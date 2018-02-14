@@ -13,6 +13,7 @@ import org.keyple.calypso.commands.CalypsoCommands;
 /**
  * The Class CalypsoRequest.
  */
+// TODO: Drop this. It's a temporary structure that serves no purpose.
 public class CalypsoRequest {
 
     /** The CLA. (class byte) */

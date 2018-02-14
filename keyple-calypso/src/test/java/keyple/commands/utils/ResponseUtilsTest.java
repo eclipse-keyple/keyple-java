@@ -12,6 +12,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.dto.*;
 import org.keyple.calypso.commands.po.PoRevision;
+import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 import org.keyple.calypso.commands.utils.ResponseUtils;
 
 // @RunWith(MockitoJUnitRunner.class)
@@ -41,9 +42,9 @@ public class ResponseUtilsTest {
 
     private byte[] randomNumber;
 
-    private KIF kif;
+    private byte kif;
 
-    private KVC kvc;
+    // private KVC kvc;
 
     @Test
     public void TestToFCI() {
@@ -55,7 +56,7 @@ public class ResponseUtilsTest {
                 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01};
 
         aid = new byte[] {0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41};
-        AID aidExpected = new AID(aid);
+        // AID aidExpected = new AID(aid);
         byte[] fciProprietaryTemplate = new byte[] {(byte) 0xBF, 0x0C, 0x13, (byte) 0xC7, 0x08,
                 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7, 0x53, 0x07, 0x0A,
                 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01};
@@ -64,12 +65,13 @@ public class ResponseUtilsTest {
                         (byte) 0xB7, 0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01};
         byte[] applicationSN =
                 new byte[] {0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7};
-        StartupInformation startupInfoExpected = new StartupInformation((byte) 0x0A, (byte) 0x3C,
-                (byte) 0x11, (byte) 0x32, (byte) 0x14, (byte) 0x10, (byte) 0x01);
+        GetDataFciRespPars.StartupInformation startupInfoExpected =
+                new GetDataFciRespPars.StartupInformation((byte) 0x0A, (byte) 0x3C, (byte) 0x11,
+                        (byte) 0x32, (byte) 0x14, (byte) 0x10, (byte) 0x01);
 
-        FCI fciExpected = new FCI(aidExpected.getValue(), fciProprietaryTemplate,
+        GetDataFciRespPars.FCI fciExpected = new GetDataFciRespPars.FCI(aid, fciProprietaryTemplate,
                 fciIssuerDiscretionaryData, applicationSN, startupInfoExpected);
-        FCI fciTested = ResponseUtils.toFCI(apduResponse);
+        GetDataFciRespPars.FCI fciTested = ResponseUtils.toFCI(apduResponse);
 
         Assert.assertArrayEquals(fciExpected.getApplicationSN(), fciTested.getApplicationSN());
         Assert.assertArrayEquals(fciExpected.getFciIssuerDiscretionaryData(),
@@ -192,10 +194,11 @@ public class ResponseUtilsTest {
 
         transactionCounter = new byte[] {(byte) 0x8F, 0x05, 0x75};
         randomNumber = new byte[] {0x1A, 0x00, 0x00, 0x00, 0x00};
-        kif = new KIF((byte) 0x00);
-        kvc = new KVC((byte) 0x00);
+        kif = 0x00;
+        byte kvc = (byte) 0x00;
 
-        POChallenge poChallengeExpected = new POChallenge(transactionCounter, randomNumber);
+        SecureSession.PoChallenge poChallengeExpected =
+                new SecureSession.PoChallenge(transactionCounter, randomNumber);
         boolean isPreviousSessionRatifiedExpected = true;
         boolean isManageSecureSessionAuthorizedExpected = false;
         byte[] originalData = new byte[] {};
@@ -209,10 +212,8 @@ public class ResponseUtilsTest {
                 SecureSessionTested.getOriginalData());
         Assert.assertArrayEquals(SecureSessionExpected.getSecureSessionData(),
                 SecureSessionTested.getSecureSessionData());
-        Assert.assertEquals(SecureSessionExpected.getKIF().getValue(),
-                SecureSessionTested.getKIF().getValue());
-        Assert.assertEquals(SecureSessionExpected.getKVC().getValue(),
-                SecureSessionTested.getKVC().getValue());
+        Assert.assertEquals(SecureSessionExpected.getKIF(), SecureSessionTested.getKIF());
+        Assert.assertEquals(SecureSessionExpected.getKVC(), SecureSessionTested.getKVC());
         Assert.assertArrayEquals(SecureSessionExpected.getSessionChallenge().getRandomNumber(),
                 SecureSessionTested.getSessionChallenge().getRandomNumber());
         Assert.assertArrayEquals(
@@ -228,9 +229,10 @@ public class ResponseUtilsTest {
 
         transactionCounter = new byte[] {(byte) 0x03, (byte) 0x0D, (byte) 0x14};
         randomNumber = new byte[] {(byte) 0x53};
-        kvc = new KVC((byte) 0x7E);
+        byte kvc = (byte) 0x7E;
 
-        POChallenge poChallengeExpected = new POChallenge(transactionCounter, randomNumber);
+        SecureSession.PoChallenge poChallengeExpected =
+                new SecureSession.PoChallenge(transactionCounter, randomNumber);
         boolean isPreviousSessionRatifiedExpected = false;
         boolean isManageSecureSessionAuthorizedExpected = false;
         byte[] originalData = null;
@@ -242,8 +244,7 @@ public class ResponseUtilsTest {
 
         Assert.assertArrayEquals(SecureSessionExpected.getSecureSessionData(),
                 SecureSessionTested.getSecureSessionData());
-        Assert.assertEquals(SecureSessionExpected.getKVC().getValue(),
-                SecureSessionTested.getKVC().getValue());
+        Assert.assertEquals(SecureSessionExpected.getKVC(), SecureSessionTested.getKVC());
         Assert.assertArrayEquals(SecureSessionExpected.getSessionChallenge().getRandomNumber(),
                 SecureSessionTested.getSessionChallenge().getRandomNumber());
         Assert.assertArrayEquals(
@@ -264,8 +265,8 @@ public class ResponseUtilsTest {
 
         Assert.assertArrayEquals(SecureSessionExpectedCaseTwo.getSecureSessionData(),
                 SecureSessionTestedCaseTwo.getSecureSessionData());
-        Assert.assertEquals(SecureSessionExpectedCaseTwo.getKVC().getValue(),
-                SecureSessionTestedCaseTwo.getKVC().getValue());
+        Assert.assertEquals(SecureSessionExpectedCaseTwo.getKVC(),
+                SecureSessionTestedCaseTwo.getKVC());
         Assert.assertArrayEquals(
                 SecureSessionExpectedCaseTwo.getSessionChallenge().getRandomNumber(),
                 SecureSessionTestedCaseTwo.getSessionChallenge().getRandomNumber());
@@ -287,8 +288,8 @@ public class ResponseUtilsTest {
 
         Assert.assertArrayEquals(SecureSessionExpectedCaseThree.getSecureSessionData(),
                 SecureSessionTestedCaseThree.getSecureSessionData());
-        Assert.assertEquals(SecureSessionExpectedCaseThree.getKVC().getValue(),
-                SecureSessionTestedCaseThree.getKVC().getValue());
+        Assert.assertEquals(SecureSessionExpectedCaseThree.getKVC(),
+                SecureSessionTestedCaseThree.getKVC());
         Assert.assertArrayEquals(
                 SecureSessionExpectedCaseThree.getSessionChallenge().getRandomNumber(),
                 SecureSessionTestedCaseThree.getSessionChallenge().getRandomNumber());
@@ -298,49 +299,13 @@ public class ResponseUtilsTest {
     }
 
     @Test
-    public void TestToPOHalfSessionSignature() {
-
-        apduResponse = new byte[] {(byte) 0x4D, (byte) 0xBD, (byte) 0xC9, 0x60};
-        apduResponseCaseTwo = new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, (byte) 0xA7, 0x21,
-                (byte) 0xC2, 0x2E};
-        apduResponseCaseThree = new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3};
-
-        byte[] sessionSignature = new byte[] {(byte) 0x4D, (byte) 0xBD, (byte) 0xC9, 0x60};
-        byte[] sessionSignatureCaseTwo = new byte[] {(byte) 0xA7, 0x21, (byte) 0xC2, 0x2E};
-
-        // Case Length = 4
-        POHalfSessionSignature poHalfSessionSignatureExpected =
-                new POHalfSessionSignature(sessionSignature, null);
-        POHalfSessionSignature poHalfSessionSignatureTested =
-                ResponseUtils.toPoHalfSessionSignature(apduResponse);
-
-        Assert.assertArrayEquals(poHalfSessionSignatureExpected.getValue(),
-                poHalfSessionSignatureTested.getValue());
-
-        // Case Length = 8
-        POHalfSessionSignature poHalfSessionSignatureExpectedCaseTwo =
-                new POHalfSessionSignature(sessionSignatureCaseTwo, null);
-        POHalfSessionSignature poHalfSessionSignatureTestedCaseTwo =
-                ResponseUtils.toPoHalfSessionSignature(apduResponseCaseTwo);
-
-        Assert.assertArrayEquals(poHalfSessionSignatureExpectedCaseTwo.getValue(),
-                poHalfSessionSignatureTestedCaseTwo.getValue());
-
-        // Case Other
-        POHalfSessionSignature poHalfSessionSignatureTestedCaseThree =
-                ResponseUtils.toPoHalfSessionSignature(apduResponseCaseThree);
-        Assert.assertEquals(poHalfSessionSignatureTestedCaseThree.getValue().length, 0);
-
-    }
-
-    @Test
     public void TestToKVCRev2() {
 
         apduResponse = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53};
-        KVC KVCRev2Expected = new KVC((byte) 0x7E);
-        KVC KVCRev2Tested = ResponseUtils.toKVCRev2(apduResponse);
+        byte KVCRev2Expected = (byte) 0x7E;
+        byte KVCRev2Tested = ResponseUtils.toKVCRev2(apduResponse);
 
-        Assert.assertEquals(KVCRev2Expected.getValue(), KVCRev2Tested.getValue());
+        Assert.assertEquals(KVCRev2Expected, KVCRev2Tested);
 
         apduResponseCaseTwo =
                 new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53};

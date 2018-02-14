@@ -14,7 +14,7 @@ package org.keyple.calypso.commands.dto;
 public class SecureSession {
 
     /** The session challenge. */
-    POChallenge sessionChallenge;
+    PoChallenge sessionChallenge;
 
     /** The previous session ratified boolean. */
     boolean previousSessionRatified;
@@ -23,10 +23,10 @@ public class SecureSession {
     boolean manageSecureSessionAuthorized;
 
     /** The kif. */
-    KIF kif = new KIF((byte) 0xFF);
+    byte kif = (byte) 0xFF;
 
     /** The kvc. */
-    KVC kvc;
+    byte kvc;
 
     /** The original data. */
     byte[] originalData;
@@ -48,8 +48,8 @@ public class SecureSession {
      *        APDU command
      */
     // Rev 3.1
-    public SecureSession(POChallenge sessionChallenge, boolean previousSessionRatified,
-            boolean manageSecureSessionAuthorized, KIF kif, KVC kvc, byte[] originalData,
+    public SecureSession(PoChallenge sessionChallenge, boolean previousSessionRatified,
+            boolean manageSecureSessionAuthorized, byte kif, byte kvc, byte[] originalData,
             byte[] secureSessionData) {
         this.sessionChallenge = sessionChallenge;
         this.previousSessionRatified = previousSessionRatified;
@@ -73,8 +73,8 @@ public class SecureSession {
      *        APDU command
      */
     // Rev 2.4
-    public SecureSession(POChallenge sessionChallenge, boolean previousSessionRatified,
-            boolean manageSecureSessionAuthorized, KVC kvc, byte[] originalData,
+    public SecureSession(PoChallenge sessionChallenge, boolean previousSessionRatified,
+            boolean manageSecureSessionAuthorized, byte kvc, byte[] originalData,
             byte[] secureSessionData) {
         this.sessionChallenge = sessionChallenge;
         this.previousSessionRatified = previousSessionRatified;
@@ -89,7 +89,7 @@ public class SecureSession {
      *
      * @return the session challenge
      */
-    public POChallenge getSessionChallenge() {
+    public PoChallenge getSessionChallenge() {
         return sessionChallenge;
     }
 
@@ -116,7 +116,7 @@ public class SecureSession {
      *
      * @return the kif
      */
-    public KIF getKIF() {
+    public byte getKIF() {
         return kif;
     }
 
@@ -125,7 +125,7 @@ public class SecureSession {
      *
      * @return the kvc
      */
-    public KVC getKVC() {
+    public byte getKVC() {
         return kvc;
     }
 
@@ -148,5 +148,48 @@ public class SecureSession {
      */
     public byte[] getSecureSessionData() {
         return secureSessionData.clone();
+    }
+
+    /**
+     * The Class PoChallenge. Challenge return by a PO Get Challenge APDU command
+     */
+    public static class PoChallenge {
+
+        /** The transaction counter. */
+        private byte[] transactionCounter;
+
+        /** The random number provide by the terminal */
+        private byte[] randomNumber;
+
+        /**
+         * Instantiates a new PoChallenge.
+         *
+         * @param transactionCounter the transaction counter
+         * @param randomNumber the random number
+         */
+        public PoChallenge(byte[] transactionCounter, byte[] randomNumber) {
+            this.transactionCounter =
+                    (transactionCounter == null ? null : transactionCounter.clone());
+            this.randomNumber = (randomNumber == null ? null : randomNumber.clone());
+        }
+
+        /**
+         * Gets the transaction counter.
+         *
+         * @return the transaction counter
+         */
+        public byte[] getTransactionCounter() {
+            return transactionCounter.clone();
+        }
+
+        /**
+         * Gets the random number.
+         *
+         * @return the random number
+         */
+        public byte[] getRandomNumber() {
+            return randomNumber.clone();
+        }
+
     }
 }

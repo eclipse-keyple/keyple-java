@@ -8,19 +8,14 @@
 
 package org.keyple.calypso.commands.po.parser;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.keyple.calypso.commands.dto.Record;
 import org.keyple.calypso.commands.utils.ResponseUtils;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class ReadRecordsRespPars. This class provides status code properties and the getters to
- * access to the structured fields of a Read Records response.
- *
- * @author Ixxi
- *
+ * Read Records (00B2) response parser. See specs: Calypso / page 89 / 9.4.7 Read Records
  */
 public class ReadRecordsRespPars extends ApduResponseParser {
 
@@ -36,8 +31,41 @@ public class ReadRecordsRespPars extends ApduResponseParser {
         super(response);
         initStatusTable();
         if (isSuccessful()) {
-            records = ResponseUtils.toRecords(response.getbytes(), false);
+            records = parseRecords(response.getbytes(), false);
         }
+    }
+
+    /**
+     * Method to get the Records from the response.
+     *
+     * @param apduResponse the apdu response
+     * @param oneRecordOnly the one record only
+     * @return a Maps of Records
+     */
+    private static List<Record> parseRecords(byte[] apduResponse, boolean oneRecordOnly) {
+        List<Record> records = new ArrayList<Record>();
+        if (oneRecordOnly) {
+            records.add(new Record(apduResponse, 0));
+        } else {
+            int i = 0;
+            while (i < apduResponse.length) {
+                if (i + 2 + apduResponse[i + 1] > apduResponse.length - 1) {
+                    records.add(new Record(
+                            ResponseUtils.subArray(apduResponse, i + 2, apduResponse.length - 1),
+                            apduResponse[i]));
+                } else {
+                    records.add(new Record(ResponseUtils.subArray(apduResponse, i + 2,
+                            i + 2 + apduResponse[i + 1]), apduResponse[i]));
+                }
+                // add data length to iterator
+                i += apduResponse[i + 1];
+                // add byte of data length to iterator
+                i++;
+                // add byte of num record to iterator
+                i++;
+            }
+        }
+        return records;
     }
 
     /**
@@ -90,4 +118,46 @@ public class ReadRecordsRespPars extends ApduResponseParser {
         return null;
     }
 
+    /**
+     * The Class Record. The data in the files are organized in records of equal size.
+     */
+    public static class Record {
+
+        /** The data. */
+        private byte[] data;
+
+        /** The record number. */
+        private int recordNumber;
+
+        /**
+         * Instantiates a new Record.
+         *
+         * @param data the data
+         * @param recordNumber the record number
+         */
+        public Record(byte[] data, int recordNumber) {
+            super();
+            this.data = (data == null ? null : data.clone());
+            this.recordNumber = recordNumber;
+        }
+
+        /**
+         * Gets the data.
+         *
+         * @return the data
+         */
+        public byte[] getData() {
+            return data.clone();
+        }
+
+        /**
+         * Gets the record number.
+         *
+         * @return the record number
+         */
+        public int getRecordNumber() {
+            return recordNumber;
+        }
+
+    }
 }
