@@ -9,9 +9,7 @@
 package org.keyple.seproxy;
 
 /**
- * The Class APDURequest. This class defines the elements of a single APDU command request:
- * 
- * @author Ixxi
+ * Single APDU request wrapper
  */
 public class ApduRequest {
 

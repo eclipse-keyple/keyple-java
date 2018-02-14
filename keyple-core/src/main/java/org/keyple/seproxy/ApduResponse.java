@@ -9,7 +9,7 @@
 package org.keyple.seproxy;
 
 /**
- * The Class APDUResponse. This class defines the elements of a single APDU command response:
+ * Single APDU response wrapper
  */
 public class ApduResponse {
 
@@ -19,7 +19,10 @@ public class ApduResponse {
      */
     private byte[] bytes;
 
-    /** the success result of the processed APDU command. */
+    /**
+     * the success result of the processed APDU command to allow chaining responses in a group of
+     * APDUs
+     */
     private boolean successful;
 
     /** The status code. */
