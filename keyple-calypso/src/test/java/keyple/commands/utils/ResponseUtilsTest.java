@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.keyple.calypso.commands.dto.*;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
+import org.keyple.calypso.commands.po.parser.OpenSessionRespPars;
 import org.keyple.calypso.commands.utils.ResponseUtils;
 
 // @RunWith(MockitoJUnitRunner.class)
@@ -197,16 +198,14 @@ public class ResponseUtilsTest {
         kif = 0x00;
         byte kvc = (byte) 0x00;
 
-        SecureSession.PoChallenge poChallengeExpected =
-                new SecureSession.PoChallenge(transactionCounter, randomNumber);
         boolean isPreviousSessionRatifiedExpected = true;
         boolean isManageSecureSessionAuthorizedExpected = false;
         byte[] originalData = new byte[] {};
 
-        SecureSession SecureSessionExpected = new SecureSession(poChallengeExpected,
+        SecureSession SecureSessionExpected = new SecureSession(transactionCounter, randomNumber,
                 isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected, kif,
                 kvc, originalData, apduResponse);
-        SecureSession SecureSessionTested = ResponseUtils.toSecureSessionRev32(apduResponse);
+        SecureSession SecureSessionTested = OpenSessionRespPars.toSecureSessionRev32(apduResponse);
 
         Assert.assertArrayEquals(SecureSessionExpected.getOriginalData(),
                 SecureSessionTested.getOriginalData());
@@ -214,11 +213,10 @@ public class ResponseUtilsTest {
                 SecureSessionTested.getSecureSessionData());
         Assert.assertEquals(SecureSessionExpected.getKIF(), SecureSessionTested.getKIF());
         Assert.assertEquals(SecureSessionExpected.getKVC(), SecureSessionTested.getKVC());
-        Assert.assertArrayEquals(SecureSessionExpected.getSessionChallenge().getRandomNumber(),
-                SecureSessionTested.getSessionChallenge().getRandomNumber());
-        Assert.assertArrayEquals(
-                SecureSessionExpected.getSessionChallenge().getTransactionCounter(),
-                SecureSessionTested.getSessionChallenge().getTransactionCounter());
+        Assert.assertArrayEquals(SecureSessionExpected.getChallengeRandomNumber(),
+                SecureSessionTested.getChallengeRandomNumber());
+        Assert.assertArrayEquals(SecureSessionExpected.getChallengeTransactionCounter(),
+                SecureSessionTested.getChallengeTransactionCounter());
     }
 
     @Test
@@ -231,25 +229,22 @@ public class ResponseUtilsTest {
         randomNumber = new byte[] {(byte) 0x53};
         byte kvc = (byte) 0x7E;
 
-        SecureSession.PoChallenge poChallengeExpected =
-                new SecureSession.PoChallenge(transactionCounter, randomNumber);
         boolean isPreviousSessionRatifiedExpected = false;
         boolean isManageSecureSessionAuthorizedExpected = false;
         byte[] originalData = null;
 
-        SecureSession SecureSessionExpected =
-                new SecureSession(poChallengeExpected, isPreviousSessionRatifiedExpected,
-                        isManageSecureSessionAuthorizedExpected, kvc, originalData, apduResponse);
-        SecureSession SecureSessionTested = ResponseUtils.toSecureSessionRev2(apduResponse);
+        SecureSession SecureSessionExpected = new SecureSession(transactionCounter, randomNumber,
+                isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected, kvc,
+                originalData, apduResponse);
+        SecureSession SecureSessionTested = OpenSessionRespPars.toSecureSessionRev2(apduResponse);
 
         Assert.assertArrayEquals(SecureSessionExpected.getSecureSessionData(),
                 SecureSessionTested.getSecureSessionData());
         Assert.assertEquals(SecureSessionExpected.getKVC(), SecureSessionTested.getKVC());
-        Assert.assertArrayEquals(SecureSessionExpected.getSessionChallenge().getRandomNumber(),
-                SecureSessionTested.getSessionChallenge().getRandomNumber());
-        Assert.assertArrayEquals(
-                SecureSessionExpected.getSessionChallenge().getTransactionCounter(),
-                SecureSessionTested.getSessionChallenge().getTransactionCounter());
+        Assert.assertArrayEquals(SecureSessionExpected.getChallengeRandomNumber(),
+                SecureSessionTested.getChallengeRandomNumber());
+        Assert.assertArrayEquals(SecureSessionExpected.getChallengeTransactionCounter(),
+                SecureSessionTested.getChallengeTransactionCounter());
 
         // Case If Else
         apduResponseCaseTwo = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14,
@@ -257,22 +252,21 @@ public class ResponseUtilsTest {
         byte[] originalDataCaseTwo = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14,
                 (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
 
-        SecureSession SecureSessionExpectedCaseTwo = new SecureSession(poChallengeExpected,
-                isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected, kvc,
-                originalDataCaseTwo, apduResponseCaseTwo);
+        SecureSession SecureSessionExpectedCaseTwo =
+                new SecureSession(transactionCounter, randomNumber,
+                        isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
+                        kvc, originalDataCaseTwo, apduResponseCaseTwo);
         SecureSession SecureSessionTestedCaseTwo =
-                ResponseUtils.toSecureSessionRev2(apduResponseCaseTwo);
+                OpenSessionRespPars.toSecureSessionRev2(apduResponseCaseTwo);
 
         Assert.assertArrayEquals(SecureSessionExpectedCaseTwo.getSecureSessionData(),
                 SecureSessionTestedCaseTwo.getSecureSessionData());
         Assert.assertEquals(SecureSessionExpectedCaseTwo.getKVC(),
                 SecureSessionTestedCaseTwo.getKVC());
-        Assert.assertArrayEquals(
-                SecureSessionExpectedCaseTwo.getSessionChallenge().getRandomNumber(),
-                SecureSessionTestedCaseTwo.getSessionChallenge().getRandomNumber());
-        Assert.assertArrayEquals(
-                SecureSessionExpectedCaseTwo.getSessionChallenge().getTransactionCounter(),
-                SecureSessionTestedCaseTwo.getSessionChallenge().getTransactionCounter());
+        Assert.assertArrayEquals(SecureSessionExpectedCaseTwo.getChallengeRandomNumber(),
+                SecureSessionTestedCaseTwo.getChallengeRandomNumber());
+        Assert.assertArrayEquals(SecureSessionExpectedCaseTwo.getChallengeTransactionCounter(),
+                SecureSessionTestedCaseTwo.getChallengeTransactionCounter());
 
         // Case If If
         apduResponseCaseThree = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14,
@@ -280,22 +274,21 @@ public class ResponseUtilsTest {
         byte[] originalDataCaseThree = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D,
                 (byte) 0x14, (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
 
-        SecureSession SecureSessionExpectedCaseThree = new SecureSession(poChallengeExpected,
-                isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected, kvc,
-                originalDataCaseThree, apduResponseCaseThree);
+        SecureSession SecureSessionExpectedCaseThree =
+                new SecureSession(transactionCounter, randomNumber,
+                        isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
+                        kvc, originalDataCaseThree, apduResponseCaseThree);
         SecureSession SecureSessionTestedCaseThree =
-                ResponseUtils.toSecureSessionRev2(apduResponseCaseThree);
+                OpenSessionRespPars.toSecureSessionRev2(apduResponseCaseThree);
 
         Assert.assertArrayEquals(SecureSessionExpectedCaseThree.getSecureSessionData(),
                 SecureSessionTestedCaseThree.getSecureSessionData());
         Assert.assertEquals(SecureSessionExpectedCaseThree.getKVC(),
                 SecureSessionTestedCaseThree.getKVC());
-        Assert.assertArrayEquals(
-                SecureSessionExpectedCaseThree.getSessionChallenge().getRandomNumber(),
-                SecureSessionTestedCaseThree.getSessionChallenge().getRandomNumber());
-        Assert.assertArrayEquals(
-                SecureSessionExpectedCaseThree.getSessionChallenge().getTransactionCounter(),
-                SecureSessionTestedCaseThree.getSessionChallenge().getTransactionCounter());
+        Assert.assertArrayEquals(SecureSessionExpectedCaseThree.getChallengeRandomNumber(),
+                SecureSessionTestedCaseThree.getChallengeRandomNumber());
+        Assert.assertArrayEquals(SecureSessionExpectedCaseThree.getChallengeTransactionCounter(),
+                SecureSessionTestedCaseThree.getChallengeTransactionCounter());
     }
 
     @Test

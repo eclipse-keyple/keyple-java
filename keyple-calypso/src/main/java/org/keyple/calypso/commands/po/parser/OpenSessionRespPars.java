@@ -52,23 +52,84 @@ public class OpenSessionRespPars extends ApduResponseParser {
             switch (revision) {
                 case REV3_2:
                     if (response.isSuccessful()) {
-                        secureSession = ResponseUtils.toSecureSessionRev32(response.getbytes());
+                        secureSession = toSecureSessionRev32(response.getbytes());
                     }
                     break;
                 case REV3_1:
                     if (response.isSuccessful()) {
-                        secureSession = ResponseUtils.toSecureSessionRev3(response.getbytes());
+                        secureSession = toSecureSessionRev3(response.getbytes());
                     }
                     break;
                 case REV2_4:
                     if (response.isSuccessful()) {
-                        secureSession = ResponseUtils.toSecureSessionRev2(response.getbytes());
+                        secureSession = toSecureSessionRev2(response.getbytes());
                     }
                     break;
                 default:
                     break;
             }
         }
+    }
+
+    /**
+     * Method to get a Secure Session from the response in revision 3.2 mode.
+     *
+     * @param apduResponse the apdu response
+     * @return a SecureSession
+     */
+    public static SecureSession toSecureSessionRev32(byte[] apduResponse) {
+        byte flag = apduResponse[8];
+        boolean previousSessionRatified = ResponseUtils.isBitSet(flag, 0x00);
+        boolean manageSecureSessionAuthorized = ResponseUtils.isBitSet(flag, 1);
+
+        byte kif = apduResponse[9];
+        byte kvc = apduResponse[10];
+        int dataLength = apduResponse[11];
+        byte[] data = ResponseUtils.subArray(apduResponse, 12, 12 + dataLength);
+
+        return new SecureSession(ResponseUtils.subArray(apduResponse, 0, 3),
+                ResponseUtils.subArray(apduResponse, 3, 8), previousSessionRatified,
+                manageSecureSessionAuthorized, kif, kvc, data, apduResponse);
+    }
+
+    /**
+     * Method to get a Secure Session from the response in revision 3 mode.
+     *
+     * @param apduResponse the apdu response
+     * @return a SecureSession
+     */
+    public static SecureSession toSecureSessionRev3(byte[] apduResponse) {
+        boolean previousSessionRatified = apduResponse[4] == (byte) 0x01 ? true : false;
+        boolean manageSecureSessionAuthorized = false;
+
+        byte kif = apduResponse[5];
+        byte kvc = apduResponse[6];
+        int dataLength = apduResponse[7];
+        byte[] data = ResponseUtils.subArray(apduResponse, 8, 8 + dataLength);
+
+        return new SecureSession(ResponseUtils.subArray(apduResponse, 0, 3),
+                ResponseUtils.subArray(apduResponse, 3, 4), previousSessionRatified,
+                manageSecureSessionAuthorized, kif, kvc, data, apduResponse);
+    }
+
+    /**
+     * Method to get a Secure Session from the response in revision 2 mode.
+     *
+     * @param apduResponse the apdu response
+     * @return a SecureSession
+     */
+    public static SecureSession toSecureSessionRev2(byte[] apduResponse) {
+        boolean previousSessionRatified = true;
+
+        byte kvc = ResponseUtils.toKVCRev2(apduResponse);
+
+        if (apduResponse.length < 6) {
+            previousSessionRatified = false;
+        }
+
+        return new SecureSession(ResponseUtils.subArray(apduResponse, 1, 4),
+                ResponseUtils.subArray(apduResponse, 4, 5), previousSessionRatified, false, kvc,
+                null, apduResponse);
     }
 
     /**
@@ -158,11 +219,11 @@ public class OpenSessionRespPars extends ApduResponseParser {
     }
 
     public byte[] getPoChallenge() {
-        return secureSession.getSessionChallenge().getRandomNumber();
+        return secureSession.getChallengeRandomNumber();
     }
 
     public int getTransactionCounterValue() {
-        return java.nio.ByteBuffer.wrap(secureSession.getSessionChallenge().getTransactionCounter())
+        return java.nio.ByteBuffer.wrap(secureSession.getChallengeTransactionCounter())
                 .order(java.nio.ByteOrder.LITTLE_ENDIAN).getInt();
     }
 

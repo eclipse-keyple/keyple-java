@@ -13,12 +13,7 @@ import java.util.List;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.keyple.calypso.commands.csm.CsmRevision;
-import org.keyple.calypso.commands.csm.builder.CsmGetChallengeCmdBuild;
-import org.keyple.calypso.commands.csm.builder.DigestAuthenticateCmdBuild;
-import org.keyple.calypso.commands.csm.builder.DigestCloseCmdBuild;
-import org.keyple.calypso.commands.csm.builder.DigestInitCmdBuild;
-import org.keyple.calypso.commands.csm.builder.DigestUpdateCmdBuild;
-import org.keyple.calypso.commands.csm.builder.SelectDiversifierCmdBuild;
+import org.keyple.calypso.commands.csm.builder.*;
 import org.keyple.calypso.commands.csm.parser.CsmGetChallengeRespPars;
 import org.keyple.calypso.commands.csm.parser.DigestAuthenticateRespPars;
 import org.keyple.calypso.commands.csm.parser.DigestCloseRespPars;
@@ -30,18 +25,11 @@ import org.keyple.calypso.commands.po.builder.OpenSessionCmdBuild;
 import org.keyple.calypso.commands.po.parser.CloseSessionRespPars;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 import org.keyple.calypso.commands.po.parser.OpenSessionRespPars;
+import org.keyple.calypso.commands.utils.ResponseUtils;
 import org.keyple.commands.ApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
-import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.ProxyReader;
-import org.keyple.seproxy.SeRequest;
-import org.keyple.seproxy.SeResponse;
-import org.keyple.seproxy.exceptions.ChannelStateReaderException;
-import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.seproxy.exceptions.InvalidApduReaderException;
-import org.keyple.seproxy.exceptions.TimeoutReaderException;
-import org.keyple.seproxy.exceptions.UnexpectedReaderException;
+import org.keyple.seproxy.*;
+import org.keyple.seproxy.exceptions.*;
 
 /**
  * Portable Object Secure Session.
@@ -730,7 +718,7 @@ public class PoSecureSession {
             rev = PoRevision.REV2_4;
         } else if (Byte.valueOf(applicationTypeByte).compareTo((byte) 0x7f) <= 0
                 && Byte.valueOf(applicationTypeByte).compareTo((byte) 0x20) >= 0) {
-            if (isBitEqualsOne(applicationTypeByte, 3)) {
+            if (ResponseUtils.isBitSet(applicationTypeByte, 3)) {
                 rev = PoRevision.REV3_2;
             } else {
                 rev = PoRevision.REV3_1;
@@ -767,16 +755,5 @@ public class PoSecureSession {
      */
     public byte[] getSessionTerminalChallenge() {
         return sessionTerminalChallenge;
-    }
-
-    /**
-     * Checks if is bit equals one.
-     *
-     * @param thebyte the thebyte
-     * @param position the position
-     * @return true, if is bit equals one
-     */
-    private static boolean isBitEqualsOne(byte thebyte, int position) {
-        return (1 == ((thebyte >> position) & 1));
     }
 }

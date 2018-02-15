@@ -8,7 +8,6 @@
 
 package org.keyple.calypso.commands.utils;
 
-import org.keyple.calypso.commands.dto.*;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 
 /**
@@ -88,80 +87,6 @@ public class ResponseUtils {
     }
 
     /**
-     * Method to get a Secure Session from the response in revision 3.2 mode.
-     *
-     * @param apduResponse the apdu response
-     * @return a SecureSession
-     */
-    public static SecureSession toSecureSessionRev32(byte[] apduResponse) {
-
-        byte flag = apduResponse[8];
-        boolean previousSessionRatified = isBitEqualsOne(flag, 0x00);
-        boolean manageSecureSessionAuthorized = isBitEqualsOne(flag, 1);
-
-        byte kif = apduResponse[9];
-        byte kvc = apduResponse[10];
-        int dataLength = apduResponse[11];
-        byte[] data = subArray(apduResponse, 12, 12 + dataLength);
-
-        return new SecureSession(
-                new SecureSession.PoChallenge(subArray(apduResponse, 0, 3),
-                        subArray(apduResponse, 3, 8)),
-                previousSessionRatified, manageSecureSessionAuthorized, kif, kvc, data,
-                apduResponse);
-    }
-
-    /**
-     * Method to get a Secure Session from the response in revision 3 mode.
-     *
-     * @param apduResponse the apdu response
-     * @return a SecureSession
-     */
-    public static SecureSession toSecureSessionRev3(byte[] apduResponse) {
-        SecureSession secureSession;
-        boolean previousSessionRatified = apduResponse[4] == (byte) 0x01 ? true : false;
-        boolean manageSecureSessionAuthorized = false;
-
-        byte kif = apduResponse[5];
-        byte kvc = apduResponse[6];
-        int dataLength = apduResponse[7];
-        byte[] data = subArray(apduResponse, 8, 8 + dataLength);
-
-        secureSession = new SecureSession(
-                new SecureSession.PoChallenge(subArray(apduResponse, 0, 3),
-                        subArray(apduResponse, 3, 4)),
-                previousSessionRatified, manageSecureSessionAuthorized, kif, kvc, data,
-                apduResponse);
-        return secureSession;
-    }
-
-    /**
-     * Method to get a Secure Session from the response in revision 2 mode.
-     *
-     * @param apduResponse the apdu response
-     * @return a SecureSession
-     */
-    public static SecureSession toSecureSessionRev2(byte[] apduResponse) {
-        SecureSession secureSession;
-        boolean previousSessionRatified = true;
-
-        byte kvc = toKVCRev2(apduResponse);
-
-        if (apduResponse.length < 6) {
-            previousSessionRatified = false;
-        }
-
-        // TODO selecting record data without length ?
-
-        secureSession = new SecureSession(
-                new SecureSession.PoChallenge(subArray(apduResponse, 1, 4),
-                        subArray(apduResponse, 4, 5)),
-                previousSessionRatified, false, kvc, null, apduResponse);
-
-        return secureSession;
-    }
-
-    /**
      * Method to get the KVC from the response in revision 2 mode.
      *
      * @param apduResponse the apdu response
@@ -173,14 +98,14 @@ public class ResponseUtils {
     }
 
     /**
-     * Checks if is bit equals one.
+     * Get the value of the bit
      *
-     * @param thebyte the thebyte
-     * @param position the position
-     * @return true, if is bit equals one
+     * @param b Input byte
+     * @param p Bit position in the byte
+     * @return true if the bit is set
      */
-    private static boolean isBitEqualsOne(byte thebyte, int position) {
-        return (1 == ((thebyte >> position) & 1));
+    public static boolean isBitSet(byte b, int p) {
+        return (1 == ((b >> p) & 1));
     }
 
     /**

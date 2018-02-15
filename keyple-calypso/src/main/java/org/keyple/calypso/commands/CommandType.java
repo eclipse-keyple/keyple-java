@@ -18,5 +18,5 @@ public enum CommandType {
     /** The po. */
     PO,
     /** The csm. */
-    CSM;
+    CSM
 }
