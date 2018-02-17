@@ -10,8 +10,6 @@ package keyple.commands.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.keyple.calypso.commands.dto.*;
-import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 import org.keyple.calypso.commands.po.parser.OpenSessionRespPars;
 import org.keyple.calypso.commands.utils.ResponseUtils;
@@ -182,16 +180,16 @@ public class ResponseUtilsTest {
         byte kif = 0x00;
         byte kvc = (byte) 0x00;
 
-        OpenSessionRespPars.SecureSession.PoChallenge poChallengeExpected =
-                new OpenSessionRespPars.SecureSession.PoChallenge(transactionCounter, randomNumber);
         boolean isPreviousSessionRatifiedExpected = true;
         boolean isManageSecureSessionAuthorizedExpected = false;
         byte[] originalData = new byte[] {};
 
-        OpenSessionRespPars.SecureSession SecureSessionExpected = new OpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
-                isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
-                kif,kvc, originalData, apduResponse);
-        OpenSessionRespPars.SecureSession SecureSessionTested = OpenSessionRespPars.toSecureSessionRev32(apduResponse);
+        OpenSessionRespPars.SecureSession SecureSessionExpected =
+                new OpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
+                        isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
+                        kif, kvc, originalData, apduResponse);
+        OpenSessionRespPars.SecureSession SecureSessionTested =
+                OpenSessionRespPars.toSecureSessionRev32(apduResponse);
 
         Assert.assertArrayEquals(SecureSessionExpected.getOriginalData(),
                 SecureSessionTested.getOriginalData());
@@ -215,14 +213,12 @@ public class ResponseUtilsTest {
         randomNumber = new byte[] {(byte) 0x53};
         byte kvc = (byte) 0x7E;
 
-        OpenSessionRespPars.SecureSession.PoChallenge poChallengeExpected =
-                new OpenSessionRespPars.SecureSession.PoChallenge(transactionCounter, randomNumber);
         boolean isPreviousSessionRatifiedExpected = false;
         boolean isManageSecureSessionAuthorizedExpected = false;
         byte[] originalData = null;
 
         OpenSessionRespPars.SecureSession SecureSessionExpected =
-                new OpenSessionRespPars.SecureSession(poChallengeExpected,
+                new OpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
                         isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
                         kvc, originalData, apduResponse);
         OpenSessionRespPars.SecureSession SecureSessionTested =

@@ -87,11 +87,9 @@ public class OpenSessionRespPars extends ApduResponseParser {
         int dataLength = apduResponse[11];
         byte[] data = ResponseUtils.subArray(apduResponse, 12, 12 + dataLength);
 
-        return new SecureSession(
-                new SecureSession.PoChallenge(ResponseUtils.subArray(apduResponse, 0, 3),
-                        ResponseUtils.subArray(apduResponse, 3, 8)),
-                previousSessionRatified, manageSecureSessionAuthorized, kif, kvc, data,
-                apduResponse);
+        return new SecureSession(ResponseUtils.subArray(apduResponse, 0, 3),
+                ResponseUtils.subArray(apduResponse, 3, 8), previousSessionRatified,
+                manageSecureSessionAuthorized, kif, kvc, data, apduResponse);
     }
 
     /**
@@ -110,11 +108,9 @@ public class OpenSessionRespPars extends ApduResponseParser {
         int dataLength = apduResponse[7];
         byte[] data = ResponseUtils.subArray(apduResponse, 8, 8 + dataLength);
 
-        secureSession = new SecureSession(
-                new SecureSession.PoChallenge(ResponseUtils.subArray(apduResponse, 0, 3),
-                        ResponseUtils.subArray(apduResponse, 3, 4)),
-                previousSessionRatified, manageSecureSessionAuthorized, kif, kvc, data,
-                apduResponse);
+        secureSession = new SecureSession(ResponseUtils.subArray(apduResponse, 0, 3),
+                ResponseUtils.subArray(apduResponse, 3, 4), previousSessionRatified,
+                manageSecureSessionAuthorized, kif, kvc, data, apduResponse);
         return secureSession;
     }
 
@@ -136,10 +132,9 @@ public class OpenSessionRespPars extends ApduResponseParser {
 
         // TODO selecting record data without length ?
 
-        secureSession = new SecureSession(
-                new SecureSession.PoChallenge(ResponseUtils.subArray(apduResponse, 1, 4),
-                        ResponseUtils.subArray(apduResponse, 4, 5)),
-                previousSessionRatified, false, kvc, null, apduResponse);
+        secureSession = new SecureSession(ResponseUtils.subArray(apduResponse, 1, 4),
+                ResponseUtils.subArray(apduResponse, 4, 5), previousSessionRatified, false, kvc,
+                null, apduResponse);
 
         return secureSession;
     }
@@ -264,32 +259,33 @@ public class OpenSessionRespPars extends ApduResponseParser {
      */
     public static class SecureSession {
 
-        /** The session challenge. */
-        PoChallenge sessionChallenge;
+        /** Challenge transaction counter */
+        private final byte[] challengeTransactionCounter;
+
+        /** Challenge random number */
+        private final byte[] challengeRandomNumber;
 
         /** The previous session ratified boolean. */
-        boolean previousSessionRatified;
+        private final boolean previousSessionRatified;
 
         /** The manage secure session authorized boolean. */
-        boolean manageSecureSessionAuthorized;
+        private final boolean manageSecureSessionAuthorized;
 
         /** The kif. */
-        byte kif = (byte) 0xFF;
+        private final byte kif;
 
         /** The kvc. */
-        byte kvc;
+        private final byte kvc;
 
         /** The original data. */
-        byte[] originalData;
+        private final byte[] originalData;
 
         /** The secure session data. */
-        byte[] secureSessionData;
+        private final byte[] secureSessionData;
 
         /**
          * Instantiates a new SecureSession for a Calypso application revision 3
          *
-         * @param sessionChallenge the session challenge return by the open secure session APDU
-         *        command
          * @param previousSessionRatified the previous session ratified
          * @param manageSecureSessionAuthorized the manage secure session authorized
          * @param kif the KIF from the response of the open secure session APDU command
@@ -299,11 +295,11 @@ public class OpenSessionRespPars extends ApduResponseParser {
          * @param secureSessionData the secure session data from the response of open secure session
          *        APDU command
          */
-        // Rev 3.1
-        public SecureSession(PoChallenge sessionChallenge, boolean previousSessionRatified,
-                boolean manageSecureSessionAuthorized, byte kif, byte kvc, byte[] originalData,
-                byte[] secureSessionData) {
-            this.sessionChallenge = sessionChallenge;
+        public SecureSession(byte[] challengeTransactionCounter, byte[] challengeRandomNumber,
+                boolean previousSessionRatified, boolean manageSecureSessionAuthorized, byte kif,
+                byte kvc, byte[] originalData, byte[] secureSessionData) {
+            this.challengeTransactionCounter = challengeTransactionCounter;
+            this.challengeRandomNumber = challengeRandomNumber;
             this.previousSessionRatified = previousSessionRatified;
             this.manageSecureSessionAuthorized = manageSecureSessionAuthorized;
             this.kif = kif;
@@ -315,8 +311,6 @@ public class OpenSessionRespPars extends ApduResponseParser {
         /**
          * Instantiates a new SecureSession for a Calypso application revision 2.4
          *
-         * @param sessionChallenge the session challenge return by the open secure session APDU
-         *        command
          * @param previousSessionRatified the previous session ratified
          * @param manageSecureSessionAuthorized the manage secure session authorized
          * @param kvc the KVC from the response of the open secure session APDU command
@@ -325,25 +319,25 @@ public class OpenSessionRespPars extends ApduResponseParser {
          * @param secureSessionData the secure session data from the response of open secure session
          *        APDU command
          */
-        // Rev 2.4
-        public SecureSession(PoChallenge sessionChallenge, boolean previousSessionRatified,
-                boolean manageSecureSessionAuthorized, byte kvc, byte[] originalData,
-                byte[] secureSessionData) {
-            this.sessionChallenge = sessionChallenge;
+        public SecureSession(byte[] challengeTransactionCounter, byte[] challengeRandomNumber,
+                boolean previousSessionRatified, boolean manageSecureSessionAuthorized, byte kvc,
+                byte[] originalData, byte[] secureSessionData) {
+            this.challengeTransactionCounter = challengeTransactionCounter;
+            this.challengeRandomNumber = challengeRandomNumber;
             this.previousSessionRatified = previousSessionRatified;
             this.manageSecureSessionAuthorized = manageSecureSessionAuthorized;
+            this.kif = (byte) 0xFF;
             this.kvc = kvc;
             this.originalData = (originalData == null ? null : originalData.clone());
             this.secureSessionData = (secureSessionData == null ? null : secureSessionData.clone());
         }
 
-        /**
-         * Gets the session challenge.
-         *
-         * @return the session challenge
-         */
-        public PoChallenge getSessionChallenge() {
-            return sessionChallenge;
+        public byte[] getChallengeTransactionCounter() {
+            return challengeTransactionCounter;
+        }
+
+        public byte[] getChallengeRandomNumber() {
+            return challengeRandomNumber;
         }
 
         /**
@@ -401,49 +395,6 @@ public class OpenSessionRespPars extends ApduResponseParser {
          */
         public byte[] getSecureSessionData() {
             return secureSessionData.clone();
-        }
-
-        /**
-         * The Class PoChallenge. Challenge return by a PO Get Challenge APDU command
-         */
-        public static class PoChallenge {
-
-            /** The transaction counter. */
-            private byte[] transactionCounter;
-
-            /** The random number provide by the terminal */
-            private byte[] randomNumber;
-
-            /**
-             * Instantiates a new PoChallenge.
-             *
-             * @param transactionCounter the transaction counter
-             * @param randomNumber the random number
-             */
-            public PoChallenge(byte[] transactionCounter, byte[] randomNumber) {
-                this.transactionCounter =
-                        (transactionCounter == null ? null : transactionCounter.clone());
-                this.randomNumber = (randomNumber == null ? null : randomNumber.clone());
-            }
-
-            /**
-             * Gets the transaction counter.
-             *
-             * @return the transaction counter
-             */
-            public byte[] getTransactionCounter() {
-                return transactionCounter.clone();
-            }
-
-            /**
-             * Gets the random number.
-             *
-             * @return the random number
-             */
-            public byte[] getRandomNumber() {
-                return randomNumber.clone();
-            }
-
         }
     }
 }
