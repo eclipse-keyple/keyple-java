@@ -231,11 +231,11 @@ public class OpenSessionRespPars extends ApduResponseParser {
     }
 
     public byte[] getPoChallenge() {
-        return secureSession.getSessionChallenge().getRandomNumber();
+        return secureSession.getChallengeRandomNumber();
     }
 
     public int getTransactionCounterValue() {
-        return java.nio.ByteBuffer.wrap(secureSession.getSessionChallenge().getTransactionCounter())
+        return java.nio.ByteBuffer.wrap(secureSession.getChallengeTransactionCounter())
                 .order(java.nio.ByteOrder.LITTLE_ENDIAN).getInt();
     }
 

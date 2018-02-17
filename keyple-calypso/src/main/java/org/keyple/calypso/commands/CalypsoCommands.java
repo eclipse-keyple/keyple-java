@@ -128,16 +128,16 @@ public enum CalypsoCommands implements CommandsTable {
      *
      * @param commandType the command type
      * @param name the name
-     * @param instructionbyte the instruction byte
+     * @param instructionByte the instruction byte
      * @param commandBuilderClass the command builder class
      * @param responseParserClass the response parser class
      */
-    private CalypsoCommands(CommandType commandType, String name, byte instructionbyte,
+    CalypsoCommands(CommandType commandType, String name, byte instructionByte,
             Class<? extends ApduCommandBuilder> commandBuilderClass,
             Class<? extends ApduResponseParser> responseParserClass) {
         this.commandType = commandType;
         this.name = name;
-        this.instructionbyte = instructionbyte;
+        this.instructionbyte = instructionByte;
         this.commandBuilderClass = commandBuilderClass;
         this.responseParserClass = responseParserClass;
     }
@@ -174,7 +174,6 @@ public enum CalypsoCommands implements CommandsTable {
      *
      * @return the corresponding command builder class
      */
-    // public Class<?> getCommandBuilderClass() {
     public Class<? extends ApduCommandBuilder> getCommandBuilderClass() {
         return commandBuilderClass;
     }
@@ -184,7 +183,6 @@ public enum CalypsoCommands implements CommandsTable {
      *
      * @return the corresponding response parser class
      */
-    // public Class<?> getResponseParserClass() {
     public Class<? extends ApduResponseParser> getResponseParserClass() {
         return responseParserClass;
     }
