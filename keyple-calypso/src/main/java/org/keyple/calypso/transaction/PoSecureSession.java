@@ -30,6 +30,7 @@ import org.keyple.calypso.commands.po.builder.OpenSessionCmdBuild;
 import org.keyple.calypso.commands.po.parser.CloseSessionRespPars;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 import org.keyple.calypso.commands.po.parser.OpenSessionRespPars;
+import org.keyple.calypso.commands.utils.ResponseUtils;
 import org.keyple.commands.ApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
@@ -730,7 +731,7 @@ public class PoSecureSession {
             rev = PoRevision.REV2_4;
         } else if (Byte.valueOf(applicationTypeByte).compareTo((byte) 0x7f) <= 0
                 && Byte.valueOf(applicationTypeByte).compareTo((byte) 0x20) >= 0) {
-            if (isBitEqualsOne(applicationTypeByte, 3)) {
+            if (ResponseUtils.isBitSet(applicationTypeByte, 3)) {
                 rev = PoRevision.REV3_2;
             } else {
                 rev = PoRevision.REV3_1;
@@ -767,16 +768,5 @@ public class PoSecureSession {
      */
     public byte[] getSessionTerminalChallenge() {
         return sessionTerminalChallenge;
-    }
-
-    /**
-     * Checks if is bit equals one.
-     *
-     * @param thebyte the thebyte
-     * @param position the position
-     * @return true, if is bit equals one
-     */
-    private static boolean isBitEqualsOne(byte thebyte, int position) {
-        return (1 == ((thebyte >> position) & 1));
     }
 }

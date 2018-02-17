@@ -20,7 +20,6 @@ import org.keyple.calypso.commands.csm.builder.SelectDiversifierCmdBuild;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.GetDataFciCmdBuild;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
-import org.keyple.calypso.commands.utils.ResponseUtils;
 import org.keyple.commands.ApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
@@ -90,7 +89,7 @@ public class SelectDiversiferCmdBuildTest {
         Mockito.when(fakeSpecificReader.transmit(seRequest)).thenReturn(seResponse);
 
         GetDataFciRespPars.FCI fci =
-                ResponseUtils.toFCI(responseFci.getApduResponses().get(0).getbytes());
+                GetDataFciRespPars.toFCI(responseFci.getApduResponses().get(0).getbytes());
         dataIn = fci.getApplicationSN();
 
         ApduCommandBuilder apduCommandBuilder2 = new SelectDiversifierCmdBuild(null, dataIn);

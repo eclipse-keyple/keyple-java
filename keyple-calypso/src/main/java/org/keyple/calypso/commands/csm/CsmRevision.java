@@ -21,7 +21,7 @@ public enum CsmRevision {
     /** The revision of S1D SAM SAM. */
     S1D();// 94h
 
-    private CsmRevision() {
+    CsmRevision() {
 
     }
 
