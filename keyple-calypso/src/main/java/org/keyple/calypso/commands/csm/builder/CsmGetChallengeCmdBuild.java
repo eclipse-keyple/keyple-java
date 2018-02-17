@@ -47,7 +47,8 @@ public class CsmGetChallengeCmdBuild extends CsmCommandBuilder {
         byte p2 = 0x00;
 
         // CalypsoRequest calypsoRequest = new CalypsoRequest();
-        request = RequestUtils.constructAPDURequest(cla, command, p1, p2, null, expectedResponseLength);
+        request = RequestUtils.constructAPDURequest(cla, command, p1, p2, null,
+                expectedResponseLength);
     }
 
     /**

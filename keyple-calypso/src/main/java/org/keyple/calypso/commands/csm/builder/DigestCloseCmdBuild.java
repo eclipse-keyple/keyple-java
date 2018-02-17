@@ -49,7 +49,8 @@ public class DigestCloseCmdBuild extends CsmCommandBuilder {
 
         // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, null,
         // expectedResponseLength);
-        request = RequestUtils.constructAPDURequest(cla, command, p1, p2, null, expectedResponseLength);
+        request = RequestUtils.constructAPDURequest(cla, command, p1, p2, null,
+                expectedResponseLength);
     }
 
     /**
