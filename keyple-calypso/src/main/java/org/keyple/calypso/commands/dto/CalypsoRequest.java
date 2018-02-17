@@ -12,6 +12,8 @@ import org.keyple.calypso.commands.CalypsoCommands;
 
 /**
  * The Class CalypsoRequest.
+ * 
+ * @deprecated This class should disappear
  */
 // TODO: Drop this. It's a temporary structure that serves no purpose.
 public class CalypsoRequest {
@@ -32,58 +34,39 @@ public class CalypsoRequest {
     private byte lc;
 
     /** The data in. (data in the command) */
-    private byte[] dataIn = new byte[0];
+    private byte[] dataIn;
 
     /** The Le.(length of response data) */
     private byte le;
 
-    private boolean forceLc = false;
+    private boolean forceLe;
 
-    private boolean forceLe = true;
 
-    /** The case 4. */
-    private boolean case4;
-
-    /**
-     * Instantiates a new CalypsoRequest.
-     *
-     * @param cla the CLA
-     * @param ins the INS
-     * @param p1 the P1
-     * @param p2 the P2
-     * @param dataIn the data in
-     */
     public CalypsoRequest(byte cla, CalypsoCommands ins, byte p1, byte p2, byte[] dataIn) {
         this.cla = cla;
         this.ins = ins;
         this.p1 = p1;
         this.p2 = p2;
-        this.dataIn = (dataIn == null ? new byte[0] : dataIn.clone());
+        this.dataIn = (dataIn == null ?
+                new byte[0] : dataIn.clone());
         if (dataIn == null) {
-
             this.lc = 0x00;
         } else {
-            this.lc = (byte) dataIn.length;
+            this.lc =
+                    (byte) dataIn.length;
         }
         this.forceLe = false;
     }
 
-    /**
-     * Instantiates a new CalypsoRequest.
-     *
-     * @param ins the INS
-     * @param cla the CLA
-     * @param p1 the P1
-     * @param p2 the P2
-     * @param dataIn the data in
-     * @param le the Le
-     */
-    public CalypsoRequest(byte cla, CalypsoCommands ins, byte p1, byte p2, byte[] dataIn, byte le) {
+
+    public CalypsoRequest(byte cla, CalypsoCommands ins, byte p1, byte p2, byte[] dataIn, byte
+            le) {
         this.cla = cla;
         this.ins = ins;
         this.p1 = p1;
         this.p2 = p2;
-        this.dataIn = (dataIn == null ? new byte[0] : dataIn.clone());
+        this.dataIn = (dataIn ==
+                null ? new byte[0] : dataIn.clone());
 
         if (dataIn == null) {
             this.lc = 0x00;
@@ -95,14 +78,6 @@ public class CalypsoRequest {
         this.forceLe = true;
     }
 
-    /**
-     * Set the lc
-     *
-     * @param lc length
-     */
-    public void setLc(byte lc) {
-        this.lc = lc;
-    }
 
     /**
      * Gets the cla.
@@ -167,29 +142,11 @@ public class CalypsoRequest {
         return le;
     }
 
-    /**
-     * Checks if is case 4.
-     *
-     * @return the boolean
-     */
-    public boolean isCase4() {
-        return case4;
-    }
-
     public boolean isForceLe() {
         return forceLe;
     }
 
-    public void setForceLe(boolean forceLe) {
-        this.forceLe = forceLe;
-    }
-
     public boolean isForceLc() {
-        return forceLc;
+        return false;
     }
-
-    public void setForceLc(boolean forceLc) {
-        this.forceLc = forceLc;
-    }
-
 }

@@ -10,8 +10,10 @@ package org.keyple.calypso.commands.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.ArrayUtils;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.dto.CalypsoRequest;
+import org.keyple.commands.CommandsTable;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
@@ -23,16 +25,6 @@ import org.keyple.seproxy.ApduRequest;
 public class RequestUtils {
 
     private RequestUtils() {}
-
-    /**
-     * Construct APDU request.
-     *
-     * @param request the request
-     * @return the APDU request
-     */
-    public static ApduRequest constructAPDURequest(CalypsoRequest request) {
-        return constructAPDURequest(request, 0);
-    }
 
     public static void controlRequestConsistency(CalypsoCommands command, ApduRequest request)
             throws InconsistentCommandException {
@@ -55,8 +47,88 @@ public class RequestUtils {
      * Construct APDU request.
      *
      * @param request the request
+     * @return the APDU request
+     * @deprecated Pass the arguments directly
+     */
+    private static ApduRequest constructAPDURequest(CalypsoRequest request) {
+        return constructAPDURequest(request, 0);
+    }
+
+    public static ApduRequest constructAPDURequest(byte cla, CommandsTable ins, byte p1, byte p2,
+            byte[] dataIn) {
+        return constructAPDURequest(cla, ins.getInstructionByte(), p1, p2, dataIn, null);
+    }
+
+    public static ApduRequest constructAPDURequest(byte cla, CommandsTable ins, byte p1, byte p2,
+            byte[] dataIn, byte le) {
+        return constructAPDURequest(cla, ins.getInstructionByte(), p1, p2, dataIn,  le);
+    }
+
+    private static ApduRequest constructAPDURequest(byte cla, byte ins, byte p1, byte p2,
+            byte[] dataIn, Byte le) {
+
+        if (dataIn == null) {
+            dataIn = new byte[0];
+        }
+
+        boolean forceLe;
+        if ( le == null ) {
+            le = 0;
+            forceLe = false;
+        } else {
+            forceLe = true;
+        }
+
+        int localCaseId = 0;
+        {
+            // try to retrieve case
+            if (dataIn.length == 0 && le == 0x00) {
+                localCaseId = 1;
+            }
+            if (dataIn.length == 0 && le != 0x00) {
+                localCaseId = 2;
+            }
+            if (dataIn.length != 0 && le == 0x00) {
+                localCaseId = 3;
+            }
+            if (dataIn.length != 0 && le != 0x00) {
+                localCaseId = 4;
+            }
+        }
+
+        List<Byte> apdu = new ArrayList<Byte>();
+
+        apdu.add(cla);
+        apdu.add(ins);
+        apdu.add(p1);
+        apdu.add(p2);
+
+        if (dataIn.length != 0) {
+            apdu.add((byte)dataIn.length);
+            for (int v = 0; v < dataIn.length; v++) {
+                apdu.add(dataIn[v]);
+            }
+        }
+
+
+        if (forceLe) {
+            if (localCaseId == 4) {
+                apdu.add((byte) 0x00);
+            } else {
+                apdu.add(le);
+            }
+        }
+        byte[] array = ArrayUtils.toPrimitive(apdu.toArray(new Byte[0]));
+        return new ApduRequest(array, localCaseId == 4);
+    }
+
+    /**
+     * Construct APDU request.
+     *
+     * @param request the request
      * @param caseId the case id
      * @return the APDU request
+     * @deprecated
      */
     public static ApduRequest constructAPDURequest(CalypsoRequest request, int caseId) {
 

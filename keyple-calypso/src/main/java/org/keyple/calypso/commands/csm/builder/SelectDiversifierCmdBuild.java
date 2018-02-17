@@ -11,7 +11,6 @@ package org.keyple.calypso.commands.csm.builder;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.csm.CsmCommandBuilder;
 import org.keyple.calypso.commands.csm.CsmRevision;
-import org.keyple.calypso.commands.dto.CalypsoRequest;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
@@ -47,9 +46,9 @@ public class SelectDiversifierCmdBuild extends CsmCommandBuilder {
         byte cla = CsmRevision.S1D.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x80;
         byte p1 = 0x00;
         byte p2 = 0x00;
-        CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, diversifier);
+        // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, diversifier);
 
-        request = RequestUtils.constructAPDURequest(calypsoRequest);
+        request = RequestUtils.constructAPDURequest(cla, command, p1, p2, diversifier);
 
     }
 

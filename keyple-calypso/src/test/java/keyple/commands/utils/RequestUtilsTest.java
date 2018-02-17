@@ -8,6 +8,7 @@
 
 package keyple.commands.utils;
 
+import org.apache.commons.codec.binary.Hex;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +25,7 @@ public class RequestUtilsTest {
 
     private boolean isCase4;
 
-    private ApduRequest ApduRequestExpected;
+    private ApduRequest expected;
 
     private byte cla;
 
@@ -46,24 +47,27 @@ public class RequestUtilsTest {
     public void testConstructApduRequest() {
         fci = new byte[] {(byte) 0x00, (byte) 0xCA, 0x00, 0x6F};
         isCase4 = false;
-        ApduRequestExpected = new ApduRequest(fci, isCase4);
+        expected = new ApduRequest(fci, isCase4);
         cla = (byte) 0x00;
         ins = CalypsoCommands.PO_GET_DATA_FCI;
         pUn = 0x00;
         pDeux = 0x6F;
         dataIn = null;
 
-        request = new CalypsoRequest(cla, ins, pUn, pDeux, dataIn);
-        ApduRequest ApduRequestActual = RequestUtils.constructAPDURequest(request);
-        Assert.assertArrayEquals(ApduRequestExpected.getbytes(), ApduRequestActual.getbytes());
-        Assert.assertEquals(ApduRequestExpected.isCase4(), ApduRequestActual.isCase4());
+        // request = new CalypsoRequest(cla, ins, pUn, pDeux, dataIn);
+        ApduRequest actual =
+                RequestUtils.constructAPDURequest(cla, ins, pUn, pDeux, dataIn);
+        // System.out.println("APDU Actual:   " + Hex.encodeHexString(actual.getbytes()));
+        // System.out.println("APDU Expected: " + Hex.encodeHexString(expected.getbytes()));
+        Assert.assertArrayEquals(expected.getbytes(), actual.getbytes());
+        Assert.assertEquals(expected.isCase4(), actual.isCase4());
     }
 
     @Test
     public void testConstructApduRequestCase4() {
         fci = new byte[] {(byte) 0x00, (byte) 0xCA, 0x00, 0x6F, 0x00};
         isCase4 = true;
-        ApduRequestExpected = new ApduRequest(fci, isCase4);
+        expected = new ApduRequest(fci, isCase4);
         cla = (byte) 0x00;
         ins = CalypsoCommands.PO_GET_DATA_FCI;
         pUn = 0x00;
@@ -71,27 +75,32 @@ public class RequestUtilsTest {
         dataIn = null;
         option = 0x00;
 
-        request = new CalypsoRequest(cla, ins, pUn, pDeux, dataIn, option);
-        ApduRequest ApduRequestActual = RequestUtils.constructAPDURequest(request);
-        Assert.assertArrayEquals(ApduRequestExpected.getbytes(), ApduRequestActual.getbytes());
-        Assert.assertNotEquals(ApduRequestExpected.isCase4(), ApduRequestActual.isCase4());
+        // request = new CalypsoRequest(cla, ins, pUn, pDeux, dataIn, option);
+        ApduRequest actual =
+                RequestUtils.constructAPDURequest(cla, ins, pUn, pDeux, dataIn, option);
+        // System.out.println("APDU Actual:   " + Hex.encodeHexString(actual.getbytes()));
+        // System.out.println("APDU Expected: " + Hex.encodeHexString(expected.getbytes()));
+        Assert.assertArrayEquals(expected.getbytes(), actual.getbytes());
+        Assert.assertNotEquals(expected.isCase4(), actual.isCase4());
     }
 
     @Test
     public void testConstructApduRequestData() {
         fci = new byte[] {(byte) 0x00, (byte) 0xCA, 0x00, 0x6F, 0x02, 0x00, 0x00};
         isCase4 = false;
-        ApduRequestExpected = new ApduRequest(fci, isCase4);
+        expected = new ApduRequest(fci, isCase4);
         cla = (byte) 0x00;
         ins = CalypsoCommands.PO_GET_DATA_FCI;
         pUn = 0x00;
         pDeux = 0x6F;
         dataIn = new byte[] {0x00, 0x00};
 
-        request = new CalypsoRequest(cla, ins, pUn, pDeux, dataIn);
-        ApduRequest ApduRequestActual = RequestUtils.constructAPDURequest(request);
-        Assert.assertArrayEquals(ApduRequestExpected.getbytes(), ApduRequestActual.getbytes());
-        Assert.assertEquals(ApduRequestExpected.isCase4(), ApduRequestActual.isCase4());
+        // request = new CalypsoRequest(cla, ins, pUn, pDeux, dataIn);
+        ApduRequest actual = RequestUtils.constructAPDURequest(cla, ins, pUn, pDeux, dataIn);
+        // System.out.println("APDU Actual:   " + Hex.encodeHexString(actual.getbytes()));
+        // System.out.println("APDU Expected: " + Hex.encodeHexString(expected.getbytes()));
+        Assert.assertArrayEquals(expected.getbytes(), actual.getbytes());
+        Assert.assertEquals(expected.isCase4(), actual.isCase4());
     }
 
     @Test
@@ -106,11 +115,14 @@ public class RequestUtilsTest {
         optionExptected = (byte) 0x00;
         fci = new byte[] {(byte) 0x00, (byte) 0xCA, 0x00, 0x6F, (byte) dataIn.length, (byte) 0xA8,
                 0x31, (byte) 0xC3, 0x3E, 0x00, optionExptected};
-        ApduRequestExpected = new ApduRequest(fci, isCase4);
+        expected = new ApduRequest(fci, isCase4);
 
-        request = new CalypsoRequest(cla, ins, pUn, pDeux, dataIn, option);
-        ApduRequest ApduRequestActual = RequestUtils.constructAPDURequest(request);
-        Assert.assertArrayEquals(ApduRequestExpected.getbytes(), ApduRequestActual.getbytes());
-        Assert.assertEquals(ApduRequestExpected.isCase4(), ApduRequestActual.isCase4());
+        // request = new CalypsoRequest(cla, ins, pUn, pDeux, dataIn, option);
+        ApduRequest actual =
+                RequestUtils.constructAPDURequest(cla, ins, pUn, pDeux, dataIn, option);
+        // System.out.println("APDU Actual:   " + Hex.encodeHexString(actual.getbytes()));
+        // System.out.println("APDU Expected: " + Hex.encodeHexString(expected.getbytes()));
+        Assert.assertArrayEquals(expected.getbytes(), actual.getbytes());
+        Assert.assertEquals(expected.isCase4(), actual.isCase4());
     }
 }

@@ -9,7 +9,6 @@
 package org.keyple.calypso.commands.po.builder;
 
 import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.calypso.commands.dto.CalypsoRequest;
 import org.keyple.calypso.commands.po.PoCommandBuilder;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.utils.RequestUtils;
@@ -77,10 +76,14 @@ public class OpenSessionCmdBuild extends PoCommandBuilder {
                 break;
         }
 
-        CalypsoRequest request = new CalypsoRequest(
+        /*
+         * CalypsoRequest request = new CalypsoRequest(
+         * PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00, command, p1,
+         * p2, dataIn);
+         */
+        this.request = RequestUtils.constructAPDURequest(
                 PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00, command,
                 p1, p2, dataIn);
-        this.request = RequestUtils.constructAPDURequest(request);
 
     }
 
