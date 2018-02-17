@@ -130,12 +130,9 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
     }
 
     private static class TestSettingException extends Exception {
-        private static final long serialVersionUID = 1L;
-
         public TestSettingException(String message) {
             super(message);
         }
-
     }
 
     public static void main(String[] args) throws TestSettingException {

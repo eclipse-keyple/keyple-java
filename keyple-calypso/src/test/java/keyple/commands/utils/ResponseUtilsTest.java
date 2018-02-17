@@ -14,29 +14,16 @@ import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 import org.keyple.calypso.commands.po.parser.OpenSessionRespPars;
 import org.keyple.calypso.commands.utils.ResponseUtils;
 
-// @RunWith(MockitoJUnitRunner.class)
 public class ResponseUtilsTest {
-
-    // @InjectMocks
-    // ResponseUtils responseUtils;
-
-    // @Mock
-    private byte[] apduResponse;
-
-    private byte[] apduResponseCaseTwo;
-
-    private byte[] transactionCounter;
-
-    private byte[] randomNumber;
 
     @Test
     public void TestToFCI() {
 
         // Case if
-        apduResponse = new byte[] {(byte) 0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54, 0x52,
-                0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13, (byte) 0xC7,
-                0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7, 0x53, 0x07,
-                0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01};
+        byte[] apduResponse = new byte[] {(byte) 0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54,
+                0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13,
+                (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7,
+                0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01};
 
         byte[] aid = new byte[] {0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41};
         // AID aidExpected = new AID(aid);
@@ -171,12 +158,12 @@ public class ResponseUtilsTest {
 
     @Test
     public void TestToSecureSession() {
-        apduResponse = new byte[] {(byte) 0x8F, 0x05, 0x75, 0x1A, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x30, 0x7E, (byte) 0x1D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00};
+        byte[] apduResponse = new byte[] {(byte) 0x8F, 0x05, 0x75, 0x1A, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x30, 0x7E, (byte) 0x1D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00};
 
-        transactionCounter = new byte[] {(byte) 0x8F, 0x05, 0x75};
-        randomNumber = new byte[] {0x1A, 0x00, 0x00, 0x00, 0x00};
+        byte[] transactionCounter = new byte[] {(byte) 0x8F, 0x05, 0x75};
+        byte[] randomNumber = new byte[] {0x1A, 0x00, 0x00, 0x00, 0x00};
         byte kif = 0x00;
         byte kvc = (byte) 0x00;
 
@@ -207,10 +194,11 @@ public class ResponseUtilsTest {
     public void TestToSecureSessionRev2() {
 
         // Case Else
-        apduResponse = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53};
+        byte[] apduResponse =
+                new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53};
 
-        transactionCounter = new byte[] {(byte) 0x03, (byte) 0x0D, (byte) 0x14};
-        randomNumber = new byte[] {(byte) 0x53};
+        byte[] transactionCounter = new byte[] {(byte) 0x03, (byte) 0x0D, (byte) 0x14};
+        byte[] randomNumber = new byte[] {(byte) 0x53};
         byte kvc = (byte) 0x7E;
 
         boolean isPreviousSessionRatifiedExpected = false;
@@ -233,7 +221,7 @@ public class ResponseUtilsTest {
                 SecureSessionTested.getChallengeTransactionCounter());
 
         // Case If Else
-        apduResponseCaseTwo = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14,
+        byte[] apduResponseCaseTwo = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14,
                 (byte) 0x53, (byte) 0x30, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
         byte[] originalDataCaseTwo = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14,
                 (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
@@ -279,14 +267,14 @@ public class ResponseUtilsTest {
 
     @Test
     public void TestToKVCRev2() {
-
-        apduResponse = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53};
+        byte[] apduResponse =
+                new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53};
         byte KVCRev2Expected = (byte) 0x7E;
         byte KVCRev2Tested = ResponseUtils.toKVCRev2(apduResponse);
 
         Assert.assertEquals(KVCRev2Expected, KVCRev2Tested);
 
-        apduResponseCaseTwo =
+        byte[] apduResponseCaseTwo =
                 new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53};
 
     }

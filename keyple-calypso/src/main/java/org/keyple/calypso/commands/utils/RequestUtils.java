@@ -93,8 +93,8 @@ public class RequestUtils {
 
         if (dataIn.length != 0) {
             apdu.add((byte) dataIn.length);
-            for (int v = 0; v < dataIn.length; v++) {
-                apdu.add(dataIn[v]);
+            for (byte d : dataIn) {
+                apdu.add(d);
             }
         }
 

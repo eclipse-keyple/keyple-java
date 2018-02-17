@@ -25,7 +25,6 @@ public class AppendRecordRespPars extends ApduResponseParser {
      * @param response the response from the Update Records APDU command
      */
     public AppendRecordRespPars(ApduResponse response) {
-
         super(response);
         initStatusTable();
     }
