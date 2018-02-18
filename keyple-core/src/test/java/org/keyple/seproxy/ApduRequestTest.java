@@ -50,7 +50,7 @@ public class ApduRequestTest {
 
     @Test
     public void byteBufferWrap() {
-        workOnApdu(new ApduRequest(ByteBuffer.wrap(new byte[10], 5, 5), false));
+        workOnApdu(new ApduRequest(new byte[10], 5, 5, false));
     }
 
     private void workOnApdu(ApduRequest request) {

@@ -39,6 +39,11 @@ public class ApduRequest extends AbstractApduWrapper {
         this.case4 = case4;
     }
 
+    public ApduRequest(byte[] data, int offset, int length, boolean case4) {
+        super(data, offset, length);
+        this.case4 = case4;
+    }
+
     public ApduRequest() {}
 
     /**
@@ -60,6 +65,15 @@ public class ApduRequest extends AbstractApduWrapper {
 
     @Override
     public String toString() {
-        return "APDU Request " + super.toString();
+        ByteBuffer b;
+
+        if ( buffer.position() > 0 ) {
+            b = buffer.duplicate();
+            b.limit(buffer.position());
+        } else {
+            b = buffer;
+        }
+
+        return "APDU Request " + toHex(b);
     }
 }
