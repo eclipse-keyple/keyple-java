@@ -67,7 +67,7 @@ public class ApduRequest extends AbstractApduWrapper {
     public String toString() {
         ByteBuffer b;
 
-        if ( buffer.position() > 0 ) {
+        if (buffer.position() > 0) {
             b = buffer.duplicate();
             b.limit(buffer.position());
         } else {

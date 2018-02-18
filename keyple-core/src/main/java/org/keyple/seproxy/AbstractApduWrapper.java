@@ -36,8 +36,8 @@ public abstract class AbstractApduWrapper {
     }
 
     /**
-     * Get the content as a new byte array.
-     * Please note this operation should be avoided as much as possible
+     * Get the content as a new byte array. Please note this operation should be avoided as much as
+     * possible
      *
      * @return Newly created array with a copy of the content
      */
@@ -60,7 +60,7 @@ public abstract class AbstractApduWrapper {
     protected static String toHex(ByteBuffer buffer) {
         StringBuilder sb = new StringBuilder(buffer.limit() * 2);
         final byte[] array = buffer.array();
-        for (int i = buffer.arrayOffset(), e = i+buffer.limit(); i < e; i++) {
+        for (int i = buffer.arrayOffset(), e = i + buffer.limit(); i < e; i++) {
             sb.append(String.format("%02X", array[i]));
         }
 
