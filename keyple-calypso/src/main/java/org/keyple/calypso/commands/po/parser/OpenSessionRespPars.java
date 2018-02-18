@@ -51,17 +51,17 @@ public class OpenSessionRespPars extends ApduResponseParser {
             switch (revision) {
                 case REV3_2:
                     if (response.isSuccessful()) {
-                        secureSession = toSecureSessionRev32(response.getbytes());
+                        secureSession = toSecureSessionRev32(response.getBytes());
                     }
                     break;
                 case REV3_1:
                     if (response.isSuccessful()) {
-                        secureSession = toSecureSessionRev3(response.getbytes());
+                        secureSession = toSecureSessionRev3(response.getBytes());
                     }
                     break;
                 case REV2_4:
                     if (response.isSuccessful()) {
-                        secureSession = toSecureSessionRev2(response.getbytes());
+                        secureSession = toSecureSessionRev2(response.getBytes());
                     }
                     break;
                 default:

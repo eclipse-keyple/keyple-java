@@ -80,6 +80,6 @@ public class DigestInitCmdBuildTest {
         ApduCommandBuilder apduCommandBuilder = new DigestInitCmdBuild(revision, verificationMode,
                 rev3_2Mode, workKeyRecordNumber, workKeyKif, workKeyKVC, digestData);
 
-        assertArrayEquals(request, apduCommandBuilder.getApduRequest().getbytes());
+        assertArrayEquals(request, apduCommandBuilder.getApduRequest().getBytes());
     }
 }

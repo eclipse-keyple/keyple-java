@@ -31,7 +31,7 @@ public class POGetChallengeRespParsTest {
 
         ApduResponseParser apduResponseParser =
                 new PoGetChallengeRespPars(seResponse.getApduResponses().get(0));
-        byte[] reponseActual = apduResponseParser.getApduResponse().getbytes();
+        byte[] reponseActual = apduResponseParser.getApduResponse().getBytes();
         Assert.assertArrayEquals(response, reponseActual);
         Assert.assertEquals("Successful execution.", apduResponseParser.getStatusInformation());
 

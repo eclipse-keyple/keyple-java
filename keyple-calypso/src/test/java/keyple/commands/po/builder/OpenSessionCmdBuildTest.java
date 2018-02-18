@@ -68,7 +68,7 @@ public class OpenSessionCmdBuildTest {
         apduCommandBuilder = new OpenSessionCmdBuild(PoRevision.REV2_4, keyIndex, dataIn,
                 sfiToSelect, recordNumberToRead);
         ApduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertArrayEquals(request2_4, ApduRequest.getbytes());
+        Assert.assertArrayEquals(request2_4, ApduRequest.getBytes());
     }
 
     @Test
@@ -89,7 +89,7 @@ public class OpenSessionCmdBuildTest {
         apduCommandBuilder = new OpenSessionCmdBuild(PoRevision.REV3_1, keyIndex, dataIn,
                 sfiToSelect, recordNumberToRead);
         ApduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertArrayEquals(request3_1, ApduRequest.getbytes());
+        Assert.assertArrayEquals(request3_1, ApduRequest.getBytes());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class OpenSessionCmdBuildTest {
         apduCommandBuilder = new OpenSessionCmdBuild(PoRevision.REV3_2, keyIndex, samChallenge,
                 sfiToSelect, recordNumberToRead);
         ApduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertArrayEquals(request3_2, ApduRequest.getbytes());
+        Assert.assertArrayEquals(request3_2, ApduRequest.getBytes());
     }
 
 

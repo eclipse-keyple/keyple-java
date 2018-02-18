@@ -89,7 +89,7 @@ public class SelectDiversiferCmdBuildTest {
         Mockito.when(fakeSpecificReader.transmit(seRequest)).thenReturn(seResponse);
 
         GetDataFciRespPars.FCI fci =
-                GetDataFciRespPars.toFCI(responseFci.getApduResponses().get(0).getbytes());
+                GetDataFciRespPars.toFCI(responseFci.getApduResponses().get(0).getBytes());
         dataIn = fci.getApplicationSN();
 
         ApduCommandBuilder apduCommandBuilder2 = new SelectDiversifierCmdBuild(null, dataIn);

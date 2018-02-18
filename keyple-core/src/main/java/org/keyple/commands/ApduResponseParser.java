@@ -25,7 +25,7 @@ import org.keyple.seproxy.ApduResponse;
 public abstract class ApduResponseParser {
 
     /** the byte array APDU response. */
-    private ApduResponse response;
+    protected ApduResponse response;
 
     /** The status table. */
     protected Map<byte[], StatusProperties> statusTable = new HashMap<byte[], StatusProperties>();

@@ -45,7 +45,7 @@ public class PoGetChallengeRespPars extends ApduResponseParser {
      */
     public byte[] getPoChallenge() {
         if (isSuccessful()) {
-            return getApduResponse().getbytes();
+            return getApduResponse().getBytes();
         }
         return null;
     }

@@ -32,7 +32,7 @@ public class DigestCloseRespPars extends ApduResponseParser {
         super(response);
         initStatusTable();
         if (isSuccessful()) {
-            signature = response.getbytes();
+            signature = response.getBytes();
         }
     }
 

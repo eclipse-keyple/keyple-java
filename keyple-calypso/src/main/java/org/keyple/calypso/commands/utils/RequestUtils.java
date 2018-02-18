@@ -29,9 +29,9 @@ public class RequestUtils {
             throws InconsistentCommandException {
         boolean isRequestInconsistent = true;
         if (request != null) {
-            if (request.getbytes() != null) {
-                if (request.getbytes().length >= 2) {
-                    if (command.getInstructionByte() == request.getbytes()[1]) {
+            if (request.getBytes() != null) {
+                if (request.getBytes().length >= 2) {
+                    if (command.getInstructionByte() == request.getBytes()[1]) {
                         isRequestInconsistent = false;
                     }
                 }

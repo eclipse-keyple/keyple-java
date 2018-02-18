@@ -31,7 +31,7 @@ public class DigestUpdateRespPars extends ApduResponseParser {
         super(response);
         initStatusTable();
         if (isSuccessful()) {
-            this.processedData = response.getbytes();
+            this.processedData = response.getBytes();
         }
     }
 

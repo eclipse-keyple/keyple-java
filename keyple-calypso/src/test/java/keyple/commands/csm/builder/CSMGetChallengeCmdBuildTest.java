@@ -27,7 +27,7 @@ public class CSMGetChallengeCmdBuildTest {
                 new CsmGetChallengeCmdBuild(CsmRevision.S1D, (byte) 0x04);// 94
         ApduRequest ApduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertArrayEquals(request, ApduRequest.getbytes());
+        Assert.assertArrayEquals(request, ApduRequest.getBytes());
 
     }
 }

@@ -32,7 +32,7 @@ public class GetDataFciRespPars extends ApduResponseParser {
         super(response);
         initStatusTable();
         if (isSuccessful()) {
-            fci = toFCI(response.getbytes());
+            fci = toFCI(response.getBytes());
         }
     }
 

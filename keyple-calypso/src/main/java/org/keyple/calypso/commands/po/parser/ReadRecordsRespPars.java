@@ -31,7 +31,7 @@ public class ReadRecordsRespPars extends ApduResponseParser {
         super(response);
         initStatusTable();
         if (isSuccessful()) {
-            records = parseRecords(response.getbytes(), false);
+            records = parseRecords(response.getBytes(), false);
         }
     }
 

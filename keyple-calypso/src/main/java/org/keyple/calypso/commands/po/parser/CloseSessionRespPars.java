@@ -8,6 +8,7 @@
 
 package org.keyple.calypso.commands.po.parser;
 
+
 import org.keyple.calypso.commands.utils.ResponseUtils;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
@@ -24,7 +25,7 @@ public class CloseSessionRespPars extends ApduResponseParser {
      */
     public CloseSessionRespPars(ApduResponse response) {
         super(response);
-        parse(response.getbytes());
+        parse(response.getBytes());
         initStatusTable();
     }
 
@@ -74,7 +75,8 @@ public class CloseSessionRespPars extends ApduResponseParser {
         return postponedData != null ? postponedData : new byte[] {};
     }
 
-    public boolean hasPostponedData() {
-        return postponedData != null;
-    }
+    /*
+     * ByteBuffer bufSign, bufPostData; private void parseBuffer() { if ( bufSign == null ) {
+     * bufSign = response } }
+     */
 }
