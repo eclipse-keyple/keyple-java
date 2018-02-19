@@ -9,7 +9,6 @@
 package org.keyple.calypso.commands.po.builder;
 
 import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.calypso.commands.dto.CalypsoRequest;
 import org.keyple.calypso.commands.po.PoCommandBuilder;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.SendableInSession;
@@ -44,9 +43,10 @@ public class PoGetChallengeCmdBuild extends PoCommandBuilder implements Sendable
         byte p1 = (byte) 0x01;
         byte p2 = (byte) 0x10;
         byte[] dataIn = null;
-        byte optionnalLe = (byte) 0x08;
-        CalypsoRequest request = new CalypsoRequest(cla, command, p1, p2, dataIn, optionnalLe);
-        ApduRequest apduRequest = RequestUtils.constructAPDURequest(request);
+        byte optionalLe = (byte) 0x08;
+        // CalypsoRequest request = new CalypsoRequest(cla, command, p1, p2, dataIn, optionnalLe);
+        ApduRequest apduRequest =
+                RequestUtils.constructAPDURequest(cla, command, p1, p2, dataIn, optionalLe);
 
         this.request = apduRequest;
 

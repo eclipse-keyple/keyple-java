@@ -11,7 +11,6 @@ package org.keyple.calypso.commands.csm.builder;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.csm.CsmCommandBuilder;
 import org.keyple.calypso.commands.csm.CsmRevision;
-import org.keyple.calypso.commands.dto.CalypsoRequest;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
@@ -47,9 +46,9 @@ public class CsmGetChallengeCmdBuild extends CsmCommandBuilder {
         byte p1 = 0x00;
         byte p2 = 0x00;
 
-        CalypsoRequest calypsoRequest =
-                new CalypsoRequest(cla, command, p1, p2, null, expectedResponseLength);
-        request = RequestUtils.constructAPDURequest(calypsoRequest);
+        // CalypsoRequest calypsoRequest = new CalypsoRequest();
+        request = RequestUtils.constructAPDURequest(cla, command, p1, p2, null,
+                expectedResponseLength);
     }
 
     /**

@@ -14,5 +14,4 @@ package org.keyple.calypso.commands.po;
  * @author CNA
  */
 public interface SendableInSession {
-
 }

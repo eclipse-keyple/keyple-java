@@ -9,7 +9,6 @@
 package org.keyple.calypso.commands.po.builder;
 
 import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.calypso.commands.dto.CalypsoRequest;
 import org.keyple.calypso.commands.po.PoCommandBuilder;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.SendableInSession;
@@ -60,9 +59,10 @@ public class ReadRecordsCmdBuild extends PoCommandBuilder implements SendableInS
             p2 = (byte) (p2 - (byte) 0x01);
         }
 
-        CalypsoRequest calypsoRequest =
-                new CalypsoRequest(cla, command, p1, p2, dataIn, expectedLength);
-        ApduRequest apduRequest = RequestUtils.constructAPDURequest(calypsoRequest);
+        // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, dataIn,
+        // expectedLength);
+        ApduRequest apduRequest =
+                RequestUtils.constructAPDURequest(cla, command, p1, p2, dataIn, expectedLength);
         this.request = apduRequest;
     }
 
