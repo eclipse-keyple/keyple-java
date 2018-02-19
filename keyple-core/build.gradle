@@ -1,9 +1,21 @@
+plugins {
+    id "me.champeau.gradle.jmh" version "0.4.3"
+}
+
+sourceCompatibility = 1.6
+
 group 'org.keyple'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'me.champeau.gradle.jmh'
 
-sourceCompatibility = 1.6
+jmh {
+    // include = 'org\\.openjdk\\.jmh\\.samples\\.JMHSample_01_HelloWorld.*'
+    humanOutputFile = null
+    warmupIterations = 1
+    iterations = 1
+}
 
 dependencies {
 
