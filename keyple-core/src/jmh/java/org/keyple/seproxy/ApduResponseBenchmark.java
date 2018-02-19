@@ -28,6 +28,5 @@ public class ApduResponseBenchmark {
     @Benchmark
     public void load() {
         ApduRequest request = new ApduRequest(MESSAGE_1, true);
-        request.getbytes();
     }
 }
