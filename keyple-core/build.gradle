@@ -11,10 +11,9 @@ apply plugin: 'java'
 apply plugin: 'me.champeau.gradle.jmh'
 
 jmh {
-    // include = 'org\\.openjdk\\.jmh\\.samples\\.JMHSample_01_HelloWorld.*'
-    humanOutputFile = null
-    warmupIterations = 1
-    iterations = 1
+    fork = 1
+    iterations = 3
+    warmupIterations = 4
 }
 
 dependencies {
