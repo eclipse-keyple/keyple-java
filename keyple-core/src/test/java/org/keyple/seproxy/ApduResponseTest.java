@@ -49,4 +49,10 @@ public class ApduResponseTest {
         Assert.assertEquals("fedcba989000", Hex.encodeHexString(response.getBytes()));
     }
 
+    @Test
+    public void statusCode() {
+        ApduResponse response = new ApduResponse("FEDCBA98 9000h");
+        Assert.assertEquals(0x9000, response.getStatusCodeV2());
+    }
+
 }

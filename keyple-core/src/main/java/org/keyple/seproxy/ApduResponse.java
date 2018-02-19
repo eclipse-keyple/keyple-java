@@ -8,6 +8,7 @@
 
 package org.keyple.seproxy;
 
+import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -43,15 +44,26 @@ public class ApduResponse extends AbstractApduWrapper {
      *
      * @param hexFormat APDU in hex format with spaces permitted
      */
-    public ApduResponse(String hexFormat) {
+    public ApduResponse(String hexFormat, boolean successful) {
         try {
             buffer.put(Hex.decodeHex(HEX_IGNORED_CHARS.matcher(hexFormat).replaceAll("")));
             buffer.limit(buffer.position());
             buffer.asReadOnlyBuffer();
+            this.successful = successful;
         } catch (DecoderException e) {
             // This is unlikely and we don't want to impose everyone to catch this error
             throw new RuntimeException("Bad format", e);
         }
+    }
+
+    /**
+     * Simple APDU parsing code from hex string. See
+     * {@link ApduResponse#ApduResponse(String, boolean)}
+     * 
+     * @param hexFormat APDU in hex format with spaces permitted
+     */
+    public ApduResponse(String hexFormat) {
+        this(hexFormat, true);
     }
 
     /**
@@ -97,6 +109,30 @@ public class ApduResponse extends AbstractApduWrapper {
      */
     public byte[] getStatusCode() { // TODO - to delete
         return statusCode.clone();
+    }
+
+    public int getStatusCodeV2() {
+        int s = buffer.getShort(buffer.limit() - 2);
+
+        // java is signed only
+        if (s < 0) {
+            s += -2 * Short.MIN_VALUE;
+        }
+        return s;
+    }
+
+    public ByteBuffer getDataBeforeStatus() {
+        ByteBuffer b = buffer.duplicate();
+        b.position(0);
+        b.limit(b.limit() - 2);
+        return b.slice();
+    }
+
+    public byte[] getBytesBeforeStatus() {
+        ByteBuffer buf = getDataBeforeStatus();
+        byte[] data = new byte[buf.limit()];
+        buf.get(data);
+        return data;
     }
 
     @Override

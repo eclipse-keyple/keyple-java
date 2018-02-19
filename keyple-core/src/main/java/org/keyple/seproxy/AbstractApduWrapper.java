@@ -57,7 +57,13 @@ public abstract class AbstractApduWrapper {
         return toHex(buffer);
     }
 
-    protected static String toHex(ByteBuffer buffer) {
+    /**
+     * Represent the ByteBuffer. We only show the buffer from the array's offset to the limit.
+     * 
+     * @param buffer ByteBuffer
+     * @return
+     */
+    public static String toHex(ByteBuffer buffer) {
         StringBuilder sb = new StringBuilder(buffer.limit() * 2);
         final byte[] array = buffer.array();
         for (int i = buffer.arrayOffset(), e = i + buffer.limit(); i < e; i++) {
