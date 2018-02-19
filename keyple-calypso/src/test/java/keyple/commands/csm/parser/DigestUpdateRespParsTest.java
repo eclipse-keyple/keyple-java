@@ -29,7 +29,7 @@ public class DigestUpdateRespParsTest {
 
         ApduResponseParser apduResponseParser =
                 new DigestUpdateRespPars(seResponse.getApduResponses().get(0));
-        byte[] reponseActual = apduResponseParser.getApduResponse().getbytes();
+        byte[] reponseActual = apduResponseParser.getApduResponse().getBytes();
         Assert.assertArrayEquals(new byte[] {90, 00}, reponseActual);
     }
 }

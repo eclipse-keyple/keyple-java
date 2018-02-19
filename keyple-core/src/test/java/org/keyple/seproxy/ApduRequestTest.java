@@ -9,6 +9,7 @@
 package org.keyple.seproxy;
 
 import static org.junit.Assert.*;
+import java.nio.ByteBuffer;
 import org.junit.Test;
 
 public class ApduRequestTest {
@@ -22,7 +23,7 @@ public class ApduRequestTest {
     @Test
     public void testGetbytes() {
         ApduRequest request = new ApduRequest(new byte[] {(byte) 0x01, (byte) 0x02}, true);
-        assertArrayEquals(new byte[] {(byte) 0x01, (byte) 0x02}, request.getbytes());
+        assertArrayEquals(new byte[] {(byte) 0x01, (byte) 0x02}, request.getBytes());
     }
 
     @Test
@@ -34,8 +35,29 @@ public class ApduRequestTest {
     @Test
     public void testToString() {
         ApduRequest request = new ApduRequest(new byte[] {(byte) 0x01, (byte) 0x02}, true);
-        assertEquals(request.getClass().getName() + "@" + Integer.toHexString(request.hashCode()),
-                request.toString());
+        assertEquals("APDU Request 0102", request.toString());
+    }
+
+    @Test
+    public void byteBufferDefault() {
+        workOnApdu(new ApduRequest());
+    }
+
+    @Test
+    public void byteBufferAllocate20() {
+        workOnApdu(new ApduRequest(ByteBuffer.allocate(20), false));
+    }
+
+    @Test
+    public void byteBufferWrap() {
+        workOnApdu(new ApduRequest(new byte[10], 5, 5, false));
+    }
+
+    private void workOnApdu(ApduRequest request) {
+        byte[] data = new byte[] {0x11, 0x12, 0x13, 0x14};
+        request.put((byte) data.length);
+        request.put(data);
+        assertEquals("APDU Request 0411121314", request.toString());
     }
 
 }

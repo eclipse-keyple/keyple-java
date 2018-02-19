@@ -8,16 +8,12 @@
 
 package org.keyple.seproxy;
 
+import java.nio.ByteBuffer;
+
 /**
  * Single APDU request wrapper
  */
-public class ApduRequest {
-
-    /**
-     * an array of the bytes of an APDU request (none structured, including the header and the
-     * dataIn of the command).
-     */
-    private byte[] bytes;
+public class ApduRequest extends AbstractApduWrapper {
 
     /**
      * a ‘case 4’ flag in order to explicitly specify, if it’s expected that the APDU command
@@ -31,23 +27,24 @@ public class ApduRequest {
      * the constructor called by a ticketing application in order to build the APDU command requests
      * to push to the ProxyReader.
      *
-     * @param bytes the bytes
      * @param case4 the case 4
      */
-    public ApduRequest(byte[] bytes, boolean case4) {
-        super();
-        this.bytes = (bytes == null ? null : bytes.clone());
+    public ApduRequest(ByteBuffer buffer, boolean case4) {
+        super(buffer);
         this.case4 = case4;
     }
 
-    /**
-     * Gets the bytes.
-     *
-     * @return the data of the APDU request.
-     */
-    public byte[] getbytes() {
-        return bytes.clone();
+    public ApduRequest(byte[] data, boolean case4) {
+        super(data);
+        this.case4 = case4;
     }
+
+    public ApduRequest(byte[] data, int offset, int length, boolean case4) {
+        super(data, offset, length);
+        this.case4 = case4;
+    }
+
+    public ApduRequest() {}
 
     /**
      * Checks if is case 4.
@@ -58,4 +55,25 @@ public class ApduRequest {
         return case4;
     }
 
+    public void put(byte b) {
+        buffer.put(b);
+    }
+
+    public void put(byte[] a) {
+        buffer.put(a);
+    }
+
+    @Override
+    public String toString() {
+        ByteBuffer b;
+
+        if (buffer.position() > 0) {
+            b = buffer.duplicate();
+            b.limit(buffer.position());
+        } else {
+            b = buffer;
+        }
+
+        return "APDU Request " + toHex(b);
+    }
 }

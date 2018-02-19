@@ -9,12 +9,6 @@
 package org.keyple.commands;
 
 public class InconsistentCommandException extends Exception {
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = -5941414549312296142L;
-
     public InconsistentCommandException() {
         super();
     }
@@ -22,5 +16,4 @@ public class InconsistentCommandException extends Exception {
     public InconsistentCommandException(String message) {
         super(message);
     }
-
 }

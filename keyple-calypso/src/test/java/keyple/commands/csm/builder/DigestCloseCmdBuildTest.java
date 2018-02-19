@@ -26,13 +26,13 @@ public class DigestCloseCmdBuildTest {
                 new DigestCloseCmdBuild(CsmRevision.S1D, (byte) 0x04);// 94
         ApduRequest ApduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertArrayEquals(request, ApduRequest.getbytes());
+        Assert.assertArrayEquals(request, ApduRequest.getBytes());
 
         byte[] request1 = {(byte) 0x80, (byte) 0x8E, 0x00, 0x00, (byte) 0x04};
         apduCommandBuilder = new DigestCloseCmdBuild(CsmRevision.C1, (byte) 0x04);// 94
         ApduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertArrayEquals(request1, ApduRequest.getbytes());
+        Assert.assertArrayEquals(request1, ApduRequest.getBytes());
 
     }
 }

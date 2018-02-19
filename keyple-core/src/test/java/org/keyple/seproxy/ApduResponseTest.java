@@ -26,7 +26,7 @@ public class ApduResponseTest {
     public void testGetbytes() {
         ApduResponse response = new ApduResponse(new byte[] {(byte) 0x01, (byte) 0x02}, true,
                 new byte[] {(byte) 0x03, (byte) 0x04});
-        assertArrayEquals(new byte[] {(byte) 0x01, (byte) 0x02}, response.getbytes());
+        assertArrayEquals(new byte[] {(byte) 0x01, (byte) 0x02}, response.getBytes());
     }
 
     @Test
@@ -46,7 +46,13 @@ public class ApduResponseTest {
     @Test
     public void niceFormat() {
         ApduResponse response = new ApduResponse("FEDCBA98 9000h");
-        Assert.assertEquals("fedcba989000", Hex.encodeHexString(response.getbytes()));
+        Assert.assertEquals("fedcba989000", Hex.encodeHexString(response.getBytes()));
+    }
+
+    @Test
+    public void statusCode() {
+        ApduResponse response = new ApduResponse("FEDCBA98 9000h");
+        Assert.assertEquals(0x9000, response.getStatusCodeV2());
     }
 
 }

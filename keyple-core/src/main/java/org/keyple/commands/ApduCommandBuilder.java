@@ -26,8 +26,7 @@ public abstract class ApduCommandBuilder {
      * the reference of the command in the matrix array enumeration, in order to get the name and
      * the response parser class of the command.
      */
-    // protected CalypsoCommands commandReference;
-    protected CommandsTable commandReference;
+    private CommandsTable commandReference;
 
     /** the byte array APDU request. */
     protected ApduRequest request;
@@ -45,15 +44,6 @@ public abstract class ApduCommandBuilder {
         this.request = request;
     }
 
-
-    // /**
-    // * Instantiates a new apdu command builder.
-    // * @param reference Command reference for builder
-    // */
-    // public ApduCommandBuilder(CalypsoCommands reference) {
-    // commandReference = reference;
-    // }
-
     /**
      * Gets the name.
      *
@@ -69,7 +59,6 @@ public abstract class ApduCommandBuilder {
      * @return the corresponding ApduResponseParser class of the APDU command from the CommandsTable
      *         information
      */
-    // public final Class<?> getApduResponseParserClass() {
     public final Class<? extends ApduResponseParser> getApduResponseParserClass() {
         return commandReference.getResponseParserClass();
     }

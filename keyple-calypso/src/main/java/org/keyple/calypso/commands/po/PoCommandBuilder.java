@@ -13,11 +13,7 @@ import org.keyple.commands.ApduCommandBuilder;
 import org.keyple.seproxy.ApduRequest;
 
 /**
- * This abstract class extends ApduCommandBuilder, it has to be extended by all PO command builder
- * classes, it manages the current default revision for PO commands.
- *
- * @author Ixxi
- *
+ * Portable Object command builder
  */
 public abstract class PoCommandBuilder extends ApduCommandBuilder {
 

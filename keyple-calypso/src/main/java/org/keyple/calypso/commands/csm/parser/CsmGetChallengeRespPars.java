@@ -32,7 +32,7 @@ public class CsmGetChallengeRespPars extends ApduResponseParser {
         super(response);
         initStatusTable();
         if (isSuccessful()) {
-            challenge = response.getbytes();
+            challenge = response.getBytes();
         }
     }
 

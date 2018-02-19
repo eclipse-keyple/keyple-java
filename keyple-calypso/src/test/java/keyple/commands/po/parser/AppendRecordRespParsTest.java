@@ -29,7 +29,7 @@ public class AppendRecordRespParsTest {
 
         ApduResponseParser apduResponseParser =
                 new AppendRecordRespPars(seResponse.getApduResponses().get(0));
-        byte[] reponseActual = apduResponseParser.getApduResponse().getbytes();
+        byte[] reponseActual = apduResponseParser.getApduResponse().getBytes();
         Assert.assertArrayEquals(new byte[] {90, 00}, reponseActual);
     }
 }

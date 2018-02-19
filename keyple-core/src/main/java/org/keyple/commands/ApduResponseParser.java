@@ -25,7 +25,7 @@ import org.keyple.seproxy.ApduResponse;
 public abstract class ApduResponseParser {
 
     /** the byte array APDU response. */
-    private ApduResponse response;
+    protected ApduResponse response;
 
     /** The status table. */
     protected Map<byte[], StatusProperties> statusTable = new HashMap<byte[], StatusProperties>();
@@ -71,16 +71,20 @@ public abstract class ApduResponseParser {
         return response.getStatusCode();
     }
 
+    public int getStatusCodeV2() {
+        return response.getStatusCodeV2();
+    }
+
     /**
      * Checks if is successful.
      *
      * @return if the status is successful from the statusTable according to the current status
      *         code.
      */
-    public final boolean isSuccessful() {
+    public boolean isSuccessful() {
         for (Entry<byte[], StatusProperties> it : this.statusTable.entrySet()) {
             if (Arrays.equals(it.getKey(), response.getStatusCode())) {
-                return it.getValue().getSuccessful();
+                return it.getValue().isSuccessful();
             }
         }
 
@@ -101,13 +105,11 @@ public abstract class ApduResponseParser {
         return null;
     }
 
+
     /**
-     * The Class StatusProperties. inner Class
-     *
-     * @author Ixxi
-     *
+     * Map of statuses
      */
-    protected class StatusProperties {
+    protected static class StatusProperties {
 
         /** The successful. */
         private boolean successful;
@@ -132,7 +134,7 @@ public abstract class ApduResponseParser {
          *
          * @return the successful
          */
-        public boolean getSuccessful() {
+        public boolean isSuccessful() {
             return successful;
         }
 

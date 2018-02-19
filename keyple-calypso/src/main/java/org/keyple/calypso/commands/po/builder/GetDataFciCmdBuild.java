@@ -9,7 +9,6 @@
 package org.keyple.calypso.commands.po.builder;
 
 import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.calypso.commands.dto.CalypsoRequest;
 import org.keyple.calypso.commands.po.PoCommandBuilder;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.SendableInSession;
@@ -36,9 +35,10 @@ public class GetDataFciCmdBuild extends PoCommandBuilder implements SendableInSe
     public GetDataFciCmdBuild(PoRevision revision) {
         super(command, null);
         byte cla = PoRevision.REV2_4.equals(revision) ? (byte) 0x94 : (byte) 0x00;
-        CalypsoRequest calypsoRequest =
-                new CalypsoRequest(cla, command, (byte) 0x00, (byte) 0x6F, null, (byte) 0x00);
-        request = RequestUtils.constructAPDURequest(calypsoRequest);
+        // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, (byte) 0x00, (byte)
+        // 0x6F, null, (byte) 0x00);
+        request = RequestUtils.constructAPDURequest(cla, command, (byte) 0x00, (byte) 0x6F, null,
+                (byte) 0x00);
     }
 
     public GetDataFciCmdBuild(ApduRequest request) throws InconsistentCommandException {

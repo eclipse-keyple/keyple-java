@@ -109,13 +109,13 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                 atrDefaultSelected = true;
             }
             for (ApduRequest apduRequest : seApplicationRequest.getApduRequests()) {
-                logger.info(getName() + " : Sending : " + formatLogRequest(apduRequest.getbytes()));
+                logger.info(getName() + " : Sending : " + formatLogRequest(apduRequest.getBytes()));
                 ResponseAPDU apduResponseData;
                 try {
                     System.out.println(terminal.getName());
                     System.out.println(settings.get("protocol") + " > "
-                            + DatatypeConverter.printHexBinary(apduRequest.getbytes()));
-                    apduResponseData = channel.transmit(new CommandAPDU(apduRequest.getbytes()));
+                            + DatatypeConverter.printHexBinary(apduRequest.getBytes()));
+                    apduResponseData = channel.transmit(new CommandAPDU(apduRequest.getBytes()));
                     System.out.println(settings.get("protocol") + " < "
                             + DatatypeConverter.printHexBinary(apduResponseData.getBytes()));
 

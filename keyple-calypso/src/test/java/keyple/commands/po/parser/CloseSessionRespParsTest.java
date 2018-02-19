@@ -30,7 +30,7 @@ public class CloseSessionRespParsTest {
 
         ApduResponseParser apduResponseParser =
                 new CloseSessionRespPars(seResponse.getApduResponses().get(0));
-        byte[] reponseActual = apduResponseParser.getApduResponse().getbytes();
+        byte[] reponseActual = apduResponseParser.getApduResponse().getBytes();
         Assert.assertArrayEquals(response, reponseActual);
     }
 
