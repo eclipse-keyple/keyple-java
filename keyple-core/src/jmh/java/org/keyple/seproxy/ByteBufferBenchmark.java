@@ -8,11 +8,17 @@
 
 package org.keyple.seproxy;
 
-public class ApduRequestBenchmark {
+import java.nio.ByteBuffer;
+import org.openjdk.jmh.annotations.Benchmark;
 
-    public void testAPDURequest() {
-        ApduRequest request = new ApduRequest(new byte[] {(byte) 0x01, (byte) 0x02}, true);
-        request.toString();
+public class ByteBufferBenchmark {
+    @Benchmark
+    public void loadByteBuffer() {
+        byte[] array = ByteBuffer.allocate(255).array();
     }
 
+    @Benchmark
+    public void loadArray() {
+        byte[] array = new byte[255];
+    }
 }

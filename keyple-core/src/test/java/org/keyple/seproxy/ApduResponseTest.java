@@ -10,7 +10,6 @@ package org.keyple.seproxy;
 
 import static org.junit.Assert.*;
 import org.apache.commons.codec.binary.Hex;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class ApduResponseTest {
@@ -46,13 +45,13 @@ public class ApduResponseTest {
     @Test
     public void niceFormat() {
         ApduResponse response = new ApduResponse("FEDCBA98 9000h");
-        Assert.assertEquals("fedcba989000", Hex.encodeHexString(response.getBytes()));
+        assertEquals("fedcba989000", Hex.encodeHexString(response.getBytes()));
     }
 
     @Test
     public void statusCode() {
         ApduResponse response = new ApduResponse("FEDCBA98 9000h");
-        Assert.assertEquals(0x9000, response.getStatusCodeV2());
+        assertEquals(0x9000, response.getStatusCodeV2());
     }
 
 }

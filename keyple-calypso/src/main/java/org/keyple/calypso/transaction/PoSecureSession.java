@@ -659,8 +659,9 @@ public class PoSecureSession {
         poApduRequestList.add(closeCommand.getApduRequest());
 
         // Build PO Ratification command
-        if (ratificationAsked)
+        if (ratificationAsked) {
             poApduRequestList.add(ratificationCommand.getApduRequest());
+        }
 
         // Transfert PO commands
         SeRequest poRequest =

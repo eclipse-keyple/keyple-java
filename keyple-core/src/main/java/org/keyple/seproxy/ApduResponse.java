@@ -52,7 +52,7 @@ public class ApduResponse extends AbstractApduWrapper {
             this.successful = successful;
         } catch (DecoderException e) {
             // This is unlikely and we don't want to impose everyone to catch this error
-            throw new RuntimeException("Bad format", e);
+            throw new IllegalArgumentException("Bad format", e);
         }
     }
 

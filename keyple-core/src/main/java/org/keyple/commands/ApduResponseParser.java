@@ -35,12 +35,12 @@ public abstract class ApduResponseParser {
      * Instantiates a new apdu response parser.
      *
      * @param responseToParse APDUResponse to parse
-     * @param mapStatusProperties informations for each status
+     * @param statusTable informations for each status
      */
     protected ApduResponseParser(ApduResponse responseToParse,
-            Map<byte[], StatusProperties> mapStatusProperties) {
+            Map<byte[], StatusProperties> statusTable) {
         this.response = responseToParse;
-        this.statusTable = mapStatusProperties;
+        this.statusTable = statusTable;
     }
 
     /**

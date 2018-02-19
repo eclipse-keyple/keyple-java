@@ -64,12 +64,12 @@ public abstract class AbstractApduWrapper {
      * @return
      */
     public static String toHex(ByteBuffer buffer) {
-        StringBuilder sb = new StringBuilder(buffer.limit() * 2);
+        StringBuilder str = new StringBuilder(buffer.limit() * 2);
         final byte[] array = buffer.array();
         for (int i = buffer.arrayOffset(), e = i + buffer.limit(); i < e; i++) {
-            sb.append(String.format("%02X", array[i]));
+            str.append(String.format("%02X", array[i]));
         }
 
-        return sb.toString();
+        return str.toString();
     }
 }

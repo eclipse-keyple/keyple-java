@@ -16,8 +16,13 @@ import org.junit.Test;
  * This is to explain to everyone how ByteBuffer are supposed to be used
  */
 public class ByteBufferTest {
+
     @Test
     public void testSlices() {
+        slices();
+    }
+
+    public static void slices() {
         // We're creating a buffer wrapper an array of 6 bytes, starting at position 1 with a limit
         // of 4
         // The array offset is still 0 and the capacity still 6

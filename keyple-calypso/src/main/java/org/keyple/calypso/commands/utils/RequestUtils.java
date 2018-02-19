@@ -28,14 +28,9 @@ public class RequestUtils {
     public static void controlRequestConsistency(CalypsoCommands command, ApduRequest request)
             throws InconsistentCommandException {
         boolean isRequestInconsistent = true;
-        if (request != null) {
-            if (request.getBytes() != null) {
-                if (request.getBytes().length >= 2) {
-                    if (command.getInstructionByte() == request.getBytes()[1]) {
-                        isRequestInconsistent = false;
-                    }
-                }
-            }
+        if (request != null && request.getBytes() != null && request.getBytes().length >= 2
+                && command.getInstructionByte() == request.getBytes()[1]) {
+            isRequestInconsistent = false;
         }
         if (isRequestInconsistent) {
             throw new InconsistentCommandException();
