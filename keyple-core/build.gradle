@@ -1,41 +1,19 @@
 plugins {
-    id "me.champeau.gradle.jmh" version "0.4.5"
+    id "me.champeau.gradle.jmh" version "0.4.3"
 }
-
-apply plugin: 'me.champeau.gradle.jmh'
-apply plugin: 'java'
-apply plugin: 'pmd'
-
-group 'org.keyple'
-version '0.1-SNAPSHOT'
 
 sourceCompatibility = 1.6
 
-pmd {
-    ruleSets = [
-            "java-basic",
-            "java-braces",
-            "java-strings",
-            "java-imports",
-            "java-unnecessary",
-            "java-unusedcode",
-            "java-empty",
-            "java-codesize",
-            "java-clone",
-            "java-typeresolution",
-            "java-strictexception",
-            "java-finalizers",
-            "java-migrating",
-            "java-logging-java",
-            // "java-naming",        // 9 issues
-            // "java-optimizations"  // 67 issues
-            // "java-controversial"  // 8 issues
-            // "java-sunsecure"      // 1 issue
-            // "java-junit"          // 1 issue
-            // "java-coupling"       // 2 issues
-            // "java-design"         // 19 issues
-            // "java-comments"       // 87 issues --> Kind of conflicting with spotless
-    ]
+group 'org.keyple'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'me.champeau.gradle.jmh'
+
+jmh {
+    fork = 1
+    iterations = 3
+    warmupIterations = 4
 }
 
 dependencies {
@@ -44,6 +22,4 @@ dependencies {
     compile group: 'commons-codec', name: 'commons-codec', version: '1.11'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    // compile group: 'org.openjdk.jmh', name: 'jmh-core', version: '0.2'
-    // compile  group: 'org.openjdk.jmh', name: 'jmh-generator-annprocess', version: '0.5.4'
 }
