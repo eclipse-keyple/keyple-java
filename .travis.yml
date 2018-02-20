@@ -24,6 +24,14 @@ deploy:
   skip-cleanup: true
   github-token: $GITHUB_TOKEN
   keep-history: true
-  verbose: true
   on:
-    branch: feature-publish-javadoc
+    branch: develop
+deploy:
+  provider: pages
+  local-dir: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  keep-history: true
+  on:
+    all_branches: true
+    condition: [ $TRAVIS_BRANCH = "develop" ] || [ $TRAVIS_BRANCH = "feature-publish-javadoc" ]
