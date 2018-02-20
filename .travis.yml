@@ -26,4 +26,4 @@ deploy:
   keep-history: true
   on:
     all_branches: true
-    # condition: [ $TRAVIS_BRANCH = "develop" ] || [ $TRAVIS_BRANCH = "feature-publish-javadoc" ]
+    condition: [ $TRAVIS_BRANCH = "develop" ] || [ $TRAVIS_BRANCH = "feature-publish-javadoc" ]
