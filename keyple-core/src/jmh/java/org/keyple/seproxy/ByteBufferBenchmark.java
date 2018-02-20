@@ -9,6 +9,7 @@
 package org.keyple.seproxy;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import org.openjdk.jmh.annotations.Benchmark;
 
 public class ByteBufferBenchmark {
@@ -20,6 +21,11 @@ public class ByteBufferBenchmark {
     @Benchmark
     public void allocateArray() {
         byte[] buf = new byte[255];
+    }
+
+    @Benchmark
+    public void slices() {
+        ByteBufferTest.slices();
     }
 
     @Benchmark
@@ -42,7 +48,15 @@ public class ByteBufferBenchmark {
     @Benchmark
     public void createSubArray() {
         byte[] buf = new byte[255];
+
         byte[] head = new byte[4];
-        System.arraycopy(head, 0, buf, 0, 4);
+        System.arraycopy(buf, 0, head, 0, 4);
+
+        byte[] tail = new byte[4];
+        System.arraycopy(buf, 255 - 4, tail, 0, 4);
+
+        if (!Arrays.equals(head, tail)) {
+            throw new RuntimeException("Buffers aren't the same");
+        }
     }
 }
