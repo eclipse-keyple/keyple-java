@@ -13,12 +13,36 @@ import org.openjdk.jmh.annotations.Benchmark;
 
 public class ByteBufferBenchmark {
     @Benchmark
-    public void byteBuffer() {
-        byte[] array = ByteBuffer.allocate(255).array();
+    public void allocateByteBuffer() {
+        ByteBuffer buf = ByteBuffer.allocate(255);
     }
 
     @Benchmark
-    public void array() {
-        byte[] array = new byte[255];
+    public void allocateArray() {
+        byte[] buf = new byte[255];
+    }
+
+    @Benchmark
+    public void createSubByteBuffer() {
+        ByteBuffer buf = ByteBuffer.allocate(255);
+
+        buf.position(0).limit(4);
+        ByteBuffer head = buf.slice();
+        buf.clear();
+
+        buf.position(buf.limit() - 4);
+        ByteBuffer tail = buf.slice();
+        buf.clear();
+
+        if (!head.equals(tail)) {
+            throw new RuntimeException("Buffers aren't the same");
+        }
+    }
+
+    @Benchmark
+    public void createSubArray() {
+        byte[] buf = new byte[255];
+        byte[] head = new byte[4];
+        System.arraycopy(head, 0, buf, 0, 4);
     }
 }
