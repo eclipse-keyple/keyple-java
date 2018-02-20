@@ -1,4 +1,4 @@
 #!/bin/sh -x
-mkdir -p pages/${TRAVIS_BRANCH}/javadoc
-mv keyple-core/build/docs/javadoc pages/${TRAVIS_BRANCH}/javadoc/core
-echo "<html><body>K E Y P L E</body></html>" >pages/index.html
+mkdir -p pages/javadoc
+mv keyple-core/build/docs/javadoc pages/javadoc/core
+echo "<html><body>K E Y P L E - ${TRAVIS_BRANCH}</body></html>" >pages/index.html
