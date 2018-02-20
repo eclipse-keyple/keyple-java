@@ -26,4 +26,3 @@ deploy:
   keep-history: true
   on:
     all_branches: true
-    condition: $DEPLOY
