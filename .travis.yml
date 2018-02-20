@@ -8,9 +8,8 @@ os:
 
 # The build and tests are executed directly by gradle
 script:
-  - gradle javadoc
+  - gradle build javadoc
   - .build/prepare_pages.sh
-  - gradle build
 # Caching
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -26,5 +25,6 @@ deploy:
   github-token: $GITHUB_TOKEN
   keep-history: true
   verbose: true
-  #on:
+  on:
+    condition: true
   #  branch: develop
