@@ -13,12 +13,12 @@ import org.openjdk.jmh.annotations.Benchmark;
 
 public class ByteBufferBenchmark {
     @Benchmark
-    public void loadByteBuffer() {
+    public void byteBuffer() {
         byte[] array = ByteBuffer.allocate(255).array();
     }
 
     @Benchmark
-    public void loadArray() {
+    public void array() {
         byte[] array = new byte[255];
     }
 }
