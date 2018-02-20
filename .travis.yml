@@ -27,3 +27,4 @@ deploy:
   verbose: true
   on:
     branch: feature-publish-javadoc
+
