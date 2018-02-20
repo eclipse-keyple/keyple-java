@@ -116,11 +116,9 @@ public enum CalypsoCommands implements CommandsTable {
     private byte instructionbyte;
 
     /** The command builder class. */
-    // private Class<?> commandBuilderClass;
     private Class<? extends ApduCommandBuilder> commandBuilderClass;
 
     /** The response parser class. */
-    // private Class<?> responseParserClass;
     private Class<? extends ApduResponseParser> responseParserClass;
 
     /**

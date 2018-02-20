@@ -32,7 +32,7 @@ public class GetDataFciRespPars extends ApduResponseParser {
         super(response);
         initStatusTable();
         if (isSuccessful()) {
-            fci = ResponseUtils.toFCI(response.getbytes());
+            fci = toFCI(response.getbytes());
         }
     }
 
@@ -438,5 +438,67 @@ public class GetDataFciRespPars extends ApduResponseParser {
             return (this.applicationType & mask) == mask;
         }
 
+    }
+
+    /**
+     * Method to get the FCI from the response.
+     *
+     * @param apduResponse the apdu response
+     * @return the FCI template
+     */
+    public static FCI toFCI(byte[] apduResponse) {
+        StartupInformation startupInformation = null;
+        byte firstResponseApdubyte = apduResponse[0];
+        byte[] dfName = null;
+        byte[] fciProprietaryTemplate = null;
+        byte[] fciIssuerDiscretionaryData = null;
+        byte[] applicationSN = null;
+        byte[] discretionaryData;
+
+        if ((byte) 0x6F == firstResponseApdubyte) {
+            int aidLength = apduResponse[3];
+            int fciTemplateLength = apduResponse[5 + aidLength];
+            int fixedPartOfFciTemplate = fciTemplateLength - 22;
+            int firstbyteAid = 6 + aidLength + fixedPartOfFciTemplate;
+            int fciIssuerDiscretionaryDataLength =
+                    apduResponse[8 + aidLength + fixedPartOfFciTemplate];
+            int firstbyteFciIssuerDiscretionaryData = 9 + aidLength + fixedPartOfFciTemplate;
+            int applicationSNLength = apduResponse[10 + aidLength + fixedPartOfFciTemplate];
+            int firstbyteApplicationSN = 11 + aidLength + fixedPartOfFciTemplate;
+            int discretionaryDataLength = apduResponse[20 + aidLength + fixedPartOfFciTemplate];
+            int firstbyteDiscretionaryData = 21 + aidLength + fixedPartOfFciTemplate;
+
+            if ((byte) 0x84 == apduResponse[2]) {
+                dfName = ResponseUtils.subArray(apduResponse, 4, 4 + aidLength);
+            }
+
+            if ((byte) 0xA5 == apduResponse[4 + aidLength]) {
+                fciProprietaryTemplate = ResponseUtils.subArray(apduResponse, firstbyteAid,
+                        firstbyteAid + fciTemplateLength);
+            }
+
+            if ((byte) 0xBF == apduResponse[6 + aidLength + fixedPartOfFciTemplate]
+                    && ((byte) 0x0C == apduResponse[7 + aidLength + fixedPartOfFciTemplate])) {
+                fciIssuerDiscretionaryData = ResponseUtils.subArray(apduResponse,
+                        firstbyteFciIssuerDiscretionaryData,
+                        firstbyteFciIssuerDiscretionaryData + fciIssuerDiscretionaryDataLength);
+            }
+
+            if ((byte) 0xC7 == apduResponse[9 + aidLength + fixedPartOfFciTemplate]) {
+                applicationSN = ResponseUtils.subArray(apduResponse, firstbyteApplicationSN,
+                        firstbyteApplicationSN + applicationSNLength);
+            }
+
+            if ((byte) 0x53 == apduResponse[19 + aidLength + fixedPartOfFciTemplate]) {
+                discretionaryData = ResponseUtils.subArray(apduResponse, firstbyteDiscretionaryData,
+                        firstbyteDiscretionaryData + discretionaryDataLength);
+                startupInformation = new StartupInformation(discretionaryData[0],
+                        discretionaryData[1], discretionaryData[2], discretionaryData[3],
+                        discretionaryData[4], discretionaryData[5], discretionaryData[6]);
+            }
+        }
+
+        return new FCI(dfName, fciProprietaryTemplate, fciIssuerDiscretionaryData, applicationSN,
+                startupInformation);
     }
 }

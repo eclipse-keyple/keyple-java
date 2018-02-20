@@ -9,7 +9,6 @@
 package org.keyple.calypso.commands.po.builder;
 
 import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.calypso.commands.dto.CalypsoRequest;
 import org.keyple.calypso.commands.po.PoCommandBuilder;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.utils.RequestUtils;
@@ -25,7 +24,7 @@ import org.keyple.seproxy.ApduRequest;
 public class CloseSessionCmdBuild extends PoCommandBuilder {
 
     /** The command. */
-    private static CalypsoCommands command = CalypsoCommands.PO_CLOSE_SESSION;
+    private final static CalypsoCommands command = CalypsoCommands.PO_CLOSE_SESSION;
 
     /**
      * Instantiates a new CloseSessionCmdBuild depending of the revision of the PO.
@@ -52,9 +51,10 @@ public class CloseSessionCmdBuild extends PoCommandBuilder {
         byte cla = PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00;
 
         byte p1 = ratificationAsked ? (byte) 0x80 : (byte) 0x00;
-        CalypsoRequest calypsoRequest =
-                new CalypsoRequest(cla, command, p1, (byte) 0x00, terminalSessionSignature);
-        request = RequestUtils.constructAPDURequest(calypsoRequest, 0);
+        // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, (byte) 0x00,
+        // terminalSessionSignature);
+        request = RequestUtils.constructAPDURequest(cla, command, p1, (byte) 0x00,
+                terminalSessionSignature);
     }
 
     /**

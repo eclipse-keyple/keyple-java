@@ -9,8 +9,6 @@
 package keyple.commands.po.builder;
 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.PoRevision;
@@ -20,9 +18,6 @@ import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
 public class CloseSessionCmdBuidTest {
-
-    Logger logger = LogManager.getLogger(CloseSessionCmdBuidTest.class);
-
     @Test
     public void closeSessionCmdBuild() throws InconsistentCommandException {
         byte[] request2_4 = {(byte) 0x94, (byte) 0x8E, 0x00, 0x00, (byte) 0x04, (byte) 0xA8, 0x31,

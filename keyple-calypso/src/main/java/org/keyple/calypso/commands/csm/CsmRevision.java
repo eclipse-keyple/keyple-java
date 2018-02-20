@@ -15,14 +15,9 @@ package org.keyple.calypso.commands.csm;
  */
 public enum CsmRevision {
 
-    /** The revision of C1 and S1E SAM. */
-    C1(), // 00h or 80h
+    /** The revision of C1 and S1E SAM. 0x00, 0x80 */
+    C1,
 
-    /** The revision of S1D SAM SAM. */
-    S1D();// 94h
-
-    private CsmRevision() {
-
-    }
-
+    /** The revision of S1D SAM SAM. 0x94 */
+    S1D
 }

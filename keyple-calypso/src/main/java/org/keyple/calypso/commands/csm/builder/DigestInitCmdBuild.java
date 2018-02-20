@@ -11,7 +11,6 @@ package org.keyple.calypso.commands.csm.builder;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.csm.CsmCommandBuilder;
 import org.keyple.calypso.commands.csm.CsmRevision;
-import org.keyple.calypso.commands.dto.CalypsoRequest;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
@@ -76,9 +75,10 @@ public class DigestInitCmdBuild extends CsmCommandBuilder {
             dataIn[1] = workKeyKVC;
             System.arraycopy(digestData, 0, dataIn, 2, digestData.length);
         }
-        CalypsoRequest calypsoRequest =
-                new CalypsoRequest(cla, CalypsoCommands.CSM_DIGEST_INIT, p1, p2, dataIn);
-        request = RequestUtils.constructAPDURequest(calypsoRequest);
+        // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, CalypsoCommands.CSM_DIGEST_INIT,
+        // p1, p2, dataIn);
+        request = RequestUtils.constructAPDURequest(cla, CalypsoCommands.CSM_DIGEST_INIT, p1, p2,
+                dataIn);
 
     }
 

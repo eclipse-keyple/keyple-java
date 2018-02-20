@@ -9,13 +9,6 @@
 package org.keyple.seproxy.exceptions;
 
 public class UnexpectedReaderException extends Exception {
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = -2314614836951962548L;
-
-
     /**
      * Instantiates a new unExpected reader exception.
      *
@@ -24,5 +17,4 @@ public class UnexpectedReaderException extends Exception {
     public UnexpectedReaderException(String message) {
         super(message);
     }
-
 }
