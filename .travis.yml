@@ -25,4 +25,5 @@ deploy:
   github-token: $GITHUB_TOKEN
   keep-history: true
   on:
+    condition: ( $TRAVIS_BRANCH = "develop" ) || ( $TRAVIS_BRANCH = "feature-publish-javadoc" )
     all_branches: true
