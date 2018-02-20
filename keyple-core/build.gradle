@@ -1,5 +1,5 @@
 plugins {
-    id "me.champeau.gradle.jmh" version "0.4.5"
+    id "me.champeau.gradle.jmh" version "0.4.3"
 }
 
 sourceCompatibility = 1.6
