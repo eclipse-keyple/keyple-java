@@ -26,5 +26,4 @@ deploy:
   keep-history: true
   verbose: true
   on:
-    condition: true
-  #  branch: develop
+    branch: feature-publish-javadoc
