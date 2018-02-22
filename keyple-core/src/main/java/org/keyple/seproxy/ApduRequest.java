@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
 /**
  * Single APDU request wrapper
  */
-public class ApduRequest extends AbstractApduWrapper {
+public class ApduRequest extends AbstractApduBuffer {
 
     /**
      * a ‘case 4’ flag in order to explicitly specify, if it’s expected that the APDU command

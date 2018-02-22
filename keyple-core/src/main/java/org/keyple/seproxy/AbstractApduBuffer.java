@@ -10,28 +10,28 @@ package org.keyple.seproxy;
 
 import java.nio.ByteBuffer;
 
-public abstract class AbstractApduWrapper {
+public abstract class AbstractApduBuffer {
     /**
      * Internal buffer
      */
     final ByteBuffer buffer;
 
 
-    AbstractApduWrapper(ByteBuffer buffer) {
+    AbstractApduBuffer(ByteBuffer buffer) {
         this.buffer = buffer;
     }
 
-    AbstractApduWrapper(byte[] data) {
+    AbstractApduBuffer(byte[] data) {
         // TODO: Drop the null compatibility behavior, it's confusing
         this(data != null ? ByteBuffer.wrap(data) : ByteBuffer.allocate(0));
         // buffer.limit(data.length);
     }
 
-    AbstractApduWrapper() {
+    AbstractApduBuffer() {
         this(ByteBuffer.allocate(255));
     }
 
-    AbstractApduWrapper(byte[] data, int offset, int length) {
+    AbstractApduBuffer(byte[] data, int offset, int length) {
         this(ByteBuffer.wrap(data, offset, length).slice());
     }
 

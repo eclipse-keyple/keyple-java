@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
 /**
  * Single APDU response wrapper
  */
-public class ApduResponse extends AbstractApduWrapper {
+public class ApduResponse extends AbstractApduBuffer {
 
     /***
      * the success result of the processed APDU commandto allow chaining responses in a group of
@@ -30,7 +30,7 @@ public class ApduResponse extends AbstractApduWrapper {
     private byte[] statusCode;
 
     public ApduResponse(ByteBuffer buffer, boolean successful) {
-        super(buffer);
+        super(buffer.asReadOnlyBuffer());
         this.successful = successful;
     }
 
