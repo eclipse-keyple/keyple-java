@@ -12,11 +12,13 @@ import static org.junit.Assert.*;
 import org.apache.commons.codec.DecoderException;
 import org.junit.Test;
 
+import java.nio.ByteBuffer;
+
 public class ByteBufferUtilsTest {
 
     @Test
     public void fromHex() throws DecoderException {
-        assertEquals(new byte[] {0x01, 0x02, 0x03, 0x04}, ByteBufferUtils.fromHex("0102 03 04h"));
+        assertEquals(ByteBuffer.wrap(new byte[] {0x01, 0x02, 0x03, 0x04}), ByteBufferUtils.fromHex("0102 03 04h"));
         assertEquals(ByteBufferUtils.fromHex("01020304"), ByteBufferUtils.fromHex("0102 03 04h"));
     }
 }
