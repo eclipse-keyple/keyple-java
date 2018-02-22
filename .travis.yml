@@ -8,8 +8,8 @@ os:
 
 # The build and tests are executed directly by gradle
 script:
-  - gradle build
-  - gradle jmh
+  - gradle build javadoc jmh
+  - .build/prepare_pages.sh
 
 # Caching
 before_cache:
@@ -19,3 +19,12 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+deploy:
+  provider: pages
+  local-dir: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  keep-history: true
+  on:
+    condition: ( $TRAVIS_BRANCH = "develop" ) || ( $TRAVIS_BRANCH = "feature-publish-javadoc" )
+    all_branches: true
