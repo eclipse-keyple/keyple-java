@@ -9,9 +9,7 @@
 package org.keyple.seproxy;
 
 import java.nio.ByteBuffer;
-import java.util.regex.Pattern;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
+
 
 /**
  * Single APDU response wrapper
@@ -31,39 +29,9 @@ public class ApduResponse extends AbstractApduWrapper {
      */
     private byte[] statusCode;
 
-
-    /**
-     * Chars we will ignore when loading a sample HEX string. It allows to copy/paste the specs APDU
-     */
-    private static final Pattern HEX_IGNORED_CHARS = Pattern.compile(" |h");
-
-    /**
-     * Create an APDU from an hex string. Note: This is a convenience initialization and a temporary
-     * solution. The bytes management will probably be handled by a {@link java.nio.ByteBuffer} in a
-     * very near future.
-     *
-     * @param hexFormat APDU in hex format with spaces permitted
-     */
-    public ApduResponse(String hexFormat, boolean successful) {
-        try {
-            buffer.put(Hex.decodeHex(HEX_IGNORED_CHARS.matcher(hexFormat).replaceAll("")));
-            buffer.limit(buffer.position());
-            buffer.asReadOnlyBuffer();
-            this.successful = successful;
-        } catch (DecoderException e) {
-            // This is unlikely and we don't want to impose everyone to catch this error
-            throw new IllegalArgumentException("Bad format", e);
-        }
-    }
-
-    /**
-     * Simple APDU parsing code from hex string. See
-     * {@link ApduResponse#ApduResponse(String, boolean)}
-     * 
-     * @param hexFormat APDU in hex format with spaces permitted
-     */
-    public ApduResponse(String hexFormat) {
-        this(hexFormat, true);
+    public ApduResponse(ByteBuffer buffer, boolean successful) {
+        super(buffer);
+        this.successful = successful;
     }
 
     /**

@@ -32,8 +32,8 @@ public class ApduResponseBenchmark {
     }
 
     @Benchmark
-    public void loadFromString() {
-        ApduResponse request = new ApduResponse(HEX, true);
+    public void loadFromString() throws DecoderException {
+        ApduResponse request = new ApduResponse(ByteBufferUtils.fromHex(HEX), true);
         assert (request.getBytes().length != 0);
     }
 }

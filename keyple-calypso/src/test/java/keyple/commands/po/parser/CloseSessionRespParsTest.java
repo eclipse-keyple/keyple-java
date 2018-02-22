@@ -10,12 +10,14 @@ package keyple.commands.po.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.parser.CloseSessionRespPars;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
+import org.keyple.seproxy.ByteBufferUtils;
 import org.keyple.seproxy.SeResponse;
 
 public class CloseSessionRespParsTest {
@@ -67,29 +69,32 @@ public class CloseSessionRespParsTest {
     }
 
     @Test
-    public void existingTestConverted() {
-        CloseSessionRespPars parser = new CloseSessionRespPars(new ApduResponse("9000h"));
+    public void existingTestConverted() throws DecoderException {
+        CloseSessionRespPars parser =
+                new CloseSessionRespPars(new ApduResponse(ByteBufferUtils.fromHex("9000h"), true));
         // This assert wasn't passing
         Assert.assertEquals("", Hex.encodeHexString(parser.getSignatureLo()));
         Assert.assertEquals("", Hex.encodeHexString(parser.getPostponedData()));
     }
 
     @Test // Calypso / page 105 / Example command aborting a session:
-    public void abortingASession() {
-        CloseSessionRespPars parser = new CloseSessionRespPars(new ApduResponse("FEDCBA98 9000h"));
+    public void abortingASession() throws DecoderException {
+        CloseSessionRespPars parser = new CloseSessionRespPars(
+                new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), true));
     }
 
     @Test // Calypso / page 105 / Example command, Lc=4, without postponed data:
-    public void lc4withoutPostponedData() {
-        CloseSessionRespPars parser = new CloseSessionRespPars(new ApduResponse("FEDCBA98 9000h"));
+    public void lc4withoutPostponedData() throws DecoderException {
+        CloseSessionRespPars parser = new CloseSessionRespPars(
+                new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), true));
         Assert.assertEquals("fedcba98", Hex.encodeHexString(parser.getSignatureLo()));
         Assert.assertEquals("", Hex.encodeHexString(parser.getPostponedData()));
     }
 
     @Test // Calypso / page 105 / Example command, Lc=4, with postponed data:
-    public void lc4WithPostponedData() {
-        CloseSessionRespPars parser =
-                new CloseSessionRespPars(new ApduResponse("04 345678 FEDCBA98 9000h"));
+    public void lc4WithPostponedData() throws DecoderException {
+        CloseSessionRespPars parser = new CloseSessionRespPars(
+                new ApduResponse(ByteBufferUtils.fromHex("04 345678 FEDCBA98 9000h"), true));
         Assert.assertEquals("fedcba98", Hex.encodeHexString(parser.getSignatureLo()));
         Assert.assertEquals("04345678", Hex.encodeHexString(parser.getPostponedData()));
     }

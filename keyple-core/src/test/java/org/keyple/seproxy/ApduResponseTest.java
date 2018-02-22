@@ -9,6 +9,7 @@
 package org.keyple.seproxy;
 
 import static org.junit.Assert.*;
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
 
@@ -43,14 +44,14 @@ public class ApduResponseTest {
     }
 
     @Test
-    public void niceFormat() {
-        ApduResponse response = new ApduResponse("FEDCBA98 9000h");
+    public void niceFormat() throws DecoderException {
+        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), true);
         assertEquals("fedcba989000", Hex.encodeHexString(response.getBytes()));
     }
 
     @Test
-    public void statusCode() {
-        ApduResponse response = new ApduResponse("FEDCBA98 9000h");
+    public void statusCode() throws DecoderException {
+        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), true);
         assertEquals(0x9000, response.getStatusCodeV2());
     }
 
