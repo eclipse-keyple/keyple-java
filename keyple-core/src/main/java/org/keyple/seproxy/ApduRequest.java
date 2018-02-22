@@ -67,6 +67,7 @@ public class ApduRequest extends AbstractApduBuffer {
     public String toString() {
         ByteBuffer b;
 
+        // TODO: Buffer will be read only, as such this code makes no sense anymore
         if (buffer.position() > 0) {
             b = buffer.duplicate();
             b.limit(buffer.position());
@@ -74,6 +75,6 @@ public class ApduRequest extends AbstractApduBuffer {
             b = buffer;
         }
 
-        return "APDU Request " + toHex(b);
+        return "APDU Request " + ByteBufferUtils.toHex(b);
     }
 }

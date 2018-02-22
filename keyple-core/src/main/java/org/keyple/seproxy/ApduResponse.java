@@ -30,7 +30,7 @@ public class ApduResponse extends AbstractApduBuffer {
     private byte[] statusCode;
 
     public ApduResponse(ByteBuffer buffer, boolean successful) {
-        super(buffer.asReadOnlyBuffer());
+        super(buffer);
         this.successful = successful;
     }
 

@@ -10,7 +10,11 @@ package org.keyple.seproxy;
 
 import java.nio.ByteBuffer;
 
-public abstract class AbstractApduBuffer {
+/**
+ * APDU Buffer.
+ * It's mostly to avoid to inherit directly the {@link ByteBuffer} and have many methods inherited from it.
+ */
+class AbstractApduBuffer {
     /**
      * Internal buffer
      */
@@ -42,34 +46,19 @@ public abstract class AbstractApduBuffer {
      * @return Newly created array with a copy of the content
      */
     public byte[] getBytes() {
-        byte[] data = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(data);
-        return data;
+        return ByteBufferUtils.toBytes(buffer);
     }
 
+    /**
+     * Get the internal buffer
+     * @return Buffer
+     */
     public ByteBuffer getBuffer() {
         return buffer;
     }
 
     @Override
     public String toString() {
-        return toHex(buffer);
-    }
-
-    /**
-     * Represent the ByteBuffer. We only show the buffer from the array's offset to the limit.
-     * 
-     * @param buffer ByteBuffer
-     * @return
-     */
-    public static String toHex(ByteBuffer buffer) {
-        StringBuilder str = new StringBuilder(buffer.limit() * 2);
-        final byte[] array = buffer.array();
-        for (int i = buffer.arrayOffset(), e = i + buffer.limit(); i < e; i++) {
-            str.append(String.format("%02X", array[i]));
-        }
-
-        return str.toString();
+        return ByteBufferUtils.toHex(buffer);
     }
 }

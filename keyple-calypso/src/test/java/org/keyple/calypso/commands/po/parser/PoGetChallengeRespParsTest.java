@@ -13,7 +13,6 @@ import static org.junit.Assert.assertEquals;
 import java.nio.ByteBuffer;
 import org.apache.commons.codec.DecoderException;
 import org.junit.Test;
-import org.keyple.seproxy.AbstractApduBuffer;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ByteBufferUtils;
 
@@ -31,7 +30,7 @@ public class PoGetChallengeRespParsTest {
         // status
         // Note: Until here, zero buffer allocation/copy has been made
         assertEquals(apdu.getDataBeforeStatus(), resp.getPoChallengeV2());
-        assertEquals("01020304", AbstractApduBuffer.toHex(resp.getPoChallengeV2()));
+        assertEquals("01020304", ByteBufferUtils.toHex(resp.getPoChallengeV2()));
 
         // Now, just to be clear: All of the zero allocation/copy logic means we're always using the
         // same array,
