@@ -15,6 +15,8 @@ import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
+import java.nio.ByteBuffer;
+
 // TODO: Auto-generated Javadoc
 /**
  * This class provides the dedicated constructor to build the CSM Select Diversifier APDU command.
@@ -34,13 +36,13 @@ public class SelectDiversifierCmdBuild extends CsmCommandBuilder {
      * @param diversifier the application serial number
      * @throws InconsistentCommandException the inconsistent command exception
      */
-    public SelectDiversifierCmdBuild(CsmRevision revision, byte[] diversifier)
+    public SelectDiversifierCmdBuild(CsmRevision revision, ByteBuffer diversifier)
             throws InconsistentCommandException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
         }
-        if (diversifier == null || (diversifier.length != 4 && diversifier.length != 8)) {
+        if (diversifier == null || (diversifier.limit() != 4 && diversifier.limit() != 8)) {
             throw new InconsistentCommandException();
         }
         byte cla = CsmRevision.S1D.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x80;

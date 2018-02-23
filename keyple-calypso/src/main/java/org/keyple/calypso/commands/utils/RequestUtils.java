@@ -19,8 +19,6 @@ import org.keyple.seproxy.ApduRequest;
 
 /**
  * This class eases the construction of APDURequest.
- *
- * @author Ixxi
  */
 public class RequestUtils {
 
@@ -28,12 +26,8 @@ public class RequestUtils {
 
     public static void controlRequestConsistency(CalypsoCommands command, ApduRequest request)
             throws InconsistentCommandException {
-        boolean isRequestInconsistent = true;
-        if (request != null && request.getBytes() != null && request.getBytes().length >= 2
-                && command.getInstructionByte() == request.getBytes()[1]) {
-            isRequestInconsistent = false;
-        }
-        if (isRequestInconsistent) {
+        // Simplifying the strange logic, but I'm not sure this helps much
+        if ( request != null && request.getBuffer() != null && request.getBuffer().get(1) != command.getInstructionByte() ) {
             throw new InconsistentCommandException();
         }
     }
@@ -54,6 +48,8 @@ public class RequestUtils {
         if (dataIn == null) {
             // TODO: Drop this
             dataIn = ByteBuffer.allocate(0);
+        } else {
+            dataIn.position(0);
         }
 
         boolean forceLe;

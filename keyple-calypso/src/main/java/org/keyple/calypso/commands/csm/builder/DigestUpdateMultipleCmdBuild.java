@@ -15,6 +15,8 @@ import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
+import java.nio.ByteBuffer;
+
 // TODO: Auto-generated Javadoc
 /**
  * This class provides the dedicated constructor to build the CSM Digest Update Multiple APDU
@@ -35,7 +37,7 @@ public class DigestUpdateMultipleCmdBuild extends CsmCommandBuilder {
      * @param digestData the digest data
      * @throws InconsistentCommandException the inconsistent command exception
      */
-    public DigestUpdateMultipleCmdBuild(CsmRevision revision, byte[] digestData)
+    public DigestUpdateMultipleCmdBuild(CsmRevision revision, ByteBuffer digestData)
             throws InconsistentCommandException {
         super(command, null);
         if (revision != null) {
@@ -45,18 +47,6 @@ public class DigestUpdateMultipleCmdBuild extends CsmCommandBuilder {
         byte p1 = (byte) 0x80;
         byte p2 = (byte) 0x00;
 
-        // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, digestData);
         request = RequestUtils.constructAPDURequest(cla, command, p1, p2, digestData);
-    }
-
-    /**
-     * Instantiates a new digest update multiple cmd build.
-     *
-     * @param request the request
-     * @throws InconsistentCommandException the inconsistent command exception
-     */
-    public DigestUpdateMultipleCmdBuild(ApduRequest request) throws InconsistentCommandException {
-        super(command, request);
-        RequestUtils.controlRequestConsistency(command, request);
     }
 }

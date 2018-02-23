@@ -8,7 +8,7 @@
 
 package org.keyple.commands;
 
-public class InconsistentCommandException extends Exception {
+public class InconsistentCommandException extends IllegalArgumentException {
     public InconsistentCommandException() {
         super();
     }
