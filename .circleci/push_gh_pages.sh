@@ -43,7 +43,7 @@ fi
 
 # copy over or recompile the new site
 mkdir -p $CIRCLE_BRANCH
-cp -a ~/pages/ $CIRCLE_BRANCH/
+cp -a ~/pages/* $CIRCLE_BRANCH/
 
 # stage any changes and new files
 git add -A
