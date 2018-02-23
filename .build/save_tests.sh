@@ -1,3 +1,4 @@
 #!/bin/sh
-mkdir -p test-results
-find . -path "*/build/test-results/test/*.xml" -exec cp {} test-results \;
+mkdir -p ~/junit
+find . -path "*/build/test-results/test/*.xml" -exec cp {} ~/junit \;
+#find . -path "*/build/reports/tests/test"
