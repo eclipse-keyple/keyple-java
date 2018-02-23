@@ -42,14 +42,15 @@ else
 fi
 
 # copy over or recompile the new site
-cp -a ~/pages/ .
+mkdir -p $CIRCLE_BRANCH
+cp -a ~/pages/ $CIRCLE_BRANCH/
 
 # stage any changes and new files
 git add -A
 # now commit, ignoring branch gh-pages doesn't seem to work, so trying skip
 git commit --allow-empty -m "Deploy to GitHub pages [ci skip]"
 
-sed -i -e "s/git@github.com:calypsonet/https:\/\/${GH_TOKEN}:x-oauth-basic@github.com\/calypsonet/" .git/config
+sed -i -e "s/git@github.com:calypsonet/https:\/\/${GITHUB_TOKEN}:x-oauth-basic@github.com\/calypsonet/" .git/config
 
 # and push, but send any output to /dev/null to hide anything sensitive
 git push --force --quiet origin gh-pages
