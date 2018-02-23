@@ -1,6 +1,4 @@
 #!/bin/sh
-mkdir -p ~/tests ~/artifacts
-# find . -path "*/" -exec cp {} ~/junit \;
 for dir in keyple-*
 do
     if [ -d $dir/build/test-results/test ]; then
@@ -8,7 +6,12 @@ do
        mv $dir/build/test-results/test/*.xml ~/tests/$dir
     fi
     if [ -d $dir/build/reports/tests/test ]; then
-       mv $dir/build/reports/tests/test ~/artifacts/tests/$dir
+       mkdir -p ~/artifacts/$dir
+       mv $dir/build/reports/tests/test ~/artifacts/$dir/tests
+    fi
+    if [ -f $dir/build/reports/jmh/results.txt ]; then
+       mkdir -p ~/artifacts
+       mv $dir/build/reports/jmh/results.txt ~/artifacts/$dir/jmh.txt
     fi
 done
 
