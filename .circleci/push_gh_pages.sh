@@ -42,8 +42,8 @@ else
 fi
 
 # copy over or recompile the new site
+git rm -rf $CIRCLE_BRANCH/* ||:
 mkdir -p $CIRCLE_BRANCH
-git rm -rf $CIRCLE_BRANCH/*
 cp -a ~/pages/* $CIRCLE_BRANCH/
 
 # stage any changes and new files
