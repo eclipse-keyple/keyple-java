@@ -1,7 +1,7 @@
 #!/bin/sh
 
 mkdir -p ~/artifacts/jars
-find . -name "keyple-*.jar" -not -name "*-jmh.jar" -exec cp ~/artifacts/jars
+find . -name "keyple-*.jar" -not -name "*-jmh.jar" -exec cp ~/artifacts/jars \;
 
 for dir in keyple-*
 do
@@ -19,12 +19,11 @@ do
 
     # Javadoc --> ~/artifacts/$project/javadoc
     if [ -d $dir/build/docs/javadoc ]; then
-        mv $dir/build/docs/javadoc
+        mv $dir/build/docs/javadoc ~/artifacts/$dir/javadoc
     fi
 
     # JMH --> ~/artifacts/$project/jmh
     if [ -f $dir/build/reports/jmh/results.txt ]; then
-       mkdir -p ~/artifacts
        mv $dir/build/reports/jmh/results.txt ~/artifacts/$dir/jmh.txt
     fi
 done
