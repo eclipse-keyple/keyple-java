@@ -22,13 +22,6 @@ public class ApduResponse extends AbstractApduBuffer {
      */
     private boolean successful;
 
-    /*
-     * The status code.
-     *
-     * @deprecated This field is extracted from bytes
-     */
-    private byte[] statusCode;
-
     public ApduResponse(ByteBuffer buffer, boolean successful) {
         super(buffer);
         this.successful = successful;
@@ -47,7 +40,7 @@ public class ApduResponse extends AbstractApduBuffer {
     }
 
     /**
-     * the constructor called by a ProxyReader in order to build the APDU command response to push
+     * The constructor called by a ProxyReader in order to build the APDU command response to push
      * to a ticketing application.
      *
      * @param bytes the bytes
@@ -56,9 +49,16 @@ public class ApduResponse extends AbstractApduBuffer {
      * @deprecated Only {@link ApduResponse#ApduResponse(byte[], boolean)} should be used instead.
      */
     public ApduResponse(byte[] bytes, boolean successful, byte[] statusCode) {
-        super(bytes);
+        super(ByteBuffer.allocate(
+                (bytes != null ? bytes.length : 0) + (statusCode != null ? statusCode.length : 0)));
+        if (bytes != null) {
+            buffer.put(bytes);
+        }
+        if (statusCode != null) {
+            buffer.put(statusCode);
+        }
+        buffer.position(0);
         this.successful = successful;
-        this.statusCode = (statusCode == null ? null : statusCode.clone());
     }
 
     /**
@@ -70,15 +70,6 @@ public class ApduResponse extends AbstractApduBuffer {
         return successful;
     }
 
-    /**
-     * Gets the status code.
-     *
-     * @return the status code
-     */
-    public byte[] getStatusCode() { // TODO - to delete
-        return statusCode.clone();
-    }
-
     public int getStatusCodeV2() {
         int s = buffer.getShort(buffer.limit() - 2);
 
@@ -87,6 +78,13 @@ public class ApduResponse extends AbstractApduBuffer {
             s += -2 * Short.MIN_VALUE;
         }
         return s;
+    }
+
+    public byte[] getStatusCodeOld() {
+        byte[] statusCode = new byte[2];
+        buffer.position(buffer.limit() - 2);
+        buffer.get(statusCode);
+        return statusCode;
     }
 
     public ByteBuffer getDataBeforeStatus() {

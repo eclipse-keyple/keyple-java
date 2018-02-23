@@ -26,7 +26,8 @@ public class ApduResponseTest {
     public void testGetbytes() {
         ApduResponse response = new ApduResponse(new byte[] {(byte) 0x01, (byte) 0x02}, true,
                 new byte[] {(byte) 0x03, (byte) 0x04});
-        assertArrayEquals(new byte[] {(byte) 0x01, (byte) 0x02}, response.getBytes());
+        assertArrayEquals(new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04},
+                response.getBytes());
     }
 
     @Test
@@ -40,7 +41,8 @@ public class ApduResponseTest {
     public void testGetStatusCode() {
         ApduResponse response = new ApduResponse(new byte[] {(byte) 0x01, (byte) 0x02}, true,
                 new byte[] {(byte) 0x03, (byte) 0x04});
-        assertArrayEquals(new byte[] {(byte) 0x03, (byte) 0x04}, response.getStatusCode());
+        assertEquals(0x03 * 256 + 0x04, response.getStatusCodeV2());
+        // assertArrayEquals(new byte[] {(byte) 0x03, (byte) 0x04}, response.getStatusCodeOld());
     }
 
     @Test

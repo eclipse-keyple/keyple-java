@@ -8,6 +8,8 @@
 
 package org.keyple.calypso.commands.po.parser;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.utils.ResponseUtils;
 import org.keyple.commands.ApduResponseParser;
@@ -22,6 +24,92 @@ import org.keyple.seproxy.ApduResponse;
  */
 public class OpenSessionRespPars extends ApduResponseParser {
 
+    private static final Map<Integer, StatusProperties> STATUS_TABLE_REV2_4;
+    static {
+        Map<Integer, StatusProperties> m =
+                new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);
+        m.put(0x6700, new StatusProperties(false, "Lc value not supported."));
+        m.put(0x6900, new StatusProperties(false, "Transaction Counter is 0"));
+        m.put(0x6981, new StatusProperties(false,
+                "Command forbidden (read requested and current EF is a Binary file)."));
+        m.put(0x6982, new StatusProperties(false,
+                "Security conditions not fulfilled (PIN code not presented, AES key forbidding the "
+                        + "compatibility mode, encryption required)."));
+        m.put(0x6985, new StatusProperties(false,
+                "Access forbidden (Never access mode, Session already opened)."));
+        m.put(0x6986, new StatusProperties(false,
+                "Command not allowed (read requested and no current EF)."));
+        m.put(0x6A81, new StatusProperties(false, "Wrong key index."));
+        m.put(0x6A82, new StatusProperties(false, "File not found."));
+        m.put(0x6A83,
+                new StatusProperties(false, "Record not found (record index is above NumRec)."));
+        m.put(0x6B00, new StatusProperties(false,
+                "P1 or P2 value not supported (key index incorrect, wrong P2)."));
+        STATUS_TABLE_REV2_4 = m;
+    }
+
+    private static final Map<Integer, StatusProperties> STATUS_TABLE_REV3_1;
+    static {
+        Map<Integer, StatusProperties> m =
+                new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);
+        m.put(0x6700, new StatusProperties(false, "Lc value not supported."));
+        m.put(0x6900, new StatusProperties(false, "Transaction Counter is 0"));
+        m.put(0x6981, new StatusProperties(false,
+                "Command forbidden (read requested and current EF is a Binary file)."));
+        m.put(0x6982, new StatusProperties(false,
+                "Security conditions not fulfilled (PIN code not presented, encryption required). "));
+        m.put(0x6985, new StatusProperties(false,
+                "Access forbidden (Never access mode, Session already opened)."));
+        m.put(0x6986, new StatusProperties(false,
+                "Command not allowed (read requested and no current EF)."));
+        m.put(0x6A81, new StatusProperties(false, "Wrong key index."));
+        m.put(0x6A82, new StatusProperties(false, "File not found."));
+        m.put(0x6A83,
+                new StatusProperties(false, "Record not found (record index is above NumRec)."));
+        m.put(0x6B00, new StatusProperties(false,
+                "P1 or P2 value not supported (e.g. REV.3.2 mode not supported)."));
+        STATUS_TABLE_REV3_1 = m;
+    }
+
+
+    private static final Map<Integer, StatusProperties> STATUS_TABLE_REV3_2;
+    static {
+        Map<Integer, StatusProperties> m =
+                new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);
+        m.put(0x6700, new StatusProperties(false, "Lc value not supported."));
+        m.put(0x6900, new StatusProperties(false, "Transaction Counter is 0"));
+        m.put(0x6981, new StatusProperties(false,
+                "Command forbidden (read requested and current EF is a Binary file)."));
+        m.put(0x6982, new StatusProperties(false,
+                "Security conditions not fulfilled (PIN code not presented, AES key forbidding the "
+                        + "Revision 3 mode, encryption required)."));
+        m.put(0x6985, new StatusProperties(false,
+                "Access forbidden (Never access mode, Session already opened)."));
+        m.put(0x6986, new StatusProperties(false,
+                "Command not allowed (read requested and no current EF)."));
+        m.put(0x6A81, new StatusProperties(false, "Wrong key index."));
+        m.put(0x6A82, new StatusProperties(false, "File not found."));
+        m.put(0x6A83,
+                new StatusProperties(false, "Record not found (record index is above NumRec)."));
+        m.put(0x6B00, new StatusProperties(false, "P1 or P2 value not supported."));
+        STATUS_TABLE_REV3_2 = m;
+    }
+
+    Map<Integer, StatusProperties> getStatusTable() {
+        switch (revision) {
+            case REV3_2:
+                return STATUS_TABLE_REV3_2;
+            case REV3_1:
+                return STATUS_TABLE_REV3_1;
+            case REV2_4:
+                return STATUS_TABLE_REV2_4;
+            default:
+                throw new IllegalStateException("Unknown revision: " + revision);
+        }
+    }
+
+    private final PoRevision revision;
+
     /** The secure session. */
     private SecureSession secureSession;
 
@@ -33,20 +121,7 @@ public class OpenSessionRespPars extends ApduResponseParser {
      */
     public OpenSessionRespPars(ApduResponse response, PoRevision revision) {
         super(response);
-        switch (revision) {
-            case REV3_2:
-                initStatusTable32();
-                break;
-            case REV3_1:
-                initStatusTable31();
-                break;
-            case REV2_4:
-                initStatusTable24();
-                break;
-            default:
-                break;
-        }
-
+        this.revision = revision;
         if (isSuccessful()) {
             switch (revision) {
                 case REV3_2:
@@ -100,7 +175,7 @@ public class OpenSessionRespPars extends ApduResponseParser {
      */
     public static SecureSession toSecureSessionRev3(byte[] apduResponse) {
         SecureSession secureSession;
-        boolean previousSessionRatified = apduResponse[4] == (byte) 0x01 ? true : false;
+        boolean previousSessionRatified = (apduResponse[4] == (byte) 0x01);
         boolean manageSecureSessionAuthorized = false;
 
         byte kif = apduResponse[5];
@@ -137,92 +212,6 @@ public class OpenSessionRespPars extends ApduResponseParser {
                 null, apduResponse);
 
         return secureSession;
-    }
-
-    /**
-     * Initializes the status table.
-     */
-    private void initStatusTable32() {
-        statusTable.put(new byte[] {(byte) 0x67, (byte) 0x00},
-                new StatusProperties(false, "Lc value not supported."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x00},
-                new StatusProperties(false, "Transaction Counter is 0"));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x81}, new StatusProperties(false,
-                "Command forbidden (read requested and current EF is a Binary file)."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x82}, new StatusProperties(false,
-                "Security conditions not fulfilled (PIN code not presented, encryption required). "));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x85}, new StatusProperties(false,
-                "Access forbidden (Never access mode, Session already opened)."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x86}, new StatusProperties(false,
-                "Command not allowed (read requested and no current EF)."));
-        statusTable.put(new byte[] {(byte) 0x6A, (byte) 0x81},
-                new StatusProperties(false, "Wrong key index."));
-        statusTable.put(new byte[] {(byte) 0x6A, (byte) 0x82},
-                new StatusProperties(false, "File not found."));
-        statusTable.put(new byte[] {(byte) 0x6A, (byte) 0x83},
-                new StatusProperties(false, "Record not found (record index is above NumRec)."));
-        statusTable.put(new byte[] {(byte) 0x6B, (byte) 0x00}, new StatusProperties(false,
-                "P1 or P2 value not supported (e.g. REV.3.2 mode not supported)."));
-        statusTable.put(new byte[] {(byte) 0x90, (byte) 0x00},
-                new StatusProperties(true, "Successful execution."));
-    }
-
-    /**
-     * Initializes the status table.
-     */
-    private void initStatusTable31() {
-        statusTable.put(new byte[] {(byte) 0x67, (byte) 0x00},
-                new StatusProperties(false, "Lc value not supported."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x00},
-                new StatusProperties(false, "Transaction Counter is 0"));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x81}, new StatusProperties(false,
-                "Command forbidden (read requested and current EF is a Binary file)."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x82}, new StatusProperties(false,
-                "Security conditions not fulfilled (PIN code not presented, AES key forbidding the "
-                        + "Revision 3 mode, encryption required)."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x85}, new StatusProperties(false,
-                "Access forbidden (Never access mode, Session already opened)."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x86}, new StatusProperties(false,
-                "Command not allowed (read requested and no current EF)."));
-        statusTable.put(new byte[] {(byte) 0x6A, (byte) 0x81},
-                new StatusProperties(false, "Wrong key index."));
-        statusTable.put(new byte[] {(byte) 0x6A, (byte) 0x82},
-                new StatusProperties(false, "File not found."));
-        statusTable.put(new byte[] {(byte) 0x6A, (byte) 0x83},
-                new StatusProperties(false, "Record not found (record index is above NumRec)."));
-        statusTable.put(new byte[] {(byte) 0x6B, (byte) 0x00},
-                new StatusProperties(false, "P1 or P2 value not supported."));
-        statusTable.put(new byte[] {(byte) 0x90, (byte) 0x00},
-                new StatusProperties(true, "Successful execution."));
-    }
-
-    /**
-     * Initializes the status table.
-     */
-    private void initStatusTable24() {
-        statusTable.put(new byte[] {(byte) 0x67, (byte) 0x00},
-                new StatusProperties(false, "Lc value not supported."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x00},
-                new StatusProperties(false, "Transaction Counter is 0"));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x81}, new StatusProperties(false,
-                "Command forbidden (read requested and current EF is a Binary file)."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x82}, new StatusProperties(false,
-                "Security conditions not fulfilled (PIN code not presented, AES key forbidding the "
-                        + "compatibility mode, encryption required)."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x85}, new StatusProperties(false,
-                "Access forbidden (Never access mode, Session already opened)."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x86}, new StatusProperties(false,
-                "Command not allowed (read requested and no current EF)."));
-        statusTable.put(new byte[] {(byte) 0x6A, (byte) 0x81},
-                new StatusProperties(false, "Wrong key index."));
-        statusTable.put(new byte[] {(byte) 0x6A, (byte) 0x82},
-                new StatusProperties(false, "File not found."));
-        statusTable.put(new byte[] {(byte) 0x6A, (byte) 0x83},
-                new StatusProperties(false, "Record not found (record index is above NumRec)."));
-        statusTable.put(new byte[] {(byte) 0x6B, (byte) 0x00}, new StatusProperties(false,
-                "P1 or P2 value not supported (key index incorrect, wrong P2)."));
-        statusTable.put(new byte[] {(byte) 0x90, (byte) 0x00},
-                new StatusProperties(true, "Successful execution."));
     }
 
     public byte[] getPoChallenge() {

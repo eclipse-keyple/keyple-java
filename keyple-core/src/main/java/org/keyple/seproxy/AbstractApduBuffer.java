@@ -11,8 +11,8 @@ package org.keyple.seproxy;
 import java.nio.ByteBuffer;
 
 /**
- * APDU Buffer.
- * It's mostly to avoid to inherit directly the {@link ByteBuffer} and have many methods inherited from it.
+ * APDU Buffer. It's mostly to avoid to inherit directly the {@link ByteBuffer} and have many
+ * methods inherited from it.
  */
 class AbstractApduBuffer {
     /**
@@ -32,7 +32,7 @@ class AbstractApduBuffer {
     }
 
     AbstractApduBuffer() {
-        this(ByteBuffer.allocate(255));
+        this(ByteBuffer.allocate(261));
     }
 
     AbstractApduBuffer(byte[] data, int offset, int length) {
@@ -51,6 +51,7 @@ class AbstractApduBuffer {
 
     /**
      * Get the internal buffer
+     * 
      * @return Buffer
      */
     public ByteBuffer getBuffer() {

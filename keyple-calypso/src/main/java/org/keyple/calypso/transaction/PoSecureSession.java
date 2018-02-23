@@ -391,7 +391,7 @@ public class PoSecureSession {
                 // rigth command, to fix ApduResponse.getBytes
                 byte[] additionOfGetBytesAndGetStatusCode =
                         ArrayUtils.addAll(poApduResponseList.get(i).getBytes(),
-                                poApduResponseList.get(i).getStatusCode());
+                                poApduResponseList.get(i).getStatusCodeOld());
                 // System.out.println("\t\tDEBUG ##### csmApduResponseList.size() : " +
                 // DatatypeConverter.printHexBinary(additionOfGetBytesAndGetStatusCode));
                 System.out.println(
@@ -521,7 +521,7 @@ public class PoSecureSession {
             // command, to fix ApduResponse.getBytes
             byte[] additionOfGetBytesAndGetStatusCode =
                     ArrayUtils.addAll(poApduResponseList.get(i).getBytes(),
-                            poApduResponseList.get(i).getStatusCode());
+                            poApduResponseList.get(i).getStatusCodeOld());
             // System.out.println("\t\tDEBUG ##### csmApduResponseList.size() : " +
             // DatatypeConverter.printHexBinary(additionOfGetBytesAndGetStatusCode));
             System.out.println(

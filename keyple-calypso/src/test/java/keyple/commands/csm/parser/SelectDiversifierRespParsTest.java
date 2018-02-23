@@ -42,12 +42,12 @@ public class SelectDiversifierRespParsTest {
                 new SelectDiversifierRespPars(seResponse.getApduResponses().get(0));
 
         Assert.assertArrayEquals(new byte[] {90, 00},
-                apduResponseParser.getApduResponse().getStatusCode());
+                apduResponseParser.getApduResponse().getStatusCodeOld());
 
         Mockito.when(seResponse.getApduResponses()).thenReturn(list1);
         apduResponseParser = new SelectDiversifierRespPars(seResponse.getApduResponses().get(0));
 
-        Assert.assertThat(apduResponseParser.getApduResponse().getStatusCode(),
+        Assert.assertThat(apduResponseParser.getApduResponse().getStatusCodeOld(),
                 IsNot.not(new byte[] {90, 00}));
         apduResponseParser = new SelectDiversifierRespPars(seResponse.getApduResponses().get(0));
 

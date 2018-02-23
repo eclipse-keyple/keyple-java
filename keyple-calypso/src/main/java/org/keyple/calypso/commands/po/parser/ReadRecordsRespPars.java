@@ -9,7 +9,9 @@
 package org.keyple.calypso.commands.po.parser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.keyple.calypso.commands.utils.ResponseUtils;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
@@ -18,6 +20,30 @@ import org.keyple.seproxy.ApduResponse;
  * Read Records (00B2) response parser. See specs: Calypso / page 89 / 9.4.7 Read Records
  */
 public class ReadRecordsRespPars extends ApduResponseParser {
+
+    private static final Map<Integer, StatusProperties> STATUS_TABLE;
+
+    static {
+        Map<Integer, StatusProperties> m =
+                new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);
+        m.put(0x6981, new StatusProperties(false, "Command forbidden on binary files"));
+        m.put(0x6982, new StatusProperties(false,
+                "Security conditions not fulfilled (PIN code not presented, encryption required)."));
+        m.put(0x6985, new StatusProperties(false,
+                "Access forbidden (Never access mode, stored value log file and a stored value operation was done during the current session)."));
+        m.put(0x6986, new StatusProperties(false, "Command not allowed (no current EF)"));
+        m.put(0x6A82, new StatusProperties(false, "File not found"));
+        m.put(0x6A83, new StatusProperties(false,
+                "Record not found (record index is 0, or above NumRec"));
+        m.put(0x6B00, new StatusProperties(false, "P2 value not supported"));
+        m.put(0x6CFF, new StatusProperties(false, "Le value incorrect"));
+        m.put(0x9000, new StatusProperties(true, "Successful execution."));
+        STATUS_TABLE = m;
+    }
+
+    Map<Integer, StatusProperties> getStatusTable() {
+        return STATUS_TABLE;
+    }
 
     /** The records. */
     private List<Record> records;
@@ -29,9 +55,8 @@ public class ReadRecordsRespPars extends ApduResponseParser {
      */
     public ReadRecordsRespPars(ApduResponse response) {
         super(response);
-        initStatusTable();
         if (isSuccessful()) {
-            records = parseRecords(response.getBytes(), false);
+            records = parseRecords(response.getBytesBeforeStatus(), false);
         }
     }
 
@@ -66,31 +91,6 @@ public class ReadRecordsRespPars extends ApduResponseParser {
             }
         }
         return records;
-    }
-
-    /**
-     * Initializes the status table.
-     */
-    private void initStatusTable() {
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x81},
-                new ApduResponseParser.StatusProperties(false,
-                        "Command forbidden on binary files"));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x82}, new StatusProperties(false,
-                "Security conditions not fulfilled (PIN code not presented, encryption required)."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x85}, new StatusProperties(false,
-                "Access forbidden (Never access mode, stored value log file and a stored value operation was done during the current session)."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x86},
-                new StatusProperties(false, "Command not allowed (no current EF)"));
-        statusTable.put(new byte[] {(byte) 0x6A, (byte) 0x82},
-                new StatusProperties(false, "File not found"));
-        statusTable.put(new byte[] {(byte) 0x6A, (byte) 0x83}, new StatusProperties(false,
-                "Record not found (record index is 0, or above NumRec"));
-        statusTable.put(new byte[] {(byte) 0x6B, (byte) 0x00},
-                new StatusProperties(false, "P2 value not supported"));
-        statusTable.put(new byte[] {(byte) 0x6C, (byte) 0xFF},
-                new StatusProperties(false, "Le value incorrect"));
-        statusTable.put(new byte[] {(byte) 0x90, (byte) 0x00},
-                new StatusProperties(true, "Successful execution."));
     }
 
     /**

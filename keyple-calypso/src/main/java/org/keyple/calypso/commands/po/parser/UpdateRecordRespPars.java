@@ -8,17 +8,43 @@
 
 package org.keyple.calypso.commands.po.parser;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
 /**
- * The Class UpdateRecordRespPars. This class provides status code properties of an Update Record
- * response. the Update Record APDU command
- *
- * @author Ixxi .
+ * Update Record response parser.
  */
 public class UpdateRecordRespPars extends ApduResponseParser {
 
+    private static final Map<Integer, StatusProperties> STATUS_TABLE;
+
+    // TODO: Remove the dots at the end of the strings, there are not sentences, they don't have a
+    // verb
+    static {
+        Map<Integer, StatusProperties> m =
+                new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);
+        m.put(0x6400, new StatusProperties(false, "Too many modifications in session."));
+        m.put(0x6700, new StatusProperties(false, "Lc value not supported."));
+        m.put(0x6981, new StatusProperties(false,
+                "Command forbidden on cyclic files when the record exists and is not record 01h and on binary files."));
+        m.put(0x6982, new StatusProperties(false,
+                "Security conditions not fulfilled (no session, wrong key, encryption required)."));
+        m.put(0x6985, new StatusProperties(false,
+                "Access forbidden (Never access mode, DF is invalidated, etc..)."));
+        m.put(0x6986, new StatusProperties(false, "Command not allowed (no current EF)."));
+        m.put(0x6A82, new StatusProperties(false, "File not found."));
+        m.put(0x6A83, new StatusProperties(false,
+                "Record is not found (record index is 0 or above NumRec)."));
+        m.put(0x6B00, new StatusProperties(false, "P2 value not supported."));
+        m.put(0x9000, new StatusProperties(true, "Successful execution."));
+        STATUS_TABLE = m;
+    }
+
+    Map<Integer, StatusProperties> getStatusTable() {
+        return STATUS_TABLE;
+    }
 
     /**
      * Instantiates a new UpdateRecordRespPars.
@@ -26,35 +52,6 @@ public class UpdateRecordRespPars extends ApduResponseParser {
      * @param response the response from the Update Records APDU command
      */
     public UpdateRecordRespPars(ApduResponse response) {
-
         super(response);
-        initStatusTable();
     }
-
-    /**
-     * Initializes the status table.
-     */
-    private void initStatusTable() {
-        statusTable.put(new byte[] {(byte) 0x64, (byte) 0x00},
-                new StatusProperties(false, "Too many modifications in session."));
-        statusTable.put(new byte[] {(byte) 0x67, (byte) 0x00},
-                new StatusProperties(false, "Lc value not supported."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x81}, new StatusProperties(false,
-                "Command forbidden on cyclic files when the record exists and is not record 01h and on binary files."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x82}, new StatusProperties(false,
-                "Security conditions not fulfilled (no session, wrong key, encryption required)."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x85}, new StatusProperties(false,
-                "Access forbidden (Never access mode, DF is invalidated, etc..)."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x86},
-                new StatusProperties(false, "Command not allowed (no current EF)."));
-        statusTable.put(new byte[] {(byte) 0x6A, (byte) 0x82},
-                new StatusProperties(false, "File not found."));
-        statusTable.put(new byte[] {(byte) 0x6A, (byte) 0x83}, new StatusProperties(false,
-                "Record is not found (record index is 0 or above NumRec)."));
-        statusTable.put(new byte[] {(byte) 0x6B, (byte) 0x00},
-                new StatusProperties(false, "P2 value not supported."));
-        statusTable.put(new byte[] {(byte) 0x90, (byte) 0x00},
-                new StatusProperties(true, "Succesfull execution."));
-    }
-
 }

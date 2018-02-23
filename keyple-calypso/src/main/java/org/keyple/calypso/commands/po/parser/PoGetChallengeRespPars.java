@@ -9,8 +9,6 @@
 package org.keyple.calypso.commands.po.parser;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
@@ -23,14 +21,6 @@ import org.keyple.seproxy.ApduResponse;
  */
 public class PoGetChallengeRespPars extends ApduResponseParser {
 
-
-    private static final Map<Integer, StatusProperties> STATUS_TABLE;
-    static {
-        HashMap<Integer, StatusProperties> m = new HashMap<Integer, StatusProperties>();
-        m.put(0x9000, new StatusProperties(true, "Success"));
-        STATUS_TABLE = m;
-    }
-
     /**
      * Instantiates a new PoGetChallengeRespPars.
      *
@@ -38,25 +28,6 @@ public class PoGetChallengeRespPars extends ApduResponseParser {
      */
     public PoGetChallengeRespPars(ApduResponse response) {
         super(response);
-        initStatusTable();
-    }
-
-    /**
-     * Initializes the status table.
-     */
-    private void initStatusTable() {
-        statusTable.put(new byte[] {(byte) 0x90, (byte) 0x00},
-                new StatusProperties(true, "Successful execution."));
-    }
-
-    public Map<Integer, StatusProperties> getStatusTable() {
-        return STATUS_TABLE;
-    }
-
-    @Override
-    public boolean isSuccessful() {
-        StatusProperties p = getStatusTable().get(getStatusCodeV2());
-        return p != null && p.isSuccessful();
     }
 
     /**

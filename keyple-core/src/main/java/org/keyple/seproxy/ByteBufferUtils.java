@@ -8,11 +8,10 @@
 
 package org.keyple.seproxy;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-
 import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 
 /**
  * Utils around the {@link ByteBuffer}

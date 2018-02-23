@@ -8,6 +8,8 @@
 
 package org.keyple.calypso.commands.po.parser;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
@@ -19,6 +21,24 @@ import org.keyple.seproxy.ApduResponse;
  */
 public class AppendRecordRespPars extends ApduResponseParser {
 
+    private static final Map<Integer, StatusProperties> STATUS_TABLE;
+
+    static {
+        Map<Integer, StatusProperties> m =
+                new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);
+        m.put(0x6B00, new StatusProperties(false, "P1 or P2 vaue not supported."));
+        m.put(0x6700, new StatusProperties(false, "Lc value not supported."));
+        m.put(0x6400, new StatusProperties(false, "Too many modifications in session."));
+        m.put(0x6981, new StatusProperties(false, "The current EF is not a Cyclic EF."));
+        m.put(0x6982, new StatusProperties(false,
+                "Security conditions not fulfilled (no session, wrong key)."));
+        m.put(0x6985, new StatusProperties(false,
+                "Access forbidden (Never access mode, DF is invalidated, etc..)."));
+        m.put(0x6986, new StatusProperties(false, "Command not allowed (no current EF)."));
+        m.put(0x6A82, new StatusProperties(false, "File not found."));
+        STATUS_TABLE = m;
+    }
+
     /**
      * Instantiates a new AppendRecordRespPars.
      *
@@ -26,31 +46,16 @@ public class AppendRecordRespPars extends ApduResponseParser {
      */
     public AppendRecordRespPars(ApduResponse response) {
         super(response);
-        initStatusTable();
     }
 
     /**
-     * Initializes the status table.
+     * Get the internal status table
+     *
+     * @return Status table
      */
-    private void initStatusTable() {
-        statusTable.put(new byte[] {(byte) 0x6B, (byte) 0x00},
-                new StatusProperties(false, "P1 or P2 vaue not supported."));
-        statusTable.put(new byte[] {(byte) 0x67, (byte) 0x00},
-                new StatusProperties(false, "Lc value not supported."));
-        statusTable.put(new byte[] {(byte) 0x64, (byte) 0x00},
-                new StatusProperties(false, "Too many modifications in session."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x81},
-                new StatusProperties(false, "The current EF is not a Cyclic EF."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x82}, new StatusProperties(false,
-                "Security conditions not fulfilled (no session, wrong key)."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x85}, new StatusProperties(false,
-                "Access forbidden (Never access mode, DF is invalidated, etc..)."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x86},
-                new StatusProperties(false, "Command not allowed (no current EF)."));
-        statusTable.put(new byte[] {(byte) 0x6A, (byte) 0x82},
-                new StatusProperties(false, "File not found."));
-        statusTable.put(new byte[] {(byte) 0x90, (byte) 0x00},
-                new StatusProperties(true, "Correct execution."));
+    Map<Integer, StatusProperties> getStatusTable() {
+        return STATUS_TABLE;
     }
+
 
 }

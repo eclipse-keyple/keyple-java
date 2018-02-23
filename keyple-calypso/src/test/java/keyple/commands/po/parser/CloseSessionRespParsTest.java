@@ -26,7 +26,7 @@ public class CloseSessionRespParsTest {
     public void closeSessionRespPars() { // by ixxi
         byte[] response = {0x4D, (byte) 0xBD, (byte) 0xC9, 0x60, (byte) 0x90, 0x00};
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse = new ApduResponse(response, true, new byte[] {90, 00});
+        ApduResponse apduResponse = new ApduResponse(response, true);
         listeResponse.add(apduResponse);
         SeResponse seResponse = new SeResponse(true, null, listeResponse);
 

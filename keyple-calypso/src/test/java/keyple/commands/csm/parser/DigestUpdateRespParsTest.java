@@ -22,8 +22,7 @@ public class DigestUpdateRespParsTest {
     @Test
     public void digestUpdateRespPars() {
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse =
-                new ApduResponse(new byte[] {90, 00}, true, new byte[] {90, 00});
+        ApduResponse apduResponse = new ApduResponse(new byte[] {90, 00}, true);
         listeResponse.add(apduResponse);
         SeResponse seResponse = new SeResponse(true, null, listeResponse);
 

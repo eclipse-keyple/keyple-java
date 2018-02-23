@@ -150,12 +150,12 @@ public class PoSecureSessionTest {
         assertNull(seResponse2.getFci());
         assertArrayEquals(responseOpenSession.getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(0).getBytes());
-        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCode(),
-                seResponse2.getApduResponses().get(0).getStatusCode());
+        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCodeOld(),
+                seResponse2.getApduResponses().get(0).getStatusCodeOld());
         assertArrayEquals(responseOpenSession.getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(1).getBytes());
-        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCode(),
-                seResponse2.getApduResponses().get(1).getStatusCode());
+        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCodeOld(),
+                seResponse2.getApduResponses().get(1).getStatusCodeOld());
     }
 
     @Test
@@ -177,12 +177,12 @@ public class PoSecureSessionTest {
         assertNull(seResponse2.getFci());
         assertArrayEquals(responseOpenSession.getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(0).getBytes());
-        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCode(),
-                seResponse2.getApduResponses().get(0).getStatusCode());
+        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCodeOld(),
+                seResponse2.getApduResponses().get(0).getStatusCodeOld());
         assertArrayEquals(responseOpenSession.getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(1).getBytes());
-        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCode(),
-                seResponse2.getApduResponses().get(1).getStatusCode());
+        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCodeOld(),
+                seResponse2.getApduResponses().get(1).getStatusCodeOld());
     }
 
     @Test
@@ -204,12 +204,12 @@ public class PoSecureSessionTest {
         assertNull(seResponse2.getFci());
         assertArrayEquals(responseOpenSession.getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(0).getBytes());
-        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCode(),
-                seResponse2.getApduResponses().get(0).getStatusCode());
+        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCodeOld(),
+                seResponse2.getApduResponses().get(0).getStatusCodeOld());
         assertArrayEquals(responseOpenSession.getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(1).getBytes());
-        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCode(),
-                seResponse2.getApduResponses().get(1).getStatusCode());
+        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCodeOld(),
+                seResponse2.getApduResponses().get(1).getStatusCodeOld());
     }
 
 
@@ -237,16 +237,16 @@ public class PoSecureSessionTest {
         assertNull(seResponse2.getFci());
         assertArrayEquals(responseOpenSession.getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(0).getBytes());
-        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCode(),
-                seResponse2.getApduResponses().get(0).getStatusCode());
+        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCodeOld(),
+                seResponse2.getApduResponses().get(0).getStatusCodeOld());
         assertArrayEquals(responseOpenSession.getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(1).getBytes());
-        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCode(),
-                seResponse2.getApduResponses().get(1).getStatusCode());
+        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCodeOld(),
+                seResponse2.getApduResponses().get(1).getStatusCodeOld());
         assertArrayEquals(responseOpenSession.getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(2).getBytes());
-        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCode(),
-                seResponse2.getApduResponses().get(2).getStatusCode());
+        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCodeOld(),
+                seResponse2.getApduResponses().get(2).getStatusCodeOld());
     }
 
     @Test(expected = UnexpectedReaderException.class)
@@ -314,8 +314,8 @@ public class PoSecureSessionTest {
         assertNull(seResponse2.getFci());
         assertArrayEquals(responseOpenSession.getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(0).getBytes());
-        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCode(),
-                seResponse2.getApduResponses().get(0).getStatusCode());
+        assertArrayEquals(responseOpenSession.getApduResponses().get(0).getStatusCodeOld(),
+                seResponse2.getApduResponses().get(0).getStatusCodeOld());
 
     }
 
@@ -360,8 +360,8 @@ public class PoSecureSessionTest {
         assertArrayEquals(responseTerminalSessionSignature.getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(0).getBytes());
         assertArrayEquals(
-                responseTerminalSessionSignature.getApduResponses().get(0).getStatusCode(),
-                seResponse2.getApduResponses().get(0).getStatusCode());
+                responseTerminalSessionSignature.getApduResponses().get(0).getStatusCodeOld(),
+                seResponse2.getApduResponses().get(0).getStatusCodeOld());
     }
 
     @Test
@@ -389,13 +389,13 @@ public class PoSecureSessionTest {
         assertArrayEquals(responseTerminalSessionSignature.getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(0).getBytes());
         assertArrayEquals(
-                responseTerminalSessionSignature.getApduResponses().get(0).getStatusCode(),
-                seResponse2.getApduResponses().get(0).getStatusCode());
+                responseTerminalSessionSignature.getApduResponses().get(0).getStatusCodeOld(),
+                seResponse2.getApduResponses().get(0).getStatusCodeOld());
         assertArrayEquals(responseTerminalSessionSignature.getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(1).getBytes());
         assertArrayEquals(
-                responseTerminalSessionSignature.getApduResponses().get(0).getStatusCode(),
-                seResponse2.getApduResponses().get(1).getStatusCode());
+                responseTerminalSessionSignature.getApduResponses().get(0).getStatusCodeOld(),
+                seResponse2.getApduResponses().get(1).getStatusCodeOld());
     }
 
 
@@ -425,8 +425,8 @@ public class PoSecureSessionTest {
         assertNotNull(seResponse2.getFci());
         assertArrayEquals(responseFci.getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(0).getBytes());
-        assertArrayEquals(responseFci.getApduResponses().get(0).getStatusCode(),
-                seResponse2.getApduResponses().get(0).getStatusCode());
+        assertArrayEquals(responseFci.getApduResponses().get(0).getStatusCodeOld(),
+                seResponse2.getApduResponses().get(0).getStatusCodeOld());
 
     }
 
