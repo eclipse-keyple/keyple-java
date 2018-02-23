@@ -12,6 +12,8 @@ package org.keyple.calypso.commands.csm.parser;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
+import java.nio.ByteBuffer;
+
 /**
  * This class provides status code properties and the getters to access to the structured fields of
  * a Digest Close response.
@@ -21,7 +23,7 @@ import org.keyple.seproxy.ApduResponse;
  */
 public class DigestCloseRespPars extends ApduResponseParser {
     /** The SAM signture */
-    private byte[] signature;
+    ByteBuffer signature;
 
     /**
      * Instantiates a new DigestCloseRespPars.
@@ -31,7 +33,7 @@ public class DigestCloseRespPars extends ApduResponseParser {
     public DigestCloseRespPars(ApduResponse response) {
         super(response);
         if (isSuccessful()) {
-            signature = response.getBytes();
+            signature = response.getBuffer();
         }
     }
 
@@ -40,12 +42,8 @@ public class DigestCloseRespPars extends ApduResponseParser {
      *
      * @return the sam half session signature
      */
-    public byte[] getSignature() {
-        if (signature != null) {
-            return signature.clone();
-        } else {
-            return new byte[0];
-        }
+    public ByteBuffer getSignature() {
+        return signature;
     }
 
 }

@@ -95,10 +95,7 @@ public class ApduResponse extends AbstractApduBuffer {
     }
 
     public byte[] getBytesBeforeStatus() {
-        ByteBuffer buf = getDataBeforeStatus();
-        byte[] data = new byte[buf.limit()];
-        buf.get(data);
-        return data;
+        return ByteBufferUtils.toBytes(getDataBeforeStatus());
     }
 
     @Override
