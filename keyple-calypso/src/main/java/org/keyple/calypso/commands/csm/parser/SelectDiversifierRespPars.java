@@ -8,6 +8,7 @@
 
 package org.keyple.calypso.commands.csm.parser;
 
+
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
@@ -27,14 +28,5 @@ public class SelectDiversifierRespPars extends ApduResponseParser {
      */
     public SelectDiversifierRespPars(ApduResponse response) {
         super(response);
-        initStatusTable();
-    }
-
-    /**
-     * Initializes the status table.
-     */
-    private void initStatusTable() {
-        statusTable.put(new byte[] {(byte) 0x90, (byte) 0x00},
-                new StatusProperties(true, "Successful execution."));
     }
 }

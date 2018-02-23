@@ -8,8 +8,9 @@ os:
 
 # The build and tests are executed directly by gradle
 script:
-  - gradle build javadoc
+  - gradle build javadoc jmh
   - .build/prepare_pages.sh
+
 # Caching
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock

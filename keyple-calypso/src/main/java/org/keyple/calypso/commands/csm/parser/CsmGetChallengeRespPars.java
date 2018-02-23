@@ -8,6 +8,7 @@
 
 package org.keyple.calypso.commands.csm.parser;
 
+
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
@@ -19,7 +20,6 @@ import org.keyple.seproxy.ApduResponse;
  *
  */
 public class CsmGetChallengeRespPars extends ApduResponseParser {
-
     /** The CSM(SAM) challenge. */
     private byte[] challenge;
 
@@ -30,18 +30,9 @@ public class CsmGetChallengeRespPars extends ApduResponseParser {
      */
     public CsmGetChallengeRespPars(ApduResponse response) {
         super(response);
-        initStatusTable();
         if (isSuccessful()) {
-            challenge = response.getbytes();
+            challenge = response.getBytes();
         }
-    }
-
-    /**
-     * Initializes the status table.
-     */
-    private void initStatusTable() {
-        statusTable.put(new byte[] {(byte) 0x90, (byte) 0x00},
-                new StatusProperties(true, "Successful execution."));
     }
 
     /**

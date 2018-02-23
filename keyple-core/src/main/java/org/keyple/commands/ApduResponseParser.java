@@ -8,10 +8,8 @@
 
 package org.keyple.commands;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import org.keyple.seproxy.ApduResponse;
 
 // TODO: Auto-generated Javadoc
@@ -25,22 +23,26 @@ import org.keyple.seproxy.ApduResponse;
 public abstract class ApduResponseParser {
 
     /** the byte array APDU response. */
-    private ApduResponse response;
+    protected ApduResponse response;
 
-    /** The status table. */
-    protected Map<byte[], StatusProperties> statusTable = new HashMap<byte[], StatusProperties>();
+    protected static final Map<Integer, StatusProperties> STATUS_TABLE;
+    static {
+        HashMap<Integer, StatusProperties> m = new HashMap<Integer, StatusProperties>();
+        m.put(0x9000, new StatusProperties(true, "Success"));
+        STATUS_TABLE = m;
+    }
 
+    // Note: The conversion of all commands was done with:
+    // Input regex: new byte\[\] \{\(byte\) 0x([0-9A-Za-z]{2})\, \(byte\) 0x([0-9A-Za-z]{2})\}
+    // Output regex: 0x$1$2
 
     /**
-     * Instantiates a new apdu response parser.
-     *
-     * @param responseToParse APDUResponse to parse
-     * @param mapStatusProperties informations for each status
+     * Get the internal status table
+     * 
+     * @return Status table
      */
-    protected ApduResponseParser(ApduResponse responseToParse,
-            Map<byte[], StatusProperties> mapStatusProperties) {
-        this.response = responseToParse;
-        this.statusTable = mapStatusProperties;
+    Map<Integer, StatusProperties> getStatusTable() {
+        return STATUS_TABLE;
     }
 
     /**
@@ -61,14 +63,12 @@ public abstract class ApduResponseParser {
         return response;
     }
 
+    private int getStatusCodeV2() {
+        return response.getStatusCodeV2();
+    }
 
-    /**
-     * Gets the status code.
-     *
-     * @return the status code
-     */
-    public final byte[] getStatusCode() {
-        return response.getStatusCode();
+    private StatusProperties getPropertiesForStatusCode() {
+        return getStatusTable().get(getStatusCodeV2());
     }
 
     /**
@@ -77,14 +77,9 @@ public abstract class ApduResponseParser {
      * @return if the status is successful from the statusTable according to the current status
      *         code.
      */
-    public final boolean isSuccessful() {
-        for (Entry<byte[], StatusProperties> it : this.statusTable.entrySet()) {
-            if (Arrays.equals(it.getKey(), response.getStatusCode())) {
-                return it.getValue().getSuccessful();
-            }
-        }
-
-        return false;
+    public boolean isSuccessful() {
+        StatusProperties props = getPropertiesForStatusCode();
+        return props != null && props.isSuccessful();
     }
 
     /**
@@ -93,21 +88,15 @@ public abstract class ApduResponseParser {
      * @return the ASCII message from the statusTable for the current status code.
      */
     public final String getStatusInformation() {
-        for (Entry<byte[], StatusProperties> it : this.statusTable.entrySet()) {
-            if (Arrays.equals(it.getKey(), response.getStatusCode())) {
-                return it.getValue().getInformation();
-            }
-        }
-        return null;
+        StatusProperties props = getPropertiesForStatusCode();
+        return props != null ? props.getInformation() : null;
     }
 
+
     /**
-     * The Class StatusProperties. inner Class
-     *
-     * @author Ixxi
-     *
+     * Map of statuses
      */
-    protected class StatusProperties {
+    protected static class StatusProperties {
 
         /** The successful. */
         private boolean successful;
@@ -132,7 +121,7 @@ public abstract class ApduResponseParser {
          *
          * @return the successful
          */
-        public boolean getSuccessful() {
+        public boolean isSuccessful() {
             return successful;
         }
 
@@ -141,7 +130,7 @@ public abstract class ApduResponseParser {
          *
          * @return the information
          */
-        public String getInformation() {
+        String getInformation() {
             return information;
         }
 

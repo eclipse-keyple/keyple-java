@@ -22,14 +22,13 @@ public class DigestUpdateRespParsTest {
     @Test
     public void digestUpdateRespPars() {
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse =
-                new ApduResponse(new byte[] {90, 00}, true, new byte[] {90, 00});
+        ApduResponse apduResponse = new ApduResponse(new byte[] {90, 00}, true);
         listeResponse.add(apduResponse);
         SeResponse seResponse = new SeResponse(true, null, listeResponse);
 
         ApduResponseParser apduResponseParser =
                 new DigestUpdateRespPars(seResponse.getApduResponses().get(0));
-        byte[] reponseActual = apduResponseParser.getApduResponse().getbytes();
+        byte[] reponseActual = apduResponseParser.getApduResponse().getBytes();
         Assert.assertArrayEquals(new byte[] {90, 00}, reponseActual);
     }
 }

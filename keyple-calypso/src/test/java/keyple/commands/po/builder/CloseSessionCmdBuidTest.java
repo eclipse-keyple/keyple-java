@@ -29,12 +29,12 @@ public class CloseSessionCmdBuidTest {
                 new CloseSessionCmdBuild(PoRevision.REV2_4, false, terminalSessionSiganture);
         ApduRequest ApduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertArrayEquals(request2_4, ApduRequest.getbytes());
+        Assert.assertArrayEquals(request2_4, ApduRequest.getBytes());
 
         apduCommandBuilder =
                 new CloseSessionCmdBuild(PoRevision.REV3_1, true, terminalSessionSiganture);
         ApduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertArrayEquals(request3_1, ApduRequest.getbytes());
+        Assert.assertArrayEquals(request3_1, ApduRequest.getBytes());
     }
 }

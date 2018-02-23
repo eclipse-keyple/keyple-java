@@ -188,8 +188,9 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
         try {
             pcscReaders = pcscPlugin.getReaders();
 
-            if (poReaderRef == csmReaderRef)
+            if (poReaderRef == csmReaderRef) {
                 throw new TestSettingException("PO & CSM readers conflit!");
+            }
 
             KeypleTest_ObservablePoTransaction observer = new KeypleTest_ObservablePoTransaction();
 

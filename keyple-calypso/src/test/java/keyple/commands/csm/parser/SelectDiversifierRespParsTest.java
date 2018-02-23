@@ -17,18 +17,12 @@ import org.keyple.calypso.commands.csm.parser.SelectDiversifierRespPars;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.SeResponse;
-import org.keyple.seproxy.exceptions.ChannelStateReaderException;
-import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.seproxy.exceptions.InvalidApduReaderException;
-import org.keyple.seproxy.exceptions.TimeoutReaderException;
-import org.keyple.seproxy.exceptions.UnexpectedReaderException;
 import org.mockito.Mockito;
 
 public class SelectDiversifierRespParsTest {
 
     @Test
-    public void selectDiviersifierResp() throws IOReaderException, UnexpectedReaderException,
-            ChannelStateReaderException, InvalidApduReaderException, TimeoutReaderException {
+    public void selectDiviersifierResp() {
         List<ApduResponse> list = new ArrayList<ApduResponse>();
         List<ApduResponse> list1 = new ArrayList<ApduResponse>();
         List<ApduResponse> list2 = new ArrayList<ApduResponse>();
@@ -48,12 +42,12 @@ public class SelectDiversifierRespParsTest {
                 new SelectDiversifierRespPars(seResponse.getApduResponses().get(0));
 
         Assert.assertArrayEquals(new byte[] {90, 00},
-                apduResponseParser.getApduResponse().getStatusCode());
+                apduResponseParser.getApduResponse().getStatusCodeOld());
 
         Mockito.when(seResponse.getApduResponses()).thenReturn(list1);
         apduResponseParser = new SelectDiversifierRespPars(seResponse.getApduResponses().get(0));
 
-        Assert.assertThat(apduResponseParser.getApduResponse().getStatusCode(),
+        Assert.assertThat(apduResponseParser.getApduResponse().getStatusCodeOld(),
                 IsNot.not(new byte[] {90, 00}));
         apduResponseParser = new SelectDiversifierRespPars(seResponse.getApduResponses().get(0));
 

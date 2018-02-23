@@ -8,6 +8,7 @@
 
 package org.keyple.calypso.commands.csm.parser;
 
+
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
@@ -29,18 +30,9 @@ public class DigestUpdateRespPars extends ApduResponseParser {
      */
     public DigestUpdateRespPars(ApduResponse response) {
         super(response);
-        initStatusTable();
         if (isSuccessful()) {
-            this.processedData = response.getbytes();
+            this.processedData = response.getBytes();
         }
-    }
-
-    /**
-     * Initializes the status table.
-     */
-    private void initStatusTable() {
-        statusTable.put(new byte[] {(byte) 0x90, (byte) 0x00},
-                new StatusProperties(true, "Successful execution."));
     }
 
     public byte[] getProcessedData() {

@@ -8,6 +8,9 @@
 
 package org.keyple.calypso.commands.po.parser;
 
+
+import java.util.HashMap;
+import java.util.Map;
 import org.keyple.calypso.commands.utils.ResponseUtils;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
@@ -17,15 +20,26 @@ import org.keyple.seproxy.ApduResponse;
  * Session
  */
 public class CloseSessionRespPars extends ApduResponseParser {
+
+    private static final Map<Integer, StatusProperties> STATUS_TABLE;
+
     /**
-     * Instantiates a new CloseSessionRespPars from the response.
-     *
-     * @param response from CloseSessionCmdBuild
+     * Initializes the status table.
      */
-    public CloseSessionRespPars(ApduResponse response) {
-        super(response);
-        parse(response.getbytes());
-        initStatusTable();
+    static {
+        Map<Integer, StatusProperties> m =
+                new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);
+        m.put(0x6700, new StatusProperties(false,
+                "Lc signatureLo not supported (e.g. Lc=4 with a Revision 3.2 mode for Open Secure Session)."));
+        m.put(0x6B00, new StatusProperties(false, "P1 or P2 signatureLo not supported."));
+        m.put(0x6988, new StatusProperties(false, "incorrect signatureLo."));
+        m.put(0x6985, new StatusProperties(false, "No session was opened."));
+
+        STATUS_TABLE = m;
+    }
+
+    Map<Integer, StatusProperties> getStatusTable() {
+        return STATUS_TABLE;
     }
 
     /** The signatureLo. */
@@ -35,19 +49,13 @@ public class CloseSessionRespPars extends ApduResponseParser {
     private byte[] postponedData;
 
     /**
-     * Initializes the status table.
+     * Instantiates a new CloseSessionRespPars from the response.
+     *
+     * @param response from CloseSessionCmdBuild
      */
-    private void initStatusTable() {
-        statusTable.put(new byte[] {(byte) 0x67, (byte) 0x00}, new StatusProperties(false,
-                "Lc signatureLo not supported (e.g. Lc=4 with a Revision 3.2 mode for Open Secure Session)."));
-        statusTable.put(new byte[] {(byte) 0x6B, (byte) 0x00},
-                new StatusProperties(false, "P1 or P2 signatureLo not supported."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x88},
-                new StatusProperties(false, "incorrect signatureLo."));
-        statusTable.put(new byte[] {(byte) 0x69, (byte) 0x85},
-                new StatusProperties(false, "No session was opened."));
-        statusTable.put(new byte[] {(byte) 0x90, (byte) 0x00},
-                new StatusProperties(true, "Successful execution."));
+    public CloseSessionRespPars(ApduResponse response) {
+        super(response);
+        parse(response.getBytes());
     }
 
     private void parse(byte[] response) {
@@ -66,15 +74,13 @@ public class CloseSessionRespPars extends ApduResponseParser {
          */
     }
 
+    // TODO: Switch that to ByteBuffer
+
     public byte[] getSignatureLo() {
         return signatureLo != null ? signatureLo : new byte[] {};
     }
 
     public byte[] getPostponedData() {
         return postponedData != null ? postponedData : new byte[] {};
-    }
-
-    public boolean hasPostponedData() {
-        return postponedData != null;
     }
 }

@@ -8,20 +8,13 @@
 
 package org.keyple.seproxy;
 
-import java.util.regex.Pattern;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
+import java.nio.ByteBuffer;
+
 
 /**
  * Single APDU response wrapper
  */
-public class ApduResponse {
-
-    /**
-     * an array of the bytes of an APDU response (none structured, including the dataOut field and
-     * the status of the command).
-     */
-    private final byte[] bytes;
+public class ApduResponse extends AbstractApduBuffer {
 
     /***
      * the success result of the processed APDU commandto allow chaining responses in a group of
@@ -29,35 +22,9 @@ public class ApduResponse {
      */
     private boolean successful;
 
-    /**
-     * The status code.
-     *
-     * @deprecated This field is extracted from bytes
-     */
-    private byte[] statusCode;
-
-
-    /**
-     * Chars we will ignore when loading a sample HEX string. It allows to copy/paste the specs APDU
-     */
-    private static final Pattern HEX_IGNORED_CHARS = Pattern.compile(" |h");
-
-    /**
-     * Create an APDU from an hex string. Note: This is a convenience initialization and a temporary
-     * solution. The bytes management will probably be handled by a {@link java.nio.ByteBuffer} in a
-     * very near future.
-     *
-     * @param hexFormat APDU in hex format with spaces permitted
-     */
-    public ApduResponse(String hexFormat) {
-        // Hex..hexFormat.replace(" ", "")
-        // hexFormat
-        try {
-            this.bytes = Hex.decodeHex(HEX_IGNORED_CHARS.matcher(hexFormat).replaceAll(""));
-        } catch (DecoderException e) {
-            // This is unlikely and we don't want to impose everyone to catch this error
-            throw new RuntimeException("Bad format", e);
-        }
+    public ApduResponse(ByteBuffer buffer, boolean successful) {
+        super(buffer);
+        this.successful = successful;
     }
 
     /**
@@ -68,12 +35,12 @@ public class ApduResponse {
      * @param successful the successful
      */
     public ApduResponse(byte[] bytes, boolean successful) {
-        this.bytes = (bytes == null ? null : bytes.clone());
+        super(bytes);
         this.successful = successful;
     }
 
     /**
-     * the constructor called by a ProxyReader in order to build the APDU command response to push
+     * The constructor called by a ProxyReader in order to build the APDU command response to push
      * to a ticketing application.
      *
      * @param bytes the bytes
@@ -82,19 +49,16 @@ public class ApduResponse {
      * @deprecated Only {@link ApduResponse#ApduResponse(byte[], boolean)} should be used instead.
      */
     public ApduResponse(byte[] bytes, boolean successful, byte[] statusCode) {
-        this.bytes = (bytes == null ? null : bytes.clone());
+        super(ByteBuffer.allocate(
+                (bytes != null ? bytes.length : 0) + (statusCode != null ? statusCode.length : 0)));
+        if (bytes != null) {
+            buffer.put(bytes);
+        }
+        if (statusCode != null) {
+            buffer.put(statusCode);
+        }
+        buffer.position(0);
         this.successful = successful;
-        this.statusCode = (statusCode == null ? null : statusCode.clone());
-    }
-
-    /**
-     * Gets the bytes.
-     *
-     * @return the data of the APDU response.
-     */
-    public byte[] getbytes() {
-        // return bytes.clone();
-        return bytes;
     }
 
     /**
@@ -106,18 +70,39 @@ public class ApduResponse {
         return successful;
     }
 
-    /**
-     * Gets the status code.
-     *
-     * @return the status code
-     */
-    public byte[] getStatusCode() { // TODO - to delete
-        return statusCode.clone();
+    public int getStatusCodeV2() {
+        int s = buffer.getShort(buffer.limit() - 2);
+
+        // java is signed only
+        if (s < 0) {
+            s += -2 * Short.MIN_VALUE;
+        }
+        return s;
     }
 
+    public byte[] getStatusCodeOld() {
+        byte[] statusCode = new byte[2];
+        buffer.position(buffer.limit() - 2);
+        buffer.get(statusCode);
+        return statusCode;
+    }
+
+    public ByteBuffer getDataBeforeStatus() {
+        ByteBuffer b = buffer.duplicate();
+        b.position(0);
+        b.limit(b.limit() - 2);
+        return b.slice();
+    }
+
+    public byte[] getBytesBeforeStatus() {
+        ByteBuffer buf = getDataBeforeStatus();
+        byte[] data = new byte[buf.limit()];
+        buf.get(data);
+        return data;
+    }
 
     @Override
     public String toString() {
-        return Hex.encodeHexString(bytes) + "/" + successful;
+        return "APDU Response " + super.toString();
     }
 }

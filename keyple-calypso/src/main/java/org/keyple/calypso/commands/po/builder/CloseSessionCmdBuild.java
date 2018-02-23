@@ -42,10 +42,9 @@ public class CloseSessionCmdBuild extends PoCommandBuilder {
         }
         // The optional parameter terminalSessionSignature could contain 4 or 8
         // bytes.
-        if (terminalSessionSignature != null) {
-            if (terminalSessionSignature.length != 4 && terminalSessionSignature.length != 8) {
-                throw new InconsistentCommandException();
-            }
+        if (terminalSessionSignature != null && terminalSessionSignature.length != 4
+                && terminalSessionSignature.length != 8) {
+            throw new InconsistentCommandException();
         }
 
         byte cla = PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00;

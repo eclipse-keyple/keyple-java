@@ -8,6 +8,7 @@
 
 package org.keyple.calypso.commands.po.parser;
 
+import java.nio.ByteBuffer;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
@@ -27,15 +28,6 @@ public class PoGetChallengeRespPars extends ApduResponseParser {
      */
     public PoGetChallengeRespPars(ApduResponse response) {
         super(response);
-        initStatusTable();
-    }
-
-    /**
-     * Initializes the status table.
-     */
-    private void initStatusTable() {
-        statusTable.put(new byte[] {(byte) 0x90, (byte) 0x00},
-                new StatusProperties(true, "Successful execution."));
     }
 
     /**
@@ -45,8 +37,12 @@ public class PoGetChallengeRespPars extends ApduResponseParser {
      */
     public byte[] getPoChallenge() {
         if (isSuccessful()) {
-            return getApduResponse().getbytes();
+            return getApduResponse().getBytesBeforeStatus();
         }
         return null;
+    }
+
+    public ByteBuffer getPoChallengeV2() {
+        return getApduResponse().getDataBeforeStatus();
     }
 }
