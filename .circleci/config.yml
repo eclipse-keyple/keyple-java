@@ -27,6 +27,11 @@ jobs:
 
       - run: gradle build javadoc jmh
       - run: .build/prepare_pages.sh
+      - run: .build/save_tests.sh
+
+      - store_test_results:
+        path: test-results
+
 
       - save_cache:
           paths:
