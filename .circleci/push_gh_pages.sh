@@ -42,7 +42,6 @@ else
 fi
 
 # copy over or recompile the new site
-cp .build/web/index.html .
 cp ~/pages .
 
 # stage any changes and new files

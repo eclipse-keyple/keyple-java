@@ -33,3 +33,5 @@ do
         mv $dir/build/reports/jmh/results.txt ~/artifacts/$dir/jmh.txt
     fi
 done
+
+cp .build/web/index.html ~/pages
