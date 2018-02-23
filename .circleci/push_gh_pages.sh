@@ -50,7 +50,6 @@ git add -A
 git commit --allow-empty -m "Deploy to GitHub pages [ci skip]"
 
 sed -i -e "s/git@github.com:calypsonet/https:\/\/${GH_TOKEN}:x-oauth-basic@github.com\/calypsonet/" .git/config
-cat .git/config
 
 # and push, but send any output to /dev/null to hide anything sensitive
 git push --force --quiet origin gh-pages
