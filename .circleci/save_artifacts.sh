@@ -35,4 +35,4 @@ do
     fi
 done
 
-cp .build/web/index.html ~/pages
+cp .build/web/* ~/pages/

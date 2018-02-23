@@ -42,7 +42,7 @@ else
 fi
 
 # copy over or recompile the new site
-cp -a ~/pages .
+cp -a ~/pages/ .
 
 # stage any changes and new files
 git add -A
