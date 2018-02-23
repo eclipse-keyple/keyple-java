@@ -16,6 +16,8 @@ import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
+import java.nio.ByteBuffer;
+
 /**
  * The Class PoGetChallengeCmdBuild. This class provides the dedicated constructor to build the PO
  * Get Challenge.
@@ -42,7 +44,7 @@ public class PoGetChallengeCmdBuild extends PoCommandBuilder implements Sendable
 
         byte p1 = (byte) 0x01;
         byte p2 = (byte) 0x10;
-        byte[] dataIn = null;
+        ByteBuffer dataIn = null;
         byte optionalLe = (byte) 0x08;
         // CalypsoRequest request = new CalypsoRequest(cla, command, p1, p2, dataIn, optionnalLe);
         ApduRequest apduRequest =

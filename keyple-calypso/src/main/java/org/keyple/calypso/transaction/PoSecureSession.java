@@ -8,6 +8,7 @@
 
 package org.keyple.calypso.transaction;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.DatatypeConverter;
@@ -81,7 +82,7 @@ public class PoSecureSession {
     public byte[] sessionTerminalChallenge;
     private byte[] sessionCardChallenge;
 
-    public byte[] sessionTerminalSignature;
+    ByteBuffer sessionTerminalSignature;
     private byte[] sessionCardSignature;
 
     boolean transactionResult;
@@ -653,8 +654,7 @@ public class PoSecureSession {
         boolean ratificationAsked = (ratificationCommand != null);
 
         // Build PO Close Session command
-        CloseSessionCmdBuild closeCommand =
-                new CloseSessionCmdBuild(poRevision, ratificationAsked, sessionTerminalSignature);
+        CloseSessionCmdBuild closeCommand = new CloseSessionCmdBuild(poRevision, ratificationAsked, sessionTerminalSignature);
 
         poApduRequestList.add(closeCommand.getApduRequest());
 

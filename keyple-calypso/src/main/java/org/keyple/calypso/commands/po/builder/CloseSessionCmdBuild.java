@@ -15,6 +15,8 @@ import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
+import java.nio.ByteBuffer;
+
 // TODO: Auto-generated Javadoc
 /**
  * This class provides the dedicated constructor to build the Close Secure Session APDU command.
@@ -35,15 +37,15 @@ public class CloseSessionCmdBuild extends PoCommandBuilder {
      * @throws InconsistentCommandException the inconsistent command exception
      */
     public CloseSessionCmdBuild(PoRevision revision, boolean ratificationAsked,
-            byte[] terminalSessionSignature) throws InconsistentCommandException {
+            ByteBuffer terminalSessionSignature) throws InconsistentCommandException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
         }
         // The optional parameter terminalSessionSignature could contain 4 or 8
         // bytes.
-        if (terminalSessionSignature != null && terminalSessionSignature.length != 4
-                && terminalSessionSignature.length != 8) {
+        if (terminalSessionSignature != null && terminalSessionSignature.limit() != 4
+                && terminalSessionSignature.limit() != 8) {
             throw new InconsistentCommandException();
         }
 

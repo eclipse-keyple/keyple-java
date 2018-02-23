@@ -8,6 +8,7 @@
 
 package org.keyple.calypso.commands.utils;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
@@ -38,20 +39,21 @@ public class RequestUtils {
     }
 
     public static ApduRequest constructAPDURequest(byte cla, CommandsTable ins, byte p1, byte p2,
-            byte[] dataIn) {
+            ByteBuffer dataIn) {
         return constructAPDURequest(cla, ins.getInstructionByte(), p1, p2, dataIn, null);
     }
 
     public static ApduRequest constructAPDURequest(byte cla, CommandsTable ins, byte p1, byte p2,
-            byte[] dataIn, byte le) {
+                                                   ByteBuffer dataIn, byte le) {
         return constructAPDURequest(cla, ins.getInstructionByte(), p1, p2, dataIn, le);
     }
 
     private static ApduRequest constructAPDURequest(byte cla, byte ins, byte p1, byte p2,
-            byte[] dataIn, Byte le) {
+            ByteBuffer dataIn, Byte le) {
 
         if (dataIn == null) {
-            dataIn = new byte[0];
+            // TODO: Drop this
+            dataIn = ByteBuffer.allocate(0);
         }
 
         boolean forceLe;
@@ -65,43 +67,41 @@ public class RequestUtils {
         int localCaseId = 0;
         {
             // try to retrieve case
-            if (dataIn.length == 0 && le == 0x00) {
+            if (dataIn.limit() == 0 && le == 0x00) {
                 localCaseId = 1;
             }
-            if (dataIn.length == 0 && le != 0x00) {
+            if (dataIn.limit() == 0 && le != 0x00) {
                 localCaseId = 2;
             }
-            if (dataIn.length != 0 && le == 0x00) {
+            if (dataIn.limit() != 0 && le == 0x00) {
                 localCaseId = 3;
             }
-            if (dataIn.length != 0 && le != 0x00) {
+            if (dataIn.limit() != 0 && le != 0x00) {
                 localCaseId = 4;
             }
         }
 
-        List<Byte> apdu = new ArrayList<Byte>();
+        ByteBuffer apdu = ByteBuffer.allocate(261);
 
-        apdu.add(cla);
-        apdu.add(ins);
-        apdu.add(p1);
-        apdu.add(p2);
+        apdu.put(cla);
+        apdu.put(ins);
+        apdu.put(p1);
+        apdu.put(p2);
 
-        if (dataIn.length != 0) {
-            apdu.add((byte) dataIn.length);
-            for (byte d : dataIn) {
-                apdu.add(d);
-            }
+        if (dataIn.limit() != 0) {
+            apdu.put((byte) dataIn.limit());
+            apdu.put(dataIn);
         }
 
 
         if (forceLe) {
             if (localCaseId == 4) {
-                apdu.add((byte) 0x00);
+                apdu.put((byte) 0x00);
             } else {
-                apdu.add(le);
+                apdu.put(le);
             }
         }
-        byte[] array = ArrayUtils.toPrimitive(apdu.toArray(new Byte[0]));
-        return new ApduRequest(array, localCaseId == 4);
+        //byte[] array = ArrayUtils.toPrimitive(apdu.toArray(new Byte[0]));
+        return new ApduRequest(apdu, localCaseId == 4);
     }
 }
