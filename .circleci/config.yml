@@ -25,7 +25,7 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run: gradle build javadoc jmh
+      - run: gradle build javadoc # jmh - Disabling JMH as it's very unreliable under CircleCI
       - run: .build/prepare_pages.sh
       - run: .circleci/save_artifacts.sh
       - run: .circleci/push_gh_pages.sh
