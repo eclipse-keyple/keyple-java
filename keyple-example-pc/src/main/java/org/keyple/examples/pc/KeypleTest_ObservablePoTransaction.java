@@ -108,22 +108,7 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
                         "========= PO Transaction ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
 
-        } catch (UnexpectedReaderException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ChannelStateReaderException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvalidApduReaderException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (TimeoutReaderException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InconsistentCommandException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOReaderException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
