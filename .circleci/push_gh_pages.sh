@@ -49,7 +49,7 @@ git add -A
 # now commit, ignoring branch gh-pages doesn't seem to work, so trying skip
 git commit --allow-empty -m "Deploy to GitHub pages [ci skip]"
 
-sed -i'' "s~https://github.com/~https://${GH_TOKEN}:x-oauth-basic@github.com/~" .git/config
+sed -i -e "s/git@github.com:calypsonet/https:\/\/${GH_TOKEN}:x-oauth-basic@github.com\/calypsonet/" .git/config
 cat .git/config
 
 # and push, but send any output to /dev/null to hide anything sensitive
