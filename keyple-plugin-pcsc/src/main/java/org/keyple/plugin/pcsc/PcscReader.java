@@ -230,13 +230,14 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         try {
             // if (aid != null) {
             // generate select application command
-            byte[] command = new byte[aid.length + 5];
+            byte[] command = new byte[aid.length + 6];
             command[0] = (byte) 0x00;
             command[1] = (byte) 0xA4;
             command[2] = (byte) 0x04;
             command[3] = (byte) 0x00;
             command[4] = Byte.decode("" + aid.length);
             System.arraycopy(aid, 0, command, 5, aid.length);
+            command[5+aid.length] = (byte) 0x00;
             logger.info(getName() + " : Send AID : " + formatLogRequest(command));
 
             System.out.println(terminal.getName()
