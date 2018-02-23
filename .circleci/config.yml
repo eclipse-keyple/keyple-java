@@ -27,7 +27,8 @@ jobs:
 
       - run: gradle build javadoc jmh
       - run: .build/prepare_pages.sh
-      - run: .build/save_tests.sh
+      - run: .circleci/save_artifacts.sh
+      - run: .circleci/push_gh_pages.sh
 
       - store_test_results:
           path: ~/tests
