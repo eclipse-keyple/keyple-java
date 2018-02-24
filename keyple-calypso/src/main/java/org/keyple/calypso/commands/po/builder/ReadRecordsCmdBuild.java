@@ -60,7 +60,8 @@ public class ReadRecordsCmdBuild extends PoCommandBuilder implements SendableInS
 
         // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, dataIn,
         // expectedLength);
-        ApduRequest apduRequest = RequestUtils.constructAPDURequest(cla, command, p1, p2, null, expectedLength);
+        ApduRequest apduRequest =
+                RequestUtils.constructAPDURequest(cla, command, p1, p2, null, expectedLength);
         this.request = apduRequest;
     }
 

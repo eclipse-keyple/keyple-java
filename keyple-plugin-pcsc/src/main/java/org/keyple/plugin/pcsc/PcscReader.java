@@ -39,7 +39,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     private CardChannel channel;
     private Card card;
 
-    private byte[] aidCurrentlySelected;
+    private ByteBuffer aidCurrentlySelected;
     private ApduResponse fciDataSelected;
     private boolean atrDefaultSelected = false;
 
@@ -221,24 +221,23 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      *
      * @throws ChannelStateReaderException
      */
-    private ApduResponse connect(byte[] aid) throws ChannelStateReaderException {
+    private ApduResponse connect(ByteBuffer aid) throws ChannelStateReaderException {
         try {
             // if (aid != null) {
             // generate select application command
-            ByteBuffer command = ByteBuffer.allocate(aid.length + 6);
-            command.put( (byte) 0x00);
-            command.put( (byte) 0xA4);
-            command.put( (byte) 0x04);
-            command.put( (byte) 0x00);
-            command.put( (byte) aid.length);
-            command.put( aid );
-            command.put( (byte) 0x00);
+            ByteBuffer command = ByteBuffer.allocate(aid.limit() + 6);
+            command.put((byte) 0x00);
+            command.put((byte) 0xA4);
+            command.put((byte) 0x04);
+            command.put((byte) 0x00);
+            command.put((byte) aid.limit());
+            command.put(aid);
+            command.put((byte) 0x00);
             logger.info(getName() + " : Send AID : " + ByteBufferUtils.toHex(command));
 
             System.out.println(terminal.getName()
                     + "\t\t PC/SC Select Application\t\tfrom PcscReader.connect(byte[] aid)");
-            System.out.println(
-                    settings.get("protocol") + " > " + ByteBufferUtils.toHex(command));
+            System.out.println(settings.get("protocol") + " > " + ByteBufferUtils.toHex(command));
             command.position(0);
             ResponseAPDU res = channel.transmit(new CommandAPDU(command));
             System.out.println(settings.get("protocol") + " < "

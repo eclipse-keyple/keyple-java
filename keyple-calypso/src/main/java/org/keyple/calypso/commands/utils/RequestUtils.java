@@ -9,9 +9,6 @@
 package org.keyple.calypso.commands.utils;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.commons.lang3.ArrayUtils;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.commands.CommandsTable;
 import org.keyple.commands.InconsistentCommandException;
@@ -27,7 +24,8 @@ public class RequestUtils {
     public static void controlRequestConsistency(CalypsoCommands command, ApduRequest request)
             throws InconsistentCommandException {
         // Simplifying the strange logic, but I'm not sure this helps much
-        if ( request != null && request.getBuffer() != null && request.getBuffer().get(1) != command.getInstructionByte() ) {
+        if (request != null && request.getBuffer() != null
+                && request.getBuffer().get(1) != command.getInstructionByte()) {
             throw new InconsistentCommandException();
         }
     }
@@ -38,12 +36,12 @@ public class RequestUtils {
     }
 
     public static ApduRequest constructAPDURequest(byte cla, CommandsTable ins, byte p1, byte p2,
-                                                   ByteBuffer dataIn, byte le) {
+            ByteBuffer dataIn, byte le) {
         return constructAPDURequest(cla, ins.getInstructionByte(), p1, p2, dataIn, le);
     }
 
-    private static ApduRequest constructAPDURequest(byte cla, byte ins, byte p1, byte p2,
-            ByteBuffer dataIn, Byte le) {
+    static ApduRequest constructAPDURequest(byte cla, byte ins, byte p1, byte p2, ByteBuffer dataIn,
+            Byte le) {
 
         if (dataIn == null) {
             // TODO: Drop this
@@ -97,7 +95,11 @@ public class RequestUtils {
                 apdu.put(le);
             }
         }
-        //byte[] array = ArrayUtils.toPrimitive(apdu.toArray(new Byte[0]));
+
+        apdu.limit(apdu.position());
+        apdu.position(0);
+
+        // byte[] array = ArrayUtils.toPrimitive(apdu.toArray(new Byte[0]));
         return new ApduRequest(apdu, localCaseId == 4);
     }
 }

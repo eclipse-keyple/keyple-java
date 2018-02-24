@@ -8,14 +8,13 @@
 
 package org.keyple.calypso.commands.po.builder;
 
+import java.nio.ByteBuffer;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.po.PoCommandBuilder;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
-
-import java.nio.ByteBuffer;
 
 // TODO: Auto-generated Javadoc
 /**

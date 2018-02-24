@@ -29,10 +29,7 @@ import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 import org.keyple.calypso.transaction.PoSecureSession;
 import org.keyple.commands.InconsistentCommandException;
-import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.ProxyReader;
-import org.keyple.seproxy.SeRequest;
-import org.keyple.seproxy.SeResponse;
+import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.*;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -417,8 +414,8 @@ public class PoSecureSessionTest {
                 (byte) 0x08, (byte) 0x00);
 
         byte[] aid = new byte[] {0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41};
-        SeResponse seResponse2 = this.poPlainSecrureSession.processIdentification(aid,
-                Arrays.asList(poCommandsInsideSession));
+        SeResponse seResponse2 = this.poPlainSecrureSession.processIdentification(
+                ByteBufferUtils.wrap(aid), Arrays.asList(poCommandsInsideSession));
 
         assertEquals(3, seResponse2.getApduResponses().size());
         // Whitebox.getInternalState(seResponse2, "channelPreviouslyOpen").equals(true);
@@ -455,8 +452,8 @@ public class PoSecureSessionTest {
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
             InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException,
             InconsistentParameterValueException {
-        OpenSessionCmdBuild openCommand =
-                new OpenSessionCmdBuild(PoRevision.REV2_4, key, samchallenge, sfi, recordNumber);
+        OpenSessionCmdBuild openCommand = new OpenSessionCmdBuild(PoRevision.REV2_4, key,
+                ByteBufferUtils.wrap(samchallenge), sfi, recordNumber);
         return poPlainSecrureSession.processOpening(openCommand,
                 Arrays.asList(poCommandsInsideSession));
 

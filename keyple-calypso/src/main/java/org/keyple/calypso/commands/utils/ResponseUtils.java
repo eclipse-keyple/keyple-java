@@ -9,6 +9,7 @@
 package org.keyple.calypso.commands.utils;
 
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
+import org.keyple.seproxy.ByteBufferUtils;
 
 /**
  * This class eases the parse of APDUResponses into objects.
@@ -82,8 +83,10 @@ public class ResponseUtils {
             }
         }
 
-        return new GetDataFciRespPars.FCI(dfName, fciProprietaryTemplate,
-                fciIssuerDiscretionaryData, applicationSN, startupInformation);
+        return new GetDataFciRespPars.FCI(ByteBufferUtils.wrap(dfName),
+                ByteBufferUtils.wrap(fciProprietaryTemplate),
+                ByteBufferUtils.wrap(fciIssuerDiscretionaryData),
+                ByteBufferUtils.wrap(applicationSN), startupInformation);
     }
 
     /**

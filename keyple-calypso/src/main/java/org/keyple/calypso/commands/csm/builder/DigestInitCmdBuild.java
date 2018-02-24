@@ -8,14 +8,13 @@
 
 package org.keyple.calypso.commands.csm.builder;
 
+import java.nio.ByteBuffer;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.csm.CsmCommandBuilder;
 import org.keyple.calypso.commands.csm.CsmRevision;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
-
-import java.nio.ByteBuffer;
 
 /**
  * This class provides the dedicated constructor to build the CSM Digest Init APDU command.
@@ -32,17 +31,17 @@ public class DigestInitCmdBuild extends CsmCommandBuilder {
     /**
      * Instantiates a new DigestInitCmdBuild.
      *
-     * @param revision            of the CSM(SAM)
-     * @param verificationMode    the verification mode
-     * @param rev3_2Mode          the rev 3 2 mode
+     * @param revision of the CSM(SAM)
+     * @param verificationMode the verification mode
+     * @param rev3_2Mode the rev 3 2 mode
      * @param workKeyRecordNumber the work key record number
-     * @param workKeyKif          from the OpenSessionCmdBuild response
-     * @param workKeyKVC          from the OpenSessionCmdBuild response
-     * @param digestData          all data out from the OpenSessionCmdBuild response
+     * @param workKeyKif from the OpenSessionCmdBuild response
+     * @param workKeyKVC from the OpenSessionCmdBuild response
+     * @param digestData all data out from the OpenSessionCmdBuild response
      * @throws InconsistentCommandException the inconsistent command exception
      */
     public DigestInitCmdBuild(CsmRevision revision, boolean verificationMode, boolean rev3_2Mode,
-                              byte workKeyRecordNumber, byte workKeyKif, byte workKeyKVC, byte[] digestData)
+            byte workKeyRecordNumber, byte workKeyKif, byte workKeyKVC, byte[] digestData)
             throws InconsistentCommandException {
         super(command, null);
         if (revision != null) {
@@ -81,7 +80,8 @@ public class DigestInitCmdBuild extends CsmCommandBuilder {
         }
         // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, CalypsoCommands.CSM_DIGEST_INIT,
         // p1, p2, dataIn);
-        request = RequestUtils.constructAPDURequest(cla, CalypsoCommands.CSM_DIGEST_INIT, p1, p2, dataIn);
+        request = RequestUtils.constructAPDURequest(cla, CalypsoCommands.CSM_DIGEST_INIT, p1, p2,
+                dataIn);
 
     }
 

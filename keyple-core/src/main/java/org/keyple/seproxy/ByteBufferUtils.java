@@ -41,6 +41,9 @@ public class ByteBufferUtils {
      * @return Hex representation of the buffer
      */
     public static String toHex(ByteBuffer buffer) {
+        if (buffer == null) {
+            return "";
+        }
         StringBuilder str = new StringBuilder((buffer.limit() - buffer.arrayOffset()) * 2);
         final byte[] array = buffer.array();
         for (int i = buffer.arrayOffset(), e = i + buffer.limit(); i < e; i++) {
@@ -58,8 +61,33 @@ public class ByteBufferUtils {
      */
     public static byte[] toBytes(ByteBuffer buffer) {
         byte[] data = new byte[buffer.limit()];
-        buffer.rewind();
+        int p = buffer.position();
         buffer.get(data);
+        buffer.position(p);
         return data;
+    }
+
+    public static ByteBuffer subIndex(ByteBuffer buf, int start, int end) {
+        buf = buf.duplicate();
+        buf.position(start).limit(end);
+        return buf.slice();
+    }
+
+    public static ByteBuffer subLen(ByteBuffer buf, int offset, int length) {
+        buf = buf.duplicate();
+        buf.position(offset).limit(offset + length);
+        return buf.slice();
+    }
+
+    /**
+     * Temporary conversion method. Every time this method is called it should be replaced by
+     * something else.
+     *
+     * @param array Array to convert to {@link ByteBuffer}
+     * @return {@link ByteBuffer} or null
+     * @deprecated This should be replaced by some proper {@link ByteBuffer} handling
+     */
+    public static ByteBuffer wrap(byte[] array) {
+        return array != null ? ByteBuffer.wrap(array) : null;
     }
 }

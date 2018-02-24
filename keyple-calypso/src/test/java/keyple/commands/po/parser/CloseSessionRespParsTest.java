@@ -8,10 +8,10 @@
 
 package keyple.commands.po.parser;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.parser.CloseSessionRespPars;
@@ -46,25 +46,27 @@ public class CloseSessionRespParsTest {
         byte[] apduResponseCaseThree =
                 new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, (byte) 0x90, 0x00};
 
-        byte[] sessionSignature = new byte[] {(byte) 0x4D, (byte) 0xBD, (byte) 0xC9, 0x60};
+        ByteBuffer sessionSignature =
+                ByteBufferUtils.wrap(new byte[] {(byte) 0x4D, (byte) 0xBD, (byte) 0xC9, 0x60});
         byte[] sessionSignatureCaseTwo = new byte[] {(byte) 0xA7, 0x21, (byte) 0xC2, 0x2E};
 
         {// Case Length = 4
             CloseSessionRespPars pars =
                     new CloseSessionRespPars(new ApduResponse(apduResponse, true));
-            Assert.assertArrayEquals(sessionSignature, pars.getSignatureLo());
+            Assert.assertEquals(sessionSignature, pars.getSignatureLo());
         }
 
         {// Case Length = 8
             CloseSessionRespPars pars =
                     new CloseSessionRespPars(new ApduResponse(apduResponseCaseTwo, true));
-            Assert.assertArrayEquals(sessionSignatureCaseTwo, pars.getSignatureLo());
+            Assert.assertEquals(ByteBufferUtils.wrap(sessionSignatureCaseTwo),
+                    pars.getSignatureLo());
         }
 
         {// Case Other
             CloseSessionRespPars pars =
                     new CloseSessionRespPars(new ApduResponse(apduResponseCaseThree, true));
-            Assert.assertEquals(0, pars.getSignatureLo().length);
+            Assert.assertEquals("", ByteBufferUtils.toHex(pars.getSignatureLo()));
         }
     }
 
@@ -73,8 +75,8 @@ public class CloseSessionRespParsTest {
         CloseSessionRespPars parser =
                 new CloseSessionRespPars(new ApduResponse(ByteBufferUtils.fromHex("9000h"), true));
         // This assert wasn't passing
-        Assert.assertEquals("", Hex.encodeHexString(parser.getSignatureLo()));
-        Assert.assertEquals("", Hex.encodeHexString(parser.getPostponedData()));
+        Assert.assertEquals("", ByteBufferUtils.toHex(parser.getSignatureLo()));
+        Assert.assertEquals("", ByteBufferUtils.toHex(parser.getPostponedData()));
     }
 
     @Test // Calypso / page 105 / Example command aborting a session:
@@ -87,15 +89,15 @@ public class CloseSessionRespParsTest {
     public void lc4withoutPostponedData() throws DecoderException {
         CloseSessionRespPars parser = new CloseSessionRespPars(
                 new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), true));
-        Assert.assertEquals("fedcba98", Hex.encodeHexString(parser.getSignatureLo()));
-        Assert.assertEquals("", Hex.encodeHexString(parser.getPostponedData()));
+        Assert.assertEquals("FEDCBA98", ByteBufferUtils.toHex(parser.getSignatureLo()));
+        Assert.assertEquals("", ByteBufferUtils.toHex(parser.getPostponedData()));
     }
 
     @Test // Calypso / page 105 / Example command, Lc=4, with postponed data:
     public void lc4WithPostponedData() throws DecoderException {
         CloseSessionRespPars parser = new CloseSessionRespPars(
                 new ApduResponse(ByteBufferUtils.fromHex("04 345678 FEDCBA98 9000h"), true));
-        Assert.assertEquals("fedcba98", Hex.encodeHexString(parser.getSignatureLo()));
-        Assert.assertEquals("04345678", Hex.encodeHexString(parser.getPostponedData()));
+        Assert.assertEquals("FEDCBA98", ByteBufferUtils.toHex(parser.getSignatureLo()));
+        Assert.assertEquals("04345678", ByteBufferUtils.toHex(parser.getPostponedData()));
     }
 }

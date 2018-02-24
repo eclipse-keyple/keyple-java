@@ -8,14 +8,13 @@
 
 package org.keyple.calypso.commands.po.builder;
 
+import java.nio.ByteBuffer;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.po.PoCommandBuilder;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
-
-import java.nio.ByteBuffer;
 
 /**
  * The Class OpenSessionCmdBuild. This class provides the dedicated constructor to build the Open
@@ -62,7 +61,7 @@ public class OpenSessionCmdBuild extends PoCommandBuilder {
             case REV3_2:
                 p1 = (byte) ((recordNumberToRead * 8) + keyIndex);
                 p2 = (byte) ((sfiToSelect * 8) + 2);
-                dataIn = ByteBuffer.allocate(samChallenge.limit()+1);
+                dataIn = ByteBuffer.allocate(samChallenge.limit() + 1);
                 dataIn.put((byte) 0x00);
                 dataIn.put(samChallenge);
                 break;

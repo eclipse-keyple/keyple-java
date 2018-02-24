@@ -8,6 +8,7 @@
 
 package keyple.commands.csm.builder;
 
+import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.csm.CsmRevision;
@@ -15,22 +16,24 @@ import org.keyple.calypso.commands.csm.builder.DigestUpdateCmdBuild;
 import org.keyple.commands.ApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
+import org.keyple.seproxy.ByteBufferUtils;
 
 public class DigestUpdateCmdBuildTest {
 
     @Test
     public void digestUpdateCmdBuild() throws InconsistentCommandException {
-        byte[] digestDAta = {(byte) 0x94, (byte) 0xAE, 0x01, 0x02};
-        byte[] request = {(byte) 0x94, (byte) 0x8C, 0x00, (byte) 0x80, (byte) digestDAta.length,
-                (byte) 0x94, (byte) 0xAE, 0x01, 0x02};
+        ByteBuffer digestDAta =
+                ByteBufferUtils.wrap(new byte[] {(byte) 0x94, (byte) 0xAE, 0x01, 0x02});
+        ByteBuffer request = ByteBufferUtils.wrap(new byte[] {(byte) 0x94, (byte) 0x8C, 0x00,
+                (byte) 0x80, (byte) digestDAta.limit(), (byte) 0x94, (byte) 0xAE, 0x01, 0x02});
 
         ApduCommandBuilder apduCommandBuilder =
                 new DigestUpdateCmdBuild(CsmRevision.S1D, true, digestDAta);
         ApduRequest ApduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertArrayEquals(request, ApduRequest.getBytes());
+        Assert.assertEquals(request, ApduRequest.getBuffer());
 
-        byte[] request2 = {(byte) 0x80, (byte) 0x8C, 0x00, (byte) 0x80, (byte) digestDAta.length,
+        byte[] request2 = {(byte) 0x80, (byte) 0x8C, 0x00, (byte) 0x80, (byte) digestDAta.limit(),
                 (byte) 0x94, (byte) 0xAE, 0x01, 0x02};
 
         ApduCommandBuilder apduCommandBuilder2 =

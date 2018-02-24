@@ -8,6 +8,7 @@
 
 package keyple.commands.csm.builder;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +35,7 @@ public class SelectDiversiferCmdBuildTest {
 
     Logger logger = LogManager.getLogger(SelectDiversiferCmdBuildTest.class);
 
-    private byte[] dataIn;
+    private ByteBuffer dataIn;
 
     private ProxyReader fakeSpecificReader;
 
@@ -89,7 +90,7 @@ public class SelectDiversiferCmdBuildTest {
         Mockito.when(fakeSpecificReader.transmit(seRequest)).thenReturn(seResponse);
 
         GetDataFciRespPars.FCI fci =
-                GetDataFciRespPars.toFCI(responseFci.getApduResponses().get(0).getBytes());
+                GetDataFciRespPars.toFCI(responseFci.getApduResponses().get(0).getBuffer());
         dataIn = fci.getApplicationSN();
 
         ApduCommandBuilder apduCommandBuilder2 = new SelectDiversifierCmdBuild(null, dataIn);

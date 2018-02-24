@@ -8,6 +8,7 @@
 
 package keyple.commands.utils;
 
+import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +16,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.seproxy.ApduRequest;
+import org.keyple.seproxy.ByteBufferUtils;
 
 @RunWith(BlockJUnit4ClassRunner.class)
 public class RequestUtilsTest {
@@ -31,7 +33,7 @@ public class RequestUtilsTest {
 
     private byte pDeux;
 
-    private byte[] dataIn;
+    private ByteBuffer dataIn;
 
     private byte option;
 
@@ -88,7 +90,7 @@ public class RequestUtilsTest {
         ins = CalypsoCommands.PO_GET_DATA_FCI;
         pUn = 0x00;
         pDeux = 0x6F;
-        dataIn = new byte[] {0x00, 0x00};
+        dataIn = ByteBufferUtils.wrap(new byte[] {0x00, 0x00});
 
         // request = new CalypsoRequest(cla, ins, pUn, pDeux, dataIn);
         ApduRequest actual = RequestUtils.constructAPDURequest(cla, ins, pUn, pDeux, dataIn);
@@ -105,10 +107,10 @@ public class RequestUtilsTest {
         ins = CalypsoCommands.PO_GET_DATA_FCI;
         pUn = 0x00;
         pDeux = 0x6F;
-        dataIn = new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, 0x00};
+        dataIn = ByteBufferUtils.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, 0x00});
         option = (byte) 0x01;
         optionExptected = (byte) 0x00;
-        fci = new byte[] {(byte) 0x00, (byte) 0xCA, 0x00, 0x6F, (byte) dataIn.length, (byte) 0xA8,
+        fci = new byte[] {(byte) 0x00, (byte) 0xCA, 0x00, 0x6F, (byte) dataIn.limit(), (byte) 0xA8,
                 0x31, (byte) 0xC3, 0x3E, 0x00, optionExptected};
         expected = new ApduRequest(fci, isCase4);
 

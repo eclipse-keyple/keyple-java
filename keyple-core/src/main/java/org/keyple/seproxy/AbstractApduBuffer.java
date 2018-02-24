@@ -55,13 +55,13 @@ class AbstractApduBuffer {
      * Get a slice from the buffer
      *
      * @param position Position of the new slice in the buffer
-     * @param length   Length of the slice in the buffer
+     * @param length Length of the slice in the buffer
      * @return A byte buffer coming from the inner {@link #buffer}
      */
     public ByteBuffer slice(int position, int length) {
         ByteBuffer duplicate = buffer.duplicate();
         duplicate.position(position);
-        duplicate.limit(position+length);
+        duplicate.limit(position + length);
         return duplicate.slice();
     }
 

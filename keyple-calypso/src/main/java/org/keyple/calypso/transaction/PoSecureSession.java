@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.DatatypeConverter;
-import org.apache.commons.lang3.ArrayUtils;
 import org.keyple.calypso.commands.csm.CsmRevision;
 import org.keyple.calypso.commands.csm.builder.*;
 import org.keyple.calypso.commands.csm.parser.CsmGetChallengeRespPars;
@@ -65,9 +64,9 @@ public class PoSecureSession {
     private SessionState currentState;
 
     /** Selected AID of the Calypso PO. */
-    private byte[] poCalypsoInstanceAid;
+    private ByteBuffer poCalypsoInstanceAid;
     /** Serial Number of the selected Calypso instance. */
-    private byte[] poCalypsoInstanceSerial;
+    private ByteBuffer poCalypsoInstanceSerial;
 
     /** The PO Calypso Revision. */
     public PoRevision poRevision = PoRevision.REV3_1;// PoCommandBuilder.defaultRevision; // TODO =>
@@ -83,7 +82,7 @@ public class PoSecureSession {
     private byte[] sessionCardChallenge;
 
     ByteBuffer sessionTerminalSignature;
-    private byte[] sessionCardSignature;
+    ByteBuffer sessionCardSignature;
 
     boolean transactionResult;
 
@@ -105,78 +104,6 @@ public class PoSecureSession {
         currentState = SessionState.PO_NOT_IDENTIFIED;
     }
 
-    // /**
-    // * Gets the SE response diversifier by AID reader and FCI.
-    // *
-    // * @param keepChannelOpen
-    // * the keep channel open
-    // * @param reader
-    // * the reader
-    // * @param applicationSN
-    // * the application SN
-    // * @return the SE response diversifier by AID reader and FCI
-    // * @throws UnexpectedReaderException
-    // * the unexpected reader exception
-    // * @throws IOReaderException
-    // * the IO reader exception
-    // * @throws ChannelStateReaderException
-    // * the channel state reader exception
-    // * @throws InvalidApduReaderException
-    // * the invalid apdu reader exception
-    // * @throws TimeoutReaderException
-    // * the timeout reader exception
-    // * @throws InconsistentCommandException
-    // * the inconsistent command exception
-    // */
-    // private SeResponse selectDiversifier(boolean keepChannelOpen, ProxyReader reader, byte[]
-    // applicationSN)
-    // throws UnexpectedReaderException, IOReaderException, ChannelStateReaderException,
-    // InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
-    // List<ApduRequest> apduRequestList = new ArrayList<ApduRequest>();
-    //
-    // ApduCommandBuilder selectDiversifier = new SelectDiversifierCmdBuild(this.csmRevision,
-    // applicationSN);
-    // ApduRequest requestDiversifier = selectDiversifier.getApduRequest();
-    // apduRequestList.add(requestDiversifier);
-    //
-    // return transmitApduResquests(null, reader, keepChannelOpen, apduRequestList);
-    //
-    // }
-
-    // /**
-    // * Gets the SE response challenge by AID reader and FCI.
-    // *
-    // * @param keepChannelOpen
-    // * the keep channel open
-    // * @param reader
-    // * the reader
-    // * @return the SE response challenge by AID reader and FCI
-    // * @throws UnexpectedReaderException
-    // * the unexpected reader exception
-    // * @throws IOReaderException
-    // * the IO reader exception
-    // * @throws ChannelStateReaderException
-    // * the channel state reader exception
-    // * @throws InvalidApduReaderException
-    // * the invalid apdu reader exception
-    // * @throws TimeoutReaderException
-    // * the timeout reader exception
-    // * @throws InconsistentCommandException
-    // * the inconsistent command exception
-    // */
-    // private SeResponse getChallenge(boolean keepChannelOpen, ProxyReader reader)
-    // throws UnexpectedReaderException, IOReaderException, ChannelStateReaderException,
-    // InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
-    // List<ApduRequest> apduRequestList = new ArrayList<ApduRequest>();
-    //
-    // ApduCommandBuilder csmGetChallenge = new CsmGetChallengeCmdBuild(this.csmRevision, (byte)
-    // 0x04);
-    // ApduRequest request = csmGetChallenge.getApduRequest();
-    // apduRequestList.add(request);
-    //
-    // return transmitApduResquests(null, reader, keepChannelOpen, apduRequestList);
-    // }
-
     /**
      * Process identification. On poReader, generate a SERequest for the specified PO AID, with
      * keepChannelOpen set at true, and apduRequests defined with the optional
@@ -194,7 +121,7 @@ public class PoSecureSession {
      * @throws TimeoutReaderException the timeout reader exception
      * @throws InconsistentCommandException the inconsistent command exception
      */
-    public SeResponse processIdentification(byte[] poAid,
+    public SeResponse processIdentification(ByteBuffer poAid,
             List<SendableInSession> poCommandsOutsideSession)
             throws UnexpectedReaderException, IOReaderException, ChannelStateReaderException,
             InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
@@ -219,10 +146,10 @@ public class PoSecureSession {
         poRevision = computePoRevision(poFciRespPars.getApplicationTypeByte());
         poCalypsoInstanceAid = poFciRespPars.getDfName();
         System.out.println("\t========= Identification === Selected DF Name : "
-                + DatatypeConverter.printHexBinary(poCalypsoInstanceAid));
+                + ByteBufferUtils.toHex(poCalypsoInstanceAid));
         poCalypsoInstanceSerial = poFciRespPars.getApplicationSerialNumber();
         System.out.println("\t========= Identification === Calypso Serial Number : "
-                + DatatypeConverter.printHexBinary(poCalypsoInstanceSerial));
+                + ByteBufferUtils.toHex(poCalypsoInstanceSerial));
 
         // Define CSM Select Diversifier command
         ApduCommandBuilder selectDiversifier =
@@ -376,33 +303,34 @@ public class PoSecureSession {
                         "\t========= Opening ========== Generate CSM cmd request - Digest Update for PO request : "
                                 + DatatypeConverter
                                         .printHexBinary((new DigestUpdateCmdBuild(csmRevision,
-                                                false, poApduRequestList.get(i).getBytes()))
+                                                false, poApduRequestList.get(i).getBuffer()))
                                                         .getApduRequest().getBytes()));
                 csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
-                        poApduRequestList.get(i).getBytes())).getApduRequest());
+                        poApduRequestList.get(i).getBuffer())).getApduRequest());
                 // Build "Digest Update" command for each PO APDU Response
                 System.out.println(
                         "\t========= Opening ==WRONG=== Generate CSM cmd request - Digest Update for PO response : "
-                                + DatatypeConverter
-                                        .printHexBinary((new DigestUpdateCmdBuild(csmRevision,
-                                                false, poApduResponseList.get(i).getBytes()))
-                                                        .getApduRequest().getBytes()));
+                                + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision,
+                                        false, poApduResponseList.get(i).getBuffer())
+                                                .getApduRequest().getBuffer())));
                 // csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
                 // poApduResponseList.get(i).getBytes())).getApduRequest()); //TODO => this is the
                 // rigth command, to fix ApduResponse.getBytes
-                byte[] additionOfGetBytesAndGetStatusCode =
-                        ArrayUtils.addAll(poApduResponseList.get(i).getBytes(),
-                                poApduResponseList.get(i).getStatusCodeOld());
-                // System.out.println("\t\tDEBUG ##### csmApduResponseList.size() : " +
-                // DatatypeConverter.printHexBinary(additionOfGetBytesAndGetStatusCode));
+                /*
+                 * ByteBuffer additionOfGetBytesAndGetStatusCode =
+                 * ArrayUtils.addAll(poApduResponseList.get(i).getBuffer(),
+                 * poApduResponseList.get(i).getStatusCodeOld()); //
+                 * System.out.println("\t\tDEBUG ##### csmApduResponseList.size() : " + //
+                 * DatatypeConverter.printHexBinary(additionOfGetBytesAndGetStatusCode));
+                 */
                 System.out.println(
                         "\t========= Opening ==HACK==== Generate CSM cmd request - Digest Update for PO response : "
-                                + DatatypeConverter
-                                        .printHexBinary((new DigestUpdateCmdBuild(csmRevision,
-                                                false, additionOfGetBytesAndGetStatusCode))
-                                                        .getApduRequest().getBytes()));
+                                + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision,
+                                        false, poApduResponseList.get(i).getBuffer()))
+                                                .getApduRequest().getBuffer()));
                 csmApduRequestList.add(((new DigestUpdateCmdBuild(csmRevision, false,
-                        additionOfGetBytesAndGetStatusCode)).getApduRequest())); // HACK
+                        poApduResponseList.get(i).getBuffer())).getApduRequest())); // HACK
+
             }
         }
 
@@ -494,18 +422,17 @@ public class PoSecureSession {
         List<ApduResponse> poApduResponseList = poResponse.getApduResponses();
 
         // Browse all exchanged PO commands to compute CSM digest
-        // TODO => rajouter un contr�le afin de v�rifier que poApduResponseList a m�me taille que
+        // TODO => rajouter un contrôle afin de vérifier que poApduResponseList a même taille que
         // poApduRequestList
         for (int i = 0; i < poApduRequestList.size(); i++) {
             // Build "Digest Update" command for each PO APDU Request
             System.out.println(
                     "\t========= Continuation ===== Generate CSM cmd request - Digest Update for PO request : "
-                            + DatatypeConverter
-                                    .printHexBinary((new DigestUpdateCmdBuild(csmRevision, false,
-                                            poApduRequestList.get(i).getBytes())).getApduRequest()
-                                                    .getBytes()));
+                            + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
+                                    poApduRequestList.get(i).getBuffer())).getApduRequest()
+                                            .getBuffer()));
             csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
-                    poApduRequestList.get(i).getBytes())).getApduRequest());
+                    poApduRequestList.get(i).getBuffer())).getApduRequest());
             // Build "Digest Update" command for each PO APDU Response
             // System.out.println("\t========= Continuation ===== Generate CSM cmd request - Digest
             // Update for PO response : " + DatatypeConverter.printHexBinary((new
@@ -513,26 +440,26 @@ public class PoSecureSession {
             // poApduResponseList.get(i).getBytes())).getApduRequest().getBytes()));
             System.out.println(
                     "\t==WRONG== Continuation ===== Generate CSM cmd request - Digest Update for PO response : "
-                            + DatatypeConverter
-                                    .printHexBinary((new DigestUpdateCmdBuild(csmRevision, false,
-                                            poApduResponseList.get(i).getBytes())).getApduRequest()
-                                                    .getBytes()));
+                            + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
+                                    poApduResponseList.get(i).getBuffer())).getApduRequest()
+                                            .getBuffer()));
             // csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
             // poApduResponseList.get(i).getBytes())).getApduRequest()); //TODO => this is the rigth
             // command, to fix ApduResponse.getBytes
-            byte[] additionOfGetBytesAndGetStatusCode =
-                    ArrayUtils.addAll(poApduResponseList.get(i).getBytes(),
-                            poApduResponseList.get(i).getStatusCodeOld());
+            /*
+             * byte[] additionOfGetBytesAndGetStatusCode =
+             * ArrayUtils.addAll(poApduResponseList.get(i).getBytes(),
+             * poApduResponseList.get(i).getStatusCodeOld());
+             */
             // System.out.println("\t\tDEBUG ##### csmApduResponseList.size() : " +
             // DatatypeConverter.printHexBinary(additionOfGetBytesAndGetStatusCode));
             System.out.println(
                     "\t==HACK=== Continuation ===== Generate CSM cmd request - Digest Update for PO response : "
-                            + DatatypeConverter
-                                    .printHexBinary((new DigestUpdateCmdBuild(csmRevision, false,
-                                            additionOfGetBytesAndGetStatusCode)).getApduRequest()
-                                                    .getBytes()));
+                            + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
+                                    poApduResponseList.get(i).getBuffer())).getApduRequest()
+                                            .getBuffer()));
             csmApduRequestList.add(((new DigestUpdateCmdBuild(csmRevision, false,
-                    additionOfGetBytesAndGetStatusCode)).getApduRequest())); // HACK
+                    poApduResponseList.get(i).getBuffer())).getApduRequest())); // HACK
 
         }
 
@@ -600,12 +527,12 @@ public class PoSecureSession {
 
                     // Build "Digest Update" command for each PO APDU Request
                     csmApduRequestList_1.add((new DigestUpdateCmdBuild(csmRevision, false,
-                            poApduRequestList.get(i).getBytes())).getApduRequest());
+                            poApduRequestList.get(i).getBuffer())).getApduRequest());
                     // Build "Digest Update" command for each "ANTICIPATED" PO APDU Response
                     // csmApduRequestList_1.add((new DigestUpdateCmdBuild(csmRevision, false,
                     // poApduResponseList_1.get(i).getBytes())).getApduRequest());
                     csmApduRequestList_1.add((new DigestUpdateCmdBuild(csmRevision, false,
-                            poAnticipatedResponseInsideSession.get(i).getBytes()))
+                            poAnticipatedResponseInsideSession.get(i).getBuffer()))
                                     .getApduRequest());
                 }
             } else {
@@ -654,7 +581,8 @@ public class PoSecureSession {
         boolean ratificationAsked = (ratificationCommand != null);
 
         // Build PO Close Session command
-        CloseSessionCmdBuild closeCommand = new CloseSessionCmdBuild(poRevision, ratificationAsked, sessionTerminalSignature);
+        CloseSessionCmdBuild closeCommand =
+                new CloseSessionCmdBuild(poRevision, ratificationAsked, sessionTerminalSignature);
 
         poApduRequestList.add(closeCommand.getApduRequest());
 

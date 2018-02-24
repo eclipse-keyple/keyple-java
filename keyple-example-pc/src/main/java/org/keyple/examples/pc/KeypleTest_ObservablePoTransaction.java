@@ -11,7 +11,6 @@ package org.keyple.examples.pc;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.DatatypeConverter;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.SendableInSession;
 import org.keyple.calypso.commands.po.builder.OpenSessionCmdBuild;
@@ -72,7 +71,7 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
             // Step 1
             System.out.println(
                     "\n\n========= PO Transaction ======= Identification =====================");
-            poTransaction.processIdentification(DatatypeConverter.parseHexBinary(poAid), null);
+            poTransaction.processIdentification(ByteBufferUtils.fromHex(poAid), null);
 
             // Step 2
             System.out.println(
@@ -81,9 +80,9 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
             byte debitKeyIndex = 0x03;
             // Open Session for the debit key #1 - with read of the first record of the cyclic EF of
             // SFI 0Ah
-            OpenSessionCmdBuild poOpenSession =
-                    new OpenSessionCmdBuild(poTransaction.getRevision(), debitKeyIndex,
-                            poTransaction.sessionTerminalChallenge, (byte) 0x0A, (byte) 0x01);
+            OpenSessionCmdBuild poOpenSession = new OpenSessionCmdBuild(poTransaction.getRevision(),
+                    debitKeyIndex, ByteBufferUtils.wrap(poTransaction.sessionTerminalChallenge),
+                    (byte) 0x0A, (byte) 0x01);
             poTransaction.processOpening(poOpenSession, filesToReadInSession);
             // poTransaction.processOpening(poOpenSession, null);
 

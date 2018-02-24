@@ -10,7 +10,6 @@ package org.keyple.calypso.commands.po.parser;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import java.nio.ByteBuffer;
 import org.apache.commons.codec.DecoderException;
 import org.junit.Test;
 import org.keyple.seproxy.ApduResponse;
@@ -45,6 +44,6 @@ public class PoGetChallengeRespParsTest {
         assertArrayEquals(payload, resp.getPoChallenge());
 
         // We compare the wrapped one we created with the ByteBuffer we fetched
-        assertEquals(ByteBuffer.wrap(payload), resp.getPoChallengeV2());
+        assertEquals(ByteBufferUtils.wrap(payload), resp.getPoChallengeV2());
     }
 }
