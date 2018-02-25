@@ -21,17 +21,15 @@ import org.keyple.seproxy.exceptions.*;
 public class DigestAuthenticateCmdBuildTest {
 
     @Test
-    public void digestAuthenticate()
-            throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+    public void digestAuthenticate() throws InconsistentCommandException {
 
-        ByteBuffer signaturePO = ByteBufferUtils.wrap(new byte[] {0x00, 0x01, 0x02, 0x03});
-        ByteBuffer request = ByteBufferUtils.wrap(
-                new byte[] {(byte) 0x80, (byte) 0x82, 0x00, 0x00, 0x04, 0x00, 0x01, 0x02, 0x03});
+        ByteBuffer signaturePO = ByteBuffer.wrap(new byte[] {0x00, 0x01, 0x02, 0x03});
+        ByteBuffer request = ByteBuffer.wrap(
+                new byte[] {(byte) 0x94, (byte) 0x82, 0x00, 0x00, 0x04, 0x00, 0x01, 0x02, 0x03});
 
         ApduCommandBuilder apduCommandBuilder = new DigestAuthenticateCmdBuild(null, signaturePO);
         ApduRequest ApduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertEquals(request, ApduRequest.getBuffer());
+        Assert.assertEquals(ByteBufferUtils.toHex(request), ByteBufferUtils.toHex(ApduRequest.getBuffer().slice()));
     }
 }

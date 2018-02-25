@@ -20,6 +20,6 @@ dependencies {
 }
 
 test {
-    exclude '**/DigestAuthenticateCmdBuildTest.class'
+    // exclude '**/DigestAuthenticateCmdBuildTest.class'
     exclude '**/PoSecureSessionTest.class'
 }
