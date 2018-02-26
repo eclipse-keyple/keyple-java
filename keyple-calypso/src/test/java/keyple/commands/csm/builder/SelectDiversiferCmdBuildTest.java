@@ -107,10 +107,10 @@ public class SelectDiversiferCmdBuildTest {
         Mockito.when(fakeSpecificReader.transmit(seRequest2)).thenReturn(seResponse);
         SeResponse seResponse1 = fakeSpecificReader.transmit(seRequest2);
 
-        Assert.assertArrayEquals(seResponseExpected.getApduResponses().get(0).getStatusCodeOld(),
-                seResponse1.getApduResponses().get(0).getStatusCodeOld());
+        Assert.assertEquals(seResponseExpected.getApduResponses().get(0).getStatusCode(),
+                seResponse1.getApduResponses().get(0).getStatusCode());
 
-        Assert.assertThat(seResponseExpected.getApduResponses().get(0).getStatusCodeOld(), IsNot
-                .not(IsEqual.equalTo(seResponse1.getApduResponses().get(1).getStatusCodeOld())));
+        Assert.assertThat(seResponseExpected.getApduResponses().get(0).getStatusCode(),
+                IsNot.not(IsEqual.equalTo(seResponse1.getApduResponses().get(1).getStatusCode())));
     }
 }

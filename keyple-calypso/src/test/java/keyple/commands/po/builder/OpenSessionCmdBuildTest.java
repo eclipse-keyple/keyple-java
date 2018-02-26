@@ -26,8 +26,7 @@ public class OpenSessionCmdBuildTest {
 
     Logger logger = LogManager.getLogger(OpenSessionCmdBuildTest.class);
 
-    ByteBuffer samChallenge =
-            ByteBufferUtils.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
+    ByteBuffer samChallenge = ByteBuffer.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
 
     ApduCommandBuilder apduCommandBuilder;
 
@@ -44,9 +43,6 @@ public class OpenSessionCmdBuildTest {
         byte p2 = (byte) (sfiToSelect * 8);
         byte cmd = (byte) 0x8A;
         ByteBuffer dataIn = samChallenge;
-        // revision 2.4
-        byte[] request2_4 =
-                {cla, cmd, p1, p2, (byte) dataIn.limit(), (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E};
 
         apduCommandBuilder = new OpenSessionCmdBuild(PoRevision.REV2_4, keyIndex, dataIn,
                 sfiToSelect, recordNumberToRead);
@@ -105,9 +101,9 @@ public class OpenSessionCmdBuildTest {
         byte[] dataIn = new byte[samChallenge.limit() + 1];
         System.arraycopy(ByteBufferUtils.toBytes(samChallenge), 0, dataIn, 1, samChallenge.limit());
         // revision 3.2
-        ByteBuffer request3_2 = ByteBufferUtils
-                .wrap(new byte[] {cla, cmd, p1, p2, (byte) (samChallenge.limit() + 1), (byte) 0x00,
-                        (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
+        ByteBuffer request3_2 =
+                ByteBuffer.wrap(new byte[] {cla, cmd, p1, p2, (byte) (samChallenge.limit() + 1),
+                        (byte) 0x00, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
         apduCommandBuilder = new OpenSessionCmdBuild(PoRevision.REV3_2, keyIndex, samChallenge,
                 sfiToSelect, recordNumberToRead);
         ApduRequest = apduCommandBuilder.getApduRequest();

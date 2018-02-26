@@ -80,9 +80,9 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
             byte debitKeyIndex = 0x03;
             // Open Session for the debit key #1 - with read of the first record of the cyclic EF of
             // SFI 0Ah
-            OpenSessionCmdBuild poOpenSession = new OpenSessionCmdBuild(poTransaction.getRevision(),
-                    debitKeyIndex, ByteBufferUtils.wrap(poTransaction.sessionTerminalChallenge),
-                    (byte) 0x0A, (byte) 0x01);
+            OpenSessionCmdBuild poOpenSession =
+                    new OpenSessionCmdBuild(poTransaction.getRevision(), debitKeyIndex,
+                            poTransaction.sessionTerminalChallenge, (byte) 0x0A, (byte) 0x01);
             poTransaction.processOpening(poOpenSession, filesToReadInSession);
             // poTransaction.processOpening(poOpenSession, null);
 

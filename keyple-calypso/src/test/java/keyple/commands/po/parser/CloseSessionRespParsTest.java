@@ -39,16 +39,17 @@ public class CloseSessionRespParsTest {
     @Test
     public void TestToPOHalfSessionSignature() { // by ixxi from ResponseUtilsTest
 
-        byte[] apduResponse =
-                new byte[] {(byte) 0x4D, (byte) 0xBD, (byte) 0xC9, 0x60, (byte) 0x90, 0x00};
-        byte[] apduResponseCaseTwo = new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, (byte) 0xA7,
-                0x21, (byte) 0xC2, 0x2E, (byte) 0x90, 0x00};
-        byte[] apduResponseCaseThree =
-                new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, (byte) 0x90, 0x00};
+        ByteBuffer apduResponse = ByteBuffer
+                .wrap(new byte[] {(byte) 0x4D, (byte) 0xBD, (byte) 0xC9, 0x60, (byte) 0x90, 0x00});
+        ByteBuffer apduResponseCaseTwo = ByteBuffer.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3,
+                0x3E, (byte) 0xA7, 0x21, (byte) 0xC2, 0x2E, (byte) 0x90, 0x00});
+        ByteBuffer apduResponseCaseThree =
+                ByteBuffer.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, (byte) 0x90, 0x00});
 
         ByteBuffer sessionSignature =
-                ByteBufferUtils.wrap(new byte[] {(byte) 0x4D, (byte) 0xBD, (byte) 0xC9, 0x60});
-        byte[] sessionSignatureCaseTwo = new byte[] {(byte) 0xA7, 0x21, (byte) 0xC2, 0x2E};
+                ByteBuffer.wrap(new byte[] {(byte) 0x4D, (byte) 0xBD, (byte) 0xC9, 0x60});
+        ByteBuffer sessionSignatureCaseTwo =
+                ByteBuffer.wrap(new byte[] {(byte) 0xA7, 0x21, (byte) 0xC2, 0x2E});
 
         {// Case Length = 4
             CloseSessionRespPars pars =
@@ -59,8 +60,7 @@ public class CloseSessionRespParsTest {
         {// Case Length = 8
             CloseSessionRespPars pars =
                     new CloseSessionRespPars(new ApduResponse(apduResponseCaseTwo, true));
-            Assert.assertEquals(ByteBufferUtils.wrap(sessionSignatureCaseTwo),
-                    pars.getSignatureLo());
+            Assert.assertEquals(sessionSignatureCaseTwo, pars.getSignatureLo());
         }
 
         {// Case Other

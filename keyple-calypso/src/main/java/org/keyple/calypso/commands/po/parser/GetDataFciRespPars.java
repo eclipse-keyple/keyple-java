@@ -303,6 +303,16 @@ public class GetDataFciRespPars extends ApduResponseParser {
             this.softwareRevision = softwareRevision;
         }
 
+        public StartupInformation(ByteBuffer buffer) {
+            this.bufferSize = buffer.get();
+            this.platform = buffer.get();
+            this.applicationType = buffer.get();
+            this.applicationSubtype = buffer.get();
+            this.softwareIssuer = buffer.get();
+            this.softwareVersion = buffer.get();
+            this.softwareRevision = buffer.get();
+        }
+
         @Override
         public int hashCode() {
             final int prime = 31;
@@ -487,10 +497,12 @@ public class GetDataFciRespPars extends ApduResponseParser {
                 discretionaryData =
                         ByteBufferUtils.subIndex(apduResponse, firstbyteDiscretionaryData,
                                 firstbyteDiscretionaryData + discretionaryDataLength);
-                startupInformation = new StartupInformation(discretionaryData.get(0),
-                        discretionaryData.get(1), discretionaryData.get(2),
-                        discretionaryData.get(3), discretionaryData.get(4),
-                        discretionaryData.get(5), discretionaryData.get(6));
+                startupInformation = new StartupInformation(discretionaryData);
+                /*
+                 * startupInformation = new StartupInformation(discretionaryData.get(0),
+                 * discretionaryData.get(1), discretionaryData.get(2), discretionaryData.get(3),
+                 * discretionaryData.get(4), discretionaryData.get(5), discretionaryData.get(6));
+                 */
             }
         }
 

@@ -70,7 +70,7 @@ public class ApduResponse extends AbstractApduBuffer {
         return successful;
     }
 
-    public int getStatusCodeV2() {
+    public int getStatusCode() {
         int s = buffer.getShort(buffer.limit() - 2);
 
         // java is signed only
@@ -80,6 +80,12 @@ public class ApduResponse extends AbstractApduBuffer {
         return s;
     }
 
+    /**
+     * Get the old (two bytes) status code
+     * 
+     * @return Old status code format
+     * @deprecated Prefer {@link #getStatusCode()}
+     */
     public byte[] getStatusCodeOld() {
         byte[] statusCode = new byte[2];
         buffer.position(buffer.limit() - 2);

@@ -45,11 +45,8 @@ public class PoGetChallengeCmdBuild extends PoCommandBuilder implements Sendable
         byte p2 = (byte) 0x10;
         ByteBuffer dataIn = null;
         byte optionalLe = (byte) 0x08;
-        // CalypsoRequest request = new CalypsoRequest(cla, command, p1, p2, dataIn, optionnalLe);
-        ApduRequest apduRequest =
-                RequestUtils.constructAPDURequest(cla, command, p1, p2, dataIn, optionalLe);
 
-        this.request = apduRequest;
+        this.request = RequestUtils.constructAPDURequest(cla, command, p1, p2, dataIn, optionalLe);
 
     }
 

@@ -41,7 +41,7 @@ public class DigestInitCmdBuild extends CsmCommandBuilder {
      * @throws InconsistentCommandException the inconsistent command exception
      */
     public DigestInitCmdBuild(CsmRevision revision, boolean verificationMode, boolean rev3_2Mode,
-            byte workKeyRecordNumber, byte workKeyKif, byte workKeyKVC, byte[] digestData)
+            byte workKeyRecordNumber, byte workKeyKif, byte workKeyKVC, ByteBuffer digestData)
             throws InconsistentCommandException {
         super(command, null);
         if (revision != null) {
@@ -71,7 +71,7 @@ public class DigestInitCmdBuild extends CsmCommandBuilder {
         ByteBuffer dataIn;
 
         if (p2 == (byte) 0xFF) {
-            dataIn = ByteBuffer.allocate(2 + digestData.length);
+            dataIn = ByteBuffer.allocate(2 + digestData.limit());
             dataIn.put(workKeyKif);
             dataIn.put(workKeyKVC);
             dataIn.put(digestData);

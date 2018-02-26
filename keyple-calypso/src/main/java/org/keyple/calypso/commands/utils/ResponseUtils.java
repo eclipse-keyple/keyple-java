@@ -9,6 +9,7 @@
 package org.keyple.calypso.commands.utils;
 
 
+import java.nio.ByteBuffer;
 
 /**
  * This class eases the parse of APDUResponses into objects.
@@ -30,9 +31,9 @@ public class ResponseUtils {
      * @param apduResponse the apdu response
      * @return a KVC byte
      */
-    public static byte toKVCRev2(byte[] apduResponse) {
+    public static byte toKVCRev2(ByteBuffer apduResponse) {
         // TODO: Check that part: I replaced a (null) KVC by a 0x00
-        return apduResponse.length > 4 ? apduResponse[0] : 0x00;
+        return apduResponse.limit() > 4 ? apduResponse.get(0) : 0x00;
     }
 
     /**

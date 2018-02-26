@@ -9,6 +9,7 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'me.champeau.gradle.jmh'
+apply plugin: 'pmd'
 
 jmh { // https://github.com/melix/jmh-gradle-plugin#configuration-options
     fork = 1
@@ -23,22 +24,21 @@ pmd {
             "java-braces",
             "java-strings",
             "java-imports",
-            // "java-unnecessary",
-            // "java-unusedcode",
-            //"java-metrics",
-            // "java-empty",
-            // "java-codesize",
-            // "java-clone",
-            // "java-typeresolution",
-            // "java-strictexception",
-            // "java-finalizers",
-            // "java-migrating",
-            // "java-logging-java",
-            // "java-controversial"  // 8 issues
-            // "java-sunsecure"      // 1 issue
-            // "java-junit"          // 1 issue
-            // "java-optimizations"  // 44 issues
+            "java-unnecessary",
+            "java-unusedcode",
+            "java-empty",
+            "java-codesize",
+            "java-clone",
+            "java-typeresolution",
+            "java-strictexception",
+            "java-finalizers",
+            "java-migrating",
             // "java-naming",        // 9 issues
+            // "java-logging-java",
+            // "java-controversial",  // 8 issues
+            // "java-sunsecure",      // 1 issue
+            // "java-junit",          // 1 issue
+            // "java-optimizations",  // 44 issues
             // "java-coupling"       // 2 issues
             // "java-design"         // 19 issues
             // "java-comments"       // 87 issues --> Kind of conflicting with spotless

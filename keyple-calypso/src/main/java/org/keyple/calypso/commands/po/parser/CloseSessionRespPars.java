@@ -24,9 +24,6 @@ public class CloseSessionRespPars extends ApduResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
-    /**
-     * Initializes the status table.
-     */
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);

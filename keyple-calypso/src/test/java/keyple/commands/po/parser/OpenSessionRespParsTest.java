@@ -18,7 +18,7 @@ import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.parser.OpenSessionRespPars;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.SeResponse;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import keyple.commands.utils.TestsUtilsResponseTabByteGenerator;
 
 @RunWith(MockitoJUnitRunner.class)

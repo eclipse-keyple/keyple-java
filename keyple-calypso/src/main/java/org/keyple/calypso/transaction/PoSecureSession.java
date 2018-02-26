@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.DatatypeConverter;
+import org.apache.commons.codec.DecoderException;
 import org.keyple.calypso.commands.csm.CsmRevision;
 import org.keyple.calypso.commands.csm.builder.*;
 import org.keyple.calypso.commands.csm.parser.CsmGetChallengeRespPars;
@@ -78,8 +79,8 @@ public class PoSecureSession {
     /** The default key index for a PO session. */
     private byte defaultKeyIndex;
 
-    public byte[] sessionTerminalChallenge;
-    private byte[] sessionCardChallenge;
+    public ByteBuffer sessionTerminalChallenge;
+    private ByteBuffer sessionCardChallenge;
 
     ByteBuffer sessionTerminalSignature;
     ByteBuffer sessionCardSignature;
@@ -188,7 +189,7 @@ public class PoSecureSession {
                                     .printHexBinary(csmChallengePars.getApduResponse().getBytes()));
             sessionTerminalChallenge = csmChallengePars.getChallenge();
             System.out.println("\t========= Identification === Terminal Challenge : "
-                    + DatatypeConverter.printHexBinary(sessionTerminalChallenge));
+                    + ByteBufferUtils.toHex(sessionTerminalChallenge));
         } else {
             // TODO traitement erreur
         }
@@ -255,17 +256,20 @@ public class PoSecureSession {
                 + DatatypeConverter.printHexBinary(poOpenSessionPars.getApduResponse().getBytes()));
         sessionCardChallenge = poOpenSessionPars.getPoChallenge();
         System.out.println("\t========= Opening ========== WRONG Card Challenge : "
-                + DatatypeConverter.printHexBinary((byte[]) sessionCardChallenge));
+                + ByteBufferUtils.toHex(sessionCardChallenge));
 
 
-        // HACK - OpenSessionRespPars.getPoChallenge() ne retourne pas la bonne valeur de PO
+        // HACK - OpenSessionRespPars.getPoChallengeOld() ne retourne pas la bonne valeur de PO
         // challenge
-        // TODO - corriger => OpenSessionRespPars.getPoChallenge()
-        sessionCardChallenge = DatatypeConverter.parseHexBinary(
-                DatatypeConverter.printHexBinary(poOpenSessionPars.getApduResponse().getBytes())
-                        .substring(0, 4 * 2)); // HACK
+        // TODO - corriger => OpenSessionRespPars.getPoChallengeOld()
+        try {
+            sessionCardChallenge = ByteBufferUtils.fromHex(ByteBufferUtils
+                    .toHex(poOpenSessionPars.getApduResponse().getBuffer()).substring(0, 4 * 2)); // HACK
+        } catch (DecoderException e) {
+            e.printStackTrace();
+        }
         System.out.println("\t========= Opening ========== HACKED Card Challenge : "
-                + DatatypeConverter.printHexBinary((byte[]) sessionCardChallenge));
+                + ByteBufferUtils.toHex(sessionCardChallenge));
 
         // Build "Digest Init" command from PO Open Session
         byte kif = poOpenSessionPars.getSelectedKif();
@@ -682,7 +686,7 @@ public class PoSecureSession {
      *
      * @return the PO poRevision
      */
-    public byte[] getSessionTerminalChallenge() {
+    public ByteBuffer getSessionTerminalChallenge() {
         return sessionTerminalChallenge;
     }
 }
