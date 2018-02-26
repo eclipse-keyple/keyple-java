@@ -8,7 +8,7 @@
 
 package keyple.commands.csm.builder;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import java.nio.ByteBuffer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,12 +76,12 @@ public class DigestInitCmdBuildTest {
         CsmRevision revision = CsmRevision.S1D;
 
         int size = digestData.limit() + 2;
-        byte[] request = {cla, (byte) 0x8A, p1_2, p2, (byte) size, workKeyKif, workKeyKVC,
-                (byte) 0x80, (byte) 0x8A, 0x00};
+        ByteBuffer request = ByteBuffer.wrap(new byte[] {cla, (byte) 0x8A, p1_2, p2, (byte) size,
+                workKeyKif, workKeyKVC, (byte) 0x80, (byte) 0x8A, 0x00});
 
         ApduCommandBuilder apduCommandBuilder = new DigestInitCmdBuild(revision, verificationMode,
                 rev3_2Mode, workKeyRecordNumber, workKeyKif, workKeyKVC, digestData);
 
-        assertArrayEquals(request, apduCommandBuilder.getApduRequest().getBytes());
+        assertEquals(request, apduCommandBuilder.getApduRequest().getBuffer());
     }
 }

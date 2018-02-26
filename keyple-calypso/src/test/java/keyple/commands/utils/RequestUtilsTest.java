@@ -55,7 +55,7 @@ public class RequestUtilsTest {
         ApduRequest actual = RequestUtils.constructAPDURequest(cla, ins, pUn, pDeux, dataIn);
         // System.out.println("APDU Actual: " + Hex.encodeHexString(actual.getBytes()));
         // System.out.println("APDU Expected: " + Hex.encodeHexString(expected.getBytes()));
-        Assert.assertArrayEquals(expected.getBytes(), actual.getBytes());
+        Assert.assertEquals(expected.getBuffer(), actual.getBuffer());
         Assert.assertEquals(expected.isCase4(), actual.isCase4());
     }
 
@@ -76,7 +76,7 @@ public class RequestUtilsTest {
                 RequestUtils.constructAPDURequest(cla, ins, pUn, pDeux, dataIn, option);
         // System.out.println("APDU Actual: " + Hex.encodeHexString(actual.getBytes()));
         // System.out.println("APDU Expected: " + Hex.encodeHexString(expected.getBytes()));
-        Assert.assertArrayEquals(expected.getBytes(), actual.getBytes());
+        Assert.assertEquals(expected.getBuffer(), actual.getBuffer());
         Assert.assertNotEquals(expected.isCase4(), actual.isCase4());
     }
 
