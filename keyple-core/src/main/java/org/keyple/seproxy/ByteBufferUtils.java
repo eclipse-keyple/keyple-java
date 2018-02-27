@@ -30,8 +30,13 @@ public class ByteBufferUtils {
      * @return ByteBuffer
      * @throws DecoderException If the buffer is not correctly formatted
      */
-    public static ByteBuffer fromHex(String hex) throws DecoderException {
-        return ByteBuffer.wrap(Hex.decodeHex(HEX_IGNORED_CHARS.matcher(hex).replaceAll("")));
+    public static ByteBuffer fromHex(String hex) {
+        try {
+            return ByteBuffer.wrap(Hex.decodeHex(HEX_IGNORED_CHARS.matcher(hex).replaceAll("")));
+        } catch (DecoderException ex) {
+            throw new IllegalArgumentException(
+                    "You need to provide hex (spaces and 'h' are allowed)", ex);
+        }
     }
 
     /**
