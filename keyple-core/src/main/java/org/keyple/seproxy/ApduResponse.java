@@ -20,7 +20,7 @@ public class ApduResponse extends AbstractApduBuffer {
      * the success result of the processed APDU commandto allow chaining responses in a group of
      * APDUs
      */
-    private boolean successful;
+    private final boolean successful;
 
     public ApduResponse(ByteBuffer buffer, boolean successful) {
         super(buffer);
@@ -109,6 +109,7 @@ public class ApduResponse extends AbstractApduBuffer {
      * Get the bytes before the status code
      * 
      * @return byte array of data present before the status code
+     * @deprecated Prefer {@link #getDataOut()}
      */
     public byte[] getBytesOut() {
         return ByteBufferUtils.toBytes(getDataOut());
