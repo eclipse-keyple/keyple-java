@@ -31,6 +31,6 @@ public class PoGetChallengeRespPars extends ApduResponseParser {
     }
 
     public ByteBuffer getPoChallenge() {
-        return getApduResponse().getDataBeforeStatus();
+        return getApduResponse().getDataOut();
     }
 }

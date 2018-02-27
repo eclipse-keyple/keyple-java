@@ -57,7 +57,7 @@ public class ReadRecordsRespPars extends ApduResponseParser {
     public ReadRecordsRespPars(ApduResponse response) {
         super(response);
         if (isSuccessful()) {
-            records = parseRecords(response.getDataBeforeStatus());
+            records = parseRecords(response.getDataOut());
         }
     }
 

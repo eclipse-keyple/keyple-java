@@ -45,7 +45,7 @@ public class ReadRecordsRespParsTest {
 
         ApduResponseParser apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getApduResponses().get(0));
-        byte[] reponseActual = apduResponseParser.getApduResponse().getBytesBeforeStatus();
+        byte[] reponseActual = apduResponseParser.getApduResponse().getBytesOut();
         Assert.assertArrayEquals(response, reponseActual);
 
     }
@@ -62,7 +62,7 @@ public class ReadRecordsRespParsTest {
 
         ReadRecordsRespPars apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getApduResponses().get(0));
-        byte[] reponseActual = apduResponseParser.getApduResponse().getBytesBeforeStatus();
+        byte[] reponseActual = apduResponseParser.getApduResponse().getBytesOut();
         Assert.assertArrayEquals(response, reponseActual);
     }
 
@@ -78,7 +78,7 @@ public class ReadRecordsRespParsTest {
 
         ApduResponseParser apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getApduResponses().get(0));
-        byte[] reponseActual = apduResponseParser.getApduResponse().getBytesBeforeStatus();
+        byte[] reponseActual = apduResponseParser.getApduResponse().getBytesOut();
         Assert.assertArrayEquals(response, reponseActual);
     }
 
@@ -94,7 +94,7 @@ public class ReadRecordsRespParsTest {
 
         ApduResponseParser apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getApduResponses().get(0));
-        byte[] reponseActual = apduResponseParser.getApduResponse().getBytesBeforeStatus();
+        byte[] reponseActual = apduResponseParser.getApduResponse().getBytesOut();
         Assert.assertArrayEquals(response, reponseActual);
     }
 }
