@@ -93,15 +93,25 @@ public class ApduResponse extends AbstractApduBuffer {
         return statusCode;
     }
 
-    public ByteBuffer getDataBeforeStatus() {
+    /**
+     * Get the data before the statusCode
+     * 
+     * @return slice of the buffer before the status code
+     */
+    public ByteBuffer getDataOut() {
         ByteBuffer b = buffer.duplicate();
         b.position(0);
         b.limit(b.limit() - 2);
         return b.slice();
     }
 
-    public byte[] getBytesBeforeStatus() {
-        return ByteBufferUtils.toBytes(getDataBeforeStatus());
+    /**
+     * Get the bytes before the status code
+     * 
+     * @return byte array of data present before the status code
+     */
+    public byte[] getBytesOut() {
+        return ByteBufferUtils.toBytes(getDataOut());
     }
 
     @Override
