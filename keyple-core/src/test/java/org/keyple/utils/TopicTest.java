@@ -43,12 +43,7 @@ public class TopicTest {
     }
 
     static class Subscriber implements Topic.Subscriber<Event> {
-        private final String name;
         private int nbCalls;
-
-        public Subscriber(String name) {
-            this.name = name;
-        }
 
         @Override
         public void update(Event event) {
@@ -64,8 +59,8 @@ public class TopicTest {
     @Test
     public void sample() {
         Topic<Event> pub = new Topic<Event>();
-        Subscriber sub1 = new Subscriber("sub1");
-        Subscriber sub2 = new Subscriber("sub2");
+        Subscriber sub1 = new Subscriber();
+        Subscriber sub2 = new Subscriber();
         pub.addSubscriber(sub1);
         pub.post(new Event("ev1"));
         pub.addSubscriber(sub2);
