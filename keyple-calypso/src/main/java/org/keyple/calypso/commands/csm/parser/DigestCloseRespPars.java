@@ -21,9 +21,6 @@ import org.keyple.seproxy.ApduResponse;
  *
  */
 public class DigestCloseRespPars extends ApduResponseParser {
-    /** The SAM signture */
-    ByteBuffer signature;
-
     /**
      * Instantiates a new DigestCloseRespPars.
      *
@@ -31,9 +28,6 @@ public class DigestCloseRespPars extends ApduResponseParser {
      */
     public DigestCloseRespPars(ApduResponse response) {
         super(response);
-        if (isSuccessful()) {
-            signature = response.getBuffer();
-        }
     }
 
     /**
@@ -42,7 +36,7 @@ public class DigestCloseRespPars extends ApduResponseParser {
      * @return the sam half session signature
      */
     public ByteBuffer getSignature() {
-        return signature;
+        return isSuccessful() ? response.getBuffer() : null;
     }
 
 }
