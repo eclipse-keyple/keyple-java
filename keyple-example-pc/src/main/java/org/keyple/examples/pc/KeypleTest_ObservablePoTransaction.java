@@ -11,7 +11,6 @@ package org.keyple.examples.pc;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.DatatypeConverter;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.SendableInSession;
 import org.keyple.calypso.commands.po.builder.OpenSessionCmdBuild;
@@ -72,7 +71,7 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
             // Step 1
             System.out.println(
                     "\n\n========= PO Transaction ======= Identification =====================");
-            poTransaction.processIdentification(DatatypeConverter.parseHexBinary(poAid), null);
+            poTransaction.processIdentification(ByteBufferUtils.fromHex(poAid), null);
 
             // Step 2
             System.out.println(
@@ -108,22 +107,7 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
                         "========= PO Transaction ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
 
-        } catch (UnexpectedReaderException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ChannelStateReaderException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvalidApduReaderException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (TimeoutReaderException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InconsistentCommandException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOReaderException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

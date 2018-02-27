@@ -8,6 +8,7 @@
 
 package org.keyple.calypso.commands.po.builder;
 
+import java.nio.ByteBuffer;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.po.PoCommandBuilder;
 import org.keyple.calypso.commands.po.PoRevision;
@@ -35,15 +36,15 @@ public class CloseSessionCmdBuild extends PoCommandBuilder {
      * @throws InconsistentCommandException the inconsistent command exception
      */
     public CloseSessionCmdBuild(PoRevision revision, boolean ratificationAsked,
-            byte[] terminalSessionSignature) throws InconsistentCommandException {
+            ByteBuffer terminalSessionSignature) throws InconsistentCommandException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
         }
         // The optional parameter terminalSessionSignature could contain 4 or 8
         // bytes.
-        if (terminalSessionSignature != null && terminalSessionSignature.length != 4
-                && terminalSessionSignature.length != 8) {
+        if (terminalSessionSignature != null && terminalSessionSignature.limit() != 4
+                && terminalSessionSignature.limit() != 8) {
             throw new InconsistentCommandException();
         }
 

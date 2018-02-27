@@ -9,11 +9,12 @@
 package org.keyple.calypso.commands.po.parser;
 
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import org.keyple.calypso.commands.utils.ResponseUtils;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
+import org.keyple.seproxy.ByteBufferUtils;
 
 /**
  * Close Secure Session (008E) response parser. See specs: Calypso / page 104 / 9.5.2 Close Secure
@@ -23,9 +24,6 @@ public class CloseSessionRespPars extends ApduResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
-    /**
-     * Initializes the status table.
-     */
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);
@@ -43,10 +41,10 @@ public class CloseSessionRespPars extends ApduResponseParser {
     }
 
     /** The signatureLo. */
-    private byte[] signatureLo;
+    private ByteBuffer signatureLo;
 
     /** The postponed data. */
-    private byte[] postponedData;
+    private ByteBuffer postponedData;
 
     /**
      * Instantiates a new CloseSessionRespPars from the response.
@@ -55,18 +53,18 @@ public class CloseSessionRespPars extends ApduResponseParser {
      */
     public CloseSessionRespPars(ApduResponse response) {
         super(response);
-        parse(response.getBytes());
+        parse(response.getBuffer());
     }
 
-    private void parse(byte[] response) {
+    private void parse(ByteBuffer response) {
         // fclairamb(2018-02-14): Removed 2 bytes to the global response length;
-        final int size = response.length - 2;
+        final int size = response.limit() - 2;
 
         if (size == 8) {
-            signatureLo = ResponseUtils.subArray(response, 4, size);
-            postponedData = ResponseUtils.subArray(response, 0, 4);
+            signatureLo = ByteBufferUtils.subIndex(response, 4, 8);
+            postponedData = ByteBufferUtils.subIndex(response, 0, 4);
         } else if (size == 4) {
-            signatureLo = ResponseUtils.subArray(response, 0, size);
+            signatureLo = ByteBufferUtils.subIndex(response, 0, size);
         }
         // TODO: I can't add this, it breaks compatibility with existing tests
         /*
@@ -76,11 +74,11 @@ public class CloseSessionRespPars extends ApduResponseParser {
 
     // TODO: Switch that to ByteBuffer
 
-    public byte[] getSignatureLo() {
-        return signatureLo != null ? signatureLo : new byte[] {};
+    public ByteBuffer getSignatureLo() {
+        return signatureLo;
     }
 
-    public byte[] getPostponedData() {
-        return postponedData != null ? postponedData : new byte[] {};
+    public ByteBuffer getPostponedData() {
+        return postponedData;
     }
 }

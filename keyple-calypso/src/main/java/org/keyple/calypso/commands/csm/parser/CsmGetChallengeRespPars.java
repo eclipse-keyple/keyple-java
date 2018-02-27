@@ -9,6 +9,7 @@
 package org.keyple.calypso.commands.csm.parser;
 
 
+import java.nio.ByteBuffer;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
@@ -21,7 +22,7 @@ import org.keyple.seproxy.ApduResponse;
  */
 public class CsmGetChallengeRespPars extends ApduResponseParser {
     /** The CSM(SAM) challenge. */
-    private byte[] challenge;
+    private final ByteBuffer challenge;
 
     /**
      * Instantiates a new CsmGetChallengeRespPars .
@@ -30,9 +31,7 @@ public class CsmGetChallengeRespPars extends ApduResponseParser {
      */
     public CsmGetChallengeRespPars(ApduResponse response) {
         super(response);
-        if (isSuccessful()) {
-            challenge = response.getBytes();
-        }
+        challenge = isSuccessful() ? response.getBuffer() : null;
     }
 
     /**
@@ -40,12 +39,8 @@ public class CsmGetChallengeRespPars extends ApduResponseParser {
      *
      * @return the challenge
      */
-    public byte[] getChallenge() {
-        if (challenge != null) {
-            return challenge.clone();
-        } else {
-            return new byte[0];
-        }
+    public ByteBuffer getChallenge() {
+        return challenge;
     }
 
 }

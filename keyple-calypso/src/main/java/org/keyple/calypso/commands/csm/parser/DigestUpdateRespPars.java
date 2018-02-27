@@ -9,6 +9,7 @@
 package org.keyple.calypso.commands.csm.parser;
 
 
+import java.nio.ByteBuffer;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
@@ -21,7 +22,7 @@ import org.keyple.seproxy.ApduResponse;
  */
 public class DigestUpdateRespPars extends ApduResponseParser {
 
-    private byte[] processedData;
+    private final ByteBuffer processedData;
 
     /**
      * Instantiates a new DigestUpdateRespPars.
@@ -30,17 +31,11 @@ public class DigestUpdateRespPars extends ApduResponseParser {
      */
     public DigestUpdateRespPars(ApduResponse response) {
         super(response);
-        if (isSuccessful()) {
-            this.processedData = response.getBytes();
-        }
+        this.processedData = isSuccessful() ? response.getBuffer() : null;
     }
 
-    public byte[] getProcessedData() {
-        if (processedData != null) {
-            return processedData.clone();
-        } else {
-            return new byte[0];
-        }
+    public ByteBuffer getProcessedData() {
+        return processedData;
     }
 
 }

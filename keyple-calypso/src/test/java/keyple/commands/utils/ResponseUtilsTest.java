@@ -8,6 +8,7 @@
 
 package keyple.commands.utils;
 
+import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
@@ -20,21 +21,22 @@ public class ResponseUtilsTest {
     public void TestToFCI() {
 
         // Case if
-        byte[] apduResponse = new byte[] {(byte) 0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54,
-                0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13,
-                (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7,
-                0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01};
+        ByteBuffer apduResponse = ByteBuffer.wrap(new byte[] {(byte) 0x6F, 0x22, (byte) 0x84, 0x08,
+                0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF,
+                0x0C, 0x13, (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A,
+                (byte) 0xB7, 0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01});
 
-        byte[] aid = new byte[] {0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41};
+        ByteBuffer aid =
+                ByteBuffer.wrap(new byte[] {0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41});
         // AID aidExpected = new AID(aid);
-        byte[] fciProprietaryTemplate = new byte[] {(byte) 0xBF, 0x0C, 0x13, (byte) 0xC7, 0x08,
-                0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7, 0x53, 0x07, 0x0A,
-                0x3C, 0x11, 0x32, 0x14, 0x10, 0x01};
-        byte[] fciIssuerDiscretionaryData =
+        ByteBuffer fciProprietaryTemplate = ByteBuffer.wrap(new byte[] {(byte) 0xBF, 0x0C, 0x13,
+                (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7,
+                0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01});
+        ByteBuffer fciIssuerDiscretionaryData = ByteBuffer.wrap(
                 new byte[] {(byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A,
-                        (byte) 0xB7, 0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01};
-        byte[] applicationSN =
-                new byte[] {0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7};
+                        (byte) 0xB7, 0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01});
+        ByteBuffer applicationSN = ByteBuffer
+                .wrap(new byte[] {0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7});
         GetDataFciRespPars.StartupInformation startupInfoExpected =
                 new GetDataFciRespPars.StartupInformation((byte) 0x0A, (byte) 0x3C, (byte) 0x11,
                         (byte) 0x32, (byte) 0x14, (byte) 0x10, (byte) 0x01);
@@ -43,10 +45,10 @@ public class ResponseUtilsTest {
                 fciIssuerDiscretionaryData, applicationSN, startupInfoExpected);
         GetDataFciRespPars.FCI fciTested = GetDataFciRespPars.toFCI(apduResponse);
 
-        Assert.assertArrayEquals(fciExpected.getApplicationSN(), fciTested.getApplicationSN());
-        Assert.assertArrayEquals(fciExpected.getFciIssuerDiscretionaryData(),
+        Assert.assertEquals(fciExpected.getApplicationSN(), fciTested.getApplicationSN());
+        Assert.assertEquals(fciExpected.getFciIssuerDiscretionaryData(),
                 fciTested.getFciIssuerDiscretionaryData());
-        Assert.assertArrayEquals(fciExpected.getFciProprietaryTemplate(),
+        Assert.assertEquals(fciExpected.getFciProprietaryTemplate(),
                 fciTested.getFciProprietaryTemplate());
         Assert.assertEquals(fciExpected.getStartupInformation().getApplicationSubtype(),
                 fciTested.getStartupInformation().getApplicationSubtype());
@@ -64,10 +66,10 @@ public class ResponseUtilsTest {
                 fciTested.getStartupInformation().getSoftwareVersion());
 
         // Case else
-        byte[] wrongApduResponse = new byte[] {(byte) 0x5F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D,
-                0x54, 0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13,
-                (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7,
-                0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01};
+        ByteBuffer wrongApduResponse = ByteBuffer.wrap(new byte[] {(byte) 0x5F, 0x22, (byte) 0x84,
+                0x08, 0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16,
+                (byte) 0xBF, 0x0C, 0x13, (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A,
+                (byte) 0x9A, (byte) 0xB7, 0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01});
 
         fciTested = GetDataFciRespPars.toFCI(wrongApduResponse);
 
@@ -77,10 +79,10 @@ public class ResponseUtilsTest {
         Assert.assertNull(fciTested.getStartupInformation());
 
         // Case if else
-        wrongApduResponse = new byte[] {(byte) 0x6F, 0x22, (byte) 0x83, 0x08, 0x33, 0x4D, 0x54,
-                0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13,
-                (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7,
-                0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01};
+        wrongApduResponse = ByteBuffer.wrap(new byte[] {(byte) 0x6F, 0x22, (byte) 0x83, 0x08, 0x33,
+                0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C,
+                0x13, (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A,
+                (byte) 0xB7, 0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01});
 
         fciTested = GetDataFciRespPars.toFCI(wrongApduResponse);
 
@@ -90,10 +92,10 @@ public class ResponseUtilsTest {
         Assert.assertNotNull(fciTested.getStartupInformation());
 
         // Case if else 2
-        wrongApduResponse = new byte[] {(byte) 0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54,
-                0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA6, 0x16, (byte) 0xBF, 0x0C, 0x13,
-                (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7,
-                0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01};
+        wrongApduResponse = ByteBuffer.wrap(new byte[] {(byte) 0x6F, 0x22, (byte) 0x84, 0x08, 0x33,
+                0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA6, 0x16, (byte) 0xBF, 0x0C,
+                0x13, (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A,
+                (byte) 0xB7, 0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01});
 
         fciTested = GetDataFciRespPars.toFCI(wrongApduResponse);
 
@@ -103,10 +105,10 @@ public class ResponseUtilsTest {
         Assert.assertNotNull(fciTested.getStartupInformation());
 
         // Case if else 3
-        wrongApduResponse = new byte[] {(byte) 0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54,
-                0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xAF, 0x0C, 0x13,
-                (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7,
-                0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01};
+        wrongApduResponse = ByteBuffer.wrap(new byte[] {(byte) 0x6F, 0x22, (byte) 0x84, 0x08, 0x33,
+                0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xAF, 0x0C,
+                0x13, (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A,
+                (byte) 0xB7, 0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01});
 
         fciTested = GetDataFciRespPars.toFCI(wrongApduResponse);
 
@@ -116,10 +118,10 @@ public class ResponseUtilsTest {
         Assert.assertNotNull(fciTested.getStartupInformation());
 
         // Case if else 3bis
-        wrongApduResponse = new byte[] {(byte) 0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54,
-                0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0D, 0x13,
-                (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7,
-                0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01};
+        wrongApduResponse = ByteBuffer.wrap(new byte[] {(byte) 0x6F, 0x22, (byte) 0x84, 0x08, 0x33,
+                0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0D,
+                0x13, (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A,
+                (byte) 0xB7, 0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01});
 
         fciTested = GetDataFciRespPars.toFCI(wrongApduResponse);
 
@@ -129,10 +131,10 @@ public class ResponseUtilsTest {
         Assert.assertNotNull(fciTested.getStartupInformation());
 
         // Case if else 4
-        wrongApduResponse = new byte[] {(byte) 0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54,
-                0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13,
-                (byte) 0xC8, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7,
-                0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01};
+        wrongApduResponse = ByteBuffer.wrap(new byte[] {(byte) 0x6F, 0x22, (byte) 0x84, 0x08, 0x33,
+                0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C,
+                0x13, (byte) 0xC8, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A,
+                (byte) 0xB7, 0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01});
 
         fciTested = GetDataFciRespPars.toFCI(wrongApduResponse);
 
@@ -142,10 +144,10 @@ public class ResponseUtilsTest {
         Assert.assertNotNull(fciTested.getStartupInformation());
 
         // Case if else 4
-        wrongApduResponse = new byte[] {(byte) 0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54,
-                0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13,
-                (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7,
-                0x54, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01};
+        wrongApduResponse = ByteBuffer.wrap(new byte[] {(byte) 0x6F, 0x22, (byte) 0x84, 0x08, 0x33,
+                0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C,
+                0x13, (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A,
+                (byte) 0xB7, 0x54, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01});
 
         fciTested = GetDataFciRespPars.toFCI(wrongApduResponse);
 
@@ -158,18 +160,18 @@ public class ResponseUtilsTest {
 
     @Test
     public void TestToSecureSession() {
-        byte[] apduResponse = new byte[] {(byte) 0x8F, 0x05, 0x75, 0x1A, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x30, 0x7E, (byte) 0x1D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00};
+        ByteBuffer apduResponse = ByteBuffer.wrap(new byte[] {(byte) 0x8F, 0x05, 0x75, 0x1A, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x30, 0x7E, (byte) 0x1D, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00});
 
-        byte[] transactionCounter = new byte[] {(byte) 0x8F, 0x05, 0x75};
-        byte[] randomNumber = new byte[] {0x1A, 0x00, 0x00, 0x00, 0x00};
+        ByteBuffer transactionCounter = ByteBuffer.wrap(new byte[] {(byte) 0x8F, 0x05, 0x75});
+        ByteBuffer randomNumber = ByteBuffer.wrap(new byte[] {0x1A, 0x00, 0x00, 0x00, 0x00});
         byte kif = 0x00;
         byte kvc = (byte) 0x00;
 
         boolean isPreviousSessionRatifiedExpected = true;
         boolean isManageSecureSessionAuthorizedExpected = false;
-        byte[] originalData = new byte[] {};
+        ByteBuffer originalData = ByteBuffer.allocate(0);
 
         OpenSessionRespPars.SecureSession SecureSessionExpected =
                 new OpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
@@ -178,15 +180,15 @@ public class ResponseUtilsTest {
         OpenSessionRespPars.SecureSession SecureSessionTested =
                 OpenSessionRespPars.toSecureSessionRev32(apduResponse);
 
-        Assert.assertArrayEquals(SecureSessionExpected.getOriginalData(),
+        Assert.assertEquals(SecureSessionExpected.getOriginalData(),
                 SecureSessionTested.getOriginalData());
-        Assert.assertArrayEquals(SecureSessionExpected.getSecureSessionData(),
+        Assert.assertEquals(SecureSessionExpected.getSecureSessionData(),
                 SecureSessionTested.getSecureSessionData());
         Assert.assertEquals(SecureSessionExpected.getKIF(), SecureSessionTested.getKIF());
         Assert.assertEquals(SecureSessionExpected.getKVC(), SecureSessionTested.getKVC());
-        Assert.assertArrayEquals(SecureSessionExpected.getChallengeRandomNumber(),
+        Assert.assertEquals(SecureSessionExpected.getChallengeRandomNumber(),
                 SecureSessionTested.getChallengeRandomNumber());
-        Assert.assertArrayEquals(SecureSessionExpected.getChallengeTransactionCounter(),
+        Assert.assertEquals(SecureSessionExpected.getChallengeTransactionCounter(),
                 SecureSessionTested.getChallengeTransactionCounter());
     }
 
@@ -194,16 +196,17 @@ public class ResponseUtilsTest {
     public void TestToSecureSessionRev2() {
 
         // Case Else
-        byte[] apduResponse =
-                new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53};
+        ByteBuffer apduResponse = ByteBuffer
+                .wrap(new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53});
 
-        byte[] transactionCounter = new byte[] {(byte) 0x03, (byte) 0x0D, (byte) 0x14};
-        byte[] randomNumber = new byte[] {(byte) 0x53};
+        ByteBuffer transactionCounter =
+                ByteBuffer.wrap(new byte[] {(byte) 0x03, (byte) 0x0D, (byte) 0x14});
+        ByteBuffer randomNumber = ByteBuffer.wrap(new byte[] {(byte) 0x53});
         byte kvc = (byte) 0x7E;
 
         boolean isPreviousSessionRatifiedExpected = false;
         boolean isManageSecureSessionAuthorizedExpected = false;
-        byte[] originalData = null;
+        ByteBuffer originalData = null;
 
         OpenSessionRespPars.SecureSession SecureSessionExpected =
                 new OpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
@@ -212,19 +215,21 @@ public class ResponseUtilsTest {
         OpenSessionRespPars.SecureSession SecureSessionTested =
                 OpenSessionRespPars.toSecureSessionRev2(apduResponse);
 
-        Assert.assertArrayEquals(SecureSessionExpected.getSecureSessionData(),
+        Assert.assertEquals(SecureSessionExpected.getSecureSessionData(),
                 SecureSessionTested.getSecureSessionData());
         Assert.assertEquals(SecureSessionExpected.getKVC(), SecureSessionTested.getKVC());
-        Assert.assertArrayEquals(SecureSessionExpected.getChallengeRandomNumber(),
+        Assert.assertEquals(SecureSessionExpected.getChallengeRandomNumber(),
                 SecureSessionTested.getChallengeRandomNumber());
-        Assert.assertArrayEquals(SecureSessionExpected.getChallengeTransactionCounter(),
+        Assert.assertEquals(SecureSessionExpected.getChallengeTransactionCounter(),
                 SecureSessionTested.getChallengeTransactionCounter());
 
         // Case If Else
-        byte[] apduResponseCaseTwo = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14,
-                (byte) 0x53, (byte) 0x30, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
-        byte[] originalDataCaseTwo = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14,
-                (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
+        ByteBuffer apduResponseCaseTwo =
+                ByteBuffer.wrap(new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14,
+                        (byte) 0x53, (byte) 0x30, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04});
+        ByteBuffer originalDataCaseTwo =
+                ByteBuffer.wrap(new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14,
+                        (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04});
 
         OpenSessionRespPars.SecureSession SecureSessionExpectedCaseTwo =
                 new OpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
@@ -233,20 +238,22 @@ public class ResponseUtilsTest {
         OpenSessionRespPars.SecureSession SecureSessionTestedCaseTwo =
                 OpenSessionRespPars.toSecureSessionRev2(apduResponseCaseTwo);
 
-        Assert.assertArrayEquals(SecureSessionExpectedCaseTwo.getSecureSessionData(),
+        Assert.assertEquals(SecureSessionExpectedCaseTwo.getSecureSessionData(),
                 SecureSessionTestedCaseTwo.getSecureSessionData());
         Assert.assertEquals(SecureSessionExpectedCaseTwo.getKVC(),
                 SecureSessionTestedCaseTwo.getKVC());
-        Assert.assertArrayEquals(SecureSessionExpectedCaseTwo.getChallengeRandomNumber(),
+        Assert.assertEquals(SecureSessionExpectedCaseTwo.getChallengeRandomNumber(),
                 SecureSessionTestedCaseTwo.getChallengeRandomNumber());
-        Assert.assertArrayEquals(SecureSessionExpectedCaseTwo.getChallengeTransactionCounter(),
+        Assert.assertEquals(SecureSessionExpectedCaseTwo.getChallengeTransactionCounter(),
                 SecureSessionTestedCaseTwo.getChallengeTransactionCounter());
 
         // Case If If
-        byte[] apduResponseCaseThree = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D,
-                (byte) 0x14, (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
-        byte[] originalDataCaseThree = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D,
-                (byte) 0x14, (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
+        ByteBuffer apduResponseCaseThree =
+                ByteBuffer.wrap(new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14,
+                        (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04});
+        ByteBuffer originalDataCaseThree =
+                ByteBuffer.wrap(new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14,
+                        (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04});
 
         OpenSessionRespPars.SecureSession SecureSessionExpectedCaseThree =
                 new OpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
@@ -255,27 +262,27 @@ public class ResponseUtilsTest {
         OpenSessionRespPars.SecureSession SecureSessionTestedCaseThree =
                 OpenSessionRespPars.toSecureSessionRev2(apduResponseCaseThree);
 
-        Assert.assertArrayEquals(SecureSessionExpectedCaseThree.getSecureSessionData(),
+        Assert.assertEquals(SecureSessionExpectedCaseThree.getSecureSessionData(),
                 SecureSessionTestedCaseThree.getSecureSessionData());
         Assert.assertEquals(SecureSessionExpectedCaseThree.getKVC(),
                 SecureSessionTestedCaseThree.getKVC());
-        Assert.assertArrayEquals(SecureSessionExpectedCaseThree.getChallengeRandomNumber(),
+        Assert.assertEquals(SecureSessionExpectedCaseThree.getChallengeRandomNumber(),
                 SecureSessionTestedCaseThree.getChallengeRandomNumber());
-        Assert.assertArrayEquals(SecureSessionExpectedCaseThree.getChallengeTransactionCounter(),
+        Assert.assertEquals(SecureSessionExpectedCaseThree.getChallengeTransactionCounter(),
                 SecureSessionTestedCaseThree.getChallengeTransactionCounter());
     }
 
     @Test
     public void TestToKVCRev2() {
-        byte[] apduResponse =
-                new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53};
+        ByteBuffer apduResponse = ByteBuffer
+                .wrap(new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53});
         byte KVCRev2Expected = (byte) 0x7E;
         byte KVCRev2Tested = ResponseUtils.toKVCRev2(apduResponse);
 
         Assert.assertEquals(KVCRev2Expected, KVCRev2Tested);
 
-        byte[] apduResponseCaseTwo =
-                new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53};
+        ByteBuffer apduResponseCaseTwo = ByteBuffer
+                .wrap(new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53});
 
     }
 

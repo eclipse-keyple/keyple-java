@@ -8,11 +8,12 @@
 
 package org.keyple.calypso.commands.po.parser;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import org.keyple.calypso.commands.utils.ResponseUtils;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
+import org.keyple.seproxy.ByteBufferUtils;
 
 /**
  * This class provides status code properties and the getters to access to the structured fields of
@@ -52,18 +53,15 @@ public class GetDataFciRespPars extends ApduResponseParser {
     public GetDataFciRespPars(ApduResponse response) {
         super(response);
         if (isSuccessful()) {
-            fci = toFCI(response.getBytes());
+            fci = toFCI(response.getBuffer());
         }
     }
 
-    public byte[] getDfName() {
-        if (fci != null) {
-            return fci.getDfName();
-        }
-        return null;
+    public ByteBuffer getDfName() {
+        return fci != null ? fci.getDfName() : null;
     }
 
-    public byte[] getApplicationSerialNumber() {
+    public ByteBuffer getApplicationSerialNumber() {
         if (fci != null) {
             return fci.getApplicationSN();
         }
@@ -174,16 +172,16 @@ public class GetDataFciRespPars extends ApduResponseParser {
     public static class FCI {
 
         /** The DF Name. */
-        private byte[] dfName;
+        private ByteBuffer dfName;
 
         /** The fci proprietary template. */
-        private byte[] fciProprietaryTemplate;
+        private ByteBuffer fciProprietaryTemplate;
 
         /** The fci issuer discretionary data. */
-        private byte[] fciIssuerDiscretionaryData;
+        private ByteBuffer fciIssuerDiscretionaryData;
 
         /** The application SN. */
-        private byte[] applicationSN;
+        private ByteBuffer applicationSN;
 
         /** The startup information. */
         private StartupInformation startupInformation;
@@ -197,17 +195,13 @@ public class GetDataFciRespPars extends ApduResponseParser {
          * @param applicationSN the application SN
          * @param startupInformation the startup information
          */
-        public FCI(byte[] dfName, byte[] fciProprietaryTemplate, byte[] fciIssuerDiscretionaryData,
-                byte[] applicationSN, StartupInformation startupInformation) {
-            if (dfName != null) {
-                this.dfName = dfName.clone();
-            }
-
-            this.fciProprietaryTemplate =
-                    (fciProprietaryTemplate == null ? null : fciProprietaryTemplate.clone());
-            this.fciIssuerDiscretionaryData = (fciIssuerDiscretionaryData == null ? null
-                    : fciIssuerDiscretionaryData.clone());
-            this.applicationSN = (applicationSN == null ? null : applicationSN.clone());
+        public FCI(ByteBuffer dfName, ByteBuffer fciProprietaryTemplate,
+                ByteBuffer fciIssuerDiscretionaryData, ByteBuffer applicationSN,
+                StartupInformation startupInformation) {
+            this.dfName = dfName;
+            this.fciProprietaryTemplate = fciProprietaryTemplate;
+            this.fciIssuerDiscretionaryData = fciIssuerDiscretionaryData;
+            this.applicationSN = applicationSN;
             this.startupInformation = startupInformation;
         }
 
@@ -216,9 +210,8 @@ public class GetDataFciRespPars extends ApduResponseParser {
          *
          * @return the fci proprietary template
          */
-        public byte[] getFciProprietaryTemplate() {
-            return (this.fciProprietaryTemplate == null ? null
-                    : this.fciProprietaryTemplate.clone());
+        public ByteBuffer getFciProprietaryTemplate() {
+            return fciProprietaryTemplate;
         }
 
         /**
@@ -226,9 +219,8 @@ public class GetDataFciRespPars extends ApduResponseParser {
          *
          * @return the fci issuer discretionary data
          */
-        public byte[] getFciIssuerDiscretionaryData() {
-            return (this.fciIssuerDiscretionaryData == null ? null
-                    : this.fciIssuerDiscretionaryData.clone());
+        public ByteBuffer getFciIssuerDiscretionaryData() {
+            return fciIssuerDiscretionaryData;
         }
 
         /**
@@ -236,8 +228,8 @@ public class GetDataFciRespPars extends ApduResponseParser {
          *
          * @return the application SN
          */
-        public byte[] getApplicationSN() {
-            return (this.applicationSN == null ? null : this.applicationSN.clone());
+        public ByteBuffer getApplicationSN() {
+            return applicationSN;
         }
 
         /**
@@ -254,12 +246,8 @@ public class GetDataFciRespPars extends ApduResponseParser {
          *
          * @return the DF name
          */
-        public byte[] getDfName() {
-            if (dfName != null) {
-                return dfName.clone();
-            } else {
-                return new byte[0];
-            }
+        public ByteBuffer getDfName() {
+            return dfName;
         }
 
     }
@@ -313,6 +301,16 @@ public class GetDataFciRespPars extends ApduResponseParser {
             this.softwareIssuer = softwareIssuer;
             this.softwareVersion = softwareVersion;
             this.softwareRevision = softwareRevision;
+        }
+
+        public StartupInformation(ByteBuffer buffer) {
+            this.bufferSize = buffer.get();
+            this.platform = buffer.get();
+            this.applicationType = buffer.get();
+            this.applicationSubtype = buffer.get();
+            this.softwareIssuer = buffer.get();
+            this.softwareVersion = buffer.get();
+            this.softwareRevision = buffer.get();
         }
 
         @Override
@@ -452,55 +450,59 @@ public class GetDataFciRespPars extends ApduResponseParser {
      * @param apduResponse the apdu response
      * @return the FCI template
      */
-    public static FCI toFCI(byte[] apduResponse) {
+    public static FCI toFCI(ByteBuffer apduResponse) {
         StartupInformation startupInformation = null;
-        byte firstResponseApdubyte = apduResponse[0];
-        byte[] dfName = null;
-        byte[] fciProprietaryTemplate = null;
-        byte[] fciIssuerDiscretionaryData = null;
-        byte[] applicationSN = null;
-        byte[] discretionaryData;
+        byte firstResponseApdubyte = apduResponse.get(0);
+        ByteBuffer dfName = null;
+        ByteBuffer fciProprietaryTemplate = null;
+        ByteBuffer fciIssuerDiscretionaryData = null;
+        ByteBuffer applicationSN = null;
+        ByteBuffer discretionaryData;
 
         if ((byte) 0x6F == firstResponseApdubyte) {
-            int aidLength = apduResponse[3];
-            int fciTemplateLength = apduResponse[5 + aidLength];
+            int aidLength = apduResponse.get(3);
+            int fciTemplateLength = apduResponse.get(5 + aidLength);
             int fixedPartOfFciTemplate = fciTemplateLength - 22;
             int firstbyteAid = 6 + aidLength + fixedPartOfFciTemplate;
             int fciIssuerDiscretionaryDataLength =
-                    apduResponse[8 + aidLength + fixedPartOfFciTemplate];
+                    apduResponse.get(8 + aidLength + fixedPartOfFciTemplate);
             int firstbyteFciIssuerDiscretionaryData = 9 + aidLength + fixedPartOfFciTemplate;
-            int applicationSNLength = apduResponse[10 + aidLength + fixedPartOfFciTemplate];
+            int applicationSNLength = apduResponse.get(10 + aidLength + fixedPartOfFciTemplate);
             int firstbyteApplicationSN = 11 + aidLength + fixedPartOfFciTemplate;
-            int discretionaryDataLength = apduResponse[20 + aidLength + fixedPartOfFciTemplate];
+            int discretionaryDataLength = apduResponse.get(20 + aidLength + fixedPartOfFciTemplate);
             int firstbyteDiscretionaryData = 21 + aidLength + fixedPartOfFciTemplate;
 
-            if ((byte) 0x84 == apduResponse[2]) {
-                dfName = ResponseUtils.subArray(apduResponse, 4, 4 + aidLength);
+            if ((byte) 0x84 == apduResponse.get(2)) {
+                dfName = ByteBufferUtils.subIndex(apduResponse, 4, 4 + aidLength);
             }
 
-            if ((byte) 0xA5 == apduResponse[4 + aidLength]) {
-                fciProprietaryTemplate = ResponseUtils.subArray(apduResponse, firstbyteAid,
+            if ((byte) 0xA5 == apduResponse.get(4 + aidLength)) {
+                fciProprietaryTemplate = ByteBufferUtils.subIndex(apduResponse, firstbyteAid,
                         firstbyteAid + fciTemplateLength);
             }
 
-            if ((byte) 0xBF == apduResponse[6 + aidLength + fixedPartOfFciTemplate]
-                    && ((byte) 0x0C == apduResponse[7 + aidLength + fixedPartOfFciTemplate])) {
-                fciIssuerDiscretionaryData = ResponseUtils.subArray(apduResponse,
+            if ((byte) 0xBF == apduResponse.get(6 + aidLength + fixedPartOfFciTemplate)
+                    && ((byte) 0x0C == apduResponse.get(7 + aidLength + fixedPartOfFciTemplate))) {
+                fciIssuerDiscretionaryData = ByteBufferUtils.subIndex(apduResponse,
                         firstbyteFciIssuerDiscretionaryData,
                         firstbyteFciIssuerDiscretionaryData + fciIssuerDiscretionaryDataLength);
             }
 
-            if ((byte) 0xC7 == apduResponse[9 + aidLength + fixedPartOfFciTemplate]) {
-                applicationSN = ResponseUtils.subArray(apduResponse, firstbyteApplicationSN,
+            if ((byte) 0xC7 == apduResponse.get(9 + aidLength + fixedPartOfFciTemplate)) {
+                applicationSN = ByteBufferUtils.subIndex(apduResponse, firstbyteApplicationSN,
                         firstbyteApplicationSN + applicationSNLength);
             }
 
-            if ((byte) 0x53 == apduResponse[19 + aidLength + fixedPartOfFciTemplate]) {
-                discretionaryData = ResponseUtils.subArray(apduResponse, firstbyteDiscretionaryData,
-                        firstbyteDiscretionaryData + discretionaryDataLength);
-                startupInformation = new StartupInformation(discretionaryData[0],
-                        discretionaryData[1], discretionaryData[2], discretionaryData[3],
-                        discretionaryData[4], discretionaryData[5], discretionaryData[6]);
+            if ((byte) 0x53 == apduResponse.get(19 + aidLength + fixedPartOfFciTemplate)) {
+                discretionaryData =
+                        ByteBufferUtils.subIndex(apduResponse, firstbyteDiscretionaryData,
+                                firstbyteDiscretionaryData + discretionaryDataLength);
+                startupInformation = new StartupInformation(discretionaryData);
+                /*
+                 * startupInformation = new StartupInformation(discretionaryData.get(0),
+                 * discretionaryData.get(1), discretionaryData.get(2), discretionaryData.get(3),
+                 * discretionaryData.get(4), discretionaryData.get(5), discretionaryData.get(6));
+                 */
             }
         }
 

@@ -8,6 +8,7 @@
 
 package org.keyple.plugin.pcsc;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,13 +22,7 @@ import javax.smartcardio.ResponseAPDU;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.ConfigurableReader;
-import org.keyple.seproxy.ObservableReader;
-import org.keyple.seproxy.ReaderEvent;
-import org.keyple.seproxy.SeRequest;
-import org.keyple.seproxy.SeResponse;
+import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.seproxy.exceptions.InvalidApduReaderException;
@@ -44,7 +39,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     private CardChannel channel;
     private Card card;
 
-    private byte[] aidCurrentlySelected;
+    private ByteBuffer aidCurrentlySelected;
     private ApduResponse fciDataSelected;
     private boolean atrDefaultSelected = false;
 
@@ -226,24 +221,24 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      *
      * @throws ChannelStateReaderException
      */
-    private ApduResponse connect(byte[] aid) throws ChannelStateReaderException {
+    private ApduResponse connect(ByteBuffer aid) throws ChannelStateReaderException {
         try {
             // if (aid != null) {
             // generate select application command
-            byte[] command = new byte[aid.length + 5];
-            command[0] = (byte) 0x00;
-            command[1] = (byte) 0xA4;
-            command[2] = (byte) 0x04;
-            command[3] = (byte) 0x00;
-            command[4] = Byte.decode("" + aid.length);
-            System.arraycopy(aid, 0, command, 5, aid.length);
-            logger.info(getName() + " : Send AID : " + formatLogRequest(command));
+            ByteBuffer command = ByteBuffer.allocate(aid.limit() + 6);
+            command.put((byte) 0x00);
+            command.put((byte) 0xA4);
+            command.put((byte) 0x04);
+            command.put((byte) 0x00);
+            command.put((byte) aid.limit());
+            command.put(aid);
+            command.put((byte) 0x00);
+            logger.info(getName() + " : Send AID : " + ByteBufferUtils.toHex(command));
 
             System.out.println(terminal.getName()
                     + "\t\t PC/SC Select Application\t\tfrom PcscReader.connect(byte[] aid)");
-            System.out.println(
-                    settings.get("protocol") + " > " + DatatypeConverter.printHexBinary(command));
-
+            System.out.println(settings.get("protocol") + " > " + ByteBufferUtils.toHex(command));
+            command.position(0);
             ResponseAPDU res = channel.transmit(new CommandAPDU(command));
             System.out.println(settings.get("protocol") + " < "
                     + DatatypeConverter.printHexBinary(res.getBytes()));

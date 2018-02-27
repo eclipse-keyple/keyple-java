@@ -17,6 +17,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,17 +34,14 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.SeRequest;
-import org.keyple.seproxy.SeResponse;
+import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.seproxy.exceptions.InvalidApduReaderException;
 import org.keyple.seproxy.exceptions.TimeoutReaderException;
 import org.keyple.seproxy.exceptions.UnexpectedReaderException;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SmartCardIOReaderTest {
@@ -133,7 +131,7 @@ public class SmartCardIOReaderTest {
                 new byte[] {(byte) 0x94, (byte) 0xA4, 0x00, 0x00, 0x02, 0x3F, 0x02}, false);
 
         // code de la requete
-        byte[] aidToSelect = new byte[] {};
+        ByteBuffer aidToSelect = ByteBuffer.allocate(0);
 
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
@@ -164,7 +162,7 @@ public class SmartCardIOReaderTest {
                 new byte[] {(byte) 0x94, (byte) 0xA4, 0x00, 0x00, 0x02, 0x3F, 0x02}, false);
 
         // code de la requete
-        byte[] aidToSelect = null;
+        ByteBuffer aidToSelect = null;
 
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
@@ -198,7 +196,8 @@ public class SmartCardIOReaderTest {
                 new byte[] {(byte) 0x94, (byte) 0xA4, 0x00, 0x00, 0x02, 0x3F, 0x02}, false);
 
         // code de la requete
-        byte[] aidToSelect = new byte[] {(byte) 0x94, (byte) 0xCA, 0x00, 0x4F, 0x00};
+        ByteBuffer aidToSelect =
+                ByteBufferUtils.wrap(new byte[] {(byte) 0x94, (byte) 0xCA, 0x00, 0x4F, 0x00});
 
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
@@ -228,7 +227,8 @@ public class SmartCardIOReaderTest {
                 new byte[] {(byte) 0x94, (byte) 0xA4, 0x00, 0x00, 0x02, 0x3F, 0x02}, false);
 
         // code de la requete
-        byte[] aidToSelect = new byte[] {(byte) 0x94, (byte) 0xCA, 0x00, 0x4F, 0x00};
+        ByteBuffer aidToSelect =
+                ByteBufferUtils.wrap(new byte[] {(byte) 0x94, (byte) 0xCA, 0x00, 0x4F, 0x00});
 
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);

@@ -30,19 +30,7 @@ public class PoGetChallengeRespPars extends ApduResponseParser {
         super(response);
     }
 
-    /**
-     * Gets the po challenge.
-     *
-     * @return the po challenge
-     */
-    public byte[] getPoChallenge() {
-        if (isSuccessful()) {
-            return getApduResponse().getBytesBeforeStatus();
-        }
-        return null;
-    }
-
-    public ByteBuffer getPoChallengeV2() {
+    public ByteBuffer getPoChallenge() {
         return getApduResponse().getDataBeforeStatus();
     }
 }

@@ -16,6 +16,7 @@ public class ByteBufferBenchmark {
     @Benchmark
     public void allocateByteBuffer() {
         ByteBuffer buf = ByteBuffer.allocate(255);
+        assert buf != null;
     }
 
     @Benchmark
@@ -41,7 +42,7 @@ public class ByteBufferBenchmark {
         buf.clear();
 
         if (!head.equals(tail)) {
-            throw new RuntimeException("Buffers aren't the same");
+            throw new IllegalStateException("Buffers aren't the same");
         }
     }
 
@@ -56,7 +57,7 @@ public class ByteBufferBenchmark {
         System.arraycopy(buf, 255 - 4, tail, 0, 4);
 
         if (!Arrays.equals(head, tail)) {
-            throw new RuntimeException("Buffers aren't the same");
+            throw new IllegalStateException("Buffers aren't the same");
         }
     }
 }

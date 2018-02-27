@@ -8,6 +8,7 @@
 
 package org.keyple.calypso.commands.csm.builder;
 
+import java.nio.ByteBuffer;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.csm.CsmCommandBuilder;
 import org.keyple.calypso.commands.csm.CsmRevision;
@@ -38,8 +39,8 @@ public class DigestUpdateCmdBuild extends CsmCommandBuilder {
      * @param digestData all bytes from command sent by the PO or response from the command
      * @throws InconsistentCommandException the inconsistent command exception
      */
-    public DigestUpdateCmdBuild(CsmRevision revision, boolean encryptedSession, byte[] digestData)
-            throws InconsistentCommandException {
+    public DigestUpdateCmdBuild(CsmRevision revision, boolean encryptedSession,
+            ByteBuffer digestData) throws InconsistentCommandException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -51,7 +52,7 @@ public class DigestUpdateCmdBuild extends CsmCommandBuilder {
             p2 = (byte) 0x80;
         }
 
-        if (digestData != null && digestData.length > 255) {
+        if (digestData != null && digestData.limit() > 255) {
             throw new InconsistentCommandException();
         }
 

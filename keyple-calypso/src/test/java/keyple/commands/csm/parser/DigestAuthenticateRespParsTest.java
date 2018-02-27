@@ -8,6 +8,7 @@
 
 package keyple.commands.csm.parser;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -29,7 +30,7 @@ public class DigestAuthenticateRespParsTest {
 
         ApduResponseParser apduResponseParser =
                 new DigestAuthenticateRespPars(seResponse.getApduResponses().get(0));
-        byte[] reponseActual = apduResponseParser.getApduResponse().getBytes();
-        Assert.assertArrayEquals(new byte[] {90, 00}, reponseActual);
+        ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
+        Assert.assertEquals(ByteBuffer.wrap(new byte[] {90, 00}), reponseActual);
     }
 }

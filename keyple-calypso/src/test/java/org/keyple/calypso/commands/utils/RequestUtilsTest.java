@@ -6,18 +6,20 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.seproxy;
+package org.keyple.calypso.commands.utils;
 
 import static org.junit.Assert.*;
 import org.apache.commons.codec.DecoderException;
 import org.junit.Test;
+import org.keyple.seproxy.ApduRequest;
+import org.keyple.seproxy.ByteBufferUtils;
 
-public class ByteBufferUtilsTest {
+public class RequestUtilsTest {
 
     @Test
-    public void fromHex() throws DecoderException {
-        assertEquals(ByteBufferUtils.wrap(new byte[] {0x01, 0x02, 0x03, 0x04}),
-                ByteBufferUtils.fromHex("0102 03 04h"));
-        assertEquals(ByteBufferUtils.fromHex("01020304"), ByteBufferUtils.fromHex("0102 03 04h"));
+    public void constructAPDURequest() throws DecoderException {
+        ApduRequest req = RequestUtils.constructAPDURequest((byte) 1, (byte) 2, (byte) 3, (byte) 4,
+                ByteBufferUtils.fromHex("0506"), (byte) 0x07);
+        assertEquals("0102030402050600", ByteBufferUtils.toHex(req.getBuffer()));
     }
 }

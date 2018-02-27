@@ -8,32 +8,29 @@
 
 package keyple.commands.csm.builder;
 
+import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.csm.builder.DigestAuthenticateCmdBuild;
 import org.keyple.commands.ApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.exceptions.ChannelStateReaderException;
-import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.seproxy.exceptions.InvalidApduReaderException;
-import org.keyple.seproxy.exceptions.TimeoutReaderException;
-import org.keyple.seproxy.exceptions.UnexpectedReaderException;
+import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.seproxy.exceptions.*;
 
 public class DigestAuthenticateCmdBuildTest {
 
     @Test
-    public void digestAuthenticate()
-            throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+    public void digestAuthenticate() throws InconsistentCommandException {
 
-        byte[] signaturePO = {0x00, 0x01, 0x02, 0x03};
-        byte[] request = {(byte) 0x80, (byte) 0x82, 0x00, 0x00, 0x04, 0x00, 0x01, 0x02, 0x03};
+        ByteBuffer signaturePO = ByteBuffer.wrap(new byte[] {0x00, 0x01, 0x02, 0x03});
+        ByteBuffer request = ByteBuffer.wrap(
+                new byte[] {(byte) 0x94, (byte) 0x82, 0x00, 0x00, 0x04, 0x00, 0x01, 0x02, 0x03});
 
         ApduCommandBuilder apduCommandBuilder = new DigestAuthenticateCmdBuild(null, signaturePO);
         ApduRequest ApduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertArrayEquals(request, ApduRequest.getBytes());
-
+        Assert.assertEquals(ByteBufferUtils.toHex(request),
+                ByteBufferUtils.toHex(ApduRequest.getBuffer().slice()));
     }
 }

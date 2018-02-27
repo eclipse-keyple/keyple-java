@@ -8,6 +8,7 @@
 
 package keyple.commands.csm.builder;
 
+import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.csm.CsmRevision;
@@ -20,14 +21,13 @@ public class CSMGetChallengeCmdBuildTest {
 
     @Test
     public void getChallengeCmdBuild() throws InconsistentCommandException {
-
-        byte[] request = {(byte) 0x94, (byte) 0x84, 0x00, 0x00, 0x04};
+        ByteBuffer request =
+                ByteBuffer.wrap(new byte[] {(byte) 0x94, (byte) 0x84, 0x00, 0x00, 0x04});
 
         ApduCommandBuilder apduCommandBuilder =
                 new CsmGetChallengeCmdBuild(CsmRevision.S1D, (byte) 0x04);// 94
-        ApduRequest ApduRequest = apduCommandBuilder.getApduRequest();
+        ApduRequest apduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertArrayEquals(request, ApduRequest.getBytes());
-
+        Assert.assertEquals(request, apduRequest.getBuffer());
     }
 }

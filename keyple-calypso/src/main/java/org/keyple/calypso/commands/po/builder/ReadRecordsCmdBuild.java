@@ -53,17 +53,13 @@ public class ReadRecordsCmdBuild extends PoCommandBuilder implements SendableInS
 
         byte cla = PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00;
         byte p1 = firstRecordNumber;
-        byte[] dataIn = null;
         byte p2 = (sfi == (byte) 0x00) ? (byte) 0x05 : (byte) ((byte) (sfi * 8) + 5);
         if (readJustOneRecord) {
             p2 = (byte) (p2 - (byte) 0x01);
         }
 
-        // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, dataIn,
-        // expectedLength);
-        ApduRequest apduRequest =
-                RequestUtils.constructAPDURequest(cla, command, p1, p2, dataIn, expectedLength);
-        this.request = apduRequest;
+        this.request =
+                RequestUtils.constructAPDURequest(cla, command, p1, p2, null, expectedLength);
     }
 
     /**

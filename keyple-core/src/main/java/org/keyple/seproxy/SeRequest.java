@@ -8,6 +8,7 @@
 
 package org.keyple.seproxy;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class SeRequest {
      * - Could be missing when operating SE which don’t support the Select Application command (as
      * it is the case for CSM).
      */
-    private byte[] aidToSelect;
+    private ByteBuffer aidToSelect;
 
     /**
      * the final logical channel status: if true, the SE reader keep active the logical channel of
@@ -41,7 +42,7 @@ public class SeRequest {
     /**
      * contains a group of APDUCommand to operate on the selected SE application by the SE reader.
      */
-    private List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
+    private List<ApduRequest> apduRequests;
 
     /**
      * the constructor called by a ProxyReader in order to open a logical channel, to send a set of
@@ -51,8 +52,9 @@ public class SeRequest {
      * @param apduRequests the apdu requests
      * @param keepChannelOpen the keep channel open
      */
-    public SeRequest(byte[] aidToSelect, List<ApduRequest> apduRequests, boolean keepChannelOpen) {
-        this.aidToSelect = (aidToSelect == null ? null : aidToSelect.clone());
+    public SeRequest(ByteBuffer aidToSelect, List<ApduRequest> apduRequests,
+            boolean keepChannelOpen) {
+        this.aidToSelect = aidToSelect;
         this.keepChannelOpen = keepChannelOpen;
         this.apduRequests = apduRequests;
 
@@ -77,11 +79,8 @@ public class SeRequest {
      *
      * @return the current AID set to select
      */
-    public byte[] getAidToSelect() {
-        if (aidToSelect != null) {
-            return aidToSelect.clone();
-        }
-        return null;
+    public ByteBuffer getAidToSelect() {
+        return aidToSelect;
     }
 
     /**

@@ -64,7 +64,7 @@ public abstract class ApduResponseParser {
     }
 
     private int getStatusCodeV2() {
-        return response.getStatusCodeV2();
+        return response.getStatusCode();
     }
 
     private StatusProperties getPropertiesForStatusCode() {

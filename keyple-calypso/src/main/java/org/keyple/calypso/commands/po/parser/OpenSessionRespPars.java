@@ -8,12 +8,14 @@
 
 package org.keyple.calypso.commands.po.parser;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.utils.ResponseUtils;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
+import org.keyple.seproxy.ByteBufferUtils;
 
 /**
  * The Class OpenSessionRespPars. This class provides status code properties and the getters to
@@ -126,17 +128,17 @@ public class OpenSessionRespPars extends ApduResponseParser {
             switch (revision) {
                 case REV3_2:
                     if (response.isSuccessful()) {
-                        secureSession = toSecureSessionRev32(response.getBytes());
+                        secureSession = toSecureSessionRev32(response.getBuffer());
                     }
                     break;
                 case REV3_1:
                     if (response.isSuccessful()) {
-                        secureSession = toSecureSessionRev3(response.getBytes());
+                        secureSession = toSecureSessionRev3(response.getBuffer());
                     }
                     break;
                 case REV2_4:
                     if (response.isSuccessful()) {
-                        secureSession = toSecureSessionRev2(response.getBytes());
+                        secureSession = toSecureSessionRev2(response.getBuffer());
                     }
                     break;
                 default:
@@ -151,19 +153,19 @@ public class OpenSessionRespPars extends ApduResponseParser {
      * @param apduResponse the apdu response
      * @return a SecureSession
      */
-    public static SecureSession toSecureSessionRev32(byte[] apduResponse) {
+    public static SecureSession toSecureSessionRev32(ByteBuffer apduResponse) {
 
-        byte flag = apduResponse[8];
+        byte flag = apduResponse.get(8);
         boolean previousSessionRatified = ResponseUtils.isBitSet(flag, 0x00);
         boolean manageSecureSessionAuthorized = ResponseUtils.isBitSet(flag, 1);
 
-        byte kif = apduResponse[9];
-        byte kvc = apduResponse[10];
-        int dataLength = apduResponse[11];
-        byte[] data = ResponseUtils.subArray(apduResponse, 12, 12 + dataLength);
+        byte kif = apduResponse.get(9);
+        byte kvc = apduResponse.get(10);
+        int dataLength = apduResponse.get(11);
+        ByteBuffer data = ByteBufferUtils.subIndex(apduResponse, 12, 12 + dataLength);
 
-        return new SecureSession(ResponseUtils.subArray(apduResponse, 0, 3),
-                ResponseUtils.subArray(apduResponse, 3, 8), previousSessionRatified,
+        return new SecureSession(ByteBufferUtils.subIndex(apduResponse, 0, 3),
+                ByteBufferUtils.subIndex(apduResponse, 3, 8), previousSessionRatified,
                 manageSecureSessionAuthorized, kif, kvc, data, apduResponse);
     }
 
@@ -173,18 +175,18 @@ public class OpenSessionRespPars extends ApduResponseParser {
      * @param apduResponse the apdu response
      * @return a SecureSession
      */
-    public static SecureSession toSecureSessionRev3(byte[] apduResponse) {
+    public static SecureSession toSecureSessionRev3(ByteBuffer apduResponse) {
         SecureSession secureSession;
-        boolean previousSessionRatified = (apduResponse[4] == (byte) 0x01);
+        boolean previousSessionRatified = (apduResponse.get(4) == (byte) 0x01);
         boolean manageSecureSessionAuthorized = false;
 
-        byte kif = apduResponse[5];
-        byte kvc = apduResponse[6];
-        int dataLength = apduResponse[7];
-        byte[] data = ResponseUtils.subArray(apduResponse, 8, 8 + dataLength);
+        byte kif = apduResponse.get(5);
+        byte kvc = apduResponse.get(6);
+        int dataLength = apduResponse.get(7);
+        ByteBuffer data = ByteBufferUtils.subIndex(apduResponse, 8, 8 + dataLength);
 
-        secureSession = new SecureSession(ResponseUtils.subArray(apduResponse, 0, 3),
-                ResponseUtils.subArray(apduResponse, 3, 4), previousSessionRatified,
+        secureSession = new SecureSession(ByteBufferUtils.subIndex(apduResponse, 0, 3),
+                ByteBufferUtils.subIndex(apduResponse, 3, 4), previousSessionRatified,
                 manageSecureSessionAuthorized, kif, kvc, data, apduResponse);
         return secureSession;
     }
@@ -195,31 +197,32 @@ public class OpenSessionRespPars extends ApduResponseParser {
      * @param apduResponse the apdu response
      * @return a SecureSession
      */
-    public static SecureSession toSecureSessionRev2(byte[] apduResponse) {
+    public static SecureSession toSecureSessionRev2(ByteBuffer apduResponse) {
         SecureSession secureSession;
         boolean previousSessionRatified = true;
 
         byte kvc = ResponseUtils.toKVCRev2(apduResponse);
 
-        if (apduResponse.length < 6) {
+        if (apduResponse.limit() < 6) {
             previousSessionRatified = false;
         }
 
         // TODO selecting record data without length ?
 
-        secureSession = new SecureSession(ResponseUtils.subArray(apduResponse, 1, 4),
-                ResponseUtils.subArray(apduResponse, 4, 5), previousSessionRatified, false, kvc,
+        secureSession = new SecureSession(ByteBufferUtils.subIndex(apduResponse, 1, 4),
+                ByteBufferUtils.subIndex(apduResponse, 4, 5), previousSessionRatified, false, kvc,
                 null, apduResponse);
 
         return secureSession;
     }
 
-    public byte[] getPoChallenge() {
+    public ByteBuffer getPoChallenge() {
         return secureSession.getChallengeRandomNumber();
     }
 
+
     public int getTransactionCounterValue() {
-        return java.nio.ByteBuffer.wrap(secureSession.getChallengeTransactionCounter())
+        return secureSession.getChallengeTransactionCounter().duplicate()
                 .order(java.nio.ByteOrder.LITTLE_ENDIAN).getInt();
     }
 
@@ -239,7 +242,7 @@ public class OpenSessionRespPars extends ApduResponseParser {
         return secureSession.getKVC();
     }
 
-    public byte[] getRecordDataRead() {
+    public ByteBuffer getRecordDataRead() {
         return secureSession.getSecureSessionData();
     }
 
@@ -249,10 +252,10 @@ public class OpenSessionRespPars extends ApduResponseParser {
     public static class SecureSession {
 
         /** Challenge transaction counter */
-        private final byte[] challengeTransactionCounter;
+        private final ByteBuffer challengeTransactionCounter;
 
         /** Challenge random number */
-        private final byte[] challengeRandomNumber;
+        private final ByteBuffer challengeRandomNumber;
 
         /** The previous session ratified boolean. */
         private final boolean previousSessionRatified;
@@ -267,10 +270,10 @@ public class OpenSessionRespPars extends ApduResponseParser {
         private final byte kvc;
 
         /** The original data. */
-        private final byte[] originalData;
+        private final ByteBuffer originalData;
 
         /** The secure session data. */
-        private final byte[] secureSessionData;
+        private final ByteBuffer secureSessionData;
 
         /**
          * Instantiates a new SecureSession for a Calypso application revision 3
@@ -284,17 +287,18 @@ public class OpenSessionRespPars extends ApduResponseParser {
          * @param secureSessionData the secure session data from the response of open secure session
          *        APDU command
          */
-        public SecureSession(byte[] challengeTransactionCounter, byte[] challengeRandomNumber,
-                boolean previousSessionRatified, boolean manageSecureSessionAuthorized, byte kif,
-                byte kvc, byte[] originalData, byte[] secureSessionData) {
+        public SecureSession(ByteBuffer challengeTransactionCounter,
+                ByteBuffer challengeRandomNumber, boolean previousSessionRatified,
+                boolean manageSecureSessionAuthorized, byte kif, byte kvc, ByteBuffer originalData,
+                ByteBuffer secureSessionData) {
             this.challengeTransactionCounter = challengeTransactionCounter;
             this.challengeRandomNumber = challengeRandomNumber;
             this.previousSessionRatified = previousSessionRatified;
             this.manageSecureSessionAuthorized = manageSecureSessionAuthorized;
             this.kif = kif;
             this.kvc = kvc;
-            this.originalData = (originalData == null ? null : originalData.clone());
-            this.secureSessionData = (secureSessionData == null ? null : secureSessionData.clone());
+            this.originalData = originalData;
+            this.secureSessionData = secureSessionData;
         }
 
         /**
@@ -308,24 +312,25 @@ public class OpenSessionRespPars extends ApduResponseParser {
          * @param secureSessionData the secure session data from the response of open secure session
          *        APDU command
          */
-        public SecureSession(byte[] challengeTransactionCounter, byte[] challengeRandomNumber,
-                boolean previousSessionRatified, boolean manageSecureSessionAuthorized, byte kvc,
-                byte[] originalData, byte[] secureSessionData) {
+        public SecureSession(ByteBuffer challengeTransactionCounter,
+                ByteBuffer challengeRandomNumber, boolean previousSessionRatified,
+                boolean manageSecureSessionAuthorized, byte kvc, ByteBuffer originalData,
+                ByteBuffer secureSessionData) {
             this.challengeTransactionCounter = challengeTransactionCounter;
             this.challengeRandomNumber = challengeRandomNumber;
             this.previousSessionRatified = previousSessionRatified;
             this.manageSecureSessionAuthorized = manageSecureSessionAuthorized;
             this.kif = (byte) 0xFF;
             this.kvc = kvc;
-            this.originalData = (originalData == null ? null : originalData.clone());
-            this.secureSessionData = (secureSessionData == null ? null : secureSessionData.clone());
+            this.originalData = originalData;
+            this.secureSessionData = secureSessionData;
         }
 
-        public byte[] getChallengeTransactionCounter() {
+        public ByteBuffer getChallengeTransactionCounter() {
             return challengeTransactionCounter;
         }
 
-        public byte[] getChallengeRandomNumber() {
+        public ByteBuffer getChallengeRandomNumber() {
             return challengeRandomNumber;
         }
 
@@ -370,11 +375,8 @@ public class OpenSessionRespPars extends ApduResponseParser {
          *
          * @return the original data
          */
-        public byte[] getOriginalData() {
-            if (originalData == null) {
-                return new byte[] {};
-            }
-            return originalData.clone();
+        public ByteBuffer getOriginalData() {
+            return originalData;
         }
 
         /**
@@ -382,8 +384,8 @@ public class OpenSessionRespPars extends ApduResponseParser {
          *
          * @return the secure session data
          */
-        public byte[] getSecureSessionData() {
-            return secureSessionData.clone();
+        public ByteBuffer getSecureSessionData() {
+            return secureSessionData;
         }
     }
 }
