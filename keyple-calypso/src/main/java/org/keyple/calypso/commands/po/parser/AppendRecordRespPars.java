@@ -14,10 +14,7 @@ import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
 /**
- * The Class UpdateRecordRespPars. This class provides status code properties of an Update Record
- * response. the Update Record APDU command
- *
- * @author Ixxi .
+ * Update records response parser. See specs: Calypso / page 96 / 9.4.1.1 - Update record
  */
 public class AppendRecordRespPars extends ApduResponseParser {
 
@@ -56,6 +53,4 @@ public class AppendRecordRespPars extends ApduResponseParser {
     Map<Integer, StatusProperties> getStatusTable() {
         return STATUS_TABLE;
     }
-
-
 }

@@ -14,16 +14,9 @@ import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
 /**
- * This class provides status code properties and the getters to access to the structured fields of
- * a Get Challenge response.
- *
- * @author Ixxi
- *
+ * CSM get challenge. See specs: Calypso / Page 108 / 9.5.4 - Get challenge
  */
 public class CsmGetChallengeRespPars extends ApduResponseParser {
-    /** The CSM(SAM) challenge. */
-    private final ByteBuffer challenge;
-
     /**
      * Instantiates a new CsmGetChallengeRespPars .
      *
@@ -31,7 +24,6 @@ public class CsmGetChallengeRespPars extends ApduResponseParser {
      */
     public CsmGetChallengeRespPars(ApduResponse response) {
         super(response);
-        challenge = isSuccessful() ? response.getBuffer() : null;
     }
 
     /**
@@ -40,7 +32,6 @@ public class CsmGetChallengeRespPars extends ApduResponseParser {
      * @return the challenge
      */
     public ByteBuffer getChallenge() {
-        return challenge;
+        return isSuccessful() ? response.getBuffer() : null;
     }
-
 }

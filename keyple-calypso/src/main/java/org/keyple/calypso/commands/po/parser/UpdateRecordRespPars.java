@@ -14,31 +14,29 @@ import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
 /**
- * Update Record response parser.
+ * Update Record response parser. See specs: Calypso / page 96 / 9.4.11 - Update Record
  */
 public class UpdateRecordRespPars extends ApduResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
-    // TODO: Remove the dots at the end of the strings, there are not sentences, they don't have a
-    // verb
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);
-        m.put(0x6400, new StatusProperties(false, "Too many modifications in session."));
-        m.put(0x6700, new StatusProperties(false, "Lc value not supported."));
+        m.put(0x6400, new StatusProperties(false, "Too many modifications in session"));
+        m.put(0x6700, new StatusProperties(false, "Lc value not supported"));
         m.put(0x6981, new StatusProperties(false,
-                "Command forbidden on cyclic files when the record exists and is not record 01h and on binary files."));
+                "Command forbidden on cyclic files when the record exists and is not record 01h and on binary files"));
         m.put(0x6982, new StatusProperties(false,
-                "Security conditions not fulfilled (no session, wrong key, encryption required)."));
+                "Security conditions not fulfilled (no session, wrong key, encryption required)"));
         m.put(0x6985, new StatusProperties(false,
-                "Access forbidden (Never access mode, DF is invalidated, etc..)."));
-        m.put(0x6986, new StatusProperties(false, "Command not allowed (no current EF)."));
-        m.put(0x6A82, new StatusProperties(false, "File not found."));
+                "Access forbidden (Never access mode, DF is invalidated, etc..)"));
+        m.put(0x6986, new StatusProperties(false, "Command not allowed (no current EF)"));
+        m.put(0x6A82, new StatusProperties(false, "File not found"));
         m.put(0x6A83, new StatusProperties(false,
-                "Record is not found (record index is 0 or above NumRec)."));
-        m.put(0x6B00, new StatusProperties(false, "P2 value not supported."));
-        m.put(0x9000, new StatusProperties(true, "Successful execution."));
+                "Record is not found (record index is 0 or above NumRec)"));
+        m.put(0x6B00, new StatusProperties(false, "P2 value not supported"));
+        m.put(0x9000, new StatusProperties(true, "Successful execution"));
         STATUS_TABLE = m;
     }
 

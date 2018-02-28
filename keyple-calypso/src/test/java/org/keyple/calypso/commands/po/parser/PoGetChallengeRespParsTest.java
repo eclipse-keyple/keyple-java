@@ -28,7 +28,7 @@ public class PoGetChallengeRespParsTest {
         // Here we compare that the data fetched is only the part that is before the execution
         // status
         // Note: Until here, zero buffer allocation/copy has been made
-        assertEquals(apdu.getDataBeforeStatus(), resp.getPoChallenge());
+        assertEquals(apdu.getDataOut(), resp.getPoChallenge());
         assertEquals("01020304", ByteBufferUtils.toHex(resp.getPoChallenge()));
 
         // Now, just to be clear: All of the zero allocation/copy logic means we're always using the
@@ -37,7 +37,7 @@ public class PoGetChallengeRespParsTest {
         assertEquals(apdu.getBuffer().array(), resp.getPoChallenge().array());
 
         // Let's still do things the old way
-        final ByteBuffer payload = apdu.getDataBeforeStatus(); // 01 02 03 04
+        final ByteBuffer payload = apdu.getDataOut(); // 01 02 03 04
 
         assertEquals(payload, resp.getPoChallenge());
     }
