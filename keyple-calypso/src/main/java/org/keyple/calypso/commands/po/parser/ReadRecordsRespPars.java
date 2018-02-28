@@ -72,12 +72,11 @@ public class ReadRecordsRespPars extends ApduResponseParser {
         int i = 0;
         while (i < apduResponse.limit()) {
             if (i + 2 + apduResponse.get(i + 1) > apduResponse.limit() - 1) {
-                records.add(new Record(
-                        ByteBufferUtils.subIndex(apduResponse, i + 2, apduResponse.limit() - 1),
-                        apduResponse.get(i)));
+                records.add(new Record(apduResponse.get(i),
+                        ByteBufferUtils.subIndex(apduResponse, i + 2, apduResponse.limit() - 1)));
             } else {
-                records.add(new Record(ByteBufferUtils.subIndex(apduResponse, i + 2,
-                        i + 2 + apduResponse.get(i + 1)), apduResponse.get(i)));
+                records.add(new Record(apduResponse.get(i), ByteBufferUtils.subIndex(apduResponse,
+                        i + 2, i + 2 + apduResponse.get(i + 1))));
             }
             // add data length to iterator
             i += apduResponse.get(i + 1);
@@ -86,6 +85,22 @@ public class ReadRecordsRespPars extends ApduResponseParser {
             // add byte of num record to iterator
             i++;
         }
+        return records;
+    }
+
+    // fclairamb: I might be missing something. The doc says:
+    // <Record Number:1 byte> < Length:1 byte> <Record data: Length bytes>
+    private static List<Record> parseRecordsV2(ByteBuffer apdu) {
+        List<Record> records = new ArrayList<Record>();
+
+        while (apdu.hasRemaining()) {
+            byte recordNb = apdu.get();
+            byte len = apdu.get();
+            ByteBuffer dup = apdu.duplicate();
+            dup.position(0).limit(len);
+            records.add(new Record(recordNb, dup.slice()));
+        }
+
         return records;
     }
 
@@ -102,6 +117,7 @@ public class ReadRecordsRespPars extends ApduResponseParser {
      * Gets the records data.
      *
      * @return the records data
+     * @deprecated I'm not sure it makes sense
      */
     public List<ByteBuffer> getRecordsData() {
         if (records == null) {
@@ -114,24 +130,28 @@ public class ReadRecordsRespPars extends ApduResponseParser {
         return list;
     }
 
+    public List<Record> getRecords() {
+        return records;
+    }
+
     /**
      * The Class Record. The data in the files are organized in records of equal size.
      */
     public static class Record {
 
         /** The data. */
-        private ByteBuffer data;
+        private final ByteBuffer data;
 
         /** The record number. */
-        private int recordNumber;
+        private final int recordNumber;
 
         /**
          * Instantiates a new Record.
          *
-         * @param data the data
          * @param recordNumber the record number
+         * @param data the data
          */
-        public Record(ByteBuffer data, int recordNumber) {
+        Record(int recordNumber, ByteBuffer data) {
             super();
             this.data = data;
             this.recordNumber = recordNumber;
@@ -155,5 +175,10 @@ public class ReadRecordsRespPars extends ApduResponseParser {
             return recordNumber;
         }
 
+        @Override
+        public String toString() {
+            return String.format("Record{nb=%d,data=%s}", recordNumber,
+                    ByteBufferUtils.toHex(data));
+        }
     }
 }

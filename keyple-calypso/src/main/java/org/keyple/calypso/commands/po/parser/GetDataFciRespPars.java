@@ -43,7 +43,7 @@ public class GetDataFciRespPars extends ApduResponseParser {
     }
 
     /** The fci. */
-    private FCI fci;
+    private final FCI fci;
 
     /**
      * Instantiates a new PoFciRespPars.
@@ -52,9 +52,7 @@ public class GetDataFciRespPars extends ApduResponseParser {
      */
     public GetDataFciRespPars(ApduResponse response) {
         super(response);
-        if (isSuccessful()) {
-            fci = toFCI(response.getBuffer());
-        }
+        fci = isSuccessful() ? toFCI(response.getBuffer()) : null;
     }
 
     public ByteBuffer getDfName() {
@@ -62,108 +60,63 @@ public class GetDataFciRespPars extends ApduResponseParser {
     }
 
     public ByteBuffer getApplicationSerialNumber() {
-        if (fci != null) {
-            return fci.getApplicationSN();
-        }
-        return null;
+        return fci != null ? fci.getApplicationSN() : null;
     }
 
     public byte getBufferSizeByte() {
-        if (fci != null) {
-            return fci.getStartupInformation().getBufferSize();
-        }
-        return 0x00;
+        return fci != null ? fci.getStartupInformation().getBufferSize() : 0x00;
     }
 
     public int getBufferSizeValue() {
-        if (fci != null) {
-            return (int) fci.getStartupInformation().getBufferSize();
-        }
-        return 0;
+        return fci != null ? (int) fci.getStartupInformation().getBufferSize() : 0;
     }
 
     public byte getPlatformByte() {
-        if (fci != null) {
-            return fci.getStartupInformation().getPlatform();
-        }
-        return 0x00;
+        return fci != null ? fci.getStartupInformation().getPlatform() : 0x00;
     }
 
     public byte getApplicationTypeByte() {
-        if (fci != null) {
-            return fci.getStartupInformation().getApplicationType();
-        }
-        return 0x00;
+        return fci != null ? fci.getStartupInformation().getApplicationType() : 0x00;
     }
 
     public boolean isRev3Compliant() {
-        if (fci != null) {
-            return true;
-        }
-        return false;
+        return fci != null;
     }
 
     public boolean isRev3_2ModeAvailable() {
-        if (fci != null) {
-            return fci.getStartupInformation().hasCalypsoRev32modeAvailable();
-        }
-        return false;
+        return fci != null && fci.getStartupInformation().hasCalypsoRev32modeAvailable();
     }
 
     public boolean isRatificationCommandRequired() {
-        if (fci != null) {
-            return fci.getStartupInformation().hasRatificationCommandRequired();
-        }
-        return false;
+        return fci != null && fci.getStartupInformation().hasRatificationCommandRequired();
     }
 
     public boolean hasCalypsoStoredValue() {
-        if (fci != null) {
-            return fci.getStartupInformation().hasCalypsoStoreValue();
-        }
-        return false;
+        return fci != null && fci.getStartupInformation().hasCalypsoStoreValue();
     }
 
     public boolean hasCalypsoPin() {
-        if (fci != null) {
-            return fci.getStartupInformation().hasCalypsoPin();
-        }
-        return false;
+        return fci != null && fci.getStartupInformation().hasCalypsoPin();
     }
 
     public byte getApplicationSubtypeByte() {
-        if (fci != null) {
-            return fci.getStartupInformation().getApplicationSubtype();
-        }
-        return 0x00;
+        return fci != null ? fci.getStartupInformation().getApplicationSubtype() : 0x00;
     }
 
     public byte getSoftwareIssuerByte() {
-        if (fci != null) {
-            return fci.getStartupInformation().getSoftwareIssuer();
-        }
-        return 0x00;
+        return fci != null ? fci.getStartupInformation().getSoftwareIssuer() : 0x00;
     }
 
     public byte getSoftwareVersionByte() {
-        if (fci != null) {
-            return fci.getStartupInformation().getSoftwareVersion();
-        }
-        return 0x00;
+        return fci != null ? fci.getStartupInformation().getSoftwareVersion() : 0x00;
     }
 
     public byte getSoftwareRevisionByte() {
-        if (fci != null) {
-            return fci.getStartupInformation().getSoftwareRevision();
-        }
-        return 0x00;
+        return fci != null ? fci.getStartupInformation().getSoftwareRevision() : 0x00;
     }
 
     public boolean isDfInvalidated() {
-        if (fci != null) {
-            return true;
-        }
-        return false;
+        return fci != null;
     }
 
     /**
@@ -423,23 +376,19 @@ public class GetDataFciRespPars extends ApduResponseParser {
         }
 
         public boolean hasCalypsoPin() {
-            byte mask = 0x01;
-            return (this.applicationType & mask) == mask;
+            return (this.applicationType & 0x01) != 0;
         }
 
         public boolean hasCalypsoStoreValue() {
-            byte mask = 0x02;
-            return (this.applicationType & mask) == mask;
+            return (this.applicationType & 0x02) != 0;
         }
 
         public boolean hasRatificationCommandRequired() {
-            byte mask = 0x04;
-            return (this.applicationType & mask) == mask;
+            return (this.applicationType & 0x04) != 0;
         }
 
         public boolean hasCalypsoRev32modeAvailable() {
-            byte mask = 0x08;
-            return (this.applicationType & mask) == mask;
+            return (this.applicationType & 0x08) != 0;
         }
 
     }

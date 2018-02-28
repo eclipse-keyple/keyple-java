@@ -17,7 +17,7 @@ import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ByteBufferUtils;
 
 /**
- * Close Secure Session (008E) response parser. See specs: Calypso / page 104 / 9.5.2 Close Secure
+ * Close Secure Session (008E) response parser. See specs: Calypso / page 104 / 9.5.2 - Close Secure
  * Session
  */
 public class CloseSessionRespPars extends ApduResponseParser {
@@ -57,7 +57,6 @@ public class CloseSessionRespPars extends ApduResponseParser {
     }
 
     private void parse(ByteBuffer response) {
-        // fclairamb(2018-02-14): Removed 2 bytes to the global response length;
         final int size = response.limit() - 2;
 
         if (size == 8) {
@@ -66,13 +65,7 @@ public class CloseSessionRespPars extends ApduResponseParser {
         } else if (size == 4) {
             signatureLo = ByteBufferUtils.subIndex(response, 0, size);
         }
-        // TODO: I can't add this, it breaks compatibility with existing tests
-        /*
-         * else if ( size != 0 ){ throw new RuntimeException("Size "+size+" is impossible"); }
-         */
     }
-
-    // TODO: Switch that to ByteBuffer
 
     public ByteBuffer getSignatureLo() {
         return signatureLo;

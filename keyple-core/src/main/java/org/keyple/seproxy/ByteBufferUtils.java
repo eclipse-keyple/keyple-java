@@ -44,12 +44,12 @@ public class ByteBufferUtils {
         if (buffer == null) {
             return "";
         }
-        StringBuilder str = new StringBuilder((buffer.limit() - buffer.arrayOffset()) * 2);
-        final byte[] array = buffer.array();
-        for (int i = buffer.arrayOffset(), e = i + buffer.limit(); i < e; i++) {
-            str.append(String.format("%02X", array[i]));
+        ByteBuffer buf = buffer.duplicate();
+        buf.position(0);
+        StringBuilder str = new StringBuilder(buf.remaining() * 2);
+        while (buf.hasRemaining()) {
+            str.append(String.format("%02X", buf.get()));
         }
-
         return str.toString();
     }
 

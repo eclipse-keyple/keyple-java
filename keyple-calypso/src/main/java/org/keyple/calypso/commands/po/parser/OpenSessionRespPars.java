@@ -12,16 +12,13 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import org.keyple.calypso.commands.po.PoRevision;
-import org.keyple.calypso.commands.utils.ResponseUtils;
+import org.keyple.calypso.commands.utils.ApduUtils;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ByteBufferUtils;
 
 /**
- * The Class OpenSessionRespPars. This class provides status code properties and the getters to
- * access to the structured fields of an Open Secure Session response.
- *
- * @author Ixxi
+ * Open session response parser. See specs: Calypso / page 100 / 9.5.1 - Open secure session
  *
  */
 public class OpenSessionRespPars extends ApduResponseParser {
@@ -97,6 +94,17 @@ public class OpenSessionRespPars extends ApduResponseParser {
         STATUS_TABLE_REV3_2 = m;
     }
 
+    /**
+     * Method to get the KVC from the response in revision 2 mode.
+     *
+     * @param apduResponse the apdu response
+     * @return a KVC byte
+     */
+    public static byte toKVCRev2(ByteBuffer apduResponse) {
+        // TODO: Check that part: I replaced a (null) KVC by a 0x00
+        return apduResponse.limit() > 4 ? apduResponse.get(0) : 0x00;
+    }
+
     Map<Integer, StatusProperties> getStatusTable() {
         switch (revision) {
             case REV3_2:
@@ -113,7 +121,7 @@ public class OpenSessionRespPars extends ApduResponseParser {
     private final PoRevision revision;
 
     /** The secure session. */
-    private SecureSession secureSession;
+    private final SecureSession secureSession;
 
     /**
      * Instantiates a new OpenSessionRespPars.
@@ -124,27 +132,32 @@ public class OpenSessionRespPars extends ApduResponseParser {
     public OpenSessionRespPars(ApduResponse response, PoRevision revision) {
         super(response);
         this.revision = revision;
+        //
+        SecureSession ss = null;
         if (isSuccessful()) {
             switch (revision) {
                 case REV3_2:
                     if (response.isSuccessful()) {
-                        secureSession = toSecureSessionRev32(response.getBuffer());
+                        ss = toSecureSessionRev32(response.getBuffer());
                     }
                     break;
                 case REV3_1:
                     if (response.isSuccessful()) {
-                        secureSession = toSecureSessionRev3(response.getBuffer());
+                        ss = toSecureSessionRev3(response.getBuffer());
                     }
                     break;
                 case REV2_4:
                     if (response.isSuccessful()) {
-                        secureSession = toSecureSessionRev2(response.getBuffer());
+                        ss = toSecureSessionRev2(response.getBuffer());
                     }
                     break;
                 default:
                     break;
             }
+        } else {
+            ss = null;
         }
+        secureSession = ss;
     }
 
     /**
@@ -156,8 +169,8 @@ public class OpenSessionRespPars extends ApduResponseParser {
     public static SecureSession toSecureSessionRev32(ByteBuffer apduResponse) {
 
         byte flag = apduResponse.get(8);
-        boolean previousSessionRatified = ResponseUtils.isBitSet(flag, 0x00);
-        boolean manageSecureSessionAuthorized = ResponseUtils.isBitSet(flag, 1);
+        boolean previousSessionRatified = ApduUtils.isBitSet(flag, 0x00);
+        boolean manageSecureSessionAuthorized = ApduUtils.isBitSet(flag, 1);
 
         byte kif = apduResponse.get(9);
         byte kvc = apduResponse.get(10);
@@ -201,7 +214,7 @@ public class OpenSessionRespPars extends ApduResponseParser {
         SecureSession secureSession;
         boolean previousSessionRatified = true;
 
-        byte kvc = ResponseUtils.toKVCRev2(apduResponse);
+        byte kvc = toKVCRev2(apduResponse);
 
         if (apduResponse.limit() < 6) {
             previousSessionRatified = false;

@@ -12,18 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 import org.keyple.seproxy.ApduResponse;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class ApduResponseParser. This abstract class has to be extended by all PO and CSM response
- * parser classes, it provides the generic getters to manage response’s status.
- *
- * @author Ixxi
- *
+ * Base class for parsing APDU
  */
 public abstract class ApduResponseParser {
 
     /** the byte array APDU response. */
-    protected ApduResponse response;
+    protected final ApduResponse response;
 
     protected static final Map<Integer, StatusProperties> STATUS_TABLE;
     static {
@@ -63,12 +58,12 @@ public abstract class ApduResponseParser {
         return response;
     }
 
-    private int getStatusCodeV2() {
+    private int getStatusCode() {
         return response.getStatusCode();
     }
 
     private StatusProperties getPropertiesForStatusCode() {
-        return getStatusTable().get(getStatusCodeV2());
+        return getStatusTable().get(getStatusCode());
     }
 
     /**
@@ -94,15 +89,15 @@ public abstract class ApduResponseParser {
 
 
     /**
-     * Map of statuses
+     * Status code properties
      */
     protected static class StatusProperties {
 
         /** The successful. */
-        private boolean successful;
+        private final boolean successful;
 
         /** The information. */
-        private String information;
+        private final String information;
 
         /**
          * A map with the double byte of a status as key, and the successful property and ASCII text
