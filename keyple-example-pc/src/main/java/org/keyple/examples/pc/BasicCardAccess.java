@@ -9,7 +9,6 @@
 package org.keyple.examples.pc;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
@@ -21,7 +20,9 @@ public class BasicCardAccess {
     public static void main(String[] args) throws Exception {
         SeProxyService seProxyService = SeProxyService.getInstance();
         System.out.println("SeProxyServ v" + seProxyService.getVersion());
-        seProxyService.setPlugins(Collections.singletonList(PcscPlugin.getInstance()));
+        List<ReadersPlugin> plugins = new ArrayList<ReadersPlugin>();
+        plugins.add(PcscPlugin.getInstance());
+        seProxyService.setPlugins(plugins);
         for (ReadersPlugin rp : seProxyService.getPlugins()) {
             System.out.println("Reader plugin: " + rp.getName());
             for (ProxyReader pr : rp.getReaders()) {

@@ -13,66 +13,44 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.smartcardio.Card;
-import javax.smartcardio.CardChannel;
-import javax.smartcardio.CardException;
-import javax.smartcardio.CardTerminal;
-import javax.smartcardio.CommandAPDU;
-import javax.smartcardio.ResponseAPDU;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.smartcardio.*;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.keyple.plugin.pcsc.log.CardChannelLogger;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.seproxy.exceptions.InvalidApduReaderException;
-import org.keyple.seproxy.exceptions.TimeoutReaderException;
-import org.keyple.seproxy.exceptions.UnexpectedReaderException;
 
 public class PcscReader extends ObservableReader implements ConfigurableReader {
 
-    static final Logger logger = LogManager.getLogger(PcscReader.class);
+    private static final Logger logger = LogManager.getLogger(PcscReader.class);
+    private static final String SETTING_KEY_PROTOCOL = "protocol";
 
-    private String name;
+    private final CardTerminal terminal;
+    private final String name;
+    private final Map<String, String> settings;
 
-    private CardTerminal terminal;
-    private CardChannel channel;
     private Card card;
+    private CardChannel channel;
 
     private ByteBuffer aidCurrentlySelected;
     private ApduResponse fciDataSelected;
     private boolean atrDefaultSelected = false;
 
-    private Map<String, String> settings;
-
-    // private Thread readerThread;
-    private EventThread readerThread;
+    private EventThread thread;
+    private static final AtomicInteger threadCount = new AtomicInteger();
+    private long threadWaitTimeout = 5000; // 5s
 
 
     protected PcscReader(CardTerminal terminal, String name) { // PcscReader constructor may be
-                                                               // called only by PcscPlugin
+        // called only by PcscPlugin
         this.terminal = terminal;
         this.name = name;
         this.card = null;
         this.channel = null;
         this.settings = new HashMap<String, String>();
-
-        // TODO je n'ai pas compris l'implémentation Ixxi
-        // EventThread eventThread = new EventThread(this);
-        // this.readerThread = new Thread(eventThread);
-        // this.readerThread.start();
-        readerThread = new EventThread(this);
-        readerThread.start();
-
-        // TODO to check start & stop of the thread
-    }
-
-
-    // TODO
-    @SuppressWarnings("deprecation")
-    protected void finalize() throws Throwable {
-        readerThread.stopPolling();
-        readerThread.stop(); // TODO faut-il quand même fermer la thread
     }
 
 
@@ -83,13 +61,12 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
     @Override
     public SeResponse transmit(SeRequest seApplicationRequest)
-            throws ChannelStateReaderException, InvalidApduReaderException, IOReaderException,
-            TimeoutReaderException, UnexpectedReaderException {
+            throws ChannelStateReaderException, IOReaderException {
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
         if (isSEPresent()) { // TODO si vrai ET pas vrai => retourne un SeResponse vide de manière
-                             // systématique - return new SeResponse(false, fciDataSelected,
-                             // apduResponseList);
+            // systématique - return new SeResponse(false, fciDataSelected,
+            // apduResponseList);
             try {
                 this.prepareAndConnectToTerminalAndSetChannel();
             } catch (CardException e) {
@@ -99,45 +76,32 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             if (seApplicationRequest.getAidToSelect() != null && aidCurrentlySelected == null) {
                 fciDataSelected = this.connect(seApplicationRequest.getAidToSelect());
             } else if (!atrDefaultSelected) {
-                fciDataSelected = new ApduResponse(card.getATR().getBytes(), true,
-                        new byte[] {(byte) 0x90, (byte) 0x00});
+                fciDataSelected = new ApduResponse(ByteBuffer.wrap(card.getATR().getBytes()), true);
                 atrDefaultSelected = true;
             }
             for (ApduRequest apduRequest : seApplicationRequest.getApduRequests()) {
-                logger.info(getName() + " : Sending : " + formatLogRequest(apduRequest.getBytes()));
                 ResponseAPDU apduResponseData;
                 try {
-                    System.out.println(terminal.getName());
-                    System.out.println(settings.get("protocol") + " > "
-                            + DatatypeConverter.printHexBinary(apduRequest.getBytes()));
-                    apduResponseData = channel.transmit(new CommandAPDU(apduRequest.getBytes()));
-                    System.out.println(settings.get("protocol") + " < "
-                            + DatatypeConverter.printHexBinary(apduResponseData.getBytes()));
+                    apduResponseData = channel.transmit(new CommandAPDU(apduRequest.getBuffer()));
 
                     byte[] statusCode = new byte[] {(byte) apduResponseData.getSW1(),
                             (byte) apduResponseData.getSW2()};
-                    logger.info(getName() + " : Recept : "
-                            + DatatypeConverter.printHexBinary(apduResponseData.getData()) + " "
-                            + DatatypeConverter.printHexBinary(statusCode));
-
                     // gestion du getResponse en case 4 avec reponse valide et
                     // retour vide
                     hackCase4AndGetResponse(apduRequest.isCase4(), statusCode, apduResponseData,
                             channel);
 
-                    apduResponseList
-                            .add(new ApduResponse(apduResponseData.getData(), true, statusCode));
+                    apduResponseList.add(new ApduResponse(apduResponseData.getData(), true));
                 } catch (CardException e) {
                     throw new ChannelStateReaderException(e.getMessage());
                 } catch (NullPointerException e) {
                     logger.error(getName() + " : Error executing command", e);
-                    apduResponseList.add(new ApduResponse(null, false, null));
+                    apduResponseList.add(new ApduResponse((byte[]) null, false));
                     break;
                 }
             }
 
             if (!seApplicationRequest.askKeepChannelOpen()) {
-                logger.info("disconnect");
                 this.disconnect();
             }
         }
@@ -146,15 +110,18 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     }
 
     private void prepareAndConnectToTerminalAndSetChannel() throws CardException {
-        String protocol = "";
+        final String protocol = getCardProtocol();
         if (card == null) {
-            protocol = settings.containsKey("protocol") ? settings.get("protocol") : "*";
             System.out.println(terminal.getName());
-            System.out.println(settings.get("protocol")
+            System.out.println(protocol
                     + " - connect(protocol)\t\tfrom prepareAndConnectToTerminalAndSetChannel()");
             this.card = this.terminal.connect(protocol);
         }
-        this.channel = card.getBasicChannel();
+        this.channel = new CardChannelLogger("card/" + protocol, card.getBasicChannel());
+    }
+
+    private String getCardProtocol() {
+        return settings.getOrDefault(SETTING_KEY_PROTOCOL, "*");
     }
 
     private static void hackCase4AndGetResponse(boolean isCase4, byte[] statusCode,
@@ -205,15 +172,11 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
     @Override
     public boolean isSEPresent() throws IOReaderException {
-        boolean sePresent = false;
-
         try {
-            sePresent = terminal.isCardPresent();
+            return terminal.isCardPresent();
         } catch (CardException e) {
-            throw new IOReaderException(e.getMessage(), e);
+            throw new IOReaderException(e);
         }
-
-        return sePresent;
     }
 
     /**
@@ -263,12 +226,10 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      * method to disconnect the card from the terminal
      *
      * @throws IOReaderException
-     *
      * @throws CardException
-     *
      */
     private void disconnect() throws IOReaderException {
-
+        logger.info("disconnect");
         try {
             aidCurrentlySelected = null;
             fciDataSelected = null;
@@ -283,39 +244,11 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                 this.card = null;
             }
         } catch (CardException e) {
-            throw new IOReaderException(e.getMessage(), e);
+            throw new IOReaderException(e);
         }
 
     }
 
-    /*
-     * TODO Paramètres PC/SC dont le support est à intégré paramètre 'Protocol' pouvant prendre les
-     * valeurs String 'T0', 'T1', 'Tx' paramètre 'Mode' pouvant prendre les valeurs String 'Shared',
-     * 'Exclusive', 'Direct' paramètre 'Disconnect' pouvant prendre les valeurs String 'Leave',
-     * 'Reset', 'Unpower', 'Eject' Il s'agit des valeurs de paramètre définies par le standard
-     * 'PC/SC'.
-     * 
-     * Si on traduit ses paramètres pour l'API SmartCard IO cela donne: pour 'Protocol' :
-     * javax.smartcardio.CardTerminal.connect(String protocol) paramétré avec "T=0" si 'T0', "T=1"
-     * si 'T1', "*" si 'Tx' => voir définition
-     * https://docs.oracle.com/javase/6/docs/jre/api/security/smartcardio/spec/javax/smartcardio/
-     * CardTerminal.html#connect(java.lang.String) le comportement par défaut pour 'Protocol' doit
-     * être 'Tx'
-     * 
-     * paramètre 'Mode' : le comportement par défaut pour 'Protocol' doit être 'Exclusive', dans ce
-     * cas une exclusivité d'accès est gérée via javax.smartcardio.Card.beginExclusive() et
-     * endExclusive() cf.
-     * https://docs.oracle.com/javase/6/docs/jre/api/security/smartcardio/spec/javax/smartcardio/
-     * Card.html#beginExclusive() sinon le 'Mode' doit être considéré comme 'Shared' à vérifier avec
-     * Jean-Pierre Fortune, le mode 'Direct' ne devrait pas être supporté pour un
-     * ProxyReader.transmit(), (l'envoi de commandes directes de paramétrage du lecteur PC/SC
-     * devrait se faire avec un setParameter spécial)
-     * 
-     * Pour 'Disconnect', un paramétrage 'Reset', fera que la commande
-     * javax.smartcardio.Carddisconnect(boolean reset) sera paramétrée à 'true' si 'Reset', à
-     * 'false' si 'Unpower' Les valeurs 'Leave' et 'Eject' ne serait pas gérée.
-     * 
-     */
     @Override
     public void setParameters(Map<String, String> settings) {
         this.settings.putAll(settings);
@@ -331,65 +264,145 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         return this.settings;
     }
 
-    /**
-     * @author yann.herriau
+    /*
+     * TODO Paramètres PC/SC dont le support est à intégré paramètre 'Protocol' pouvant prendre les
+     * valeurs String 'T0', 'T1', 'Tx' paramètre 'Mode' pouvant prendre les valeurs String 'Shared',
+     * 'Exclusive', 'Direct' paramètre 'Disconnect' pouvant prendre les valeurs String 'Leave',
+     * 'Reset', 'Unpower', 'Eject' Il s'agit des valeurs de paramètre définies par le standard
+     * 'PC/SC'.
      *
-     *         To implement Notifications, SmarcardIoReader use a Thread for card insertion or
-     *         removal detection
+     * Si on traduit ses paramètres pour l'API SmartCard IO cela donne: pour 'Protocol' :
+     * javax.smartcardio.CardTerminal.connect(String protocol) paramétré avec "T=0" si 'T0', "T=1"
+     * si 'T1', "*" si 'Tx' => voir définition
+     * https://docs.oracle.com/javase/6/docs/jre/api/security/smartcardio/spec/javax/smartcardio/
+     * CardTerminal.html#connect(java.lang.String) le comportement par défaut pour 'Protocol' doit
+     * être 'Tx'
+     *
+     * paramètre 'Mode' : le comportement par défaut pour 'Protocol' doit être 'Exclusive', dans ce
+     * cas une exclusivité d'accès est gérée via javax.smartcardio.Card.beginExclusive() et
+     * endExclusive() cf.
+     * https://docs.oracle.com/javase/6/docs/jre/api/security/smartcardio/spec/javax/smartcardio/
+     * Card.html#beginExclusive() sinon le 'Mode' doit être considéré comme 'Shared' à vérifier avec
+     * Jean-Pierre Fortune, le mode 'Direct' ne devrait pas être supporté pour un
+     * ProxyReader.transmit(), (l'envoi de commandes directes de paramétrage du lecteur PC/SC
+     * devrait se faire avec un setParameter spécial)
+     *
+     * Pour 'Disconnect', un paramétrage 'Reset', fera que la commande
+     * javax.smartcardio.Carddisconnect(boolean reset) sera paramétrée à 'true' si 'Reset', à
+     * 'false' si 'Unpower' Les valeurs 'Leave' et 'Eject' ne serait pas gérée.
      *
      */
-    // public class EventThread implements Runnable { // TODO implémentation Ixxi, pas compris
-    public class EventThread extends Thread {
-        PcscReader reader;
 
-        public EventThread(PcscReader reader) {
-            this.reader = reader;
-        }
-
-        // TODO vérifier conditions de fermeture
-        private volatile boolean running = true;
-
-        public void stopPolling() {
-            running = false;
-        }
-
-        public void run() {
-            // while (true) {
-            // try {
-            // terminal.waitForCardPresent(0);
-            // reader.notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.SE_INSERTED));
-            // terminal.waitForCardAbsent(0);
-            // System.out.println(terminal.getName());
-            // System.out.println(settings.get("protocol") + " - disconnect()\t\tfrom
-            // PcscReader.EventThread.run()");
-            // reader.disconnect();
-            // reader.notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.SE_REMOVAL));
-
-            while (running) {
-                try {
-                    if (terminal.isCardPresent()) {
-                        terminal.waitForCardAbsent(0);
-                        // TODO to clean logs
-                        System.out.println(terminal.getName() + "\tSE removed");
-                        System.out.println(settings.get("protocol")
-                                + " - disconnect()\t\tfrom PcscReader.EventThread.run()");
-                        reader.disconnect();
-                        reader.notifyObservers(
-                                new ReaderEvent(reader, ReaderEvent.EventType.SE_REMOVAL));
-                    } else {
-                        terminal.waitForCardPresent(0);
-                        reader.notifyObservers(
-                                new ReaderEvent(reader, ReaderEvent.EventType.SE_INSERTED));
-                        // TODO to clean logs
-                        System.out.println(terminal.getName() + "\tSE inserted");
-                    }
-                } catch (CardException e) {
-                    reader.notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.IO_ERROR));
-                } catch (IOReaderException e) {
-                    reader.notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.IO_ERROR));
+    @Override
+    public void addObserver(ReaderObserver calledBack) {
+        // We don't need synchronization for the list itself, we need to make sure we're not
+        // starting and
+        // closing the thread at the same time
+        synchronized (readerObservers) {
+            super.addObserver(calledBack);
+            if (readerObservers.size() == 1) {
+                if (thread != null) {
+                    throw new IllegalStateException("The reader thread shouldn't null");
                 }
+
+                thread = new EventThread(this);
+                thread.start();
             }
         }
     }
 
+    @Override
+    public void deleteObserver(ReaderObserver calledback) {
+        synchronized (readerObservers) {
+            super.deleteObserver(calledback);
+            if (readerObservers.isEmpty()) {
+                if (thread == null) {
+                    throw new IllegalStateException("The reader thread should be null");
+                }
+
+                // We'll let the thread calmly end its course after the waitForCard(Absent|Present)
+                // timeout occurs
+                thread.end();
+                thread = null;
+            }
+        }
+    }
+
+
+    /**
+     * Thread in charge of reporting live events
+     */
+    class EventThread extends Thread {
+        /**
+         * Reader that we'll report about
+         */
+        private final PcscReader reader;
+
+        /**
+         * If the thread should be kept a alive
+         */
+        private volatile boolean running = true;
+
+        /**
+         * Constructor
+         *
+         * @param reader PcscReader
+         */
+        EventThread(PcscReader reader) {
+            super("pcsc-events-" + threadCount.addAndGet(1));
+            this.reader = reader;
+        }
+
+        /**
+         * Marks the thread as one that should end when the last cardWaitTimeout occurs
+         */
+        void end() {
+            running = false;
+        }
+
+        private void cardRemoved() {
+            notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.SE_REMOVAL));
+        }
+
+        private void cardInserted() {
+            notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.SE_INSERTED));
+        }
+
+        public void run() {
+            try {
+                // First thing we'll do is to notify that a card was inserted if one is already
+                // present.
+                if (isSEPresent()) {
+                    cardInserted();
+                }
+
+                while (running) {
+                    // If we have a card,
+                    if (isSEPresent()) {
+                        // we will wait for it to disappear
+                        if (terminal.waitForCardAbsent(threadWaitTimeout)) {
+                            disconnect();
+                            // and notify about it.
+                            cardRemoved();
+                        }
+                        // false means timeout, and we go back to the beginning of the loop
+                    }
+                    // If we don't,
+                    else {
+                        // we will wait for it to appear
+                        if (terminal.waitForCardPresent(threadWaitTimeout)) {
+                            cardInserted();
+                        }
+                        // false means timeout, and we go back to the beginning of the loop
+                    }
+                }
+            } catch (CardException e) {
+                notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.IO_ERROR));
+                running = false;
+            } catch (IOReaderException e) {
+                notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.IO_ERROR));
+                running = false;
+            }
+        }
+    }
 }
