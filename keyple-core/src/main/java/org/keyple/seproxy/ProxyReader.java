@@ -15,10 +15,7 @@ import org.keyple.seproxy.exceptions.TimeoutReaderException;
 import org.keyple.seproxy.exceptions.UnexpectedReaderException;
 
 /**
- * The Interface ProxyReader. This interface has to be implemented by each plugins of readers’
- * drivers.
- *
- * @author Ixxi
+ * Interface each {@link ReadersPlugin} should implement
  */
 public interface ProxyReader {
 

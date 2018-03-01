@@ -17,23 +17,40 @@ import org.keyple.plugin.pcsc.PcscPlugin;
 import org.keyple.seproxy.*;
 
 public class BasicCardAccess {
+    private static final Object sync = new Object();
+
     public static void main(String[] args) throws Exception {
         SeProxyService seProxyService = SeProxyService.getInstance();
         System.out.println("SeProxyServ v" + seProxyService.getVersion());
         List<ReadersPlugin> plugins = new ArrayList<ReadersPlugin>();
-        plugins.add(PcscPlugin.getInstance());
+        plugins.add(PcscPlugin.getInstance().setLogging(true));
         seProxyService.setPlugins(plugins);
         for (ReadersPlugin rp : seProxyService.getPlugins()) {
             System.out.println("Reader plugin: " + rp.getName());
-            for (ProxyReader pr : rp.getReaders()) {
+            for (final ProxyReader pr : rp.getReaders()) {
                 System.out
                         .println("Reader name: " + pr.getName() + ", present: " + pr.isSEPresent());
-                parseInfo(pr);
+                if (pr instanceof ObservableReader) {
+                    ((ObservableReader) pr).addObserver(new ReaderObserver() {
+                        @Override
+                        public void notify(ReaderEvent event) {
+                            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
+                                parseInfo(pr);
+                            }
+                        }
+                    });
+                } else {
+                    parseInfo(pr);
+                }
             }
+        }
+
+        synchronized (sync) {
+            sync.wait();
         }
     }
 
-    public static void parseInfo(ProxyReader poReader) throws Exception {
+    public static void parseInfo(ProxyReader poReader) {
         String poAid = "A000000291A000000191";
         String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
                 + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
@@ -54,7 +71,14 @@ public class BasicCardAccess {
 
         SeRequest poRequest =
                 new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
-        SeResponse poResponse = poReader.transmit(poRequest);
-        System.out.println("PoResponse: " + poResponse.getApduResponses());
+        try {
+            SeResponse poResponse = poReader.transmit(poRequest);
+            System.out.println("PoResponse: " + poResponse.getApduResponses());
+            synchronized (sync) {
+                sync.notify();
+            }
+        } catch (Exception ex) {
+            System.out.println("Error: " + ex.getClass() + ":" + ex.getMessage());
+        }
     }
 }

@@ -8,7 +8,8 @@
 
 package org.keyple.examples.pc;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 import org.keyple.example.common.BasicCardAccessManager;
 import org.keyple.plugin.pcsc.PcscPlugin;
 import org.keyple.seproxy.ProxyReader;
@@ -19,13 +20,16 @@ public class DeportedLogicConsumer {
     public static void main(String[] args) throws Exception {
         SeProxyService seProxyService = SeProxyService.getInstance();
         System.out.println("SeProxyServ v" + seProxyService.getVersion());
-        seProxyService.setPlugins(Collections.singletonList(PcscPlugin.getInstance()));
+        List<ReadersPlugin> plugins = new ArrayList<ReadersPlugin>();
+        plugins.add(PcscPlugin.getInstance().setLogging(true));
+        seProxyService.setPlugins(plugins);
         for (ReadersPlugin rp : seProxyService.getPlugins()) {
             System.out.println("Reader plugin: " + rp.getName());
             for (ProxyReader pr : rp.getReaders()) {
                 System.out
                         .println("Reader name: " + pr.getName() + ", present: " + pr.isSEPresent());
                 if (pr.isSEPresent()) {
+                    // This is what contains the actual test logic
                     BasicCardAccessManager mgr = new BasicCardAccessManager();
                     mgr.setPoReader(pr);
                     mgr.run();
