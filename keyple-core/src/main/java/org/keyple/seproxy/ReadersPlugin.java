@@ -12,10 +12,7 @@ import java.util.List;
 import org.keyple.seproxy.exceptions.IOReaderException;
 
 /**
- * The Interface ReadersPlugin. This interface has to be implemented by each plugins of readers’
- * drivers.
- *
- * @author Ixxi
+ * Card readers plugin interface. Every single card wanting to implement this interface should
  */
 public interface ReadersPlugin {
 
@@ -35,6 +32,5 @@ public interface ReadersPlugin {
      * @return the ‘unique’ name of the readers’ plugin.
      * @throws IOReaderException Exception of type IO Reader
      */
-    List<ProxyReader> getReaders() throws IOReaderException;
-
+    List<? extends ProxyReader> getReaders() throws IOReaderException;
 }

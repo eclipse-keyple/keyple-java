@@ -18,26 +18,29 @@ import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.keyple.seproxy.ProxyReader;
+import org.keyple.plugin.pcsc.log.CardTerminalsLogger;
+import org.keyple.seproxy.ObservableReader;
 import org.keyple.seproxy.ReadersPlugin;
 import org.keyple.seproxy.exceptions.IOReaderException;
 
 public final class PcscPlugin implements ReadersPlugin {
 
-    /** singleton instance of SeProxyService */
-    private static PcscPlugin uniqueInstance = new PcscPlugin();
+    /**
+     * singleton instance of SeProxyService
+     */
+    private static final PcscPlugin uniqueInstance = new PcscPlugin();
 
+    private static final Logger logger = LogManager.getLogger(PcscPlugin.class);
 
-    static final Logger logger = LogManager.getLogger(PcscPlugin.class);
+    private static final TerminalFactory factory = TerminalFactory.getDefault();
 
-    private TerminalFactory factory = TerminalFactory.getDefault();
+    private final Map<String, ObservableReader> readers = new HashMap<String, ObservableReader>();
 
-    private Map<String, ProxyReader> readers;
+    private boolean logging = false;
 
+    private long waitTimeout = 30000;
 
-    private PcscPlugin() {
-        this.readers = new HashMap<String, ProxyReader>();
-    }
+    private PcscPlugin() {}
 
     /**
      * Gets the single instance of PcscPlugin.
@@ -53,13 +56,24 @@ public final class PcscPlugin implements ReadersPlugin {
         return "PcscPlugin";
     }
 
+    /**
+     * Enable the logging
+     *
+     * @param logging If logging is enabled
+     * @return Same instance (fluent setter)
+     */
+    public PcscPlugin setLogging(boolean logging) {
+        this.logging = logging;
+        return this;
+    }
+
     @Override
-    public List<ProxyReader> getReaders() throws IOReaderException {
+    public List<ObservableReader> getReaders() throws IOReaderException {
         CardTerminals terminals = getCardTerminals();
 
         if (terminals == null) {
-            logger.error("Not terminals found", new Throwable());
-            throw new IOReaderException("Not terminals found", new Throwable());
+            logger.error("No terminal found");
+            throw new IOReaderException("No terminal found");
         }
         try {
             if (this.readers.isEmpty()) {
@@ -72,17 +86,23 @@ public final class PcscPlugin implements ReadersPlugin {
             }
         } catch (CardException e) {
             logger.error("Terminal List not accessible", e);
-            throw new IOReaderException(e.getMessage(), e);
-        } catch (NullPointerException e) {
-            logger.error("Terminal List not accessible", e);
-            throw new IOReaderException(e.getMessage(), e);
+            throw new IOReaderException(e);
         }
+        // fclairamb(2018-02-28): Not a good exception to catch and not a good way to handle it
+        /*
+         * catch (NullPointerException e) { logger.error("Terminal List not accessible", e); throw
+         * new IOReaderException(e.getMessage(), e); }
+         */
 
-        return new ArrayList<ProxyReader>(this.readers.values());
+        return new ArrayList<ObservableReader>(this.readers.values());
     }
 
-    public CardTerminals getCardTerminals() {
-        return this.factory.terminals();
+    private CardTerminals getCardTerminals() {
+        CardTerminals terminals = factory.terminals();
+        if (logging) {
+            terminals = new CardTerminalsLogger(terminals);
+        }
+        return terminals;
     }
 
 }
