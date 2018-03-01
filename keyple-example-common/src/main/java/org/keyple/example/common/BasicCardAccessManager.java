@@ -17,7 +17,8 @@ import org.keyple.seproxy.*;
 
 public class BasicCardAccessManager extends AbstractLogicManager {
 
-    ProxyReader poReader;
+
+    private ProxyReader poReader;
 
     public void setPoReader(ProxyReader poReader) {
         this.poReader = poReader;
