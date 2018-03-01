@@ -28,7 +28,6 @@ public class ByteBufferUtils {
      *
      * @param hex Hexa string
      * @return ByteBuffer
-     * @throws DecoderException If the buffer is not correctly formatted
      */
     public static ByteBuffer fromHex(String hex) {
         try {
