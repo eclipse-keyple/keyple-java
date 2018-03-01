@@ -122,8 +122,8 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
     private String getCardProtocol() {
         String protocol = settings.get(SETTING_KEY_PROTOCOL);
-        if ( protocol == null ) {
-            protocol =  "*";
+        if (protocol == null) {
+            protocol = "*";
         }
         return protocol;
     }
@@ -304,7 +304,8 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         synchronized (readerObservers) {
             super.addObserver(calledBack);
             if (readerObservers.size() == 1) {
-                if (thread != null) { // <-- This should never happen and can probably be dropped at some point
+                if (thread != null) { // <-- This should never happen and can probably be dropped at
+                                      // some point
                     throw new IllegalStateException("The reader thread shouldn't null");
                 }
 
@@ -319,7 +320,8 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         synchronized (readerObservers) {
             super.deleteObserver(calledback);
             if (readerObservers.isEmpty()) {
-                if (thread == null) { // <-- This should never happen and can probably be dropped at some point
+                if (thread == null) { // <-- This should never happen and can probably be dropped at
+                                      // some point
                     throw new IllegalStateException("The reader thread should be null");
                 }
 

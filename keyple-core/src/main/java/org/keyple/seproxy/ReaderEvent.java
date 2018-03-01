@@ -8,7 +8,6 @@
 
 package org.keyple.seproxy;
 
-import java.util.Objects;
 
 /**
  * The Class ReaderEvent. This class is used to notify an event of a specific ObservableReader to

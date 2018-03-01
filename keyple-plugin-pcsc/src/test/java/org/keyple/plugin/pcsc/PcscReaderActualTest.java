@@ -25,8 +25,9 @@ public class PcscReaderActualTest {
         @Override
         public void notify(ReaderEvent event) {
             lastThread = Thread.currentThread();
-            System.out.println("Observer: " + event + " (from thread" + Thread.currentThread().getName()+")");
-            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED ) {
+            System.out.println("Observer: " + event + " (from thread"
+                    + Thread.currentThread().getName() + ")");
+            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
                 synchronized (this) {
                     notify(); // It's the standard java notify, nothing to do with *our* notify
                 }
@@ -35,8 +36,9 @@ public class PcscReaderActualTest {
     }
 
     /**
-     * This test registers/deregisters on an {@link ObservableReader} twice. This allows to verify we create and dispose
-     * threads correctly.
+     * This test registers/deregisters on an {@link ObservableReader} twice. This allows to verify
+     * we create and dispose threads correctly.
+     * 
      * @throws IOReaderException
      * @throws InterruptedException
      */
@@ -93,11 +95,13 @@ public class PcscReaderActualTest {
 
         Assert.assertEquals(secondThread.getState(), Thread.State.RUNNABLE);
 
-        // Now if things went fast enough the first thread (which consumes the same PCSC resources) isn't dead yet.
+        // Now if things went fast enough the first thread (which consumes the same PCSC resources)
+        // isn't dead yet.
         System.out.println("Waiting for first thread...");
         firstThread.join();
         System.out.println("Done !");
-        System.out.println("Thread "+firstThread.getName()+" is now "+firstThread.getState()+" !");
+        System.out.println(
+                "Thread " + firstThread.getName() + " is now " + firstThread.getState() + " !");
 
         // Remove the observer from the observable (thread disappears)
         for (ObservableReader reader : plugin.getReaders()) {
