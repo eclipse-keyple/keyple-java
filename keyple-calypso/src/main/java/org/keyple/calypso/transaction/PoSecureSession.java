@@ -25,7 +25,7 @@ import org.keyple.calypso.commands.po.builder.OpenSessionCmdBuild;
 import org.keyple.calypso.commands.po.parser.CloseSessionRespPars;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 import org.keyple.calypso.commands.po.parser.OpenSessionRespPars;
-import org.keyple.calypso.commands.utils.ResponseUtils;
+import org.keyple.calypso.commands.utils.ApduUtils;
 import org.keyple.commands.ApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.*;
@@ -642,7 +642,7 @@ public class PoSecureSession {
             rev = PoRevision.REV2_4;
         } else if (Byte.valueOf(applicationTypeByte).compareTo((byte) 0x7f) <= 0
                 && Byte.valueOf(applicationTypeByte).compareTo((byte) 0x20) >= 0) {
-            if (ResponseUtils.isBitSet(applicationTypeByte, 3)) {
+            if (ApduUtils.isBitSet(applicationTypeByte, 3)) {
                 rev = PoRevision.REV3_2;
             } else {
                 rev = PoRevision.REV3_1;

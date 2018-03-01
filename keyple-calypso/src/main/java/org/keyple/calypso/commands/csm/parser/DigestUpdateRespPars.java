@@ -9,21 +9,14 @@
 package org.keyple.calypso.commands.csm.parser;
 
 
-import java.nio.ByteBuffer;
+
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
 /**
- * This class provides status code properties and the getters to access to the structured fields of
- * a Digest Update response.
- *
- * @author Ixxi
- *
+ * Digest update response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC computation
  */
 public class DigestUpdateRespPars extends ApduResponseParser {
-
-    private final ByteBuffer processedData;
-
     /**
      * Instantiates a new DigestUpdateRespPars.
      *
@@ -31,11 +24,5 @@ public class DigestUpdateRespPars extends ApduResponseParser {
      */
     public DigestUpdateRespPars(ApduResponse response) {
         super(response);
-        this.processedData = isSuccessful() ? response.getBuffer() : null;
     }
-
-    public ByteBuffer getProcessedData() {
-        return processedData;
-    }
-
 }

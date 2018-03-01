@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 import org.keyple.calypso.commands.po.parser.OpenSessionRespPars;
-import org.keyple.calypso.commands.utils.ResponseUtils;
 
 public class ResponseUtilsTest {
 
@@ -277,7 +276,7 @@ public class ResponseUtilsTest {
         ByteBuffer apduResponse = ByteBuffer
                 .wrap(new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53});
         byte KVCRev2Expected = (byte) 0x7E;
-        byte KVCRev2Tested = ResponseUtils.toKVCRev2(apduResponse);
+        byte KVCRev2Tested = OpenSessionRespPars.toKVCRev2(apduResponse);
 
         Assert.assertEquals(KVCRev2Expected, KVCRev2Tested);
 
