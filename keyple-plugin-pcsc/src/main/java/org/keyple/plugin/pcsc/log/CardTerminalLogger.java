@@ -45,7 +45,7 @@ public class CardTerminalLogger extends CardTerminal {
     public boolean waitForCardPresent(long l) throws CardException {
         System.out.println(name + ".waitForCardPresent( " + l + ")... ");
         boolean present = terminal.waitForCardPresent(l);
-        System.out.println("... " + name + ".waitForCardPresent(): " + present);
+        System.out.println(name + ".waitForCardPresent(): " + present);
         return present;
     }
 
@@ -53,7 +53,7 @@ public class CardTerminalLogger extends CardTerminal {
     public boolean waitForCardAbsent(long l) throws CardException {
         System.out.println(name + ".waitForCardAbsent(" + l + ")... ");
         boolean present = terminal.waitForCardAbsent(l);
-        System.out.println("... " + name + ".waitForCardAbsent(): " + present);
+        System.out.println(name + ".waitForCardAbsent(): " + present);
         return present;
     }
 }

@@ -121,7 +121,11 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     }
 
     private String getCardProtocol() {
-        return settings.getOrDefault(SETTING_KEY_PROTOCOL, "*");
+        String protocol = settings.get(SETTING_KEY_PROTOCOL);
+        if ( protocol == null ) {
+            protocol =  "*";
+        }
+        return protocol;
     }
 
     private static void hackCase4AndGetResponse(boolean isCase4, byte[] statusCode,
@@ -296,12 +300,11 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     @Override
     public void addObserver(ReaderObserver calledBack) {
         // We don't need synchronization for the list itself, we need to make sure we're not
-        // starting and
-        // closing the thread at the same time
+        // starting and closing the thread at the same time.
         synchronized (readerObservers) {
             super.addObserver(calledBack);
             if (readerObservers.size() == 1) {
-                if (thread != null) {
+                if (thread != null) { // <-- This should never happen and can probably be dropped at some point
                     throw new IllegalStateException("The reader thread shouldn't null");
                 }
 
@@ -316,7 +319,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         synchronized (readerObservers) {
             super.deleteObserver(calledback);
             if (readerObservers.isEmpty()) {
-                if (thread == null) {
+                if (thread == null) { // <-- This should never happen and can probably be dropped at some point
                     throw new IllegalStateException("The reader thread should be null");
                 }
 
