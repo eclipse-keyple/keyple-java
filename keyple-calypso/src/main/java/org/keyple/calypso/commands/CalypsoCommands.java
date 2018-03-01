@@ -41,12 +41,8 @@ import org.keyple.commands.ApduResponseParser;
 import org.keyple.commands.CommandsTable;
 
 /**
- * This enumeration registers all the PO and CSM commands, that have to be extended by all PO and
- * CSM command builder classes. It provides the generic getters to retrieve: the name of the
- * command, the built APDURequest and, the corresponding ApduResponseParser class.
- *
- * @author Ixxi
- *
+ * PO and CSM commands enumeration. Each enumeration provides the type (PO/CSM), the name, the
+ * command builder and the response parser.
  */
 public enum CalypsoCommands implements CommandsTable {
 

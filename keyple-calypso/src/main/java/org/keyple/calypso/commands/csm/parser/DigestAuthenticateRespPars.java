@@ -13,10 +13,8 @@ import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
 /**
- * This class provides the dedicated constructor to parse the Digest Authenticate response.
- *
- * @author Ixxi
- *
+ * Digest authentication response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC
+ * computation
  */
 public class DigestAuthenticateRespPars extends ApduResponseParser {
     /**
