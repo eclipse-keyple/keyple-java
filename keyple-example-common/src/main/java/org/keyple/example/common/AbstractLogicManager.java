@@ -26,6 +26,13 @@ public abstract class AbstractLogicManager implements Runnable {
         return topic;
     }
 
+    public void run() {
+        // If we don't have any subscriber, we'll create a default one
+        if (topic.countSubscribers() == 0) {
+            topic.addSubscriber(new ConsoleEventReporter());
+        }
+    }
+
     public void start() {
         final AbstractLogicManager actualTask = this;
         thread = new Thread(new Runnable() {
@@ -94,6 +101,16 @@ public abstract class AbstractLogicManager implements Runnable {
                 output.append('}');
             }
             return output.toString();
+        }
+    }
+
+    /**
+     * Console event reporter
+     */
+    private class ConsoleEventReporter implements Topic.Subscriber<Event> {
+        @Override
+        public void update(Event event) {
+            System.out.println("Event: " + event);
         }
     }
 }
