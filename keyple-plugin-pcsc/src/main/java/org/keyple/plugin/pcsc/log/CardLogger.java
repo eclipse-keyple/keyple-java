@@ -20,7 +20,7 @@ public class CardLogger extends Card {
 
     private final Card card;
 
-    public CardLogger(String name, Card card) {
+    CardLogger(String name, Card card) {
         this.name = name;
         this.card = card;
     }
@@ -72,7 +72,7 @@ public class CardLogger extends Card {
 
     @Override
     public void disconnect(boolean b) throws CardException {
-        System.out.println(name + ".disconnect( " + b + ");");
+        System.out.println(name + ".disconnect(" + b + ");");
         card.disconnect(b);
     }
 }
