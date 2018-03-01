@@ -53,6 +53,17 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         this.settings = new HashMap<String, String>();
     }
 
+    /**
+     * Flurent setter to change the PC/SC wait timeout in ms. Defaults to 5000.
+     *
+     * @param timeout Timeout to use
+     * @return Current instance
+     */
+    public PcscReader setThreadWaitTimeout(long timeout) {
+        this.threadWaitTimeout = timeout;
+        return this;
+    }
+
 
     @Override
     public String getName() {
@@ -305,7 +316,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             super.addObserver(calledBack);
             if (readerObservers.size() == 1) {
                 if (thread != null) { // <-- This should never happen and can probably be dropped at
-                                      // some point
+                    // some point
                     throw new IllegalStateException("The reader thread shouldn't null");
                 }
 
@@ -321,7 +332,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             super.deleteObserver(calledback);
             if (readerObservers.isEmpty()) {
                 if (thread == null) { // <-- This should never happen and can probably be dropped at
-                                      // some point
+                    // some point
                     throw new IllegalStateException("The reader thread should be null");
                 }
 
