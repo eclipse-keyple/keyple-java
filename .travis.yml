@@ -8,7 +8,7 @@ os:
 
 # The build and tests are executed directly by gradle
 script:
-  - gradle build javadoc jmh
+  - gradle build javadoc
   - .build/prepare_pages.sh
 
 # Caching
