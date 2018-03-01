@@ -8,14 +8,21 @@
 
 package org.keyple.seproxy.exceptions;
 
-public class IOReaderException extends Exception {
-    /**
-     * Instantiates a new IO reader exception.
-     *
-     * @param message the message
-     * @param cause the cause
-     */
+import java.io.IOException;
+
+/**
+ * Any IO that occur around the {@link org.keyple.seproxy.ProxyReader}
+ */
+public class IOReaderException extends IOException {
     public IOReaderException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public IOReaderException(Throwable cause) {
+        super(cause.getMessage(), cause);
+    }
+
+    public IOReaderException(String message) {
+        super(message);
     }
 }

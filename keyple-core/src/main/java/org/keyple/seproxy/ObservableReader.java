@@ -8,8 +8,8 @@
 
 package org.keyple.seproxy;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The Interface ObservableReader. In order to notify a ticketing application in case of specific
@@ -21,10 +21,16 @@ import java.util.List;
  */
 public abstract class ObservableReader implements ProxyReader {
 
+    // TODO: Drop this implementation, it doesn't respect the java's definition of it (it missed the
+    // change handling)
+    // and if we redefine it, we might as well make it a generic one, which is done in the
+    // "feature-example-common" branch
+
     /**
      * an array referencing the registered ReaderObserver of the Reader.
      */
-    private List<ReaderObserver> readerObservers = new ArrayList<ReaderObserver>();
+    protected final List<ReaderObserver> readerObservers =
+            new CopyOnWriteArrayList<ReaderObserver>();
 
     /**
      * This method shall be called only from a terminal application implementing ObservableReader
@@ -34,8 +40,8 @@ public abstract class ObservableReader implements ProxyReader {
      *
      * @param calledBack the called back
      */
-    public final void attachObserver(ReaderObserver calledBack) {
-        this.readerObservers.add(calledBack);
+    public void addObserver(ReaderObserver calledBack) {
+        readerObservers.add(calledBack);
     }
 
     /**
@@ -46,24 +52,9 @@ public abstract class ObservableReader implements ProxyReader {
      *
      * @param calledback the calledback
      */
-    public final void detachObserver(ReaderObserver calledback) {
-        this.readerObservers.remove(calledback);
+    public void deleteObserver(ReaderObserver calledback) {
+        readerObservers.remove(calledback);
     }
-
-    // /**
-    // * push a ReaderEvent of the selected ObservableReader to its registered
-    // * ReaderObserver.
-    // *
-    // * @param event
-    // * the event
-    // */
-    // protected void notifyObservers(ReaderEvent event) {
-    // synchronized (this.readerObservers) {
-    // for (ReaderObserver observer : this.readerObservers) {
-    // observer.notify(event);
-    // }
-    // }
-    // }
 
     /**
      * This method shall be called only from a SE Proxy plugin by a reader implementing
@@ -74,12 +65,8 @@ public abstract class ObservableReader implements ProxyReader {
      * @param event the event
      */
     public final void notifyObservers(ReaderEvent event) {
-        synchronized (readerObservers) { // TODO Ixxi a mis un verrou sans l'expliquer, s'agit de
-                                         // s'assurer que la liste des observer n'évolue pas
-                                         // lorsqu'on la parcourt?
-            for (ReaderObserver observer : readerObservers) {
-                observer.notify(event);
-            }
+        for (ReaderObserver observer : readerObservers) {
+            observer.notify(event);
         }
     }
 

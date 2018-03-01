@@ -2,8 +2,6 @@ plugins {
     id "me.champeau.gradle.jmh" version "0.4.3"
 }
 
-sourceCompatibility = 1.6
-
 group 'org.keyple'
 version '1.0-SNAPSHOT'
 

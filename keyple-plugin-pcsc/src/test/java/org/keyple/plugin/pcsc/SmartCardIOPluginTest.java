@@ -9,17 +9,15 @@
 package org.keyple.plugin.pcsc;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-import java.util.ArrayList;
 import java.util.List;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
-import javax.smartcardio.CardTerminals;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.keyple.seproxy.ProxyReader;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -37,19 +35,23 @@ public class SmartCardIOPluginTest {
     PcscPlugin smartCardPluginSpyied;
 
     @Mock
-    CardTerminals cardTerminals;
+    List<ProxyReader> cardTerminals;
 
     @Mock
     CardTerminal cardTerminal;
 
+    // fclairamb (2018-03-01): This test made no sense, we were using a CardTerminals which is
+    // PCSC-specific when we
+    // should be returning ProxyReaders
     @Before
     public void setUp() throws IOReaderException, CardException {
         // smartCardPluginSpyied = spy(plugin);
-        when(plugin.getCardTerminals()).thenReturn(cardTerminals);
-        List<CardTerminal> terms = new ArrayList<CardTerminal>();
-        terms.add(cardTerminal);
-        when(cardTerminals.list()).thenReturn(terms);
-        when(cardTerminal.getName()).thenReturn("PcscPlugin");
+        /*
+         * when(plugin.getReaders()).thenReturn(cardTerminals); List<CardTerminal> terms = new
+         * ArrayList<CardTerminal>(); terms.add(cardTerminal);
+         * when(cardTerminals.list()).thenReturn(terms);
+         * when(cardTerminal.getName()).thenReturn("PcscPlugin");
+         */
     }
 
     @Test
