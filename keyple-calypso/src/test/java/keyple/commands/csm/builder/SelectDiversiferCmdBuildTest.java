@@ -59,7 +59,7 @@ public class SelectDiversiferCmdBuildTest {
 
     @Test
     public void selectDiviersifier() throws IOReaderException, UnexpectedReaderException,
-            ChannelStateReaderException, InvalidApduReaderException, TimeoutReaderException,
+            ChannelStateReaderException, InvalidApduReaderException, ReaderTimeoutException,
             InconsistentCommandException, InconsistentParameterValueException {
 
         ApduRequest apdu = apduCommandBuilder.getApduRequest();

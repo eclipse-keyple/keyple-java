@@ -8,6 +8,11 @@
 
 package org.keyple.seproxy.exceptions;
 
+/**
+ * Unexpected reader exception
+ * 
+ * @deprecated What could that possibly mean ?
+ */
 public class UnexpectedReaderException extends Exception {
     /**
      * Instantiates a new unExpected reader exception.

@@ -8,6 +8,9 @@
 
 package org.keyple.seproxy.exceptions;
 
+/**
+ * @deprecated Isn't referenced anywhere
+ */
 public class WrongParameterKeyException extends Exception {
     public WrongParameterKeyException(String message) {
         super(message);

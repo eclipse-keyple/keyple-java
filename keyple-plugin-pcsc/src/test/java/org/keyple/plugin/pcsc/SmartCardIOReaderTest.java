@@ -38,7 +38,7 @@ import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.seproxy.exceptions.InvalidApduReaderException;
-import org.keyple.seproxy.exceptions.TimeoutReaderException;
+import org.keyple.seproxy.exceptions.ReaderTimeoutException;
 import org.keyple.seproxy.exceptions.UnexpectedReaderException;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -124,7 +124,7 @@ public class SmartCardIOReaderTest {
     @Test
     public void testTransmitCardNotPresent()
             throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, TimeoutReaderException, UnexpectedReaderException {
+            IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
 
         when(terminal.isCardPresent()).thenReturn(false);
         ApduRequest apduRequestMF = new ApduRequest(
@@ -147,7 +147,7 @@ public class SmartCardIOReaderTest {
     @Test
     public void testTransmitToCardWithoutAidToSelect()
             throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, TimeoutReaderException, UnexpectedReaderException {
+            IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
 
         atr = new ATR(new byte[] {(byte) 0x85, 0x17, 0x00, 0x01});
         when(terminal.isCardPresent()).thenReturn(true);
@@ -181,7 +181,7 @@ public class SmartCardIOReaderTest {
     @Test
     public void testTransmitToCardWithAidToSelect()
             throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, TimeoutReaderException, UnexpectedReaderException {
+            IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
 
 
         when(terminal.isCardPresent()).thenReturn(true);
@@ -214,7 +214,7 @@ public class SmartCardIOReaderTest {
     @Test
     public void testTransmitToCardAndDisconnect()
             throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, TimeoutReaderException, UnexpectedReaderException {
+            IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
 
 
         when(terminal.isCardPresent()).thenReturn(true);

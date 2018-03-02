@@ -8,6 +8,11 @@
 
 package org.keyple.seproxy.exceptions;
 
+/**
+ * The parameter specified are inconsistent with what is expected. TODO: At least I guess so.
+ * 
+ * @deprecated This class is never thrown
+ */
 public class InconsistentParameterValueException extends Exception {
     public InconsistentParameterValueException(String message) {
         super(message);

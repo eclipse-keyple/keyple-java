@@ -97,7 +97,6 @@ public class OpenSessionCmdBuildTest {
         byte p1 = (byte) ((recordNumberToRead * 8) + keyIndex);
         byte p2 = (byte) ((sfiToSelect * 8) + 2);
         byte cmd = (byte) 0x8A;
-        System.out.println("samChallenge = " + ByteBufferUtils.toHex(samChallenge));
         byte[] dataIn = new byte[samChallenge.limit() + 1];
         System.arraycopy(ByteBufferUtils.toBytes(samChallenge), 0, dataIn, 1, samChallenge.limit());
         // revision 3.2

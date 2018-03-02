@@ -81,7 +81,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             try {
                 this.prepareAndConnectToTerminalAndSetChannel();
             } catch (CardException e) {
-                throw new ChannelStateReaderException(e.getMessage());
+                throw new ChannelStateReaderException(e);
             }
             // gestion du select application ou du getATR
             if (seApplicationRequest.getAidToSelect() != null && aidCurrentlySelected == null) {
@@ -104,7 +104,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
                     apduResponseList.add(new ApduResponse(apduResponseData.getData(), true));
                 } catch (CardException e) {
-                    throw new ChannelStateReaderException(e.getMessage());
+                    throw new ChannelStateReaderException(e);
                 } catch (NullPointerException e) {
                     logger.error(getName() + " : Error executing command", e);
                     apduResponseList.add(new ApduResponse((byte[]) null, false));
@@ -232,7 +232,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
             // }
         } catch (CardException e1) {
-            throw new ChannelStateReaderException(e1.getMessage());
+            throw new ChannelStateReaderException(e1);
         }
         // return null;
     }
