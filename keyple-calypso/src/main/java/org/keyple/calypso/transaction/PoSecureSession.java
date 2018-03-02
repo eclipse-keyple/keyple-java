@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.DatatypeConverter;
-import org.apache.commons.codec.DecoderException;
 import org.keyple.calypso.commands.csm.CsmRevision;
 import org.keyple.calypso.commands.csm.builder.*;
 import org.keyple.calypso.commands.csm.parser.CsmGetChallengeRespPars;
@@ -281,12 +280,9 @@ public class PoSecureSession {
         // HACK - OpenSessionRespPars.getPoChallengeOld() ne retourne pas la bonne valeur de PO
         // challenge
         // TODO - corriger => OpenSessionRespPars.getPoChallengeOld()
-        try {
-            sessionCardChallenge = ByteBufferUtils.fromHex(ByteBufferUtils
-                    .toHex(poOpenSessionPars.getApduResponse().getBuffer()).substring(0, 4 * 2)); // HACK
-        } catch (DecoderException e) {
-            e.printStackTrace();
-        }
+        sessionCardChallenge = ByteBufferUtils.fromHex(ByteBufferUtils
+                .toHex(poOpenSessionPars.getApduResponse().getBuffer()).substring(0, 4 * 2)); // HACK
+
         // System.out.println("\t========= Opening ========== HACKED Card Challenge : " +
         // ByteBufferUtils.toHex(sessionCardChallenge));
 

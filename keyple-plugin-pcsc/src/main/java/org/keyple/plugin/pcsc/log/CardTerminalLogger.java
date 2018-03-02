@@ -18,7 +18,7 @@ public class CardTerminalLogger extends CardTerminal {
 
     private int count = 0;
 
-    public CardTerminalLogger(String name, CardTerminal terminal) {
+    CardTerminalLogger(String name, CardTerminal terminal) {
         this.name = name;
         this.terminal = terminal;
     }
@@ -30,7 +30,7 @@ public class CardTerminalLogger extends CardTerminal {
 
     @Override
     public Card connect(String s) throws CardException {
-        System.out.println(name + ".connect()");
+        System.out.println(name + ".connect(" + s + ")");
         return new CardLogger(String.format("%s.%d", name, ++count), terminal.connect(s));
     }
 

@@ -2,6 +2,8 @@ plugins {
     id "me.champeau.gradle.jmh" version "0.4.3"
 }
 
+sourceCompatibility = 1.6
+
 group 'org.keyple'
 version '1.0-SNAPSHOT'
 
@@ -29,8 +31,8 @@ pmd {
             "java-typeresolution",
             "java-finalizers",
             "java-migrating",
-            // "java-strictexception",
             // "java-naming",        // 9 issues
+            // "java-strictexception",
             // "java-logging-java",
             // "java-controversial",  // 8 issues
             // "java-sunsecure",      // 1 issue
@@ -43,6 +45,8 @@ pmd {
 }
 
 dependencies {
+
+    compile project(':keyple-calypso')
 
     // https://mvnrepository.com/artifact/commons-codec/commons-codec
     compile group: 'commons-codec', name: 'commons-codec', version: '1.11'

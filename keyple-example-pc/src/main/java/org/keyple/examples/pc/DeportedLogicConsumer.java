@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.keyple.example.common.BasicCardAccessManager;
 import org.keyple.plugin.pcsc.PcscPlugin;
-import org.keyple.seproxy.*;
+import org.keyple.seproxy.ProxyReader;
+import org.keyple.seproxy.ReadersPlugin;
+import org.keyple.seproxy.SeProxyService;
 
-public class BasicCardAccess {
-    private static final Object sync = new Object();
-
+public class DeportedLogicConsumer {
     public static void main(String[] args) throws Exception {
         SeProxyService seProxyService = SeProxyService.getInstance();
         System.out.println("SeProxyServ v" + seProxyService.getVersion());
@@ -25,35 +25,16 @@ public class BasicCardAccess {
         seProxyService.setPlugins(plugins);
         for (ReadersPlugin rp : seProxyService.getPlugins()) {
             System.out.println("Reader plugin: " + rp.getName());
-            for (final ProxyReader pr : rp.getReaders()) {
+            for (ProxyReader pr : rp.getReaders()) {
                 System.out
                         .println("Reader name: " + pr.getName() + ", present: " + pr.isSEPresent());
-                if (pr instanceof ObservableReader) {
-                    ((ObservableReader) pr).addObserver(new ReaderObserver() {
-                        @Override
-                        public void notify(ReaderEvent event) {
-                            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
-                                parseInfo(pr);
-                            }
-                        }
-                    });
-                } else {
-                    parseInfo(pr);
+                if (pr.isSEPresent()) {
+                    // This is what contains the actual test logic
+                    BasicCardAccessManager mgr = new BasicCardAccessManager();
+                    mgr.setPoReader(pr);
+                    mgr.run();
                 }
             }
-        }
-
-        synchronized (sync) {
-            sync.wait();
-        }
-    }
-
-    private static void parseInfo(ProxyReader poReader) {
-        BasicCardAccessManager mgr = new BasicCardAccessManager();
-        mgr.setPoReader(poReader);
-        mgr.run();
-        synchronized (sync) {
-            sync.notify();
         }
     }
 }

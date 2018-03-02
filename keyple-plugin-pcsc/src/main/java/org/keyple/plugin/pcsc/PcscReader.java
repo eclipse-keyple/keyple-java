@@ -18,7 +18,6 @@ import javax.smartcardio.*;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.keyple.plugin.pcsc.log.CardChannelLogger;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
@@ -123,12 +122,9 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     private void prepareAndConnectToTerminalAndSetChannel() throws CardException {
         final String protocol = getCardProtocol();
         if (card == null) {
-            System.out.println(terminal.getName());
-            System.out.println(protocol
-                    + " - connect(protocol)\t\tfrom prepareAndConnectToTerminalAndSetChannel()");
             this.card = this.terminal.connect(protocol);
         }
-        this.channel = new CardChannelLogger("card/" + protocol, card.getBasicChannel());
+        this.channel = card.getBasicChannel();
     }
 
     private String getCardProtocol() {
@@ -211,20 +207,12 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             command.put((byte) aid.limit());
             command.put(aid);
             command.put((byte) 0x00);
-            logger.info(getName() + " : Send AID : " + ByteBufferUtils.toHex(command));
-
-            System.out.println(terminal.getName()
-                    + "\t\t PC/SC Select Application\t\tfrom PcscReader.connect(byte[] aid)");
-            System.out.println(settings.get("protocol") + " > " + ByteBufferUtils.toHex(command));
+            logger.info(getName() + " : Selecting AID " + ByteBufferUtils.toHex(aid));
             command.position(0);
             ResponseAPDU res = channel.transmit(new CommandAPDU(command));
-            System.out.println(settings.get("protocol") + " < "
-                    + DatatypeConverter.printHexBinary(res.getBytes()));
 
             byte[] statusCode = new byte[] {(byte) res.getSW1(), (byte) res.getSW2()};
             hackCase4AndGetResponse(true, statusCode, res, channel);
-            logger.info(
-                    getName() + " : Recept : " + DatatypeConverter.printHexBinary(res.getBytes()));
             ApduResponse fciResponse =
                     new ApduResponse(res.getData(), true, new byte[] {(byte) 0x90, (byte) 0x00});
             aidCurrentlySelected = aid;
@@ -252,9 +240,6 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
             if (this.card != null) {
                 this.channel = null;
-                System.out.println(terminal.getName());
-                System.out.println(settings.get("protocol")
-                        + " - disconnect(FALSE)\t\tfrom PcscReader.disconnect()");
                 this.card.disconnect(false);
                 this.card = null;
             }
@@ -366,6 +351,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
          */
         EventThread(PcscReader reader) {
             super("pcsc-events-" + threadCount.addAndGet(1));
+            setDaemon(true);
             this.reader = reader;
         }
 

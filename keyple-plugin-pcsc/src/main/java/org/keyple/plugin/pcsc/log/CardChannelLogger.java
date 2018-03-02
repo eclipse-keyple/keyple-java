@@ -28,7 +28,7 @@ public class CardChannelLogger extends CardChannel {
      * @param name Name of the logger
      * @param cardChannel Inner card channel being used
      */
-    public CardChannelLogger(String name, CardChannel cardChannel) {
+    CardChannelLogger(String name, CardChannel cardChannel) {
         this.name = name;
         this.cardChannel = cardChannel;
     }
@@ -48,7 +48,8 @@ public class CardChannelLogger extends CardChannel {
         System.out.println(
                 name + ".transmit(" + Hex.encodeHexString(commandAPDU.getBytes()) + ") ... ");
         ResponseAPDU response = cardChannel.transmit(commandAPDU);
-        System.out.println(name + ".transmit(...): " + commandAPDU);
+        System.out.println(
+                name + ".transmit(...): " + Hex.encodeHexString(response.getBytes(), false));
         return response;
     }
 
