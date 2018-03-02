@@ -29,4 +29,16 @@ public class InvalidMessageException extends IOReaderException {
         this.requests = requests;
         this.responses = responses;
     }
+
+    public Type getType() {
+        return type;
+    }
+
+    public List<ApduRequest> getRequests() {
+        return requests;
+    }
+
+    public List<ApduResponse> getResponses() {
+        return responses;
+    }
 }
