@@ -8,7 +8,7 @@ os:
 
 # The build and tests are executed directly by gradle
 script:
-  - gradle build javadoc jmh
+  - gradle build javadoc
   - .build/prepare_pages.sh
 
 # Caching
@@ -26,5 +26,5 @@ deploy:
   github-token: $GITHUB_TOKEN
   keep-history: true
   on:
-    condition: ( $TRAVIS_BRANCH = "develop" ) || ( $TRAVIS_BRANCH = "feature-publish-javadoc" )
+    condition: ( $TRAVIS_BRANCH = "feature-publish-javadoc" )
     all_branches: true

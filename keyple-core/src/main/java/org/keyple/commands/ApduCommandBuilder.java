@@ -26,7 +26,7 @@ public abstract class ApduCommandBuilder {
      * the reference of the command in the matrix array enumeration, in order to get the name and
      * the response parser class of the command.
      */
-    private CommandsTable commandReference;
+    protected CommandsTable commandReference;
 
     /** the byte array APDU request. */
     protected ApduRequest request;

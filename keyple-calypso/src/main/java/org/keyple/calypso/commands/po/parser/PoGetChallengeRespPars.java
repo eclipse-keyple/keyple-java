@@ -13,11 +13,7 @@ import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
 /**
- * The Class PoGetChallengeRespPars. This class provides status code properties and the getters to
- * access to the structured fields of a Get Challenge response.
- *
- * @author Ixxi
- *
+ * PO Get challenge response parser. See specs: Calypso / page 108 / 9.54 - Get challenge
  */
 public class PoGetChallengeRespPars extends ApduResponseParser {
 
@@ -30,19 +26,7 @@ public class PoGetChallengeRespPars extends ApduResponseParser {
         super(response);
     }
 
-    /**
-     * Gets the po challenge.
-     *
-     * @return the po challenge
-     */
-    public byte[] getPoChallenge() {
-        if (isSuccessful()) {
-            return getApduResponse().getBytesBeforeStatus();
-        }
-        return null;
-    }
-
-    public ByteBuffer getPoChallengeV2() {
-        return getApduResponse().getDataBeforeStatus();
+    public ByteBuffer getPoChallenge() {
+        return getApduResponse().getDataOut();
     }
 }

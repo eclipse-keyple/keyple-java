@@ -8,6 +8,7 @@
 
 package keyple.commands.po.parser;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -22,14 +23,15 @@ public class GetDataRespParsTest {
     @Test
     public void digestInitRespPars() {
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse = new ApduResponse(new byte[] {90, 00}, true);
+        ApduResponse apduResponse =
+                new ApduResponse(ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}), true);
         listeResponse.add(apduResponse);
         SeResponse seResponse = new SeResponse(true, null, listeResponse);
 
         ApduResponseParser apduResponseParser =
                 new GetDataFciRespPars(seResponse.getApduResponses().get(0));
 
-        byte[] reponseActual = apduResponseParser.getApduResponse().getBytes();
-        Assert.assertArrayEquals(new byte[] {90, 00}, reponseActual);
+        ByteBuffer responseActual = apduResponseParser.getApduResponse().getBuffer();
+        Assert.assertEquals(ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}), responseActual);
     }
 }

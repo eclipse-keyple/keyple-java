@@ -8,6 +8,7 @@
 
 package org.keyple.calypso.commands.csm.builder;
 
+import java.nio.ByteBuffer;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.csm.CsmCommandBuilder;
 import org.keyple.calypso.commands.csm.CsmRevision;
@@ -34,7 +35,7 @@ public class DigestAuthenticateCmdBuild extends CsmCommandBuilder {
      * @param signature the signature
      * @throws InconsistentCommandException the inconsistent command exception
      */
-    public DigestAuthenticateCmdBuild(CsmRevision revision, byte[] signature)
+    public DigestAuthenticateCmdBuild(CsmRevision revision, ByteBuffer signature)
             throws InconsistentCommandException {
         super(command, null);
         if (revision != null) {
@@ -43,9 +44,9 @@ public class DigestAuthenticateCmdBuild extends CsmCommandBuilder {
         if (signature == null) {
             throw new InconsistentCommandException();
         }
-        if (signature.length != 4 && signature.length != 8 && signature.length != 16) {
+        if (signature.limit() != 4 && signature.limit() != 8 && signature.limit() != 16) {
             throw new InconsistentCommandException(
-                    "Signature is not the right length : length is " + signature.length);
+                    "Signature is not the right length : length is " + signature.limit());
         }
         byte cla = CsmRevision.S1D.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x80;
         byte p1 = 0x00;

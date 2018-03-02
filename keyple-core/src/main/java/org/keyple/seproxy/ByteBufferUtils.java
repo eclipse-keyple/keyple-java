@@ -28,10 +28,14 @@ public class ByteBufferUtils {
      *
      * @param hex Hexa string
      * @return ByteBuffer
-     * @throws DecoderException If the buffer is not correctly formatted
      */
-    public static ByteBuffer fromHex(String hex) throws DecoderException {
-        return ByteBuffer.wrap(Hex.decodeHex(HEX_IGNORED_CHARS.matcher(hex).replaceAll("")));
+    public static ByteBuffer fromHex(String hex) {
+        try {
+            return ByteBuffer.wrap(Hex.decodeHex(HEX_IGNORED_CHARS.matcher(hex).replaceAll("")));
+        } catch (DecoderException ex) {
+            throw new IllegalArgumentException(
+                    "You need to provide hex (spaces and 'h' are allowed)", ex);
+        }
     }
 
     /**
@@ -41,12 +45,15 @@ public class ByteBufferUtils {
      * @return Hex representation of the buffer
      */
     public static String toHex(ByteBuffer buffer) {
-        StringBuilder str = new StringBuilder((buffer.limit() - buffer.arrayOffset()) * 2);
-        final byte[] array = buffer.array();
-        for (int i = buffer.arrayOffset(), e = i + buffer.limit(); i < e; i++) {
-            str.append(String.format("%02X", array[i]));
+        if (buffer == null) {
+            return "";
         }
-
+        ByteBuffer buf = buffer.duplicate();
+        buf.position(0);
+        StringBuilder str = new StringBuilder(buf.remaining() * 2);
+        while (buf.hasRemaining()) {
+            str.append(String.format("%02X", buf.get()));
+        }
         return str.toString();
     }
 
@@ -58,8 +65,33 @@ public class ByteBufferUtils {
      */
     public static byte[] toBytes(ByteBuffer buffer) {
         byte[] data = new byte[buffer.limit()];
-        buffer.rewind();
+        int p = buffer.position();
         buffer.get(data);
+        buffer.position(p);
         return data;
+    }
+
+    public static ByteBuffer subIndex(ByteBuffer buf, int start, int end) {
+        buf = buf.duplicate();
+        buf.position(start).limit(end);
+        return buf.slice();
+    }
+
+    public static ByteBuffer subLen(ByteBuffer buf, int offset, int length) {
+        buf = buf.duplicate();
+        buf.position(offset).limit(offset + length);
+        return buf.slice();
+    }
+
+    /**
+     * Temporary conversion method. Every time this method is called it should be replaced by
+     * something else.
+     *
+     * @param array Array to convert to {@link ByteBuffer}
+     * @return {@link ByteBuffer} or null
+     * @deprecated This should be replaced by some proper {@link ByteBuffer} handling
+     */
+    public static ByteBuffer wrap(byte[] array) {
+        return array != null ? ByteBuffer.wrap(array) : null;
     }
 }

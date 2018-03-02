@@ -8,6 +8,7 @@
 
 package org.keyple.seproxy;
 
+
 /**
  * The Class ReaderEvent. This class is used to notify an event of a specific ObservableReader to
  * its registered ReaderObserver in case of IO Error, SE insertion or removal.
@@ -64,4 +65,8 @@ public class ReaderEvent {
         return event;
     }
 
+    @Override
+    public String toString() {
+        return getEventType().toString();
+    }
 }

@@ -8,13 +8,14 @@
 
 package org.keyple.calypso.commands.po.parser;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.keyple.calypso.commands.utils.ResponseUtils;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
+import org.keyple.seproxy.ByteBufferUtils;
 
 /**
  * Read Records (00B2) response parser. See specs: Calypso / page 89 / 9.4.7 Read Records
@@ -56,7 +57,7 @@ public class ReadRecordsRespPars extends ApduResponseParser {
     public ReadRecordsRespPars(ApduResponse response) {
         super(response);
         if (isSuccessful()) {
-            records = parseRecords(response.getBytesBeforeStatus(), false);
+            records = parseRecords(response.getDataOut());
         }
     }
 
@@ -64,32 +65,42 @@ public class ReadRecordsRespPars extends ApduResponseParser {
      * Method to get the Records from the response.
      *
      * @param apduResponse the apdu response
-     * @param oneRecordOnly the one record only
      * @return a Maps of Records
      */
-    private static List<Record> parseRecords(byte[] apduResponse, boolean oneRecordOnly) {
+    private static List<Record> parseRecords(ByteBuffer apduResponse) {
         List<Record> records = new ArrayList<Record>();
-        if (oneRecordOnly) {
-            records.add(new Record(apduResponse, 0));
-        } else {
-            int i = 0;
-            while (i < apduResponse.length) {
-                if (i + 2 + apduResponse[i + 1] > apduResponse.length - 1) {
-                    records.add(new Record(
-                            ResponseUtils.subArray(apduResponse, i + 2, apduResponse.length - 1),
-                            apduResponse[i]));
-                } else {
-                    records.add(new Record(ResponseUtils.subArray(apduResponse, i + 2,
-                            i + 2 + apduResponse[i + 1]), apduResponse[i]));
-                }
-                // add data length to iterator
-                i += apduResponse[i + 1];
-                // add byte of data length to iterator
-                i++;
-                // add byte of num record to iterator
-                i++;
+        int i = 0;
+        while (i < apduResponse.limit()) {
+            if (i + 2 + apduResponse.get(i + 1) > apduResponse.limit() - 1) {
+                records.add(new Record(apduResponse.get(i),
+                        ByteBufferUtils.subIndex(apduResponse, i + 2, apduResponse.limit() - 1)));
+            } else {
+                records.add(new Record(apduResponse.get(i), ByteBufferUtils.subIndex(apduResponse,
+                        i + 2, i + 2 + apduResponse.get(i + 1))));
             }
+            // add data length to iterator
+            i += apduResponse.get(i + 1);
+            // add byte of data length to iterator
+            i++;
+            // add byte of num record to iterator
+            i++;
         }
+        return records;
+    }
+
+    // fclairamb: I might be missing something. The doc says:
+    // <Record Number:1 byte> < Length:1 byte> <Record data: Length bytes>
+    private static List<Record> parseRecordsV2(ByteBuffer apdu) {
+        List<Record> records = new ArrayList<Record>();
+
+        while (apdu.hasRemaining()) {
+            byte recordNb = apdu.get();
+            byte len = apdu.get();
+            ByteBuffer dup = apdu.duplicate();
+            dup.position(0).limit(len);
+            records.add(new Record(recordNb, dup.slice()));
+        }
+
         return records;
     }
 
@@ -106,16 +117,21 @@ public class ReadRecordsRespPars extends ApduResponseParser {
      * Gets the records data.
      *
      * @return the records data
+     * @deprecated I'm not sure it makes sense
      */
-    public byte[][] getRecordsData() {
-        if (records != null) {
-            byte[][] ret = new byte[records.size()][];
-            for (int i = 0; i < records.size(); i++) {
-                ret[i] = records.get(i).getData();
-            }
-            return ret;
+    public List<ByteBuffer> getRecordsData() {
+        if (records == null) {
+            return null;
         }
-        return null;
+        List<ByteBuffer> list = new ArrayList<ByteBuffer>(records.size());
+        for (Record r : records) {
+            list.add(r.data);
+        }
+        return list;
+    }
+
+    public List<Record> getRecords() {
+        return records;
     }
 
     /**
@@ -124,20 +140,20 @@ public class ReadRecordsRespPars extends ApduResponseParser {
     public static class Record {
 
         /** The data. */
-        private byte[] data;
+        private final ByteBuffer data;
 
         /** The record number. */
-        private int recordNumber;
+        private final int recordNumber;
 
         /**
          * Instantiates a new Record.
          *
-         * @param data the data
          * @param recordNumber the record number
+         * @param data the data
          */
-        public Record(byte[] data, int recordNumber) {
+        Record(int recordNumber, ByteBuffer data) {
             super();
-            this.data = (data == null ? null : data.clone());
+            this.data = data;
             this.recordNumber = recordNumber;
         }
 
@@ -146,8 +162,8 @@ public class ReadRecordsRespPars extends ApduResponseParser {
          *
          * @return the data
          */
-        public byte[] getData() {
-            return data.clone();
+        public ByteBuffer getData() {
+            return data;
         }
 
         /**
@@ -159,5 +175,10 @@ public class ReadRecordsRespPars extends ApduResponseParser {
             return recordNumber;
         }
 
+        @Override
+        public String toString() {
+            return String.format("Record{nb=%d,data=%s}", recordNumber,
+                    ByteBufferUtils.toHex(data));
+        }
     }
 }

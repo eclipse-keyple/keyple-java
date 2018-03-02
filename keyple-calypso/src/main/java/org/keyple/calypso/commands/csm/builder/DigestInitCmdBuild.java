@@ -8,6 +8,7 @@
 
 package org.keyple.calypso.commands.csm.builder;
 
+import java.nio.ByteBuffer;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.csm.CsmCommandBuilder;
 import org.keyple.calypso.commands.csm.CsmRevision;
@@ -19,11 +20,12 @@ import org.keyple.seproxy.ApduRequest;
  * This class provides the dedicated constructor to build the CSM Digest Init APDU command.
  *
  * @author Ixxi
- *
  */
 public class DigestInitCmdBuild extends CsmCommandBuilder {
 
-    /** The command. */
+    /**
+     * The command.
+     */
     private static CalypsoCommands command = CalypsoCommands.CSM_DIGEST_INIT;
 
     /**
@@ -39,7 +41,7 @@ public class DigestInitCmdBuild extends CsmCommandBuilder {
      * @throws InconsistentCommandException the inconsistent command exception
      */
     public DigestInitCmdBuild(CsmRevision revision, boolean verificationMode, boolean rev3_2Mode,
-            byte workKeyRecordNumber, byte workKeyKif, byte workKeyKVC, byte[] digestData)
+            byte workKeyRecordNumber, byte workKeyKif, byte workKeyKVC, ByteBuffer digestData)
             throws InconsistentCommandException {
         super(command, null);
         if (revision != null) {
@@ -66,14 +68,15 @@ public class DigestInitCmdBuild extends CsmCommandBuilder {
             p2 = workKeyRecordNumber;
         }
 
-        byte[] dataIn = null;
+        ByteBuffer dataIn;
 
         if (p2 == (byte) 0xFF) {
-            dataIn = new byte[2 + digestData.length];
-
-            dataIn[0] = workKeyKif;
-            dataIn[1] = workKeyKVC;
-            System.arraycopy(digestData, 0, dataIn, 2, digestData.length);
+            dataIn = ByteBuffer.allocate(2 + digestData.limit());
+            dataIn.put(workKeyKif);
+            dataIn.put(workKeyKVC);
+            dataIn.put(digestData);
+        } else {
+            dataIn = null;
         }
         // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, CalypsoCommands.CSM_DIGEST_INIT,
         // p1, p2, dataIn);

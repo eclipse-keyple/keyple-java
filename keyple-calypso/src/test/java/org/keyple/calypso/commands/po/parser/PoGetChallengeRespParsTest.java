@@ -8,7 +8,6 @@
 
 package org.keyple.calypso.commands.po.parser;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import java.nio.ByteBuffer;
 import org.apache.commons.codec.DecoderException;
@@ -29,22 +28,17 @@ public class PoGetChallengeRespParsTest {
         // Here we compare that the data fetched is only the part that is before the execution
         // status
         // Note: Until here, zero buffer allocation/copy has been made
-        assertEquals(apdu.getDataBeforeStatus(), resp.getPoChallengeV2());
-        assertEquals("01020304", ByteBufferUtils.toHex(resp.getPoChallengeV2()));
+        assertEquals(apdu.getDataOut(), resp.getPoChallenge());
+        assertEquals("01020304", ByteBufferUtils.toHex(resp.getPoChallenge()));
 
         // Now, just to be clear: All of the zero allocation/copy logic means we're always using the
         // same array,
         // here is the proof:
-        assertEquals(apdu.getBuffer().array(), resp.getPoChallengeV2().array());
+        assertEquals(apdu.getBuffer().array(), resp.getPoChallenge().array());
 
         // Let's still do things the old way
-        // Here we do a buffer allocation/copy (BAD)
-        final byte[] payload = apdu.getBytesBeforeStatus(); // 01 02 03 04
+        final ByteBuffer payload = apdu.getDataOut(); // 01 02 03 04
 
-        // We do an another one here (BAD)
-        assertArrayEquals(payload, resp.getPoChallenge());
-
-        // We compare the wrapped one we created with the ByteBuffer we fetched
-        assertEquals(ByteBuffer.wrap(payload), resp.getPoChallengeV2());
+        assertEquals(payload, resp.getPoChallenge());
     }
 }

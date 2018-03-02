@@ -8,6 +8,7 @@
 
 package keyple.commands.csm.parser;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -29,9 +30,10 @@ public class CSMGetChallengeRespParsTest {
 
         ApduResponseParser apduResponseParser =
                 new CsmGetChallengeRespPars(seResponse.getApduResponses().get(0));
-        byte[] reponseActual = apduResponseParser.getApduResponse().getBytes();
-        Assert.assertArrayEquals(
-                new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, (byte) 0x90, 0x00},
+        ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
+        Assert.assertEquals(
+                ByteBuffer
+                        .wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, (byte) 0x90, 0x00}),
                 reponseActual);
     }
 }

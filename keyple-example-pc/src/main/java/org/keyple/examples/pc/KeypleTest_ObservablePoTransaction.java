@@ -11,13 +11,11 @@ package org.keyple.examples.pc;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.DatatypeConverter;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.SendableInSession;
 import org.keyple.calypso.commands.po.builder.OpenSessionCmdBuild;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.transaction.*;
-import org.keyple.commands.*;
 import org.keyple.plugin.pcsc.PcscPlugin;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.*;
@@ -72,7 +70,7 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
             // Step 1
             System.out.println(
                     "\n\n========= PO Transaction ======= Identification =====================");
-            poTransaction.processIdentification(DatatypeConverter.parseHexBinary(poAid), null);
+            poTransaction.processIdentification(ByteBufferUtils.fromHex(poAid), null);
 
             // Step 2
             System.out.println(
@@ -108,22 +106,7 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
                         "========= PO Transaction ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
 
-        } catch (UnexpectedReaderException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ChannelStateReaderException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvalidApduReaderException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (TimeoutReaderException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InconsistentCommandException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOReaderException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -151,7 +134,7 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
         for (int i = 0; i < nbPlugins; i++) {
             ReadersPlugin plugin = readersPlugins.get(i);
 
-            List<ProxyReader> readers;
+            List<? extends ProxyReader> readers;
             try {
                 readers = plugin.getReaders();
 
@@ -184,7 +167,7 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
 
         // Select PCSC readers
         ReadersPlugin pcscPlugin = seProxyService.getPlugins().get(0);
-        List<ProxyReader> pcscReaders;
+        List<? extends ProxyReader> pcscReaders;
         try {
             pcscReaders = pcscPlugin.getReaders();
 
@@ -201,7 +184,7 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
 
 
             // Set terminal as Observer of the first reader
-            ((ObservableReader) observer.poReader).attachObserver(observer);
+            ((ObservableReader) observer.poReader).addObserver(observer);
             while (true) {
                 // Wait notification
             }

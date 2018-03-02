@@ -10,8 +10,8 @@ package org.keyple.seproxy;
 
 import static org.junit.Assert.*;
 import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
+
 
 public class ApduResponseTest {
 
@@ -41,20 +41,20 @@ public class ApduResponseTest {
     public void testGetStatusCode() {
         ApduResponse response = new ApduResponse(new byte[] {(byte) 0x01, (byte) 0x02}, true,
                 new byte[] {(byte) 0x03, (byte) 0x04});
-        assertEquals(0x03 * 256 + 0x04, response.getStatusCodeV2());
+        assertEquals(0x03 * 256 + 0x04, response.getStatusCode());
         // assertArrayEquals(new byte[] {(byte) 0x03, (byte) 0x04}, response.getStatusCodeOld());
     }
 
     @Test
     public void niceFormat() throws DecoderException {
         ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), true);
-        assertEquals("fedcba989000", Hex.encodeHexString(response.getBytes()));
+        assertEquals("FEDCBA989000", ByteBufferUtils.toHex(response.getBuffer()));
     }
 
     @Test
     public void statusCode() throws DecoderException {
         ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), true);
-        assertEquals(0x9000, response.getStatusCodeV2());
+        assertEquals(0x9000, response.getStatusCode());
     }
 
 }

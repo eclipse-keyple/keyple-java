@@ -13,11 +13,7 @@ import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
 /**
- * This class provides status code properties and the getters to access to the structured fields of
- * a Digest Init response.
- *
- * @author Ixxi
- *
+ * Digest init response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC computation
  */
 public class DigestInitRespPars extends ApduResponseParser {
     /**

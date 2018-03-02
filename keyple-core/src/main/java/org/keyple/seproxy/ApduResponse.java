@@ -20,7 +20,7 @@ public class ApduResponse extends AbstractApduBuffer {
      * the success result of the processed APDU commandto allow chaining responses in a group of
      * APDUs
      */
-    private boolean successful;
+    private final boolean successful;
 
     public ApduResponse(ByteBuffer buffer, boolean successful) {
         super(buffer);
@@ -70,7 +70,7 @@ public class ApduResponse extends AbstractApduBuffer {
         return successful;
     }
 
-    public int getStatusCodeV2() {
+    public int getStatusCode() {
         int s = buffer.getShort(buffer.limit() - 2);
 
         // java is signed only
@@ -80,6 +80,12 @@ public class ApduResponse extends AbstractApduBuffer {
         return s;
     }
 
+    /**
+     * Get the old (two bytes) status code
+     * 
+     * @return Old status code format
+     * @deprecated Prefer {@link #getStatusCode()}
+     */
     public byte[] getStatusCodeOld() {
         byte[] statusCode = new byte[2];
         buffer.position(buffer.limit() - 2);
@@ -87,18 +93,26 @@ public class ApduResponse extends AbstractApduBuffer {
         return statusCode;
     }
 
-    public ByteBuffer getDataBeforeStatus() {
+    /**
+     * Get the data before the statusCode
+     * 
+     * @return slice of the buffer before the status code
+     */
+    public ByteBuffer getDataOut() {
         ByteBuffer b = buffer.duplicate();
         b.position(0);
         b.limit(b.limit() - 2);
         return b.slice();
     }
 
-    public byte[] getBytesBeforeStatus() {
-        ByteBuffer buf = getDataBeforeStatus();
-        byte[] data = new byte[buf.limit()];
-        buf.get(data);
-        return data;
+    /**
+     * Get the bytes before the status code
+     * 
+     * @return byte array of data present before the status code
+     * @deprecated Prefer {@link #getDataOut()}
+     */
+    public byte[] getBytesOut() {
+        return ByteBufferUtils.toBytes(getDataOut());
     }
 
     @Override

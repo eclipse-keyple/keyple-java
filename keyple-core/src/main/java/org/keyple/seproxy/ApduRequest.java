@@ -27,6 +27,7 @@ public class ApduRequest extends AbstractApduBuffer {
      * the constructor called by a ticketing application in order to build the APDU command requests
      * to push to the ProxyReader.
      *
+     * @param buffer Buffer of the APDU request
      * @param case4 the case 4
      */
     public ApduRequest(ByteBuffer buffer, boolean case4) {

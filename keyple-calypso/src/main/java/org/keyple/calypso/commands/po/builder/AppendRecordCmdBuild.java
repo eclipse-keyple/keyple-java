@@ -8,6 +8,7 @@
 
 package org.keyple.calypso.commands.po.builder;
 
+import java.nio.ByteBuffer;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.po.PoCommandBuilder;
 import org.keyple.calypso.commands.po.PoRevision;
@@ -49,8 +50,7 @@ public class AppendRecordCmdBuild extends PoCommandBuilder implements SendableIn
      * @param newRecordData the new record data to write
      * @throws InconsistentCommandException the inconsistent command exception
      */
-    public AppendRecordCmdBuild(PoRevision revision, byte sfi, byte[] newRecordData)
-            throws InconsistentCommandException {
+    public AppendRecordCmdBuild(PoRevision revision, byte sfi, ByteBuffer newRecordData) {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -58,12 +58,8 @@ public class AppendRecordCmdBuild extends PoCommandBuilder implements SendableIn
         byte cla = PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00;
         byte p1 = (byte) 0x00;
         byte p2 = (sfi == 0) ? (byte) 0x00 : (byte) (sfi * 8);
-        byte[] dataIn = newRecordData;
-        // CalypsoRequest request = new CalypsoRequest(cla, command, p1, p2, dataIn);
-        ApduRequest apduRequest = RequestUtils.constructAPDURequest(cla, command, p1, p2, dataIn);
 
-        this.request = apduRequest;
-
+        this.request = RequestUtils.constructAPDURequest(cla, command, p1, p2, newRecordData);
     }
 
 

@@ -8,6 +8,7 @@
 
 package org.keyple.seproxy;
 
+
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -21,19 +22,19 @@ public class ApduResponseBenchmark {
         try {
             MESSAGE_1 = Hex.decodeHex(HEX.replaceAll(" ", ""));
         } catch (DecoderException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
     }
 
     @Benchmark
     public void loadFromByte() {
         ApduResponse request = new ApduResponse(MESSAGE_1, true);
-        assert (request.getBytes().length != 0);
+        assert request.getBytes().length != 0;
     }
 
     @Benchmark
     public void loadFromString() throws DecoderException {
         ApduResponse request = new ApduResponse(ByteBufferUtils.fromHex(HEX), true);
-        assert (request.getBytes().length != 0);
+        assert request.getBytes().length != 0;
     }
 }

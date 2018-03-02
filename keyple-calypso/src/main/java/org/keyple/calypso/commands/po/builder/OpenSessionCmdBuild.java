@@ -8,6 +8,7 @@
 
 package org.keyple.calypso.commands.po.builder;
 
+import java.nio.ByteBuffer;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.po.PoCommandBuilder;
 import org.keyple.calypso.commands.po.PoRevision;
@@ -37,7 +38,7 @@ public class OpenSessionCmdBuild extends PoCommandBuilder {
      * @throws InconsistentCommandException thrown if rev 2.4 and key index is 0
      */
 
-    public OpenSessionCmdBuild(PoRevision revision, byte keyIndex, byte[] samChallenge,
+    public OpenSessionCmdBuild(PoRevision revision, byte keyIndex, ByteBuffer samChallenge,
             byte sfiToSelect, byte recordNumberToRead) throws InconsistentCommandException {
         super(command, null);
         if (revision != null) {
@@ -45,7 +46,7 @@ public class OpenSessionCmdBuild extends PoCommandBuilder {
         }
         byte p1;
         byte p2;
-        byte[] dataIn;
+        ByteBuffer dataIn = samChallenge;
 
         switch (this.defaultRevision) {
             //
@@ -55,24 +56,20 @@ public class OpenSessionCmdBuild extends PoCommandBuilder {
                 }
                 p1 = (byte) (0x80 + (recordNumberToRead * 8) + keyIndex);
                 p2 = (byte) (sfiToSelect * 8);
-                dataIn = new byte[samChallenge.length];
-                System.arraycopy(samChallenge, 0, dataIn, 0, samChallenge.length);
                 break;
-            //
+
             case REV3_2:
                 p1 = (byte) ((recordNumberToRead * 8) + keyIndex);
                 p2 = (byte) ((sfiToSelect * 8) + 2);
-                dataIn = new byte[samChallenge.length + 1];
-                dataIn[0] = (byte) 0x00;
-                System.arraycopy(samChallenge, 0, dataIn, 1, samChallenge.length);
+                dataIn = ByteBuffer.allocate(samChallenge.limit() + 1);
+                dataIn.put((byte) 0x00);
+                dataIn.put(samChallenge);
                 break;
-            //
+
             case REV3_1:
             default:
                 p1 = (byte) ((recordNumberToRead * 8) + keyIndex);
                 p2 = (byte) ((sfiToSelect * 8) + 1);
-                dataIn = new byte[samChallenge.length];
-                System.arraycopy(samChallenge, 0, dataIn, 0, samChallenge.length);
                 break;
         }
 

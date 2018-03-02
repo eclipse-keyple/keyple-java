@@ -9,6 +9,7 @@
 package keyple.commands.po.builder;
 
 
+import java.nio.ByteBuffer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
@@ -18,13 +19,14 @@ import org.keyple.calypso.commands.po.builder.OpenSessionCmdBuild;
 import org.keyple.commands.ApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
+import org.keyple.seproxy.ByteBufferUtils;
 
 
 public class OpenSessionCmdBuildTest {
 
     Logger logger = LogManager.getLogger(OpenSessionCmdBuildTest.class);
 
-    byte[] samChallenge = {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E};
+    ByteBuffer samChallenge = ByteBuffer.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
 
     ApduCommandBuilder apduCommandBuilder;
 
@@ -33,7 +35,6 @@ public class OpenSessionCmdBuildTest {
 
     @Test(expected = InconsistentCommandException.class)
     public void openSessionCmdBuild_rev_2_4_exception() throws InconsistentCommandException {
-
         byte keyIndex = (byte) 0x00;
         byte recordNumberToRead = (byte) 0x01;
         byte sfiToSelect = (byte) 0x08;
@@ -41,10 +42,7 @@ public class OpenSessionCmdBuildTest {
         byte p1 = (byte) (0x80 + (recordNumberToRead * 8) + keyIndex);
         byte p2 = (byte) (sfiToSelect * 8);
         byte cmd = (byte) 0x8A;
-        byte[] dataIn = samChallenge;
-        // revision 2.4
-        byte[] request2_4 =
-                {cla, cmd, p1, p2, (byte) dataIn.length, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E};
+        ByteBuffer dataIn = samChallenge;
 
         apduCommandBuilder = new OpenSessionCmdBuild(PoRevision.REV2_4, keyIndex, dataIn,
                 sfiToSelect, recordNumberToRead);
@@ -52,7 +50,6 @@ public class OpenSessionCmdBuildTest {
 
     @Test
     public void openSessionCmdBuild_rev_2_4() throws InconsistentCommandException {
-
         byte keyIndex = (byte) 0x03;
         byte recordNumberToRead = (byte) 0x01;
         byte sfiToSelect = (byte) 0x08;
@@ -60,10 +57,10 @@ public class OpenSessionCmdBuildTest {
         byte p1 = (byte) (0x80 + (recordNumberToRead * 8) + keyIndex);
         byte p2 = (byte) (sfiToSelect * 8);
         byte cmd = (byte) 0x8A;
-        byte[] dataIn = samChallenge;
+        ByteBuffer dataIn = samChallenge;
         // revision 2.4
         byte[] request2_4 =
-                {cla, cmd, p1, p2, (byte) dataIn.length, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E};
+                {cla, cmd, p1, p2, (byte) dataIn.limit(), (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E};
 
         apduCommandBuilder = new OpenSessionCmdBuild(PoRevision.REV2_4, keyIndex, dataIn,
                 sfiToSelect, recordNumberToRead);
@@ -73,7 +70,6 @@ public class OpenSessionCmdBuildTest {
 
     @Test
     public void openSessionCmdBuild_rev_3_1() throws InconsistentCommandException {
-
         byte keyIndex = (byte) 0x03;
         byte recordNumberToRead = (byte) 0x01;
         byte sfiToSelect = (byte) 0x08;
@@ -81,11 +77,11 @@ public class OpenSessionCmdBuildTest {
         byte p1 = (byte) ((recordNumberToRead * 8) + keyIndex);
         byte p2 = (byte) ((sfiToSelect * 8) + 1);
         byte cmd = (byte) 0x8A;
-        byte[] dataIn = samChallenge;
+        ByteBuffer dataIn = samChallenge;
 
         // revision 3.1
         byte[] request3_1 =
-                {cla, cmd, p1, p2, (byte) dataIn.length, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E};
+                {cla, cmd, p1, p2, (byte) dataIn.limit(), (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E};
         apduCommandBuilder = new OpenSessionCmdBuild(PoRevision.REV3_1, keyIndex, dataIn,
                 sfiToSelect, recordNumberToRead);
         ApduRequest = apduCommandBuilder.getApduRequest();
@@ -94,7 +90,6 @@ public class OpenSessionCmdBuildTest {
 
     @Test
     public void openSessionCmdBuild_rev_3_2() throws InconsistentCommandException {
-
         byte keyIndex = (byte) 0x03;
         byte recordNumberToRead = (byte) 0x01;
         byte sfiToSelect = (byte) 0x08;
@@ -102,15 +97,18 @@ public class OpenSessionCmdBuildTest {
         byte p1 = (byte) ((recordNumberToRead * 8) + keyIndex);
         byte p2 = (byte) ((sfiToSelect * 8) + 2);
         byte cmd = (byte) 0x8A;
-        byte[] dataIn = new byte[samChallenge.length + 1];
-        System.arraycopy(samChallenge, 0, dataIn, 1, samChallenge.length);
+        System.out.println("samChallenge = " + ByteBufferUtils.toHex(samChallenge));
+        byte[] dataIn = new byte[samChallenge.limit() + 1];
+        System.arraycopy(ByteBufferUtils.toBytes(samChallenge), 0, dataIn, 1, samChallenge.limit());
         // revision 3.2
-        byte[] request3_2 = {cla, cmd, p1, p2, (byte) (samChallenge.length + 1), (byte) 0x00,
-                (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E};
+        ByteBuffer request3_2 =
+                ByteBuffer.wrap(new byte[] {cla, cmd, p1, p2, (byte) (samChallenge.limit() + 1),
+                        (byte) 0x00, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
         apduCommandBuilder = new OpenSessionCmdBuild(PoRevision.REV3_2, keyIndex, samChallenge,
                 sfiToSelect, recordNumberToRead);
         ApduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertArrayEquals(request3_2, ApduRequest.getBytes());
+        Assert.assertEquals(ByteBufferUtils.toHex(request3_2),
+                ByteBufferUtils.toHex(ApduRequest.getBuffer()));
     }
 
 

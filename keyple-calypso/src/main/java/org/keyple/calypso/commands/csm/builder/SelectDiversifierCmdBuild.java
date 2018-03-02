@@ -8,6 +8,7 @@
 
 package org.keyple.calypso.commands.csm.builder;
 
+import java.nio.ByteBuffer;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.csm.CsmCommandBuilder;
 import org.keyple.calypso.commands.csm.CsmRevision;
@@ -34,13 +35,13 @@ public class SelectDiversifierCmdBuild extends CsmCommandBuilder {
      * @param diversifier the application serial number
      * @throws InconsistentCommandException the inconsistent command exception
      */
-    public SelectDiversifierCmdBuild(CsmRevision revision, byte[] diversifier)
+    public SelectDiversifierCmdBuild(CsmRevision revision, ByteBuffer diversifier)
             throws InconsistentCommandException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
         }
-        if (diversifier == null || (diversifier.length != 4 && diversifier.length != 8)) {
+        if (diversifier == null || (diversifier.limit() != 4 && diversifier.limit() != 8)) {
             throw new InconsistentCommandException();
         }
         byte cla = CsmRevision.S1D.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x80;
