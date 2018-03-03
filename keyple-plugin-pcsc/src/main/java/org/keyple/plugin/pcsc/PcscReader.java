@@ -70,8 +70,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     }
 
     @Override
-    public SeResponse transmit(SeRequest seApplicationRequest)
-            throws ChannelStateReaderException, IOReaderException {
+    public SeResponse transmit(SeRequest seApplicationRequest) throws IOReaderException {
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
         if (isSEPresent()) { // TODO si vrai ET pas vrai => retourne un SeResponse vide de manière

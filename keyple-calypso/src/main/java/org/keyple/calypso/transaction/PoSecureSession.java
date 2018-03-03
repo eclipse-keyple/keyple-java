@@ -11,7 +11,6 @@ package org.keyple.calypso.transaction;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.DatatypeConverter;
 import org.keyple.calypso.commands.csm.CsmRevision;
 import org.keyple.calypso.commands.csm.builder.*;
 import org.keyple.calypso.commands.csm.parser.CsmGetChallengeRespPars;
@@ -27,7 +26,6 @@ import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 import org.keyple.calypso.commands.po.parser.OpenSessionRespPars;
 import org.keyple.calypso.commands.utils.ApduUtils;
 import org.keyple.commands.ApduCommandBuilder;
-import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.*;
 import com.github.structlog4j.ILogger;
@@ -118,17 +116,10 @@ public class PoSecureSession {
      * @param poAid the po AID
      * @param poCommandsOutsideSession the po commands outside session
      * @return the SE response
-     * @throws UnexpectedReaderException the unexpected reader exception
      * @throws IOReaderException the IO reader exception
-     * @throws ChannelStateReaderException the channel state reader exception
-     * @throws InvalidApduReaderException the invalid apdu reader exception
-     * @throws ReaderTimeoutException the timeout reader exception
-     * @throws InconsistentCommandException the inconsistent command exception
      */
     public SeResponse processIdentification(ByteBuffer poAid,
-            List<SendableInSession> poCommandsOutsideSession)
-            throws UnexpectedReaderException, IOReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, ReaderTimeoutException, InconsistentCommandException {
+            List<SendableInSession> poCommandsOutsideSession) throws IOReaderException {
 
 
         // Get PO ApduRequest List from SendableInSession List
@@ -220,17 +211,12 @@ public class PoSecureSession {
      * @param openCommand the open command
      * @param poCommandsInsideSession the po commands inside session
      * @return the SE response
-     * @throws UnexpectedReaderException the unexpected reader exception
      * @throws IOReaderException the IO reader exception
-     * @throws ChannelStateReaderException the channel state reader exception
-     * @throws InvalidApduReaderException the invalid apdu reader exception
-     * @throws ReaderTimeoutException the timeout reader exception
-     * @throws InconsistentCommandException the inconsistent command exception
      */
+    // fclariamb(2018-03-02): TODO: Cleanup that mess. There was a lot of commented out code and I
+    // added a lot more of it, once this code is tested we should clean it up
     public SeResponse processOpening(OpenSessionCmdBuild openCommand,
-            List<SendableInSession> poCommandsInsideSession)
-            throws UnexpectedReaderException, IOReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, ReaderTimeoutException, InconsistentCommandException {
+            List<SendableInSession> poCommandsInsideSession) throws IOReaderException {
 
         // Get PO ApduRequest List from SendableInSession List
         // List<ApduRequest> poApduRequestList =
@@ -239,7 +225,7 @@ public class PoSecureSession {
         // Init CSM ApduRequest List
         List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
         // PO & CSM channels to be kept "Open"
-        boolean keepChannelOpen = true;
+        // boolean keepChannelOpen = true;
 
         // Add Open Session command to PO ApduRequest list
         poApduRequestList.add(openCommand.getApduRequest());
@@ -252,8 +238,7 @@ public class PoSecureSession {
         // Transfert PO commands
         logger.info("Opening: PO request", "action", "po_secure_session.open_po_request");
         // System.out.println("\t========= Opening ========== Transfert PO commands");
-        SeRequest poRequest =
-                new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen);
+        SeRequest poRequest = new SeRequest(poCalypsoInstanceAid, poApduRequestList, true);
         SeResponse poResponse = poReader.transmit(poRequest);
         List<ApduResponse> poApduResponseList = poResponse.getApduResponses();
 
@@ -272,10 +257,6 @@ public class PoSecureSession {
         sessionCardChallenge = poOpenSessionPars.getPoChallenge();
         // System.out.println("\t========= Opening ========== WRONG Card Challenge : " +
         // ByteBufferUtils.toHex(sessionCardChallenge));
-        logger.info("Opening: PO response", "action", "po_secure_session.open_po_response",
-                "apduResponse",
-                ByteBufferUtils.toHex(poOpenSessionPars.getApduResponse().getBuffer()),
-                "sessionCardChallenge", ByteBufferUtils.toHex(sessionCardChallenge));
 
         // HACK - OpenSessionRespPars.getPoChallengeOld() ne retourne pas la bonne valeur de PO
         // challenge
@@ -288,10 +269,19 @@ public class PoSecureSession {
 
         // Build "Digest Init" command from PO Open Session
         byte kif = poOpenSessionPars.getSelectedKif();
-        System.out.println("\t========= Opening ========== PO KIF : "
-                + DatatypeConverter.printHexBinary(new byte[] {(byte) kif}));
-        System.out.println("\t========= Opening ========== PO KVC : " + DatatypeConverter
-                .printHexBinary(new byte[] {(byte) poOpenSessionPars.getSelectedKvc()}));
+        // System.out.println("\t========= Opening ========== PO KIF : "
+        // + DatatypeConverter.printHexBinary(new byte[] {(byte) kif}));
+        // System.out.println("\t========= Opening ========== PO KVC : " + DatatypeConverter
+        // .printHexBinary(new byte[] {(byte) poOpenSessionPars.getSelectedKvc()}));
+
+        logger.info("Opening: PO response", "action", "po_secure_session.open_po_response",
+                "apduResponse",
+                ByteBufferUtils.toHex(poOpenSessionPars.getApduResponse().getBuffer()),
+                "sessionCardChallenge", ByteBufferUtils.toHex(sessionCardChallenge), "poKif",
+                String.format("%02X", poOpenSessionPars.getSelectedKif()), "poKvc",
+                String.format("%02X", poOpenSessionPars.getSelectedKvc()));
+
+
         if (kif == (byte) 0xFF) {
             if (defaultKeyIndex == (byte) 0x01) {
                 kif = (byte) 0x21;
@@ -304,9 +294,10 @@ public class PoSecureSession {
         ApduCommandBuilder digestInit = new DigestInitCmdBuild(csmRevision, false,
                 poRevision.equals(PoRevision.REV3_2), defaultKeyIndex, kif,
                 poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
-        System.out
-                .println("\t========= Opening ========== Generate CSM cmd request - Digest Init : "
-                        + ByteBufferUtils.toHex(digestInit.getApduRequest().getBuffer()));
+        logger.info("Opening: CSM Request", "action", "po_secure_session.open_csm_digest_init",
+                "apdu", ByteBufferUtils.toHex(digestInit.getApduRequest().getBuffer()));
+        // System.out.println("\t========= Opening ========== Generate CSM cmd request - Digest Init
+        // : " + ByteBufferUtils.toHex(digestInit.getApduRequest().getBuffer()));
         csmApduRequestList.add(digestInit.getApduRequest());
 
         // Browse other PO commands to compute CSM digest
@@ -318,19 +309,21 @@ public class PoSecureSession {
                                                                  // Session for the first command
                                                                  // send in session
                 // Build "Digest Update" command for each PO APDU Request
-                System.out.println(
-                        "\t========= Opening ========== Generate CSM cmd request - Digest Update for PO request : "
-                                + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision,
-                                        false, poApduRequestList.get(i).getBuffer()))
-                                                .getApduRequest().getBuffer()));
+                /*
+                 * System.out.println(
+                 * "\t========= Opening ========== Generate CSM cmd request - Digest Update for PO request : "
+                 * + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
+                 * poApduRequestList.get(i).getBuffer())) .getApduRequest().getBuffer()));
+                 */
                 csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
                         poApduRequestList.get(i).getBuffer())).getApduRequest());
                 // Build "Digest Update" command for each PO APDU Response
-                System.out.println(
-                        "\t========= Opening ==WRONG=== Generate CSM cmd request - Digest Update for PO response : "
-                                + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision,
-                                        false, poApduResponseList.get(i).getBuffer())
-                                                .getApduRequest().getBuffer())));
+                /*
+                 * System.out.println(
+                 * "\t========= Opening ==WRONG=== Generate CSM cmd request - Digest Update for PO response : "
+                 * + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
+                 * poApduResponseList.get(i).getBuffer()) .getApduRequest().getBuffer())));
+                 */
                 // csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
                 // poApduResponseList.get(i).getBytes())).getApduRequest()); //TODO => this is the
                 // rigth command, to fix ApduResponse.getBytes
@@ -341,21 +334,24 @@ public class PoSecureSession {
                  * System.out.println("\t\tDEBUG ##### csmApduResponseList.size() : " + //
                  * DatatypeConverter.printHexBinary(additionOfGetBytesAndGetStatusCode));
                  */
-                System.out.println(
-                        "\t========= Opening ==HACK==== Generate CSM cmd request - Digest Update for PO response : "
-                                + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision,
-                                        false, poApduResponseList.get(i).getBuffer()))
-                                                .getApduRequest().getBuffer()));
+                /*
+                 * System.out.println(
+                 * "\t========= Opening ==HACK==== Generate CSM cmd request - Digest Update for PO response : "
+                 * + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
+                 * poApduResponseList.get(i).getBuffer())) .getApduRequest().getBuffer()));
+                 */
                 csmApduRequestList.add(((new DigestUpdateCmdBuild(csmRevision, false,
                         poApduResponseList.get(i).getBuffer())).getApduRequest())); // HACK
-
             }
         }
 
         // Transfert CSM commands
-        System.out.println("\t========= Opening ========== Transfert CSM commands");
-        SeRequest csmRequest = new SeRequest(null, csmApduRequestList, keepChannelOpen);
+        // System.out.println("\t========= Opening ========== Transfert CSM commands");
+        logger.info("Opening: CSM Request", "action", "po_secure_session.open_csm_request",
+                "apduList", csmApduRequestList);
+        SeRequest csmRequest = new SeRequest(null, csmApduRequestList, true);
         SeResponse csmResponse = csmReader.transmit(csmRequest);
+        // fclairamb(2018-03-02): TODO: We don't check the result ?
         // List<ApduResponse> csmApduResponseList = csmResponse.getApduResponses();
 
         currentState = SessionState.SESSION_OPEN;
@@ -413,16 +409,10 @@ public class PoSecureSession {
      * @param poCommandsInsideSession the po commands inside session
      * @return a SE Response
      *
-     * @throws IOReaderException
-     * @throws UnexpectedReaderException
-     * @throws ChannelStateReaderException
-     * @throws InvalidApduReaderException
-     * @throws ReaderTimeoutException
-     * @throws InconsistentCommandException
+     * @throws IOReaderException IO Reader exception
      */
     public SeResponse processProceeding(List<SendableInSession> poCommandsInsideSession)
-            throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, ReaderTimeoutException, InconsistentCommandException {
+            throws IOReaderException {
 
         // Get PO ApduRequest List from SendableInSession List
         List<ApduRequest> poApduRequestList =
@@ -433,22 +423,27 @@ public class PoSecureSession {
         boolean keepChannelOpen = true;
 
         // Transfert PO commands
-        System.out.println("\t========= Continuation ===== Transfert PO commands");
+        // System.out.println("\t========= Continuation ===== Transfert PO commands");
         SeRequest poRequest =
                 new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen);
+        logger.info("Processing: Sending PO commands", "action",
+                "po_secure_session.process_po_request", "apduList", poApduRequestList);
         SeResponse poResponse = poReader.transmit(poRequest);
         List<ApduResponse> poApduResponseList = poResponse.getApduResponses();
+        logger.info("Processing: Receiving PO responses", "action",
+                "po_secure_session.process_po_response", "apduList", poApduResponseList);
 
         // Browse all exchanged PO commands to compute CSM digest
         // TODO => rajouter un contrôle afin de vérifier que poApduResponseList a même taille que
         // poApduRequestList
         for (int i = 0; i < poApduRequestList.size(); i++) {
             // Build "Digest Update" command for each PO APDU Request
-            System.out.println(
-                    "\t========= Continuation ===== Generate CSM cmd request - Digest Update for PO request : "
-                            + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
-                                    poApduRequestList.get(i).getBuffer())).getApduRequest()
-                                            .getBuffer()));
+            /*
+             * System.out.println(
+             * "\t========= Continuation ===== Generate CSM cmd request - Digest Update for PO request : "
+             * + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
+             * poApduRequestList.get(i).getBuffer())).getApduRequest() .getBuffer()));
+             */
             csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
                     poApduRequestList.get(i).getBuffer())).getApduRequest());
             // Build "Digest Update" command for each PO APDU Response
@@ -456,11 +451,12 @@ public class PoSecureSession {
             // Update for PO response : " + DatatypeConverter.printHexBinary((new
             // DigestUpdateCmdBuild(csmRevision, false,
             // poApduResponseList.get(i).getBytes())).getApduRequest().getBytes()));
-            System.out.println(
-                    "\t==WRONG== Continuation ===== Generate CSM cmd request - Digest Update for PO response : "
-                            + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
-                                    poApduResponseList.get(i).getBuffer())).getApduRequest()
-                                            .getBuffer()));
+            /*
+             * System.out.println(
+             * "\t==WRONG== Continuation ===== Generate CSM cmd request - Digest Update for PO response : "
+             * + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
+             * poApduResponseList.get(i).getBuffer())).getApduRequest() .getBuffer()));
+             */
             // csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
             // poApduResponseList.get(i).getBytes())).getApduRequest()); //TODO => this is the rigth
             // command, to fix ApduResponse.getBytes
@@ -471,22 +467,27 @@ public class PoSecureSession {
              */
             // System.out.println("\t\tDEBUG ##### csmApduResponseList.size() : " +
             // DatatypeConverter.printHexBinary(additionOfGetBytesAndGetStatusCode));
-            System.out.println(
-                    "\t==HACK=== Continuation ===== Generate CSM cmd request - Digest Update for PO response : "
-                            + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
-                                    poApduResponseList.get(i).getBuffer())).getApduRequest()
-                                            .getBuffer()));
+            /*
+             * System.out.println(
+             * "\t==HACK=== Continuation ===== Generate CSM cmd request - Digest Update for PO response : "
+             * + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
+             * poApduResponseList.get(i).getBuffer())).getApduRequest() .getBuffer()));
+             */
             csmApduRequestList.add(((new DigestUpdateCmdBuild(csmRevision, false,
                     poApduResponseList.get(i).getBuffer())).getApduRequest())); // HACK
 
         }
 
         // Transfert CSM commands
-        System.out.println("\t========= Continuation ===== Transfert CSM commands");
+        // System.out.println("\t========= Continuation ===== Transfert CSM commands");
         SeRequest csmRequest = new SeRequest(null, csmApduRequestList, keepChannelOpen);
+        logger.info("Processing: Sending CSM requests", "action",
+                "po_secure_session.process_csm_request", "apduList", csmApduRequestList);
         SeResponse csmResponse = csmReader.transmit(csmRequest);
         // List<ApduResponse> csmApduResponseList = csmResponse.getApduResponses();
-
+        logger.info("Processing: Receiving CSM response", "action",
+                "po_secure_session.process_csm_response", "apduList",
+                csmResponse.getApduResponses());
         return poResponse;
     }
 
@@ -499,14 +500,10 @@ public class PoSecureSession {
      * the corresponding SEResponse and the boolean status of the authentication.
      *
      * @param poCommandsInsideSession the po commands inside session
+     * @param poAnticipatedResponseInsideSession The anticipated PO response in the sessions
      * @param ratificationCommand the ratification command
      * @return SEResponse close session response
      * @throws IOReaderException the IO reader exception
-     * @throws UnexpectedReaderException the unexpected reader exception
-     * @throws ChannelStateReaderException the channel state reader exception
-     * @throws InvalidApduReaderException the invalid apdu reader exception
-     * @throws ReaderTimeoutException the timeout reader exception
-     * @throws InconsistentCommandException the inconsistent command exception
      */
     // public SeResponse processClosing(List<SendableInSession> poCommandsInsideSession,
     // CloseSessionCmdBuild closeCommand, PoGetChallengeCmdBuild ratificationCommand)
@@ -514,9 +511,7 @@ public class PoSecureSession {
     // ratification étant un nouveau processOpening)
     public SeResponse processClosing(List<SendableInSession> poCommandsInsideSession,
             List<ApduResponse> poAnticipatedResponseInsideSession,
-            PoCommandBuilder ratificationCommand)
-            throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, ReaderTimeoutException, InconsistentCommandException {
+            PoCommandBuilder ratificationCommand) throws IOReaderException {
 
         // Get PO ApduRequest List from SendableInSession List - for the first PO exchange
         List<ApduRequest> poApduRequestList =

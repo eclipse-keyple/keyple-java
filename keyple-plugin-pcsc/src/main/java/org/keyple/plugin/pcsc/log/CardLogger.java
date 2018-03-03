@@ -16,19 +16,20 @@ import org.apache.commons.codec.binary.Hex;
 
 public class CardLogger extends Card {
 
-    private final String name;
+    private final String id;
 
     private final Card card;
 
-    CardLogger(String name, Card card) {
-        this.name = name;
+    CardLogger(String id, Card card) {
+        this.id = id;
         this.card = card;
     }
 
     @Override
     public ATR getATR() {
         ATR atr = card.getATR();
-        System.out.println(name + ".getATR(): " + atr);
+        Logging.LOG.info("Card: Get ATR", "action", "card.atr", "cardId", id, "atr",
+                Hex.encodeHexString(atr.getBytes(), false));
         return atr;
     }
 
@@ -39,40 +40,46 @@ public class CardLogger extends Card {
 
     @Override
     public CardChannel getBasicChannel() {
-        System.out.println(name + ".getBasicChannel()");
-        return new CardChannelLogger(name + "B", card.getBasicChannel());
+        Logging.LOG.info("Card: Get basic channel", "action", "card.get_basic_channel", "cardId",
+                id);
+        return new CardChannelLogger(id + "B", card.getBasicChannel());
     }
 
     @Override
     public CardChannel openLogicalChannel() throws CardException {
-        System.out.println(name + ".openLogicalChannel()");
-        return new CardChannelLogger(name + "L", card.openLogicalChannel());
+        Logging.LOG.info("Card: Get logical channel", "action", "card.get_logical_channel",
+                "cardId", id);
+        return new CardChannelLogger(id + "L", card.openLogicalChannel());
     }
 
     @Override
     public void beginExclusive() throws CardException {
-        System.out.println(name + ".beginExclusive()");
+        Logging.LOG.info("Card: Begin exclusive", "action", "card.begin_exclusive", "cardId", id);
         card.beginExclusive();
     }
 
     @Override
     public void endExclusive() throws CardException {
-        System.out.println(name + ".endExclusive()");
+        Logging.LOG.info("Card: End exclusive", "action", "card.end_exclusive", "cardId", id);
         card.endExclusive();
     }
 
     @Override
-    public byte[] transmitControlCommand(int i, byte[] bytes) throws CardException {
-        System.out.println(name + ".transmitControlCommand(" + i + ", "
-                + Hex.encodeHexString(bytes, false) + ") ... ");
-        byte[] data = card.transmitControlCommand(i, bytes);
-        System.out.println(name + ".transmitControlCommand(): " + Hex.encodeHexString(data, false));
-        return data;
+    public byte[] transmitControlCommand(int controlCommand, byte[] command) throws CardException {
+        Logging.LOG.info("Card: Sending control command", "action", "card.control_request",
+                "cardId", id, "controlCommand", controlCommand, "command",
+                Hex.encodeHexString(command, false));
+        byte[] response = card.transmitControlCommand(controlCommand, command);
+        Logging.LOG.info("Card: Receiving control command", "action", "card.control_response",
+                "cardId", id, "controlCommand", controlCommand, "response",
+                Hex.encodeHexString(response, false));
+        return response;
     }
 
     @Override
-    public void disconnect(boolean b) throws CardException {
-        System.out.println(name + ".disconnect(" + b + ");");
-        card.disconnect(b);
+    public void disconnect(boolean reset) throws CardException {
+        Logging.LOG.info("Card: Disconnect", "action", "card.disconnect", "cardId", id, "reset",
+                reset);
+        card.disconnect(reset);
     }
 }

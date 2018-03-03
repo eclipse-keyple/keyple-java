@@ -117,9 +117,7 @@ public class PoSecureSessionTest {
         responseFciError = new SeResponse(true, apduResponseFciErr, apduResponseFciListErr);
     }
 
-    private void setBeforeTest(byte key)
-            throws ChannelStateReaderException, InvalidApduReaderException, IOReaderException,
-            ReaderTimeoutException, UnexpectedReaderException {
+    private void setBeforeTest(byte key) throws IOReaderException {
 
         poPlainSecrureSession = new PoSecureSession(poReader, csmSessionReader, key);
         Mockito.when(poReader.transmit(Matchers.any(SeRequest.class)))

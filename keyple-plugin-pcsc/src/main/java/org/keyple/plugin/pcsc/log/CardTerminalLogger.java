@@ -13,47 +13,53 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 
 public class CardTerminalLogger extends CardTerminal {
-    private final String name;
+    private final String id;
     private final CardTerminal terminal;
 
     private int count = 0;
 
-    CardTerminalLogger(String name, CardTerminal terminal) {
-        this.name = name;
+    CardTerminalLogger(String id, CardTerminal terminal) {
+        this.id = id;
         this.terminal = terminal;
     }
 
     @Override
     public String getName() {
-        return name;
+        return id;
     }
 
     @Override
-    public Card connect(String s) throws CardException {
-        System.out.println(name + ".connect(" + s + ")");
-        return new CardLogger(String.format("%s.%d", name, ++count), terminal.connect(s));
+    public Card connect(String protocol) throws CardException {
+        Logging.LOG.info("CardTerminal: Connect", "action", "card_terminal.connect", "terminalId",
+                id, "protocol", protocol);
+        return new CardLogger(String.format("%s.%d", id, ++count), terminal.connect(protocol));
     }
 
     @Override
     public boolean isCardPresent() throws CardException {
         boolean present = terminal.isCardPresent();
-        System.out.println(name + ".isCardPresent(): " + present);
+        Logging.LOG.info("CardTerminal: Is card present", "action", "card_terminal.is_card_present",
+                "terminalId", id, "present", present);
         return present;
     }
 
     @Override
-    public boolean waitForCardPresent(long l) throws CardException {
-        System.out.println(name + ".waitForCardPresent( " + l + ")... ");
-        boolean present = terminal.waitForCardPresent(l);
-        System.out.println(name + ".waitForCardPresent(): " + present);
+    public boolean waitForCardPresent(long timeout) throws CardException {
+        Logging.LOG.info("CardTerminal: Wait for card present", "action",
+                "card_terminal.wait_for_card_present_start", "terminalId", id, "timeout", timeout);
+        boolean present = terminal.waitForCardPresent(timeout);
+        Logging.LOG.info("CardTerminal: Finished waiting", "action",
+                "card_terminal.wait_for_card_present_end", "terminalId", id, "present", present);
         return present;
     }
 
     @Override
-    public boolean waitForCardAbsent(long l) throws CardException {
-        System.out.println(name + ".waitForCardAbsent(" + l + ")... ");
-        boolean present = terminal.waitForCardAbsent(l);
-        System.out.println(name + ".waitForCardAbsent(): " + present);
+    public boolean waitForCardAbsent(long timeout) throws CardException {
+        Logging.LOG.info("CardTerminal: Wait for card absent", "action",
+                "card_terminal.wait_for_card_absent_start", "terminalId", id, "timeout", timeout);
+        boolean present = terminal.waitForCardAbsent(timeout);
+        Logging.LOG.info("CardTerminal: Finished waiting", "action",
+                "card_terminal.wait_for_card_absent_end", "terminalId", id, "present", present);
         return present;
     }
 }

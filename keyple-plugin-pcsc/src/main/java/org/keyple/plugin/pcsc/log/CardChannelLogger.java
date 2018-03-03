@@ -45,30 +45,33 @@ public class CardChannelLogger extends CardChannel {
 
     @Override
     public ResponseAPDU transmit(CommandAPDU commandAPDU) throws CardException {
-        System.out.println(
-                name + ".transmit(" + Hex.encodeHexString(commandAPDU.getBytes()) + ") ... ");
+        Logging.LOG.info("CardChannel: Request", "action", "card_channel.request", "cardChannelId",
+                name, "apdu", Hex.encodeHexString(commandAPDU.getBytes(), false));
         ResponseAPDU response = cardChannel.transmit(commandAPDU);
-        System.out.println(
-                name + ".transmit(...): " + Hex.encodeHexString(response.getBytes(), false));
+        Logging.LOG.info("CardChannel: Response", "action", "card_channel.response",
+                "cardChannelId", name, "apdu", Hex.encodeHexString(response.getBytes(), false));
         return response;
     }
 
     @Override
     public int transmit(ByteBuffer in, ByteBuffer out) throws CardException {
-        System.out.println(name + ".transmit(" + ByteBufferUtils.toHex(in) + ") ... ");
+        Logging.LOG.info("CardChannel: Request", "action", "card_channel.request", "cardChannelId",
+                name, "apdu", ByteBufferUtils.toHex(in));
         int rc = cardChannel.transmit(in, out);
-        System.out
-                .println(name + ".transmit(...): rc=" + rc + ", out=" + ByteBufferUtils.toHex(out));
+        Logging.LOG.info("CardChannel: Response", "action", "card_channel.response",
+                "cardChannelId", name, "apdu", ByteBufferUtils.toHex(out), "rc", rc);
         return rc;
     }
 
     @Override
     public void close() throws CardException {
+        Logging.LOG.info("CardChannel: Close", "action", "card_channel.close", "cardChannelId",
+                name);
         cardChannel.close();
     }
 
     @Override
     public String toString() {
-        return String.format("CardChannelLogger{name=%s,inner=%s}", name, cardChannel);
+        return String.format("CardChannelLogger{id=%s,inner=%s}", name, cardChannel);
     }
 }

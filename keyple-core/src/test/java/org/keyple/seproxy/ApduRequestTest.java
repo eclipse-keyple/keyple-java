@@ -35,7 +35,7 @@ public class ApduRequestTest {
     @Test
     public void testToString() {
         ApduRequest request = new ApduRequest(new byte[] {(byte) 0x01, (byte) 0x02}, true);
-        assertEquals("APDU Request 0102", request.toString());
+        assertEquals("Req{0102}", request.toString());
     }
 
     @Test
@@ -57,7 +57,7 @@ public class ApduRequestTest {
         byte[] data = new byte[] {0x11, 0x12, 0x13, 0x14};
         request.put((byte) data.length);
         request.put(data);
-        assertEquals("APDU Request 0411121314", request.toString());
+        assertEquals("Req{0411121314}", request.toString());
     }
 
 }

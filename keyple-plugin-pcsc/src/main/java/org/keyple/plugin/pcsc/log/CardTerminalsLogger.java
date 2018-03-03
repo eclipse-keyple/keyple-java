@@ -32,7 +32,12 @@ public class CardTerminalsLogger extends CardTerminals {
     }
 
     @Override
-    public boolean waitForChange(long l) throws CardException {
-        return cardTerminals.waitForChange(l);
+    public boolean waitForChange(long timeout) throws CardException {
+        Logging.LOG.info("CardTerminals: Wait for change", "action",
+                "card_terminal.wait_for_change_start", "timeout", timeout);
+        boolean change = cardTerminals.waitForChange(timeout);
+        Logging.LOG.info("CardTerminals: Finished waiting", "action",
+                "card_terminal.wait_for_change_end", "change", change);
+        return change;
     }
 }

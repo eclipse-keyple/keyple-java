@@ -76,6 +76,15 @@ class AbstractApduBuffer {
 
     @Override
     public String toString() {
-        return ByteBufferUtils.toHex(buffer);
+        ByteBuffer b;
+
+        // TODO: Buffer will be read only, as such this code makes no sense anymore
+        if (buffer.position() > 0) {
+            b = buffer.duplicate();
+            b.limit(buffer.position());
+        } else {
+            b = buffer;
+        }
+        return ByteBufferUtils.toHex(b);
     }
 }

@@ -8,11 +8,7 @@
 
 package org.keyple.seproxy;
 
-import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.seproxy.exceptions.InvalidApduReaderException;
-import org.keyple.seproxy.exceptions.ReaderTimeoutException;
-import org.keyple.seproxy.exceptions.UnexpectedReaderException;
 
 /**
  * Interface each {@link ReadersPlugin} should implement
@@ -35,15 +31,9 @@ public interface ProxyReader {
      *
      * @param seApplicationRequest the se application request
      * @return the SE response
-     * @throws ChannelStateReaderException Exception of type Channel State Reader
-     * @throws InvalidApduReaderException Exception of type Invalid APDU
      * @throws IOReaderException Exception of type IO Reader
-     * @throws ReaderTimeoutException Exception of type timeout
-     * @throws UnexpectedReaderException Unexepected exception
      */
-    SeResponse transmit(SeRequest seApplicationRequest)
-            throws ChannelStateReaderException, InvalidApduReaderException, IOReaderException,
-            ReaderTimeoutException, UnexpectedReaderException;
+    SeResponse transmit(SeRequest seApplicationRequest) throws IOReaderException;
 
     /**
      * Checks if is SE present.

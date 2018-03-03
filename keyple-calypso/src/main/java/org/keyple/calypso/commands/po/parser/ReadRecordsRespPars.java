@@ -42,7 +42,8 @@ public class ReadRecordsRespPars extends ApduResponseParser {
         STATUS_TABLE = m;
     }
 
-    Map<Integer, StatusProperties> getStatusTable() {
+    @Override
+    protected Map<Integer, StatusProperties> getStatusTable() {
         return STATUS_TABLE;
     }
 
