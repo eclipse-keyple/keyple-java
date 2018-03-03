@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
+import org.keyple.seproxy.exceptions.InvalidMessageException;
 
 public class PcscReader extends ObservableReader implements ConfigurableReader {
 
@@ -88,6 +89,12 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                 fciDataSelected = new ApduResponse(ByteBuffer.wrap(card.getATR().getBytes()), true);
                 atrDefaultSelected = true;
             }
+
+            // fclairamb(2018-03-03): Is there a more elegant way to do this ?
+            if (fciDataSelected.getStatusCode() != 0x9000) {
+                throw new InvalidMessageException("FCI failed !", fciDataSelected);
+            }
+
             for (ApduRequest apduRequest : seApplicationRequest.getApduRequests()) {
                 ResponseAPDU apduResponseData;
                 try {
@@ -212,8 +219,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
             byte[] statusCode = new byte[] {(byte) res.getSW1(), (byte) res.getSW2()};
             hackCase4AndGetResponse(true, statusCode, res, channel);
-            ApduResponse fciResponse =
-                    new ApduResponse(res.getData(), true, new byte[] {(byte) 0x90, (byte) 0x00});
+            ApduResponse fciResponse = new ApduResponse(res.getBytes(), true);
             aidCurrentlySelected = aid;
             return fciResponse;
 

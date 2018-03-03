@@ -267,6 +267,11 @@ public class GetDataFciRespPars extends ApduResponseParser {
             this.softwareRevision = buffer.get();
         }
 
+        public static StartupInformation empty() {
+            return new StartupInformation((byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0,
+                    (byte) 0, (byte) 0);
+        }
+
         @Override
         public int hashCode() {
             final int prime = 31;
@@ -401,7 +406,7 @@ public class GetDataFciRespPars extends ApduResponseParser {
      * @return the FCI template
      */
     public static FCI toFCI(ByteBuffer apduResponse) {
-        StartupInformation startupInformation = null;
+        StartupInformation startupInformation = StartupInformation.empty();
         byte firstResponseApdubyte = apduResponse.get(0);
         ByteBuffer dfName = null;
         ByteBuffer fciProprietaryTemplate = null;

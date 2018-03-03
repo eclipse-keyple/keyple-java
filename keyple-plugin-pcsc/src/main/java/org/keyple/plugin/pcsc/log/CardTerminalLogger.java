@@ -25,7 +25,10 @@ public class CardTerminalLogger extends CardTerminal {
 
     @Override
     public String getName() {
-        return id;
+        String name = terminal.getName();
+        Logging.LOG.info("CardTerminal: Get name", "action", "card_terminal.get_name", "terminalId",
+                id, "name", name);
+        return name;
     }
 
     @Override

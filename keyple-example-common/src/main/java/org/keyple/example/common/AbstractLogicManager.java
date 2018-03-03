@@ -13,6 +13,7 @@ import java.util.Map;
 import org.keyple.util.event.Topic;
 
 
+
 public abstract class AbstractLogicManager implements Runnable {
     private Thread thread;
 

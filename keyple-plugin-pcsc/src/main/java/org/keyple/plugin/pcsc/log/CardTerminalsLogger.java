@@ -28,6 +28,8 @@ public class CardTerminalsLogger extends CardTerminals {
         for (CardTerminal terminal : cardTerminals.list(state)) {
             list.add(new CardTerminalLogger(String.format("pcsc.%d", ++i), terminal));
         }
+        Logging.LOG.info("CardTerminals: Listing terminals", "action",
+                "card_terminal.listing_terminals", "state", state, "nb", list.size());
         return list;
     }
 

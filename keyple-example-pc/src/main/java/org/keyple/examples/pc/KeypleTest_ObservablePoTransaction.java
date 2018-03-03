@@ -11,16 +11,20 @@ package org.keyple.examples.pc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.SendableInSession;
 import org.keyple.calypso.commands.po.builder.OpenSessionCmdBuild;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
-import org.keyple.calypso.transaction.*;
+import org.keyple.calypso.transaction.PoSecureSession;
 import org.keyple.plugin.pcsc.PcscPlugin;
 import org.keyple.seproxy.*;
-import org.keyple.seproxy.exceptions.*;
+import org.keyple.seproxy.exceptions.IOReaderException;
 
 public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
+
+    // private static final Pattern PATTERN_SCM = Pattern.compile("Cherry TC");
+    // private static final Pattern PATTERN_PO = Pattern.compile("ACS");
 
     ProxyReader poReader;
     ProxyReader csmReader;
@@ -113,88 +117,90 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
     }
 
     private static class TestSettingException extends Exception {
-        public TestSettingException(String message) {
+        TestSettingException(String message) {
             super(message);
         }
     }
 
-    public static void main(String[] args) throws TestSettingException {
-        SeProxyService seProxyService = SeProxyService.getInstance();
-        List<ReadersPlugin> pluginsSet = new ArrayList<ReadersPlugin>();
-        pluginsSet.add((ReadersPlugin) PcscPlugin.getInstance());
-        seProxyService.setPlugins(pluginsSet);
+    private static String poReaderName = ".*(ASK|ACS).*";
+    private static String csmReaderName = ".*(Cherry TC|SCM Microsystems).*";
 
-        String poReaderName = "ASK LoGO 0";
-        String csmReaderName = "SCM Microsystems Inc. SDI010 Smart Card Reader 0";
-        int poReaderRef = 0, csmReaderRef = 0;
-
-        // Show available readers
-        List<ReadersPlugin> readersPlugins = seProxyService.getPlugins();
-        int nbPlugins = readersPlugins.size();
-        for (int i = 0; i < nbPlugins; i++) {
-            ReadersPlugin plugin = readersPlugins.get(i);
-
-            List<? extends ProxyReader> readers;
-            try {
-                readers = plugin.getReaders();
-
-                System.out.println("\nPlugin name : " + plugin.getName());
-                System.out.println(
-                        "Reader number / Reader name                                     / SE presence / Assignment");
-                String readerAssignment = "toto";
-                for (int u = 0; u < readers.size(); u++) {
-                    ProxyReader reader = readers.get(u);
-                    String readerName = reader.getName();
-                    if (readerName.equals(poReaderName)) {
-                        readerAssignment = "PO";
-                        poReaderRef = u;
-                    } else if (readerName.equals(csmReaderName)) {
-                        readerAssignment = "CSM";
-                        csmReaderRef = u;
-                    } else {
-                        readerAssignment = "";
-                    }
-                    System.out.printf("%-16s%-50s%-14s%-10s\n", "    " + u, reader.getName(),
-                            "    " + ((reader.isSEPresent()) ? "YES" : "NO"),
-                            "  " + readerAssignment);
+    /**
+     * Get the terminal which names match the expected pattern
+     *
+     * @param seProxyService SE Proxy service
+     * @param pattern Pattern
+     * @return ProxyReader
+     * @throws IOReaderException Any error with the card communication
+     */
+    private static ProxyReader getReader(SeProxyService seProxyService, String pattern)
+            throws IOReaderException {
+        Pattern p = Pattern.compile(pattern);
+        for (ReadersPlugin plugin : seProxyService.getPlugins()) {
+            for (ProxyReader reader : plugin.getReaders()) {
+                if (p.matcher(reader.getName()).matches()) {
+                    return reader;
                 }
-
-            } catch (IOReaderException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
         }
+        return null;
+    }
 
-        // Select PCSC readers
-        ReadersPlugin pcscPlugin = seProxyService.getPlugins().get(0);
-        List<? extends ProxyReader> pcscReaders;
-        try {
-            pcscReaders = pcscPlugin.getReaders();
+    private static final Object waitForEnd = new Object();
 
-            if (poReaderRef == csmReaderRef) {
-                throw new TestSettingException("PO & CSM readers conflit!");
-            }
-
-            KeypleTest_ObservablePoTransaction observer = new KeypleTest_ObservablePoTransaction();
-
-            observer.poReader = pcscReaders.get(poReaderRef);
-            ((ConfigurableReader) observer.poReader).setAParameter("protocol", "T=1");
-            observer.csmReader = pcscReaders.get(csmReaderRef);
-            ((ConfigurableReader) observer.csmReader).setAParameter("protocol", "T=0");
+    public static void main(String[] args)
+            throws TestSettingException, IOReaderException, InterruptedException {
+        SeProxyService seProxyService = SeProxyService.getInstance();
+        List<ReadersPlugin> pluginsSet = new ArrayList<ReadersPlugin>();
+        pluginsSet.add(PcscPlugin.getInstance().setLogging(true));
+        seProxyService.setPlugins(pluginsSet);
 
 
-            // Set terminal as Observer of the first reader
-            ((ObservableReader) observer.poReader).addObserver(observer);
-            while (true) {
-                // Wait notification
-            }
+        // int poReaderRef = 0, csmReaderRef = 0;
+        // Show available readers
+        /*
+         * List<ReadersPlugin> readersPlugins = seProxyService.getPlugins(); int nbPlugins =
+         * readersPlugins.size(); for (int i = 0; i < nbPlugins; i++) { ReadersPlugin plugin =
+         * readersPlugins.get(i);
+         * 
+         * List<? extends ProxyReader> readers; try { readers = plugin.getReaders();
+         * 
+         * System.out.println("\nPlugin name : " + plugin.getName()); System.out.println(
+         * "Reader number / Reader name                                     / SE presence / Assignment"
+         * ); String readerAssignment = "toto"; for (int u = 0; u < readers.size(); u++) {
+         * ProxyReader reader = readers.get(u); String readerName = reader.getName(); if
+         * (readerName.equals(poReaderName)) { readerAssignment = "PO"; poReaderRef = u; } else if
+         * (readerName.equals(csmReaderName)) { readerAssignment = "CSM"; csmReaderRef = u; } else {
+         * readerAssignment = ""; } System.out.printf("%-16s%-50s%-14s%-10s\n", "    " + u,
+         * reader.getName(), "    " + ((reader.isSEPresent()) ? "YES" : "NO"), "  " +
+         * readerAssignment); }
+         * 
+         * } catch (IOReaderException e) { // TODO Auto-generated catch block e.printStackTrace(); }
+         * }
+         */
 
-            // PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, (byte)
-            // 0x00);
+        ProxyReader poReader = getReader(seProxyService, poReaderName);
+        ProxyReader csmReader = getReader(seProxyService, csmReaderName);
 
-        } catch (IOReaderException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
+        if (poReader == csmReader || poReader == null || csmReader == null) {
+            throw new IllegalStateException("Bad PO/CSM setup");
+        }
+
+        System.out.println("PO Reader  : " + poReader.getName());
+        System.out.println("CSM Reader : " + csmReader.getName());
+
+        KeypleTest_ObservablePoTransaction observer = new KeypleTest_ObservablePoTransaction();
+
+        observer.poReader = poReader;
+        ((ConfigurableReader) observer.poReader).setAParameter("protocol", "T=1");
+        observer.csmReader = csmReader;
+        ((ConfigurableReader) observer.csmReader).setAParameter("protocol", "T=0");
+
+        // Set terminal as Observer of the first reader
+        ((ObservableReader) observer.poReader).addObserver(observer);
+        synchronized (waitForEnd) {
+            waitForEnd.wait();
         }
     }
 

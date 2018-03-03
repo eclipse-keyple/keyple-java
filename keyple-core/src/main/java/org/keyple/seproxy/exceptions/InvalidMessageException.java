@@ -8,6 +8,7 @@
 
 package org.keyple.seproxy.exceptions;
 
+import java.util.Collections;
 import java.util.List;
 import org.keyple.seproxy.ApduRequest;
 import org.keyple.seproxy.ApduResponse;
@@ -28,6 +29,14 @@ public class InvalidMessageException extends IOReaderException {
         this.type = type;
         this.requests = requests;
         this.responses = responses;
+    }
+
+    public InvalidMessageException(String message, ApduRequest req, ApduResponse resp) {
+        this(message, null, Collections.singletonList(req), Collections.singletonList(resp));
+    }
+
+    public InvalidMessageException(String message, ApduResponse resp) {
+        this(message, null, resp);
     }
 
     public Type getType() {
