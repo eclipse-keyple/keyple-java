@@ -10,6 +10,8 @@ version '1.0-SNAPSHOT'
 apply plugin: 'java'
 apply plugin: 'me.champeau.gradle.jmh'
 
+sourceCompatibility = 1.6
+
 jmh { // https://github.com/melix/jmh-gradle-plugin#configuration-options
     fork = 1
     iterations = 3

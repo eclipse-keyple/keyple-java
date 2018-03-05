@@ -3,10 +3,6 @@ plugins {
 }
 
 allprojects {
-    apply plugin: 'java'
-
-    sourceCompatibility = 1.6
-
     repositories {
         mavenCentral()
         jcenter()
