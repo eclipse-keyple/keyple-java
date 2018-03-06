@@ -141,12 +141,13 @@ public class PoSecureSession {
         GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(poResponse.getFci());
         poRevision = computePoRevision(poFciRespPars.getApplicationTypeByte());
         poCalypsoInstanceAid = poFciRespPars.getDfName();
+        poCalypsoInstanceSerial = poFciRespPars.getApplicationSerialNumber();
         // System.out.println("\t========= Identification === Selected DF Name : " +
         // ByteBufferUtils.toHex(poCalypsoInstanceAid));
         logger.info("Identification: PO Response", "action", "po_secure_session.ident_po_response",
                 "dfName", ByteBufferUtils.toHex(poCalypsoInstanceAid), "serialNumber",
                 ByteBufferUtils.toHex(poCalypsoInstanceSerial));
-        poCalypsoInstanceSerial = poFciRespPars.getApplicationSerialNumber();
+
         /*
          * System.out.println("\t========= Identification === Calypso Serial Number : " +
          * ByteBufferUtils.toHex(poCalypsoInstanceSerial));
