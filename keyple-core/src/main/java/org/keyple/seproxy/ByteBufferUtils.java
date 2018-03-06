@@ -94,4 +94,12 @@ public class ByteBufferUtils {
     public static ByteBuffer wrap(byte[] array) {
         return array != null ? ByteBuffer.wrap(array) : null;
     }
+
+    public static ByteBuffer concat(ByteBuffer buf1, ByteBuffer buf2) {
+        ByteBuffer result = ByteBuffer.allocate(buf1.remaining() + buf2.remaining());
+        result.put(buf1.asReadOnlyBuffer());
+        result.put(buf2.asReadOnlyBuffer());
+        result.position(0);
+        return result;
+    }
 }

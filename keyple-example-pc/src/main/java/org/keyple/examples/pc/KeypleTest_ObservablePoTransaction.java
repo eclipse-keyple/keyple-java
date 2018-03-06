@@ -56,7 +56,7 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
 
         try {
             // AID - profile Multi 1 App 1
-            String poAid = "315449432E49434101FFFFFF0000";
+            String poAid = "A000000291A000000191";// "315449432E49434101FFFFFF0000";
             // Read first record of SFI 06h - for 78h bytes
             ReadRecordsCmdBuild poReadRecordCmd_06 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
                     (byte) 0x01, true, (byte) 0x06, (byte) 0x01);

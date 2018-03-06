@@ -86,7 +86,10 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             if (seApplicationRequest.getAidToSelect() != null && aidCurrentlySelected == null) {
                 fciDataSelected = this.connect(seApplicationRequest.getAidToSelect());
             } else if (!atrDefaultSelected) {
-                fciDataSelected = new ApduResponse(ByteBuffer.wrap(card.getATR().getBytes()), true);
+                fciDataSelected = new ApduResponse(
+                        ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
+                                ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00})),
+                        true);
                 atrDefaultSelected = true;
             }
 
@@ -107,7 +110,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                     hackCase4AndGetResponse(apduRequest.isCase4(), statusCode, apduResponseData,
                             channel);
 
-                    apduResponseList.add(new ApduResponse(apduResponseData.getData(), true));
+                    apduResponseList.add(new ApduResponse(apduResponseData.getBytes(), true));
                 } catch (CardException e) {
                     throw new ChannelStateReaderException(e);
                 } catch (NullPointerException e) {
