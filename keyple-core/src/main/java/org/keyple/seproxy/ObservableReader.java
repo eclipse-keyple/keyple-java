@@ -10,6 +10,8 @@ package org.keyple.seproxy;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import com.github.structlog4j.ILogger;
+import com.github.structlog4j.SLoggerFactory;
 
 /**
  * The Interface ObservableReader. In order to notify a ticketing application in case of specific
@@ -20,6 +22,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Ixxi
  */
 public abstract class ObservableReader implements ProxyReader {
+
+    private static final ILogger logger = SLoggerFactory.getLogger(ObservableReader.class);
 
     // TODO: Drop this implementation, it doesn't respect the java's definition of it (it missed the
     // change handling)
@@ -41,6 +45,8 @@ public abstract class ObservableReader implements ProxyReader {
      * @param calledBack the called back
      */
     public void addObserver(ReaderObserver calledBack) {
+        logger.info("ObservableReader: Adding an observer", "action",
+                "observable_reader.add_observer", "readerName", getName());
         readerObservers.add(calledBack);
     }
 
@@ -53,6 +59,8 @@ public abstract class ObservableReader implements ProxyReader {
      * @param calledback the calledback
      */
     public void deleteObserver(ReaderObserver calledback) {
+        logger.info("ObservableReader: Adding an observer", "action",
+                "observable_reader.delete_observer", "readerName", getName());
         readerObservers.remove(calledback);
     }
 
@@ -65,6 +73,8 @@ public abstract class ObservableReader implements ProxyReader {
      * @param event the event
      */
     public final void notifyObservers(ReaderEvent event) {
+        logger.info("ObservableReader: Notifying of an even", "action",
+                "observable_reader.notify_observers", "event", event, "readerName", getName());
         for (ReaderObserver observer : readerObservers) {
             observer.notify(event);
         }
