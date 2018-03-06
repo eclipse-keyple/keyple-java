@@ -185,7 +185,7 @@ public class PoSecureSession {
             sessionTerminalChallenge = csmChallengePars.getChallenge();
             logger.info("Identification: Done", "action", "po_secure_session.ident_done", "apdu",
                     ByteBufferUtils.toHex(csmChallengePars.getApduResponse().getBuffer()),
-                    "sessionTerminalChallenge", sessionTerminalChallenge);
+                    "sessionTerminalChallenge", ByteBufferUtils.toHex(sessionTerminalChallenge));
             // System.out.println("\t========= Identification === Parse CSM cmd response - Select
             // Diversifier : " +
             // ByteBufferUtils.toHex(csmChallengePars.getApduResponse().getBuffer()));
