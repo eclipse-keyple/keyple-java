@@ -9,15 +9,24 @@
 package org.keyple.seproxy;
 
 import static org.junit.Assert.*;
-import org.apache.commons.codec.DecoderException;
+import java.nio.ByteBuffer;
 import org.junit.Test;
 
 public class ByteBufferUtilsTest {
 
     @Test
-    public void fromHex() throws DecoderException {
+    public void fromHex() {
         assertEquals(ByteBufferUtils.wrap(new byte[] {0x01, 0x02, 0x03, 0x04}),
                 ByteBufferUtils.fromHex("0102 03 04h"));
         assertEquals(ByteBufferUtils.fromHex("01020304"), ByteBufferUtils.fromHex("0102 03 04h"));
+        assertEquals(ByteBufferUtils.fromHex("FEDCBA98 9000h"),
+                ByteBufferUtils.fromHex("fedcba98 9000h"));
+        assertEquals(ByteBufferUtils.fromHex("FFFE"),
+                ByteBuffer.wrap(new byte[] {(byte) 0xFF, (byte) 0xFE}));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void fromHexBad() {
+        ByteBufferUtils.fromHex("010203045");
     }
 }
