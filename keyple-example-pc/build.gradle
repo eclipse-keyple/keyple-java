@@ -3,6 +3,8 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
+sourceCompatibility = 1.6
+
 dependencies {
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
     // compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.10.0'
