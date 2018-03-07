@@ -37,31 +37,28 @@ public abstract class ObservableReader implements ProxyReader {
             new CopyOnWriteArrayList<ReaderObserver>();
 
     /**
-     * This method shall be called only from a terminal application implementing ObservableReader
+     * Add an observer to a terminal reader.
      * 
-     * add a ReaderObserver to the list of registered ReaderObserver for the selected
-     * ObservableReader.
+     * This will allow to be notified about all card insertion/removal events. Please note that you
+     * shouldn't reuse the notification threads for your card processing logic.
      *
-     * @param calledBack the called back
+     * @param observer Observer to notify
      */
-    public void addObserver(ReaderObserver calledBack) {
+    public void addObserver(ReaderObserver observer) {
         logger.info("ObservableReader: Adding an observer", "action",
                 "observable_reader.add_observer", "readerName", getName());
-        readerObservers.add(calledBack);
+        readerObservers.add(observer);
     }
 
     /**
-     * This method shall be called only from a terminal application implementing ObservableReader
-     * 
-     * remove a ReaderObserver from the list of registered ReaderObserver for the selected
-     * ObservableReader.
+     * Remove an observer from a terminal reader.
      *
-     * @param calledback the calledback
+     * @param observer Observer to stop notifying
      */
-    public void deleteObserver(ReaderObserver calledback) {
-        logger.info("ObservableReader: Adding an observer", "action",
+    public void deleteObserver(ReaderObserver observer) {
+        logger.info("ObservableReader: Deleting an observer", "action",
                 "observable_reader.delete_observer", "readerName", getName());
-        readerObservers.remove(calledback);
+        readerObservers.remove(observer);
     }
 
     /**

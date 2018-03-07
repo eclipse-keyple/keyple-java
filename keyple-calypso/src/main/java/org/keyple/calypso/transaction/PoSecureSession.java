@@ -248,6 +248,10 @@ public class PoSecureSession {
             throw new InvalidMessageException("No response", InvalidMessageException.Type.PO,
                     poApduRequestList, poApduResponseList);
         }
+        if (poApduResponseList.get(0).getStatusCode() != 0x9000) {
+            throw new InvalidMessageException("Invalid PO opening response",
+                    InvalidMessageException.Type.PO, poApduRequestList, poApduResponseList);
+        }
         // TODO: check that csmApduResponseList.get(1) has the right length (challenge + status)
         logger.info("Opening: PO commands", "action", "po_secure_session.open_po_send");
         OpenSessionRespPars poOpenSessionPars =
@@ -559,18 +563,21 @@ public class PoSecureSession {
         // poRevision.equals(PoRevision.REV3_2) ? (byte) 0x08 : (byte) 0x04)).getApduRequest());
         DigestCloseCmdBuild digestClose = new DigestCloseCmdBuild(csmRevision,
                 poRevision.equals(PoRevision.REV3_2) ? (byte) 0x08 : (byte) 0x04);
-        System.out
-                .println("\t========= Closing ========== Generate CSM cmd request - Digest Close : "
-                        + ByteBufferUtils.toHex(digestClose.getApduRequest().getBuffer()));
+        /*
+         * System.out
+         * .println("\t========= Closing ========== Generate CSM cmd request - Digest Close : " +
+         * ByteBufferUtils.toHex(digestClose.getApduRequest().getBuffer()));
+         */
         csmApduRequestList_1.add(digestClose.getApduRequest());
 
         // ****FIRST**** transfert of CSM commands
-        System.out.println("\t========= Closing ========== Transfert CSM commands - #1");
-        SeRequest csmRequest_1 = new SeRequest(null, csmApduRequestList_1, keepChannelOpen);
-        SeResponse csmResponse_1 = csmReader.transmit(csmRequest_1);
+        // System.out.println("\t========= Closing ========== Transfert CSM commands - #1");
+        logger.info("Closing: Sending CSM request", "action", "po_secure_session.close_csm_req");
+        SeRequest csmRequest = new SeRequest(null, csmApduRequestList_1, keepChannelOpen);
+        SeResponse csmResponse_1 = csmReader.transmit(csmRequest);
         List<ApduResponse> csmApduResponseList_1 = csmResponse_1.getApduResponses();
-        System.out.println(
-                "\t\tDEBUG ##### csmApduResponseList_1.size() : " + csmApduResponseList_1.size());
+        // System.out.println("\t\tDEBUG ##### csmApduResponseList_1.size() : " +
+        // csmApduResponseList_1.size());
 
         // Get Terminal Signature
         if ((csmApduResponseList_1 != null) && !csmApduResponseList_1.isEmpty()) {
@@ -578,16 +585,15 @@ public class PoSecureSession {
             DigestCloseRespPars respPars = new DigestCloseRespPars(
                     csmApduResponseList_1.get(csmApduResponseList_1.size() - 1)); // .getApduResponses().get(0);
 
-            System.out.println(
-                    "\t========= Closing ========== Parse CSM cmd response - Digest Close : "
-                            + ByteBufferUtils.toHex(respPars.getApduResponse().getBuffer()));
-            System.out.println("\t\tDEBUG ##### csmApduResponseList_1.size() : "
-                    + csmApduResponseList_1.size());
+            // System.out.println("\t========= Closing ========== Parse CSM cmd response - Digest
+            // Close : " + ByteBufferUtils.toHex(respPars.getApduResponse().getBuffer()));
+            // System.out.println("\t\tDEBUG ##### csmApduResponseList_1.size() : "+
+            // csmApduResponseList_1.size());
             sessionTerminalSignature = respPars.getSignature();
         }
 
         // a ****SINGLE**** PO exchange - the "LAST" one
-        System.out.println("\t========= Closing ========== Transfert PO commands - SINGLE");
+        // System.out.println("\t========= Closing ========== Transfert PO commands - SINGLE");
         keepChannelOpen = false; // a last PO Request & a last CSM Reaquest
 
         boolean ratificationAsked = (ratificationCommand != null);
@@ -632,7 +638,7 @@ public class PoSecureSession {
         csmApduRequestList_2.add(digestAuth.getApduRequest());
 
         // ****SECOND**** transfert of CSM commands
-        System.out.println("\t========= Closing ========== Transfert CSM commands - #2");
+        // System.out.println("\t========= Closing ========== Transfert CSM commands - #2");
         SeRequest csmRequest_2 = new SeRequest(null, csmApduRequestList_2, keepChannelOpen);
         SeResponse csmResponse_2 = csmReader.transmit(csmRequest_2);
         List<ApduResponse> csmApduResponseList_2 = csmResponse_2.getApduResponses();

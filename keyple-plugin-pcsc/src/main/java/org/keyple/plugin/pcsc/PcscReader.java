@@ -16,20 +16,20 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.smartcardio.*;
 import javax.xml.bind.DatatypeConverter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.seproxy.exceptions.InvalidMessageException;
+import com.github.structlog4j.ILogger;
+import com.github.structlog4j.SLoggerFactory;
 
 public class PcscReader extends ObservableReader implements ConfigurableReader {
 
-    private static final Logger logger = LogManager.getLogger(PcscReader.class);
+    private static final ILogger logger = SLoggerFactory.getLogger(PcscReader.class);
     private static final String SETTING_KEY_PROTOCOL = "protocol";
 
     private final CardTerminal terminal;
-    private final String name;
+    private final String terminalName;
     private final Map<String, String> settings;
 
     private Card card;
@@ -44,10 +44,10 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     private long threadWaitTimeout = 5000; // 5s
 
 
-    protected PcscReader(CardTerminal terminal, String name) { // PcscReader constructor may be
+    protected PcscReader(CardTerminal terminal) { // PcscReader constructor may be
         // called only by PcscPlugin
         this.terminal = terminal;
-        this.name = name;
+        this.terminalName = terminal.getName();
         this.card = null;
         this.channel = null;
         this.settings = new HashMap<String, String>();
@@ -67,7 +67,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
     @Override
     public String getName() {
-        return name;
+        return terminalName;
     }
 
     @Override
@@ -113,14 +113,17 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                     apduResponseList.add(new ApduResponse(apduResponseData.getBytes(), true));
                 } catch (CardException e) {
                     throw new ChannelStateReaderException(e);
-                } catch (NullPointerException e) {
-                    logger.error(getName() + " : Error executing command", e);
-                    apduResponseList.add(new ApduResponse((byte[]) null, false));
-                    break;
                 }
+                // fclairamb(2018-03-07): Catching NPE here definitely isn't a good idea. We can't
+                // accept our library to throw NPE internally
+                /*
+                 * catch (NullPointerException e) { logger.error(getName() +
+                 * " : Error executing command", e); apduResponseList.add(new ApduResponse((byte[])
+                 * null, false)); break; }
+                 */
             }
 
-            if (!seApplicationRequest.askKeepChannelOpen()) {
+            if (!seApplicationRequest.keepChannelOpen()) {
                 this.disconnect();
             }
         }
@@ -205,9 +208,9 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      * @throws ChannelStateReaderException
      */
     private ApduResponse connect(ByteBuffer aid) throws ChannelStateReaderException {
+        logger.info("Connecting to card", "action", "pcsc_reader.connect", "aid",
+                ByteBufferUtils.toHex(aid), "readerName", getName());
         try {
-            // if (aid != null) {
-            // generate select application command
             ByteBuffer command = ByteBuffer.allocate(aid.limit() + 6);
             command.put((byte) 0x00);
             command.put((byte) 0xA4);
@@ -216,7 +219,6 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             command.put((byte) aid.limit());
             command.put(aid);
             command.put((byte) 0x00);
-            logger.info(getName() + " : Selecting AID " + ByteBufferUtils.toHex(aid));
             command.position(0);
             ResponseAPDU res = channel.transmit(new CommandAPDU(command));
 
@@ -225,12 +227,9 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             ApduResponse fciResponse = new ApduResponse(res.getBytes(), true);
             aidCurrentlySelected = aid;
             return fciResponse;
-
-            // }
         } catch (CardException e1) {
             throw new ChannelStateReaderException(e1);
         }
-        // return null;
     }
 
     /**
@@ -240,7 +239,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      * @throws CardException
      */
     private void disconnect() throws IOReaderException {
-        logger.info("disconnect");
+        logger.info("Disconnecting", "action", "pcsc_reader.disconnect");
         try {
             aidCurrentlySelected = null;
             fciDataSelected = null;
@@ -302,11 +301,11 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      */
 
     @Override
-    public void addObserver(ReaderObserver calledBack) {
+    public void addObserver(ReaderObserver observer) {
         // We don't need synchronization for the list itself, we need to make sure we're not
         // starting and closing the thread at the same time.
         synchronized (readerObservers) {
-            super.addObserver(calledBack);
+            super.addObserver(observer);
             if (readerObservers.size() == 1) {
                 if (thread != null) { // <-- This should never happen and can probably be dropped at
                     // some point
@@ -320,9 +319,9 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     }
 
     @Override
-    public void deleteObserver(ReaderObserver calledback) {
+    public void deleteObserver(ReaderObserver observer) {
         synchronized (readerObservers) {
-            super.deleteObserver(calledback);
+            super.deleteObserver(observer);
             if (readerObservers.isEmpty()) {
                 if (thread == null) { // <-- This should never happen and can probably be dropped at
                     // some point
@@ -378,6 +377,19 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.SE_INSERTED));
         }
 
+        /**
+         * Event failed
+         * 
+         * @param ex Exception
+         */
+        private void exceptionThrown(Exception ex) {
+            logger.error("PCSC Reader: Error handling events", "action", "pcsc_reader.event_error",
+                    "readerName", getName(), "exception", ex);
+            if (ex instanceof CardException || ex instanceof IOReaderException) {
+                notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.IO_ERROR));
+            }
+        }
+
         public void run() {
             try {
                 // First thing we'll do is to notify that a card was inserted if one is already
@@ -406,12 +418,8 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                         // false means timeout, and we go back to the beginning of the loop
                     }
                 }
-            } catch (CardException e) {
-                notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.IO_ERROR));
-                running = false;
-            } catch (IOReaderException e) {
-                notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.IO_ERROR));
-                running = false;
+            } catch (Exception e) {
+                exceptionThrown(e);
             }
         }
     }

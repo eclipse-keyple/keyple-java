@@ -29,8 +29,6 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,7 +43,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SmartCardIOReaderTest {
-    Logger logger = LogManager.getLogger(SmartCardIOReaderTest.class);
 
     private PcscReader reader;
 
@@ -77,7 +74,7 @@ public class SmartCardIOReaderTest {
         res = new ResponseAPDU(responseApduByte);
 
         readerName = "lecteur";
-        this.reader = new PcscReader(terminal, readerName);
+        this.reader = new PcscReader(terminal);
     }
 
     @Test

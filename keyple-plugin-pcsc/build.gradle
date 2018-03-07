@@ -8,8 +8,9 @@ sourceCompatibility = 1.6
 dependencies {
     compile project(':keyple-core')
 
+    // DONE: Drop log4j
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.10.0'
+    // compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.10.0'
 
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
     compile group: 'structlog4j', name:'structlog4j-api', version: '1.0.0'

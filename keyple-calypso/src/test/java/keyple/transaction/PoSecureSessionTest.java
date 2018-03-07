@@ -15,8 +15,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,9 +37,6 @@ import keyple.commands.utils.TestsUtilsResponseTabByteGenerator;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PoSecureSessionTest {
-
-    static final Logger logger = LogManager.getLogger(PoSecureSessionTest.class);
-
     @Mock
     ProxyReader poReader;
 
