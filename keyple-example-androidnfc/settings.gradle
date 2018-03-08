@@ -10,8 +10,3 @@ include 'keyple-core'
 project(':keyple-plugin-android').projectDir = file('../keyple-plugin-android')
 project(':keyple-calypso').projectDir = file('../keyple-calypso')
 project(':keyple-core').projectDir = file('../keyple-core')
-
-
-
-
-
