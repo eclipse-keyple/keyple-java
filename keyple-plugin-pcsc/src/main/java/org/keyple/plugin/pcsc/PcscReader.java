@@ -281,6 +281,22 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
     }
 
+    /**
+     * Set a list of parameters on a reader.
+     *
+     * See {@link #setAParameter(String, String)} for more details
+     *
+     * @param parameters the new parameters
+     * @throws IOReaderException This method can fail when disabling the exclusive mode as it's
+     *         executed instantly
+     */
+    @Override
+    public void setParameters(Map<String, String> parameters) throws IOReaderException {
+        for (Map.Entry<String, String> en : parameters.entrySet()) {
+            setAParameter(en.getKey(), en.getValue());
+        }
+    }
+
     /*
      * TODO Paramètres PC/SC dont le support est à intégré paramètre 'Protocol' pouvant prendre les
      * valeurs String 'T0', 'T1', 'Tx' paramètre 'Mode' pouvant prendre les valeurs String 'Shared',
@@ -311,21 +327,24 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      */
 
     /**
-     * Set a list of parameters on a reader
+     * Set a parameter.
      *
-     * @param parameters the new parameters
-     * @throws IOReaderException This method can fail when disabling the exclusive mode as it's
-     *         executed instantly
-     */
-    @Override
-    public void setParameters(Map<String, String> parameters) throws IOReaderException {
-        for (Map.Entry<String, String> en : parameters.entrySet()) {
-            setAParameter(en.getKey(), en.getValue());
-        }
-    }
-
-    /**
-     * Set a parameter value
+     * These are the parameters you can use with their associated values:
+     * <ul>
+     * <li><strong>protocol</strong>:
+     * <ul>
+     * <li>Tx: Automatic negociation (default)</li>
+     * <li>T0: T0 protocol</li>
+     * <li>T1: T1 protocol</li>
+     * </ul>
+     * </li>
+     * <li><strong>mode</strong>:
+     * <ul>
+     * <li>shared: Shared between apps and threads (default)</li>
+     * <li>exclusive: Exclusive to this app and the current thread</li>
+     * </ul>
+     * </li>
+     * </ul>
      *
      * @param name Parameter name
      * @param value Parameter value
