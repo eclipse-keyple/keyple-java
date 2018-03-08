@@ -29,14 +29,13 @@ import android.util.Log;
 
 
 /**
- * Created by ixxi on 15/01/2018.
+ * @ProxyReader implementation for the communication with the ISO Card though
+ *              the @{@link NfcAdapter}
  */
-
 public class AndroidNfcReader extends ObservableReader implements NfcAdapter.ReaderCallback {
 
     private final String mName = "AndroidNfcReader";
     public static final String TAG = "AndroidNfcReader";
-    public static String ISO_DEP = "android.nfc.tech.IsoDep";
 
     //
     private static IsoDep isoDepTag;
@@ -74,7 +73,11 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     }
 
 
-
+    /**
+     * Callback function invoked when the @{@link NfcAdapter} detects a @{@link Tag}
+     * 
+     * @param tag : detected tag
+     */
     @Override
     public void onTagDiscovered(Tag tag) {
 
@@ -97,11 +100,8 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         ApduResponse fciResponse = null;
 
-        // Check if SE is present
-        // Log.d(TAG, "Secure Element (tag) is present");
 
         // Checking of the presence of the AID request in requests group
-
         try {
 
 
@@ -113,7 +113,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
 
             for (ApduRequest apduRequest : seApplicationRequest.getApduRequests()) {
                 Log.i(TAG, getName() + " : Sending : "
-                        + Tools.byteArrayToSHex(apduRequest.getBytes()));
+                        + ByteBufferUtils.toHex(apduRequest.getBuffer()));
 
                 IsoDepResponse res = sendAPDUCommand(apduRequest.getBuffer());
 
@@ -166,7 +166,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
 
             IsoDepResponse res = sendAPDUCommand(command);
 
-            Log.i(TAG, getName() + " : Recept : " + Tools.byteArrayToSHex(connectDataOut));
+            Log.i(TAG, getName() + " : Recept : " + ByteBufferUtils.toHex(res.getResponseBuffer()));
             ApduResponse fciResponse = new ApduResponse(res.getResponseBuffer(), true);
 
             mAidCurrentlySelected = aid;
@@ -181,7 +181,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
      *
      * @param intent
      */
-    public void processIntent(Intent intent) {
+    protected void processIntent(Intent intent) {
 
         // Inform that a nfc tag has been detected
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -196,7 +196,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
      *
      * @param tag
      */
-    public void processTag(Tag tag) {
+    protected void processTag(Tag tag) {
 
         Log.d(TAG, "Processing Tag");
 
@@ -272,8 +272,6 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
         byte[] data = ByteBufferUtils.toBytes(command);
         byte[] dataOut = isoDepTag.transceive(data);
         res = new IsoDepResponse(dataOut);
-
-
 
         return res;
     }

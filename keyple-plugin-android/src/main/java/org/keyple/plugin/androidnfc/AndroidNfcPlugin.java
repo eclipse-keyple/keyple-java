@@ -16,9 +16,8 @@ import org.keyple.seproxy.exceptions.IOReaderException;
 
 
 /**
- * Created by ixxi on 15/01/2018.
+ * Readers Plugin for Android platform based on the NFC Adapter
  */
-
 public class AndroidNfcPlugin implements ReadersPlugin {
 
     private static final String TAG = AndroidNfcPlugin.class.getSimpleName();
@@ -33,7 +32,6 @@ public class AndroidNfcPlugin implements ReadersPlugin {
             this.reader = AndroidNfcReader.getInstance();
         }
 
-
     }
 
     public static AndroidNfcPlugin getInstance() {
@@ -46,6 +44,13 @@ public class AndroidNfcPlugin implements ReadersPlugin {
         return "AndroidNFCPlugin";
     }
 
+    /**
+     * For an Android NFC device, the Android NFC Plugin manages only one @{@link AndroidNfcReader}.
+     * 
+     * @return List<ProxyReader> : contains only one element, the
+     *         singleton @{@link AndroidNfcReader}
+     * @throws IOReaderException
+     */
     @Override
     public List<ProxyReader> getReaders() throws IOReaderException {
         List<ProxyReader> readers = new ArrayList<ProxyReader>();

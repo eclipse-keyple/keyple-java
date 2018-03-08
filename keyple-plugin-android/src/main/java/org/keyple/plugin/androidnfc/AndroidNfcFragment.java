@@ -19,9 +19,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * Created by Olivier Delcroix on 05/03/2018.
+ * UI-less fragment to enable NFC in an Activity Include this fragment to enable NFC Android Keyples
+ * capabilities to your Activity
+ *
  */
-
 public class AndroidNfcFragment extends Fragment {
 
 
@@ -48,6 +49,11 @@ public class AndroidNfcFragment extends Fragment {
     }
 
 
+    /**
+     * Checking of the NFC support on the Android device
+     * 
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +73,14 @@ public class AndroidNfcFragment extends Fragment {
 
     }
 
+    /**
+     * This fragment does not include UI
+     * 
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
@@ -74,6 +88,12 @@ public class AndroidNfcFragment extends Fragment {
     }
 
 
+    /**
+     *
+     * Enable the Nfc Adapter in reader mode while the fragment is active NFCAdapter will detect ISO
+     * card of type @NFCAdapter.FLAG_READER_NFC_B Android Reader is called to process the
+     * communication with the ISO Card Fragment process Intent of ACTION_TECH_DISCOVERED if presents
+     */
     @Override
     public void onResume() {
         super.onResume();
