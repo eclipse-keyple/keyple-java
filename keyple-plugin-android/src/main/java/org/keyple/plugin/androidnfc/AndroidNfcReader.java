@@ -1,35 +1,38 @@
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
+
 package org.keyple.plugin.androidnfc;
-
-
-import android.content.Intent;
-
-import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-import android.nfc.tech.IsoDep;
-import android.util.Log;
-
-import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.ApduResponse;
-
-import org.keyple.seproxy.ByteBufferUtils;
-import org.keyple.seproxy.ObservableReader;
-import org.keyple.seproxy.ReaderEvent;
-import org.keyple.seproxy.SeRequest;
-import org.keyple.seproxy.SeResponse;
-import org.keyple.seproxy.exceptions.IOReaderException;
 
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import org.keyple.seproxy.ApduRequest;
+import org.keyple.seproxy.ApduResponse;
+import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.seproxy.ObservableReader;
+import org.keyple.seproxy.ReaderEvent;
+import org.keyple.seproxy.SeRequest;
+import org.keyple.seproxy.SeResponse;
+import org.keyple.seproxy.exceptions.IOReaderException;
+import android.content.Intent;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
+import android.util.Log;
 
 
 /**
  * Created by ixxi on 15/01/2018.
  */
 
-public class AndroidNfcReader extends ObservableReader implements NfcAdapter.ReaderCallback{
+public class AndroidNfcReader extends ObservableReader implements NfcAdapter.ReaderCallback {
 
     private final String mName = "AndroidNfcReader";
     public static final String TAG = "AndroidNfcReader";
@@ -75,40 +78,42 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     @Override
     public void onTagDiscovered(Tag tag) {
 
-        Log.i(TAG, "Received Tag Discovered event "+  tag.getId());
+        Log.i(TAG, "Received Tag Discovered event " + tag.getId());
 
         processTag(tag);
     }
 
 
     @Override
-    public boolean isSEPresent() throws IOReaderException {//TODO
+    public boolean isSEPresent() throws IOReaderException {// TODO
         return false;
     }
 
     @Override
     public SeResponse transmit(SeRequest seApplicationRequest) {
         Log.i(TAG, "Calling transmit on Android NFC Reader");
-        Log.d(TAG, "Size of APDU Requests : " + String.valueOf(seApplicationRequest.getApduRequests().size()));
+        Log.d(TAG, "Size of APDU Requests : "
+                + String.valueOf(seApplicationRequest.getApduRequests().size()));
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         ApduResponse fciResponse = null;
 
-        //Check if SE is present
-        //Log.d(TAG, "Secure Element (tag) is present");
+        // Check if SE is present
+        // Log.d(TAG, "Secure Element (tag) is present");
 
         // Checking of the presence of the AID request in requests group
 
-        try{
+        try {
 
 
-        if ((seApplicationRequest.getAidToSelect() != null)
-                &&( mAidCurrentlySelected == null )) {
-            fciResponse = this.connectApplication(seApplicationRequest.getAidToSelect());
-        }
+            if ((seApplicationRequest.getAidToSelect() != null)
+                    && (mAidCurrentlySelected == null)) {
+                fciResponse = this.connectApplication(seApplicationRequest.getAidToSelect());
+            }
 
 
-        for (ApduRequest apduRequest : seApplicationRequest.getApduRequests()) {
-            Log.i(TAG, getName() + " : Sending : " + Tools.byteArrayToSHex(apduRequest.getBytes()));
+            for (ApduRequest apduRequest : seApplicationRequest.getApduRequests()) {
+                Log.i(TAG, getName() + " : Sending : "
+                        + Tools.byteArrayToSHex(apduRequest.getBytes()));
 
                 IsoDepResponse res = sendAPDUCommand(apduRequest.getBuffer());
 
@@ -116,10 +121,10 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
                 Log.i(TAG, getName() + " : Recept : " + res.getResponseBuffer().toString()
                         + " statusCode : " + res.getStatusWord().toString());
 
-                apduResponses.add(new ApduResponse(res.getResponseBuffer(),true));
+                apduResponses.add(new ApduResponse(res.getResponseBuffer(), true));
 
             }
-        }   catch (IOException e) {
+        } catch (IOException e) {
             Log.e(TAG, "Error executing command");
             e.printStackTrace();
             apduResponses.add(new ApduResponse(ByteBuffer.allocate(0), false));
@@ -162,11 +167,11 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
             IsoDepResponse res = sendAPDUCommand(command);
 
             Log.i(TAG, getName() + " : Recept : " + Tools.byteArrayToSHex(connectDataOut));
-            ApduResponse fciResponse = new ApduResponse(res.getResponseBuffer(),true);
+            ApduResponse fciResponse = new ApduResponse(res.getResponseBuffer(), true);
 
             mAidCurrentlySelected = aid;
             return fciResponse;
-        }else {
+        } else {
             return null;
         }
     }
@@ -191,17 +196,17 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
      *
      * @param tag
      */
-    public void processTag(Tag tag)  {
+    public void processTag(Tag tag) {
 
         Log.d(TAG, "Processing Tag");
 
         currentTag = tag;
 
-        try{
+        try {
             connectISODEP();
-            notifyObservers(
-                    new ReaderEvent(AndroidNfcReader.getInstance(), ReaderEvent.EventType.SE_INSERTED));
-        }catch (IOException e){
+            notifyObservers(new ReaderEvent(AndroidNfcReader.getInstance(),
+                    ReaderEvent.EventType.SE_INSERTED));
+        } catch (IOException e) {
             Log.e(TAG, "Error while connecting to Tag " + tag.getId());
             e.printStackTrace();
         }
@@ -243,27 +248,27 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
 
         } catch (IOException e) {
             Log.e(TAG, "Disconnecting error");
-        }
-        ;
+        } ;
         isoDepTag = null;
     }
 
     /**
      * Exchanges of APDU cmds with the ISO tag/card
      *
-     * @param command          command to send
-
+     * @param command command to send
+     * 
      */
     private IsoDepResponse sendAPDUCommand(ByteBuffer command) throws IOException {
         IsoDepResponse res = null;
         // Initialization
 
         long commandLenght = command.limit();
-        Log.d(TAG,"Data Length to be sent to ISODEP : " + commandLenght);
-        Log.d(TAG,"Max data possible to be transceived by IsoDep : " + isoDepTag.getMaxTransceiveLength());
+        Log.d(TAG, "Data Length to be sent to ISODEP : " + commandLenght);
+        Log.d(TAG, "Max data possible to be transceived by IsoDep : "
+                + isoDepTag.getMaxTransceiveLength());
 
 
-        Log.d(TAG,"Sending data to  tag ");
+        Log.d(TAG, "Sending data to  tag ");
         byte[] data = ByteBufferUtils.toBytes(command);
         byte[] dataOut = isoDepTag.transceive(data);
         res = new IsoDepResponse(dataOut);
@@ -275,11 +280,10 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
 
 
     /**
-     *      *  responseBuffer received response
-     *  lenDataOut      length of the response
-     *  statusWord      status word of the response
+     * * responseBuffer received response lenDataOut length of the response statusWord status word
+     * of the response
      */
-    private class IsoDepResponse{
+    private class IsoDepResponse {
         ByteBuffer responseBuffer;
         int lenDataOut;
         ByteBuffer statusWord;
@@ -290,8 +294,8 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
             this.lenDataOut = res.length;
             this.responseBuffer = ByteBuffer.wrap(res);
 
-            this.statusWord.put(responseBuffer.get( lenDataOut - 2));
-            this.statusWord.put(responseBuffer.get( lenDataOut - 1));
+            this.statusWord.put(responseBuffer.get(lenDataOut - 2));
+            this.statusWord.put(responseBuffer.get(lenDataOut - 1));
 
         }
 

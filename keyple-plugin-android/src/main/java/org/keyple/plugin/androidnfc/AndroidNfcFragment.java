@@ -1,17 +1,22 @@
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
+
 package org.keyple.plugin.androidnfc;
 
-import android.support.v4.app.Fragment;
-import android.content.Context;
+import org.keyple.seproxy.exceptions.IOReaderException;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
-import android.nfc.Tag;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import org.keyple.seproxy.exceptions.IOReaderException;
 
 /**
  * Created by Olivier Delcroix on 05/03/2018.
@@ -30,8 +35,8 @@ public class AndroidNfcFragment extends Fragment {
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * Use this factory method to create a new instance of this fragment using the provided
+     * parameters.
      *
      * @return A new instance of fragment NFCFragment.
      */
@@ -51,11 +56,11 @@ public class AndroidNfcFragment extends Fragment {
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
 
-        if (nfcAdapter == null){
+        if (nfcAdapter == null) {
             Log.w(TAG, "Your device does not support NFC");
-        };
+        } ;
 
-        if(!nfcAdapter.isEnabled()){
+        if (!nfcAdapter.isEnabled()) {
             Log.w(TAG, "PLease enable NFC to communicate with NFC Elements");
         }
 
@@ -64,7 +69,7 @@ public class AndroidNfcFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         return null;
     }
 
@@ -75,17 +80,17 @@ public class AndroidNfcFragment extends Fragment {
 
         Log.d(TAG, "onResume");
 
-        //if the fragment was created following an intent of NfcAdapter.ACTION_TECH_DISCOVERED TAG
+        // if the fragment was created following an intent of NfcAdapter.ACTION_TECH_DISCOVERED TAG
         Intent intent = getActivity().getIntent();
         Log.d(TAG, "Intent : " + intent.getAction());
-        if(intent != null &&
-                intent.getAction()!=null &&
-                intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED)){
-            //handle intent
+        if (intent != null && intent.getAction() != null
+                && intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED)) {
+            // handle intent
             try {
                 Log.d(TAG, "Handle ACTION TECH intent");
 
-                ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().get(0)).processIntent(intent);
+                ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().get(0))
+                        .processIntent(intent);
 
             } catch (IOReaderException e) {
                 e.printStackTrace();
@@ -97,11 +102,9 @@ public class AndroidNfcFragment extends Fragment {
         options.putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, 5000);
 
         try {
-            nfcAdapter.enableReaderMode(
-                    getActivity(),
+            nfcAdapter.enableReaderMode(getActivity(),
                     ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().get(0)),
-                    NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
-                    null);
+                    NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, null);
 
         } catch (IOReaderException e) {
             e.printStackTrace();
@@ -118,7 +121,6 @@ public class AndroidNfcFragment extends Fragment {
         nfcAdapter.disableReaderMode(getActivity());
 
     }
-
 
 
 

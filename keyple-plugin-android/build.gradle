@@ -1,21 +1,38 @@
-group 'org.keyple'
-version '1.0-SNAPSHOT'
 
-allprojects{
-    repositories{
-        google()
-    }
-}
-
-/**/
 buildscript {
     repositories {
+        mavenCentral()
         jcenter()
+        google()
+
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
     }
 }
+
+plugins {
+    id "com.diffplug.gradle.spotless" version "3.9.0"
+}
+
+allprojects {
+
+    repositories {
+        mavenCentral()
+    }
+
+    apply plugin: 'pmd'
+
+    pmd {
+        ruleSets = [
+                "java-basic",
+                "java-braces",
+        ]
+    }
+}
+
+group 'org.keyple'
+version '1.0-SNAPSHOT'
 
 apply plugin: 'com.android.library'
 
@@ -43,6 +60,11 @@ android {
         targetCompatibility JavaVersion.VERSION_1_6
     }
     buildToolsVersion '26.0.2'
+
+    lintOptions {
+        abortOnError false
+    }
+
 }
 /*
 */
@@ -50,6 +72,7 @@ android {
 
 repositories {
     mavenCentral()
+    google()
 }
 
 dependencies {
@@ -60,5 +83,5 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testCompile 'junit:junit:4.12'
-    implementation project(':keyple-calypso')
+    compile project(':keyple-calypso')
 }

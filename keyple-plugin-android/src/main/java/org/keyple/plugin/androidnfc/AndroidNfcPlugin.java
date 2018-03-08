@@ -9,28 +9,17 @@
 package org.keyple.plugin.androidnfc;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.keyple.seproxy.ProxyReader;
 import org.keyple.seproxy.ReadersPlugin;
 import org.keyple.seproxy.exceptions.IOReaderException;
 
-import android.app.Activity;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.nfc.NfcAdapter;
-import android.nfc.tech.IsoDep;
-import android.util.Log;
 
 /**
  * Created by ixxi on 15/01/2018.
  */
 
-public class AndroidNfcPlugin implements ReadersPlugin  {
+public class AndroidNfcPlugin implements ReadersPlugin {
 
     private static final String TAG = AndroidNfcPlugin.class.getSimpleName();
 
