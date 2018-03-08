@@ -42,7 +42,7 @@ public class DigestAuthenticateCmdBuild extends CsmCommandBuilder {
             this.defaultRevision = revision;
         }
         if (signature == null) {
-            throw new InconsistentCommandException();
+            throw new InconsistentCommandException("Signature can't be null");
         }
         if (signature.limit() != 4 && signature.limit() != 8 && signature.limit() != 16) {
             throw new InconsistentCommandException(
