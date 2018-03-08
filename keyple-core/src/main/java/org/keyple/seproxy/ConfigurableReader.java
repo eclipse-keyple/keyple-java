@@ -9,6 +9,7 @@
 package org.keyple.seproxy;
 
 import java.util.Map;
+import org.keyple.seproxy.exceptions.IOReaderException;
 
 /**
  * The Interface ConfigurableReader. This object is optionally proposed by plugins for readers
@@ -24,7 +25,7 @@ public interface ConfigurableReader extends ProxyReader {
      *
      * @param settings the new parameters
      */
-    void setParameters(Map<String, String> settings);
+    void setParameters(Map<String, String> settings) throws IOReaderException;
 
     /**
      * allows to define proprietary settings for a plugin (contactless protocols polling sequence,
@@ -33,7 +34,7 @@ public interface ConfigurableReader extends ProxyReader {
      * @param key the parameter key
      * @param value the parameter value
      */
-    void setAParameter(String key, String value);
+    void setAParameter(String key, String value) throws IOReaderException;
 
     /**
      * Gets the parameters

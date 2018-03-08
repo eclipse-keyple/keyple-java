@@ -52,18 +52,18 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
             // AID - profile Multi 1 App 1
             String poAid = "A000000291A000000191";// "315449432E49434101FFFFFF0000";
             // Read first record of SFI 06h - for 78h bytes
-            ReadRecordsCmdBuild poReadRecordCmd_06 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                    (byte) 0x01, true, (byte) 0x06, (byte) 0x01);
+            ReadRecordsCmdBuild poReadRecordCmd_T2EnvR1 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                    (byte) 0x01, true, (byte) 0x14, (byte) 0x20);
             // ReadRecordsCmdBuild poReadRecordCmd_06 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
             // (byte) 0x01, true, (byte) 0x06, (byte) 0x78);
             // Read first record of SFI 08h - for 15h bytes
-            ReadRecordsCmdBuild poReadRecordCmd_08 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                    (byte) 0x01, true, (byte) 0x08, (byte) 0x01);
+            ReadRecordsCmdBuild poReadRecordCmd_T2UsaR1 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                    (byte) 0x01, true, (byte) 0x1A, (byte) 0x30);
             // ReadRecordsCmdBuild poReadRecordCmd_08 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
             // (byte) 0x01, true, (byte) 0x08, (byte) 0x15);
             List<SendableInSession> filesToReadInSession = new ArrayList<SendableInSession>();
-            filesToReadInSession.add(poReadRecordCmd_06);
-            filesToReadInSession.add(poReadRecordCmd_08);
+            filesToReadInSession.add(poReadRecordCmd_T2EnvR1);
+            filesToReadInSession.add(poReadRecordCmd_T2UsaR1);
 
             // Step 1
             System.out.println(
@@ -79,9 +79,13 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
             // SFI 0Ah
             OpenSessionCmdBuild poOpenSession =
                     new OpenSessionCmdBuild(poTransaction.getRevision(), debitKeyIndex,
-                            poTransaction.sessionTerminalChallenge, (byte) 0x0A, (byte) 0x01);
+                            poTransaction.sessionTerminalChallenge, (byte) 0x1A, (byte) 0x01);
             poTransaction.processOpening(poOpenSession, filesToReadInSession);
             // poTransaction.processOpening(poOpenSession, null);
+
+            // TODO: Find something better
+            poReadRecordCmd_T2EnvR1.getApduRequest().getBuffer().position(0);
+            poReadRecordCmd_T2UsaR1.getApduRequest().getBuffer().position(0);
 
             // Step 3
             System.out.println(
@@ -94,7 +98,7 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
             // poTransaction.processClosing(filesToReadInSession,
             // poAnticipatedResponseInsideSession, poReadRecordCmd_06); // TODO - to complete
             // support of poAnticipatedResponseInsideSession
-            poTransaction.processClosing(null, null, poReadRecordCmd_06);
+            poTransaction.processClosing(null, null, poReadRecordCmd_T2EnvR1);
 
             if (poTransaction.isSuccessful()) {
                 System.out.println(

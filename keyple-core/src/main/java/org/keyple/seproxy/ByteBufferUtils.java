@@ -9,6 +9,9 @@
 package org.keyple.seproxy;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -55,6 +58,49 @@ public class ByteBufferUtils {
             str.append(String.format("%02X", buf.get()));
         }
         return str.toString();
+    }
+
+    private static String toHex(List<ByteBuffer> buffers) {
+        StringBuilder str = new StringBuilder();
+
+        for (ByteBuffer buf : buffers) {
+            if (str.length() > 0) {
+                str.append(' ');
+            }
+            str.append(toHex(buf));
+        }
+
+        return str.toString();
+    }
+
+    /**
+     * Convenience method to represent a list of buffers separated by separating them by a space
+     * 
+     * @param buffers List of buffers
+     * @return String representation
+     */
+    public static String toHex(ByteBuffer... buffers) {
+        return toHex(Arrays.asList(buffers));
+    }
+
+    /**
+     * Convenience method to represent a buffer cut with a space by indice
+     * 
+     * @param buffer Buffer to represent
+     * @param cutLength Indices used to cut it
+     * @return String representation
+     */
+    public static String toHexCutLen(ByteBuffer buffer, int... cutLength) {
+        List<ByteBuffer> buffers = new ArrayList<ByteBuffer>(cutLength.length + 1);
+        int lastIndex = 0;
+        for (int length : cutLength) {
+            buffers.add(ByteBufferUtils.subIndex(buffer, lastIndex, lastIndex + length));
+            lastIndex += length;
+        }
+        if (buffer.limit() > lastIndex) {
+            buffers.add(ByteBufferUtils.subIndex(buffer, lastIndex, buffer.limit()));
+        }
+        return toHex(buffers);
     }
 
     /**

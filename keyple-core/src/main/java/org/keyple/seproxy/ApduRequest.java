@@ -66,6 +66,25 @@ public class ApduRequest extends AbstractApduBuffer {
 
     @Override
     public String toString() {
-        return "Req{" + super.toString() + "}";
+        ByteBuffer b;
+
+        // TODO: Buffer will be read only, as such this code makes no sense anymore
+        if (buffer.position() > 0) {
+            b = buffer.duplicate();
+            b.limit(buffer.position());
+        } else {
+            b = buffer;
+        }
+
+        int len = b.limit();
+        int cuts[];
+        if (len >= 5) {
+            cuts = new int[] {1, 1, 2, 1};
+        } else if (len == 4) {
+            cuts = new int[] {1, 1};
+        } else {
+            cuts = new int[] {};
+        }
+        return "Req{" + ByteBufferUtils.toHexCutLen(b, cuts) + "}";
     }
 }

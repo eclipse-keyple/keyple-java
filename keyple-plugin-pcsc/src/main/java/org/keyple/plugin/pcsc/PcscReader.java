@@ -27,10 +27,23 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
     private static final ILogger logger = SLoggerFactory.getLogger(PcscReader.class);
     private static final String SETTING_KEY_PROTOCOL = "protocol";
+    private static final String SETTING_PROTOCOL_T0 = "T0";
+    private static final String SETTING_PROTOCOL_T1 = "T1";
+    private static final String SETTING_PROTOCOL_TX = "Tx";
+    private static final String SETTING_KEY_MODE = "mode";
+    private static final String SETTING_MODE_EXCLUSIVE = "exclusive";
+    private static final String SETTING_MODE_SHARED = "shared";
+    private static final String SETTING_MODE_DIRECT = "direct";
+    private static final String SETTING_KEY_DISCONNECT = "disconnect";
 
     private final CardTerminal terminal;
     private final String terminalName;
-    private final Map<String, String> settings;
+
+    // private final Map<String, String> settings;
+    private String parameterCardProtocol;
+
+    private boolean exclusiveToEnable;
+    private boolean exclusiveToDisable;
 
     private Card card;
     private CardChannel channel;
@@ -50,7 +63,16 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         this.terminalName = terminal.getName();
         this.card = null;
         this.channel = null;
-        this.settings = new HashMap<String, String>();
+
+        // Using null values to use the standard method for defining default values
+        try {
+            setAParameter(SETTING_KEY_PROTOCOL, null);
+            setAParameter(SETTING_KEY_MODE, null);
+            setAParameter(SETTING_KEY_DISCONNECT, null);
+        } catch (IOReaderException ex) {
+            // It's actually impossible to reach that state
+            throw new IllegalStateException("COuld not initialize properly", ex);
+        }
     }
 
     /**
@@ -78,7 +100,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             // systématique - return new SeResponse(false, fciDataSelected,
             // apduResponseList);
             try {
-                this.prepareAndConnectToTerminalAndSetChannel();
+                prepareAndConnectToTerminalAndSetChannel();
             } catch (CardException e) {
                 throw new ChannelStateReaderException(e);
             }
@@ -132,20 +154,24 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     }
 
     private void prepareAndConnectToTerminalAndSetChannel() throws CardException {
-        final String protocol = getCardProtocol();
+        // final String protocol = getCardProtocol();
         if (card == null) {
-            this.card = this.terminal.connect(protocol);
+            this.card = this.terminal.connect(parameterCardProtocol);
         }
+
+
+        if (exclusiveToEnable) {
+            card.beginExclusive();
+            exclusiveToDisable = true;
+        }
+
         this.channel = card.getBasicChannel();
     }
 
-    private String getCardProtocol() {
-        String protocol = settings.get(SETTING_KEY_PROTOCOL);
-        if (protocol == null) {
-            protocol = "*";
-        }
-        return protocol;
-    }
+    /*
+     * private String getCardProtocol() { String protocol = settings.get(SETTING_KEY_PROTOCOL); if
+     * (protocol == null) { protocol = "*"; } return protocol; }
+     */
 
     private static void hackCase4AndGetResponse(boolean isCase4, byte[] statusCode,
             ResponseAPDU responseFciData, CardChannel channel) throws CardException {
@@ -157,9 +183,8 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             command[2] = (byte) 0x00;
             command[3] = (byte) 0x00;
             command[4] = (byte) 0x00;
-            logger.info(" Send GetResponse : " + formatLogRequest(command));
-
-            System.out.println("Hack - Get Response");
+            logger.info("Case4 hack", "action", "pcsc_reader.case4_hack",
+                    formatLogRequest(command));
             responseFciData = channel.transmit(new CommandAPDU(command));
 
             statusCode[0] = (byte) responseFciData.getSW1();
@@ -256,21 +281,6 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
     }
 
-    @Override
-    public void setParameters(Map<String, String> settings) {
-        this.settings.putAll(settings);
-    }
-
-    @Override
-    public void setAParameter(String key, String value) {
-        this.settings.put(key, value);
-    }
-
-    @Override
-    public Map<String, String> getParameters() {
-        return this.settings;
-    }
-
     /*
      * TODO Paramètres PC/SC dont le support est à intégré paramètre 'Protocol' pouvant prendre les
      * valeurs String 'T0', 'T1', 'Tx' paramètre 'Mode' pouvant prendre les valeurs String 'Shared',
@@ -299,6 +309,80 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      * 'false' si 'Unpower' Les valeurs 'Leave' et 'Eject' ne serait pas gérée.
      *
      */
+
+    /**
+     * Set a list of parameters on a reader
+     *
+     * @param parameters the new parameters
+     * @throws IOReaderException This method can fail when disabling the exclusive mode as it's
+     *         executed instantly
+     */
+    @Override
+    public void setParameters(Map<String, String> parameters) throws IOReaderException {
+        for (Map.Entry<String, String> en : parameters.entrySet()) {
+            setAParameter(en.getKey(), en.getValue());
+        }
+    }
+
+    /**
+     * Set a parameter value
+     *
+     * @param name Parameter name
+     * @param value Parameter value
+     * @throws IOReaderException This method can fail when disabling the exclusive mode as it's
+     *         executed instantly
+     */
+    @Override
+    public void setAParameter(String name, String value) throws IOReaderException {
+        logger.info("PCSC: Set a parameter", "action", "pcsc_reader.set_parameter", "name", name,
+                "value", value);
+        if (name == null) {
+            throw new IllegalArgumentException("Parameter shouldn't be null");
+        }
+        if (name.equals(SETTING_KEY_PROTOCOL)) {
+            if (value == null || value.equals(SETTING_PROTOCOL_TX)) {
+                parameterCardProtocol = "*";
+            }
+        } else if (name.equals(SETTING_KEY_MODE)) {
+            if (value == null || value.equals(SETTING_MODE_SHARED)) {
+                exclusiveToEnable = false;
+                if (exclusiveToDisable && card != null) {
+                    try {
+                        card.endExclusive();
+                    } catch (CardException e) {
+                        throw new IOReaderException("Couldn't disable exclusive mode", e);
+                    }
+                }
+            } else if (value.equals(SETTING_MODE_EXCLUSIVE)) {
+                exclusiveToEnable = true;
+            }
+        }
+    }
+
+    @Override
+    public Map<String, String> getParameters() {
+        Map<String, String> parameters = new HashMap<String, String>();
+
+        { // Returning the protocol
+            String protocol = parameterCardProtocol;
+            if (protocol.equals("*")) {
+                protocol = SETTING_PROTOCOL_TX;
+            }
+            parameters.put(SETTING_KEY_PROTOCOL, protocol);
+        }
+
+        { // The mode ?
+            if (exclusiveToEnable || exclusiveToDisable) {
+                parameters.put(SETTING_KEY_MODE, SETTING_MODE_EXCLUSIVE);
+            } else {
+                parameters.put(SETTING_KEY_MODE, SETTING_MODE_SHARED);
+            }
+
+        }
+
+
+        return parameters;
+    }
 
     @Override
     public void addObserver(ReaderObserver observer) {
@@ -379,7 +463,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
         /**
          * Event failed
-         * 
+         *
          * @param ex Exception
          */
         private void exceptionThrown(Exception ex) {

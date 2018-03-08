@@ -83,7 +83,7 @@ public class SmartCardIOReaderTest {
     }
 
     @Test
-    public void testGettersSetters() {
+    public void testGettersSetters() throws IOReaderException {
         // this.reader = new PcscReader(terminal, readerName);
         reader.setAParameter("TOTO", "TOTO");
         assertEquals(reader.getParameters().size(), 1);

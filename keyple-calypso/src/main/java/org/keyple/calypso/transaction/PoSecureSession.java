@@ -572,7 +572,8 @@ public class PoSecureSession {
 
         // ****FIRST**** transfert of CSM commands
         // System.out.println("\t========= Closing ========== Transfert CSM commands - #1");
-        logger.info("Closing: Sending CSM request", "action", "po_secure_session.close_csm_req");
+        logger.info("Closing: Sending CSM request", "action", "po_secure_session.close_csm_req",
+                "apduList", csmApduRequestList_1);
         SeRequest csmRequest = new SeRequest(null, csmApduRequestList_1, keepChannelOpen);
         SeResponse csmResponse_1 = csmReader.transmit(csmRequest);
         List<ApduResponse> csmApduResponseList_1 = csmResponse_1.getApduResponses();
