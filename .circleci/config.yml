@@ -56,9 +56,9 @@ jobs:
 
         - checkout
 
-        - run:
-            name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
-            command: sudo chmod +x ./gradlew
+#        - run:
+#            name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
+#            command: sudo chmod +x ./gradlew
 
 
         - restore_cache:
@@ -69,7 +69,7 @@ jobs:
 
         - run:
             name: Download Dependencies
-            command: ANDROID_HOME=/opt/android/sdk ./gradlew -b ./keyple-example-androidnfc/build.gradle androidDependencies
+            command: ANDROID_HOME=/opt/android/sdk gradle -b ./keyple-example-androidnfc/build.gradle androidDependencies
 
         - save_cache:
             paths:
@@ -78,7 +78,7 @@ jobs:
 
         - run:
             name: Run assemble release
-            command: ANDROID_HOME=/opt/android/sdk ./gradlew -b ./keyple-example-androidnfc/build.gradle assembleRelease
+            command: ANDROID_HOME=/opt/android/sdk gradle -b ./keyple-example-androidnfc/build.gradle assembleRelease
 
 #
 #        - store_artifacts:
