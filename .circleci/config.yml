@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  build:
+  "build_java":
     docker:
       # documented at https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/openjdk:8-jdk
@@ -40,3 +40,55 @@ jobs:
           paths:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle" }}
+
+
+  "build_android":
+
+      working_directory: ~/code
+      docker:
+        - image: circleci/android:api-25-alpha
+
+
+      environment:
+            JVM_OPTS: -Xmx3200m
+
+      steps:
+
+        - checkout
+
+        - run:
+            name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
+            command: sudo chmod +x ./gradlew
+
+
+        - restore_cache:
+            keys:
+            - v1-dependencies-{{ checksum "./keyple-example-androidnfc/build.gradle" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+        - run:
+            name: Download Dependencies
+            command: ANDROID_HOME=/opt/android/sdk ./gradlew -b ./keyple-example-androidnfc/build.gradle androidDependencies
+
+        - save_cache:
+            paths:
+              - ~/.gradle
+            key: v1-dependencies-{{ checksum "./keyple-example-androidnfc/build.gradle" }}
+
+        - run:
+            name: Run assemble release
+            command: ANDROID_HOME=/opt/android/sdk ./gradlew -b ./keyple-example-androidnfc/build.gradle assembleRelease
+
+#
+#        - store_artifacts:
+#            path: ~/artifacts
+#            destination: reports
+
+
+workflows:
+  version: 2
+  "java_and_android_build":
+    jobs:
+      - "build_java"
+      - "build_android"
