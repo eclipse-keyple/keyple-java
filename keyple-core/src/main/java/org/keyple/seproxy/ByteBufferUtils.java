@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
+
 
 /**
  * Utils around the {@link ByteBuffer}
@@ -33,12 +32,21 @@ public class ByteBufferUtils {
      * @return ByteBuffer
      */
     public static ByteBuffer fromHex(String hex) {
-        try {
-            return ByteBuffer.wrap(Hex.decodeHex(HEX_IGNORED_CHARS.matcher(hex).replaceAll("")));
-        } catch (DecoderException ex) {
-            throw new IllegalArgumentException(
-                    "You need to provide hex (spaces and 'h' are allowed)", ex);
+        hex = HEX_IGNORED_CHARS.matcher(hex).replaceAll("").toUpperCase();
+
+        if (hex.length() % 2 != 0) {
+            throw new IllegalArgumentException("Odd numbered hex array");
         }
+
+        ByteBuffer buffer = ByteBuffer.allocate(hex.length() / 2);
+
+        for (int i = 0, e = hex.length(); i < e; i += 2) {
+            buffer.put((byte) (Integer.parseInt(hex.substring(i, i + 2), 16) & 0xFF));
+        }
+
+        buffer.position(0);
+
+        return buffer;
     }
 
     /**
