@@ -18,6 +18,7 @@ import javax.smartcardio.*;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
+import org.keyple.seproxy.exceptions.InconsistentParameterValueException;
 import org.keyple.seproxy.exceptions.InvalidMessageException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
@@ -34,6 +35,10 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     private static final String SETTING_MODE_SHARED = "shared";
     // private static final String SETTING_MODE_DIRECT = "direct";
     private static final String SETTING_KEY_DISCONNECT = "disconnect";
+    private static final String SETTING_DISCONNECT_RESET = "reset";
+    private static final String SETTING_DISCONNECT_UNPOWER = "unpower";
+    private static final String SETTING_DISCONNECT_LEAVE = "leave";
+    private static final String SETTING_DISCONNECT_EJECT = "eject";
     private static final String SETTING_KEY_THREAD_TIMEOUT = "thread_wait_timeout";
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 5000;
 
@@ -43,6 +48,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     // private final Map<String, String> settings;
     private String parameterCardProtocol;
     private boolean cardExclusiveMode;
+    private boolean cardReset;
 
     private Card card;
     private CardChannel channel;
@@ -74,7 +80,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             setAParameter(SETTING_KEY_DISCONNECT, null);
         } catch (IOReaderException ex) {
             // It's actually impossible to reach that state
-            throw new IllegalStateException("COuld not initialize properly", ex);
+            throw new IllegalStateException("Could not initialize properly", ex);
         }
     }
 
@@ -201,13 +207,13 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     /*
      * private static String formatLogRequest(byte[] request) { String c =
      * DatatypeConverter.printHexBinary(request); String log = c;
-     * 
+     *
      * if (request.length == 4) { log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " +
      * extractData(c, 4, 8); } if (request.length == 5) { log = extractData(c, 0, 2) + " " +
      * extractData(c, 2, 4) + " " + extractData(c, 4, 8) + " " + extractData(c, 8, 10); } else if
      * (request.length > 5) { log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " +
      * extractData(c, 4, 8) + " " + extractData(c, 8, 10) + " " + extractData(c, 10, c.length()); }
-     * 
+     *
      * return log; }
      */
 
@@ -284,7 +290,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
     /**
      * Set a list of parameters on a reader.
-     *
+     * <p>
      * See {@link #setAParameter(String, String)} for more details
      *
      * @param parameters the new parameters
@@ -329,12 +335,12 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
     /**
      * Set a parameter.
-     *
+     * <p>
      * These are the parameters you can use with their associated values:
      * <ul>
      * <li><strong>protocol</strong>:
      * <ul>
-     * <li>Tx: Automatic negociation (default)</li>
+     * <li>Tx: Automatic negotiation (default)</li>
      * <li>T0: T0 protocol</li>
      * <li>T1: T1 protocol</li>
      * </ul>
@@ -343,6 +349,14 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      * <ul>
      * <li>shared: Shared between apps and threads (default)</li>
      * <li>exclusive: Exclusive to this app and the current thread</li>
+     * </ul>
+     * </li>
+     * <li><strong>disconnect</strong>:
+     * <ul>
+     * <li>reset: Reset the card</li>
+     * <li>unpower: Simply unpower it</li>
+     * <li>leave: Unsupported</li>
+     * <li>eject: Eject</li>
      * </ul>
      * </li>
      * <li><strong>thread_wait_timeout</strong>: Number of milliseconds to wait</li>
@@ -363,8 +377,12 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         if (name.equals(SETTING_KEY_PROTOCOL)) {
             if (value == null || value.equals(SETTING_PROTOCOL_TX)) {
                 parameterCardProtocol = "*";
+            } else if (value.equals(SETTING_PROTOCOL_T0)) {
+                parameterCardProtocol = "T=0";
+            } else if (value.equals(SETTING_PROTOCOL_T1)) {
+                parameterCardProtocol = "T=1";
             } else {
-                parameterCardProtocol = value;
+                throw new InconsistentParameterValueException("Bad protocol", name, value);
             }
         } else if (name.equals(SETTING_KEY_MODE)) {
             if (value == null || value.equals(SETTING_MODE_EXCLUSIVE)) {
@@ -378,6 +396,8 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                     }
                 }
                 cardExclusiveMode = false;
+            } else {
+                throw new InconsistentParameterValueException(name, value);
             }
         } else if (name.equals(SETTING_KEY_THREAD_TIMEOUT)) {
             if (value == null) {
@@ -386,11 +406,28 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                 long timeout = Long.parseLong(value);
 
                 if (timeout <= 0) {
-                    throw new IllegalArgumentException("Timeout has to be of at least 1ms");
+                    throw new InconsistentParameterValueException(
+                            "Timeout has to be of at least 1ms", name, value);
                 }
 
                 threadWaitTimeout = timeout;
             }
+        } else if (name.equals(SETTING_KEY_DISCONNECT)) {
+            if (value == null || value.equals(SETTING_DISCONNECT_RESET)) {
+                cardReset = true;
+            } else if (value.equals(SETTING_DISCONNECT_UNPOWER)) {
+                cardReset = false;
+            } else if (value.equals(SETTING_DISCONNECT_EJECT)
+                    || value.equals(SETTING_DISCONNECT_LEAVE)) {
+                throw new InconsistentParameterValueException(
+                        "This disconnection parameter is not supported by this plugin", name,
+                        value);
+            } else {
+                throw new InconsistentParameterValueException(name, value);
+            }
+        } else {
+            throw new InconsistentParameterValueException("This parameter is unknown !", name,
+                    value);
         }
     }
 
@@ -402,6 +439,12 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             String protocol = parameterCardProtocol;
             if (protocol.equals("*")) {
                 protocol = SETTING_PROTOCOL_TX;
+            } else if (protocol.equals("T=0")) {
+                protocol = SETTING_PROTOCOL_T0;
+            } else if (protocol.equals("T=1")) {
+                protocol = SETTING_PROTOCOL_T1;
+            } else {
+                throw new IllegalStateException("Illegal protocol: " + protocol);
             }
             parameters.put(SETTING_KEY_PROTOCOL, protocol);
         }

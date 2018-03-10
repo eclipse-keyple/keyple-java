@@ -9,12 +9,49 @@
 package org.keyple.seproxy.exceptions;
 
 /**
- * The parameter specified are inconsistent with what is expected. TODO: At least I guess so.
- * 
- * @deprecated This class is never thrown
+ * The parameter specified are inconsistent with what is expected.
  */
-public class InconsistentParameterValueException extends Exception {
-    public InconsistentParameterValueException(String message) {
-        super(message);
+public class InconsistentParameterValueException extends IOReaderException {
+    private final String name, value;
+
+    /**
+     * Constructor
+     * 
+     * @param message Message
+     * @param name Name
+     * @param value Value
+     */
+    public InconsistentParameterValueException(String message, String name, String value) {
+        super(String.format("%s / %s=%s", message, name, value));
+        this.name = name;
+        this.value = value;
+    }
+
+    /**
+     * Constructor
+     * 
+     * @param name Name
+     * @param value Value
+     */
+    public InconsistentParameterValueException(String name, String value) {
+        this("Invalid parameter", name, value);
+    }
+
+    /**
+     * Get the parameter name
+     * 
+     * @return Name of the parameter
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Get the parameter value
+     * 
+     * @return Value of the parameter
+     */
+    public String getValue() {
+        return value;
     }
 }
