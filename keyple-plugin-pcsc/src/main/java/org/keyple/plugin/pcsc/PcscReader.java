@@ -126,7 +126,14 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             for (ApduRequest apduRequest : seApplicationRequest.getApduRequests()) {
                 ResponseAPDU apduResponseData;
                 try {
-                    apduResponseData = channel.transmit(new CommandAPDU(apduRequest.getBuffer()));
+                    ByteBuffer buffer = apduRequest.getBuffer();
+                    { // Sending data
+                      // We shouldn't have to re-use the buffer that was used to be sent but we have
+                      // some code that does it.
+                        final int posBeforeRead = buffer.position();
+                        apduResponseData = channel.transmit(new CommandAPDU(buffer));
+                        buffer.position(posBeforeRead);
+                    }
 
                     byte[] statusCode = new byte[] {(byte) apduResponseData.getSW1(),
                             (byte) apduResponseData.getSW2()};

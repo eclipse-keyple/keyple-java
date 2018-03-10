@@ -83,17 +83,17 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
             poTransaction.processOpening(poOpenSession, filesToReadInSession);
             // poTransaction.processOpening(poOpenSession, null);
 
-            // TODO: Find something better
-            poReadRecordCmd_T2EnvR1.getApduRequest().getBuffer().position(0);
-            poReadRecordCmd_T2UsaR1.getApduRequest().getBuffer().position(0);
+            // DONE: Find something better
+            // poReadRecordCmd_T2EnvR1.getApduRequest().getBuffer().position(0);
+            // poReadRecordCmd_T2UsaR1.getApduRequest().getBuffer().position(0);
 
             // Step 3
             System.out.println(
                     "========= PO Transaction ======= Continuation =======================");
             poTransaction.processProceeding(filesToReadInSession);
 
-            // TODO: Find something better
-            poReadRecordCmd_T2EnvR1.getApduRequest().getBuffer().position(0);
+            // DONE: Find something better
+            // poReadRecordCmd_T2EnvR1.getApduRequest().getBuffer().position(0);
 
             // Step 4
             System.out.println(
