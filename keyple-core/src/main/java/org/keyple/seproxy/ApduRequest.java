@@ -79,9 +79,9 @@ public class ApduRequest extends AbstractApduBuffer {
         int len = b.limit();
         int cuts[];
         if (len >= 5) {
-            cuts = new int[] {1, 1, 2, 1};
+            cuts = new int[] {2, 2, 1};
         } else if (len == 4) {
-            cuts = new int[] {1, 1};
+            cuts = new int[] {2};
         } else {
             cuts = new int[] {};
         }

@@ -613,6 +613,8 @@ public class PoSecureSession {
         // Transfert PO commands
         SeRequest poRequest =
                 new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen);
+        logger.info("Closing: Sending PO request", "action", "po_secure_session.close_po_req",
+                "apduList", poRequest.getApduRequests());
         poResponse = poReader.transmit(poRequest);
         List<ApduResponse> poApduResponseList = poResponse.getApduResponses();
 
@@ -631,6 +633,10 @@ public class PoSecureSession {
                                                                                                     // otherwise
                                                                                                     // last
                                                                                                     // one
+        if (!poCloseSessionPars.isSuccessful()) {
+            throw new InvalidMessageException("Didn't get a signature",
+                    InvalidMessageException.Type.PO, poApduRequestList, poApduResponseList);
+        }
         sessionCardSignature = poCloseSessionPars.getSignatureLo();
 
         // Build CSM Digest Authenticate command

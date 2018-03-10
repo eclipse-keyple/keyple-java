@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.smartcardio.*;
-import javax.xml.bind.DatatypeConverter;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
@@ -33,17 +32,17 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     private static final String SETTING_KEY_MODE = "mode";
     private static final String SETTING_MODE_EXCLUSIVE = "exclusive";
     private static final String SETTING_MODE_SHARED = "shared";
-    private static final String SETTING_MODE_DIRECT = "direct";
+    // private static final String SETTING_MODE_DIRECT = "direct";
     private static final String SETTING_KEY_DISCONNECT = "disconnect";
+    private static final String SETTING_KEY_THREAD_TIMEOUT = "thread_wait_timeout";
+    private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 5000;
 
     private final CardTerminal terminal;
     private final String terminalName;
 
     // private final Map<String, String> settings;
     private String parameterCardProtocol;
-
-    private boolean exclusiveToEnable;
-    private boolean exclusiveToDisable;
+    private boolean cardExclusiveMode;
 
     private Card card;
     private CardChannel channel;
@@ -54,7 +53,11 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
     private EventThread thread;
     private static final AtomicInteger threadCount = new AtomicInteger();
-    private long threadWaitTimeout = 5000; // 5s
+
+    /**
+     * Thread wait timeout in ms
+     */
+    private long threadWaitTimeout;
 
 
     protected PcscReader(CardTerminal terminal) { // PcscReader constructor may be
@@ -106,7 +109,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             }
             // gestion du select application ou du getATR
             if (seApplicationRequest.getAidToSelect() != null && aidCurrentlySelected == null) {
-                fciDataSelected = this.connect(seApplicationRequest.getAidToSelect());
+                fciDataSelected = connect(seApplicationRequest.getAidToSelect());
             } else if (!atrDefaultSelected) {
                 fciDataSelected = new ApduResponse(
                         ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
@@ -157,12 +160,9 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         // final String protocol = getCardProtocol();
         if (card == null) {
             this.card = this.terminal.connect(parameterCardProtocol);
-        }
-
-
-        if (exclusiveToEnable) {
-            card.beginExclusive();
-            exclusiveToDisable = true;
+            if (cardExclusiveMode) {
+                card.beginExclusive();
+            }
         }
 
         this.channel = card.getBasicChannel();
@@ -177,14 +177,13 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             ResponseAPDU responseFciData, CardChannel channel) throws CardException {
         if (isCase4 && statusCode[0] == (byte) 0x90 && statusCode[1] == (byte) 0x00
                 && responseFciData.getData().length == 0) {
-            byte[] command = new byte[5];
-            command[0] = (byte) 0x00;
-            command[1] = (byte) 0xC0;
-            command[2] = (byte) 0x00;
-            command[3] = (byte) 0x00;
-            command[4] = (byte) 0x00;
-            logger.info("Case4 hack", "action", "pcsc_reader.case4_hack",
-                    formatLogRequest(command));
+            ByteBuffer command = ByteBuffer.allocate(5);
+            command.put((byte) 0x00);
+            command.put((byte) 0xC0);
+            command.put((byte) 0x00);
+            command.put((byte) 0x00);
+            command.put((byte) 0x00);
+            logger.info("Case4 hack", "action", "pcsc_reader.case4_hack");
             responseFciData = channel.transmit(new CommandAPDU(command));
 
             statusCode[0] = (byte) responseFciData.getSW1();
@@ -192,23 +191,18 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         }
     }
 
-    private static String formatLogRequest(byte[] request) {
-        String c = DatatypeConverter.printHexBinary(request);
-        String log = c;
-
-        if (request.length == 4) {
-            log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " + extractData(c, 4, 8);
-        }
-        if (request.length == 5) {
-            log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " + extractData(c, 4, 8)
-                    + " " + extractData(c, 8, 10);
-        } else if (request.length > 5) {
-            log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " + extractData(c, 4, 8)
-                    + " " + extractData(c, 8, 10) + " " + extractData(c, 10, c.length());
-        }
-
-        return log;
-    }
+    /*
+     * private static String formatLogRequest(byte[] request) { String c =
+     * DatatypeConverter.printHexBinary(request); String log = c;
+     * 
+     * if (request.length == 4) { log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " +
+     * extractData(c, 4, 8); } if (request.length == 5) { log = extractData(c, 0, 2) + " " +
+     * extractData(c, 2, 4) + " " + extractData(c, 4, 8) + " " + extractData(c, 8, 10); } else if
+     * (request.length > 5) { log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " +
+     * extractData(c, 4, 8) + " " + extractData(c, 8, 10) + " " + extractData(c, 10, c.length()); }
+     * 
+     * return log; }
+     */
 
     private static String extractData(String str, int pos1, int pos2) {
         String data = "";
@@ -344,6 +338,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      * <li>exclusive: Exclusive to this app and the current thread</li>
      * </ul>
      * </li>
+     * <li><strong>thread_wait_timeout</strong>: Number of milliseconds to wait</li>
      * </ul>
      *
      * @param name Parameter name
@@ -361,19 +356,33 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         if (name.equals(SETTING_KEY_PROTOCOL)) {
             if (value == null || value.equals(SETTING_PROTOCOL_TX)) {
                 parameterCardProtocol = "*";
+            } else {
+                parameterCardProtocol = value;
             }
         } else if (name.equals(SETTING_KEY_MODE)) {
-            if (value == null || value.equals(SETTING_MODE_SHARED)) {
-                exclusiveToEnable = false;
-                if (exclusiveToDisable && card != null) {
+            if (value == null || value.equals(SETTING_MODE_EXCLUSIVE)) {
+                cardExclusiveMode = true;
+            } else if (value.equals(SETTING_MODE_SHARED)) {
+                if (cardExclusiveMode && card != null) {
                     try {
                         card.endExclusive();
                     } catch (CardException e) {
                         throw new IOReaderException("Couldn't disable exclusive mode", e);
                     }
                 }
-            } else if (value.equals(SETTING_MODE_EXCLUSIVE)) {
-                exclusiveToEnable = true;
+                cardExclusiveMode = false;
+            }
+        } else if (name.equals(SETTING_KEY_THREAD_TIMEOUT)) {
+            if (value == null) {
+                threadWaitTimeout = SETTING_THREAD_TIMEOUT_DEFAULT;
+            } else {
+                long timeout = Long.parseLong(value);
+
+                if (timeout <= 0) {
+                    throw new IllegalArgumentException("Timeout has to be of at least 1ms");
+                }
+
+                threadWaitTimeout = timeout;
             }
         }
     }
@@ -391,12 +400,15 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         }
 
         { // The mode ?
-            if (exclusiveToEnable || exclusiveToDisable) {
-                parameters.put(SETTING_KEY_MODE, SETTING_MODE_EXCLUSIVE);
-            } else {
+            if (!cardExclusiveMode) {
                 parameters.put(SETTING_KEY_MODE, SETTING_MODE_SHARED);
             }
+        }
 
+        { // The thread wait timeout
+            if (threadWaitTimeout != SETTING_THREAD_TIMEOUT_DEFAULT) {
+                parameters.put(SETTING_KEY_THREAD_TIMEOUT, Long.toString(threadWaitTimeout));
+            }
         }
 
 
