@@ -8,11 +8,12 @@
 
 package org.keyple.plugin.pcsc.log;
 
+import java.nio.ByteBuffer;
 import javax.smartcardio.ATR;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
-import org.apache.commons.codec.binary.Hex;
+import org.keyple.seproxy.ByteBufferUtils;
 
 public class CardLogger extends Card {
 
@@ -29,7 +30,7 @@ public class CardLogger extends Card {
     public ATR getATR() {
         ATR atr = card.getATR();
         Logging.LOG.info("Card: Get ATR", "action", "card.atr", "cardId", id, "atr",
-                Hex.encodeHexString(atr.getBytes(), false));
+                ByteBufferUtils.toHex(ByteBuffer.wrap(atr.getBytes())));
         return atr;
     }
 
@@ -68,11 +69,11 @@ public class CardLogger extends Card {
     public byte[] transmitControlCommand(int controlCommand, byte[] command) throws CardException {
         Logging.LOG.info("Card: Sending control command", "action", "card.control_request",
                 "cardId", id, "controlCommand", controlCommand, "command",
-                Hex.encodeHexString(command, false));
+                ByteBufferUtils.toHex(ByteBuffer.wrap(command)));
         byte[] response = card.transmitControlCommand(controlCommand, command);
         Logging.LOG.info("Card: Receiving control command", "action", "card.control_response",
                 "cardId", id, "controlCommand", controlCommand, "response",
-                Hex.encodeHexString(response, false));
+                ByteBufferUtils.toHex(ByteBuffer.wrap(response)));
         return response;
     }
 

@@ -10,7 +10,6 @@ package org.keyple.plugin.pcsc.log;
 
 import java.nio.ByteBuffer;
 import javax.smartcardio.*;
-import org.apache.commons.codec.binary.Hex;
 import org.keyple.seproxy.ByteBufferUtils;
 
 /**
@@ -46,10 +45,11 @@ public class CardChannelLogger extends CardChannel {
     @Override
     public ResponseAPDU transmit(CommandAPDU commandAPDU) throws CardException {
         Logging.LOG.info("CardChannel: Request", "action", "card_channel.request", "cardChannelId",
-                name, "apdu", Hex.encodeHexString(commandAPDU.getBytes(), false));
+                name, "apdu", ByteBufferUtils.toHex(ByteBuffer.wrap(commandAPDU.getBytes())));
         ResponseAPDU response = cardChannel.transmit(commandAPDU);
         Logging.LOG.info("CardChannel: Response", "action", "card_channel.response",
-                "cardChannelId", name, "apdu", Hex.encodeHexString(response.getBytes(), false));
+                "cardChannelId", name, "apdu",
+                ByteBufferUtils.toHex(ByteBuffer.wrap(response.getBytes())));
         return response;
     }
 

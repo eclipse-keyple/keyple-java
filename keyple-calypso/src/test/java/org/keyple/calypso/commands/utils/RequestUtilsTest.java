@@ -9,7 +9,6 @@
 package org.keyple.calypso.commands.utils;
 
 import static org.junit.Assert.*;
-import org.apache.commons.codec.DecoderException;
 import org.junit.Test;
 import org.keyple.seproxy.ApduRequest;
 import org.keyple.seproxy.ByteBufferUtils;
@@ -17,7 +16,7 @@ import org.keyple.seproxy.ByteBufferUtils;
 public class RequestUtilsTest {
 
     @Test
-    public void constructAPDURequest() throws DecoderException {
+    public void constructAPDURequest() {
         ApduRequest req = RequestUtils.constructAPDURequest((byte) 1, (byte) 2, (byte) 3, (byte) 4,
                 ByteBufferUtils.fromHex("0506"), (byte) 0x07);
         assertEquals("0102030402050600", ByteBufferUtils.toHex(req.getBuffer()));

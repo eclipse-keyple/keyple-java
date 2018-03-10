@@ -16,7 +16,7 @@ public class ByteBufferUtilsTest {
 
     @Test
     public void fromHex() {
-        assertEquals(ByteBufferUtils.wrap(new byte[] {0x01, 0x02, 0x03, 0x04}),
+        assertEquals(ByteBuffer.wrap(new byte[] {0x01, 0x02, 0x03, 0x04}),
                 ByteBufferUtils.fromHex("0102 03 04h"));
         assertEquals(ByteBufferUtils.fromHex("01020304"), ByteBufferUtils.fromHex("0102 03 04h"));
         assertEquals(ByteBufferUtils.fromHex("FEDCBA98 9000h"),
