@@ -29,6 +29,8 @@ git config --global user.name "$GH_NAME" > /dev/null 2>&1
 git init
 git remote add --fetch origin "$remote"
 
+# Avoiding really dirty URLs
+CIRCLE_BRANCH=$(echo $CIRCLE_BRANCH|sed 's/[^a-zA-Z0-9-]//g')
 
 # switch into the the gh-pages branch
 if git rev-parse --verify origin/gh-pages > /dev/null 2>&1

@@ -11,7 +11,6 @@ package keyple.commands.po.parser;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.codec.DecoderException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.parser.CloseSessionRespPars;
@@ -71,7 +70,7 @@ public class CloseSessionRespParsTest {
     }
 
     @Test
-    public void existingTestConverted() throws DecoderException {
+    public void existingTestConverted() {
         CloseSessionRespPars parser =
                 new CloseSessionRespPars(new ApduResponse(ByteBufferUtils.fromHex("9000h"), true));
         // This assert wasn't passing
@@ -80,13 +79,13 @@ public class CloseSessionRespParsTest {
     }
 
     @Test // Calypso / page 105 / Example command aborting a session:
-    public void abortingASession() throws DecoderException {
+    public void abortingASession() {
         CloseSessionRespPars parser = new CloseSessionRespPars(
                 new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), true));
     }
 
     @Test // Calypso / page 105 / Example command, Lc=4, without postponed data:
-    public void lc4withoutPostponedData() throws DecoderException {
+    public void lc4withoutPostponedData() {
         CloseSessionRespPars parser = new CloseSessionRespPars(
                 new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), true));
         Assert.assertEquals("FEDCBA98", ByteBufferUtils.toHex(parser.getSignatureLo()));
@@ -94,7 +93,7 @@ public class CloseSessionRespParsTest {
     }
 
     @Test // Calypso / page 105 / Example command, Lc=4, with postponed data:
-    public void lc4WithPostponedData() throws DecoderException {
+    public void lc4WithPostponedData() {
         CloseSessionRespPars parser = new CloseSessionRespPars(
                 new ApduResponse(ByteBufferUtils.fromHex("04 345678 FEDCBA98 9000h"), true));
         Assert.assertEquals("FEDCBA98", ByteBufferUtils.toHex(parser.getSignatureLo()));

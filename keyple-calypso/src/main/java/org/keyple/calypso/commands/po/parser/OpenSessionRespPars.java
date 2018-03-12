@@ -105,7 +105,8 @@ public class OpenSessionRespPars extends ApduResponseParser {
         return apduResponse.limit() > 4 ? apduResponse.get(0) : 0x00;
     }
 
-    Map<Integer, StatusProperties> getStatusTable() {
+    @Override
+    protected Map<Integer, StatusProperties> getStatusTable() {
         switch (revision) {
             case REV3_2:
                 return STATUS_TABLE_REV3_2;
@@ -291,6 +292,8 @@ public class OpenSessionRespPars extends ApduResponseParser {
         /**
          * Instantiates a new SecureSession for a Calypso application revision 3
          *
+         * @param challengeTransactionCounter Challenge transaction counter
+         * @param challengeRandomNumber Challenge random number
          * @param previousSessionRatified the previous session ratified
          * @param manageSecureSessionAuthorized the manage secure session authorized
          * @param kif the KIF from the response of the open secure session APDU command
@@ -316,7 +319,9 @@ public class OpenSessionRespPars extends ApduResponseParser {
 
         /**
          * Instantiates a new SecureSession for a Calypso application revision 2.4
-         *
+         * 
+         * @param challengeTransactionCounter Challenge transaction counter
+         * @param challengeRandomNumber Challenge random number
          * @param previousSessionRatified the previous session ratified
          * @param manageSecureSessionAuthorized the manage secure session authorized
          * @param kvc the KVC from the response of the open secure session APDU command

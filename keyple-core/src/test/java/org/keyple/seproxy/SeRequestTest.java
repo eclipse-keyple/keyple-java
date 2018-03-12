@@ -40,7 +40,7 @@ public class SeRequestTest {
     @Test
     public void testAskKeepChannelOpen() {
         SeRequest request = new SeRequest(aid, new ArrayList<ApduRequest>(), true);
-        assertTrue(request.askKeepChannelOpen());
+        assertTrue(request.keepChannelOpen());
     }
 
 }

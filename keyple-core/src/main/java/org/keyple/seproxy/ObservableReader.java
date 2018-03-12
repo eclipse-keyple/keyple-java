@@ -10,6 +10,8 @@ package org.keyple.seproxy;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import com.github.structlog4j.ILogger;
+import com.github.structlog4j.SLoggerFactory;
 
 /**
  * The Interface ObservableReader. In order to notify a ticketing application in case of specific
@@ -20,6 +22,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Ixxi
  */
 public abstract class ObservableReader implements ProxyReader {
+
+    private static final ILogger logger = SLoggerFactory.getLogger(ObservableReader.class);
 
     // TODO: Drop this implementation, it doesn't respect the java's definition of it (it missed the
     // change handling)
@@ -33,27 +37,28 @@ public abstract class ObservableReader implements ProxyReader {
             new CopyOnWriteArrayList<ReaderObserver>();
 
     /**
-     * This method shall be called only from a terminal application implementing ObservableReader
+     * Add an observer to a terminal reader.
      * 
-     * add a ReaderObserver to the list of registered ReaderObserver for the selected
-     * ObservableReader.
+     * This will allow to be notified about all card insertion/removal events. Please note that you
+     * shouldn't reuse the notification threads for your card processing logic.
      *
-     * @param calledBack the called back
+     * @param observer Observer to notify
      */
-    public void addObserver(ReaderObserver calledBack) {
-        readerObservers.add(calledBack);
+    public void addObserver(ReaderObserver observer) {
+        logger.info("ObservableReader: Adding an observer", "action",
+                "observable_reader.add_observer", "readerName", getName());
+        readerObservers.add(observer);
     }
 
     /**
-     * This method shall be called only from a terminal application implementing ObservableReader
-     * 
-     * remove a ReaderObserver from the list of registered ReaderObserver for the selected
-     * ObservableReader.
+     * Remove an observer from a terminal reader.
      *
-     * @param calledback the calledback
+     * @param observer Observer to stop notifying
      */
-    public void deleteObserver(ReaderObserver calledback) {
-        readerObservers.remove(calledback);
+    public void deleteObserver(ReaderObserver observer) {
+        logger.info("ObservableReader: Deleting an observer", "action",
+                "observable_reader.delete_observer", "readerName", getName());
+        readerObservers.remove(observer);
     }
 
     /**
@@ -65,6 +70,8 @@ public abstract class ObservableReader implements ProxyReader {
      * @param event the event
      */
     public final void notifyObservers(ReaderEvent event) {
+        logger.info("ObservableReader: Notifying of an even", "action",
+                "observable_reader.notify_observers", "event", event, "readerName", getName());
         for (ReaderObserver observer : readerObservers) {
             observer.notify(event);
         }

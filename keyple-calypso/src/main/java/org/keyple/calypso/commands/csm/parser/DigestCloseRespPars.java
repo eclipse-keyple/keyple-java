@@ -32,6 +32,6 @@ public class DigestCloseRespPars extends ApduResponseParser {
      * @return the sam half session signature
      */
     public ByteBuffer getSignature() {
-        return isSuccessful() ? response.getBuffer() : null;
+        return isSuccessful() ? response.getDataOut() : null;
     }
 }

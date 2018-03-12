@@ -27,13 +27,6 @@ public class ReaderEventTest {
         assertNotNull(event);
     }
 
-    // TODO: Fix this test
-    /*
-     * @Test public void testGetReader() { NotifierReader or = Mockito.mock(NotifierReader.class);
-     * ReaderEvent event = new ReaderEvent(or, ReaderEvent.EventType.IO_ERROR);
-     * Assert.assertEquals(or, event.getReader()); }
-     */
-
     @Test
     public void testGetEvent() {
         ReaderEvent event = new ReaderEvent(null, ReaderEvent.EventType.IO_ERROR);

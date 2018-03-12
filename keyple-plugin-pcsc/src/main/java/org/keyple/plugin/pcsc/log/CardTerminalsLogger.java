@@ -28,11 +28,18 @@ public class CardTerminalsLogger extends CardTerminals {
         for (CardTerminal terminal : cardTerminals.list(state)) {
             list.add(new CardTerminalLogger(String.format("pcsc.%d", ++i), terminal));
         }
+        Logging.LOG.info("CardTerminals: Listing terminals", "action",
+                "card_terminal.listing_terminals", "state", state, "nb", list.size());
         return list;
     }
 
     @Override
-    public boolean waitForChange(long l) throws CardException {
-        return cardTerminals.waitForChange(l);
+    public boolean waitForChange(long timeout) throws CardException {
+        Logging.LOG.info("CardTerminals: Wait for change", "action",
+                "card_terminal.wait_for_change_start", "timeout", timeout);
+        boolean change = cardTerminals.waitForChange(timeout);
+        Logging.LOG.info("CardTerminals: Finished waiting", "action",
+                "card_terminal.wait_for_change_end", "change", change);
+        return change;
     }
 }

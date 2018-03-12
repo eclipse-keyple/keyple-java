@@ -8,8 +8,16 @@
 
 package org.keyple.seproxy.exceptions;
 
-public class ChannelStateReaderException extends Exception {
-    public ChannelStateReaderException(String message) {
-        super(message);
+/**
+ * When the card channel cannot be opened or written to. It's just an other type of a
+ * {@link IOReaderException}
+ */
+public class ChannelStateReaderException extends IOReaderException {
+    public ChannelStateReaderException(Exception ex) {
+        super(ex);
+    }
+
+    public ChannelStateReaderException(String message, Exception ex) {
+        super(message, ex);
     }
 }
