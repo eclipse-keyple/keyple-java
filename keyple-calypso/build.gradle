@@ -10,6 +10,7 @@ dependencies {
     compile group: 'structlog4j', name:'structlog4j-api', version: '1.0.0'
 
     // compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.1'
+
     compile project(':keyple-core')
     testCompile group: 'junit', name: 'junit', version: '4.12'
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
