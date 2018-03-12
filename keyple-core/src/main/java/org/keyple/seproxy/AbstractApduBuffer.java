@@ -25,10 +25,14 @@ class AbstractApduBuffer {
         this.buffer = buffer;
     }
 
+    /**
+     * Abstract constructor
+     * 
+     * @param data Array to wrap. Cannot be null.
+     */
     AbstractApduBuffer(byte[] data) {
-        // TODO: Drop the null compatibility behavior, it's confusing
-        this(data != null ? ByteBuffer.wrap(data) : ByteBuffer.allocate(0));
-        // buffer.limit(data.length);
+        // null data is not allowed anymore
+        this(ByteBuffer.wrap(data));
     }
 
     AbstractApduBuffer() {

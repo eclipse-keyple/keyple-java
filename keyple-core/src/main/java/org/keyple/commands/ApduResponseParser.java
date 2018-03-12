@@ -36,7 +36,7 @@ public abstract class ApduResponseParser {
      * 
      * @return Status table
      */
-    Map<Integer, StatusProperties> getStatusTable() {
+    protected Map<Integer, StatusProperties> getStatusTable() {
         return STATUS_TABLE;
     }
 

@@ -57,7 +57,8 @@ public class DigestUpdateCmdBuild extends CsmCommandBuilder {
         }
 
         // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, digestData);
-        request = RequestUtils.constructAPDURequest(cla, command, p1, p2, digestData);
+        request = RequestUtils.constructAPDURequest(cla, command, p1, p2,
+                digestData != null ? digestData.asReadOnlyBuffer() : null);
     }
 
     /**

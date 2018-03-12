@@ -8,8 +8,9 @@
 
 package org.keyple.examples.pc;
 
+import java.nio.ByteBuffer;
 import javax.smartcardio.*;
-import org.apache.commons.codec.binary.Hex;
+import org.keyple.seproxy.ByteBufferUtils;
 
 public class PCSCTests {
     public static void main(String[] args) throws CardException, InterruptedException {
@@ -22,7 +23,8 @@ public class PCSCTests {
                     if (cardTerm.isCardPresent()) {
                         Card card = cardTerm.connect("T=0");
                         ATR atr = card.getATR();
-                        System.out.println("  ATR: " + Hex.encodeHexString(atr.getBytes(), false));
+                        System.out.println(
+                                "  ATR: " + ByteBufferUtils.toHex(ByteBuffer.wrap(atr.getBytes())));
 
                         CardChannel channel = card.getBasicChannel();
                         byte[] aid =

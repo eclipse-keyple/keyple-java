@@ -10,7 +10,6 @@ package org.keyple.calypso.commands.po.parser;
 
 import static org.junit.Assert.assertEquals;
 import java.nio.ByteBuffer;
-import org.apache.commons.codec.DecoderException;
 import org.junit.Test;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ByteBufferUtils;
@@ -19,7 +18,7 @@ public class PoGetChallengeRespParsTest {
 
     // TODO: Do the same with all other classes
     @Test
-    public void getPoChallenge() throws DecoderException {
+    public void getPoChallenge() {
         final ApduResponse apdu =
                 new ApduResponse(ByteBufferUtils.fromHex("01 02 03 04 9000"), true);
 

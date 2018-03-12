@@ -12,8 +12,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +24,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SmartCardIOPluginTest {
-    Logger logger = LogManager.getLogger(SmartCardIOPluginTest.class);
 
     @InjectMocks
     @Spy

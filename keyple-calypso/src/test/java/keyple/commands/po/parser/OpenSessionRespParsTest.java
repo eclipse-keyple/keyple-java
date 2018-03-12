@@ -10,8 +10,7 @@ package keyple.commands.po.parser;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.keyple.calypso.commands.po.PoRevision;
@@ -24,12 +23,9 @@ import keyple.commands.utils.TestsUtilsResponseTabByteGenerator;
 @RunWith(MockitoJUnitRunner.class)
 public class OpenSessionRespParsTest {
 
-    Logger logger = LogManager.getLogger(OpenSessionRespParsTest.class);
-
-    String msgParser;
-
-    String msgParserDur = "File not found";
-
+    private void check(OpenSessionRespPars resp) {
+        Assert.assertTrue(resp.isSuccessful());
+    }
 
     @Test
     public void testgetResponse_rev2_4() {
@@ -44,10 +40,7 @@ public class OpenSessionRespParsTest {
         SeResponse reponseMock = new SeResponse(true, responseMockFci, apduResponses);
         ApduResponse response = reponseMock.getApduResponses().get(0);
 
-        new OpenSessionRespPars(response, PoRevision.REV2_4);
-        logger.info("depuis la methode: " + msgParser);
-        logger.info("test: " + msgParserDur);
-
+        check(new OpenSessionRespPars(response, PoRevision.REV2_4));
     }
 
     @Test
@@ -63,10 +56,7 @@ public class OpenSessionRespParsTest {
         SeResponse reponseMock = new SeResponse(true, responseMockFci, apduResponses);
         ApduResponse response = reponseMock.getApduResponses().get(0);
 
-        new OpenSessionRespPars(response, PoRevision.REV3_1);
-        logger.info("depuis la methode: " + msgParser);
-        logger.info("test: " + msgParserDur);
-
+        check(new OpenSessionRespPars(response, PoRevision.REV3_1));
     }
 
     @Test
@@ -84,10 +74,7 @@ public class OpenSessionRespParsTest {
         SeResponse reponseMock = new SeResponse(true, responseMockFci, apduResponses);
         ApduResponse response = reponseMock.getApduResponses().get(0);
 
-        new OpenSessionRespPars(response, PoRevision.REV3_2);
-        logger.info("depuis la methode: " + msgParser);
-        logger.info("test: " + msgParserDur);
-
+        check(new OpenSessionRespPars(response, PoRevision.REV3_2));
     }
 
 }

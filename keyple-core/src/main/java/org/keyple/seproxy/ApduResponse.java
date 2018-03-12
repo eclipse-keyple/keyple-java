@@ -117,6 +117,6 @@ public class ApduResponse extends AbstractApduBuffer {
 
     @Override
     public String toString() {
-        return "APDU Response " + super.toString();
+        return "Resp{" + super.toString() + "}";
     }
 }

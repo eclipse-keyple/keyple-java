@@ -9,7 +9,6 @@
 package org.keyple.seproxy;
 
 import static org.junit.Assert.*;
-import org.apache.commons.codec.DecoderException;
 import org.junit.Test;
 
 
@@ -46,13 +45,13 @@ public class ApduResponseTest {
     }
 
     @Test
-    public void niceFormat() throws DecoderException {
+    public void niceFormat() {
         ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), true);
         assertEquals("FEDCBA989000", ByteBufferUtils.toHex(response.getBuffer()));
     }
 
     @Test
-    public void statusCode() throws DecoderException {
+    public void statusCode() {
         ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), true);
         assertEquals(0x9000, response.getStatusCode());
     }

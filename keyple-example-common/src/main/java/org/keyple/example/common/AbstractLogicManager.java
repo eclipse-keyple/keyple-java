@@ -13,6 +13,7 @@ import java.util.Map;
 import org.keyple.util.event.Topic;
 
 
+
 public abstract class AbstractLogicManager implements Runnable {
     private Thread thread;
 
@@ -59,10 +60,13 @@ public abstract class AbstractLogicManager implements Runnable {
         thread.start();
     }
 
-    protected void post(String name, Object... details) {
+    private void post(String name, Object... details) {
         topic.post(new Event(name, details));
     }
 
+    /**
+     * General purpose event
+     */
     public static class Event {
         private final String name;
         private final Map<String, Object> details;

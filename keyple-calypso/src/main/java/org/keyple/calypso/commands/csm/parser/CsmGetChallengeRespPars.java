@@ -32,6 +32,6 @@ public class CsmGetChallengeRespPars extends ApduResponseParser {
      * @return the challenge
      */
     public ByteBuffer getChallenge() {
-        return isSuccessful() ? response.getBuffer() : null;
+        return isSuccessful() ? response.getDataOut() : null;
     }
 }

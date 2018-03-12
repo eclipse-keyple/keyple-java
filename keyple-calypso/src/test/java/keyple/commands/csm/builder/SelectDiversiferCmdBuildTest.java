@@ -11,8 +11,6 @@ package keyple.commands.csm.builder;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNot;
 import org.junit.Assert;
@@ -32,8 +30,6 @@ import org.keyple.seproxy.exceptions.*;
 import org.mockito.Mockito;
 
 public class SelectDiversiferCmdBuildTest {
-
-    Logger logger = LogManager.getLogger(SelectDiversiferCmdBuildTest.class);
 
     private ByteBuffer dataIn;
 
@@ -59,7 +55,7 @@ public class SelectDiversiferCmdBuildTest {
 
     @Test
     public void selectDiviersifier() throws IOReaderException, UnexpectedReaderException,
-            ChannelStateReaderException, InvalidApduReaderException, TimeoutReaderException,
+            ChannelStateReaderException, InvalidApduReaderException, ReaderTimeoutException,
             InconsistentCommandException, InconsistentParameterValueException {
 
         ApduRequest apdu = apduCommandBuilder.getApduRequest();

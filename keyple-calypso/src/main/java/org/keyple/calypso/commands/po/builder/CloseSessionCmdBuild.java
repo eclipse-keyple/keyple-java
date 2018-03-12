@@ -15,6 +15,7 @@ import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
+import org.keyple.seproxy.ByteBufferUtils;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -45,7 +46,8 @@ public class CloseSessionCmdBuild extends PoCommandBuilder {
         // bytes.
         if (terminalSessionSignature != null && terminalSessionSignature.limit() != 4
                 && terminalSessionSignature.limit() != 8) {
-            throw new InconsistentCommandException();
+            throw new InconsistentCommandException("Invalid terminal sessionSignature: "
+                    + ByteBufferUtils.toHex(terminalSessionSignature));
         }
 
         byte cla = PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00;

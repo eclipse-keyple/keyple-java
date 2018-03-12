@@ -6,13 +6,11 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.seproxy.exceptions;
+package org.keyple.plugin.pcsc.log;
 
-/**
- * @deprecated Isn't referenced anywhere
- */
-public class WrongParameterKeyException extends Exception {
-    public WrongParameterKeyException(String message) {
-        super(message);
-    }
+import com.github.structlog4j.ILogger;
+import com.github.structlog4j.SLoggerFactory;
+
+class Logging {
+    static final ILogger LOG = SLoggerFactory.getLogger(Logging.class);
 }
