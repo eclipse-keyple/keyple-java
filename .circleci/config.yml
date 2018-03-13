@@ -44,7 +44,7 @@ jobs:
 
   "build_android":
 
-      working_directory: ~/code
+      #working_directory: ~/code
       docker:
         - image: thedrhax/android-sdk
         #//https://github.com/thedrhax-dockerfiles/android-sdk
@@ -65,8 +65,6 @@ jobs:
         - restore_cache:
             keys:
             - v1-dependencies-{{ checksum "./keyple-example-androidnfc/build.gradle" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
 
         - run:
             name: Download Dependencies
