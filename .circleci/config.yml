@@ -46,7 +46,7 @@ jobs:
 
       working_directory: ~/code
       docker:
-        - image: alexisduque/android-sdk-gradle
+        - image: thedrhax/android-sdk
 
 
       environment:
