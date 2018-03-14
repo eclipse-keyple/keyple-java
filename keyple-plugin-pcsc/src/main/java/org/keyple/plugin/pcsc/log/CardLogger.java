@@ -72,7 +72,7 @@ public class CardLogger extends Card {
                 "cardId", id, "controlCommand", controlCommand, "command",
                 ByteBufferUtils.toHex(ByteBuffer.wrap(command)));
         byte[] response = card.transmitControlCommand(controlCommand, command);
-        double elapsedMs = (double) ((System.nanoTime() - before)/100000)/10;
+        double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
         Logging.LOG.info("Card: Receiving control command", "action", "card.control_response",
                 "cardId", id, "controlCommand", controlCommand, "response",
                 ByteBufferUtils.toHex(ByteBuffer.wrap(response)), "elapsedMs", elapsedMs);

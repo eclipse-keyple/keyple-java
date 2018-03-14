@@ -113,24 +113,14 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         long before = System.nanoTime();
         try {
             SeResponse response = transmitActual(request);
-            double elapsedMs = (double) ((System.nanoTime() - before)/100000)/10;
-            logger.info(
-                    "PCSCReader: Data exchange",
-                    "action", "pcsc_reader.transmit",
-                    "request", request,
-                    "response", response,
-                    "elapsedMs", elapsedMs
-            );
+            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            logger.info("PCSCReader: Data exchange", "action", "pcsc_reader.transmit", "request",
+                    request, "response", response, "elapsedMs", elapsedMs);
             return response;
-        }
-        catch(IOReaderException ex) {
-            double elapsedMs = (double) ((System.nanoTime() - before)/100000)/10;
-            logger.info(
-                    "PCSCReader: Data exchange",
-                    "action", "pcsc_reader.transmit_failure",
-                    "request", request,
-                    "elapsedMs", elapsedMs
-            );
+        } catch (IOReaderException ex) {
+            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            logger.info("PCSCReader: Data exchange", "action", "pcsc_reader.transmit_failure",
+                    "request", request, "elapsedMs", elapsedMs);
             throw ex;
         }
     }
@@ -167,8 +157,8 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                 try {
                     ByteBuffer buffer = apduRequest.getBuffer();
                     { // Sending data
-                        // We shouldn't have to re-use the buffer that was used to be sent but we have
-                        // some code that does it.
+                      // We shouldn't have to re-use the buffer that was used to be sent but we have
+                      // some code that does it.
                         final int posBeforeRead = buffer.position();
                         apduResponseData = channel.transmit(new CommandAPDU(buffer));
                         buffer.position(posBeforeRead);
