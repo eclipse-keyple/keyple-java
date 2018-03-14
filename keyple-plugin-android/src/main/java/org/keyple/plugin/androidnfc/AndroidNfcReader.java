@@ -62,7 +62,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     /**
      * Access point for the unique instance of singleton
      */
-    private static AndroidNfcReader getInstance() {
+    protected static AndroidNfcReader getInstance() {
         return SingletonHolder.instance;
     }
 
@@ -82,8 +82,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     public void onTagDiscovered(Tag tag) {
 
         Log.i(TAG, "Received Tag Discovered event " + printTagId());
-
-        processTag(tag);
+        connectTag(tag);
     }
 
 
@@ -108,18 +107,24 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
 
         try {
 
-            // Checking of the presence of the AID request in requests group
-            if ((seApplicationRequest.getAidToSelect() != null)
-                    && (mAidCurrentlySelected == null)) {
-                fciResponse = this.connectApplication(seApplicationRequest.getAidToSelect());
-            }
+            if(isSEPresent()){
+
+                // Checking of the presence of the AID request in requests group
+                if ((seApplicationRequest.getAidToSelect() != null)
+                        && (mAidCurrentlySelected == null)) {
+                    fciResponse = this.connectApplication(seApplicationRequest.getAidToSelect());
+                }
 
 
-            for (ApduRequest apduRequest : seApplicationRequest.getApduRequests()) {
-                Log.i(TAG, getName() + " : Sending : "
-                        + ByteBufferUtils.toHex(apduRequest.getBuffer()));
+                for (ApduRequest apduRequest : seApplicationRequest.getApduRequests()) {
+                    Log.i(TAG, getName() + " : Sending : "
+                            + ByteBufferUtils.toHex(apduRequest.getBuffer()));
 
-                apduResponses.add(sendAPDUCommand(apduRequest.getBuffer()));
+                    apduResponses.add(sendAPDUCommand(apduRequest.getBuffer()));
+
+                }
+            }else{
+                Log.w(TAG, "SE is not present");
 
             }
         } catch (IOException e) {
@@ -146,8 +151,6 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
 
         Log.i(TAG, "Connecting to application");
 
-        byte[] connectDataOut = null;
-
         if (aid != null) {
             Log.i(TAG, "AID limit :" + aid.limit());
 
@@ -166,6 +169,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
             return sendAPDUCommand(command);
 
         } else {
+            mAidCurrentlySelected = null;
             return null;
         }
     }
@@ -175,31 +179,29 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
      *
      * @param intent
      */
-    protected void processIntent(Intent intent) {
+    protected void connectTag(Intent intent) {
 
         // Inform that a nfc tag has been detected
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-        this.processTag(tag);
+        this.connectTag(tag);
 
     }
 
 
     /**
      * Process data from the scanned NFC tag
-     *
-     * @param tag
      */
-    protected void processTag(Tag tag) {
+    protected void connectTag(Tag tag) {
 
         Log.d(TAG, "Processing Tag");
-
         currentTag = tag;
 
         try {
             connectISODEP();
             notifyObservers(new ReaderEvent(AndroidNfcReader.getInstance(),
                     ReaderEvent.EventType.SE_INSERTED));
+
         } catch (IOException e) {
             Log.e(TAG, "Error while connecting to Tag ");
             e.printStackTrace();
@@ -214,10 +216,9 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     private void connectISODEP() throws IOException {
         Log.i(TAG, "Connecting to tag as a Iso Dep : " + printTagId());
 
-        isoDepTag = null;
         isoDepTag = IsoDep.get(currentTag);
-
         isoDepTag.connect();
+
         Log.i(TAG, "Iso Dep tag connected successfully : " + printTagId());
 
     };
@@ -241,6 +242,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
         } catch (IOException e) {
             Log.e(TAG, "Disconnecting error");
         } ;
+
         isoDepTag = null;
     }
 

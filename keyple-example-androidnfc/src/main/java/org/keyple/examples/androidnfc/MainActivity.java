@@ -14,6 +14,10 @@ import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
 import org.keyple.commands.InconsistentCommandException;
+import org.keyple.example.common.AbstractLogicManager;
+import org.keyple.example.common.BasicCardAccessManager;
+import org.keyple.example.common.AbstractLogicManager.Event;
+import org.keyple.example.common.KeepOpenCardAccessManager;
 import org.keyple.plugin.androidnfc.AndroidNfcFragment;
 import org.keyple.plugin.androidnfc.AndroidNfcPlugin;
 import org.keyple.seproxy.ApduRequest;
@@ -28,6 +32,8 @@ import org.keyple.seproxy.SeProxyService;
 import org.keyple.seproxy.SeRequest;
 import org.keyple.seproxy.SeResponse;
 import org.keyple.seproxy.exceptions.IOReaderException;
+import org.keyple.util.event.Topic;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -40,7 +46,7 @@ import android.widget.TextView;
  * Example of @{@link SeProxyService} implementation based on the @{@link AndroidNfcPlugin}
  *
  */
-public class MainActivity extends AppCompatActivity implements ReaderObserver {
+public class MainActivity extends AppCompatActivity implements ReaderObserver, Topic.Subscriber<Event> {
 
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -48,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver {
 
     // Simple text on screen
     private TextView mText;
-
+    private KeepOpenCardAccessManager cardAccessManager;
 
     /**
      * SE Proxy setting of the AndroidNfcPlugin
@@ -84,10 +90,17 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver {
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
             ((ObservableReader) reader).addObserver(this);
 
+            cardAccessManager = new KeepOpenCardAccessManager();
+            cardAccessManager.setPoReader(reader);
+
+            cardAccessManager.getTopic().addSubscriber(this);
+
+            mText = (TextView) findViewById(R.id.text);
+            mText.setText("Waiting for a tag");
+
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
-
 
 
     }
@@ -100,8 +113,6 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver {
     protected void onResume() {
         super.onResume();
 
-        mText = (TextView) findViewById(R.id.text);
-        mText.setText("Waiting for a tag");
     }
 
     /**
@@ -132,9 +143,7 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver {
     @Override
     public void notify(final ReaderEvent readerEvent) {
 
-
         runOnUiThread(new Runnable() {
-
             @Override
             public void run() {
                 Log.d(TAG, "New ReaderEvent received : " + readerEvent.getEventType().toString());
@@ -143,70 +152,40 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver {
                     case SE_INSERTED:
                         try {
 
-                            SeProxyService seProxyService = SeProxyService.getInstance();
-                            List<ReadersPlugin> readersPlugin = seProxyService.getPlugins();
-                            ProxyReader poReader = readersPlugin.get(0).getReaders().get(0);
-
-                            String poAid = "A000000291A000000191";
-                            String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
-                                    + "1112131415161718191A1B1C1D1E1F20"
-                                    + "2122232425262728292A2B2C2D2E2F30";
-
-                            ReadRecordsCmdBuild poReadRecordCmd_T2Env = null;
-                            poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                                    (byte) 0x01, true, (byte) 0x14, (byte) 0x20);
-                            ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(
-                                    PoRevision.REV3_1, (byte) 0x01, true, (byte) 0x1A, (byte) 0x30);
-                            UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
-                                    new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x01,
-                                            (byte) 0x1A,
-                                            ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
-
-                            // Get PO ApduRequest List
-                            List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
-                            poApduRequestList.add(poReadRecordCmd_T2Env.getApduRequest());
-                            poApduRequestList.add(poReadRecordCmd_T2Usage.getApduRequest());
-                            poApduRequestList.add(poUpdateRecordCmd_T2UsageFill.getApduRequest());
-
-                            SeRequest poRequest = new SeRequest(ByteBufferUtils.fromHex(poAid),
-                                    poApduRequestList, false);
-                            mText.append("\n--\nTransmit : ");
-                            for (ApduRequest req : poApduRequestList) {
-                                // Log.i(TAG,r.toString());
-                                mText.append("\n" + ByteBufferUtils.toHex(req.getBuffer()));
-                            }
-
-                            SeResponse poResponse = poReader.transmit(poRequest);
-                            mText.append("\n--\nResponses : ");
-                            for (ApduResponse res : poResponse.getApduResponses()) {
-                                // Log.i(TAG,r.toString());
-                                mText.append("\n" + ByteBufferUtils.toHex(res.getBuffer()) + " "
-                                        + String.valueOf(res.getStatusCode()));
-                            }
+                            cardAccessManager.run();
 
                         } catch (InconsistentCommandException e) {
-                            e.printStackTrace();
-                        } catch (IOReaderException e) {
                             e.printStackTrace();
                         }
                         break;
 
-
                     case SE_REMOVAL:
-                        mText.setText("Waiting for a tag");
+                        mText.append("\n ---- \n");
+                        mText.append("Connection closed to tag");
                         break;
 
                     case IO_ERROR:
+                        mText.append("\n ---- \n");
                         mText.setText("Error reading card");
                         break;
 
                 }
-
             }
         });
-
-
     }
 
 
+    /**
+     * Observes Card Access when an event is received
+     * @param event
+     */
+    public void update(Event event) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mText.append("\n ---- \n");
+                mText.append(event.toString());
+            }
+        });
+    }
 }

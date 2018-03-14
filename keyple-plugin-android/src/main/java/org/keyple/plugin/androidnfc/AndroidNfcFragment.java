@@ -110,7 +110,7 @@ public class AndroidNfcFragment extends Fragment {
                 Log.d(TAG, "Handle ACTION TECH intent");
 
                 ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().get(0))
-                        .processIntent(intent);
+                        .connectTag(intent);
 
             } catch (IOReaderException e) {
                 e.printStackTrace();
