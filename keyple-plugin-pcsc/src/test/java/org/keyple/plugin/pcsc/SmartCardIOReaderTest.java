@@ -74,7 +74,7 @@ public class SmartCardIOReaderTest {
         res = new ResponseAPDU(responseApduByte);
 
         readerName = "lecteur";
-        this.reader = new PcscReader(terminal);
+        this.reader = new PcscReader(terminal, true);
     }
 
     @Test
