@@ -57,11 +57,6 @@ jobs:
 
         - checkout
 
-#        - run:
-#            name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
-#            command: sudo chmod +x ./keyple-example-androidnfc/gradlew
-
-
         - restore_cache:
             keys:
             - v1-dependencies-{{ checksum "./keyple-example-androidnfc/build.gradle" }}
@@ -76,13 +71,17 @@ jobs:
             key: v1-dependencies-{{ checksum "./keyple-example-androidnfc/build.gradle" }}
 
         - run:
+            name: Run plugin assemble to generate aar file
+            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-plugin-android/build.gradle assembleRelease
+
+
+        - run:
             name: Run assemble release
             command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example-androidnfc/build.gradle assembleRelease
 
-#
-#        - store_artifacts:
-#            path: ~/artifacts
-#            destination: reports
+        - store_artifacts:
+            path: ~/artifacts
+            destination: reports
 
 
 workflows:
