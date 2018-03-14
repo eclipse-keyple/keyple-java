@@ -180,7 +180,8 @@ public class OpenSessionRespPars extends ApduResponseParser {
 
         return new SecureSession(ByteBufferUtils.subIndex(apduResponse, 0, 3),
                 ByteBufferUtils.subIndex(apduResponse, 3, 8), previousSessionRatified,
-                manageSecureSessionAuthorized, kif, kvc, data, ByteBufferUtils.subIndex(apduResponse, 0, apduResponse.limit()-2));
+                manageSecureSessionAuthorized, kif, kvc, data,
+                ByteBufferUtils.subIndex(apduResponse, 0, apduResponse.limit() - 2));
     }
 
     /**
@@ -201,7 +202,8 @@ public class OpenSessionRespPars extends ApduResponseParser {
 
         secureSession = new SecureSession(ByteBufferUtils.subIndex(apduResponse, 0, 3),
                 ByteBufferUtils.subIndex(apduResponse, 3, 4), previousSessionRatified,
-                manageSecureSessionAuthorized, kif, kvc, data, ByteBufferUtils.subIndex(apduResponse, 0, apduResponse.limit()-2));
+                manageSecureSessionAuthorized, kif, kvc, data,
+                ByteBufferUtils.subIndex(apduResponse, 0, apduResponse.limit() - 2));
         return secureSession;
     }
 
@@ -225,7 +227,7 @@ public class OpenSessionRespPars extends ApduResponseParser {
 
         secureSession = new SecureSession(ByteBufferUtils.subIndex(apduResponse, 1, 4),
                 ByteBufferUtils.subIndex(apduResponse, 4, 5), previousSessionRatified, false, kvc,
-                null, ByteBufferUtils.subIndex(apduResponse, 0, apduResponse.limit()-2));
+                null, ByteBufferUtils.subIndex(apduResponse, 0, apduResponse.limit() - 2));
 
         return secureSession;
     }
