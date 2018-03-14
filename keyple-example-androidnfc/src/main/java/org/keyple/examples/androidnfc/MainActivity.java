@@ -63,18 +63,31 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver {
 
 
         // initialize SEProxy with Android Plugin
+        Log.d(TAG, "Initialize SEProxy with Android Plugin");
         SeProxyService seProxyService = SeProxyService.getInstance();
         List<ReadersPlugin> plugins = new ArrayList<ReadersPlugin>();
         plugins.add(AndroidNfcPlugin.getInstance());
         seProxyService.setPlugins(plugins);
 
         // add NFC Fragment to activity in order to communicate with Android Plugin
-        Log.d(TAG, "add Android NFC Fragment");
+        Log.d(TAG, "Add NFC Fragment to activity in order to communicate with Android Plugin");
         Fragment nfcFragment = AndroidNfcFragment.newInstance();
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction fragtrans = fm.beginTransaction();
         fragtrans.add(nfcFragment, "nfc");
         fragtrans.commit();
+
+
+        try {
+            //define task as an observer for ReaderEvents
+            Log.d(TAG, "Define task as an observer for ReaderEvents");
+            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+            ((ObservableReader) reader).addObserver(this);
+
+        } catch (IOReaderException e) {
+            e.printStackTrace();
+        }
+
 
 
     }
@@ -86,17 +99,6 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver {
     @Override
     protected void onResume() {
         super.onResume();
-
-
-        try {
-            SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
-            ((ObservableReader) reader).addObserver(this);
-
-        } catch (IOReaderException e) {
-            e.printStackTrace();
-        }
-
 
         mText = (TextView) findViewById(R.id.text);
         mText.setText("Waiting for a tag");
@@ -111,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver {
         super.onDestroy();
 
         try {
+            Log.d(TAG, "Remove task as an observer for ReaderEvents");
             SeProxyService seProxyService = SeProxyService.getInstance();
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
             ((ObservableReader) reader).deleteObserver(this);
@@ -118,9 +121,6 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver {
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
-
-
-
     }
 
 

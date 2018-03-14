@@ -62,7 +62,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     /**
      * Access point for the unique instance of singleton
      */
-    public static AndroidNfcReader getInstance() {
+    private static AndroidNfcReader getInstance() {
         return SingletonHolder.instance;
     }
 
@@ -81,17 +81,22 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     @Override
     public void onTagDiscovered(Tag tag) {
 
-        Log.i(TAG, "Received Tag Discovered event " + tag.getId());
+        Log.i(TAG, "Received Tag Discovered event " + printTagId());
 
         processTag(tag);
     }
 
 
     @Override
-    public boolean isSEPresent() throws IOReaderException {// TODO
-        return false;
+    public boolean isSEPresent() throws IOReaderException {
+        return isoDepTag !=null && isoDepTag.isConnected();
     }
 
+    /**
+     * Transmit {@link SeRequest} to the connected Tag
+     * @param seApplicationRequest the se application request
+     * @return {@link SeResponse} : response from the transmitted request
+     */
     @Override
     public SeResponse transmit(SeRequest seApplicationRequest) {
         Log.i(TAG, "Calling transmit on Android NFC Reader");
@@ -101,10 +106,9 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
         ApduResponse fciResponse = null;
 
 
-        // Checking of the presence of the AID request in requests group
         try {
 
-
+            // Checking of the presence of the AID request in requests group
             if ((seApplicationRequest.getAidToSelect() != null)
                     && (mAidCurrentlySelected == null)) {
                 fciResponse = this.connectApplication(seApplicationRequest.getAidToSelect());
@@ -115,13 +119,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
                 Log.i(TAG, getName() + " : Sending : "
                         + ByteBufferUtils.toHex(apduRequest.getBuffer()));
 
-                IsoDepResponse res = sendAPDUCommand(apduRequest.getBuffer());
-
-
-                Log.i(TAG, getName() + " : Recept : " + res.getResponseBuffer().toString()
-                        + " statusCode : " + res.getStatusWord().toString());
-
-                apduResponses.add(new ApduResponse(res.getResponseBuffer(), true));
+                apduResponses.add(sendAPDUCommand(apduRequest.getBuffer()));
 
             }
         } catch (IOException e) {
@@ -164,13 +162,9 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
             command.position(0);
             Log.i(TAG, " : Selecting AID " + ByteBufferUtils.toHex(aid));
 
-            IsoDepResponse res = sendAPDUCommand(command);
-
-            Log.i(TAG, getName() + " : Recept : " + ByteBufferUtils.toHex(res.getResponseBuffer()));
-            ApduResponse fciResponse = new ApduResponse(res.getResponseBuffer(), true);
-
             mAidCurrentlySelected = aid;
-            return fciResponse;
+            return sendAPDUCommand(command);
+
         } else {
             return null;
         }
@@ -207,11 +201,9 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
             notifyObservers(new ReaderEvent(AndroidNfcReader.getInstance(),
                     ReaderEvent.EventType.SE_INSERTED));
         } catch (IOException e) {
-            Log.e(TAG, "Error while connecting to Tag " + tag.getId());
+            Log.e(TAG, "Error while connecting to Tag ");
             e.printStackTrace();
         }
-
-
     }
 
 
@@ -220,13 +212,13 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
      *
      */
     private void connectISODEP() throws IOException {
-        Log.i(TAG, "Connecting to tag as a Iso Dep");
+        Log.i(TAG, "Connecting to tag as a Iso Dep : " + printTagId());
 
         isoDepTag = null;
         isoDepTag = IsoDep.get(currentTag);
 
         isoDepTag.connect();
-        Log.i(TAG, "Iso Dep tag connected successfully");
+        Log.i(TAG, "Iso Dep tag connected successfully : " + printTagId());
 
     };
 
@@ -243,7 +235,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
                 isoDepTag.close();
                 this.notifyObservers(new ReaderEvent(this, ReaderEvent.EventType.SE_REMOVAL));
 
-                Log.i(TAG, "Disconnected tag");
+                Log.i(TAG, "Disconnected tag : " + printTagId());
             }
 
         } catch (IOException e) {
@@ -258,52 +250,30 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
      * @param command command to send
      * 
      */
-    private IsoDepResponse sendAPDUCommand(ByteBuffer command) throws IOException {
-        IsoDepResponse res = null;
+    private ApduResponse sendAPDUCommand(ByteBuffer command) throws IOException {
         // Initialization
-
         long commandLenght = command.limit();
         Log.d(TAG, "Data Length to be sent to ISODEP : " + commandLenght);
         Log.d(TAG, "Max data possible to be transceived by IsoDep : "
                 + isoDepTag.getMaxTransceiveLength());
 
+        if(isSEPresent()){
 
-        Log.d(TAG, "Sending data to  tag ");
-        byte[] data = ByteBufferUtils.toBytes(command);
-        byte[] dataOut = isoDepTag.transceive(data);
-        res = new IsoDepResponse(dataOut);
+            Log.d(TAG, "Sending data to  tag ");
+            byte[] data = ByteBufferUtils.toBytes(command);
+            byte[] dataOut = isoDepTag.transceive(data);
 
-        return res;
+            Log.i(TAG, getName() + " : Recept : " + dataOut);
+            return new ApduResponse(dataOut, true);
+
+        }else{
+            Log.d(TAG, "Can not transmit secure Element is not connected");
+            return new ApduResponse(ByteBuffer.allocate(0), false);
+        }
+
     }
 
-
-    /**
-     * * responseBuffer received response lenDataOut length of the response statusWord status word
-     * of the response
-     */
-    private class IsoDepResponse {
-        ByteBuffer responseBuffer;
-        int lenDataOut;
-        ByteBuffer statusWord;
-
-
-        public IsoDepResponse(byte[] res) {
-            this.statusWord = ByteBuffer.allocate(2);
-            this.lenDataOut = res.length;
-            this.responseBuffer = ByteBuffer.wrap(res);
-
-            this.statusWord.put(responseBuffer.get(lenDataOut - 2));
-            this.statusWord.put(responseBuffer.get(lenDataOut - 1));
-
-        }
-
-        public ByteBuffer getStatusWord() {
-            return statusWord;
-        }
-
-        public ByteBuffer getResponseBuffer() {
-            return responseBuffer;
-        }
-
+    private String printTagId(){
+        return currentTag != null ? currentTag.getId() + currentTag.toString() : "null";
     }
 }
