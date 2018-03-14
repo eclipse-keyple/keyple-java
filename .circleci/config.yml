@@ -71,17 +71,20 @@ jobs:
             key: v1-dependencies-{{ checksum "./keyple-example-androidnfc/build.gradle" }}
 
         - run:
-            name: Run plugin assemble to generate aar file
+            name: Assemble Plugin NFC plugin to aar file
             command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-plugin-android/build.gradle assembleRelease
 
-
         - run:
-            name: Run assemble release
+            name: Assemble Keyple Example Android NFC application to apk file
             command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example-androidnfc/build.gradle assembleRelease
 
         - store_artifacts:
-            path: ~/artifacts
-            destination: reports
+              path: ./keyple-example-androidnfc/build/outputs/apk/
+              destination: apks/
+
+        - store_artifacts:
+              path: ./keyple-plugin-android/build/outputs/aar/
+              destination: aars/
 
 
 workflows:
