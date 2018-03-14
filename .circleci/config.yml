@@ -79,7 +79,7 @@ jobs:
             command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example-androidnfc/build.gradle assembleRelease
 
         - store_artifacts:
-              path: ./keyple-example-androidnfc/build/outputs/apk/
+              path: ./keyple-example-androidnfc/build/outputs/apk/release
               destination: apks/
 
         - store_artifacts:
