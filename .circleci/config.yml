@@ -80,11 +80,11 @@ jobs:
 
         - store_artifacts:
               path: ./keyple-example-androidnfc/build/outputs/apk/release
-              destination: apks/
+              destination: keyple-example-androidnfc/
 
         - store_artifacts:
               path: ./keyple-plugin-android/build/outputs/aar/
-              destination: aars/
+              destination: keyple-plugin-android/
 
 
 workflows:
