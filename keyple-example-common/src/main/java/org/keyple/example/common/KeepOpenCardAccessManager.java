@@ -1,5 +1,15 @@
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
+
 package org.keyple.example.common;
 
+import java.util.Arrays;
+import java.util.List;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
@@ -8,9 +18,6 @@ import org.keyple.seproxy.ByteBufferUtils;
 import org.keyple.seproxy.ProxyReader;
 import org.keyple.seproxy.SeRequest;
 import org.keyple.seproxy.SeResponse;
-
-import java.util.Arrays;
-import java.util.List;
 
 
 public class KeepOpenCardAccessManager extends AbstractLogicManager {
@@ -59,15 +66,14 @@ public class KeepOpenCardAccessManager extends AbstractLogicManager {
                     new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
 
             SeResponse poResponse2 = poReader.transmit(poRequest2);
-            getTopic()
-                    .post(new Event("Got a 2nd response", "poResponse2", poResponse2.getApduResponses()));
+            getTopic().post(
+                    new Event("Got a 2nd response", "poResponse2", poResponse2.getApduResponses()));
 
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 
 
 

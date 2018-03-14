@@ -115,7 +115,7 @@ public class AndroidNfcFragment extends Fragment {
             } catch (IOReaderException e) {
                 e.printStackTrace();
             }
-        }else{
+        } else {
             Log.d(TAG, "Intent is not of type ACTION TECH, do not process");
 
         }

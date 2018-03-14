@@ -10,30 +10,19 @@ package org.keyple.examples.androidnfc;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.keyple.calypso.commands.po.PoRevision;
-import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
-import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
 import org.keyple.commands.InconsistentCommandException;
-import org.keyple.example.common.AbstractLogicManager;
-import org.keyple.example.common.BasicCardAccessManager;
 import org.keyple.example.common.AbstractLogicManager.Event;
 import org.keyple.example.common.KeepOpenCardAccessManager;
 import org.keyple.plugin.androidnfc.AndroidNfcFragment;
 import org.keyple.plugin.androidnfc.AndroidNfcPlugin;
-import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.ByteBufferUtils;
 import org.keyple.seproxy.ObservableReader;
 import org.keyple.seproxy.ProxyReader;
 import org.keyple.seproxy.ReaderEvent;
 import org.keyple.seproxy.ReaderObserver;
 import org.keyple.seproxy.ReadersPlugin;
 import org.keyple.seproxy.SeProxyService;
-import org.keyple.seproxy.SeRequest;
-import org.keyple.seproxy.SeResponse;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.util.event.Topic;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -46,7 +35,8 @@ import android.widget.TextView;
  * Example of @{@link SeProxyService} implementation based on the @{@link AndroidNfcPlugin}
  *
  */
-public class MainActivity extends AppCompatActivity implements ReaderObserver, Topic.Subscriber<Event> {
+public class MainActivity extends AppCompatActivity
+        implements ReaderObserver, Topic.Subscriber<Event> {
 
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -85,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver, T
 
 
         try {
-            //define task as an observer for ReaderEvents
+            // define task as an observer for ReaderEvents
             Log.d(TAG, "Define task as an observer for ReaderEvents");
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
             ((ObservableReader) reader).addObserver(this);
@@ -177,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver, T
 
     /**
      * Observes Card Access when an event is received
+     * 
      * @param event
      */
     public void update(Event event) {

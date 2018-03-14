@@ -88,11 +88,12 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
 
     @Override
     public boolean isSEPresent() throws IOReaderException {
-        return isoDepTag !=null && isoDepTag.isConnected();
+        return isoDepTag != null && isoDepTag.isConnected();
     }
 
     /**
      * Transmit {@link SeRequest} to the connected Tag
+     * 
      * @param seApplicationRequest the se application request
      * @return {@link SeResponse} : response from the transmitted request
      */
@@ -107,7 +108,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
 
         try {
 
-            if(isSEPresent()){
+            if (isSEPresent()) {
 
                 // Checking of the presence of the AID request in requests group
                 if ((seApplicationRequest.getAidToSelect() != null)
@@ -123,7 +124,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
                     apduResponses.add(sendAPDUCommand(apduRequest.getBuffer()));
 
                 }
-            }else{
+            } else {
                 Log.w(TAG, "SE is not present");
 
             }
@@ -259,7 +260,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
         Log.d(TAG, "Max data possible to be transceived by IsoDep : "
                 + isoDepTag.getMaxTransceiveLength());
 
-        if(isSEPresent()){
+        if (isSEPresent()) {
 
             Log.d(TAG, "Sending data to  tag ");
             byte[] data = ByteBufferUtils.toBytes(command);
@@ -268,14 +269,14 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
             Log.i(TAG, getName() + " : Recept : " + dataOut);
             return new ApduResponse(dataOut, true);
 
-        }else{
+        } else {
             Log.d(TAG, "Can not transmit secure Element is not connected");
             return new ApduResponse(ByteBuffer.allocate(0), false);
         }
 
     }
 
-    private String printTagId(){
+    private String printTagId() {
         return currentTag != null ? currentTag.getId() + currentTag.toString() : "null";
     }
 }

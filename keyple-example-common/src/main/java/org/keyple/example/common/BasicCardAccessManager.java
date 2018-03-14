@@ -55,7 +55,7 @@ public class BasicCardAccessManager extends AbstractLogicManager {
         }
     }
 
-    private void keepOpenTest(){
+    private void keepOpenTest() {
         String poAid = "A000000291A000000191";
         String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
                 + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
@@ -84,7 +84,6 @@ public class BasicCardAccessManager extends AbstractLogicManager {
             System.out.println("Sleeping for 5 seconds");
             Thread.sleep(5000);
             System.out.println("Transmit 2nd SE Request");
-
 
 
 
