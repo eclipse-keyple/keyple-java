@@ -80,7 +80,7 @@ public final class PcscPlugin implements ReadersPlugin {
             synchronized (readers) {
                 for (CardTerminal terminal : terminals.list()) {
                     if (!this.readers.containsKey(terminal.getName())) {
-                        PcscReader reader = new PcscReader(terminal);
+                        PcscReader reader = new PcscReader(terminal, logging);
                         logger.info("New terminal found", "action", "pcsc_plugin.new_terminal",
                                 "terminalName", reader.getName());
                         this.readers.put(reader.getName(), reader);

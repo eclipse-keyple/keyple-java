@@ -60,18 +60,21 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     private EventThread thread;
     private static final AtomicInteger threadCount = new AtomicInteger();
 
+    private final boolean logging;
+
     /**
      * Thread wait timeout in ms
      */
     private long threadWaitTimeout;
 
 
-    protected PcscReader(CardTerminal terminal) { // PcscReader constructor may be
+    PcscReader(CardTerminal terminal, boolean logging) { // PcscReader constructor may be
         // called only by PcscPlugin
         this.terminal = terminal;
         this.terminalName = terminal.getName();
         this.card = null;
         this.channel = null;
+        this.logging = logging;
 
         // Using null values to use the standard method for defining default values
         try {
@@ -102,7 +105,37 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     }
 
     @Override
-    public SeResponse transmit(SeRequest seApplicationRequest) throws IOReaderException {
+    public SeResponse transmit(SeRequest request) throws IOReaderException {
+        return logging ? transmitWithTiming(request) : transmitActual(request);
+    }
+
+    private SeResponse transmitWithTiming(SeRequest request) throws IOReaderException {
+        long before = System.nanoTime();
+        try {
+            SeResponse response = transmitActual(request);
+            double elapsedMs = (double) ((System.nanoTime() - before)/100000)/10;
+            logger.info(
+                    "PCSCReader: Data exchange",
+                    "action", "pcsc_reader.transmit",
+                    "request", request,
+                    "response", response,
+                    "elapsedMs", elapsedMs
+            );
+            return response;
+        }
+        catch(IOReaderException ex) {
+            double elapsedMs = (double) ((System.nanoTime() - before)/100000)/10;
+            logger.info(
+                    "PCSCReader: Data exchange",
+                    "action", "pcsc_reader.transmit_failure",
+                    "request", request,
+                    "elapsedMs", elapsedMs
+            );
+            throw ex;
+        }
+    }
+
+    private SeResponse transmitActual(SeRequest request) throws IOReaderException {
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
         if (isSEPresent()) { // TODO si vrai ET pas vrai => retourne un SeResponse vide de manière
@@ -114,8 +147,8 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                 throw new ChannelStateReaderException(e);
             }
             // gestion du select application ou du getATR
-            if (seApplicationRequest.getAidToSelect() != null && aidCurrentlySelected == null) {
-                fciDataSelected = connect(seApplicationRequest.getAidToSelect());
+            if (request.getAidToSelect() != null && aidCurrentlySelected == null) {
+                fciDataSelected = connect(request.getAidToSelect());
             } else if (!atrDefaultSelected) {
                 fciDataSelected = new ApduResponse(
                         ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
@@ -129,13 +162,13 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                 throw new InvalidMessageException("FCI failed !", fciDataSelected);
             }
 
-            for (ApduRequest apduRequest : seApplicationRequest.getApduRequests()) {
+            for (ApduRequest apduRequest : request.getApduRequests()) {
                 ResponseAPDU apduResponseData;
                 try {
                     ByteBuffer buffer = apduRequest.getBuffer();
                     { // Sending data
-                      // We shouldn't have to re-use the buffer that was used to be sent but we have
-                      // some code that does it.
+                        // We shouldn't have to re-use the buffer that was used to be sent but we have
+                        // some code that does it.
                         final int posBeforeRead = buffer.position();
                         apduResponseData = channel.transmit(new CommandAPDU(buffer));
                         buffer.position(posBeforeRead);
@@ -161,8 +194,8 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                  */
             }
 
-            if (!seApplicationRequest.keepChannelOpen()) {
-                this.disconnect();
+            if (!request.keepChannelOpen()) {
+                disconnect();
             }
         }
 
@@ -277,10 +310,10 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             fciDataSelected = null;
             atrDefaultSelected = false;
 
-            if (this.card != null) {
-                this.channel = null;
-                this.card.disconnect(false);
-                this.card = null;
+            if (card != null) {
+                channel = null;
+                card.disconnect(cardReset);
+                card = null;
             }
         } catch (CardException e) {
             throw new IOReaderException(e);

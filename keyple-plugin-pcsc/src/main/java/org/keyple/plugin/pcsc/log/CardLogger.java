@@ -67,13 +67,15 @@ public class CardLogger extends Card {
 
     @Override
     public byte[] transmitControlCommand(int controlCommand, byte[] command) throws CardException {
+        long before = System.nanoTime();
         Logging.LOG.info("Card: Sending control command", "action", "card.control_request",
                 "cardId", id, "controlCommand", controlCommand, "command",
                 ByteBufferUtils.toHex(ByteBuffer.wrap(command)));
         byte[] response = card.transmitControlCommand(controlCommand, command);
+        double elapsedMs = (double) ((System.nanoTime() - before)/100000)/10;
         Logging.LOG.info("Card: Receiving control command", "action", "card.control_response",
                 "cardId", id, "controlCommand", controlCommand, "response",
-                ByteBufferUtils.toHex(ByteBuffer.wrap(response)));
+                ByteBufferUtils.toHex(ByteBuffer.wrap(response)), "elapsedMs", elapsedMs);
         return response;
     }
 
