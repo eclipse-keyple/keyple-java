@@ -95,5 +95,5 @@ workflows:
 
       #synchronous build to avoid error in github  "ci/circleci — Waiting for status to be reported"
       - build_android:
-        requires:
-          - build_java
+          requires:
+            - build_java
