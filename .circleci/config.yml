@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  "build_java":
+  build_java:
     docker:
       # documented at https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/openjdk:8-jdk
@@ -42,7 +42,7 @@ jobs:
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
 
-  "build_android":
+  build_android:
 
       #working_directory: ~/code
       docker:
@@ -89,9 +89,11 @@ jobs:
 
 workflows:
   version: 2
-  "java_and_android_build":
+  java_and_android_build:
     jobs:
-      - "build_java"
-      - "build_android":
+      - build_java
+
+      #synchronous build to avoid error in github  "ci/circleci — Waiting for status to be reported"
+      - build_android:
         requires:
-          - "build_java"
+          - build_java
