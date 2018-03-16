@@ -76,10 +76,10 @@ jobs:
 
         - run:
             name: Assemble Keyple Example Android NFC application to apk file
-            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example-androidnfc/build.gradle assembleRelease
+            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example-androidnfc/build.gradle assembleDebug
 
         - store_artifacts:
-              path: ./keyple-example-androidnfc/build/outputs/apk/release
+              path: ./keyple-example-androidnfc/build/outputs/apk/debug
               destination: keyple-example-androidnfc/
 
         - store_artifacts:
