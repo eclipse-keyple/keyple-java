@@ -97,19 +97,10 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    /**
-     * Declaration of the Activity as "observer" of
-     * the @{@link org.keyple.plugin.androidnfc.AndroidNfcReader}
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
 
     /**
      * Revocation of the Activity from @{@link org.keyple.plugin.androidnfc.AndroidNfcReader}
-     * "observers
+     * list of observers
      */
     @Override
     protected void onDestroy() {
