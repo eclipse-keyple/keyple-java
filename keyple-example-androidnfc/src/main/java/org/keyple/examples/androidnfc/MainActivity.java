@@ -11,7 +11,9 @@ package org.keyple.examples.androidnfc;
 import java.util.ArrayList;
 import java.util.List;
 import org.keyple.commands.InconsistentCommandException;
+import org.keyple.example.common.AbstractLogicManager;
 import org.keyple.example.common.AbstractLogicManager.Event;
+import org.keyple.example.common.BasicCardAccessManager;
 import org.keyple.example.common.KeepOpenCardAccessManager;
 import org.keyple.plugin.androidnfc.AndroidNfcFragment;
 import org.keyple.plugin.androidnfc.AndroidNfcPlugin;
@@ -29,6 +31,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 /**
@@ -44,7 +48,8 @@ public class MainActivity extends AppCompatActivity
 
     // Simple text on screen
     private TextView mText;
-    private KeepOpenCardAccessManager cardAccessManager;
+    private String testType;
+    private AbstractLogicManager cardAccessManager;
 
     /**
      * SE Proxy setting of the AndroidNfcPlugin
@@ -80,10 +85,7 @@ public class MainActivity extends AppCompatActivity
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
             ((ObservableReader) reader).addObserver(this);
 
-            cardAccessManager = new KeepOpenCardAccessManager();
-            cardAccessManager.setPoReader(reader);
-
-            cardAccessManager.getTopic().addSubscriber(this);
+            initKeepChannelAccessTest();
 
             mText = (TextView) findViewById(R.id.text);
             mText.setText("Waiting for a tag");
@@ -140,6 +142,8 @@ public class MainActivity extends AppCompatActivity
 
                 switch (readerEvent.getEventType()) {
                     case SE_INSERTED:
+                        mText.append("\n ---- \n");
+                        mText.append("Tag detected");
                         try {
 
                             cardAccessManager.run();
@@ -178,5 +182,62 @@ public class MainActivity extends AppCompatActivity
                 mText.append(event.toString());
             }
         });
+    }
+
+
+
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.simpleTestButton:
+                if (checked)
+                    Log.i(TAG, "switched to Basic Card Access Test");
+                    initBasicCardAccessTest();
+                    break;
+            case R.id.keepChannelButton:
+                if (checked)
+                    Log.i(TAG, "switched to Keep Channel Card Access Test");
+                    initKeepChannelAccessTest();
+                    break;
+        }
+    }
+
+
+
+    private void initBasicCardAccessTest(){
+
+        try{
+
+        SeProxyService seProxyService = SeProxyService.getInstance();
+        ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+
+        cardAccessManager = new BasicCardAccessManager();
+        ((BasicCardAccessManager) cardAccessManager).setPoReader(reader);
+
+        cardAccessManager.getTopic().addSubscriber(this);
+        }catch (IOReaderException e){
+            e.printStackTrace();
+        }
+
+    }
+
+    private void initKeepChannelAccessTest(){
+
+        try{
+
+            SeProxyService seProxyService = SeProxyService.getInstance();
+            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+
+            cardAccessManager = new KeepOpenCardAccessManager();
+            ((KeepOpenCardAccessManager) cardAccessManager).setPoReader(reader);
+
+            cardAccessManager.getTopic().addSubscriber(this);
+        }catch (IOReaderException e){
+            e.printStackTrace();
+        }
+
     }
 }
