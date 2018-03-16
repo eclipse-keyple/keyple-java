@@ -191,42 +191,42 @@ public class MainActivity extends AppCompatActivity
         boolean checked = ((RadioButton) view).isChecked();
 
         // Check which radio button was clicked
-        switch(view.getId()) {
+        switch (view.getId()) {
             case R.id.simpleTestButton:
                 if (checked)
                     Log.i(TAG, "switched to Basic Card Access Test");
-                    initBasicCardAccessTest();
-                    break;
+                initBasicCardAccessTest();
+                break;
             case R.id.keepChannelButton:
                 if (checked)
                     Log.i(TAG, "switched to Keep Channel Card Access Test");
-                    initKeepChannelAccessTest();
-                    break;
+                initKeepChannelAccessTest();
+                break;
         }
     }
 
 
 
-    private void initBasicCardAccessTest(){
+    private void initBasicCardAccessTest() {
 
-        try{
+        try {
 
-        SeProxyService seProxyService = SeProxyService.getInstance();
-        ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+            SeProxyService seProxyService = SeProxyService.getInstance();
+            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
 
-        cardAccessManager = new BasicCardAccessManager();
-        ((BasicCardAccessManager) cardAccessManager).setPoReader(reader);
+            cardAccessManager = new BasicCardAccessManager();
+            ((BasicCardAccessManager) cardAccessManager).setPoReader(reader);
 
-        cardAccessManager.getTopic().addSubscriber(this);
-        }catch (IOReaderException e){
+            cardAccessManager.getTopic().addSubscriber(this);
+        } catch (IOReaderException e) {
             e.printStackTrace();
         }
 
     }
 
-    private void initKeepChannelAccessTest(){
+    private void initKeepChannelAccessTest() {
 
-        try{
+        try {
 
             SeProxyService seProxyService = SeProxyService.getInstance();
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity
             ((KeepOpenCardAccessManager) cardAccessManager).setPoReader(reader);
 
             cardAccessManager.getTopic().addSubscriber(this);
-        }catch (IOReaderException e){
+        } catch (IOReaderException e) {
             e.printStackTrace();
         }
 
