@@ -27,11 +27,7 @@ import org.keyple.seproxy.ReadersPlugin;
 import org.keyple.seproxy.SeProxyService;
 import org.keyple.seproxy.SeRequest;
 import org.keyple.seproxy.SeResponse;
-import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.seproxy.exceptions.InvalidApduReaderException;
-import org.keyple.seproxy.exceptions.TimeoutReaderException;
-import org.keyple.seproxy.exceptions.UnexpectedReaderException;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -191,14 +187,6 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver {
                         } catch (InconsistentCommandException e) {
                             e.printStackTrace();
                         } catch (IOReaderException e) {
-                            e.printStackTrace();
-                        } catch (ChannelStateReaderException e) {
-                            e.printStackTrace();
-                        } catch (InvalidApduReaderException e) {
-                            e.printStackTrace();
-                        } catch (TimeoutReaderException e) {
-                            e.printStackTrace();
-                        } catch (UnexpectedReaderException e) {
                             e.printStackTrace();
                         }
                         break;

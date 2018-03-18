@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  build:
+  build_java:
     docker:
       # documented at https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/openjdk:8-jdk
@@ -40,3 +40,56 @@ jobs:
           paths:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle" }}
+
+
+  build_android:
+
+      #working_directory: ~/code
+      docker:
+        - image: thedrhax/android-sdk
+        #//https://github.com/thedrhax-dockerfiles/android-sdk
+
+
+      environment:
+            JVM_OPTS: -Xmx3200m
+
+      steps:
+
+        - checkout
+
+        - restore_cache:
+            keys:
+            - v1-dependencies-{{ checksum "./keyple-example-androidnfc/build.gradle" }}
+
+        - run:
+            name: Download Dependencies
+            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example-androidnfc/build.gradle androidDependencies
+
+        - save_cache:
+            paths:
+              - ~/.gradle
+            key: v1-dependencies-{{ checksum "./keyple-example-androidnfc/build.gradle" }}
+
+        - run:
+            name: Assemble Plugin NFC plugin to aar file
+            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-plugin-android/build.gradle assembleRelease
+
+        - run:
+            name: Assemble Keyple Example Android NFC application to apk file
+            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example-androidnfc/build.gradle assembleDebug
+
+        - store_artifacts:
+              path: ./keyple-example-androidnfc/build/outputs/apk/debug
+              destination: keyple-example-androidnfc/
+
+        - store_artifacts:
+              path: ./keyple-plugin-android/build/outputs/aar/
+              destination: keyple-plugin-android/
+
+
+workflows:
+  version: 2
+  java_and_android_build:
+    jobs:
+      - build_java
+      - build_android
