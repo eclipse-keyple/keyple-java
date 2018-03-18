@@ -10,8 +10,6 @@ package keyple.commands.po.builder;
 
 
 import java.nio.ByteBuffer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.PoRevision;
@@ -23,8 +21,6 @@ import org.keyple.seproxy.ByteBufferUtils;
 
 
 public class OpenSessionCmdBuildTest {
-
-    Logger logger = LogManager.getLogger(OpenSessionCmdBuildTest.class);
 
     ByteBuffer samChallenge = ByteBuffer.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
 
@@ -97,7 +93,6 @@ public class OpenSessionCmdBuildTest {
         byte p1 = (byte) ((recordNumberToRead * 8) + keyIndex);
         byte p2 = (byte) ((sfiToSelect * 8) + 2);
         byte cmd = (byte) 0x8A;
-        System.out.println("samChallenge = " + ByteBufferUtils.toHex(samChallenge));
         byte[] dataIn = new byte[samChallenge.limit() + 1];
         System.arraycopy(ByteBufferUtils.toBytes(samChallenge), 0, dataIn, 1, samChallenge.limit());
         // revision 3.2

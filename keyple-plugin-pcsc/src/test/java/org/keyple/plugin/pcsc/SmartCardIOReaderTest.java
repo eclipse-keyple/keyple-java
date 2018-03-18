@@ -29,8 +29,6 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,14 +36,13 @@ import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.seproxy.exceptions.InvalidApduReaderException;
-import org.keyple.seproxy.exceptions.TimeoutReaderException;
+import org.keyple.seproxy.exceptions.ReaderTimeoutException;
 import org.keyple.seproxy.exceptions.UnexpectedReaderException;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SmartCardIOReaderTest {
-    Logger logger = LogManager.getLogger(SmartCardIOReaderTest.class);
 
     private PcscReader reader;
 
@@ -77,7 +74,7 @@ public class SmartCardIOReaderTest {
         res = new ResponseAPDU(responseApduByte);
 
         readerName = "lecteur";
-        this.reader = new PcscReader(terminal, readerName);
+        this.reader = new PcscReader(terminal);
     }
 
     @Test
@@ -86,7 +83,7 @@ public class SmartCardIOReaderTest {
     }
 
     @Test
-    public void testGettersSetters() {
+    public void testGettersSetters() throws IOReaderException {
         // this.reader = new PcscReader(terminal, readerName);
         reader.setAParameter("TOTO", "TOTO");
         assertEquals(reader.getParameters().size(), 1);
@@ -124,7 +121,7 @@ public class SmartCardIOReaderTest {
     @Test
     public void testTransmitCardNotPresent()
             throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, TimeoutReaderException, UnexpectedReaderException {
+            IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
 
         when(terminal.isCardPresent()).thenReturn(false);
         ApduRequest apduRequestMF = new ApduRequest(
@@ -147,7 +144,7 @@ public class SmartCardIOReaderTest {
     @Test
     public void testTransmitToCardWithoutAidToSelect()
             throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, TimeoutReaderException, UnexpectedReaderException {
+            IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
 
         atr = new ATR(new byte[] {(byte) 0x85, 0x17, 0x00, 0x01});
         when(terminal.isCardPresent()).thenReturn(true);
@@ -181,7 +178,7 @@ public class SmartCardIOReaderTest {
     @Test
     public void testTransmitToCardWithAidToSelect()
             throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, TimeoutReaderException, UnexpectedReaderException {
+            IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
 
 
         when(terminal.isCardPresent()).thenReturn(true);
@@ -214,7 +211,7 @@ public class SmartCardIOReaderTest {
     @Test
     public void testTransmitToCardAndDisconnect()
             throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, TimeoutReaderException, UnexpectedReaderException {
+            IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
 
 
         when(terminal.isCardPresent()).thenReturn(true);

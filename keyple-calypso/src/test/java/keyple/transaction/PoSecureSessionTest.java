@@ -15,8 +15,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,9 +37,6 @@ import keyple.commands.utils.TestsUtilsResponseTabByteGenerator;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PoSecureSessionTest {
-
-    static final Logger logger = LogManager.getLogger(PoSecureSessionTest.class);
-
     @Mock
     ProxyReader poReader;
 
@@ -117,9 +112,7 @@ public class PoSecureSessionTest {
         responseFciError = new SeResponse(true, apduResponseFciErr, apduResponseFciListErr);
     }
 
-    private void setBeforeTest(byte key)
-            throws ChannelStateReaderException, InvalidApduReaderException, IOReaderException,
-            TimeoutReaderException, UnexpectedReaderException {
+    private void setBeforeTest(byte key) throws IOReaderException {
 
         poPlainSecrureSession = new PoSecureSession(poReader, csmSessionReader, key);
         Mockito.when(poReader.transmit(Matchers.any(SeRequest.class)))
@@ -131,7 +124,7 @@ public class PoSecureSessionTest {
     @Test
     public void processOpeningTestKif0xFFKey0x03noCmdInside()
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+            InvalidApduReaderException, ReaderTimeoutException, InconsistentCommandException {
 
         byte key = (byte) 0x03;
         this.setBeforeTest(key);
@@ -157,7 +150,7 @@ public class PoSecureSessionTest {
     @Test
     public void processOpeningTestKif0xFFKey0x01noCmdInside()
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+            InvalidApduReaderException, ReaderTimeoutException, InconsistentCommandException {
 
         byte key = (byte) 0x01;
         this.setBeforeTest(key);
@@ -183,7 +176,7 @@ public class PoSecureSessionTest {
     @Test
     public void processOpeningTestKif0xFFKey0x02noCmdInside()
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+            InvalidApduReaderException, ReaderTimeoutException, InconsistentCommandException {
 
         byte key = (byte) 0x02;
         this.setBeforeTest(key);
@@ -210,7 +203,7 @@ public class PoSecureSessionTest {
     @Test
     public void processOpeningTestKif0xFFKey0x03WithCmdInside()
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+            InvalidApduReaderException, ReaderTimeoutException, InconsistentCommandException {
 
         byte key = (byte) 0x03;
         this.setBeforeTest(key);
@@ -239,7 +232,7 @@ public class PoSecureSessionTest {
     @Test(expected = UnexpectedReaderException.class)
     public void processOpeningTestKif0xFFKey0x03WithCmdInsideUnexpectedReaderException()
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+            InvalidApduReaderException, ReaderTimeoutException, InconsistentCommandException {
 
         byte key = (byte) 0x03;
         this.setBeforeTest(key);
@@ -262,7 +255,7 @@ public class PoSecureSessionTest {
     @Test(expected = InconsistentCommandException.class)
     public void processProceedingTestInconsitenteCommandException()
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+            InvalidApduReaderException, ReaderTimeoutException, InconsistentCommandException {
 
         this.setBeforeTest(this.defaultKeyIndex);
         Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequest.class)))
@@ -281,7 +274,7 @@ public class PoSecureSessionTest {
     @Test
     public void processProceedingTest()
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+            InvalidApduReaderException, ReaderTimeoutException, InconsistentCommandException {
 
         this.setBeforeTest(this.defaultKeyIndex);
         byte recordNumber = (byte) 0x01;
@@ -383,7 +376,7 @@ public class PoSecureSessionTest {
     @Test
     public void processIdentificationTest()
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+            InvalidApduReaderException, ReaderTimeoutException, InconsistentCommandException {
 
         this.setBeforeTest(this.defaultKeyIndex);
 
@@ -434,7 +427,7 @@ public class PoSecureSessionTest {
     private SeResponse processOpeningTestKif0xFFKey(byte key, byte sfi, byte recordNumber,
             List<ApduResponse> apduExpected, SendableInSession[] poCommandsInsideSession)
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, TimeoutReaderException, InconsistentCommandException {
+            InvalidApduReaderException, ReaderTimeoutException, InconsistentCommandException {
         OpenSessionCmdBuild openCommand =
                 new OpenSessionCmdBuild(PoRevision.REV2_4, key, samchallenge, sfi, recordNumber);
         return poPlainSecrureSession.processOpening(openCommand,

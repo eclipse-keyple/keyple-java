@@ -15,21 +15,40 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.smartcardio.*;
-import javax.xml.bind.DatatypeConverter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
+import org.keyple.seproxy.exceptions.InconsistentParameterValueException;
+import org.keyple.seproxy.exceptions.InvalidMessageException;
+import com.github.structlog4j.ILogger;
+import com.github.structlog4j.SLoggerFactory;
 
 public class PcscReader extends ObservableReader implements ConfigurableReader {
 
-    private static final Logger logger = LogManager.getLogger(PcscReader.class);
+    private static final ILogger logger = SLoggerFactory.getLogger(PcscReader.class);
     private static final String SETTING_KEY_PROTOCOL = "protocol";
+    private static final String SETTING_PROTOCOL_T0 = "T0";
+    private static final String SETTING_PROTOCOL_T1 = "T1";
+    private static final String SETTING_PROTOCOL_TX = "Tx";
+    private static final String SETTING_KEY_MODE = "mode";
+    private static final String SETTING_MODE_EXCLUSIVE = "exclusive";
+    private static final String SETTING_MODE_SHARED = "shared";
+    // private static final String SETTING_MODE_DIRECT = "direct";
+    private static final String SETTING_KEY_DISCONNECT = "disconnect";
+    private static final String SETTING_DISCONNECT_RESET = "reset";
+    private static final String SETTING_DISCONNECT_UNPOWER = "unpower";
+    private static final String SETTING_DISCONNECT_LEAVE = "leave";
+    private static final String SETTING_DISCONNECT_EJECT = "eject";
+    private static final String SETTING_KEY_THREAD_TIMEOUT = "thread_wait_timeout";
+    private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 5000;
 
     private final CardTerminal terminal;
-    private final String name;
-    private final Map<String, String> settings;
+    private final String terminalName;
+
+    // private final Map<String, String> settings;
+    private String parameterCardProtocol;
+    private boolean cardExclusiveMode;
+    private boolean cardReset;
 
     private Card card;
     private CardChannel channel;
@@ -40,16 +59,29 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
     private EventThread thread;
     private static final AtomicInteger threadCount = new AtomicInteger();
-    private long threadWaitTimeout = 5000; // 5s
+
+    /**
+     * Thread wait timeout in ms
+     */
+    private long threadWaitTimeout;
 
 
-    protected PcscReader(CardTerminal terminal, String name) { // PcscReader constructor may be
+    protected PcscReader(CardTerminal terminal) { // PcscReader constructor may be
         // called only by PcscPlugin
         this.terminal = terminal;
-        this.name = name;
+        this.terminalName = terminal.getName();
         this.card = null;
         this.channel = null;
-        this.settings = new HashMap<String, String>();
+
+        // Using null values to use the standard method for defining default values
+        try {
+            setAParameter(SETTING_KEY_PROTOCOL, null);
+            setAParameter(SETTING_KEY_MODE, null);
+            setAParameter(SETTING_KEY_DISCONNECT, null);
+        } catch (IOReaderException ex) {
+            // It's actually impossible to reach that state
+            throw new IllegalStateException("Could not initialize properly", ex);
+        }
     }
 
     /**
@@ -66,33 +98,48 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
     @Override
     public String getName() {
-        return name;
+        return terminalName;
     }
 
     @Override
-    public SeResponse transmit(SeRequest seApplicationRequest)
-            throws ChannelStateReaderException, IOReaderException {
+    public SeResponse transmit(SeRequest seApplicationRequest) throws IOReaderException {
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
         if (isSEPresent()) { // TODO si vrai ET pas vrai => retourne un SeResponse vide de manière
             // systématique - return new SeResponse(false, fciDataSelected,
             // apduResponseList);
             try {
-                this.prepareAndConnectToTerminalAndSetChannel();
+                prepareAndConnectToTerminalAndSetChannel();
             } catch (CardException e) {
-                throw new ChannelStateReaderException(e.getMessage());
+                throw new ChannelStateReaderException(e);
             }
             // gestion du select application ou du getATR
             if (seApplicationRequest.getAidToSelect() != null && aidCurrentlySelected == null) {
-                fciDataSelected = this.connect(seApplicationRequest.getAidToSelect());
+                fciDataSelected = connect(seApplicationRequest.getAidToSelect());
             } else if (!atrDefaultSelected) {
-                fciDataSelected = new ApduResponse(ByteBuffer.wrap(card.getATR().getBytes()), true);
+                fciDataSelected = new ApduResponse(
+                        ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
+                                ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00})),
+                        true);
                 atrDefaultSelected = true;
             }
+
+            // fclairamb(2018-03-03): Is there a more elegant way to do this ?
+            if (fciDataSelected.getStatusCode() != 0x9000) {
+                throw new InvalidMessageException("FCI failed !", fciDataSelected);
+            }
+
             for (ApduRequest apduRequest : seApplicationRequest.getApduRequests()) {
                 ResponseAPDU apduResponseData;
                 try {
-                    apduResponseData = channel.transmit(new CommandAPDU(apduRequest.getBuffer()));
+                    ByteBuffer buffer = apduRequest.getBuffer();
+                    { // Sending data
+                      // We shouldn't have to re-use the buffer that was used to be sent but we have
+                      // some code that does it.
+                        final int posBeforeRead = buffer.position();
+                        apduResponseData = channel.transmit(new CommandAPDU(buffer));
+                        buffer.position(posBeforeRead);
+                    }
 
                     byte[] statusCode = new byte[] {(byte) apduResponseData.getSW1(),
                             (byte) apduResponseData.getSW2()};
@@ -101,17 +148,20 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                     hackCase4AndGetResponse(apduRequest.isCase4(), statusCode, apduResponseData,
                             channel);
 
-                    apduResponseList.add(new ApduResponse(apduResponseData.getData(), true));
+                    apduResponseList.add(new ApduResponse(apduResponseData.getBytes(), true));
                 } catch (CardException e) {
-                    throw new ChannelStateReaderException(e.getMessage());
-                } catch (NullPointerException e) {
-                    logger.error(getName() + " : Error executing command", e);
-                    apduResponseList.add(new ApduResponse((byte[]) null, false));
-                    break;
+                    throw new ChannelStateReaderException(e);
                 }
+                // fclairamb(2018-03-07): Catching NPE here definitely isn't a good idea. We can't
+                // accept our library to throw NPE internally
+                /*
+                 * catch (NullPointerException e) { logger.error(getName() +
+                 * " : Error executing command", e); apduResponseList.add(new ApduResponse((byte[])
+                 * null, false)); break; }
+                 */
             }
 
-            if (!seApplicationRequest.askKeepChannelOpen()) {
+            if (!seApplicationRequest.keepChannelOpen()) {
                 this.disconnect();
             }
         }
@@ -120,34 +170,33 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     }
 
     private void prepareAndConnectToTerminalAndSetChannel() throws CardException {
-        final String protocol = getCardProtocol();
+        // final String protocol = getCardProtocol();
         if (card == null) {
-            this.card = this.terminal.connect(protocol);
+            this.card = this.terminal.connect(parameterCardProtocol);
+            if (cardExclusiveMode) {
+                card.beginExclusive();
+            }
         }
+
         this.channel = card.getBasicChannel();
     }
 
-    private String getCardProtocol() {
-        String protocol = settings.get(SETTING_KEY_PROTOCOL);
-        if (protocol == null) {
-            protocol = "*";
-        }
-        return protocol;
-    }
+    /*
+     * private String getCardProtocol() { String protocol = settings.get(SETTING_KEY_PROTOCOL); if
+     * (protocol == null) { protocol = "*"; } return protocol; }
+     */
 
     private static void hackCase4AndGetResponse(boolean isCase4, byte[] statusCode,
             ResponseAPDU responseFciData, CardChannel channel) throws CardException {
         if (isCase4 && statusCode[0] == (byte) 0x90 && statusCode[1] == (byte) 0x00
                 && responseFciData.getData().length == 0) {
-            byte[] command = new byte[5];
-            command[0] = (byte) 0x00;
-            command[1] = (byte) 0xC0;
-            command[2] = (byte) 0x00;
-            command[3] = (byte) 0x00;
-            command[4] = (byte) 0x00;
-            logger.info(" Send GetResponse : " + formatLogRequest(command));
-
-            System.out.println("Hack - Get Response");
+            ByteBuffer command = ByteBuffer.allocate(5);
+            command.put((byte) 0x00);
+            command.put((byte) 0xC0);
+            command.put((byte) 0x00);
+            command.put((byte) 0x00);
+            command.put((byte) 0x00);
+            logger.info("Case4 hack", "action", "pcsc_reader.case4_hack");
             responseFciData = channel.transmit(new CommandAPDU(command));
 
             statusCode[0] = (byte) responseFciData.getSW1();
@@ -155,23 +204,18 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         }
     }
 
-    private static String formatLogRequest(byte[] request) {
-        String c = DatatypeConverter.printHexBinary(request);
-        String log = c;
-
-        if (request.length == 4) {
-            log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " + extractData(c, 4, 8);
-        }
-        if (request.length == 5) {
-            log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " + extractData(c, 4, 8)
-                    + " " + extractData(c, 8, 10);
-        } else if (request.length > 5) {
-            log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " + extractData(c, 4, 8)
-                    + " " + extractData(c, 8, 10) + " " + extractData(c, 10, c.length());
-        }
-
-        return log;
-    }
+    /*
+     * private static String formatLogRequest(byte[] request) { String c =
+     * DatatypeConverter.printHexBinary(request); String log = c;
+     *
+     * if (request.length == 4) { log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " +
+     * extractData(c, 4, 8); } if (request.length == 5) { log = extractData(c, 0, 2) + " " +
+     * extractData(c, 2, 4) + " " + extractData(c, 4, 8) + " " + extractData(c, 8, 10); } else if
+     * (request.length > 5) { log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " +
+     * extractData(c, 4, 8) + " " + extractData(c, 8, 10) + " " + extractData(c, 10, c.length()); }
+     *
+     * return log; }
+     */
 
     private static String extractData(String str, int pos1, int pos2) {
         String data = "";
@@ -196,9 +240,9 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      * @throws ChannelStateReaderException
      */
     private ApduResponse connect(ByteBuffer aid) throws ChannelStateReaderException {
+        logger.info("Connecting to card", "action", "pcsc_reader.connect", "aid",
+                ByteBufferUtils.toHex(aid), "readerName", getName());
         try {
-            // if (aid != null) {
-            // generate select application command
             ByteBuffer command = ByteBuffer.allocate(aid.limit() + 6);
             command.put((byte) 0x00);
             command.put((byte) 0xA4);
@@ -207,22 +251,17 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             command.put((byte) aid.limit());
             command.put(aid);
             command.put((byte) 0x00);
-            logger.info(getName() + " : Selecting AID " + ByteBufferUtils.toHex(aid));
             command.position(0);
             ResponseAPDU res = channel.transmit(new CommandAPDU(command));
 
             byte[] statusCode = new byte[] {(byte) res.getSW1(), (byte) res.getSW2()};
             hackCase4AndGetResponse(true, statusCode, res, channel);
-            ApduResponse fciResponse =
-                    new ApduResponse(res.getData(), true, new byte[] {(byte) 0x90, (byte) 0x00});
+            ApduResponse fciResponse = new ApduResponse(res.getBytes(), true);
             aidCurrentlySelected = aid;
             return fciResponse;
-
-            // }
         } catch (CardException e1) {
-            throw new ChannelStateReaderException(e1.getMessage());
+            throw new ChannelStateReaderException(e1);
         }
-        // return null;
     }
 
     /**
@@ -232,7 +271,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      * @throws CardException
      */
     private void disconnect() throws IOReaderException {
-        logger.info("disconnect");
+        logger.info("Disconnecting", "action", "pcsc_reader.disconnect");
         try {
             aidCurrentlySelected = null;
             fciDataSelected = null;
@@ -249,19 +288,20 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
     }
 
+    /**
+     * Set a list of parameters on a reader.
+     * <p>
+     * See {@link #setAParameter(String, String)} for more details
+     *
+     * @param parameters the new parameters
+     * @throws IOReaderException This method can fail when disabling the exclusive mode as it's
+     *         executed instantly
+     */
     @Override
-    public void setParameters(Map<String, String> settings) {
-        this.settings.putAll(settings);
-    }
-
-    @Override
-    public void setAParameter(String key, String value) {
-        this.settings.put(key, value);
-    }
-
-    @Override
-    public Map<String, String> getParameters() {
-        return this.settings;
+    public void setParameters(Map<String, String> parameters) throws IOReaderException {
+        for (Map.Entry<String, String> en : parameters.entrySet()) {
+            setAParameter(en.getKey(), en.getValue());
+        }
     }
 
     /*
@@ -293,12 +333,144 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      *
      */
 
+    /**
+     * Set a parameter.
+     * <p>
+     * These are the parameters you can use with their associated values:
+     * <ul>
+     * <li><strong>protocol</strong>:
+     * <ul>
+     * <li>Tx: Automatic negotiation (default)</li>
+     * <li>T0: T0 protocol</li>
+     * <li>T1: T1 protocol</li>
+     * </ul>
+     * </li>
+     * <li><strong>mode</strong>:
+     * <ul>
+     * <li>shared: Shared between apps and threads (default)</li>
+     * <li>exclusive: Exclusive to this app and the current thread</li>
+     * </ul>
+     * </li>
+     * <li><strong>disconnect</strong>:
+     * <ul>
+     * <li>reset: Reset the card</li>
+     * <li>unpower: Simply unpower it</li>
+     * <li>leave: Unsupported</li>
+     * <li>eject: Eject</li>
+     * </ul>
+     * </li>
+     * <li><strong>thread_wait_timeout</strong>: Number of milliseconds to wait</li>
+     * </ul>
+     *
+     * @param name Parameter name
+     * @param value Parameter value
+     * @throws IOReaderException This method can fail when disabling the exclusive mode as it's
+     *         executed instantly
+     */
     @Override
-    public void addObserver(ReaderObserver calledBack) {
+    public void setAParameter(String name, String value) throws IOReaderException {
+        logger.info("PCSC: Set a parameter", "action", "pcsc_reader.set_parameter", "name", name,
+                "value", value);
+        if (name == null) {
+            throw new IllegalArgumentException("Parameter shouldn't be null");
+        }
+        if (name.equals(SETTING_KEY_PROTOCOL)) {
+            if (value == null || value.equals(SETTING_PROTOCOL_TX)) {
+                parameterCardProtocol = "*";
+            } else if (value.equals(SETTING_PROTOCOL_T0)) {
+                parameterCardProtocol = "T=0";
+            } else if (value.equals(SETTING_PROTOCOL_T1)) {
+                parameterCardProtocol = "T=1";
+            } else {
+                throw new InconsistentParameterValueException("Bad protocol", name, value);
+            }
+        } else if (name.equals(SETTING_KEY_MODE)) {
+            if (value == null || value.equals(SETTING_MODE_EXCLUSIVE)) {
+                cardExclusiveMode = true;
+            } else if (value.equals(SETTING_MODE_SHARED)) {
+                if (cardExclusiveMode && card != null) {
+                    try {
+                        card.endExclusive();
+                    } catch (CardException e) {
+                        throw new IOReaderException("Couldn't disable exclusive mode", e);
+                    }
+                }
+                cardExclusiveMode = false;
+            } else {
+                throw new InconsistentParameterValueException(name, value);
+            }
+        } else if (name.equals(SETTING_KEY_THREAD_TIMEOUT)) {
+            if (value == null) {
+                threadWaitTimeout = SETTING_THREAD_TIMEOUT_DEFAULT;
+            } else {
+                long timeout = Long.parseLong(value);
+
+                if (timeout <= 0) {
+                    throw new InconsistentParameterValueException(
+                            "Timeout has to be of at least 1ms", name, value);
+                }
+
+                threadWaitTimeout = timeout;
+            }
+        } else if (name.equals(SETTING_KEY_DISCONNECT)) {
+            if (value == null || value.equals(SETTING_DISCONNECT_RESET)) {
+                cardReset = true;
+            } else if (value.equals(SETTING_DISCONNECT_UNPOWER)) {
+                cardReset = false;
+            } else if (value.equals(SETTING_DISCONNECT_EJECT)
+                    || value.equals(SETTING_DISCONNECT_LEAVE)) {
+                throw new InconsistentParameterValueException(
+                        "This disconnection parameter is not supported by this plugin", name,
+                        value);
+            } else {
+                throw new InconsistentParameterValueException(name, value);
+            }
+        } else {
+            throw new InconsistentParameterValueException("This parameter is unknown !", name,
+                    value);
+        }
+    }
+
+    @Override
+    public Map<String, String> getParameters() {
+        Map<String, String> parameters = new HashMap<String, String>();
+
+        { // Returning the protocol
+            String protocol = parameterCardProtocol;
+            if (protocol.equals("*")) {
+                protocol = SETTING_PROTOCOL_TX;
+            } else if (protocol.equals("T=0")) {
+                protocol = SETTING_PROTOCOL_T0;
+            } else if (protocol.equals("T=1")) {
+                protocol = SETTING_PROTOCOL_T1;
+            } else {
+                throw new IllegalStateException("Illegal protocol: " + protocol);
+            }
+            parameters.put(SETTING_KEY_PROTOCOL, protocol);
+        }
+
+        { // The mode ?
+            if (!cardExclusiveMode) {
+                parameters.put(SETTING_KEY_MODE, SETTING_MODE_SHARED);
+            }
+        }
+
+        { // The thread wait timeout
+            if (threadWaitTimeout != SETTING_THREAD_TIMEOUT_DEFAULT) {
+                parameters.put(SETTING_KEY_THREAD_TIMEOUT, Long.toString(threadWaitTimeout));
+            }
+        }
+
+
+        return parameters;
+    }
+
+    @Override
+    public void addObserver(ReaderObserver observer) {
         // We don't need synchronization for the list itself, we need to make sure we're not
         // starting and closing the thread at the same time.
         synchronized (readerObservers) {
-            super.addObserver(calledBack);
+            super.addObserver(observer);
             if (readerObservers.size() == 1) {
                 if (thread != null) { // <-- This should never happen and can probably be dropped at
                     // some point
@@ -312,9 +484,9 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     }
 
     @Override
-    public void deleteObserver(ReaderObserver calledback) {
+    public void deleteObserver(ReaderObserver observer) {
         synchronized (readerObservers) {
-            super.deleteObserver(calledback);
+            super.deleteObserver(observer);
             if (readerObservers.isEmpty()) {
                 if (thread == null) { // <-- This should never happen and can probably be dropped at
                     // some point
@@ -370,6 +542,19 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.SE_INSERTED));
         }
 
+        /**
+         * Event failed
+         *
+         * @param ex Exception
+         */
+        private void exceptionThrown(Exception ex) {
+            logger.error("PCSC Reader: Error handling events", "action", "pcsc_reader.event_error",
+                    "readerName", getName(), "exception", ex);
+            if (ex instanceof CardException || ex instanceof IOReaderException) {
+                notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.IO_ERROR));
+            }
+        }
+
         public void run() {
             try {
                 // First thing we'll do is to notify that a card was inserted if one is already
@@ -398,12 +583,8 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                         // false means timeout, and we go back to the beginning of the loop
                     }
                 }
-            } catch (CardException e) {
-                notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.IO_ERROR));
-                running = false;
-            } catch (IOReaderException e) {
-                notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.IO_ERROR));
-                running = false;
+            } catch (Exception e) {
+                exceptionThrown(e);
             }
         }
     }

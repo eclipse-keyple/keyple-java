@@ -16,21 +16,21 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.keyple.plugin.pcsc.log.CardTerminalsLogger;
 import org.keyple.seproxy.ObservableReader;
 import org.keyple.seproxy.ReadersPlugin;
 import org.keyple.seproxy.exceptions.IOReaderException;
+import com.github.structlog4j.ILogger;
+import com.github.structlog4j.SLoggerFactory;
 
 public final class PcscPlugin implements ReadersPlugin {
+
+    private static final ILogger logger = SLoggerFactory.getLogger(PcscPlugin.class);
 
     /**
      * singleton instance of SeProxyService
      */
     private static final PcscPlugin uniqueInstance = new PcscPlugin();
-
-    private static final Logger logger = LogManager.getLogger(PcscPlugin.class);
 
     private static final TerminalFactory factory = TerminalFactory.getDefault();
 
@@ -71,30 +71,33 @@ public final class PcscPlugin implements ReadersPlugin {
     public List<ObservableReader> getReaders() throws IOReaderException {
         CardTerminals terminals = getCardTerminals();
 
-        if (terminals == null) {
-            logger.error("No terminal found");
-            throw new IOReaderException("No terminal found");
-        }
+        // fclairamb(2018-03-07): This can't happen
+        /*
+         * if (terminals == null) { logger.error("No terminal found", "action",
+         * "pcsc_plugin.no_terminals"); throw new IOReaderException("No terminal found"); }
+         */
         try {
-            if (this.readers.isEmpty()) {
+            synchronized (readers) {
                 for (CardTerminal terminal : terminals.list()) {
-                    PcscReader reader = new PcscReader(terminal, terminal.getName());
-                    if (!this.readers.containsKey(reader.getName())) {
+                    if (!this.readers.containsKey(terminal.getName())) {
+                        PcscReader reader = new PcscReader(terminal);
+                        logger.info("New terminal found", "action", "pcsc_plugin.new_terminal",
+                                "terminalName", reader.getName());
                         this.readers.put(reader.getName(), reader);
                     }
                 }
+                return new ArrayList<ObservableReader>(this.readers.values());
             }
         } catch (CardException e) {
-            logger.error("Terminal List not accessible", e);
-            throw new IOReaderException(e);
+            logger.error("Terminal list is not accessible", "action", "pcsc_plugin.no_terminals",
+                    "exception", e);
+            throw new IOReaderException("Could not access terminals list", e);
         }
         // fclairamb(2018-02-28): Not a good exception to catch and not a good way to handle it
         /*
          * catch (NullPointerException e) { logger.error("Terminal List not accessible", e); throw
          * new IOReaderException(e.getMessage(), e); }
          */
-
-        return new ArrayList<ObservableReader>(this.readers.values());
     }
 
     private CardTerminals getCardTerminals() {

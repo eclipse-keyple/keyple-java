@@ -8,6 +8,9 @@
 
 package org.keyple.seproxy.exceptions;
 
+/**
+ * @deprecated Never used
+ */
 public class ParameterProcessingErrorException extends Exception {
     public ParameterProcessingErrorException(String message) {
         super(message);

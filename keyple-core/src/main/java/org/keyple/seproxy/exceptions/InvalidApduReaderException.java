@@ -8,6 +8,9 @@
 
 package org.keyple.seproxy.exceptions;
 
+/**
+ * @deprecated Nobody uses it, should we keep it ?
+ */
 public class InvalidApduReaderException extends Exception {
     public InvalidApduReaderException(String message) {
         super(message);

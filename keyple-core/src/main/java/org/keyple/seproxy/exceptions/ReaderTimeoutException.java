@@ -8,8 +8,13 @@
 
 package org.keyple.seproxy.exceptions;
 
-public class TimeoutReaderException extends Exception {
-    public TimeoutReaderException(String message) {
+/**
+ * Thrown when a timeout occurs.
+ * 
+ * @deprecated Do we need it ?
+ */
+public class ReaderTimeoutException extends IOReaderException {
+    public ReaderTimeoutException(String message) {
         super(message);
     }
 }

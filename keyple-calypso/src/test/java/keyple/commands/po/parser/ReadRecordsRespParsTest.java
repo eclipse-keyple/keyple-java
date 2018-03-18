@@ -11,7 +11,6 @@ package keyple.commands.po.parser;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.codec.DecoderException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.parser.ReadRecordsRespPars;
@@ -77,7 +76,7 @@ public class ReadRecordsRespParsTest {
 
     @Test
     // TODO: Fix the parsing code so that the test makes sense
-    public void sampleMultipleRecordsParsing() throws DecoderException {
+    public void sampleMultipleRecordsParsing() {
         ByteBuffer apdu = ByteBufferUtils.fromHex("1415 2425 3435 4445 9000h");
         ReadRecordsRespPars recordsPasing = new ReadRecordsRespPars(new ApduResponse(apdu, true));
         List<ReadRecordsRespPars.Record> records = recordsPasing.getRecords();

@@ -6,16 +6,11 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.plugin.androidnfc;
+package org.keyple.plugin.pcsc.log;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
+import com.github.structlog4j.ILogger;
+import com.github.structlog4j.SLoggerFactory;
 
-/**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
- */
-public class ApplicationTest extends ApplicationTestCase<Application> {
-    public ApplicationTest() {
-        super(Application.class);
-    }
+class Logging {
+    static final ILogger LOG = SLoggerFactory.getLogger(Logging.class);
 }

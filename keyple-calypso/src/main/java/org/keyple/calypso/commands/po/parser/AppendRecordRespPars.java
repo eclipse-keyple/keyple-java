@@ -50,7 +50,8 @@ public class AppendRecordRespPars extends ApduResponseParser {
      *
      * @return Status table
      */
-    Map<Integer, StatusProperties> getStatusTable() {
+    @Override
+    protected Map<Integer, StatusProperties> getStatusTable() {
         return STATUS_TABLE;
     }
 }

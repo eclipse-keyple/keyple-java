@@ -94,11 +94,11 @@ public class SeRequest {
     }
 
     /**
-     * Ask keep channel open.
+     * Define if the channel should be kept open after the the {@link SeRequest} has been executed.
      *
-     * @return the boolean
+     * @return If the channel should be kept open
      */
-    public boolean askKeepChannelOpen() {
+    public boolean keepChannelOpen() {
         return keepChannelOpen;
     }
 
