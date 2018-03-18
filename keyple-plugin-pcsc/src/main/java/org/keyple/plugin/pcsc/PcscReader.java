@@ -26,20 +26,20 @@ import com.github.structlog4j.SLoggerFactory;
 public class PcscReader extends ObservableReader implements ConfigurableReader {
 
     private static final ILogger logger = SLoggerFactory.getLogger(PcscReader.class);
-    private static final String SETTING_KEY_PROTOCOL = "protocol";
-    private static final String SETTING_PROTOCOL_T0 = "T0";
-    private static final String SETTING_PROTOCOL_T1 = "T1";
-    private static final String SETTING_PROTOCOL_TX = "Tx";
-    private static final String SETTING_KEY_MODE = "mode";
-    private static final String SETTING_MODE_EXCLUSIVE = "exclusive";
-    private static final String SETTING_MODE_SHARED = "shared";
-    // private static final String SETTING_MODE_DIRECT = "direct";
-    private static final String SETTING_KEY_DISCONNECT = "disconnect";
-    private static final String SETTING_DISCONNECT_RESET = "reset";
-    private static final String SETTING_DISCONNECT_UNPOWER = "unpower";
-    private static final String SETTING_DISCONNECT_LEAVE = "leave";
-    private static final String SETTING_DISCONNECT_EJECT = "eject";
-    private static final String SETTING_KEY_THREAD_TIMEOUT = "thread_wait_timeout";
+    public static final String SETTING_KEY_PROTOCOL = "protocol";
+    public static final String SETTING_PROTOCOL_T0 = "T0";
+    public static final String SETTING_PROTOCOL_T1 = "T1";
+    public static final String SETTING_PROTOCOL_TX = "Tx";
+    public static final String SETTING_KEY_MODE = "mode";
+    public static final String SETTING_MODE_EXCLUSIVE = "exclusive";
+    public static final String SETTING_MODE_SHARED = "shared";
+    public static final String SETTING_KEY_DISCONNECT = "disconnect";
+    public static final String SETTING_DISCONNECT_RESET = "reset";
+    public static final String SETTING_DISCONNECT_UNPOWER = "unpower";
+    public static final String SETTING_DISCONNECT_LEAVE = "leave";
+    public static final String SETTING_DISCONNECT_EJECT = "eject";
+    public static final String SETTING_KEY_THREAD_TIMEOUT = "thread_wait_timeout";
+    public static final String SETTING_KEY_LOGGING = "logging";
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 5000;
 
     private final CardTerminal terminal;
@@ -60,7 +60,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     private EventThread thread;
     private static final AtomicInteger threadCount = new AtomicInteger();
 
-    private final boolean logging;
+    private boolean logging;
 
     /**
      * Thread wait timeout in ms
@@ -68,19 +68,19 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     private long threadWaitTimeout;
 
 
-    PcscReader(CardTerminal terminal, boolean logging) { // PcscReader constructor may be
+    PcscReader(CardTerminal terminal) { // PcscReader constructor may be
         // called only by PcscPlugin
         this.terminal = terminal;
         this.terminalName = terminal.getName();
         this.card = null;
         this.channel = null;
-        this.logging = logging;
 
         // Using null values to use the standard method for defining default values
         try {
             setAParameter(SETTING_KEY_PROTOCOL, null);
             setAParameter(SETTING_KEY_MODE, null);
             setAParameter(SETTING_KEY_DISCONNECT, null);
+            setAParameter(SETTING_KEY_LOGGING, null);
         } catch (IOReaderException ex) {
             // It's actually impossible to reach that state
             throw new IllegalStateException("Could not initialize properly", ex);
@@ -113,11 +113,13 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         long before = System.nanoTime();
         try {
             SeResponse response = transmitActual(request);
+            // Switching to the 10th of milliseconds and dividing by 10 to get the ms
             double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
             logger.info("PCSCReader: Data exchange", "action", "pcsc_reader.transmit", "request",
                     request, "response", response, "elapsedMs", elapsedMs);
             return response;
         } catch (IOReaderException ex) {
+            // Switching to the 10th of milliseconds and dividing by 10 to get the ms
             double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
             logger.info("PCSCReader: Data exchange", "action", "pcsc_reader.transmit_failure",
                     "request", request, "elapsedMs", elapsedMs);
@@ -153,35 +155,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             }
 
             for (ApduRequest apduRequest : request.getApduRequests()) {
-                ResponseAPDU apduResponseData;
-                try {
-                    ByteBuffer buffer = apduRequest.getBuffer();
-                    { // Sending data
-                      // We shouldn't have to re-use the buffer that was used to be sent but we have
-                      // some code that does it.
-                        final int posBeforeRead = buffer.position();
-                        apduResponseData = channel.transmit(new CommandAPDU(buffer));
-                        buffer.position(posBeforeRead);
-                    }
-
-                    byte[] statusCode = new byte[] {(byte) apduResponseData.getSW1(),
-                            (byte) apduResponseData.getSW2()};
-                    // gestion du getResponse en case 4 avec reponse valide et
-                    // retour vide
-                    hackCase4AndGetResponse(apduRequest.isCase4(), statusCode, apduResponseData,
-                            channel);
-
-                    apduResponseList.add(new ApduResponse(apduResponseData.getBytes(), true));
-                } catch (CardException e) {
-                    throw new ChannelStateReaderException(e);
-                }
-                // fclairamb(2018-03-07): Catching NPE here definitely isn't a good idea. We can't
-                // accept our library to throw NPE internally
-                /*
-                 * catch (NullPointerException e) { logger.error(getName() +
-                 * " : Error executing command", e); apduResponseList.add(new ApduResponse((byte[])
-                 * null, false)); break; }
-                 */
+                apduResponseList.add(transmit(apduRequest));
             }
 
             if (!request.keepChannelOpen()) {
@@ -190,6 +164,47 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         }
 
         return new SeResponse(false, fciDataSelected, apduResponseList);
+    }
+
+    /**
+     * Transmission of each APDU request
+     *
+     * @param apduRequest APDU request
+     * @return APDU response
+     * @throws ChannelStateReaderException Exception faced
+     */
+    private ApduResponse transmit(ApduRequest apduRequest) throws ChannelStateReaderException {
+        ResponseAPDU apduResponseData;
+        long before = logging ? System.nanoTime() : 0;
+        try {
+            ByteBuffer buffer = apduRequest.getBuffer();
+            { // Sending data
+              // We shouldn't have to re-use the buffer that was used to be sent but we have
+              // some code that does it.
+                final int posBeforeRead = buffer.position();
+                apduResponseData = channel.transmit(new CommandAPDU(buffer));
+                buffer.position(posBeforeRead);
+            }
+
+            byte[] statusCode =
+                    new byte[] {(byte) apduResponseData.getSW1(), (byte) apduResponseData.getSW2()};
+            // gestion du getResponse en case 4 avec reponse valide et
+            // retour vide
+            hackCase4AndGetResponse(apduRequest.isCase4(), statusCode, apduResponseData, channel);
+
+            ApduResponse apduResponse = new ApduResponse(apduResponseData.getBytes(), true);
+
+            if (logging) {
+                double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+                logger.info("PCSCReader: Transmission", "action", "pcsc_reader.transmit",
+                        "apduRequest", apduRequest, "apduResponse", apduResponse, "elapsedMs",
+                        elapsedMs);
+            }
+
+            return apduResponse;
+        } catch (CardException e) {
+            throw new ChannelStateReaderException(e);
+        }
     }
 
     private void prepareAndConnectToTerminalAndSetChannel() throws CardException {
@@ -219,8 +234,11 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             command.put((byte) 0x00);
             command.put((byte) 0x00);
             command.put((byte) 0x00);
-            logger.info("Case4 hack", "action", "pcsc_reader.case4_hack");
+
+
             responseFciData = channel.transmit(new CommandAPDU(command));
+            logger.info("Case4 hack", "action", "pcsc_reader.case4_hack");
+
 
             statusCode[0] = (byte) responseFciData.getSW1();
             statusCode[1] = (byte) responseFciData.getSW2();
@@ -448,6 +466,8 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             } else {
                 throw new InconsistentParameterValueException(name, value);
             }
+        } else if (name.equals(SETTING_KEY_LOGGING)) {
+            logging = Boolean.parseBoolean(value); // default is null and perfectly acceptable
         } else {
             throw new InconsistentParameterValueException("This parameter is unknown !", name,
                     value);

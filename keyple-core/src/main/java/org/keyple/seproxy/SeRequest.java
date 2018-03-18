@@ -102,4 +102,9 @@ public class SeRequest {
         return keepChannelOpen;
     }
 
+
+    @Override
+    public String toString() {
+        return String.format("SeRequest{requests=%s}", getApduRequests());
+    }
 }
