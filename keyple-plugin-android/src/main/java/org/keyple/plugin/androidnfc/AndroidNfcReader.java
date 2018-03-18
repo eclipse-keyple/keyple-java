@@ -130,7 +130,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
             apduResponses.add(new ApduResponse(ByteBuffer.allocate(0), false));
         }
 
-        if (!seApplicationRequest.askKeepChannelOpen()) {
+        if (!seApplicationRequest.keepChannelOpen()) {
             disconnectISODEP();
         }
 
