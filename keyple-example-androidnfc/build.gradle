@@ -79,4 +79,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation project(':keyple-plugin-android')
     implementation project(':keyple-calypso')
+    compile project(path: ':keyple-example-common')
 }
