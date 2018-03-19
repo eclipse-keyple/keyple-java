@@ -99,8 +99,8 @@ public class MainActivity extends AppCompatActivity
 
 
     /**
-     * Revocation of the Activity from @{@link org.keyple.plugin.androidnfc.AndroidNfcReader}
-     * list of observers
+     * Revocation of the Activity from @{@link org.keyple.plugin.androidnfc.AndroidNfcReader} list
+     * of observers
      */
     @Override
     protected void onDestroy() {
