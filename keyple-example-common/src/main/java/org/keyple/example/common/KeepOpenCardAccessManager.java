@@ -13,9 +13,14 @@ import java.util.List;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
-import org.keyple.seproxy.*;
+import org.keyple.seproxy.ApduRequest;
+import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.seproxy.ProxyReader;
+import org.keyple.seproxy.SeRequest;
+import org.keyple.seproxy.SeResponse;
 
-public class BasicCardAccessManager extends AbstractLogicManager {
+
+public class KeepOpenCardAccessManager extends AbstractLogicManager {
 
 
     private ProxyReader poReader;
@@ -45,11 +50,26 @@ public class BasicCardAccessManager extends AbstractLogicManager {
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
         SeRequest poRequest =
-                new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+                new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, true);
         try {
+
+            System.out.println("Transmit 1st SE Request, keep channel open");
             SeResponse poResponse = poReader.transmit(poRequest);
             getTopic()
                     .post(new Event("Got a response", "poResponse", poResponse.getApduResponses()));
+
+            System.out.println("Sleeping for 3 seconds");
+            Thread.sleep(3000);
+            System.out.println("Transmit 2nd SE Request, close channel");
+
+            SeRequest poRequest2 =
+                    new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+
+            SeResponse poResponse2 = poReader.transmit(poRequest2);
+            getTopic().post(
+                    new Event("Got a 2nd response", "poResponse2", poResponse2.getApduResponses()));
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }

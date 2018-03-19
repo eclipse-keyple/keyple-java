@@ -13,8 +13,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 import org.keyple.calypso.commands.po.parser.OpenSessionRespPars;
+import org.keyple.seproxy.ByteBufferUtils;
 
 public class ResponseUtilsTest {
+
+    // TODO: Clean these tests. I'm pretty sure they are useless as is.
 
     @Test
     public void TestToFCI() {
@@ -175,7 +178,8 @@ public class ResponseUtilsTest {
         OpenSessionRespPars.SecureSession SecureSessionExpected =
                 new OpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
                         isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
-                        kif, kvc, originalData, apduResponse);
+                        kif, kvc, originalData,
+                        ByteBufferUtils.subIndex(apduResponse, 0, apduResponse.limit() - 2));
         OpenSessionRespPars.SecureSession SecureSessionTested =
                 OpenSessionRespPars.toSecureSessionRev32(apduResponse);
 
@@ -210,7 +214,8 @@ public class ResponseUtilsTest {
         OpenSessionRespPars.SecureSession SecureSessionExpected =
                 new OpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
                         isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
-                        kvc, originalData, apduResponse);
+                        kvc, originalData,
+                        ByteBufferUtils.subIndex(apduResponse, 0, apduResponse.limit() - 2));
         OpenSessionRespPars.SecureSession SecureSessionTested =
                 OpenSessionRespPars.toSecureSessionRev2(apduResponse);
 
@@ -233,7 +238,8 @@ public class ResponseUtilsTest {
         OpenSessionRespPars.SecureSession SecureSessionExpectedCaseTwo =
                 new OpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
                         isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
-                        kvc, originalDataCaseTwo, apduResponseCaseTwo);
+                        kvc, originalDataCaseTwo, ByteBufferUtils.subIndex(apduResponseCaseTwo, 0,
+                                apduResponseCaseTwo.limit() - 2));
         OpenSessionRespPars.SecureSession SecureSessionTestedCaseTwo =
                 OpenSessionRespPars.toSecureSessionRev2(apduResponseCaseTwo);
 
@@ -257,7 +263,8 @@ public class ResponseUtilsTest {
         OpenSessionRespPars.SecureSession SecureSessionExpectedCaseThree =
                 new OpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
                         isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
-                        kvc, originalDataCaseThree, apduResponseCaseThree);
+                        kvc, originalDataCaseThree, ByteBufferUtils.subIndex(apduResponseCaseThree,
+                                0, apduResponseCaseThree.limit() - 2));
         OpenSessionRespPars.SecureSession SecureSessionTestedCaseThree =
                 OpenSessionRespPars.toSecureSessionRev2(apduResponseCaseThree);
 

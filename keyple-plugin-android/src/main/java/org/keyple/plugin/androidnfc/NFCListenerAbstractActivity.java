@@ -77,7 +77,7 @@ public abstract class NFCListenerAbstractActivity extends Activity
             final String action = intent.getAction();
             if (action.equals(NfcAdapter.ACTION_TECH_DISCOVERED)) {
                 // AndroidNfcPlugin.getInstance().plugReader(nfcAdapter);
-                AndroidNfcReader.getInstance().processIntent(intent);
+                AndroidNfcReader.getInstance().connectTag(intent);
 
                 onSEconnected();
             }

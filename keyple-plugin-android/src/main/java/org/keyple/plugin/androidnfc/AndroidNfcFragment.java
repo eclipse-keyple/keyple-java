@@ -98,7 +98,7 @@ public class AndroidNfcFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        Log.d(TAG, "onResume");
+        Log.d(TAG, "onResume Fragment");
 
         // if the fragment was created following an intent of NfcAdapter.ACTION_TECH_DISCOVERED TAG
         Intent intent = getActivity().getIntent();
@@ -110,11 +110,14 @@ public class AndroidNfcFragment extends Fragment {
                 Log.d(TAG, "Handle ACTION TECH intent");
 
                 ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().get(0))
-                        .processIntent(intent);
+                        .connectTag(intent);
 
             } catch (IOReaderException e) {
                 e.printStackTrace();
             }
+        } else {
+            Log.d(TAG, "Intent is not of type ACTION TECH, do not process");
+
         }
 
 
@@ -122,9 +125,12 @@ public class AndroidNfcFragment extends Fragment {
         options.putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, 5000);
 
         try {
+
+            Log.i(TAG, "Enabling Read Write Mode");
+
             nfcAdapter.enableReaderMode(getActivity(),
                     ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().get(0)),
-                    NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, null);
+                    NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, options);
 
         } catch (IOReaderException e) {
             e.printStackTrace();
