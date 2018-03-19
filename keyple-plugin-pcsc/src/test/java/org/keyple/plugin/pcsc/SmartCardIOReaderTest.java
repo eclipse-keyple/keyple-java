@@ -64,7 +64,7 @@ public class SmartCardIOReaderTest {
     private byte[] responseApduByte;
 
     @Before
-    public void setUp() throws CardException {
+    public void setUp() throws CardException, IOReaderException {
         when(terminal.connect(any(String.class))).thenReturn(card);
         when(card.getBasicChannel()).thenReturn(channel);
 
@@ -74,7 +74,8 @@ public class SmartCardIOReaderTest {
         res = new ResponseAPDU(responseApduByte);
 
         readerName = "lecteur";
-        this.reader = new PcscReader(terminal);
+        reader = new PcscReader(terminal);
+        reader.setAParameter(PcscReader.SETTING_KEY_LOGGING, "true");
     }
 
     @Test

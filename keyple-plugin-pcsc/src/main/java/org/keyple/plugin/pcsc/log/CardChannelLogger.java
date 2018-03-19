@@ -46,10 +46,13 @@ public class CardChannelLogger extends CardChannel {
     public ResponseAPDU transmit(CommandAPDU commandAPDU) throws CardException {
         Logging.LOG.info("CardChannel: Request", "action", "card_channel.request", "cardChannelId",
                 name, "apdu", ByteBufferUtils.toHex(ByteBuffer.wrap(commandAPDU.getBytes())));
+        long before = System.nanoTime();
         ResponseAPDU response = cardChannel.transmit(commandAPDU);
+        double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
         Logging.LOG.info("CardChannel: Response", "action", "card_channel.response",
                 "cardChannelId", name, "apdu",
-                ByteBufferUtils.toHex(ByteBuffer.wrap(response.getBytes())));
+                ByteBufferUtils.toHex(ByteBuffer.wrap(response.getBytes())), "elapsedMs",
+                elapsedMs);
         return response;
     }
 
@@ -57,9 +60,12 @@ public class CardChannelLogger extends CardChannel {
     public int transmit(ByteBuffer in, ByteBuffer out) throws CardException {
         Logging.LOG.info("CardChannel: Request", "action", "card_channel.request", "cardChannelId",
                 name, "apdu", ByteBufferUtils.toHex(in));
+        long before = System.nanoTime();
         int rc = cardChannel.transmit(in, out);
+        double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
         Logging.LOG.info("CardChannel: Response", "action", "card_channel.response",
-                "cardChannelId", name, "apdu", ByteBufferUtils.toHex(out), "rc", rc);
+                "cardChannelId", name, "apdu", ByteBufferUtils.toHex(out), "rc", rc, "elapsedMs",
+                elapsedMs);
         return rc;
     }
 
