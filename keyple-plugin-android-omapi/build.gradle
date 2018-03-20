@@ -1,0 +1,85 @@
+
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        google()
+
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+    }
+}
+
+plugins {
+    id "com.diffplug.gradle.spotless" version "3.9.0"
+}
+
+allprojects {
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    apply plugin: 'pmd'
+
+    pmd {
+        ruleSets = [
+                "java-basic",
+                "java-braces",
+        ]
+    }
+}
+
+group 'org.keyple'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'com.android.library'
+
+sourceCompatibility = 1.6
+
+
+android {
+    compileSdkVersion 21
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_6
+        targetCompatibility JavaVersion.VERSION_1_6
+    }
+    buildToolsVersion '26.0.2'
+
+    lintOptions {
+        abortOnError false
+    }
+
+}
+/*
+*/
+
+
+repositories {
+    mavenCentral()
+    google()
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile project(':keyple-calypso')
+}
