@@ -10,41 +10,37 @@ package org.keyple.examples.androidnfc;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.keyple.calypso.commands.po.PoRevision;
-import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
-import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
 import org.keyple.commands.InconsistentCommandException;
+import org.keyple.example.common.AbstractLogicManager;
+import org.keyple.example.common.AbstractLogicManager.Event;
+import org.keyple.example.common.BasicCardAccessManager;
+import org.keyple.example.common.KeepOpenCardAccessManager;
 import org.keyple.plugin.androidnfc.AndroidNfcFragment;
 import org.keyple.plugin.androidnfc.AndroidNfcPlugin;
-import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.ByteBufferUtils;
 import org.keyple.seproxy.ObservableReader;
 import org.keyple.seproxy.ProxyReader;
 import org.keyple.seproxy.ReaderEvent;
 import org.keyple.seproxy.ReaderObserver;
 import org.keyple.seproxy.ReadersPlugin;
 import org.keyple.seproxy.SeProxyService;
-import org.keyple.seproxy.SeRequest;
-import org.keyple.seproxy.SeResponse;
-import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.seproxy.exceptions.InvalidApduReaderException;
-import org.keyple.seproxy.exceptions.TimeoutReaderException;
-import org.keyple.seproxy.exceptions.UnexpectedReaderException;
+import org.keyple.util.event.Topic;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 /**
  * Example of @{@link SeProxyService} implementation based on the @{@link AndroidNfcPlugin}
  *
  */
-public class MainActivity extends AppCompatActivity implements ReaderObserver {
+public class MainActivity extends AppCompatActivity
+        implements ReaderObserver, Topic.Subscriber<Event> {
 
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -52,7 +48,8 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver {
 
     // Simple text on screen
     private TextView mText;
-
+    private String testType;
+    private AbstractLogicManager cardAccessManager;
 
     /**
      * SE Proxy setting of the AndroidNfcPlugin
@@ -67,13 +64,14 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver {
 
 
         // initialize SEProxy with Android Plugin
+        Log.d(TAG, "Initialize SEProxy with Android Plugin");
         SeProxyService seProxyService = SeProxyService.getInstance();
         List<ReadersPlugin> plugins = new ArrayList<ReadersPlugin>();
         plugins.add(AndroidNfcPlugin.getInstance());
         seProxyService.setPlugins(plugins);
 
         // add NFC Fragment to activity in order to communicate with Android Plugin
-        Log.d(TAG, "add Android NFC Fragment");
+        Log.d(TAG, "Add NFC Fragment to activity in order to communicate with Android Plugin");
         Fragment nfcFragment = AndroidNfcFragment.newInstance();
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction fragtrans = fm.beginTransaction();
@@ -81,40 +79,35 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver {
         fragtrans.commit();
 
 
-    }
-
-    /**
-     * Declaration of the Activity as "observer" of
-     * the @{@link org.keyple.plugin.androidnfc.AndroidNfcReader}
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-
         try {
-            SeProxyService seProxyService = SeProxyService.getInstance();
+            // define task as an observer for ReaderEvents
+            Log.d(TAG, "Define task as an observer for ReaderEvents");
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
             ((ObservableReader) reader).addObserver(this);
+
+            initKeepChannelAccessTest();
+
+            mText = (TextView) findViewById(R.id.text);
+            mText.setText("Waiting for a tag");
 
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
 
 
-        mText = (TextView) findViewById(R.id.text);
-        mText.setText("Waiting for a tag");
     }
 
+
     /**
-     * Revocation of the Activity from @{@link org.keyple.plugin.androidnfc.AndroidNfcReader}
-     * "observers
+     * Revocation of the Activity from @{@link org.keyple.plugin.androidnfc.AndroidNfcReader} list
+     * of observers
      */
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
         try {
+            Log.d(TAG, "Remove task as an observer for ReaderEvents");
             SeProxyService seProxyService = SeProxyService.getInstance();
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
             ((ObservableReader) reader).deleteObserver(this);
@@ -122,9 +115,6 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver {
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
-
-
-
     }
 
 
@@ -136,89 +126,109 @@ public class MainActivity extends AppCompatActivity implements ReaderObserver {
     @Override
     public void notify(final ReaderEvent readerEvent) {
 
-
         runOnUiThread(new Runnable() {
-
             @Override
             public void run() {
                 Log.d(TAG, "New ReaderEvent received : " + readerEvent.getEventType().toString());
 
                 switch (readerEvent.getEventType()) {
                     case SE_INSERTED:
+                        mText.append("\n ---- \n");
+                        mText.append("Tag detected");
                         try {
 
-                            SeProxyService seProxyService = SeProxyService.getInstance();
-                            List<ReadersPlugin> readersPlugin = seProxyService.getPlugins();
-                            ProxyReader poReader = readersPlugin.get(0).getReaders().get(0);
-
-                            String poAid = "A000000291A000000191";
-                            String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
-                                    + "1112131415161718191A1B1C1D1E1F20"
-                                    + "2122232425262728292A2B2C2D2E2F30";
-
-                            ReadRecordsCmdBuild poReadRecordCmd_T2Env = null;
-                            poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                                    (byte) 0x01, true, (byte) 0x14, (byte) 0x20);
-                            ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(
-                                    PoRevision.REV3_1, (byte) 0x01, true, (byte) 0x1A, (byte) 0x30);
-                            UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
-                                    new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x01,
-                                            (byte) 0x1A,
-                                            ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
-
-                            // Get PO ApduRequest List
-                            List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
-                            poApduRequestList.add(poReadRecordCmd_T2Env.getApduRequest());
-                            poApduRequestList.add(poReadRecordCmd_T2Usage.getApduRequest());
-                            poApduRequestList.add(poUpdateRecordCmd_T2UsageFill.getApduRequest());
-
-                            SeRequest poRequest = new SeRequest(ByteBufferUtils.fromHex(poAid),
-                                    poApduRequestList, false);
-                            mText.append("\n--\nTransmit : ");
-                            for (ApduRequest req : poApduRequestList) {
-                                // Log.i(TAG,r.toString());
-                                mText.append("\n" + ByteBufferUtils.toHex(req.getBuffer()));
-                            }
-
-                            SeResponse poResponse = poReader.transmit(poRequest);
-                            mText.append("\n--\nResponses : ");
-                            for (ApduResponse res : poResponse.getApduResponses()) {
-                                // Log.i(TAG,r.toString());
-                                mText.append("\n" + ByteBufferUtils.toHex(res.getBuffer()) + " "
-                                        + String.valueOf(res.getStatusCode()));
-                            }
+                            cardAccessManager.run();
 
                         } catch (InconsistentCommandException e) {
-                            e.printStackTrace();
-                        } catch (IOReaderException e) {
-                            e.printStackTrace();
-                        } catch (ChannelStateReaderException e) {
-                            e.printStackTrace();
-                        } catch (InvalidApduReaderException e) {
-                            e.printStackTrace();
-                        } catch (TimeoutReaderException e) {
-                            e.printStackTrace();
-                        } catch (UnexpectedReaderException e) {
                             e.printStackTrace();
                         }
                         break;
 
-
                     case SE_REMOVAL:
-                        mText.setText("Waiting for a tag");
+                        mText.append("\n ---- \n");
+                        mText.append("Connection closed to tag");
                         break;
 
                     case IO_ERROR:
+                        mText.append("\n ---- \n");
                         mText.setText("Error reading card");
                         break;
 
                 }
-
             }
         });
-
-
     }
 
 
+    /**
+     * Observes Card Access when an event is received
+     * 
+     * @param event
+     */
+    public void update(Event event) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mText.append("\n ---- \n");
+                mText.append(event.toString());
+            }
+        });
+    }
+
+
+
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch (view.getId()) {
+            case R.id.simpleTestButton:
+                if (checked)
+                    Log.i(TAG, "switched to Basic Card Access Test");
+                initBasicCardAccessTest();
+                break;
+            case R.id.keepChannelButton:
+                if (checked)
+                    Log.i(TAG, "switched to Keep Channel Card Access Test");
+                initKeepChannelAccessTest();
+                break;
+        }
+    }
+
+
+
+    private void initBasicCardAccessTest() {
+
+        try {
+
+            SeProxyService seProxyService = SeProxyService.getInstance();
+            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+
+            cardAccessManager = new BasicCardAccessManager();
+            ((BasicCardAccessManager) cardAccessManager).setPoReader(reader);
+
+            cardAccessManager.getTopic().addSubscriber(this);
+        } catch (IOReaderException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void initKeepChannelAccessTest() {
+
+        try {
+
+            SeProxyService seProxyService = SeProxyService.getInstance();
+            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+
+            cardAccessManager = new KeepOpenCardAccessManager();
+            ((KeepOpenCardAccessManager) cardAccessManager).setPoReader(reader);
+
+            cardAccessManager.getTopic().addSubscriber(this);
+        } catch (IOReaderException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

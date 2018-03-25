@@ -10,10 +10,15 @@ buildscript {
     }
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.1'
+}
+
 allprojects {
 
     repositories {
         mavenCentral()
+        jcenter()
     }
 
     apply plugin: 'pmd'
@@ -49,8 +54,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_6
-        targetCompatibility JavaVersion.VERSION_1_6
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     buildToolsVersion '26.0.2'
 
@@ -74,4 +79,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation project(':keyple-plugin-android')
     implementation project(':keyple-calypso')
+    compile project(path: ':keyple-example-common')
 }
