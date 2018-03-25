@@ -15,7 +15,6 @@ import org.keyple.calypso.commands.po.parser.AbstractOpenSessionRespPars;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 import org.keyple.calypso.commands.po.parser.OpenSession24RespPars;
 import org.keyple.calypso.commands.po.parser.OpenSession32RespPars;
-import org.keyple.seproxy.ByteBufferUtils;
 
 public class ResponseUtilsTest {
 
@@ -180,8 +179,7 @@ public class ResponseUtilsTest {
         AbstractOpenSessionRespPars.SecureSession SecureSessionExpected =
                 new AbstractOpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
                         isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
-                        kif, kvc, originalData,
-                        ByteBufferUtils.subIndex(apduResponse, 0, apduResponse.limit() - 2));
+                        kif, kvc, originalData, apduResponse);
         AbstractOpenSessionRespPars.SecureSession SecureSessionTested =
                 OpenSession32RespPars.createSecureSession(apduResponse);
 
@@ -216,8 +214,7 @@ public class ResponseUtilsTest {
         AbstractOpenSessionRespPars.SecureSession SecureSessionExpected =
                 new AbstractOpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
                         isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
-                        kvc, originalData,
-                        ByteBufferUtils.subIndex(apduResponse, 0, apduResponse.limit() - 2));
+                        kvc, originalData, apduResponse);
         AbstractOpenSessionRespPars.SecureSession SecureSessionTested =
                 OpenSession24RespPars.createSecureSession(apduResponse);
 
@@ -240,8 +237,7 @@ public class ResponseUtilsTest {
         AbstractOpenSessionRespPars.SecureSession SecureSessionExpectedCaseTwo =
                 new AbstractOpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
                         isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
-                        kvc, originalDataCaseTwo, ByteBufferUtils.subIndex(apduResponseCaseTwo, 0,
-                                apduResponseCaseTwo.limit() - 2));
+                        kvc, originalDataCaseTwo, apduResponseCaseTwo);
         AbstractOpenSessionRespPars.SecureSession SecureSessionTestedCaseTwo =
                 OpenSession24RespPars.createSecureSession(apduResponseCaseTwo);
 
@@ -265,8 +261,7 @@ public class ResponseUtilsTest {
         AbstractOpenSessionRespPars.SecureSession SecureSessionExpectedCaseThree =
                 new AbstractOpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
                         isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
-                        kvc, originalDataCaseThree, ByteBufferUtils.subIndex(apduResponseCaseThree,
-                                0, apduResponseCaseThree.limit() - 2));
+                        kvc, originalDataCaseThree, apduResponseCaseThree);
         AbstractOpenSessionRespPars.SecureSession SecureSessionTestedCaseThree =
                 OpenSession24RespPars.createSecureSession(apduResponseCaseThree);
 
