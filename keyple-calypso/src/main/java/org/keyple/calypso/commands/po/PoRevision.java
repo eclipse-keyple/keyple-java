@@ -8,6 +8,8 @@
 
 package org.keyple.calypso.commands.po;
 
+import org.keyple.calypso.commands.CalypsoCommands;
+
 /**
  * Calypso revisions
  */
@@ -26,5 +28,19 @@ public enum PoRevision {
     /**
      * Calypso Revision 3.2 (CLA 0x00)
      */
-    REV3_2
+    REV3_2;
+
+
+    public CalypsoCommands toOpenSessionCommand() {
+        switch (this) {
+            case REV2_4:
+                return CalypsoCommands.PO_OPEN_SESSION_24;
+            case REV3_1:
+                return CalypsoCommands.PO_OPEN_SESSION_31;
+            case REV3_2:
+                return CalypsoCommands.PO_OPEN_SESSION_32;
+            default:
+                throw new IllegalStateException("Any revision should have a matching command");
+        }
+    }
 }

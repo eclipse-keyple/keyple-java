@@ -35,9 +35,9 @@ public class DigestInitCmdBuild extends CsmCommandBuilder {
      * @param verificationMode the verification mode
      * @param rev3_2Mode the rev 3 2 mode
      * @param workKeyRecordNumber the work key record number
-     * @param workKeyKif from the OpenSessionCmdBuild response
-     * @param workKeyKVC from the OpenSessionCmdBuild response
-     * @param digestData all data out from the OpenSessionCmdBuild response
+     * @param workKeyKif from the AbstractOpenSessionCmdBuild response
+     * @param workKeyKVC from the AbstractOpenSessionCmdBuild response
+     * @param digestData all data out from the AbstractOpenSessionCmdBuild response
      * @throws InconsistentCommandException the inconsistent command exception
      */
     public DigestInitCmdBuild(CsmRevision revision, boolean verificationMode, boolean rev3_2Mode,

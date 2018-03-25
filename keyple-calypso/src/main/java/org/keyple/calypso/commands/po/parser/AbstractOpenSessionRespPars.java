@@ -12,18 +12,16 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import org.keyple.calypso.commands.po.PoRevision;
-import org.keyple.calypso.commands.utils.ApduUtils;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.ByteBufferUtils;
 
 /**
  * Open session response parser. See specs: Calypso / page 100 / 9.5.1 - Open secure session
  *
  */
-public class OpenSessionRespPars extends ApduResponseParser {
+public abstract class AbstractOpenSessionRespPars extends ApduResponseParser {
 
-    private static final Map<Integer, StatusProperties> STATUS_TABLE_REV2_4;
+    private static final Map<Integer, StatusProperties> STATUS_TABLE;
     static {
         Map<Integer, StatusProperties> m =
                 new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);
@@ -44,54 +42,7 @@ public class OpenSessionRespPars extends ApduResponseParser {
                 new StatusProperties(false, "Record not found (record index is above NumRec)."));
         m.put(0x6B00, new StatusProperties(false,
                 "P1 or P2 value not supported (key index incorrect, wrong P2)."));
-        STATUS_TABLE_REV2_4 = m;
-    }
-
-    private static final Map<Integer, StatusProperties> STATUS_TABLE_REV3_1;
-    static {
-        Map<Integer, StatusProperties> m =
-                new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false, "Lc value not supported."));
-        m.put(0x6900, new StatusProperties(false, "Transaction Counter is 0"));
-        m.put(0x6981, new StatusProperties(false,
-                "Command forbidden (read requested and current EF is a Binary file)."));
-        m.put(0x6982, new StatusProperties(false,
-                "Security conditions not fulfilled (PIN code not presented, encryption required). "));
-        m.put(0x6985, new StatusProperties(false,
-                "Access forbidden (Never access mode, Session already opened)."));
-        m.put(0x6986, new StatusProperties(false,
-                "Command not allowed (read requested and no current EF)."));
-        m.put(0x6A81, new StatusProperties(false, "Wrong key index."));
-        m.put(0x6A82, new StatusProperties(false, "File not found."));
-        m.put(0x6A83,
-                new StatusProperties(false, "Record not found (record index is above NumRec)."));
-        m.put(0x6B00, new StatusProperties(false,
-                "P1 or P2 value not supported (e.g. REV.3.2 mode not supported)."));
-        STATUS_TABLE_REV3_1 = m;
-    }
-
-
-    private static final Map<Integer, StatusProperties> STATUS_TABLE_REV3_2;
-    static {
-        Map<Integer, StatusProperties> m =
-                new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);
-        m.put(0x6700, new StatusProperties(false, "Lc value not supported."));
-        m.put(0x6900, new StatusProperties(false, "Transaction Counter is 0"));
-        m.put(0x6981, new StatusProperties(false,
-                "Command forbidden (read requested and current EF is a Binary file)."));
-        m.put(0x6982, new StatusProperties(false,
-                "Security conditions not fulfilled (PIN code not presented, AES key forbidding the "
-                        + "Revision 3 mode, encryption required)."));
-        m.put(0x6985, new StatusProperties(false,
-                "Access forbidden (Never access mode, Session already opened)."));
-        m.put(0x6986, new StatusProperties(false,
-                "Command not allowed (read requested and no current EF)."));
-        m.put(0x6A81, new StatusProperties(false, "Wrong key index."));
-        m.put(0x6A82, new StatusProperties(false, "File not found."));
-        m.put(0x6A83,
-                new StatusProperties(false, "Record not found (record index is above NumRec)."));
-        m.put(0x6B00, new StatusProperties(false, "P1 or P2 value not supported."));
-        STATUS_TABLE_REV3_2 = m;
+        STATUS_TABLE = m;
     }
 
     /**
@@ -107,128 +58,41 @@ public class OpenSessionRespPars extends ApduResponseParser {
 
     @Override
     protected Map<Integer, StatusProperties> getStatusTable() {
-        switch (revision) {
-            case REV3_2:
-                return STATUS_TABLE_REV3_2;
-            case REV3_1:
-                return STATUS_TABLE_REV3_1;
-            case REV2_4:
-                return STATUS_TABLE_REV2_4;
-            default:
-                throw new IllegalStateException("Unknown revision: " + revision);
-        }
+        // At this stage, the status table is the same for everyone
+        return STATUS_TABLE;
     }
 
     private final PoRevision revision;
 
     /** The secure session. */
-    private final SecureSession secureSession;
+    SecureSession secureSession;
 
     /**
-     * Instantiates a new OpenSessionRespPars.
+     * Instantiates a new AbstractOpenSessionRespPars.
      *
      * @param response the response from Open secure session APDU command
      * @param revision the revision of the PO
      */
-    public OpenSessionRespPars(ApduResponse response, PoRevision revision) {
+    AbstractOpenSessionRespPars(ApduResponse response, PoRevision revision) {
         super(response);
         this.revision = revision;
-        //
-        SecureSession ss = null;
-        if (isSuccessful()) {
-            switch (revision) {
-                case REV3_2:
-                    if (response.isSuccessful()) {
-                        ss = toSecureSessionRev32(response.getBuffer());
-                    }
-                    break;
-                case REV3_1:
-                    if (response.isSuccessful()) {
-                        ss = toSecureSessionRev3(response.getBuffer());
-                    }
-                    break;
-                case REV2_4:
-                    if (response.isSuccessful()) {
-                        ss = toSecureSessionRev2(response.getBuffer());
-                    }
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            ss = null;
+        this.secureSession = toSecureSession(response.getBuffer());
+    }
+
+    public static AbstractOpenSessionRespPars create(ApduResponse response, PoRevision revision) {
+        switch (revision) {
+            case REV2_4:
+                return new OpenSession24RespPars(response);
+            case REV3_1:
+                return new OpenSession31RespPars(response);
+            case REV3_2:
+                return new OpenSession32RespPars(response);
+            default:
+                throw new IllegalArgumentException("Unknow revision " + revision);
         }
-        secureSession = ss;
     }
 
-    /**
-     * Method to get a Secure Session from the response in revision 3.2 mode.
-     *
-     * @param apduResponse the apdu response
-     * @return a SecureSession
-     */
-    public static SecureSession toSecureSessionRev32(ByteBuffer apduResponse) {
-
-        byte flag = apduResponse.get(8);
-        boolean previousSessionRatified = ApduUtils.isBitSet(flag, 0x00);
-        boolean manageSecureSessionAuthorized = ApduUtils.isBitSet(flag, 1);
-
-        byte kif = apduResponse.get(9);
-        byte kvc = apduResponse.get(10);
-        int dataLength = apduResponse.get(11);
-        ByteBuffer data = ByteBufferUtils.subIndex(apduResponse, 12, 12 + dataLength);
-
-        return new SecureSession(ByteBufferUtils.subIndex(apduResponse, 0, 3),
-                ByteBufferUtils.subIndex(apduResponse, 3, 8), previousSessionRatified,
-                manageSecureSessionAuthorized, kif, kvc, data, apduResponse);
-    }
-
-    /**
-     * Method to get a Secure Session from the response in revision 3 mode.
-     *
-     * @param apduResponse the apdu response
-     * @return a SecureSession
-     */
-    public static SecureSession toSecureSessionRev3(ByteBuffer apduResponse) {
-        SecureSession secureSession;
-        boolean previousSessionRatified = (apduResponse.get(4) == (byte) 0x01);
-        boolean manageSecureSessionAuthorized = false;
-
-        byte kif = apduResponse.get(5);
-        byte kvc = apduResponse.get(6);
-        int dataLength = apduResponse.get(7);
-        ByteBuffer data = ByteBufferUtils.subIndex(apduResponse, 8, 8 + dataLength);
-
-        secureSession = new SecureSession(ByteBufferUtils.subIndex(apduResponse, 0, 3),
-                ByteBufferUtils.subIndex(apduResponse, 3, 4), previousSessionRatified,
-                manageSecureSessionAuthorized, kif, kvc, data, apduResponse);
-        return secureSession;
-    }
-
-    /**
-     * Method to get a Secure Session from the response in revision 2 mode.
-     *
-     * @param apduResponse the apdu response
-     * @return a SecureSession
-     */
-    public static SecureSession toSecureSessionRev2(ByteBuffer apduResponse) {
-        SecureSession secureSession;
-        boolean previousSessionRatified = true;
-
-        byte kvc = toKVCRev2(apduResponse);
-
-        if (apduResponse.limit() < 6) {
-            previousSessionRatified = false;
-        }
-
-        // TODO selecting record data without length ?
-
-        secureSession = new SecureSession(ByteBufferUtils.subIndex(apduResponse, 1, 4),
-                ByteBufferUtils.subIndex(apduResponse, 4, 5), previousSessionRatified, false, kvc,
-                null, apduResponse);
-
-        return secureSession;
-    }
+    abstract SecureSession toSecureSession(ByteBuffer apduResponse);
 
     public ByteBuffer getPoChallenge() {
         return secureSession.getChallengeRandomNumber();
