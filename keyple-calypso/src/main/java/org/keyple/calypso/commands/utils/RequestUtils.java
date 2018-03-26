@@ -15,7 +15,7 @@ import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
 /**
- * This class eases the construction of APDURequest.
+ * Eases the creation of {@link ApduRequest} requests.
  */
 public class RequestUtils {
 
@@ -32,16 +32,17 @@ public class RequestUtils {
 
     public static ApduRequest constructAPDURequest(byte cla, CommandsTable ins, byte p1, byte p2,
             ByteBuffer dataIn) {
-        return constructAPDURequest(cla, ins.getInstructionByte(), p1, p2, dataIn, null);
+        return constructAPDURequest(cla, ins, p1, p2, dataIn, null);
     }
 
-    public static ApduRequest constructAPDURequest(byte cla, CommandsTable ins, byte p1, byte p2,
-            ByteBuffer dataIn, byte le) {
-        return constructAPDURequest(cla, ins.getInstructionByte(), p1, p2, dataIn, le);
-    }
+    /*
+     * public static ApduRequest constructAPDURequest(byte cla, CommandsTable ins, byte p1, byte p2,
+     * ByteBuffer dataIn, byte le) { return constructAPDURequest(cla, ins.getInstructionByte(), p1,
+     * p2, dataIn, le); }
+     */
 
-    static ApduRequest constructAPDURequest(byte cla, byte ins, byte p1, byte p2, ByteBuffer dataIn,
-            Byte le) {
+    public static ApduRequest constructAPDURequest(byte cla, CommandsTable command, byte p1,
+            byte p2, ByteBuffer dataIn, Byte le) {
 
         if (dataIn == null) {
             // TODO: Drop this
@@ -49,6 +50,8 @@ public class RequestUtils {
         } else {
             dataIn.position(0);
         }
+
+        byte ins = command.getInstructionByte();
 
         boolean forceLe;
         if (le == null) {
@@ -100,6 +103,6 @@ public class RequestUtils {
         apdu.position(0);
 
         // byte[] array = ArrayUtils.toPrimitive(apdu.toArray(new Byte[0]));
-        return new ApduRequest(apdu, localCaseId == 4);
+        return new ApduRequest(apdu, localCaseId == 4).setName(command.getName());
     }
 }
