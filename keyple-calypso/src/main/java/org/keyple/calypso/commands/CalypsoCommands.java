@@ -22,20 +22,9 @@ import org.keyple.calypso.commands.csm.parser.DigestInitRespPars;
 import org.keyple.calypso.commands.csm.parser.DigestUpdateMultipleRespPars;
 import org.keyple.calypso.commands.csm.parser.DigestUpdateRespPars;
 import org.keyple.calypso.commands.csm.parser.SelectDiversifierRespPars;
-import org.keyple.calypso.commands.po.builder.AppendRecordCmdBuild;
-import org.keyple.calypso.commands.po.builder.CloseSessionCmdBuild;
-import org.keyple.calypso.commands.po.builder.GetDataFciCmdBuild;
-import org.keyple.calypso.commands.po.builder.OpenSessionCmdBuild;
-import org.keyple.calypso.commands.po.builder.PoGetChallengeCmdBuild;
-import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
-import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
-import org.keyple.calypso.commands.po.parser.AppendRecordRespPars;
-import org.keyple.calypso.commands.po.parser.CloseSessionRespPars;
-import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
-import org.keyple.calypso.commands.po.parser.OpenSessionRespPars;
-import org.keyple.calypso.commands.po.parser.PoGetChallengeRespPars;
-import org.keyple.calypso.commands.po.parser.ReadRecordsRespPars;
-import org.keyple.calypso.commands.po.parser.UpdateRecordRespPars;
+import org.keyple.calypso.commands.po.PoRevision;
+import org.keyple.calypso.commands.po.builder.*;
+import org.keyple.calypso.commands.po.parser.*;
 import org.keyple.commands.ApduCommandBuilder;
 import org.keyple.commands.ApduResponseParser;
 import org.keyple.commands.CommandsTable;
@@ -51,8 +40,16 @@ public enum CalypsoCommands implements CommandsTable {
             GetDataFciRespPars.class),
 
     /** The po open session. */
-    PO_OPEN_SESSION(CommandType.PO, "Open Secure Session", (byte) 0x8A, OpenSessionCmdBuild.class,
-            OpenSessionRespPars.class),
+    PO_OPEN_SESSION_24(CommandType.PO, "Open Secure Session V2.4", (byte) 0x8A,
+            OpenSession24CmdBuild.class, OpenSession24RespPars.class),
+
+    /** The po open session. */
+    PO_OPEN_SESSION_31(CommandType.PO, "Open Secure Session V3.1", (byte) 0x8A,
+            OpenSession31CmdBuild.class, OpenSession31RespPars.class),
+
+    /** The po open session. */
+    PO_OPEN_SESSION_32(CommandType.PO, "Open Secure Session V3.2", (byte) 0x8A,
+            OpenSession32CmdBuild.class, OpenSession32RespPars.class),
 
     /** The po close session. */
     PO_CLOSE_SESSION(CommandType.PO, "Close Secure Session", (byte) 0x8E,
@@ -181,4 +178,16 @@ public enum CalypsoCommands implements CommandsTable {
         return responseParserClass;
     }
 
+    public CalypsoCommands getOpenSessionForRev(PoRevision rev) {
+        switch (rev) {
+            case REV2_4:
+                return CalypsoCommands.PO_OPEN_SESSION_24;
+            case REV3_1:
+                return CalypsoCommands.PO_OPEN_SESSION_31;
+            case REV3_2:
+                return CalypsoCommands.PO_OPEN_SESSION_32;
+            default:
+                throw new IllegalStateException("Any revision should have a matching command");
+        }
+    }
 }
