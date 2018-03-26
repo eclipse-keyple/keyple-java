@@ -21,7 +21,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.SendableInSession;
-import org.keyple.calypso.commands.po.builder.OpenSessionCmdBuild;
+import org.keyple.calypso.commands.po.builder.AbstractOpenSessionCmdBuild;
+import org.keyple.calypso.commands.po.builder.OpenSession24CmdBuild;
 import org.keyple.calypso.commands.po.builder.PoGetChallengeCmdBuild;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
@@ -48,7 +49,9 @@ public class PoSecureSessionTest {
     PoSecureSession poPlainSecrureSession;
 
 
-    /** The revision. */
+    /**
+     * The revision.
+     */
     private PoRevision revision = PoRevision.REV3_1;
 
     @Mock
@@ -80,7 +83,6 @@ public class PoSecureSessionTest {
         responseOpenSessionError = new SeResponse(true, apduResponseErr, apduResponseListErr);
 
 
-
         ApduResponse apduResponseTerminalSessionSignature = TestsUtilsResponseTabByteGenerator
                 .generateApduResponseTerminalSessionSignatureCmd();
         List<ApduResponse> apduResponseTerminalSessionSignatureList = new ArrayList<ApduResponse>();
@@ -96,7 +98,6 @@ public class PoSecureSessionTest {
         responseTerminalSessionSignatureError =
                 new SeResponse(true, apduResponseTerminalSessionSignatureErr,
                         apduResponseTerminalSessionSignatureListErr);
-
 
 
         ApduResponse apduResponseFci =
@@ -426,10 +427,9 @@ public class PoSecureSessionTest {
 
     private SeResponse processOpeningTestKif0xFFKey(byte key, byte sfi, byte recordNumber,
             List<ApduResponse> apduExpected, SendableInSession[] poCommandsInsideSession)
-            throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, ReaderTimeoutException, InconsistentCommandException {
-        OpenSessionCmdBuild openCommand =
-                new OpenSessionCmdBuild(PoRevision.REV2_4, key, samchallenge, sfi, recordNumber);
+            throws IOReaderException, InconsistentCommandException {
+        AbstractOpenSessionCmdBuild openCommand =
+                new OpenSession24CmdBuild(key, samchallenge, sfi, recordNumber);
         return poPlainSecrureSession.processOpening(openCommand,
                 poCommandsInsideSession != null ? Arrays.asList(poCommandsInsideSession) : null);
 
