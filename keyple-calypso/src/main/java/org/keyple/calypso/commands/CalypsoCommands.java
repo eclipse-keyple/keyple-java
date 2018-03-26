@@ -178,7 +178,13 @@ public enum CalypsoCommands implements CommandsTable {
         return responseParserClass;
     }
 
-    public CalypsoCommands getOpenSessionForRev(PoRevision rev) {
+    /**
+     * Get the right open-session command for a given {@link PoRevision}
+     * 
+     * @param rev Command revision
+     * @return Returned command
+     */
+    public static CalypsoCommands getOpenSessionForRev(PoRevision rev) {
         switch (rev) {
             case REV2_4:
                 return CalypsoCommands.PO_OPEN_SESSION_24;

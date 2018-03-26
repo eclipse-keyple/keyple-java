@@ -10,6 +10,7 @@ package org.keyple.calypso.commands.po.builder;
 
 
 import java.nio.ByteBuffer;
+import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.po.PoCommandBuilder;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.commands.InconsistentCommandException;
@@ -30,7 +31,7 @@ public abstract class AbstractOpenSessionCmdBuild extends PoCommandBuilder {
      * @throws InconsistentCommandException thrown if rev 2.4 and key index is 0
      */
     public AbstractOpenSessionCmdBuild(PoRevision revision) {
-        super(revision.toOpenSessionCommand(), null);
+        super(CalypsoCommands.getOpenSessionForRev(revision), null);
         defaultRevision = revision;
     }
 
