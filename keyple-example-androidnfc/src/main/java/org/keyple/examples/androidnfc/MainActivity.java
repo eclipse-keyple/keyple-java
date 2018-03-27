@@ -8,48 +8,37 @@
 
 package org.keyple.examples.androidnfc;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.keyple.commands.InconsistentCommandException;
-import org.keyple.example.common.AbstractLogicManager;
-import org.keyple.example.common.AbstractLogicManager.Event;
-import org.keyple.example.common.BasicCardAccessManager;
-import org.keyple.example.common.KeepOpenCardAccessManager;
-import org.keyple.plugin.androidnfc.AndroidNfcFragment;
-import org.keyple.plugin.androidnfc.AndroidNfcPlugin;
-import org.keyple.seproxy.ObservableReader;
-import org.keyple.seproxy.ProxyReader;
-import org.keyple.seproxy.ReaderEvent;
-import org.keyple.seproxy.ReaderObserver;
-import org.keyple.seproxy.ReadersPlugin;
-import org.keyple.seproxy.SeProxyService;
-import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.util.event.Topic;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
-import android.widget.RadioButton;
-import android.widget.TextView;
+import android.view.MenuItem;
+
+import org.keyple.plugin.androidnfc.AndroidNfcPlugin;
+import org.keyple.seproxy.SeProxyService;
+
 
 /**
  * Example of @{@link SeProxyService} implementation based on the @{@link AndroidNfcPlugin}
  *
  */
 public class MainActivity extends AppCompatActivity
-        implements ReaderObserver, Topic.Subscriber<Event> {
+        {
 
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG_NFC_TEST_FRAGMENT = "tagnfctestfragment";
+    private static final String TAG_OMAPI_TEST_FRAGMENT = "tagomapitestfragment";
 
 
-    // Simple text on screen
-    private TextView mText;
-    private String testType;
-    private AbstractLogicManager cardAccessManager;
+    private DrawerLayout mDrawerLayout;
+
+
 
     /**
      * SE Proxy setting of the AndroidNfcPlugin
@@ -59,176 +48,100 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /**
+         * Define UI elements
+         */
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_main);
 
+        setupNavDrawer();
+        /**
+         * end of Define UI elements
+         */
 
-        // initialize SEProxy with Android Plugin
-        Log.d(TAG, "Initialize SEProxy with Android Plugin");
-        SeProxyService seProxyService = SeProxyService.getInstance();
-        List<ReadersPlugin> plugins = new ArrayList<ReadersPlugin>();
-        plugins.add(AndroidNfcPlugin.getInstance());
-        seProxyService.setPlugins(plugins);
-
-        // add NFC Fragment to activity in order to communicate with Android Plugin
-        Log.d(TAG, "Add NFC Fragment to activity in order to communicate with Android Plugin");
-        Fragment nfcFragment = AndroidNfcFragment.newInstance();
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction fragtrans = fm.beginTransaction();
-        fragtrans.add(nfcFragment, "nfc");
-        fragtrans.commit();
-
-
-        try {
-            // define task as an observer for ReaderEvents
-            Log.d(TAG, "Define task as an observer for ReaderEvents");
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
-            ((ObservableReader) reader).addObserver(this);
-
-            initKeepChannelAccessTest();
-
-            mText = (TextView) findViewById(R.id.text);
-            mText.setText("Waiting for a tag");
-
-        } catch (IOReaderException e) {
-            e.printStackTrace();
-        }
+        activateNFCTestView();
 
 
     }
 
-
-    /**
-     * Revocation of the Activity from @{@link org.keyple.plugin.androidnfc.AndroidNfcReader} list
-     * of observers
-     */
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        try {
-            Log.d(TAG, "Remove task as an observer for ReaderEvents");
-            SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
-            ((ObservableReader) reader).deleteObserver(this);
-
-        } catch (IOReaderException e) {
-            e.printStackTrace();
-        }
+    private void activateNFCTestView(){
+        //init NFC Test Fragment
+        Log.d(TAG,"Insert NFC Test Fragment");
+        NFCTestFragment nfcTestFragment = NFCTestFragment.newInstance();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, nfcTestFragment, TAG_NFC_TEST_FRAGMENT)
+                .addToBackStack(null)
+                .commit();
     }
 
+    private void activateOMAPITestView(){
+        //init OMAPI Test Fragment
+        Log.d(TAG,"Insert NFC Test Fragment");
+        OMAPITestFragment omapiTestFragment = OMAPITestFragment.newInstance();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, omapiTestFragment, TAG_OMAPI_TEST_FRAGMENT)
+                .addToBackStack(null)
+                .commit();
+    }
 
-    /**
-     * Management of SE insertion event to operate a ticketing processing
-     * 
-     * @param readerEvent : event received from SEProxyService
-     */
-    @Override
-    public void notify(final ReaderEvent readerEvent) {
+    private void setupNavDrawer(){
+        mDrawerLayout = findViewById(R.id.drawer_layout);
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "New ReaderEvent received : " + readerEvent.getEventType().toString());
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        // set item as selected to persist highlight
+                        menuItem.setChecked(true);
+                        // close drawer when item is tapped
+                        mDrawerLayout.closeDrawers();
 
-                switch (readerEvent.getEventType()) {
-                    case SE_INSERTED:
-                        mText.append("\n ---- \n");
-                        mText.append("Tag detected");
-                        try {
+                        // Add code here to update the UI based on the item selected
+                        // For example, swap UI fragments here
+                        Log.d(TAG, "Item selected from drawer: " + menuItem.getTitle());
 
-                            cardAccessManager.run();
+                        switch (menuItem.getItemId()){
+                            case R.id.nav_nfc :
+                                activateNFCTestView();
+                                break;
+                            case R.id.nav_omapi :
+                                activateOMAPITestView();
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Invalid menuItem");
 
-                        } catch (InconsistentCommandException e) {
-                            e.printStackTrace();
                         }
-                        break;
-
-                    case SE_REMOVAL:
-                        mText.append("\n ---- \n");
-                        mText.append("Connection closed to tag");
-                        break;
-
-                    case IO_ERROR:
-                        mText.append("\n ---- \n");
-                        mText.setText("Error reading card");
-                        break;
-
-                }
-            }
-        });
-    }
 
 
-    /**
-     * Observes Card Access when an event is received
-     * 
-     * @param event
-     */
-    public void update(Event event) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mText.append("\n ---- \n");
-                mText.append(event.toString());
-            }
-        });
+
+                        return true;
+                    }
+                });
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+
+
+
     }
 
 
 
-    public void onRadioButtonClicked(View view) {
-        // Is the button now checked?
-        boolean checked = ((RadioButton) view).isChecked();
-
-        // Check which radio button was clicked
-        switch (view.getId()) {
-            case R.id.simpleTestButton:
-                if (checked)
-                    Log.i(TAG, "switched to Basic Card Access Test");
-                initBasicCardAccessTest();
-                break;
-            case R.id.keepChannelButton:
-                if (checked)
-                    Log.i(TAG, "switched to Keep Channel Card Access Test");
-                initKeepChannelAccessTest();
-                break;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
         }
-    }
-
-
-
-    private void initBasicCardAccessTest() {
-
-        try {
-
-            SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
-
-            cardAccessManager = new BasicCardAccessManager();
-            ((BasicCardAccessManager) cardAccessManager).setPoReader(reader);
-
-            cardAccessManager.getTopic().addSubscriber(this);
-        } catch (IOReaderException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void initKeepChannelAccessTest() {
-
-        try {
-
-            SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
-
-            cardAccessManager = new KeepOpenCardAccessManager();
-            ((KeepOpenCardAccessManager) cardAccessManager).setPoReader(reader);
-
-            cardAccessManager.getTopic().addSubscriber(this);
-        } catch (IOReaderException e) {
-            e.printStackTrace();
-        }
-
+        return super.onOptionsItemSelected(item);
     }
 }

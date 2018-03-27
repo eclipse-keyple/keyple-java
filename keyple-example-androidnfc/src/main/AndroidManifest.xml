@@ -17,23 +17,21 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="Keyple NFC Reader">
-
+            android:label="Keyple Android Test">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />
             </intent-filter>
 
-            <meta-data android:name="android.nfc.action.TECH_DISCOVERED"
-                android:resource="@xml/tech_list"
-                />
-
-
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/tech_list" />
         </activity>
+        <activity android:name=".NFCTestActivity"></activity>
     </application>
 
 </manifest>
