@@ -41,7 +41,7 @@ sourceCompatibility = 1.6
 
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 'Giesecke Devrient GmbH:Open Mobile API:21'
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 21
@@ -77,9 +77,12 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:21.0.3'
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
+    implementation 'com.android.support:support-v4:21.0.3'
+    implementation 'com.android.support:appcompat-v7:21.0.3'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile project(':keyple-calypso')
+    implementation project(':keyple-calypso')
+    provided files('libs/org.simalliance.openmobileapi.jar')
+
 }

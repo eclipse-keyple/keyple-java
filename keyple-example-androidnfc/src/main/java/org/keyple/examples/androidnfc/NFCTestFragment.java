@@ -1,17 +1,15 @@
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
+
 package org.keyple.examples.androidnfc;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.RadioGroup;
-import android.widget.TextView;
-
+import java.util.ArrayList;
+import java.util.List;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.example.common.AbstractLogicManager;
 import org.keyple.example.common.BasicCardAccessManager;
@@ -26,24 +24,33 @@ import org.keyple.seproxy.ReadersPlugin;
 import org.keyple.seproxy.SeProxyService;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.util.event.Topic;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
 
-
-public class NFCTestFragment extends Fragment implements ReaderObserver,
-        Topic.Subscriber<AbstractLogicManager.Event>  {
+public class NFCTestFragment extends Fragment
+        implements ReaderObserver, Topic.Subscriber<AbstractLogicManager.Event> {
 
 
     private static final String TAG = NFCTestFragment.class.getSimpleName();
 
-    private static final String TAG_NFC_ANDROID_FRAGMENT = "keyple-nfc-android";
+    private static final String TAG_NFC_ANDROID_FRAGMENT =
+            "org.keyple.plugin.androidnfc.AndroidNfcFragment";
 
 
-    //Logic
+    // Logic
     private AbstractLogicManager cardAccessManager;
 
-    //UI
+    // UI
     private TextView mText;
 
 
@@ -51,7 +58,12 @@ public class NFCTestFragment extends Fragment implements ReaderObserver,
         return new NFCTestFragment();
     }
 
-
+    /**
+     * Initialize SEProxy with Keyple Android NFC Plugin Add this view to the list of Observer
+     * of @{@link ProxyReader}
+     * 
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +76,8 @@ public class NFCTestFragment extends Fragment implements ReaderObserver,
         seProxyService.setPlugins(plugins);
 
         // add NFC Fragment to activity in order to communicate with Android Plugin
-        Log.d(TAG, "Add NFC Fragment to activity in order to communicate with Android Plugin");
+        Log.d(TAG, "Add Keyple NFC Fragment to activity in order to "
+                + "communicate with Android Plugin");
         Fragment nfcFragment = AndroidNfcFragment.newInstance();
         FragmentManager fm = getFragmentManager();
         FragmentTransaction fragtrans = fm.beginTransaction();
@@ -74,7 +87,7 @@ public class NFCTestFragment extends Fragment implements ReaderObserver,
 
         try {
             // define task as an observer for ReaderEvents
-            Log.d(TAG, "Define task as an observer for ReaderEvents");
+            Log.d(TAG, "Define this view as an observer for ReaderEvents");
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
             ((ObservableReader) reader).addObserver(this);
 
@@ -86,11 +99,18 @@ public class NFCTestFragment extends Fragment implements ReaderObserver,
     }
 
 
+    /**
+     * Initialize UI for this view
+     * 
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
 
 
         View view = inflater.inflate(R.layout.fragment_nfc_test, container, false);
@@ -99,22 +119,23 @@ public class NFCTestFragment extends Fragment implements ReaderObserver,
 
         RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
 
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 // checkedId is the RadioButton selected
 
-                switch(checkedId) {
+                switch (checkedId) {
                     case R.id.simpleTestButton:
                         Log.i(TAG, "switched to Basic Card Access Test");
                         clearText();
-                        mText.setText("When a smartcard is detected, a set of 3 basic commands will be sent");
+                        mText.setText(
+                                "When a smartcard is detected, a set of 3 basic commands will be sent");
                         initBasicCardAccessTest();
                         break;
                     case R.id.keepChannelButton:
                         Log.i(TAG, "switched to Keep Channel Card Access Test");
                         clearText();
-                        mText.setText("When a smartcard is detected,  a set of 3 basic commands will be sent, then 3 seconds later, commands will be sent again");
+                        mText.setText(
+                                "When a smartcard is detected,  a set of 3 basic commands will be sent, then 3 seconds later, commands will be sent again");
                         initKeepChannelAccessTest();
                         break;
                 }
@@ -137,8 +158,7 @@ public class NFCTestFragment extends Fragment implements ReaderObserver,
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "New ReaderEvent received : " +
-                        readerEvent.getEventType().toString());
+                Log.d(TAG, "New ReaderEvent received : " + readerEvent.getEventType().toString());
 
                 switch (readerEvent.getEventType()) {
                     case SE_INSERTED:
@@ -233,11 +253,11 @@ public class NFCTestFragment extends Fragment implements ReaderObserver,
             ((ObservableReader) reader).deleteObserver(this);
 
 
-            //destroy AndroidNFC fragment
+            // destroy AndroidNFC fragment
 
             FragmentManager fm = getFragmentManager();
             Fragment f = fm.findFragmentByTag(TAG_NFC_ANDROID_FRAGMENT);
-            if(f!=null){
+            if (f != null) {
                 fm.beginTransaction().remove(f).commit();
             }
 
@@ -247,7 +267,7 @@ public class NFCTestFragment extends Fragment implements ReaderObserver,
     }
 
 
-    private void clearText(){
+    private void clearText() {
         mText.setText("");
     }
 }

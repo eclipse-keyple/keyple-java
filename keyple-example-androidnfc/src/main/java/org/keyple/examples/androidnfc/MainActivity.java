@@ -8,6 +8,8 @@
 
 package org.keyple.examples.androidnfc;
 
+import org.keyple.plugin.androidnfc.AndroidNfcPlugin;
+import org.keyple.seproxy.SeProxyService;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
@@ -19,21 +21,17 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
-import org.keyple.plugin.androidnfc.AndroidNfcPlugin;
-import org.keyple.seproxy.SeProxyService;
-
 
 /**
  * Example of @{@link SeProxyService} implementation based on the @{@link AndroidNfcPlugin}
  *
  */
-public class MainActivity extends AppCompatActivity
-        {
+public class MainActivity extends AppCompatActivity {
 
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String TAG_NFC_TEST_FRAGMENT = "tagnfctestfragment";
-    private static final String TAG_OMAPI_TEST_FRAGMENT = "tagomapitestfragment";
+    private static final String TAG_NFC_TEST_VIEW = "tagnfctestfragment";
+    private static final String TAG_OMAPI_TEST_VIEW = "tagomapitestfragment";
 
 
     private DrawerLayout mDrawerLayout;
@@ -41,7 +39,7 @@ public class MainActivity extends AppCompatActivity
 
 
     /**
-     * SE Proxy setting of the AndroidNfcPlugin
+     * Setup navigation drawer
      * 
      * @param savedInstanceState
      */
@@ -65,29 +63,27 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void activateNFCTestView(){
-        //init NFC Test Fragment
-        Log.d(TAG,"Insert NFC Test Fragment");
+    private void activateNFCTestView() {
+        // init NFC Test Fragment
+        Log.d(TAG, "Insert NFC Test View Fragment");
         NFCTestFragment nfcTestFragment = NFCTestFragment.newInstance();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, nfcTestFragment, TAG_NFC_TEST_FRAGMENT)
-                .addToBackStack(null)
-                .commit();
+                .replace(R.id.fragment_container, nfcTestFragment, TAG_NFC_TEST_VIEW)
+                .addToBackStack(null).commit();
     }
 
-    private void activateOMAPITestView(){
-        //init OMAPI Test Fragment
-        Log.d(TAG,"Insert NFC Test Fragment");
+    private void activateOMAPITestView() {
+        // init OMAPI Test Fragment
+        Log.d(TAG, "Insert OMAPI Test View  Fragment");
         OMAPITestFragment omapiTestFragment = OMAPITestFragment.newInstance();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, omapiTestFragment, TAG_OMAPI_TEST_FRAGMENT)
-                .addToBackStack(null)
-                .commit();
+                .replace(R.id.fragment_container, omapiTestFragment, TAG_OMAPI_TEST_VIEW)
+                .addToBackStack(null).commit();
     }
 
-    private void setupNavDrawer(){
+    private void setupNavDrawer() {
         mDrawerLayout = findViewById(R.id.drawer_layout);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -104,20 +100,17 @@ public class MainActivity extends AppCompatActivity
                         // For example, swap UI fragments here
                         Log.d(TAG, "Item selected from drawer: " + menuItem.getTitle());
 
-                        switch (menuItem.getItemId()){
-                            case R.id.nav_nfc :
+                        switch (menuItem.getItemId()) {
+                            case R.id.nav_nfc:
                                 activateNFCTestView();
                                 break;
-                            case R.id.nav_omapi :
+                            case R.id.nav_omapi:
                                 activateOMAPITestView();
                                 break;
                             default:
                                 throw new IllegalArgumentException("Invalid menuItem");
 
                         }
-
-
-
                         return true;
                     }
                 });
@@ -133,8 +126,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-
-
+    // 'Open' event for navigation drawer
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
