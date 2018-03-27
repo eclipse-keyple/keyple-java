@@ -91,7 +91,7 @@ public class NFCTestFragment extends Fragment
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
             ((ObservableReader) reader).addObserver(this);
 
-            initKeepChannelAccessTest();
+            initBasicCardAccessTest();
 
         } catch (IOReaderException e) {
             e.printStackTrace();

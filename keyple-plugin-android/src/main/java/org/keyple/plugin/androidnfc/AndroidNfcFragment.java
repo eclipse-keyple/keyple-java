@@ -141,9 +141,7 @@ public class AndroidNfcFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.i(TAG, "on Pause Fragment");
-        Log.i(TAG, "Stopping Read Write Mode");
-
+        Log.i(TAG, "on Pause Fragment - Stopping Read Write Mode");
         nfcAdapter.disableReaderMode(getActivity());
 
     }

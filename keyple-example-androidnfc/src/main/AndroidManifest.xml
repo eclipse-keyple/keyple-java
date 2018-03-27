@@ -2,11 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.keyple.examples.androidnfc">
 
+    <!-- Required for NFC-->
     <uses-permission android:name="android.permission.NFC" />
-
     <uses-feature
         android:name="android.hardware.nfc"
         android:required="true" />
+
+    <!-- Required for Open Mobile API-->
+    <uses-permission android:name="org.simalliance.openmobileapi.SMARTCARD" />
+
 
     <application
         android:allowBackup="true"
@@ -15,18 +19,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!-- Required for Open Mobile API-->
+        <uses-library
+            android:name="org.simalliance.openmobileapi"
+            android:required="true" />
+
         <activity
             android:name=".MainActivity"
             android:label="Keyple Android Test">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Required for NFC KEYPLE-->
             <intent-filter>
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />
             </intent-filter>
 
+            <!-- Required for NFC KEYPLE-->
             <meta-data
                 android:name="android.nfc.action.TECH_DISCOVERED"
                 android:resource="@xml/tech_list" />

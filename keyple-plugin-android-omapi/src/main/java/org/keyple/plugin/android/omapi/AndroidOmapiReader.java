@@ -60,11 +60,8 @@ public class AndroidOmapiReader implements ProxyReader {
                     ByteBufferUtils.toBytes(seApplicationRequest.getAidToSelect()));
             fci = new ApduResponse(ByteBuffer.wrap(channel.getSelectResponse()), true);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            fci = new ApduResponse(ByteBuffer.wrap(channel.getSelectResponse()), false);
-            seResponse = new SeResponse(false, fci, null);
-            return seResponse;
+        } catch (Exception e) {
+            throw new IOReaderException(e.getMessage(), e.getCause());
         }
 
         Log.i(TAG, "Send APDU commands from SeRequest objects");
