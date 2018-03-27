@@ -53,8 +53,7 @@ public class BasicCardAccessManager extends AbstractLogicManager {
                     .post(new Event("Got a response", "poResponse", poResponse.getApduResponses()));
         } catch (IOReaderException e) {
             e.printStackTrace();
-            getTopic()
-                    .post(new Event("Got an error", "error", e.getMessage()));
+            getTopic().post(new Event("Got an error", "error", e.getMessage()));
         }
     }
 

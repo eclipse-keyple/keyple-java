@@ -8,6 +8,17 @@
 
 package org.keyple.examples.androidnfc;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.keyple.example.common.AbstractLogicManager;
+import org.keyple.example.common.BasicCardAccessManager;
+import org.keyple.plugin.android.omapi.AndroidOmapiFragment;
+import org.keyple.plugin.android.omapi.AndroidOmapiPlugin;
+import org.keyple.seproxy.ProxyReader;
+import org.keyple.seproxy.ReadersPlugin;
+import org.keyple.seproxy.SeProxyService;
+import org.keyple.seproxy.exceptions.IOReaderException;
+import org.keyple.util.event.Topic;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,19 +29,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import org.keyple.example.common.AbstractLogicManager;
-import org.keyple.example.common.BasicCardAccessManager;
-import org.keyple.plugin.android.omapi.AndroidOmapiFragment;
-import org.keyple.plugin.android.omapi.AndroidOmapiPlugin;
-import org.keyple.seproxy.ProxyReader;
-import org.keyple.seproxy.ReadersPlugin;
-import org.keyple.seproxy.SeProxyService;
-import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.util.event.Topic;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class OMAPITestFragment extends Fragment
@@ -49,6 +47,7 @@ public class OMAPITestFragment extends Fragment
 
     /**
      * Initialize SEProxy with Keyple Android OMAPI Plugin
+     * 
      * @param savedInstanceState
      */
     @Override
@@ -102,11 +101,12 @@ public class OMAPITestFragment extends Fragment
         BasicCardAccessManager cardAccessManager;
 
         try {
-            List<? extends ProxyReader> readers = SeProxyService.getInstance().getPlugins().get(0).getReaders();
+            List<? extends ProxyReader> readers =
+                    SeProxyService.getInstance().getPlugins().get(0).getReaders();
 
-            if(readers.size()<1){
+            if (readers.size() < 1) {
                 mText.append("\nNo readers setup in Keyple Plugin");
-            }else{
+            } else {
                 for (ProxyReader reader : readers) {
                     mText.append("\nConnected to reader : " + reader.getName());
                     cardAccessManager = new BasicCardAccessManager();
