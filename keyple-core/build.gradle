@@ -51,6 +51,12 @@ pmd {
     ]
 }
 
+task fatJar(type: Jar) {
+    baseName = project.name + '-fat'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
 dependencies {
     // fclairamb(2017-03-06): #37: Structured logging
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
