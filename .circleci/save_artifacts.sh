@@ -1,7 +1,9 @@
 #!/bin/sh
 
-mkdir -p ~/artifacts/jars
-find . -name "keyple-*.jar" -not -name "*-jmh.jar" -exec cp {} ~/artifacts/jars \;
+mkdir -p ~/artifacts/jars ~/pages/jars
+find . -name "keyple-*.jar" -not -name "*-jmh.jar" \
+  -exec cp {} ~/artifacts/jars \; \
+  -exec cp {} ~/pages/jars \;
 
 for dir in keyple-*
 do
