@@ -144,6 +144,7 @@ public class OMAPITestFragment extends Fragment
      */
     @Override
     public void onDestroy() {
+        super.onDestroy();
 
         // Destroy Keyple OMAPI Fragment
         Log.d(TAG, "Destroy Keyple OMAPI Fragment");
@@ -153,7 +154,6 @@ public class OMAPITestFragment extends Fragment
             fm.beginTransaction().remove(f).commit();
         }
 
-        super.onDestroy();
 
     }
 
