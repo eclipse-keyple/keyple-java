@@ -100,7 +100,7 @@ public class NFCTestFragment extends Fragment
 
 
     /**
-     * Initialize UI for this view
+     * Initialize UI for NFC Test view
      * 
      * @param inflater
      * @param container
@@ -188,6 +188,9 @@ public class NFCTestFragment extends Fragment
         });
     }
 
+    /**
+     * Init basic test suite
+     */
     private void initBasicCardAccessTest() {
 
         try {
@@ -205,6 +208,9 @@ public class NFCTestFragment extends Fragment
 
     }
 
+    /**
+     * Init advanced test suite (keep channel open between two sets of commands)
+     */
     private void initKeepChannelAccessTest() {
 
         try {

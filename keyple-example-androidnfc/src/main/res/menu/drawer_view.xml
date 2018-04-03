@@ -8,10 +8,5 @@
             android:checked="true"
             />
 
-        <item
-            android:id="@+id/nav_omapi"
-            android:icon="@drawable/ic_open_with_black_24dp"
-            android:title="Open Mobile API"/>
-
     </group>
 </menu>

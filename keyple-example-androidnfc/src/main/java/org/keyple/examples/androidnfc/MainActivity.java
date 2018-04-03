@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String TAG_NFC_TEST_VIEW = "tagnfctestfragment";
-    private static final String TAG_OMAPI_TEST_VIEW = "tagomapitestfragment";
 
 
     private DrawerLayout mDrawerLayout;
@@ -73,15 +72,6 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(null).commit();
     }
 
-    private void activateOMAPITestView() {
-        // init OMAPI Test Fragment
-        Log.d(TAG, "Insert OMAPI Test View  Fragment");
-        OMAPITestFragment omapiTestFragment = OMAPITestFragment.newInstance();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, omapiTestFragment, TAG_OMAPI_TEST_VIEW)
-                .addToBackStack(null).commit();
-    }
 
     private void setupNavDrawer() {
         mDrawerLayout = findViewById(R.id.drawer_layout);
@@ -104,9 +94,7 @@ public class MainActivity extends AppCompatActivity {
                             case R.id.nav_nfc:
                                 activateNFCTestView();
                                 break;
-                            case R.id.nav_omapi:
-                                activateOMAPITestView();
-                                break;
+
                             default:
                                 throw new IllegalArgumentException("Invalid menuItem");
 
