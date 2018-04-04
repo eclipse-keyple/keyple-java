@@ -47,7 +47,7 @@ public class NFCTestFragment extends Fragment
             "org.keyple.plugin.androidnfc.AndroidNfcFragment";
 
 
-    // Logic
+    // APDU Commands Test Logic
     private AbstractLogicManager cardAccessManager;
 
     // UI
@@ -59,7 +59,8 @@ public class NFCTestFragment extends Fragment
     }
 
     /**
-     * Initialize SEProxy with Keyple Android NFC Plugin Add this view to the list of Observer
+     * Initialize SEProxy with Keyple Android NFC Plugin
+     * Add this view to the list of Observer
      * of @{@link ProxyReader}
      * 
      * @param savedInstanceState

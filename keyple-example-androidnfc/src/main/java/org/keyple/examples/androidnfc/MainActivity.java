@@ -62,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Inject NFC Test View fragment into activity
+     */
     private void activateNFCTestView() {
         // init NFC Test Fragment
         Log.d(TAG, "Insert NFC Test View Fragment");
@@ -73,9 +76,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Configure Navigation Drawer
+     */
     private void setupNavDrawer() {
         mDrawerLayout = findViewById(R.id.drawer_layout);
 
+        //Drawer configuration
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -103,14 +110,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+        //Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //Hamburger icon
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
-
-
 
     }
 

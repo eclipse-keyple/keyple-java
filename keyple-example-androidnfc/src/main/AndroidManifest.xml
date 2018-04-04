@@ -8,10 +8,6 @@
         android:name="android.hardware.nfc"
         android:required="true" />
 
-    <!-- Required for Open Mobile API-->
-    <uses-permission android:name="org.simalliance.openmobileapi.SMARTCARD" />
-
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -20,10 +16,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!-- Required for Open Mobile API-->
-        <uses-library
-            android:name="org.simalliance.openmobileapi"
-            android:required="true" />
 
         <activity
             android:name=".MainActivity"
@@ -42,7 +34,6 @@
                 android:name="android.nfc.action.TECH_DISCOVERED"
                 android:resource="@xml/tech_list" />
         </activity>
-        <activity android:name=".NFCTestActivity"></activity>
     </application>
 
 </manifest>

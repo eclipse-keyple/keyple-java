@@ -77,7 +77,7 @@ repositories {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:support-v4:26.1.0'
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support:design:26.1.0'
@@ -87,5 +87,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation project(':keyple-plugin-android')
     implementation project(':keyple-calypso')
-    compile project(path: ':keyple-example-common')
+    implementation project(':keyple-example-common')
 }
