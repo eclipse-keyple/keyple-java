@@ -59,8 +59,7 @@ public class NFCTestFragment extends Fragment
     }
 
     /**
-     * Initialize SEProxy with Keyple Android NFC Plugin
-     * Add this view to the list of Observer
+     * Initialize SEProxy with Keyple Android NFC Plugin Add this view to the list of Observer
      * of @{@link ProxyReader}
      * 
      * @param savedInstanceState

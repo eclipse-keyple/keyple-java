@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupNavDrawer() {
         mDrawerLayout = findViewById(R.id.drawer_layout);
 
-        //Drawer configuration
+        // Drawer configuration
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -110,11 +110,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        //Toolbar
+        // Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //Hamburger icon
+        // Hamburger icon
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
