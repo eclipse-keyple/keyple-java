@@ -16,15 +16,25 @@ import java.util.Map;
 
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.IOReaderException;
+import org.keyple.seproxy.exceptions.ReaderTimeoutException;
 
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
 public class StubReader extends ObservableReader implements ConfigurableReader {
 
+
     private static final ILogger logger = SLoggerFactory.getLogger(StubReader.class);
 
     private boolean logging;
+    private boolean isSEPresent = false;
+    private ByteBuffer aid;
+
+    private Map<String, String> parameters = new HashMap<String, String>();
+
+    public static final String ALLOWED_PARAMETER_1 = "parameter1";
+    public static final String ALLOWED_PARAMETER_2 = "parameter2";
+
 
 
 
@@ -40,10 +50,35 @@ public class StubReader extends ObservableReader implements ConfigurableReader {
             return null;
         }
 
-        //prepare response
-        boolean channelPreviouslyOpen = false;
-        ApduResponse fci = new ApduResponse(ByteBuffer.allocate(0),false);
+        if(test_WillTimeout){
+            throw new ReaderTimeoutException("Timeout while processing SeRequest");
+        }
+
+        boolean channelPreviouslyOpen;
+        ApduResponse fci;
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
+
+        //Open channel commands
+        if(!test_ChannelIsOpen){
+            channelPreviouslyOpen = false;
+            if(test_ApplicationError){
+                fci = new ApduResponse(ByteBuffer.allocate(0),false);
+                return new SeResponse(channelPreviouslyOpen, fci,apduResponses);
+            }else{
+                fci = new ApduResponse(ByteBuffer.allocate(0),true);
+            }
+        }else{
+            channelPreviouslyOpen = true;
+            aid = ByteBuffer.allocate(0);
+            fci = new ApduResponse(aid, true);
+        }
+
+
+        //Prepare succesfull responses
+        for (ApduRequest apduRequest : request.getApduRequests()){
+            apduResponses.add(new ApduResponse(ByteBuffer.allocate(0),true));
+        }
+
         return new SeResponse(channelPreviouslyOpen, fci,apduResponses);
     }
 
@@ -51,7 +86,7 @@ public class StubReader extends ObservableReader implements ConfigurableReader {
 
     @Override
     public boolean isSEPresent() throws IOReaderException {
-      return false;
+      return isSEPresent;
     }
 
 
@@ -75,14 +110,45 @@ public class StubReader extends ObservableReader implements ConfigurableReader {
 
     @Override
     public void setAParameter(String name, String value) throws IOReaderException {
-
+        if(name.equals(ALLOWED_PARAMETER_1) || name.equals(ALLOWED_PARAMETER_2)){
+            parameters.put(name,value);
+        }else{
+            throw new IOReaderException("parameter name not supported : " + name);
+        }
     }
 
     @Override
     public Map<String, String> getParameters() {
-        Map<String, String> parameters = new HashMap<String, String>();
-
         return parameters;
+    }
+
+
+
+
+    private boolean test_WillTimeout = false;
+    private boolean test_ApplicationError = false;
+    private boolean test_ChannelIsOpen = false;
+
+    public void test_InsertSE(){
+        isSEPresent = true;
+        notifyObservers(new ReaderEvent(this, ReaderEvent.EventType.SE_INSERTED));
+    }
+
+    public void test_RemoveSE(){
+        isSEPresent = false;
+        notifyObservers(new ReaderEvent(this, ReaderEvent.EventType.SE_REMOVAL));
+    }
+
+    public void test_SetWillTimeout(Boolean willTimeout){
+        test_WillTimeout = willTimeout;
+    }
+
+    public void test_SetApplicationError(Boolean applicationError){
+        test_ApplicationError = applicationError;
+    }
+
+    public void test_SetChannelIsOpen(Boolean channelIsOpen){
+        test_ChannelIsOpen = channelIsOpen;
     }
 
 

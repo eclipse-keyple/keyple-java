@@ -48,4 +48,25 @@ public class StubReaderTest {
     }
 
 
+    @Test
+    //if SE is not present, transmit fails
+    public void testTransmitSEnotPressent() {
+
+    }
+
+
+    @Test
+    //if APDU format is not recognized
+    public void testAPDUFormatNotRecognized() {
+
+
+    }
+
+    @Test
+    //Timeout
+    public void testTimeout() {
+
+
+    }
+
 }
