@@ -9,7 +9,6 @@
 package org.keyple.plugin.stub;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,9 +62,9 @@ public final class StubPlugin implements ReadersPlugin {
 
     @Override
     public List<ObservableReader> getReaders() throws IOReaderException {
-        if(readers.size()==0){
+        if (readers.size() == 0) {
             StubReader reader = new StubReader();
-            readers.put(reader.getName() , reader);
+            readers.put(reader.getName(), reader);
         }
         return new ArrayList(readers.values());
     }
