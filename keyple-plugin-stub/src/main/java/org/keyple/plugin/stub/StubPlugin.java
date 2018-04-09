@@ -20,18 +20,12 @@ import com.github.structlog4j.SLoggerFactory;
 
 public final class StubPlugin implements ReadersPlugin {
 
-    private static final ILogger logger = SLoggerFactory.getLogger(StubPlugin.class);
-
-    /**
-     * singleton instance of SeProxyService
-     */
     private static final StubPlugin uniqueInstance = new StubPlugin();
 
     private final Map<String, ObservableReader> readers = new HashMap<String, ObservableReader>();
 
-    private boolean logging = false;
+    private static final ILogger logger = SLoggerFactory.getLogger(StubPlugin.class);
 
-    private long waitTimeout = 30000;
 
     private StubPlugin() {}
 
@@ -49,20 +43,10 @@ public final class StubPlugin implements ReadersPlugin {
         return "StubPlugin";
     }
 
-    /**
-     * Enable the logging
-     *
-     * @param logging If logging is enabled
-     * @return Same instance (fluent setter)
-     */
-    public StubPlugin setLogging(boolean logging) {
-        this.logging = logging;
-        return this;
-    }
-
     @Override
     public List<ObservableReader> getReaders() throws IOReaderException {
         if (readers.size() == 0) {
+            logger.info("Stub Reader list is empty, adding one reader");
             StubReader reader = new StubReader();
             readers.put(reader.getName(), reader);
         }
