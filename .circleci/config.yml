@@ -71,7 +71,7 @@ jobs:
 
         - run:
             name: Assemble Plugin NFC plugin to aar file
-            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-plugin-android/build.gradle assembleRelease
+            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-plugin-android-nfc/build.gradle assembleRelease
 
         - run:
             name: Assemble Keyple Example Android NFC application to apk file
@@ -82,8 +82,8 @@ jobs:
               destination: keyple-example-android-nfc/
 
         - store_artifacts:
-              path: ./keyple-plugin-android/build/outputs/aar/
-              destination: keyple-plugin-android/
+              path: ./keyple-plugin-android-nfc/build/outputs/aar/
+              destination: keyple-plugin-android-nfc/
 
 
 workflows:
