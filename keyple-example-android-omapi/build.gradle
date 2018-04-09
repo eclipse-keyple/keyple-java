@@ -42,7 +42,7 @@ android {
         release {
             keyAlias 'OrangeLabsTest'
             keyPassword '0rangeLabsTest'
-            storeFile file('/Volumes/secondary/Workspace/OrangeLabs-Test-Android.keystore')
+            storeFile file('/path/to/yourownkeystore')
             storePassword '0rangeLabs'
         }
     }
@@ -99,7 +99,7 @@ dependencies {
     provided files('libs/org.simalliance.openmobileapi.jar')
 }
 
-/*
+//Override signing properties from local file
 def Properties props = new Properties()
 def propFile = new File('signing.properties')
 if (propFile.canRead()){
@@ -119,4 +119,3 @@ if (propFile.canRead()){
     println 'signing.properties not found'
     android.buildTypes.release.signingConfig = null
 }
-*/
