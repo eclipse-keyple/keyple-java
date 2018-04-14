@@ -1,0 +1,91 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        google()
+
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.1'
+}
+
+allprojects {
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    apply plugin: 'pmd'
+
+    pmd {
+        ruleSets = [
+                "java-basic",
+                "java-braces",
+        ]
+    }
+}
+
+group 'org.keyple'
+version '1.0-SNAPSHOT'
+
+
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+        config {
+        }
+    }
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "org.keyple.examples.androidnfc"
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.config
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable true
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildToolsVersion '26.0.2'
+    lintOptions {
+        abortOnError false
+    }
+    productFlavors {
+    }
+}
+
+repositories {
+    mavenCentral()
+    google()
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    implementation project(':keyple-plugin-android-nfc')
+    implementation project(':keyple-calypso')
+    implementation project(':keyple-example-common')
+}
