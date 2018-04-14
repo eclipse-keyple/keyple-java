@@ -198,7 +198,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                 double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
                 logger.info("PCSCReader: Transmission", "action", "pcsc_reader.transmit",
                         "apduRequest", apduRequest, "apduResponse", apduResponse, "elapsedMs",
-                        elapsedMs);
+                        elapsedMs, "apduName", apduRequest.getName());
             }
 
             return apduResponse;

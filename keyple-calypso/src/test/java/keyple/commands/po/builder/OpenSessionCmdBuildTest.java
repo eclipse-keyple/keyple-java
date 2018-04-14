@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.PoRevision;
-import org.keyple.calypso.commands.po.builder.OpenSessionCmdBuild;
+import org.keyple.calypso.commands.po.builder.AbstractOpenSessionCmdBuild;
 import org.keyple.commands.ApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
@@ -40,7 +40,7 @@ public class OpenSessionCmdBuildTest {
         byte cmd = (byte) 0x8A;
         ByteBuffer dataIn = samChallenge;
 
-        apduCommandBuilder = new OpenSessionCmdBuild(PoRevision.REV2_4, keyIndex, dataIn,
+        apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV2_4, keyIndex, dataIn,
                 sfiToSelect, recordNumberToRead);
     }
 
@@ -58,7 +58,7 @@ public class OpenSessionCmdBuildTest {
         byte[] request2_4 =
                 {cla, cmd, p1, p2, (byte) dataIn.limit(), (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E};
 
-        apduCommandBuilder = new OpenSessionCmdBuild(PoRevision.REV2_4, keyIndex, dataIn,
+        apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV2_4, keyIndex, dataIn,
                 sfiToSelect, recordNumberToRead);
         ApduRequest = apduCommandBuilder.getApduRequest();
         Assert.assertArrayEquals(request2_4, ApduRequest.getBytes());
@@ -78,7 +78,7 @@ public class OpenSessionCmdBuildTest {
         // revision 3.1
         byte[] request3_1 =
                 {cla, cmd, p1, p2, (byte) dataIn.limit(), (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E};
-        apduCommandBuilder = new OpenSessionCmdBuild(PoRevision.REV3_1, keyIndex, dataIn,
+        apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV3_1, keyIndex, dataIn,
                 sfiToSelect, recordNumberToRead);
         ApduRequest = apduCommandBuilder.getApduRequest();
         Assert.assertArrayEquals(request3_1, ApduRequest.getBytes());
@@ -99,8 +99,8 @@ public class OpenSessionCmdBuildTest {
         ByteBuffer request3_2 =
                 ByteBuffer.wrap(new byte[] {cla, cmd, p1, p2, (byte) (samChallenge.limit() + 1),
                         (byte) 0x00, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
-        apduCommandBuilder = new OpenSessionCmdBuild(PoRevision.REV3_2, keyIndex, samChallenge,
-                sfiToSelect, recordNumberToRead);
+        apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV3_2, keyIndex,
+                samChallenge, sfiToSelect, recordNumberToRead);
         ApduRequest = apduCommandBuilder.getApduRequest();
         Assert.assertEquals(ByteBufferUtils.toHex(request3_2),
                 ByteBufferUtils.toHex(ApduRequest.getBuffer()));

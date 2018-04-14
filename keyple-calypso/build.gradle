@@ -17,6 +17,12 @@ dependencies {
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.13.0'
 }
 
+task fatJar(type: Jar) {
+    baseName = project.name + '-fat'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
 test {
     exclude '**/PoSecureSessionTest.class'
 }

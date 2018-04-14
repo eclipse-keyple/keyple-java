@@ -14,7 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.keyple.calypso.commands.po.PoRevision;
-import org.keyple.calypso.commands.po.parser.OpenSessionRespPars;
+import org.keyple.calypso.commands.po.parser.AbstractOpenSessionRespPars;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.SeResponse;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -23,7 +23,7 @@ import keyple.commands.utils.TestsUtilsResponseTabByteGenerator;
 @RunWith(MockitoJUnitRunner.class)
 public class OpenSessionRespParsTest {
 
-    private void check(OpenSessionRespPars resp) {
+    private void check(AbstractOpenSessionRespPars resp) {
         Assert.assertTrue(resp.isSuccessful());
     }
 
@@ -40,7 +40,7 @@ public class OpenSessionRespParsTest {
         SeResponse reponseMock = new SeResponse(true, responseMockFci, apduResponses);
         ApduResponse response = reponseMock.getApduResponses().get(0);
 
-        check(new OpenSessionRespPars(response, PoRevision.REV2_4));
+        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class OpenSessionRespParsTest {
         SeResponse reponseMock = new SeResponse(true, responseMockFci, apduResponses);
         ApduResponse response = reponseMock.getApduResponses().get(0);
 
-        check(new OpenSessionRespPars(response, PoRevision.REV3_1));
+        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV3_1));
     }
 
     @Test
@@ -74,7 +74,7 @@ public class OpenSessionRespParsTest {
         SeResponse reponseMock = new SeResponse(true, responseMockFci, apduResponses);
         ApduResponse response = reponseMock.getApduResponses().get(0);
 
-        check(new OpenSessionRespPars(response, PoRevision.REV3_2));
+        check(AbstractOpenSessionRespPars.create(response, PoRevision.REV3_2));
     }
 
 }

@@ -11,9 +11,10 @@ package keyple.commands.utils;
 import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.Test;
+import org.keyple.calypso.commands.po.parser.AbstractOpenSessionRespPars;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
-import org.keyple.calypso.commands.po.parser.OpenSessionRespPars;
-import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.calypso.commands.po.parser.OpenSession24RespPars;
+import org.keyple.calypso.commands.po.parser.OpenSession32RespPars;
 
 public class ResponseUtilsTest {
 
@@ -175,13 +176,12 @@ public class ResponseUtilsTest {
         boolean isManageSecureSessionAuthorizedExpected = false;
         ByteBuffer originalData = ByteBuffer.allocate(0);
 
-        OpenSessionRespPars.SecureSession SecureSessionExpected =
-                new OpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
+        AbstractOpenSessionRespPars.SecureSession SecureSessionExpected =
+                new AbstractOpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
                         isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
-                        kif, kvc, originalData,
-                        ByteBufferUtils.subIndex(apduResponse, 0, apduResponse.limit() - 2));
-        OpenSessionRespPars.SecureSession SecureSessionTested =
-                OpenSessionRespPars.toSecureSessionRev32(apduResponse);
+                        kif, kvc, originalData, apduResponse);
+        AbstractOpenSessionRespPars.SecureSession SecureSessionTested =
+                OpenSession32RespPars.createSecureSession(apduResponse);
 
         Assert.assertEquals(SecureSessionExpected.getOriginalData(),
                 SecureSessionTested.getOriginalData());
@@ -211,13 +211,12 @@ public class ResponseUtilsTest {
         boolean isManageSecureSessionAuthorizedExpected = false;
         ByteBuffer originalData = null;
 
-        OpenSessionRespPars.SecureSession SecureSessionExpected =
-                new OpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
+        AbstractOpenSessionRespPars.SecureSession SecureSessionExpected =
+                new AbstractOpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
                         isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
-                        kvc, originalData,
-                        ByteBufferUtils.subIndex(apduResponse, 0, apduResponse.limit() - 2));
-        OpenSessionRespPars.SecureSession SecureSessionTested =
-                OpenSessionRespPars.toSecureSessionRev2(apduResponse);
+                        kvc, originalData, apduResponse);
+        AbstractOpenSessionRespPars.SecureSession SecureSessionTested =
+                OpenSession24RespPars.createSecureSession(apduResponse);
 
         Assert.assertEquals(SecureSessionExpected.getSecureSessionData(),
                 SecureSessionTested.getSecureSessionData());
@@ -235,13 +234,12 @@ public class ResponseUtilsTest {
                 ByteBuffer.wrap(new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14,
                         (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04});
 
-        OpenSessionRespPars.SecureSession SecureSessionExpectedCaseTwo =
-                new OpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
+        AbstractOpenSessionRespPars.SecureSession SecureSessionExpectedCaseTwo =
+                new AbstractOpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
                         isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
-                        kvc, originalDataCaseTwo, ByteBufferUtils.subIndex(apduResponseCaseTwo, 0,
-                                apduResponseCaseTwo.limit() - 2));
-        OpenSessionRespPars.SecureSession SecureSessionTestedCaseTwo =
-                OpenSessionRespPars.toSecureSessionRev2(apduResponseCaseTwo);
+                        kvc, originalDataCaseTwo, apduResponseCaseTwo);
+        AbstractOpenSessionRespPars.SecureSession SecureSessionTestedCaseTwo =
+                OpenSession24RespPars.createSecureSession(apduResponseCaseTwo);
 
         Assert.assertEquals(SecureSessionExpectedCaseTwo.getSecureSessionData(),
                 SecureSessionTestedCaseTwo.getSecureSessionData());
@@ -260,13 +258,12 @@ public class ResponseUtilsTest {
                 ByteBuffer.wrap(new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14,
                         (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04});
 
-        OpenSessionRespPars.SecureSession SecureSessionExpectedCaseThree =
-                new OpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
+        AbstractOpenSessionRespPars.SecureSession SecureSessionExpectedCaseThree =
+                new AbstractOpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
                         isPreviousSessionRatifiedExpected, isManageSecureSessionAuthorizedExpected,
-                        kvc, originalDataCaseThree, ByteBufferUtils.subIndex(apduResponseCaseThree,
-                                0, apduResponseCaseThree.limit() - 2));
-        OpenSessionRespPars.SecureSession SecureSessionTestedCaseThree =
-                OpenSessionRespPars.toSecureSessionRev2(apduResponseCaseThree);
+                        kvc, originalDataCaseThree, apduResponseCaseThree);
+        AbstractOpenSessionRespPars.SecureSession SecureSessionTestedCaseThree =
+                OpenSession24RespPars.createSecureSession(apduResponseCaseThree);
 
         Assert.assertEquals(SecureSessionExpectedCaseThree.getSecureSessionData(),
                 SecureSessionTestedCaseThree.getSecureSessionData());
@@ -283,7 +280,7 @@ public class ResponseUtilsTest {
         ByteBuffer apduResponse = ByteBuffer
                 .wrap(new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53});
         byte KVCRev2Expected = (byte) 0x7E;
-        byte KVCRev2Tested = OpenSessionRespPars.toKVCRev2(apduResponse);
+        byte KVCRev2Tested = AbstractOpenSessionRespPars.toKVCRev2(apduResponse);
 
         Assert.assertEquals(KVCRev2Expected, KVCRev2Tested);
 

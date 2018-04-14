@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.SendableInSession;
-import org.keyple.calypso.commands.po.builder.OpenSessionCmdBuild;
+import org.keyple.calypso.commands.po.builder.AbstractOpenSessionCmdBuild;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.transaction.PoSecureSession;
 import org.keyple.plugin.pcsc.PcscPlugin;
@@ -77,8 +77,8 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
             byte debitKeyIndex = 0x03;
             // Open Session for the debit key #1 - with read of the first record of the cyclic EF of
             // SFI 0Ah
-            OpenSessionCmdBuild poOpenSession =
-                    new OpenSessionCmdBuild(poTransaction.getRevision(), debitKeyIndex,
+            AbstractOpenSessionCmdBuild poOpenSession =
+                    AbstractOpenSessionCmdBuild.create(poTransaction.getRevision(), debitKeyIndex,
                             poTransaction.sessionTerminalChallenge, (byte) 0x1A, (byte) 0x01);
             poTransaction.processOpening(poOpenSession, filesToReadInSession);
             // poTransaction.processOpening(poOpenSession, null);
