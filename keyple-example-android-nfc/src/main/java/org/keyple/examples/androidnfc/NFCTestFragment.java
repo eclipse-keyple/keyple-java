@@ -258,7 +258,7 @@ public class NFCTestFragment extends Fragment
             Log.d(TAG, "Remove task as an observer for ReaderEvents");
             SeProxyService seProxyService = SeProxyService.getInstance();
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
-            ((ObservableReader) reader).deleteObserver(this);
+            ((ObservableReader) reader).removeObserver(this);
 
 
             // destroy AndroidNFC fragment
