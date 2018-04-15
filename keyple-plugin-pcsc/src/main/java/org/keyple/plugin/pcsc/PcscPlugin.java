@@ -13,7 +13,6 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
-
 import org.keyple.plugin.pcsc.log.CardTerminalsLogger;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.IOReaderException;
@@ -46,8 +45,7 @@ public final class PcscPlugin extends ObservablePlugin {
 
     private EventThread thread;
 
-    private PcscPlugin() {
-    }
+    private PcscPlugin() {}
 
     /**
      * Gets the single instance of PcscPlugin.
@@ -160,7 +158,8 @@ public final class PcscPlugin extends ObservablePlugin {
     class EventThread extends Thread {
         private boolean running = true;
 
-        private Map<String, ObservableReader> previousReaders = new HashMap<String, ObservableReader>();
+        private Map<String, ObservableReader> previousReaders =
+                new HashMap<String, ObservableReader>();
 
         /**
          * Marks the thread as one that should end when the last cardWaitTimeout occurs
@@ -172,14 +171,16 @@ public final class PcscPlugin extends ObservablePlugin {
         public void run() {
             try {
                 while (running) {
-                    Map<String, ObservableReader> previous = new HashMap<String, ObservableReader>(previousReaders);
+                    Map<String, ObservableReader> previous =
+                            new HashMap<String, ObservableReader>(previousReaders);
                     previousReaders = new HashMap<String, ObservableReader>();
 
 
                     for (ObservableReader r : getReaders()) {
                         previousReaders.put(r.getName(), r);
 
-                        // If one of the values that are being removed doesn't exist, it means it's a new reader
+                        // If one of the values that are being removed doesn't exist, it means it's
+                        // a new reader
                         if (previous.remove(r.getName()) == null) {
                             notifyObservers(new ReaderPresencePluginEvent(true, r));
                         }
@@ -192,8 +193,7 @@ public final class PcscPlugin extends ObservablePlugin {
 
                     try {
                         factory.terminals().waitForChange(threadWaitTimeout);
-                    }
-                    catch(IllegalStateException ex ) {
+                    } catch (IllegalStateException ex) {
                         Thread.sleep(5000);
                     }
                 }

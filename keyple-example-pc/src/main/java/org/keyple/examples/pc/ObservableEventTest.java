@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
+
 package org.keyple.examples.pc;
 
 import org.keyple.plugin.pcsc.PcscPlugin;
@@ -18,23 +26,29 @@ public class ObservableEventTest {
                         System.out.println("New reader: " + presence.getReader().getName());
                         ProxyReader reader = presence.getReader();
                         if (reader instanceof ObservableReader) {
-                            ((ObservableReader) reader).addObserver(new Observable.Observer<ReaderEvent>() {
-                                @Override
-                                public void update(Observable<? extends ReaderEvent> observable, ReaderEvent event) {
-                                    if (event.getEventType().equals(ReaderEvent.EventType.SE_INSERTED)) {
-                                        System.out.println("Card inserted on: " + event.getReader().getName());
-                                        analyseCard(event.getReader());
-                                    }
-                                }
+                            ((ObservableReader) reader)
+                                    .addObserver(new Observable.Observer<ReaderEvent>() {
+                                        @Override
+                                        public void update(
+                                                Observable<? extends ReaderEvent> observable,
+                                                ReaderEvent event) {
+                                            if (event.getEventType()
+                                                    .equals(ReaderEvent.EventType.SE_INSERTED)) {
+                                                System.out.println("Card inserted on: "
+                                                        + event.getReader().getName());
+                                                analyseCard(event.getReader());
+                                            }
+                                        }
 
-                                private void analyseCard(ObservableReader reader) {
-                                    try {
-                                        System.out.println("Card present = " + reader.isSEPresent());
-                                    } catch (IOReaderException ex) {
-                                        ex.printStackTrace(System.err);
-                                    }
-                                }
-                            });
+                                        private void analyseCard(ObservableReader reader) {
+                                            try {
+                                                System.out.println(
+                                                        "Card present = " + reader.isSEPresent());
+                                            } catch (IOReaderException ex) {
+                                                ex.printStackTrace(System.err);
+                                            }
+                                        }
+                                    });
                         }
                     } else {
                         System.out.println("Removed reader: " + presence.getReader().getName());
