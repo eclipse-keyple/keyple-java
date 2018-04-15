@@ -8,24 +8,28 @@
 
 package org.keyple.plugin.pcsc;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
+
 import org.keyple.plugin.pcsc.log.CardTerminalsLogger;
-import org.keyple.seproxy.ObservableReader;
-import org.keyple.seproxy.ReadersPlugin;
+import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public final class PcscPlugin implements ReadersPlugin {
+public final class PcscPlugin extends ObservablePlugin {
 
     private static final ILogger logger = SLoggerFactory.getLogger(PcscPlugin.class);
+
+    private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 30000;
+
+    /**
+     * Thread wait timeout in ms
+     */
+    private long threadWaitTimeout = SETTING_THREAD_TIMEOUT_DEFAULT;
 
     /**
      * singleton instance of SeProxyService
@@ -40,7 +44,10 @@ public final class PcscPlugin implements ReadersPlugin {
 
     private long waitTimeout = 30000;
 
-    private PcscPlugin() {}
+    private EventThread thread;
+
+    private PcscPlugin() {
+    }
 
     /**
      * Gets the single instance of PcscPlugin.
@@ -71,18 +78,13 @@ public final class PcscPlugin implements ReadersPlugin {
     public List<ObservableReader> getReaders() throws IOReaderException {
         CardTerminals terminals = getCardTerminals();
 
-        // fclairamb(2018-03-07): This can't happen
-        /*
-         * if (terminals == null) { logger.error("No terminal found", "action",
-         * "pcsc_plugin.no_terminals"); throw new IOReaderException("No terminal found"); }
-         */
         try {
             synchronized (readers) {
                 for (CardTerminal terminal : terminals.list()) {
                     if (!this.readers.containsKey(terminal.getName())) {
                         PcscReader reader = new PcscReader(terminal);
                         if (logging) {
-                            reader.setAParameter(PcscReader.SETTING_KEY_LOGGING, "true");
+                            reader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
                         }
                         logger.info("New terminal found", "action", "pcsc_plugin.new_terminal",
                                 "terminalName", reader.getName());
@@ -96,11 +98,6 @@ public final class PcscPlugin implements ReadersPlugin {
                     "exception", e);
             throw new IOReaderException("Could not access terminals list", e);
         }
-        // fclairamb(2018-02-28): Not a good exception to catch and not a good way to handle it
-        /*
-         * catch (NullPointerException e) { logger.error("Terminal List not accessible", e); throw
-         * new IOReaderException(e.getMessage(), e); }
-         */
     }
 
     private CardTerminals getCardTerminals() {
@@ -109,6 +106,101 @@ public final class PcscPlugin implements ReadersPlugin {
             terminals = new CardTerminalsLogger(terminals);
         }
         return terminals;
+    }
+
+    @Override
+    public final void notifyObservers(PluginEvent event) {
+        logger.info("ObservablePlugin: Notifying of an event", "action",
+                "observable_plugin.notify_observers", "event", event, "pluginName", getName());
+        setChanged();
+        super.notifyObservers(event);
+    }
+
+    @Override
+    public void addObserver(Observer<? super PluginEvent> observer) {
+        synchronized (observers) {
+            super.addObserver(observer);
+            if (observers.size() == 1) {
+                if (thread != null) { // <-- This should never happen and can probably be dropped at
+                    // some point
+                    throw new IllegalStateException("The reader thread shouldn't null");
+                }
+
+                thread = new EventThread();
+                thread.start();
+            }
+        }
+    }
+
+    @Override
+    public void removeObserver(Observer<? super PluginEvent> observer) {
+        synchronized (observers) {
+            super.removeObserver(observer);
+            if (observers.isEmpty()) {
+                if (thread == null) { // <-- This should never happen and can probably be dropped at
+                    // some point
+                    throw new IllegalStateException("The reader thread should be null");
+                }
+
+                // We'll let the thread calmly end its course after the waitForCard(Absent|Present)
+                // timeout occurs
+                thread.end();
+                thread = null;
+            }
+        }
+    }
+
+    private void exceptionThrown(Exception e) {
+        notifyObservers(new ErrorPluginEvent(e));
+    }
+
+    /**
+     * Thread in charge of reporting live events
+     */
+    class EventThread extends Thread {
+        private boolean running = true;
+
+        private Map<String, ObservableReader> previousReaders = new HashMap<String, ObservableReader>();
+
+        /**
+         * Marks the thread as one that should end when the last cardWaitTimeout occurs
+         */
+        void end() {
+            running = false;
+        }
+
+        public void run() {
+            try {
+                while (running) {
+                    Map<String, ObservableReader> previous = new HashMap<String, ObservableReader>(previousReaders);
+                    previousReaders = new HashMap<String, ObservableReader>();
+
+
+                    for (ObservableReader r : getReaders()) {
+                        previousReaders.put(r.getName(), r);
+
+                        // If one of the values that are being removed doesn't exist, it means it's a new reader
+                        if (previous.remove(r.getName()) == null) {
+                            notifyObservers(new ReaderPresencePluginEvent(true, r));
+                        }
+                    }
+
+                    // If we have a value left that wasn't removed, it means it's a deleted reader
+                    for (ObservableReader r : previous.values()) {
+                        notifyObservers(new ReaderPresencePluginEvent(false, r));
+                    }
+
+                    try {
+                        factory.terminals().waitForChange(threadWaitTimeout);
+                    }
+                    catch(IllegalStateException ex ) {
+                        Thread.sleep(5000);
+                    }
+                }
+            } catch (Exception e) {
+                exceptionThrown(e);
+            }
+        }
     }
 
 }

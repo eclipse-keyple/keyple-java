@@ -82,7 +82,7 @@ public class PcscReaderActualTest {
 
         // Remove the observer from the observable (thread disappears)
         for (ObservableReader reader : plugin.getReaders()) {
-            reader.deleteObserver(observer);
+            reader.removeObserver(observer);
         }
 
         // Re-add it (thread is created)
@@ -114,7 +114,7 @@ public class PcscReaderActualTest {
 
         // Remove the observer from the observable (thread disappears)
         for (ObservableReader reader : plugin.getReaders()) {
-            reader.deleteObserver(observer);
+            reader.removeObserver(observer);
         }
         System.out.println("Waiting for last thread...");
         secondThread.join();

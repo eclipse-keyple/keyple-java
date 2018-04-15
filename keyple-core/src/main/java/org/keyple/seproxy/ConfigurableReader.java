@@ -33,7 +33,7 @@ public interface ConfigurableReader extends ProxyReader {
      * @param value the parameter value
      * @throws IOReaderException Something went wrong with a parameter
      */
-    void setAParameter(String key, String value) throws IOReaderException;
+    void setParameter(String key, String value) throws IOReaderException;
 
     /**
      * Gets the parameters

@@ -56,7 +56,7 @@ public abstract class ObservableReader extends Observable<ReaderEvent> implement
      *
      * @param observer Observer to stop notifying
      */
-    public void deleteObserver(ReaderObserver observer) {
+    public void removeObserver(ReaderObserver observer) {
         logger.info("ObservableReader: Deleting an observer", "action",
                 "observable_reader.delete_observer", "readerName", getName());
         // readerObservers.remove(observer);
@@ -72,11 +72,8 @@ public abstract class ObservableReader extends Observable<ReaderEvent> implement
      * @param event the event
      */
     public final void notifyObservers(ReaderEvent event) {
-        logger.info("ObservableReader: Notifying of an even", "action",
+        logger.info("ObservableReader: Notifying of an event", "action",
                 "observable_reader.notify_observers", "event", event, "readerName", getName());
-        /*
-         * for (ReaderObserver observer : readerObservers) { observer.notify(event); }
-         */
         setChanged();
         super.notifyObservers(event);
     }
