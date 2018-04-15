@@ -153,7 +153,7 @@ public class NFCTestFragment extends Fragment
      * @param readerEvent : event received from SEProxyService
      */
     @Override
-    public void notify(final ReaderEvent readerEvent) {
+    public void update(final Observable<? extends ReaderEvent> observable, final ReaderEvent readerEvent) {
 
         getActivity().runOnUiThread(new Runnable() {
             @Override
