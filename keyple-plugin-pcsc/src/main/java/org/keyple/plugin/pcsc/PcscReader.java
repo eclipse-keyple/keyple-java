@@ -509,7 +509,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     }
 
     @Override
-    public void addObserver(ReaderObserver observer) {
+    public void addObserver(Observer<? super ReaderEvent> observer) {
         // We don't need synchronization for the list itself, we need to make sure we're not
         // starting and closing the thread at the same time.
         synchronized (observers) {
@@ -527,7 +527,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     }
 
     @Override
-    public void removeObserver(ReaderObserver observer) {
+    public void removeObserver(Observer<? super ReaderEvent> observer) {
         synchronized (observers) {
             super.removeObserver(observer);
             if (observers.isEmpty()) {

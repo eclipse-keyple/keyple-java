@@ -41,8 +41,6 @@ public final class PcscPlugin extends ObservablePlugin {
 
     private boolean logging = false;
 
-    private long waitTimeout = 30000;
-
     private EventThread thread;
 
     private PcscPlugin() {}
@@ -77,19 +75,26 @@ public final class PcscPlugin extends ObservablePlugin {
         CardTerminals terminals = getCardTerminals();
 
         try {
+            // florent(2018-04-15): #64: Fixed the previous logic. It was not removing readers once
+            // they disappeared.
             synchronized (readers) {
-                for (CardTerminal terminal : terminals.list()) {
-                    if (!this.readers.containsKey(terminal.getName())) {
-                        PcscReader reader = new PcscReader(terminal);
+                Map<String, ObservableReader> previous =
+                        new HashMap<String, ObservableReader>(readers);
+                for (CardTerminal term : terminals.list()) {
+                    if (previous.remove(term.getName()) == null) {
+                        PcscReader reader = new PcscReader(term);
                         if (logging) {
                             reader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
                         }
                         logger.info("New terminal found", "action", "pcsc_plugin.new_terminal",
                                 "terminalName", reader.getName());
-                        this.readers.put(reader.getName(), reader);
+                        readers.put(reader.getName(), reader);
                     }
                 }
-                return new ArrayList<ObservableReader>(this.readers.values());
+                for (Map.Entry<String, ObservableReader> en : previous.entrySet()) {
+                    readers.remove(en.getKey());
+                }
+                return new ArrayList<ObservableReader>(readers.values());
             }
         } catch (CardException e) {
             logger.error("Terminal list is not accessible", "action", "pcsc_plugin.no_terminals",
@@ -194,7 +199,7 @@ public final class PcscPlugin extends ObservablePlugin {
                     try {
                         factory.terminals().waitForChange(threadWaitTimeout);
                     } catch (IllegalStateException ex) {
-                        Thread.sleep(5000);
+                        Thread.sleep(1000);
                     }
                 }
             } catch (Exception e) {

@@ -15,7 +15,9 @@ import org.keyple.util.event.Observable;
  * Reader is constructed.
  *
  * @author Ixxi
+ * @deprecated We can remove this
  */
+@Deprecated
 public interface ReaderObserver extends Observable.Observer<ReaderEvent> {
 
     /*
