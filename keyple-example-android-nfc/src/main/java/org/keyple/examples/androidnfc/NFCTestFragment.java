@@ -23,8 +23,8 @@ import org.keyple.seproxy.ReaderObserver;
 import org.keyple.seproxy.ReadersPlugin;
 import org.keyple.seproxy.SeProxyService;
 import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.util.event.Topic;
 import org.keyple.util.event.Observable;
+import org.keyple.util.event.Topic;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -154,7 +154,8 @@ public class NFCTestFragment extends Fragment
      * @param readerEvent : event received from SEProxyService
      */
     @Override
-    public void update(final Observable<? extends ReaderEvent> observable, final ReaderEvent readerEvent) {
+    public void update(final Observable<? extends ReaderEvent> observable,
+            final ReaderEvent readerEvent) {
 
         getActivity().runOnUiThread(new Runnable() {
             @Override
