@@ -32,22 +32,19 @@ public class BasicCardAccess {
                 if (pr instanceof ObservableReader) {
                     ((ObservableReader) pr).addObserver(new ReaderObserver() {
                         @Override
-                        public void update(Observable<? extends ReaderEvent> observable, ReaderEvent event) {
+                        public void update(Observable<? extends ReaderEvent> observable,
+                                ReaderEvent event) {
                             if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
                                 parseInfo(pr);
                             }
                         }
                     });
                     /*
-                    ((ObservableReader) pr).addObserver(new ReaderObserver() {
-                        @Override
-                        public void notify(ReaderEvent event) {
-                            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
-                                parseInfo(pr);
-                            }
-                        }
-                    });
-                    */
+                     * ((ObservableReader) pr).addObserver(new ReaderObserver() {
+                     * 
+                     * @Override public void notify(ReaderEvent event) { if (event.getEventType() ==
+                     * ReaderEvent.EventType.SE_INSERTED) { parseInfo(pr); } } });
+                     */
                 } else {
                     parseInfo(pr);
                 }

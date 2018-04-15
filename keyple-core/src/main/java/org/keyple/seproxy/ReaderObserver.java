@@ -23,7 +23,9 @@ public interface ReaderObserver extends Observable.Observer<ReaderEvent> {
      * an asynchronous interface becomes available.
      *
      * @param event the event
-     * @deprecated The {@link Observable.Observer#update(Observable, Object)} method should be use instead
+     * 
+     * @deprecated The {@link Observable.Observer#update(Observable, Object)} method should be use
+     * instead
      */
     // void notify(ReaderEvent event);
 }

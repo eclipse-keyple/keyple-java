@@ -8,11 +8,10 @@
 
 package org.keyple.seproxy;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.keyple.util.event.Observable;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
-import org.keyple.util.event.Observable;
 
 /**
  * The Interface ObservableReader. In order to notify a ticketing application in case of specific
@@ -34,7 +33,8 @@ public abstract class ObservableReader extends Observable<ReaderEvent> implement
     /**
      * an array referencing the registered ReaderObserver of the Reader.
      */
-    //protected final List<ReaderObserver> readerObservers = new CopyOnWriteArrayList<ReaderObserver>();
+    // protected final List<ReaderObserver> readerObservers = new
+    // CopyOnWriteArrayList<ReaderObserver>();
 
     /**
      * Add an observer to a terminal reader.
@@ -48,7 +48,7 @@ public abstract class ObservableReader extends Observable<ReaderEvent> implement
         logger.info("ObservableReader: Adding an observer", "action",
                 "observable_reader.add_observer", "readerName", getName());
         super.addObserver(observer);
-        //readerObservers.add(observer);
+        // readerObservers.add(observer);
     }
 
     /**
@@ -59,7 +59,7 @@ public abstract class ObservableReader extends Observable<ReaderEvent> implement
     public void deleteObserver(ReaderObserver observer) {
         logger.info("ObservableReader: Deleting an observer", "action",
                 "observable_reader.delete_observer", "readerName", getName());
-        //readerObservers.remove(observer);
+        // readerObservers.remove(observer);
         super.removeObserver(observer);
     }
 
@@ -75,10 +75,8 @@ public abstract class ObservableReader extends Observable<ReaderEvent> implement
         logger.info("ObservableReader: Notifying of an even", "action",
                 "observable_reader.notify_observers", "event", event, "readerName", getName());
         /*
-        for (ReaderObserver observer : readerObservers) {
-            observer.notify(event);
-        }
-        */
+         * for (ReaderObserver observer : readerObservers) { observer.notify(event); }
+         */
         setChanged();
         super.notifyObservers(event);
     }
