@@ -25,17 +25,6 @@ public abstract class ObservableReader extends Observable<ReaderEvent> implement
 
     private static final ILogger logger = SLoggerFactory.getLogger(ObservableReader.class);
 
-    // TODO: Drop this implementation, it doesn't respect the java's definition of it (it missed the
-    // change handling)
-    // and if we redefine it, we might as well make it a generic one, which is done in the
-    // "feature-example-common" branch
-
-    /**
-     * an array referencing the registered ReaderObserver of the Reader.
-     */
-    // protected final List<ReaderObserver> readerObservers = new
-    // CopyOnWriteArrayList<ReaderObserver>();
-
     /**
      * Add an observer to a terminal reader.
      * 
@@ -48,7 +37,6 @@ public abstract class ObservableReader extends Observable<ReaderEvent> implement
         logger.info("ObservableReader: Adding an observer", "action",
                 "observable_reader.add_observer", "readerName", getName());
         super.addObserver(observer);
-        // readerObservers.add(observer);
     }
 
     /**
@@ -59,7 +47,6 @@ public abstract class ObservableReader extends Observable<ReaderEvent> implement
     public void removeObserver(ReaderObserver observer) {
         logger.info("ObservableReader: Deleting an observer", "action",
                 "observable_reader.delete_observer", "readerName", getName());
-        // readerObservers.remove(observer);
         super.removeObserver(observer);
     }
 
