@@ -512,9 +512,9 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     public void addObserver(ReaderObserver observer) {
         // We don't need synchronization for the list itself, we need to make sure we're not
         // starting and closing the thread at the same time.
-        synchronized (readerObservers) {
+        synchronized (observers) {
             super.addObserver(observer);
-            if (readerObservers.size() == 1) {
+            if (observers.size() == 1) {
                 if (thread != null) { // <-- This should never happen and can probably be dropped at
                     // some point
                     throw new IllegalStateException("The reader thread shouldn't null");
@@ -528,9 +528,9 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
     @Override
     public void deleteObserver(ReaderObserver observer) {
-        synchronized (readerObservers) {
+        synchronized (observers) {
             super.deleteObserver(observer);
-            if (readerObservers.isEmpty()) {
+            if (observers.isEmpty()) {
                 if (thread == null) { // <-- This should never happen and can probably be dropped at
                     // some point
                     throw new IllegalStateException("The reader thread should be null");

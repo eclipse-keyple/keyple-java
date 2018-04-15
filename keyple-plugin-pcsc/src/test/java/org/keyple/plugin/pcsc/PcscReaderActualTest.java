@@ -12,9 +12,11 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.keyple.seproxy.ObservableReader;
+import org.keyple.seproxy.ProxyReader;
 import org.keyple.seproxy.ReaderEvent;
 import org.keyple.seproxy.ReaderObserver;
 import org.keyple.seproxy.exceptions.IOReaderException;
+import org.keyple.util.event.Observable;
 
 public class PcscReaderActualTest {
 
@@ -22,8 +24,22 @@ public class PcscReaderActualTest {
 
         private Thread lastThread;
 
+        /*
         @Override
         public void notify(ReaderEvent event) {
+            lastThread = Thread.currentThread();
+            System.out.println("Observer: " + event + " (from thread"
+                    + Thread.currentThread().getName() + ")");
+            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
+                synchronized (this) {
+                    notify(); // It's the standard java notify, nothing to do with *our* notify
+                }
+            }
+        }
+        */
+
+        @Override
+        public void update(Observable<? extends ReaderEvent> observable, ReaderEvent event) {
             lastThread = Thread.currentThread();
             System.out.println("Observer: " + event + " (from thread"
                     + Thread.currentThread().getName() + ")");

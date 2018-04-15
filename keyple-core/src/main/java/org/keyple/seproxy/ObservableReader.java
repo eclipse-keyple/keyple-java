@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
+import org.keyple.util.event.Observable;
 
 /**
  * The Interface ObservableReader. In order to notify a ticketing application in case of specific
@@ -21,7 +22,7 @@ import com.github.structlog4j.SLoggerFactory;
  *
  * @author Ixxi
  */
-public abstract class ObservableReader implements ProxyReader {
+public abstract class ObservableReader extends Observable<ReaderEvent> implements ProxyReader {
 
     private static final ILogger logger = SLoggerFactory.getLogger(ObservableReader.class);
 
@@ -33,8 +34,7 @@ public abstract class ObservableReader implements ProxyReader {
     /**
      * an array referencing the registered ReaderObserver of the Reader.
      */
-    protected final List<ReaderObserver> readerObservers =
-            new CopyOnWriteArrayList<ReaderObserver>();
+    //protected final List<ReaderObserver> readerObservers = new CopyOnWriteArrayList<ReaderObserver>();
 
     /**
      * Add an observer to a terminal reader.
@@ -47,7 +47,8 @@ public abstract class ObservableReader implements ProxyReader {
     public void addObserver(ReaderObserver observer) {
         logger.info("ObservableReader: Adding an observer", "action",
                 "observable_reader.add_observer", "readerName", getName());
-        readerObservers.add(observer);
+        super.addObserver(observer);
+        //readerObservers.add(observer);
     }
 
     /**
@@ -58,7 +59,8 @@ public abstract class ObservableReader implements ProxyReader {
     public void deleteObserver(ReaderObserver observer) {
         logger.info("ObservableReader: Deleting an observer", "action",
                 "observable_reader.delete_observer", "readerName", getName());
-        readerObservers.remove(observer);
+        //readerObservers.remove(observer);
+        super.removeObserver(observer);
     }
 
     /**
@@ -72,9 +74,13 @@ public abstract class ObservableReader implements ProxyReader {
     public final void notifyObservers(ReaderEvent event) {
         logger.info("ObservableReader: Notifying of an even", "action",
                 "observable_reader.notify_observers", "event", event, "readerName", getName());
+        /*
         for (ReaderObserver observer : readerObservers) {
             observer.notify(event);
         }
+        */
+        setChanged();
+        super.notifyObservers(event);
     }
 
 }

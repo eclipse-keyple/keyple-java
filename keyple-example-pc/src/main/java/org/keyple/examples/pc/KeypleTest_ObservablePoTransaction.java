@@ -20,6 +20,7 @@ import org.keyple.calypso.transaction.PoSecureSession;
 import org.keyple.plugin.pcsc.PcscPlugin;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.IOReaderException;
+import org.keyple.util.event.Observable;
 
 public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
     private ProxyReader poReader, csmReader;
@@ -29,7 +30,7 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
     }
 
     @Override
-    public void notify(ReaderEvent event) {
+    public void update(Observable<? extends ReaderEvent> observable, ReaderEvent event) {
         switch (event.getEventType()) {
             case SE_INSERTED:
                 System.out.println("SE INSERTED");
