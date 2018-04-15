@@ -14,6 +14,7 @@ import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
 import org.keyple.seproxy.*;
+import org.keyple.seproxy.exceptions.IOReaderException;
 
 public class BasicCardAccessManager extends AbstractLogicManager {
 
@@ -50,8 +51,9 @@ public class BasicCardAccessManager extends AbstractLogicManager {
             SeResponse poResponse = poReader.transmit(poRequest);
             getTopic()
                     .post(new Event("Got a response", "poResponse", poResponse.getApduResponses()));
-        } catch (Exception e) {
+        } catch (IOReaderException e) {
             e.printStackTrace();
+            getTopic().post(new Event("Got an error", "error", e.getMessage()));
         }
     }
 
