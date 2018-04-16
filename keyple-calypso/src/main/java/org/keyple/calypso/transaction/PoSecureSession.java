@@ -19,11 +19,11 @@ import org.keyple.calypso.commands.csm.parser.DigestCloseRespPars;
 import org.keyple.calypso.commands.po.PoCommandBuilder;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.SendableInSession;
+import org.keyple.calypso.commands.po.builder.AbstractOpenSessionCmdBuild;
 import org.keyple.calypso.commands.po.builder.CloseSessionCmdBuild;
-import org.keyple.calypso.commands.po.builder.OpenSessionCmdBuild;
+import org.keyple.calypso.commands.po.parser.AbstractOpenSessionRespPars;
 import org.keyple.calypso.commands.po.parser.CloseSessionRespPars;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
-import org.keyple.calypso.commands.po.parser.OpenSessionRespPars;
 import org.keyple.calypso.commands.utils.ApduUtils;
 import org.keyple.commands.ApduCommandBuilder;
 import org.keyple.seproxy.*;
@@ -216,7 +216,7 @@ public class PoSecureSession {
      */
     // fclariamb(2018-03-02): TODO: Cleanup that mess. There was a lot of commented out code and I
     // added a lot more of it, once this code is tested we should clean it up
-    public SeResponse processOpening(OpenSessionCmdBuild openCommand,
+    public SeResponse processOpening(AbstractOpenSessionCmdBuild openCommand,
             List<SendableInSession> poCommandsInsideSession) throws IOReaderException {
 
         // Get PO ApduRequest List from SendableInSession List
@@ -254,18 +254,21 @@ public class PoSecureSession {
         }
         // TODO: check that csmApduResponseList.get(1) has the right length (challenge + status)
         logger.info("Opening: PO commands", "action", "po_secure_session.open_po_send");
-        OpenSessionRespPars poOpenSessionPars =
-                new OpenSessionRespPars(poApduResponseList.get(0), poRevision); // first item of
-                                                                                // poApduResponseList
+        AbstractOpenSessionRespPars poOpenSessionPars =
+                AbstractOpenSessionRespPars.create(poApduResponseList.get(0), poRevision); // first
+                                                                                           // item
+                                                                                           // of
+        // poApduResponseList
         // System.out.println("\t========= Opening ========== Parse PO cmd response - Open Session :
         // " + ByteBufferUtils.toHex(poOpenSessionPars.getApduResponse().getBuffer()));
         sessionCardChallenge = poOpenSessionPars.getPoChallenge();
         // System.out.println("\t========= Opening ========== WRONG Card Challenge : " +
         // ByteBufferUtils.toHex(sessionCardChallenge));
 
-        // HACK - OpenSessionRespPars.getPoChallengeOld() ne retourne pas la bonne valeur de PO
+        // HACK - AbstractOpenSessionRespPars.getPoChallengeOld() ne retourne pas la bonne valeur de
+        // PO
         // challenge
-        // TODO - corriger => OpenSessionRespPars.getPoChallengeOld()
+        // TODO - corriger => AbstractOpenSessionRespPars.getPoChallengeOld()
         sessionCardChallenge = ByteBufferUtils.fromHex(ByteBufferUtils
                 .toHex(poOpenSessionPars.getApduResponse().getBuffer()).substring(0, 4 * 2)); // HACK
 
@@ -392,11 +395,11 @@ public class PoSecureSession {
      * @return the secure session by SE response and poRevision
      * @throws UnexpectedReaderException the unexpected reader exception
      */
-    private OpenSessionRespPars getSecureSessionBySEResponseAndRevision(
+    private AbstractOpenSessionRespPars getSecureSessionBySEResponseAndRevision(
             SeResponse responseOpenSession) throws UnexpectedReaderException {
 
-        OpenSessionRespPars openSessionRespPars =
-                new OpenSessionRespPars(responseOpenSession.getApduResponses().get(0), poRevision);
+        AbstractOpenSessionRespPars openSessionRespPars = AbstractOpenSessionRespPars
+                .create(responseOpenSession.getApduResponses().get(0), poRevision);
         if (!openSessionRespPars.isSuccessful()) {
             throw new UnexpectedReaderException(openSessionRespPars.getStatusInformation());
         }

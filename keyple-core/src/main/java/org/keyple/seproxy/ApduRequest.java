@@ -24,6 +24,11 @@ public class ApduRequest extends AbstractApduBuffer {
     private boolean case4;
 
     /**
+     * Name of the request being sent
+     */
+    private String name;
+
+    /**
      * the constructor called by a ticketing application in order to build the APDU command requests
      * to push to the ProxyReader.
      *
@@ -62,6 +67,26 @@ public class ApduRequest extends AbstractApduBuffer {
 
     public void put(byte[] a) {
         buffer.put(a);
+    }
+
+    /**
+     * Name this APDU request
+     * 
+     * @param name Name of the APDU request
+     * @return Name of the APDU request
+     */
+    public ApduRequest setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * Get the name of this APDU request
+     * 
+     * @return Name of the APDU request
+     */
+    public String getName() {
+        return name;
     }
 
     @Override
