@@ -1,0 +1,1 @@
+Install me with adb install nfcagent-1.1.13-preprod-debug.apk
