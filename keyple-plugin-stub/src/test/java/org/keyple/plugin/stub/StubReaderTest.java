@@ -100,7 +100,7 @@ public class StubReaderTest {
     @Test
     public void testSetWrongParamater() {
         try {
-            stubReader.setAParameter("WRONG_PARAMETER", "a");
+            stubReader.setParameter("WRONG_PARAMETER", "a");
             fail("Should raise exception");
         } catch (IOReaderException e) {
             assert (e != null);
