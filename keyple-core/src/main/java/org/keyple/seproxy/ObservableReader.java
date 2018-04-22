@@ -36,7 +36,7 @@ public abstract class ObservableReader extends Observable<ReaderEvent> implement
     public void addObserver(ReaderObserver observer) {
         logger.info("ObservableReader: Adding an observer", "action",
                 "observable_reader.add_observer", "readerName", getName());
-        super.addObserver(observer);
+        addObserver((Observer<? super ReaderEvent>) observer);
     }
 
     /**
@@ -47,7 +47,7 @@ public abstract class ObservableReader extends Observable<ReaderEvent> implement
     public void removeObserver(ReaderObserver observer) {
         logger.info("ObservableReader: Deleting an observer", "action",
                 "observable_reader.delete_observer", "readerName", getName());
-        super.removeObserver(observer);
+        removeObserver((Observer<? super ReaderEvent>) observer);
     }
 
     /**

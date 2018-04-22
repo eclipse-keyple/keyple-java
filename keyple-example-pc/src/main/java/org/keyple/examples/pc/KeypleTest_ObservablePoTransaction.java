@@ -162,15 +162,16 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
         System.out.println("PO Reader  : " + poReader.getName());
         System.out.println("CSM Reader : " + csmReader.getName());
 
-        KeypleTest_ObservablePoTransaction observer = new KeypleTest_ObservablePoTransaction();
+        ((ConfigurableReader) poReader).setParameter("protocol", "T1");
+        ((ConfigurableReader) csmReader).setParameter("protocol", "T0");
 
+        // Setting up ourself as an observer
+        KeypleTest_ObservablePoTransaction observer = new KeypleTest_ObservablePoTransaction();
         observer.poReader = poReader;
-        ((ConfigurableReader) observer.poReader).setParameter("protocol", "T1");
         observer.csmReader = csmReader;
-        ((ConfigurableReader) observer.csmReader).setParameter("protocol", "T0");
 
         // Set terminal as Observer of the first reader
-        ((ObservableReader) observer.poReader).addObserver(observer);
+        ((ObservableReader) poReader).addObserver(observer);
         synchronized (waitForEnd) {
             waitForEnd.wait();
         }
