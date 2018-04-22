@@ -33,10 +33,10 @@ public abstract class ObservableReader extends Observable<ReaderEvent> implement
      *
      * @param observer Observer to notify
      */
-    public void addObserver(ReaderObserver observer) {
+    public void addObserver(Observable.Observer<? super ReaderEvent> observer) {
         logger.info("ObservableReader: Adding an observer", "action",
                 "observable_reader.add_observer", "readerName", getName());
-        addObserver((Observer<? super ReaderEvent>) observer);
+        super.addObserver(observer);
     }
 
     /**
@@ -44,10 +44,10 @@ public abstract class ObservableReader extends Observable<ReaderEvent> implement
      *
      * @param observer Observer to stop notifying
      */
-    public void removeObserver(ReaderObserver observer) {
+    public void removeObserver(Observable.Observer<? super ReaderEvent> observer) {
         logger.info("ObservableReader: Deleting an observer", "action",
                 "observable_reader.delete_observer", "readerName", getName());
-        removeObserver((Observer<? super ReaderEvent>) observer);
+        super.removeObserver(observer);
     }
 
     /**
