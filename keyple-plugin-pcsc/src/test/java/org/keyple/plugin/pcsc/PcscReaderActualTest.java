@@ -15,6 +15,7 @@ import org.keyple.seproxy.ObservableReader;
 import org.keyple.seproxy.ReaderEvent;
 import org.keyple.seproxy.ReaderObserver;
 import org.keyple.seproxy.exceptions.IOReaderException;
+import org.keyple.util.event.Observable;
 
 public class PcscReaderActualTest {
 
@@ -22,8 +23,16 @@ public class PcscReaderActualTest {
 
         private Thread lastThread;
 
+        /*
+         * @Override public void notify(ReaderEvent event) { lastThread = Thread.currentThread();
+         * System.out.println("Observer: " + event + " (from thread" +
+         * Thread.currentThread().getName() + ")"); if (event.getEventType() ==
+         * ReaderEvent.EventType.SE_INSERTED) { synchronized (this) { notify(); // It's the standard
+         * java notify, nothing to do with *our* notify } } }
+         */
+
         @Override
-        public void notify(ReaderEvent event) {
+        public void update(Observable<? extends ReaderEvent> observable, ReaderEvent event) {
             lastThread = Thread.currentThread();
             System.out.println("Observer: " + event + " (from thread"
                     + Thread.currentThread().getName() + ")");
@@ -73,7 +82,7 @@ public class PcscReaderActualTest {
 
         // Remove the observer from the observable (thread disappears)
         for (ObservableReader reader : plugin.getReaders()) {
-            reader.deleteObserver(observer);
+            reader.removeObserver(observer);
         }
 
         // Re-add it (thread is created)
@@ -105,7 +114,7 @@ public class PcscReaderActualTest {
 
         // Remove the observer from the observable (thread disappears)
         for (ObservableReader reader : plugin.getReaders()) {
-            reader.deleteObserver(observer);
+            reader.removeObserver(observer);
         }
         System.out.println("Waiting for last thread...");
         secondThread.join();

@@ -77,10 +77,10 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
         // Using null values to use the standard method for defining default values
         try {
-            setAParameter(SETTING_KEY_PROTOCOL, null);
-            setAParameter(SETTING_KEY_MODE, null);
-            setAParameter(SETTING_KEY_DISCONNECT, null);
-            setAParameter(SETTING_KEY_LOGGING, null);
+            setParameter(SETTING_KEY_PROTOCOL, null);
+            setParameter(SETTING_KEY_MODE, null);
+            setParameter(SETTING_KEY_DISCONNECT, null);
+            setParameter(SETTING_KEY_LOGGING, null);
         } catch (IOReaderException ex) {
             // It's actually impossible to reach that state
             throw new IllegalStateException("Could not initialize properly", ex);
@@ -345,7 +345,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     /**
      * Set a list of parameters on a reader.
      * <p>
-     * See {@link #setAParameter(String, String)} for more details
+     * See {@link #setParameter(String, String)} for more details
      *
      * @param parameters the new parameters
      * @throws IOReaderException This method can fail when disabling the exclusive mode as it's
@@ -354,7 +354,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     @Override
     public void setParameters(Map<String, String> parameters) throws IOReaderException {
         for (Map.Entry<String, String> en : parameters.entrySet()) {
-            setAParameter(en.getKey(), en.getValue());
+            setParameter(en.getKey(), en.getValue());
         }
     }
 
@@ -422,7 +422,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      *         executed instantly
      */
     @Override
-    public void setAParameter(String name, String value) throws IOReaderException {
+    public void setParameter(String name, String value) throws IOReaderException {
         logger.info("PCSC: Set a parameter", "action", "pcsc_reader.set_parameter", "name", name,
                 "value", value);
         if (name == null) {
@@ -522,12 +522,12 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     }
 
     @Override
-    public void addObserver(ReaderObserver observer) {
+    public void addObserver(Observer<? super ReaderEvent> observer) {
         // We don't need synchronization for the list itself, we need to make sure we're not
         // starting and closing the thread at the same time.
-        synchronized (readerObservers) {
+        synchronized (observers) {
             super.addObserver(observer);
-            if (readerObservers.size() == 1) {
+            if (observers.size() == 1) {
                 if (thread != null) { // <-- This should never happen and can probably be dropped at
                     // some point
                     throw new IllegalStateException("The reader thread shouldn't null");
@@ -540,10 +540,10 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     }
 
     @Override
-    public void deleteObserver(ReaderObserver observer) {
-        synchronized (readerObservers) {
-            super.deleteObserver(observer);
-            if (readerObservers.isEmpty()) {
+    public void removeObserver(Observer<? super ReaderEvent> observer) {
+        synchronized (observers) {
+            super.removeObserver(observer);
+            if (observers.isEmpty()) {
                 if (thread == null) { // <-- This should never happen and can probably be dropped at
                     // some point
                     throw new IllegalStateException("The reader thread should be null");

@@ -23,6 +23,7 @@ import org.keyple.seproxy.ReaderObserver;
 import org.keyple.seproxy.ReadersPlugin;
 import org.keyple.seproxy.SeProxyService;
 import org.keyple.seproxy.exceptions.IOReaderException;
+import org.keyple.util.event.Observable;
 import org.keyple.util.event.Topic;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -153,7 +154,8 @@ public class NFCTestFragment extends Fragment
      * @param readerEvent : event received from SEProxyService
      */
     @Override
-    public void notify(final ReaderEvent readerEvent) {
+    public void update(final Observable<? extends ReaderEvent> observable,
+            final ReaderEvent readerEvent) {
 
         getActivity().runOnUiThread(new Runnable() {
             @Override
@@ -256,7 +258,7 @@ public class NFCTestFragment extends Fragment
             Log.d(TAG, "Remove task as an observer for ReaderEvents");
             SeProxyService seProxyService = SeProxyService.getInstance();
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
-            ((ObservableReader) reader).deleteObserver(this);
+            ((ObservableReader) reader).removeObserver(this);
 
 
             // destroy AndroidNFC fragment

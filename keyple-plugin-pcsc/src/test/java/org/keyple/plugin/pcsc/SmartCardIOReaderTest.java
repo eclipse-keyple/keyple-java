@@ -75,7 +75,7 @@ public class SmartCardIOReaderTest {
 
         readerName = "lecteur";
         reader = new PcscReader(terminal);
-        reader.setAParameter(PcscReader.SETTING_KEY_LOGGING, "true");
+        reader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
     }
 
     @Test
@@ -86,7 +86,7 @@ public class SmartCardIOReaderTest {
     @Test
     public void testGettersSetters() throws IOReaderException {
         // this.reader = new PcscReader(terminal, readerName);
-        reader.setAParameter("TOTO", "TOTO");
+        reader.setParameter("TOTO", "TOTO");
         assertEquals(reader.getParameters().size(), 1);
 
         Map<String, String> test = new HashMap<String, String>();

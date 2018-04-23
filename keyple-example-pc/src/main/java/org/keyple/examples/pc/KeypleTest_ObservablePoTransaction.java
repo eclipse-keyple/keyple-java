@@ -20,6 +20,7 @@ import org.keyple.calypso.transaction.PoSecureSession;
 import org.keyple.plugin.pcsc.PcscPlugin;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.IOReaderException;
+import org.keyple.util.event.Observable;
 
 public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
     private ProxyReader poReader, csmReader;
@@ -29,7 +30,7 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
     }
 
     @Override
-    public void notify(ReaderEvent event) {
+    public void update(Observable<? extends ReaderEvent> observable, ReaderEvent event) {
         switch (event.getEventType()) {
             case SE_INSERTED:
                 System.out.println("SE INSERTED");
@@ -161,15 +162,16 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
         System.out.println("PO Reader  : " + poReader.getName());
         System.out.println("CSM Reader : " + csmReader.getName());
 
-        KeypleTest_ObservablePoTransaction observer = new KeypleTest_ObservablePoTransaction();
+        ((ConfigurableReader) poReader).setParameter("protocol", "T1");
+        ((ConfigurableReader) csmReader).setParameter("protocol", "T0");
 
+        // Setting up ourself as an observer
+        KeypleTest_ObservablePoTransaction observer = new KeypleTest_ObservablePoTransaction();
         observer.poReader = poReader;
-        ((ConfigurableReader) observer.poReader).setAParameter("protocol", "T1");
         observer.csmReader = csmReader;
-        ((ConfigurableReader) observer.csmReader).setAParameter("protocol", "T0");
 
         // Set terminal as Observer of the first reader
-        ((ObservableReader) observer.poReader).addObserver(observer);
+        ((ObservableReader) poReader).addObserver(observer);
         synchronized (waitForEnd) {
             waitForEnd.wait();
         }

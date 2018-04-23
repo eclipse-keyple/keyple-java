@@ -8,20 +8,26 @@
 
 package org.keyple.seproxy;
 
+import org.keyple.util.event.Observable;
+
 /**
  * An asynchronous update interface for receiving notifications about Reader information as the
  * Reader is constructed.
  *
  * @author Ixxi
+ * @deprecated We can remove this
  */
-public interface ReaderObserver {
+@Deprecated
+public interface ReaderObserver extends Observable.Observer<ReaderEvent> {
 
-    /**
+    /*
      * This method is called when information about an Reader which was previously requested using
      * an asynchronous interface becomes available.
      *
      * @param event the event
+     * 
+     * @deprecated The {@link Observable.Observer#update(Observable, Object)} method should be use
+     * instead
      */
-    void notify(ReaderEvent event);
-
+    // void notify(ReaderEvent event);
 }

@@ -22,11 +22,11 @@ import java.util.Collection;
 public class Observable<T> {
 
     public interface Observer<U> {
-        void update(Observable<? extends U> observer, U arg);
+        void update(Observable<? extends U> observable, U arg);
     }
 
     private boolean changed = false;
-    private final Collection<Observer<? super T>> observers;
+    protected final Collection<Observer<? super T>> observers;
 
     public Observable() {
         observers = new ArrayList<Observer<? super T>>();

@@ -101,7 +101,7 @@ public class StubReader extends ObservableReader implements ConfigurableReader {
     /**
      * Set a list of parameters on a reader.
      * <p>
-     * See {@link #setAParameter(String, String)} for more details
+     * See {@link #setParameter(String, String)} for more details
      *
      * @param parameters the new parameters
      * @throws IOReaderException This method can fail when disabling the exclusive mode as it's
@@ -110,13 +110,12 @@ public class StubReader extends ObservableReader implements ConfigurableReader {
     @Override
     public void setParameters(Map<String, String> parameters) throws IOReaderException {
         for (Map.Entry<String, String> en : parameters.entrySet()) {
-            setAParameter(en.getKey(), en.getValue());
+            setParameter(en.getKey(), en.getValue());
         }
     }
 
-
     @Override
-    public void setAParameter(String name, String value) throws IOReaderException {
+    public void setParameter(String name, String value) throws IOReaderException {
         if (name.equals(ALLOWED_PARAMETER_1) || name.equals(ALLOWED_PARAMETER_2)) {
             parameters.put(name, value);
         } else {

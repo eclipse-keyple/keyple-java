@@ -8,8 +8,8 @@
 
 package org.keyple.seproxy;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.keyple.util.event.Observable;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
@@ -21,20 +21,9 @@ import com.github.structlog4j.SLoggerFactory;
  *
  * @author Ixxi
  */
-public abstract class ObservableReader implements ProxyReader {
+public abstract class ObservableReader extends Observable<ReaderEvent> implements ProxyReader {
 
     private static final ILogger logger = SLoggerFactory.getLogger(ObservableReader.class);
-
-    // TODO: Drop this implementation, it doesn't respect the java's definition of it (it missed the
-    // change handling)
-    // and if we redefine it, we might as well make it a generic one, which is done in the
-    // "feature-example-common" branch
-
-    /**
-     * an array referencing the registered ReaderObserver of the Reader.
-     */
-    protected final List<ReaderObserver> readerObservers =
-            new CopyOnWriteArrayList<ReaderObserver>();
 
     /**
      * Add an observer to a terminal reader.
@@ -44,10 +33,10 @@ public abstract class ObservableReader implements ProxyReader {
      *
      * @param observer Observer to notify
      */
-    public void addObserver(ReaderObserver observer) {
+    public void addObserver(Observable.Observer<? super ReaderEvent> observer) {
         logger.info("ObservableReader: Adding an observer", "action",
                 "observable_reader.add_observer", "readerName", getName());
-        readerObservers.add(observer);
+        super.addObserver(observer);
     }
 
     /**
@@ -55,10 +44,10 @@ public abstract class ObservableReader implements ProxyReader {
      *
      * @param observer Observer to stop notifying
      */
-    public void deleteObserver(ReaderObserver observer) {
+    public void removeObserver(Observable.Observer<? super ReaderEvent> observer) {
         logger.info("ObservableReader: Deleting an observer", "action",
                 "observable_reader.delete_observer", "readerName", getName());
-        readerObservers.remove(observer);
+        super.removeObserver(observer);
     }
 
     /**
@@ -70,11 +59,10 @@ public abstract class ObservableReader implements ProxyReader {
      * @param event the event
      */
     public final void notifyObservers(ReaderEvent event) {
-        logger.info("ObservableReader: Notifying of an even", "action",
+        logger.info("ObservableReader: Notifying of an event", "action",
                 "observable_reader.notify_observers", "event", event, "readerName", getName());
-        for (ReaderObserver observer : readerObservers) {
-            observer.notify(event);
-        }
+        setChanged();
+        super.notifyObservers(event);
     }
 
 }
