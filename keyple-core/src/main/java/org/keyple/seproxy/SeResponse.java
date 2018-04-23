@@ -8,113 +8,83 @@
 
 package org.keyple.seproxy;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
- * The Class SEResponse. This class aggregates the elements of a response from a local or remote SE
- * Reader, received through a ProxyReader, including a group of APDU responses and the previous
- * status of the logical channel with the targeted SE application.
- *
- * @author Ixxi
+ * Aggregates the elements of a response from a local or remote SE Reader, received through a
+ * ProxyReader, including a group of APDU responses and the previous status of the logical channel
+ * with the targeted SE application.
+ * 
+ * @see SeRequest
  */
 public class SeResponse {
-
     /**
-     * is defined as true by the SE reader in case a logical channel was already open with the
-     * target SE application.
+     * List of elements that were received following the transmission of the
+     * {@link SeRequestElement}.
      */
-    private boolean channelPreviouslyOpen;
+    private final List<SeResponseElement> elements;
 
     /**
-     * present if channelPreviouslyOpen is false, contains the FCI response of the channel opening
-     * (either the response of a SelectApplication command, or the response of a GetData(‘FCI’)
-     * command).
-     */
-    private ApduResponse fci;
-
-    /**
-     * could contain a group of APDUResponse returned by the selected SE application on the SE
-     * reader.
-     */
-    private List<ApduResponse> apduResponses;
-
-    /**
-     * present if channelPreviouslyOpen is false and if the SE Reader manages the ATR (as for ISO
-     * 7816-3 contacts reader, or B’ Innovatron contactless reader), contains the ATR.
-     */
-    private byte[] atr;
-
-    /**
-     * the constructor called by a ProxyReader during the processing of the ‘transmit’ method.
+     * Compatibility layer constructor
      *
-     * @param channelPreviouslyOpen the channel previously open
-     * @param fci the fci data
-     * @param apduResponses the apdu responses
+     * @deprecated You should use {@link SeResponse#SeResponse(List)} with
+     *             {@link SeResponseElement#SeResponseElement(boolean, ApduResponse, List)}
      */
     public SeResponse(boolean channelPreviouslyOpen, ApduResponse fci,
             List<ApduResponse> apduResponses) {
-        this.channelPreviouslyOpen = channelPreviouslyOpen;
-
-        this.fci = fci;
-
-        this.apduResponses = apduResponses;
+        elements = Collections
+                .singletonList(new SeResponseElement(channelPreviouslyOpen, fci, apduResponses));
     }
 
     /**
-     * the constructor called by a ProxyReader during the processing of the ‘transmit’ method.
-     *
-     * @param channelPreviouslyOpen the channel previously open
-     * @param fci the fci data
-     * @param apduResponses the apdu responses
-     * @param atr the atr
+     * Create an {@link SeResponse} from a list of {@link SeResponseElement}s.
+     * 
+     * @param elements List of elements
      */
-    public SeResponse(boolean channelPreviouslyOpen, ApduResponse fci,
-            List<ApduResponse> apduResponses, byte[] atr) {
-        this.channelPreviouslyOpen = channelPreviouslyOpen;
-        // this.fci = null;
-        // this.atr = null;
-        this.fci = fci;
-        if (atr != null && atr.length > 0) {
-            this.atr = atr.clone();
+    public SeResponse(List<SeResponseElement> elements) {
+        this.elements = elements;
+    }
+
+    private SeResponseElement getSingleElement() {
+        if (elements.size() != 1) {
+            throw new IllegalStateException("This method only support ONE element");
         }
-
-        this.apduResponses = apduResponses;
+        return elements.get(0);
     }
 
     /**
-     * Was channel previously open.
+     * See {@link SeResponseElement#getApduResponses()}
      *
-     * @return the previous state of the logical channel.
+     * @deprecated Provided only as a compatibility layer with the previous architecture
      */
-    public boolean wasChannelPreviouslyOpen() {
-        return channelPreviouslyOpen;
-    }
-
-    /**
-     * Gets the fci data.
-     *
-     * @return null or the FCI response if a channel was opened.
-     */
-    public ApduResponse getFci() {
-        return this.fci;
-    }
-
-    /**
-     * Gets the apdu responses.
-     *
-     * @return the group of APDUs responses returned by the SE application for this instance of
-     *         SEResponse.
-     */
+    @Deprecated
     public List<ApduResponse> getApduResponses() {
-        return apduResponses;
+        return getSingleElement().getApduResponses();
     }
 
     /**
-     * returns null or the ATR if ATR is supported by the SE Reader and if a channel was opened
+     * See {@link SeResponseElement#getFci()}
      *
-     * @return the ATR
+     * @deprecated Provided only as a compatibility layer with the previous architecture
      */
-    public byte[] getAtr() {
-        return this.atr.clone();
+    @Deprecated
+    public ApduResponse getFci() {
+        return getSingleElement().getFci();
+    }
+
+    /**
+     * See {@link SeResponseElement#wasChannelPreviouslyOpen()}
+     *
+     * @deprecated Provided only as a compatibility layer with the previous architecture
+     */
+    @Deprecated
+    public boolean wasChannelPreviouslyOpen() {
+        return getSingleElement().wasChannelPreviouslyOpen();
+    }
+
+    @Override
+    public String toString() {
+        return "SeReponse{elements=" + elements + "}";
     }
 }

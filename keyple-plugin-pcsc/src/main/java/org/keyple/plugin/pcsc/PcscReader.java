@@ -128,19 +128,24 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     }
 
     private SeResponse transmitActual(SeRequest request) throws IOReaderException {
-        List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
+        try {
+            prepareAndConnectToTerminalAndSetChannel();
+        } catch (CardException e) {
+            throw new ChannelStateReaderException(e);
+        }
 
-        if (isSEPresent()) { // TODO si vrai ET pas vrai => retourne un SeResponse vide de manière
-            // systématique - return new SeResponse(false, fciDataSelected,
-            // apduResponseList);
-            try {
-                prepareAndConnectToTerminalAndSetChannel();
-            } catch (CardException e) {
-                throw new ChannelStateReaderException(e);
-            }
-            // gestion du select application ou du getATR
-            if (request.getAidToSelect() != null && aidCurrentlySelected == null) {
-                fciDataSelected = connect(request.getAidToSelect());
+        boolean previouslyOpen = false;
+
+        // #82: Updating the code to support more than one element transmission
+        List<SeResponseElement> respElements = new ArrayList<SeResponseElement>();
+        for (SeRequestElement reqElement : request.getElements()) {
+            List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
+
+            // florent: #82: I don't see the point of doing simple SE presence check here. We should
+            // either NOT check for SE element presence or directly throw an exception.
+            // if (isSEPresent()) {
+            if (reqElement.getAidToSelect() != null && aidCurrentlySelected == null) {
+                fciDataSelected = connect(reqElement.getAidToSelect());
             } else if (!atrDefaultSelected) {
                 fciDataSelected = new ApduResponse(
                         ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
@@ -154,16 +159,24 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                 throw new InvalidMessageException("FCI failed !", fciDataSelected);
             }
 
-            for (ApduRequest apduRequest : request.getApduRequests()) {
+            for (ApduRequest apduRequest : reqElement.getApduRequests()) {
                 apduResponseList.add(transmit(apduRequest));
             }
 
-            if (!request.keepChannelOpen()) {
-                disconnect();
-            }
-        }
+            respElements
+                    .add(new SeResponseElement(previouslyOpen, fciDataSelected, apduResponseList));
 
-        return new SeResponse(false, fciDataSelected, apduResponseList);
+            // #82: We can now correctly exploit the SeResponseElement.previouslyOpen property
+            if (!reqElement.keepChannelOpen()) {
+                disconnect();
+                previouslyOpen = false;
+            } else {
+                previouslyOpen = true;
+            }
+
+            // }
+        }
+        return new SeResponse(respElements);
     }
 
     /**
