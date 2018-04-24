@@ -8,6 +8,15 @@
 
 package org.keyple.plugin.pcsc;
 
+import com.github.structlog4j.ILogger;
+import com.github.structlog4j.SLoggerFactory;
+import org.keyple.seproxy.*;
+import org.keyple.seproxy.exceptions.ChannelStateReaderException;
+import org.keyple.seproxy.exceptions.IOReaderException;
+import org.keyple.seproxy.exceptions.InconsistentParameterValueException;
+import org.keyple.seproxy.exceptions.InvalidMessageException;
+
+import javax.smartcardio.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,14 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
-import javax.smartcardio.*;
-import org.keyple.seproxy.*;
-import org.keyple.seproxy.exceptions.ChannelStateReaderException;
-import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.seproxy.exceptions.InconsistentParameterValueException;
-import org.keyple.seproxy.exceptions.InvalidMessageException;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
 
 
 public class PcscReader extends ObservableReader implements ConfigurableReader {
@@ -42,7 +43,10 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     public static final String SETTING_DISCONNECT_EJECT = "eject";
     public static final String SETTING_KEY_THREAD_TIMEOUT = "thread_wait_timeout";
     public static final String SETTING_KEY_LOGGING = "logging";
-    public static final String SETTING_KEY_PO_SOLUTION_PREFIX = "po_solution"; // TODO To factorize in the common abstract reader class?
+    public static final String SETTING_KEY_PO_SOLUTION_PREFIX = "po_solution"; // TODO To factorize
+                                                                               // in the common
+                                                                               // abstract reader
+                                                                               // class?
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 5000;
 
     private final CardTerminal terminal;
@@ -159,12 +163,14 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                 Pattern p = Pattern.compile(selectionMask);
                 String atr = ByteBufferUtils.toHex(ByteBuffer.wrap(card.getATR().getBytes()));
                 if (!p.matcher(atr).matches()) {
-                    logger.info("Protocol selection: unmatching SE: " + protocolFlag, "action", "pcsc_reader.transmit_actual");
+                    logger.info("Protocol selection: unmatching SE: " + protocolFlag, "action",
+                            "pcsc_reader.transmit_actual");
                     respElements.add(null); // add empty response
                     continue; // try next request
                 }
             }
-            logger.info("Protocol selection: matching SE: " + protocolFlag, "action", "pcsc_reader.transmit_actual");
+            logger.info("Protocol selection: matching SE: " + protocolFlag, "action",
+                    "pcsc_reader.transmit_actual");
 
             List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
@@ -176,7 +182,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             } else if (!atrDefaultSelected) {
                 fciDataSelected = new ApduResponse(
                         ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
-                                ByteBuffer.wrap(new byte[]{(byte) 0x90, 0x00})),
+                                ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00})),
                         true);
                 atrDefaultSelected = true;
             }
