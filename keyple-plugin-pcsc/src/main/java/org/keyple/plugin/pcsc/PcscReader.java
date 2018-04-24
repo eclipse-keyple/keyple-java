@@ -8,14 +8,6 @@
 
 package org.keyple.plugin.pcsc;
 
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
-import org.keyple.seproxy.*;
-import org.keyple.seproxy.exceptions.ChannelStateReaderException;
-import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.seproxy.exceptions.InconsistentParameterValueException;
-import org.keyple.seproxy.exceptions.InvalidMessageException;
-
 import javax.smartcardio.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -24,7 +16,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
-
+import javax.smartcardio.*;
+import org.keyple.seproxy.*;
+import org.keyple.seproxy.exceptions.ChannelStateReaderException;
+import org.keyple.seproxy.exceptions.IOReaderException;
+import org.keyple.seproxy.exceptions.InconsistentParameterValueException;
+import org.keyple.seproxy.exceptions.InvalidMessageException;
+import com.github.structlog4j.ILogger;
+import com.github.structlog4j.SLoggerFactory;
 
 public class PcscReader extends ObservableReader implements ConfigurableReader {
 
@@ -190,11 +189,9 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             // fclairamb(2018-03-03): Is there a more elegant way to do this ?
             if (fciDataSelected.getStatusCode() != 0x9000) {
                 // if channel is set to be left open, we stop here
-                if(reqElement.keepChannelOpen()) {
+                if (reqElement.keepChannelOpen()) {
                     throw new InvalidMessageException("FCI failed !", fciDataSelected);
-                }
-                else
-                {
+                } else {
                     continue; // app selection failed, let's try next request
                 }
             }
