@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.ChannelStateReaderException;
@@ -22,6 +23,7 @@ import org.keyple.seproxy.exceptions.InconsistentParameterValueException;
 import org.keyple.seproxy.exceptions.InvalidMessageException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
+
 
 public class PcscReader extends ObservableReader implements ConfigurableReader {
 
@@ -40,6 +42,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     public static final String SETTING_DISCONNECT_EJECT = "eject";
     public static final String SETTING_KEY_THREAD_TIMEOUT = "thread_wait_timeout";
     public static final String SETTING_KEY_LOGGING = "logging";
+    public static final String SETTING_KEY_PO_SOLUTION_PREFIX = "po_solution"; // TODO To factorize in the common abstract reader class?
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 5000;
 
     private final CardTerminal terminal;
@@ -67,6 +70,11 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      */
     private long threadWaitTimeout;
 
+    /**
+     * PO selection map associating po solution and atr regex string
+     */
+    private Map<String, String> protocolsMap;
+
 
     PcscReader(CardTerminal terminal) { // PcscReader constructor may be
         // called only by PcscPlugin
@@ -74,6 +82,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         this.terminalName = terminal.getName();
         this.card = null;
         this.channel = null;
+        this.protocolsMap = new HashMap<String, String>();
 
         // Using null values to use the standard method for defining default values
         try {
@@ -139,6 +148,24 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         // #82: Updating the code to support more than one element transmission
         List<SeResponseElement> respElements = new ArrayList<SeResponseElement>();
         for (SeRequestElement reqElement : request.getElements()) {
+
+            // This is the target selection code introduced by JP
+            String protocolFlag = reqElement.getProtocolFlag();
+            if (protocolFlag != null && !protocolFlag.isEmpty()) {
+                String selectionMask = protocolsMap.get(protocolFlag);
+                if (selectionMask == null) {
+                    throw new InvalidMessageException("Target selector mask not found!", null);
+                }
+                Pattern p = Pattern.compile(selectionMask);
+                String atr = ByteBufferUtils.toHex(ByteBuffer.wrap(card.getATR().getBytes()));
+                if (!p.matcher(atr).matches()) {
+                    logger.info("Protocol selection: unmatching SE: " + protocolFlag, "action", "pcsc_reader.transmit_actual");
+                    respElements.add(null); // add empty response
+                    continue; // try next request
+                }
+            }
+            logger.info("Protocol selection: matching SE: " + protocolFlag, "action", "pcsc_reader.transmit_actual");
+
             List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
             // florent: #82: I don't see the point of doing simple SE presence check here. We should
@@ -149,14 +176,21 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             } else if (!atrDefaultSelected) {
                 fciDataSelected = new ApduResponse(
                         ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
-                                ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00})),
+                                ByteBuffer.wrap(new byte[]{(byte) 0x90, 0x00})),
                         true);
                 atrDefaultSelected = true;
             }
 
             // fclairamb(2018-03-03): Is there a more elegant way to do this ?
             if (fciDataSelected.getStatusCode() != 0x9000) {
-                throw new InvalidMessageException("FCI failed !", fciDataSelected);
+                // if channel is set to be left open, we stop here
+                if(reqElement.keepChannelOpen()) {
+                    throw new InvalidMessageException("FCI failed !", fciDataSelected);
+                }
+                else
+                {
+                    continue; // app selection failed, let's try next request
+                }
             }
 
             for (ApduRequest apduRequest : reqElement.getApduRequests()) {
@@ -170,11 +204,10 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             if (!reqElement.keepChannelOpen()) {
                 disconnect();
                 previouslyOpen = false;
+                break; // we do not go further, exit for loop
             } else {
                 previouslyOpen = true;
             }
-
-            // }
         }
         return new SeResponse(respElements);
     }
@@ -481,6 +514,12 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             }
         } else if (name.equals(SETTING_KEY_LOGGING)) {
             logging = Boolean.parseBoolean(value); // default is null and perfectly acceptable
+        } else if (name.startsWith(SETTING_KEY_PO_SOLUTION_PREFIX)) {
+            if (value == null || value.length() == 0) {
+                this.protocolsMap.remove(value);
+            } else {
+                this.protocolsMap.put(name, value);
+            }
         } else {
             throw new InconsistentParameterValueException("This parameter is unknown !", name,
                     value);

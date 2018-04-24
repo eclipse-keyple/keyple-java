@@ -22,7 +22,7 @@ import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.util.event.Observable;
 
-public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
+public class KeypleTest_ObservablePoTransaction implements  Observable.Observer<ReaderEvent> {
     private ProxyReader poReader, csmReader;
 
     public KeypleTest_ObservablePoTransaction() {
@@ -120,7 +120,7 @@ public class KeypleTest_ObservablePoTransaction implements ReaderObserver {
 
     // This is where you should add patterns of readers you want to use for tests
     private static final String poReaderName = ".*(ASK|ACS).*";
-    private static final String csmReaderName = ".*(Cherry TC|SCM Microsystems).*";
+    private static final String csmReaderName = ".*(Cherry TC|SCM Microsystems|Identive).*";
 
     /**
      * Get the terminal which names match the expected pattern
