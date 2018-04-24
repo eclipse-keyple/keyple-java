@@ -22,7 +22,7 @@ import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.util.event.Observable;
 
-public class KeypleTest_ObservablePoTransaction implements  Observable.Observer<ReaderEvent> {
+public class KeypleTest_ObservablePoTransaction implements Observable.Observer<ReaderEvent> {
     private ProxyReader poReader, csmReader;
 
     public KeypleTest_ObservablePoTransaction() {
