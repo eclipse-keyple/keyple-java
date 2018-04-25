@@ -29,8 +29,8 @@ import android.util.Log;
 
 
 /**
- * @ProxyReader implementation for the communication with the ISO Card though
- *              the @{@link NfcAdapter}
+ * {@link org.keyple.seproxy.ProxyReader} implementation for the communication
+ * with the ISO Card by the @{@link NfcAdapter} of the Android system
  */
 public class AndroidNfcReader extends ObservableReader implements NfcAdapter.ReaderCallback {
 
@@ -61,6 +61,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
 
     /**
      * Access point for the unique instance of singleton
+     * @return singleton instance of @{@link AndroidNfcReader}
      */
     protected static AndroidNfcReader getInstance() {
         return SingletonHolder.instance;
@@ -177,8 +178,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
 
     /**
      * Process data from NFC Intent
-     *
-     * @param intent
+     * @param intent : Intent resulting from the scan of a compatible tag
      */
     protected void connectTag(Intent intent) {
 
@@ -192,6 +192,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
 
     /**
      * Process data from the scanned NFC tag
+     @param tag: Tag to connect to
      */
     protected void connectTag(Tag tag) {
 

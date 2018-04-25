@@ -66,9 +66,40 @@ android {
         abortOnError false
     }
 
+    libraryVariants.all { variant ->
+        task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
+            description "Generates Javadoc for variant ${variant.name.capitalize()}"
+
+            source = variant.javaCompile.source
+            options.links("http://docs.oracle.com/javase/7/docs/api/")
+            options.links("http://d.android.com/reference/")
+
+            // First add all of your dependencies to the classpath, then add the android jars
+            classpath += files(variant.javaCompile.classpath.files)
+            classpath += files(android.getBootClasspath())
+
+            // We're excluding these generated files
+            exclude '**/BuildConfig.java'
+            exclude '**/R.java'
+            failOnError = false
+            destinationDir = file("${project.docsDir}/javadoc")
+        }
+
+    }
+
+    libraryVariants.all { variant ->
+        task("generate${variant.name.capitalize()}JavadocJar", type: Jar, dependsOn: "generate${variant.name.capitalize()}Javadoc") {
+            classifier = 'javadoc'
+            from tasks["generate${variant.name.capitalize()}Javadoc"].destinationDir
+        }
+
+        // Add the Javadoc jar to the project's artifacts. This will allow us to upload it easily later
+        project.artifacts.add("archives", tasks["generate${variant.name.capitalize()}JavadocJar"]);
+    }
 }
 /*
 */
+
 
 
 repositories {
