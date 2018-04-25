@@ -172,27 +172,20 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
             List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
-            // florent: #82: I don't see the point of doing simple SE presence check here. We should
-            // either NOT check for SE element presence or directly throw an exception.
-            // if (isSEPresent()) {
             if (reqElement.getAidToSelect() != null && aidCurrentlySelected == null) {
                 fciDataSelected = connect(reqElement.getAidToSelect());
+                // fclairamb(2018-03-03): Is there a more elegant way to do this ?
+                if (fciDataSelected.getStatusCode() != 0x9000) {
+                    logger.info("Application selection failed!", "action",
+                            "pcsc_reader.transmit_actual");
+                    continue; // app selection failed, let's try next request if any
+                }
             } else if (!atrDefaultSelected) {
                 fciDataSelected = new ApduResponse(
                         ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
                                 ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00})),
                         true);
                 atrDefaultSelected = true;
-            }
-
-            // fclairamb(2018-03-03): Is there a more elegant way to do this ?
-            if (fciDataSelected.getStatusCode() != 0x9000) {
-                // if channel is set to be left open, we stop here
-                if (reqElement.keepChannelOpen()) {
-                    throw new InvalidMessageException("FCI failed !", fciDataSelected);
-                } else {
-                    continue; // app selection failed, let's try next request
-                }
             }
 
             for (ApduRequest apduRequest : reqElement.getApduRequests()) {
