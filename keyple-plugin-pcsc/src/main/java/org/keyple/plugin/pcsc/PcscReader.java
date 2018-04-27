@@ -140,11 +140,11 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
 
     /**
      * Do the transmission of all needed request elements contained in the provided request
-     * according to the protocol flag selection logic.
-     * The response elements are returned in the response object.
-     * The request elements are ordered at application level and the responses match this order.
-     * When a request is not matching the current PO, the response elements pushed in the response
-     * object is set to null.
+     * according to the protocol flag selection logic. The response elements are returned in the
+     * response object. The request elements are ordered at application level and the responses
+     * match this order. When a request is not matching the current PO, the response elements pushed
+     * in the response object is set to null.
+     * 
      * @param request
      * @return response
      * @throws IOReaderException
