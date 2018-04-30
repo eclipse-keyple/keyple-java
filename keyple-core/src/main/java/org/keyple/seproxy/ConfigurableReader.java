@@ -41,4 +41,11 @@ public interface ConfigurableReader extends ProxyReader {
      * @return the configuration of the selected reader
      */
     Map<String, String> getParameters();
+
+    /**
+     * Define the list of protocols we should support
+     *
+     * @param protocolsMap Protocols map
+     */
+    void setProtocols(Map<String, String> protocolsMap);
 }
