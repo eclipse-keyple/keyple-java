@@ -17,7 +17,9 @@ import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ByteBufferUtils;
 import org.keyple.seproxy.ProxyReader;
 import org.keyple.seproxy.SeRequest;
+import org.keyple.seproxy.SeRequestElement;
 import org.keyple.seproxy.SeResponse;
+import org.keyple.seproxy.SeResponseElement;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.simalliance.openmobileapi.Channel;
 import org.simalliance.openmobileapi.Reader;
@@ -48,42 +50,48 @@ public class AndroidOmapiReader implements ProxyReader {
 
         Log.i(TAG, "Create Session from reader...");
         Session session = null;
-        SeResponse seResponse = null;
-        ApduResponse fci = null;
+        List<SeResponseElement> seResponseElements = new ArrayList<SeResponseElement>();
 
-        try {
-            Log.i(TAG, "Create session...");
-            session = omapiReader.openSession();
 
-            Log.i(TAG, "Create logical channel within the session...");
-            channel = session.openLogicalChannel(
-                    ByteBufferUtils.toBytes(seApplicationRequest.getAidToSelect()));
-            fci = new ApduResponse(ByteBuffer.wrap(channel.getSelectResponse()), true);
+        for(SeRequestElement seRequestElement : seApplicationRequest.getElements()){
 
-        } catch (Exception e) {
-            throw new IOReaderException(e.getMessage(), e.getCause());
-        }
-
-        Log.i(TAG, "Send APDU commands from SeRequest objects");
-        List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
-        for (ApduRequest seRequest : seApplicationRequest.getApduRequests()) {
-            byte[] respApdu = new byte[0];
+            ApduResponse fci = null;
             try {
-                respApdu = channel.transmit(ByteBufferUtils.toBytes(seRequest.getBuffer()));
-                apduResponses.add(new ApduResponse(respApdu, true));
+                Log.i(TAG, "Create session...");
+                session = omapiReader.openSession();
+
+                Log.i(TAG, "Create logical channel within the session...");
+                channel = session.openLogicalChannel(
+                        ByteBufferUtils.toBytes(seRequestElement.getAidToSelect()));
+                fci = new ApduResponse(ByteBuffer.wrap(channel.getSelectResponse()), true);
+
             } catch (IOException e) {
-                e.printStackTrace();
-                apduResponses.add(new ApduResponse(ByteBuffer.allocate(0), false));
+                throw new IOReaderException(e.getMessage(), e.getCause());
+            }
+
+            Log.i(TAG, "Send APDU commands from SeRequest objects");
+            List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
+            for (ApduRequest seRequest : seRequestElement.getApduRequests()) {
+                byte[] respApdu = new byte[0];
+                try {
+                    respApdu = channel.transmit(ByteBufferUtils.toBytes(seRequest.getBuffer()));
+                    apduResponses.add(new ApduResponse(respApdu, true));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    apduResponses.add(new ApduResponse(ByteBuffer.allocate(0), false));
+                }
+            }
+
+            seResponseElements.add(new SeResponseElement(false, fci, apduResponses));
+
+            if (!seRequestElement.keepChannelOpen()) {
+                channel.close();
             }
         }
 
-        seResponse = new SeResponse(false, fci, apduResponses);
 
-        if (!seApplicationRequest.keepChannelOpen()) {
-            channel.close();
-        }
+        return new SeResponse(seResponseElements);
 
-        return seResponse;
     }
 
     @Override

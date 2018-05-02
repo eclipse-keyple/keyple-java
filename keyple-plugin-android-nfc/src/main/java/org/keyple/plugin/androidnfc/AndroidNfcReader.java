@@ -19,7 +19,9 @@ import org.keyple.seproxy.ByteBufferUtils;
 import org.keyple.seproxy.ObservableReader;
 import org.keyple.seproxy.ReaderEvent;
 import org.keyple.seproxy.SeRequest;
+import org.keyple.seproxy.SeRequestElement;
 import org.keyple.seproxy.SeResponse;
+import org.keyple.seproxy.SeResponseElement;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
@@ -42,6 +44,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     private static Tag currentTag;
 
     private ByteBuffer mAidCurrentlySelected = null;
+    private List<ByteBuffer> openChannels = new ArrayList<ByteBuffer>();
 
     /**
      * Private constructor
@@ -101,45 +104,66 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     public SeResponse transmit(SeRequest seApplicationRequest) {
         Log.i(TAG, "Calling transmit on Android NFC Reader");
         Log.d(TAG, "Size of APDU Requests : "
-                + String.valueOf(seApplicationRequest.getApduRequests().size()));
-        List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
-        ApduResponse fciResponse = null;
+                + String.valueOf(seApplicationRequest.getElements().size()));
+
+        List<SeResponseElement> seResponseElements = new ArrayList<SeResponseElement>();
 
 
         try {
 
-            if (isSEPresent()) {
 
-                // Checking of the presence of the AID request in requests group
-                if ((seApplicationRequest.getAidToSelect() != null)
-                        && (mAidCurrentlySelected == null)) {
-                    fciResponse = this.connectApplication(seApplicationRequest.getAidToSelect());
+        if (isSEPresent()) {
+
+            for (SeRequestElement seRequestElement : seApplicationRequest.getElements()) {
+
+                //init
+                List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
+                ApduResponse fciResponse = null;
+
+                try {
+
+                    // Checking of the presence of the AID request in requests group
+                    Log.i(TAG, "Connecting to application : " + seRequestElement.getAidToSelect());
+                    fciResponse = this.connectApplication(seRequestElement.getAidToSelect());
+
+
+                    for (ApduRequest apduRequest : seRequestElement.getApduRequests()) {
+                        Log.i(TAG, getName() + " : Sending : "
+                                + ByteBufferUtils.toHex(apduRequest.getBuffer()));
+
+                        apduResponses.add(sendAPDUCommand(apduRequest.getBuffer()));
+
+                    }
+
+
+                } catch (IOException e) {
+                    Log.e(TAG, "Error executing command");
+                    e.printStackTrace();
+                    apduResponses.add(null);//add empty response
                 }
 
-
-                for (ApduRequest apduRequest : seApplicationRequest.getApduRequests()) {
-                    Log.i(TAG, getName() + " : Sending : "
-                            + ByteBufferUtils.toHex(apduRequest.getBuffer()));
-
-                    apduResponses.add(sendAPDUCommand(apduRequest.getBuffer()));
-
+                if (!seRequestElement.keepChannelOpen()) {
+                    disconnectTag();
                 }
-            } else {
-                Log.w(TAG, "SE is not present");
+
+                SeResponseElement out = new SeResponseElement(true, fciResponse, apduResponses);
+                seResponseElements.add(out);
 
             }
-        } catch (IOException e) {
-            Log.e(TAG, "Error executing command");
-            e.printStackTrace();
+
+        } else {
+            Log.w(TAG, "SE is not present");
+
+        }
+        }catch (IOException e) {
+            Log.e(TAG, "Error while reading SE");
+            List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
+            ApduResponse fciResponse = null;
             apduResponses.add(new ApduResponse(ByteBuffer.allocate(0), false));
+
         }
 
-        if (!seApplicationRequest.keepChannelOpen()) {
-            disconnectISODEP();
-        }
-
-
-        return new SeResponse(false, fciResponse, apduResponses);
+        return new SeResponse(seResponseElements);
     }
 
 
@@ -152,27 +176,24 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
 
         Log.i(TAG, "Connecting to application");
 
-        if (aid != null) {
-            Log.i(TAG, "AID limit :" + aid.limit());
+        Log.i(TAG, "AID limit :" + aid.limit());
 
-            ByteBuffer command = ByteBuffer.allocate(aid.limit() + 6);
-            command.put((byte) 0x00);
-            command.put((byte) 0xA4);
-            command.put((byte) 0x04);
-            command.put((byte) 0x00);
-            command.put((byte) aid.limit());
-            command.put(aid);
-            command.put((byte) 0x00);
-            command.position(0);
-            Log.i(TAG, " : Selecting AID " + ByteBufferUtils.toHex(aid));
+        ByteBuffer command = ByteBuffer.allocate(aid.limit() + 6);
+        command.put((byte) 0x00);
+        command.put((byte) 0xA4);
+        command.put((byte) 0x04);
+        command.put((byte) 0x00);
+        command.put((byte) aid.limit());
+        command.put(aid);
+        command.put((byte) 0x00);
+        command.position(0);
+        Log.i(TAG, " : Selecting AID " + ByteBufferUtils.toHex(aid));
 
-            mAidCurrentlySelected = aid;
-            return sendAPDUCommand(command);
+        //mAidCurrentlySelected = aid;
+        openChannels.add(aid);
+        return sendAPDUCommand(command);
 
-        } else {
-            mAidCurrentlySelected = null;
-            return null;
-        }
+
     }
 
     /**
@@ -199,7 +220,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
         currentTag = tag;
 
         try {
-            connectISODEP();
+            connectTag();
             notifyObservers(new ReaderEvent(AndroidNfcReader.getInstance(),
                     ReaderEvent.EventType.SE_INSERTED));
 
@@ -214,7 +235,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
      * Logical canal with the tag/card
      *
      */
-    private void connectISODEP() throws IOException {
+    private void connectTag() throws IOException {
         Log.i(TAG, "Connecting to tag as a Iso Dep : " + printTagId());
 
         isoDepTag = IsoDep.get(currentTag);
@@ -228,7 +249,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     /**
      * Disconnect the NFC reader from its tag
      */
-    private void disconnectISODEP() {
+    private void disconnectTag() {
         try {
             mAidCurrentlySelected = null;
 
@@ -260,19 +281,13 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
         Log.d(TAG, "Max data possible to be transceived by IsoDep : "
                 + isoDepTag.getMaxTransceiveLength());
 
-        if (isSEPresent()) {
+        Log.d(TAG, "Sending data to  tag ");
+        byte[] data = ByteBufferUtils.toBytes(command);
+        byte[] dataOut = isoDepTag.transceive(data);
 
-            Log.d(TAG, "Sending data to  tag ");
-            byte[] data = ByteBufferUtils.toBytes(command);
-            byte[] dataOut = isoDepTag.transceive(data);
+        Log.i(TAG, getName() + " : Recept : " + dataOut);
+        return new ApduResponse(dataOut, true);
 
-            Log.i(TAG, getName() + " : Recept : " + dataOut);
-            return new ApduResponse(dataOut, true);
-
-        } else {
-            Log.d(TAG, "Can not transmit secure Element is not connected");
-            return new ApduResponse(ByteBuffer.allocate(0), false);
-        }
 
     }
 
