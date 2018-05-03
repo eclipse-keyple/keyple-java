@@ -81,11 +81,6 @@ jobs:
             name: Assemble Keyple Example Android NFC application to apk file
             command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example-android-nfc/build.gradle assembleDebug
 
-        - run:
-            name: Generate Keyple OMAPI Plugin javadoc
-            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example-android-omapi/build.gradle generateDebugJavadoc
-
-
         - store_artifacts:
               path: ./keyple-example-android-nfc/build/outputs/apk/debug
               destination: keyple-example-android-nfc/
