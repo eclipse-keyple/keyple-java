@@ -66,9 +66,11 @@ android {
         abortOnError false
     }
 
+
     libraryVariants.all { variant ->
         task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
             description "Generates Javadoc for variant ${variant.name.capitalize()}"
+            println "Generates Javadoc for variant ${variant.name.capitalize()}"
 
             source = variant.javaCompile.source
             options.links("http://docs.oracle.com/javase/7/docs/api/")
@@ -77,6 +79,10 @@ android {
             // First add all of your dependencies to the classpath, then add the android jars
             classpath += files(variant.javaCompile.classpath.files)
             classpath += files(android.getBootClasspath())
+            println 'classpath : ' + classpath.getFiles()
+            println 'options links : ' + options.links
+            println 'source : ' + source.getFiles()
+
 
             // We're excluding these generated files
             exclude '**/BuildConfig.java'
@@ -87,18 +93,11 @@ android {
 
     }
 
-    libraryVariants.all { variant ->
-        task("generate${variant.name.capitalize()}JavadocJar", type: Jar, dependsOn: "generate${variant.name.capitalize()}Javadoc") {
-            classifier = 'javadoc'
-            from tasks["generate${variant.name.capitalize()}Javadoc"].destinationDir
-        }
-
-        // Add the Javadoc jar to the project's artifacts. This will allow us to upload it easily later
-        project.artifacts.add("archives", tasks["generate${variant.name.capitalize()}JavadocJar"]);
-    }
 }
 /*
 */
+
+
 
 
 
@@ -111,9 +110,9 @@ dependencies {
     implementation 'com.android.support:support-v4:26.1.0'
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
     implementation project(':keyple-calypso')
 }
