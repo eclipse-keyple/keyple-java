@@ -76,12 +76,13 @@ android {
             options.links("http://docs.oracle.com/javase/7/docs/api/")
             options.links("http://d.android.com/reference/")
 
-            // First add all of your dependencies to the classpath, then add the android jars
-            classpath += files(variant.javaCompile.classpath.files)
-            classpath += files(android.getBootClasspath())
             println 'classpath : ' + classpath.getFiles()
             println 'options links : ' + options.links
             println 'source : ' + source.getFiles()
+
+            // First add all of your dependencies to the classpath, then add the android jars
+            classpath += files(variant.javaCompile.classpath.files)
+            classpath += files(android.getBootClasspath())
 
 
             // We're excluding these generated files
