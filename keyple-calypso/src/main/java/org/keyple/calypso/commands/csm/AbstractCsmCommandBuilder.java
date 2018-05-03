@@ -9,22 +9,20 @@
 package org.keyple.calypso.commands.csm;
 
 import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.commands.ApduCommandBuilder;
+import org.keyple.commands.AbstractApduCommandBuilder;
 import org.keyple.seproxy.ApduRequest;
 
 /**
  *
- * This abstract class extends ApduCommandBuilder, it has to be extended by all CSM command builder
- * classes, it manages the current default revision for PO commands
- *
- * @author IXXI
+ * This abstract class extends AbstractApduCommandBuilder, it has to be extended by all CSM command
+ * builder classes, it manages the current default revision for PO commands
  *
  */
-public abstract class CsmCommandBuilder extends ApduCommandBuilder {
+public abstract class AbstractCsmCommandBuilder extends AbstractApduCommandBuilder {
 
     protected CsmRevision defaultRevision = CsmRevision.S1D;// 94
 
-    public CsmCommandBuilder(CalypsoCommands reference, ApduRequest request) {
+    public AbstractCsmCommandBuilder(CalypsoCommands reference, ApduRequest request) {
         super(reference, request);
     }
 }

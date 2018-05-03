@@ -8,19 +8,15 @@
 
 package org.keyple.commands;
 
-// import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.seproxy.ApduRequest;
 
 /**
- * The Class ApduCommandBuilder. This abstract class has to be extended by all PO and CSM command
- * builder classes, it provides the generic getters to retrieve: the name of the command, the built
- * APDURequest, the corresponding ApduResponseParser class.
- *
- * @author Ixxi
- *
+ * APDU command builder. It has to be extended by all PO and CSM command builder classes, it
+ * provides the generic getters to retrieve: the name of the command, the built APDURequest, the
+ * corresponding ApduResponseParser class.
  */
 
-public abstract class ApduCommandBuilder {
+public abstract class AbstractApduCommandBuilder {
 
     /**
      * the reference of the command in the matrix array enumeration, in order to get the name and
@@ -38,8 +34,8 @@ public abstract class ApduCommandBuilder {
      * @param commandReference command reference
      * @param request request
      */
-    // public ApduCommandBuilder(CalypsoCommands commandReference, ApduRequest request) {
-    public ApduCommandBuilder(CommandsTable commandReference, ApduRequest request) {
+    // public AbstractApduCommandBuilder(CalypsoCommands commandReference, ApduRequest request) {
+    public AbstractApduCommandBuilder(CommandsTable commandReference, ApduRequest request) {
         this.commandReference = commandReference;
         this.request = request;
     }

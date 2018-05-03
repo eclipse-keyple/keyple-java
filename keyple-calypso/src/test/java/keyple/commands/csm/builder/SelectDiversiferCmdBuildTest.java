@@ -19,7 +19,7 @@ import org.keyple.calypso.commands.csm.builder.SelectDiversifierCmdBuild;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.GetDataFciCmdBuild;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
-import org.keyple.commands.ApduCommandBuilder;
+import org.keyple.commands.AbstractApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 import org.keyple.seproxy.ApduResponse;
@@ -47,7 +47,8 @@ public class SelectDiversiferCmdBuildTest {
 
     private ApduResponse responseExpected = new ApduResponse(null, true, returnOK);
 
-    private ApduCommandBuilder apduCommandBuilder = new GetDataFciCmdBuild(PoRevision.REV3_1);
+    private AbstractApduCommandBuilder apduCommandBuilder =
+            new GetDataFciCmdBuild(PoRevision.REV3_1);
 
     private List<ApduResponse> list = new ArrayList<ApduResponse>();
 
@@ -89,7 +90,8 @@ public class SelectDiversiferCmdBuildTest {
                 GetDataFciRespPars.toFCI(responseFci.getApduResponses().get(0).getBuffer());
         dataIn = fci.getApplicationSN();
 
-        ApduCommandBuilder apduCommandBuilder2 = new SelectDiversifierCmdBuild(null, dataIn);
+        AbstractApduCommandBuilder apduCommandBuilder2 =
+                new SelectDiversifierCmdBuild(null, dataIn);
         ApduRequest ApduRequest = apduCommandBuilder2.getApduRequest();
 
         ApduRequests2.add(ApduRequest);

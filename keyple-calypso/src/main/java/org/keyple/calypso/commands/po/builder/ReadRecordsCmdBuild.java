@@ -9,7 +9,7 @@
 package org.keyple.calypso.commands.po.builder;
 
 import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.calypso.commands.po.PoCommandBuilder;
+import org.keyple.calypso.commands.po.AbstractPoCommandBuilder;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.SendableInSession;
 import org.keyple.calypso.commands.utils.RequestUtils;
@@ -23,7 +23,7 @@ import org.keyple.seproxy.ApduRequest;
  * @author Ixxi
  *
  */
-public class ReadRecordsCmdBuild extends PoCommandBuilder implements SendableInSession {
+public class ReadRecordsCmdBuild extends AbstractPoCommandBuilder implements SendableInSession {
 
     /** The command. */
     private static CalypsoCommands command = CalypsoCommands.PO_READ_RECORDS;

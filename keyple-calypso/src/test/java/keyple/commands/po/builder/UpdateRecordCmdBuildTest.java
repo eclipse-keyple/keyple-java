@@ -13,7 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
-import org.keyple.commands.ApduCommandBuilder;
+import org.keyple.commands.AbstractApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
@@ -23,7 +23,7 @@ public class UpdateRecordCmdBuildTest {
 
     ByteBuffer newRecordData = ByteBuffer.wrap(new byte[] {0x00, 0x01, 0x02, 0x03, 0x04});
 
-    ApduCommandBuilder apduCommandBuilder;
+    AbstractApduCommandBuilder apduCommandBuilder;
 
     ApduRequest ApduRequest;
 

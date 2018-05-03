@@ -14,7 +14,7 @@ public interface CommandsTable {
 
     byte getInstructionByte();
 
-    Class<? extends ApduCommandBuilder> getCommandBuilderClass();
+    Class<? extends AbstractApduCommandBuilder> getCommandBuilderClass();
 
     Class<? extends ApduResponseParser> getResponseParserClass();
 

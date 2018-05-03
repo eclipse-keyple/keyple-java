@@ -11,7 +11,7 @@ package org.keyple.calypso.commands.po.builder;
 
 import java.nio.ByteBuffer;
 import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.calypso.commands.po.PoCommandBuilder;
+import org.keyple.calypso.commands.po.AbstractPoCommandBuilder;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.commands.InconsistentCommandException;
 
@@ -22,7 +22,7 @@ import org.keyple.commands.InconsistentCommandException;
  * @author Ixxi
  *
  */
-public abstract class AbstractOpenSessionCmdBuild extends PoCommandBuilder {
+public abstract class AbstractOpenSessionCmdBuild extends AbstractPoCommandBuilder {
 
     /**
      * Instantiates a new AbstractOpenSessionCmdBuild.

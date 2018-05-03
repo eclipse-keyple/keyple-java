@@ -13,7 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
-import org.keyple.commands.ApduCommandBuilder;
+import org.keyple.commands.AbstractApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
@@ -25,7 +25,7 @@ public class ReadRecordsCmdBuildTest {
 
     byte expectedLenght = 0x00;
 
-    ApduCommandBuilder apduCommandBuilder;
+    AbstractApduCommandBuilder apduCommandBuilder;
 
     ApduRequest ApduRequest;
 
