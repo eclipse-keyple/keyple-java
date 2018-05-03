@@ -14,7 +14,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.parser.ReadRecordsRespPars;
-import org.keyple.commands.ApduResponseParser;
+import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ByteBufferUtils;
 import org.keyple.seproxy.SeResponse;
@@ -97,7 +97,7 @@ public class ReadRecordsRespParsTest {
         listeResponse.add(apduResponse);
         SeResponse seResponse = new SeResponse(true, null, listeResponse);
 
-        ApduResponseParser apduResponseParser =
+        AbstractApduResponseParser apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getApduResponses().get(0));
         ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
         Assert.assertEquals(response, reponseActual);
@@ -112,7 +112,7 @@ public class ReadRecordsRespParsTest {
         listeResponse.add(apduResponse);
         SeResponse seResponse = new SeResponse(true, null, listeResponse);
 
-        ApduResponseParser apduResponseParser =
+        AbstractApduResponseParser apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getApduResponses().get(0));
         ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
         Assert.assertEquals(response, reponseActual);

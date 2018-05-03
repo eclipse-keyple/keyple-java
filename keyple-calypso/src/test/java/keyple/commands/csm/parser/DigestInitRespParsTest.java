@@ -14,7 +14,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.csm.parser.DigestInitRespPars;
-import org.keyple.commands.ApduResponseParser;
+import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.SeResponse;
 
@@ -27,7 +27,7 @@ public class DigestInitRespParsTest {
         listeResponse.add(apduResponse);
         SeResponse seResponse = new SeResponse(true, null, listeResponse);
 
-        ApduResponseParser apduResponseParser =
+        AbstractApduResponseParser apduResponseParser =
                 new DigestInitRespPars(seResponse.getApduResponses().get(0));
         Assert.assertEquals(ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}),
                 apduResponseParser.getApduResponse().getBuffer());

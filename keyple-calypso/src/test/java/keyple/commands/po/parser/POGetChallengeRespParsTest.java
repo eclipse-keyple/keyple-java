@@ -13,7 +13,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.parser.PoGetChallengeRespPars;
-import org.keyple.commands.ApduResponseParser;
+import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.SeResponse;
 
@@ -28,7 +28,7 @@ public class POGetChallengeRespParsTest {
         listeResponse.add(apduResponse);
         SeResponse seResponse = new SeResponse(true, null, listeResponse);
 
-        ApduResponseParser apduResponseParser =
+        AbstractApduResponseParser apduResponseParser =
                 new PoGetChallengeRespPars(seResponse.getApduResponses().get(0));
         byte[] reponseActual = apduResponseParser.getApduResponse().getBytes();
         Assert.assertArrayEquals(response, reponseActual);

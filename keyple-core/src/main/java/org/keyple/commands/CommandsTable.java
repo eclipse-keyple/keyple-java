@@ -16,6 +16,6 @@ public interface CommandsTable {
 
     Class<? extends AbstractApduCommandBuilder> getCommandBuilderClass();
 
-    Class<? extends ApduResponseParser> getResponseParserClass();
+    Class<? extends AbstractApduResponseParser> getResponseParserClass();
 
 }

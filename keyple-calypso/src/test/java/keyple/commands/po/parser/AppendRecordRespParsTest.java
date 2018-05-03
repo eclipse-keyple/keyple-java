@@ -13,7 +13,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.parser.AppendRecordRespPars;
-import org.keyple.commands.ApduResponseParser;
+import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.SeResponse;
 
@@ -26,7 +26,7 @@ public class AppendRecordRespParsTest {
         listeResponse.add(apduResponse);
         SeResponse seResponse = new SeResponse(true, null, listeResponse);
 
-        ApduResponseParser apduResponseParser =
+        AbstractApduResponseParser apduResponseParser =
                 new AppendRecordRespPars(seResponse.getApduResponses().get(0));
         byte[] reponseActual = apduResponseParser.getApduResponse().getBytes();
         Assert.assertArrayEquals(new byte[] {90, 00}, reponseActual);

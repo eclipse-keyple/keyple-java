@@ -13,20 +13,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.keyple.commands.ApduResponseParser;
+import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ByteBufferUtils;
 
 /**
  * Read Records (00B2) response parser. See specs: Calypso / page 89 / 9.4.7 Read Records
  */
-public class ReadRecordsRespPars extends ApduResponseParser {
+public class ReadRecordsRespPars extends AbstractApduResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
     static {
         Map<Integer, StatusProperties> m =
-                new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);
+                new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
         m.put(0x6981, new StatusProperties(false, "Command forbidden on binary files"));
         m.put(0x6982, new StatusProperties(false,
                 "Security conditions not fulfilled (PIN code not presented, encryption required)."));

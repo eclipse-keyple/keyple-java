@@ -13,7 +13,7 @@ import org.keyple.seproxy.ApduRequest;
 /**
  * APDU command builder. It has to be extended by all PO and CSM command builder classes, it
  * provides the generic getters to retrieve: the name of the command, the built APDURequest, the
- * corresponding ApduResponseParser class.
+ * corresponding AbstractApduResponseParser class.
  */
 
 public abstract class AbstractApduCommandBuilder {
@@ -52,10 +52,10 @@ public abstract class AbstractApduCommandBuilder {
     /**
      * Gets the apdu response parser class.
      *
-     * @return the corresponding ApduResponseParser class of the APDU command from the CommandsTable
-     *         information
+     * @return the corresponding AbstractApduResponseParser class of the APDU command from the
+     *         CommandsTable information
      */
-    public final Class<? extends ApduResponseParser> getApduResponseParserClass() {
+    public final Class<? extends AbstractApduResponseParser> getApduResponseParserClass() {
         return commandReference.getResponseParserClass();
     }
 

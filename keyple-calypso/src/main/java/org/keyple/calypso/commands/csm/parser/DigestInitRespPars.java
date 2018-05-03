@@ -9,13 +9,13 @@
 package org.keyple.calypso.commands.csm.parser;
 
 
-import org.keyple.commands.ApduResponseParser;
+import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
 /**
  * Digest init response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC computation
  */
-public class DigestInitRespPars extends ApduResponseParser {
+public class DigestInitRespPars extends AbstractApduResponseParser {
     /**
      * Instantiates a new DigestInitRespPars.
      *
