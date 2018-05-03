@@ -26,6 +26,15 @@ public class SeResponse {
     private final List<SeResponseElement> elements;
 
     /**
+     * List of response elements
+     *
+     * @return List of response elements
+     */
+    public List<SeResponseElement> getElements() {
+        return elements;
+    }
+
+    /**
      * Compatibility layer constructor
      *
      * @deprecated You should use {@link SeResponse#SeResponse(List)} with
