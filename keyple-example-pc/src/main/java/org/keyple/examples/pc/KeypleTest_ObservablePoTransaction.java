@@ -20,7 +20,7 @@ import org.keyple.calypso.transaction.PoSecureSession;
 import org.keyple.plugin.pcsc.PcscPlugin;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.util.event.Observable;
+import org.keyple.util.Observable;
 
 public class KeypleTest_ObservablePoTransaction implements Observable.Observer<ReaderEvent> {
     private ProxyReader poReader, csmReader;

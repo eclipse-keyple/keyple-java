@@ -13,7 +13,7 @@ import java.util.List;
 import org.keyple.example.common.BasicCardAccessManager;
 import org.keyple.plugin.pcsc.PcscPlugin;
 import org.keyple.seproxy.*;
-import org.keyple.util.event.Observable;
+import org.keyple.util.Observable;
 
 public class BasicCardAccess {
     private static final Object sync = new Object();

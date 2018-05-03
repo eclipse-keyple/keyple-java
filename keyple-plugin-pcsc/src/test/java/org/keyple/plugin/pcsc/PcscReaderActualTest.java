@@ -15,7 +15,7 @@ import org.keyple.seproxy.ObservableReader;
 import org.keyple.seproxy.ReaderEvent;
 import org.keyple.seproxy.ReaderObserver;
 import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.util.event.Observable;
+import org.keyple.util.Observable;
 
 public class PcscReaderActualTest {
 

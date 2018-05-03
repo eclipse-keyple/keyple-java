@@ -11,7 +11,7 @@ package org.keyple.examples.pc;
 import org.keyple.plugin.pcsc.PcscPlugin;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.util.event.Observable;
+import org.keyple.util.Observable;
 
 public class ObservableEventTest {
     public static void main(String[] args) throws Exception {

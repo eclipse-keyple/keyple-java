@@ -9,7 +9,7 @@
 package org.keyple.seproxy;
 
 
-import org.keyple.util.event.Observable;
+import org.keyple.util.Observable;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
