@@ -73,7 +73,7 @@ android {
             println "Generates Javadoc for variant ${variant.name.capitalize()}"
 
             source = variant.javaCompile.source
-            options.links("http://docs.oracle.com/javase/7/docs/api/")
+            options.links("http://docs.oracle.com/javase/6/docs/api/")
             options.links("http://d.android.com/reference/")
 
             println 'classpath : ' + classpath.getFiles()
@@ -82,6 +82,7 @@ android {
 
             // First add all of your dependencies to the classpath, then add the android jars
             doFirst {
+                //doFirst is needed else we get the error "Cannot create variant 'android-lint' after configuration" with gradle 4.4+
                 classpath = files(variant.javaCompile.classpath.files, project.android.getBootClasspath())
             }
             classpath += files(android.getBootClasspath())

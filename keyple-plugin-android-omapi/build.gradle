@@ -69,14 +69,23 @@ android {
     libraryVariants.all { variant ->
         task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
             description "Generates Javadoc for variant ${variant.name.capitalize()}"
+            println "Generates Javadoc for variant ${variant.name.capitalize()}"
 
             source = variant.javaCompile.source
-            options.links("http://docs.oracle.com/javase/7/docs/api/")
+            options.links("http://docs.oracle.com/javase/6/docs/api/")
             options.links("http://d.android.com/reference/")
 
+            println 'classpath : ' + classpath.getFiles()
+            println 'options links : ' + options.links
+            println 'source : ' + source.getFiles()
+
             // First add all of your dependencies to the classpath, then add the android jars
-            classpath += files(variant.javaCompile.classpath.files)
+            doFirst {
+                //doFirst is needed else we get the error "Cannot create variant 'android-lint' after configuration" with gradle 4.4+
+                classpath = files(variant.javaCompile.classpath.files, project.android.getBootClasspath())
+            }
             classpath += files(android.getBootClasspath())
+
 
             // We're excluding these generated files
             exclude '**/BuildConfig.java'
@@ -85,16 +94,6 @@ android {
             destinationDir = file("${project.docsDir}/javadoc")
         }
 
-    }
-
-    libraryVariants.all { variant ->
-        task("generate${variant.name.capitalize()}JavadocJar", type: Jar, dependsOn: "generate${variant.name.capitalize()}Javadoc") {
-            classifier = 'javadoc'
-            from tasks["generate${variant.name.capitalize()}Javadoc"].destinationDir
-        }
-
-        // Add the Javadoc jar to the project's artifacts. This will allow us to upload it easily later
-        project.artifacts.add("archives", tasks["generate${variant.name.capitalize()}JavadocJar"]);
     }
 
 }
