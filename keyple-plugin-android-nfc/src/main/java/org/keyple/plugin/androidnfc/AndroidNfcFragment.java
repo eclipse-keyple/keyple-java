@@ -51,8 +51,6 @@ public class AndroidNfcFragment extends Fragment {
 
     /**
      * Checking of the NFC support on the Android device
-     * 
-     * @param savedInstanceState
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,11 +73,7 @@ public class AndroidNfcFragment extends Fragment {
 
     /**
      * This fragment does not include UI
-     * 
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
+     *
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

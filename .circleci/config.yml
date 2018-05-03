@@ -61,6 +61,10 @@ jobs:
             - v1-dependencies-{{ checksum "./keyple-example-android-nfc/build.gradle" }}
 
         - run:
+            name: Assemble Keyple
+            command: ANDROID_HOME=/home/user/android-sdk-linux gradle build
+
+        - run:
             name: Download Dependencies
             command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example-android-nfc/build.gradle androidDependencies
 
@@ -71,7 +75,7 @@ jobs:
 
         - run:
             name: Assemble Plugin NFC plugin to aar file
-            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-plugin-android-nfc/build.gradle assembleRelease
+            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-plugin-android-nfc/build.gradle assembleDebug generateDebugJavadoc
 
         - run:
             name: Assemble Keyple Example Android NFC application to apk file

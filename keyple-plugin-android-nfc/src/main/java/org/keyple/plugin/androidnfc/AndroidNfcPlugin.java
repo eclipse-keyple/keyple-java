@@ -47,9 +47,8 @@ public class AndroidNfcPlugin implements ReadersPlugin {
     /**
      * For an Android NFC device, the Android NFC Plugin manages only one @{@link AndroidNfcReader}.
      * 
-     * @return List<ProxyReader> : contains only one element, the
-     *         singleton @{@link AndroidNfcReader}
-     * @throws IOReaderException
+     * @return lists of ProxyReader with only one element : @{@link AndroidNfcReader}
+     * @throws IOReaderException : something bad happened while reading the SE
      */
     @Override
     public List<ProxyReader> getReaders() throws IOReaderException {
