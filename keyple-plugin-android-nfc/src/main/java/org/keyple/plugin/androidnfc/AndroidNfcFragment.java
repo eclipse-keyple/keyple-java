@@ -51,7 +51,7 @@ public class AndroidNfcFragment extends Fragment {
 
     /**
      * Checking of the NFC support on the Android device
-          */
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
