@@ -65,10 +65,6 @@ jobs:
             command: ANDROID_HOME=/home/user/android-sdk-linux gradle build
 
         - run:
-            name: Assemble Jar from keyple calypso and keyple core
-            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-calypso assemble
-
-        - run:
             name: Download Dependencies
             command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example-android-nfc/build.gradle androidDependencies
 
