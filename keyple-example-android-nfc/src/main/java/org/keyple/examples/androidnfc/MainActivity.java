@@ -11,6 +11,7 @@ package org.keyple.examples.androidnfc;
 import org.keyple.plugin.androidnfc.AndroidNfcPlugin;
 import org.keyple.seproxy.SeProxyService;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -46,14 +47,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /**
+        /*
          * Define UI elements
          */
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_main);
 
         setupNavDrawer();
-        /**
+        /*
          * end of Define UI elements
          */
 
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                         // set item as selected to persist highlight
                         menuItem.setChecked(true);
                         // close drawer when item is tapped
@@ -116,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Hamburger icon
         ActionBar actionbar = getSupportActionBar();
+        assert actionbar != null;
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
 

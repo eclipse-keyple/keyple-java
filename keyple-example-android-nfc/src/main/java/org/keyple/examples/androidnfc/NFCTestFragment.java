@@ -8,6 +8,7 @@
 
 package org.keyple.examples.androidnfc;
 
+import static org.keyple.seproxy.ReaderEvent.EventType.SE_INSERTED;
 import java.util.ArrayList;
 import java.util.List;
 import org.keyple.commands.InconsistentCommandException;
@@ -19,7 +20,6 @@ import org.keyple.plugin.androidnfc.AndroidNfcPlugin;
 import org.keyple.seproxy.ObservableReader;
 import org.keyple.seproxy.ProxyReader;
 import org.keyple.seproxy.ReaderEvent;
-import org.keyple.seproxy.ReaderObserver;
 import org.keyple.seproxy.ReadersPlugin;
 import org.keyple.seproxy.SeProxyService;
 import org.keyple.seproxy.exceptions.IOReaderException;
@@ -39,7 +39,7 @@ import android.widget.TextView;
 
 
 public class NFCTestFragment extends Fragment
-        implements ReaderObserver, Topic.Subscriber<AbstractLogicManager.Event> {
+        implements Observable.Observer<ReaderEvent>, Topic.Subscriber<AbstractLogicManager.Event> {
 
 
     private static final String TAG = NFCTestFragment.class.getSimpleName();
@@ -116,9 +116,9 @@ public class NFCTestFragment extends Fragment
 
         View view = inflater.inflate(R.layout.fragment_nfc_test, container, false);
 
-        mText = (TextView) view.findViewById(R.id.text);
+        mText = view.findViewById(R.id.text);
 
-        RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
+        RadioGroup radioGroup = view.findViewById(R.id.radioGroup);
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -148,47 +148,6 @@ public class NFCTestFragment extends Fragment
 
     }
 
-    /**
-     * Management of SE insertion event to operate a ticketing processing
-     *
-     * @param readerEvent : event received from SEProxyService
-     */
-    @Override
-    public void update(final Observable<? extends ReaderEvent> observable,
-            final ReaderEvent readerEvent) {
-
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "New ReaderEvent received : " + readerEvent.getEventType().toString());
-
-                switch (readerEvent.getEventType()) {
-                    case SE_INSERTED:
-                        mText.append("\n ---- \n");
-                        mText.append("Tag detected");
-                        try {
-
-                            cardAccessManager.run();
-
-                        } catch (InconsistentCommandException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-
-                    case SE_REMOVAL:
-                        mText.append("\n ---- \n");
-                        mText.append("Connection closed to tag");
-                        break;
-
-                    case IO_ERROR:
-                        mText.append("\n ---- \n");
-                        mText.setText("Error reading card");
-                        break;
-
-                }
-            }
-        });
-    }
 
     /**
      * Init basic test suite
@@ -234,7 +193,7 @@ public class NFCTestFragment extends Fragment
     /**
      * Observes Card Access when an event is received
      *
-     * @param event
+     * @param event event received from Card Access Logic Manager
      */
     public void update(AbstractLogicManager.Event event) {
         getActivity().runOnUiThread(new Runnable() {
@@ -277,5 +236,42 @@ public class NFCTestFragment extends Fragment
 
     private void clearText() {
         mText.setText("");
+    }
+
+
+
+    @Override
+    public void update(Observable<? extends ReaderEvent> observable, ReaderEvent readerEvent) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "New ReaderEvent received : " + readerEvent.getEventType().toString());
+
+                switch (readerEvent.getEventType()) {
+                    case SE_INSERTED:
+                        mText.append("\n ---- \n");
+                        mText.append("Tag detected");
+                        try {
+
+                            cardAccessManager.run();
+
+                        } catch (InconsistentCommandException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+
+                    case SE_REMOVAL:
+                        mText.append("\n ---- \n");
+                        mText.append("Connection closed to tag");
+                        break;
+
+                    case IO_ERROR:
+                        mText.append("\n ---- \n");
+                        mText.setText("Error reading card");
+                        break;
+
+                }
+            }
+        });
     }
 }

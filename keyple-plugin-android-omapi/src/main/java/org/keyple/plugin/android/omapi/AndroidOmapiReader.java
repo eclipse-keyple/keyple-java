@@ -53,7 +53,7 @@ public class AndroidOmapiReader implements ProxyReader {
         List<SeResponseElement> seResponseElements = new ArrayList<SeResponseElement>();
 
 
-        for(SeRequestElement seRequestElement : seApplicationRequest.getElements()){
+        for (SeRequestElement seRequestElement : seApplicationRequest.getElements()) {
 
             ApduResponse fci = null;
             try {

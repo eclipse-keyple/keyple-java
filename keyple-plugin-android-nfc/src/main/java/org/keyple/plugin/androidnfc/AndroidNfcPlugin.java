@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.keyple.seproxy.ProxyReader;
 import org.keyple.seproxy.ReadersPlugin;
-import org.keyple.seproxy.exceptions.IOReaderException;
+import android.util.Log;
 
 
 /**
@@ -22,13 +22,14 @@ public class AndroidNfcPlugin implements ReadersPlugin {
 
     private static final String TAG = AndroidNfcPlugin.class.getSimpleName();
 
-    private static AndroidNfcPlugin uniqueInstance = new AndroidNfcPlugin();
+    private final static AndroidNfcPlugin uniqueInstance = new AndroidNfcPlugin();
 
     private ProxyReader reader;
 
     private AndroidNfcPlugin() {
 
         if (this.reader == null) {
+            Log.i(TAG, "Instanciate singleton NFC Plugin");
             this.reader = AndroidNfcReader.getInstance();
         }
 
@@ -49,13 +50,12 @@ public class AndroidNfcPlugin implements ReadersPlugin {
      * 
      * @return List<ProxyReader> : contains only one element, the
      *         singleton @{@link AndroidNfcReader}
-     * @throws IOReaderException
      */
     @Override
-    public List<ProxyReader> getReaders() throws IOReaderException {
+    public List<ProxyReader> getReaders() {
+        // return the only one reader in a list
         List<ProxyReader> readers = new ArrayList<ProxyReader>();
         readers.add(reader);
         return readers;
-
     }
 }

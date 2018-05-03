@@ -39,7 +39,7 @@ public abstract class NFCListenerAbstractActivity extends Activity
 
         if (nfcAdapter == null) {
             Log.w(TAG, "Your device does not support NFC");
-        } ;
+        }
 
         if (!nfcAdapter.isEnabled()) {
             Log.w(TAG, "PLease enable NFC to communicate with NFC Elements");
@@ -73,7 +73,7 @@ public abstract class NFCListenerAbstractActivity extends Activity
 
         Log.d(TAG, "On New Intent : " + intent.toString());
 
-        if (intent != null && intent.getAction() != null) {
+        if (intent.getAction() != null) {
             final String action = intent.getAction();
             if (action.equals(NfcAdapter.ACTION_TECH_DISCOVERED)) {
                 // AndroidNfcPlugin.getInstance().plugReader(nfcAdapter);
