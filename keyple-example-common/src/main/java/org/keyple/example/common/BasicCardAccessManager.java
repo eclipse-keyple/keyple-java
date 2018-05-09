@@ -8,6 +8,7 @@
 
 package org.keyple.example.common;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.keyple.calypso.commands.po.PoRevision;
@@ -45,8 +46,14 @@ public class BasicCardAccessManager extends AbstractLogicManager {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
+        SeRequestElement seRequestElement = new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+        seRequestElement.setProtocolFlag("android.nfc.tech.IsoDep");
+        List<SeRequestElement> seRequestElements = new ArrayList<SeRequestElement>();
+        seRequestElements.add(seRequestElement);
         SeRequest poRequest =
-                new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+                new SeRequest(seRequestElements);
+
+
         try {
             SeResponse poResponse = poReader.transmit(poRequest);
             getTopic()

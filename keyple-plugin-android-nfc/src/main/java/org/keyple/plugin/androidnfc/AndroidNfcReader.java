@@ -26,7 +26,6 @@ import org.keyple.seproxy.exceptions.IOReaderException;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.IsoDep;
 import android.util.Log;
 
 
@@ -40,7 +39,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     private static final String TAG = "AndroidNfcReader";
 
     //
-    private static IsoDep isoDepTag;
+    private static TagTransceiver tagTransceiver;
     private static Tag currentTag;
 
     private final List<ByteBuffer> openChannels = new ArrayList<ByteBuffer>();
@@ -86,26 +85,30 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     public void onTagDiscovered(Tag tag) {
 
         Log.i(TAG, "Received Tag Discovered event " + printTagId());
-        connectTag(tag);
+        processTag(tag);
     }
 
 
     @Override
     public boolean isSEPresent() throws IOReaderException {
-        return isoDepTag != null && isoDepTag.isConnected();
+        return tagTransceiver != null && tagTransceiver.isConnected();
     }
 
     /**
      * Transmit {@link SeRequest} to the connected Tag
+     * Supports protocol argument to filterProtocol commands for the right connected Tag
      * 
-     * @param seApplicationRequest the se application request
+     * @param seRequest the se application request
      * @return {@link SeResponse} : response from the transmitted request
      */
     @Override
-    public SeResponse transmit(SeRequest seApplicationRequest) {
+    public SeResponse transmit(SeRequest seRequest) {
         Log.i(TAG, "Calling transmit on Android NFC Reader");
-        Log.d(TAG, "Size of APDU Requests : "
-                + String.valueOf(seApplicationRequest.getElements().size()));
+        Log.d(TAG,  "Size of APDU Requests : "
+                + String.valueOf(seRequest.getElements().size()));
+
+        SeRequest seApplicationRequest = filterProtocol(seRequest);
+
 
         List<SeResponseElement> seResponseElements = new ArrayList<SeResponseElement>();
 
@@ -177,6 +180,20 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     }
 
 
+    private SeRequest filterProtocol(SeRequest seRequest){
+
+        List<SeRequestElement> filteredSRE = new ArrayList<SeRequestElement>();
+
+        for (SeRequestElement seRequestElement : seRequest.getElements()) {
+            if(seRequestElement.getProtocolFlag().equals(tagTransceiver.getTech())){
+                filteredSRE.add(seRequestElement);
+            }
+        }
+        return new SeRequest(filteredSRE);
+
+    }
+
+
     /**
      * method to connect to the card from the terminal
      *
@@ -208,26 +225,26 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     /**
      * Process data from NFC Intent
      *
-     * @param intent : Intent received and filter by xml tech_list
+     * @param intent : Intent received and filterProtocol by xml tech_list
      */
-    protected void connectTag(Intent intent) {
+    protected void processIntent(Intent intent) {
 
         // Extract Tag from Intent
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        this.connectTag(tag);
+        this.processTag(tag);
     }
 
 
     /**
      * Process data from the scanned NFC tag
      */
-    protected void connectTag(Tag tag) {
+    protected void processTag(Tag tag) {
 
         Log.d(TAG, "Processing Tag");
         currentTag = tag;
 
         try {
-            connectTag();
+            processIntent();
             notifyObservers(new ReaderEvent(AndroidNfcReader.getInstance(),
                     ReaderEvent.EventType.SE_INSERTED));
 
@@ -242,11 +259,12 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
      * Logical canal with the tag/card
      *
      */
-    private void connectTag() throws IOException {
-        Log.i(TAG, "Connecting to tag as a Iso Dep : " + printTagId());
+    private void processIntent() throws IOException {
+        Log.i(TAG, "Processing Tag : " + printTagId());
+        Log.i(TAG, "Tag tech list: " + currentTag.getTechList());
 
-        isoDepTag = IsoDep.get(currentTag);
-        isoDepTag.connect();
+        tagTransceiver = IsoDepTransceiver.getTagTransceiver(currentTag);
+        tagTransceiver.connect();
 
         Log.i(TAG, "Iso Dep tag connected successfully : " + printTagId());
 
@@ -259,9 +277,9 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     private void disconnectTag() {
         try {
 
-            if (isoDepTag != null) {
+            if (tagTransceiver != null) {
 
-                isoDepTag.close();
+                tagTransceiver.close();
                 this.notifyObservers(new ReaderEvent(this, ReaderEvent.EventType.SE_REMOVAL));
 
                 Log.i(TAG, "Disconnected tag : " + printTagId());
@@ -271,7 +289,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
             Log.e(TAG, "Disconnecting error");
         }
 
-        isoDepTag = null;
+        tagTransceiver = null;
     }
 
     /**
@@ -294,11 +312,11 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
         long commandLenght = command.limit();
         Log.d(TAG, "Data Length to be sent to ISODEP : " + commandLenght);
         Log.d(TAG, "Max data possible to be transceived by IsoDep : "
-                + isoDepTag.getMaxTransceiveLength());
+                + tagTransceiver.getMaxTransceiveLength());
 
         Log.d(TAG, "Sending data to  tag ");
         byte[] data = ByteBufferUtils.toBytes(command);
-        byte[] dataOut = isoDepTag.transceive(data);
+        byte[] dataOut = tagTransceiver.transceive(data);
 
         Log.i(TAG, getName() + " : Recept : " + dataOut);
         return new ApduResponse(dataOut, true);

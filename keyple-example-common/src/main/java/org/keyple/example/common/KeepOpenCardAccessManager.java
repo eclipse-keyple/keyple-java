@@ -8,6 +8,7 @@
 
 package org.keyple.example.common;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.keyple.calypso.commands.po.PoRevision;
@@ -17,6 +18,7 @@ import org.keyple.seproxy.ApduRequest;
 import org.keyple.seproxy.ByteBufferUtils;
 import org.keyple.seproxy.ProxyReader;
 import org.keyple.seproxy.SeRequest;
+import org.keyple.seproxy.SeRequestElement;
 import org.keyple.seproxy.SeResponse;
 
 
@@ -49,8 +51,12 @@ public class KeepOpenCardAccessManager extends AbstractLogicManager {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
+        SeRequestElement seRequestElement = new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, true);
+        seRequestElement.setProtocolFlag("android.nfc.tech.IsoDep");
+        List<SeRequestElement> seRequestElements = new ArrayList<SeRequestElement>();
+        seRequestElements.add(seRequestElement);
         SeRequest poRequest =
-                new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, true);
+                new SeRequest(seRequestElements);
         try {
 
             System.out.println("Transmit 1st SE Request, keep channel open");
@@ -62,8 +68,12 @@ public class KeepOpenCardAccessManager extends AbstractLogicManager {
             Thread.sleep(3000);
             System.out.println("Transmit 2nd SE Request, close channel");
 
+            SeRequestElement seRequestElement2 = new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+            seRequestElement2.setProtocolFlag("android.nfc.tech.IsoDep");
+            List<SeRequestElement> seRequestElements2 = new ArrayList<SeRequestElement>();
+            seRequestElements2.add(seRequestElement2);
             SeRequest poRequest2 =
-                    new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+                    new SeRequest(seRequestElements2);
 
             SeResponse poResponse2 = poReader.transmit(poRequest2);
             getTopic().post(
