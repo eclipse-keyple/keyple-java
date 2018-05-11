@@ -95,8 +95,8 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     }
 
     /**
-     * Transmit {@link SeRequest} to the connected Tag
-     * Supports protocol argument to filterProtocol commands for the right connected Tag
+     * Transmit {@link SeRequest} to the connected Tag Supports protocol argument to filterProtocol
+     * commands for the right connected Tag
      * 
      * @param seRequest the se application request
      * @return {@link SeResponse} : response from the transmitted request
@@ -104,8 +104,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     @Override
     public SeResponse transmit(SeRequest seRequest) {
         Log.i(TAG, "Calling transmit on Android NFC Reader");
-        Log.d(TAG,  "Size of APDU Requests : "
-                + String.valueOf(seRequest.getElements().size()));
+        Log.d(TAG, "Size of APDU Requests : " + String.valueOf(seRequest.getElements().size()));
 
         SeRequest seApplicationRequest = filterProtocol(seRequest);
 
@@ -180,12 +179,12 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     }
 
 
-    private SeRequest filterProtocol(SeRequest seRequest){
+    private SeRequest filterProtocol(SeRequest seRequest) {
 
         List<SeRequestElement> filteredSRE = new ArrayList<SeRequestElement>();
 
         for (SeRequestElement seRequestElement : seRequest.getElements()) {
-            if(seRequestElement.getProtocolFlag().equals(tagTransceiver.getTech())){
+            if (seRequestElement.getProtocolFlag().equals(tagTransceiver.getTech())) {
                 filteredSRE.add(seRequestElement);
             }
         }
