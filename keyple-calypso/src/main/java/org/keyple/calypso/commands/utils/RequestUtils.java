@@ -21,7 +21,7 @@ public class RequestUtils {
 
     private RequestUtils() {}
 
-    public static void controlRequestConsistency(CalypsoCommands command, ApduRequest request)
+    public static void controlRequestConsistency(CommandsTable command, ApduRequest request)
             throws InconsistentCommandException {
         // Simplifying the strange logic, but I'm not sure this helps much
         if (request != null && request.getBuffer() != null

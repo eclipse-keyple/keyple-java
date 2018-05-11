@@ -14,7 +14,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.keyple.calypso.commands.CalypsoCommands;
+import org.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.keyple.calypso.commands.utils.RequestUtils;
+import org.keyple.commands.CommandsTable;
 import org.keyple.seproxy.ApduRequest;
 
 @RunWith(BlockJUnit4ClassRunner.class)
@@ -26,7 +28,7 @@ public class RequestUtilsTest {
 
     private byte cla;
 
-    private CalypsoCommands ins;
+    private CommandsTable ins;
 
     private byte pUn;
 
@@ -46,7 +48,7 @@ public class RequestUtilsTest {
         isCase4 = false;
         expected = new ApduRequest(fci, isCase4);
         cla = (byte) 0x00;
-        ins = CalypsoCommands.PO_GET_DATA_FCI;
+        ins = CalypsoPoCommands.GET_DATA_FCI;
         pUn = 0x00;
         pDeux = 0x6F;
         dataIn = null;
@@ -62,7 +64,7 @@ public class RequestUtilsTest {
         isCase4 = true;
         expected = new ApduRequest(fci, isCase4);
         cla = (byte) 0x00;
-        ins = CalypsoCommands.PO_GET_DATA_FCI;
+        ins = CalypsoPoCommands.GET_DATA_FCI;
         pUn = 0x00;
         pDeux = 0x6F;
         dataIn = null;
@@ -80,7 +82,7 @@ public class RequestUtilsTest {
         isCase4 = false;
         expected = new ApduRequest(fci, isCase4);
         cla = (byte) 0x00;
-        ins = CalypsoCommands.PO_GET_DATA_FCI;
+        ins = CalypsoPoCommands.GET_DATA_FCI;
         pUn = 0x00;
         pDeux = 0x6F;
         dataIn = ByteBuffer.wrap(new byte[] {0x00, 0x00});
@@ -94,7 +96,7 @@ public class RequestUtilsTest {
     public void testConstructApduRequestCase4Data() {
         isCase4 = true;
         cla = (byte) 0x00;
-        ins = CalypsoCommands.PO_GET_DATA_FCI;
+        ins = CalypsoPoCommands.GET_DATA_FCI;
         pUn = 0x00;
         pDeux = 0x6F;
         dataIn = ByteBuffer.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, 0x00});

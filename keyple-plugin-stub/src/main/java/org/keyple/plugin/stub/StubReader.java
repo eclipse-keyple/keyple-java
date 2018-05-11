@@ -160,5 +160,8 @@ public class StubReader extends ObservableReader implements ConfigurableReader {
         test_ChannelIsOpen = channelIsOpen;
     }
 
+    @Override
+    public void setProtocols(Map<String, String> protocolsMap) {
 
+    }
 }

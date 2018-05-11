@@ -12,8 +12,10 @@ import java.nio.ByteBuffer;
 import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.SendableInSession;
 import org.keyple.calypso.commands.po.AbstractPoCommandBuilder;
+import org.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.utils.RequestUtils;
+import org.keyple.commands.CommandsTable;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
@@ -26,7 +28,7 @@ import org.keyple.seproxy.ApduRequest;
 public class UpdateRecordCmdBuild extends AbstractPoCommandBuilder implements SendableInSession {
 
     /** The command. */
-    private static CalypsoCommands command = CalypsoCommands.PO_UPDATE_RECORD;
+    private static CommandsTable command = CalypsoPoCommands.UPDATE_RECORD;
 
     /**
      * Instantiates a new UpdateRecordCmdBuild.

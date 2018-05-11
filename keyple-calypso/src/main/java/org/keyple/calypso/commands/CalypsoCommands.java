@@ -22,6 +22,7 @@ import org.keyple.calypso.commands.csm.parser.DigestInitRespPars;
 import org.keyple.calypso.commands.csm.parser.DigestUpdateMultipleRespPars;
 import org.keyple.calypso.commands.csm.parser.DigestUpdateRespPars;
 import org.keyple.calypso.commands.csm.parser.SelectDiversifierRespPars;
+import org.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.*;
 import org.keyple.calypso.commands.po.parser.*;
@@ -69,35 +70,7 @@ public enum CalypsoCommands implements CommandsTable {
 
     /** The po get challenge. */
     PO_GET_CHALLENGE(CommandType.PO, "Get Challenge", (byte) 0x84, PoGetChallengeCmdBuild.class,
-            PoGetChallengeRespPars.class),
-
-    /** The csm select diversifier. */
-    CSM_SELECT_DIVERSIFIER(CommandType.CSM, "Select Diversifier", (byte) 0x14,
-            SelectDiversifierCmdBuild.class, SelectDiversifierRespPars.class),
-
-    /** The csm get challenge. */
-    CSM_GET_CHALLENGE(CommandType.CSM, "Get Challenge", (byte) 0x84, CsmGetChallengeCmdBuild.class,
-            CsmGetChallengeRespPars.class),
-
-    /** The csm digest init. */
-    CSM_DIGEST_INIT(CommandType.CSM, "Digest Init", (byte) 0x8A, DigestInitCmdBuild.class,
-            DigestInitRespPars.class),
-
-    /** The csm digest update. */
-    CSM_DIGEST_UPDATE(CommandType.CSM, "Digest Update", (byte) 0x8C, DigestUpdateCmdBuild.class,
-            DigestUpdateRespPars.class),
-
-    /** The csm digest update multiple. */
-    CSM_DIGEST_UPDATE_MULTIPLE(CommandType.CSM, "Digest Update Multiple", (byte) 0x8C,
-            DigestUpdateMultipleCmdBuild.class, DigestUpdateMultipleRespPars.class),
-
-    /** The csm digest close. */
-    CSM_DIGEST_CLOSE(CommandType.CSM, "Digest Close", (byte) 0x8E, DigestCloseCmdBuild.class,
-            DigestCloseRespPars.class),
-
-    /** The csm digest authenticate. */
-    CSM_DIGEST_AUTHENTICATE(CommandType.CSM, "Digest Authenticate", (byte) 0x82,
-            DigestAuthenticateCmdBuild.class, DigestAuthenticateRespPars.class);
+            PoGetChallengeRespPars.class);
 
     /** The command type. */
     private CommandType commandType;
