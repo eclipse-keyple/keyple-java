@@ -46,12 +46,12 @@ public class BasicCardAccessManager extends AbstractLogicManager {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-        SeRequestElement seRequestElement = new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+        SeRequestElement seRequestElement =
+                new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
         seRequestElement.setProtocolFlag("android.nfc.tech.IsoDep");
         List<SeRequestElement> seRequestElements = new ArrayList<SeRequestElement>();
         seRequestElements.add(seRequestElement);
-        SeRequest poRequest =
-                new SeRequest(seRequestElements);
+        SeRequest poRequest = new SeRequest(seRequestElements);
 
 
         try {
