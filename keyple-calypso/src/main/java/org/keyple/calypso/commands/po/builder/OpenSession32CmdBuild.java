@@ -9,7 +9,7 @@
 package org.keyple.calypso.commands.po.builder;
 
 import java.nio.ByteBuffer;
-import org.keyple.calypso.commands.CalypsoCommands;
+import org.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
@@ -36,6 +36,6 @@ public class OpenSession32CmdBuild extends AbstractOpenSessionCmdBuild {
         dataIn.put(samChallenge);
 
         this.request = RequestUtils.constructAPDURequest((byte) 0x00,
-                CalypsoCommands.getOpenSessionForRev(defaultRevision), p1, p2, dataIn);
+                CalypsoPoCommands.getOpenSessionForRev(defaultRevision), p1, p2, dataIn);
     }
 }

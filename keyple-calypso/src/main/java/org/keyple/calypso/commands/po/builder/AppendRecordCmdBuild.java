@@ -9,7 +9,6 @@
 package org.keyple.calypso.commands.po.builder;
 
 import java.nio.ByteBuffer;
-import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.SendableInSession;
 import org.keyple.calypso.commands.po.AbstractPoCommandBuilder;
 import org.keyple.calypso.commands.po.CalypsoPoCommands;
@@ -39,7 +38,7 @@ public class AppendRecordCmdBuild extends AbstractPoCommandBuilder implements Se
      * @param request the request
      * @throws InconsistentCommandException the inconsistent command exception
      */
-    AppendRecordCmdBuild(CalypsoCommands commandeReference, ApduRequest request)
+    AppendRecordCmdBuild(CommandsTable commandeReference, ApduRequest request)
             throws InconsistentCommandException {
         super(commandeReference, request);
     }
