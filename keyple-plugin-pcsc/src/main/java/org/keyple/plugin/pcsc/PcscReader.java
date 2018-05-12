@@ -41,7 +41,10 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     public static final String SETTING_DISCONNECT_EJECT = "eject";
     public static final String SETTING_KEY_THREAD_TIMEOUT = "thread_wait_timeout";
     public static final String SETTING_KEY_LOGGING = "logging";
-    public static final String SETTING_KEY_PROTOCOLS_MAP = "protocols_map";
+    public static final String SETTING_KEY_PO_SOLUTION_PREFIX = "po_solution"; // TODO To factorize
+    // in the common
+    // abstract reader
+    // class?
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 5000;
 
     private final CardTerminal terminal;
@@ -70,7 +73,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     private long threadWaitTimeout;
 
     /**
-     * Product selection map associating product case and atr regex string
+     * PO selection map associating po solution and atr regex string
      */
     private Map<String, String> protocolsMap;
 
@@ -81,6 +84,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         this.terminalName = terminal.getName();
         this.card = null;
         this.channel = null;
+        this.protocolsMap = new HashMap<String, String>();
 
         // Using null values to use the standard method for defining default values
         try {
@@ -92,6 +96,17 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             // It's actually impossible to reach that state
             throw new IllegalStateException("Could not initialize properly", ex);
         }
+    }
+
+    /**
+     * Flurent setter to change the PC/SC wait timeout in ms. Defaults to 5000.
+     *
+     * @param timeout Timeout to use
+     * @return Current instance
+     */
+    public PcscReader setThreadWaitTimeout(long timeout) {
+        this.threadWaitTimeout = timeout;
+        return this;
     }
 
 
@@ -147,36 +162,27 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         List<SeResponseElement> respElements = new ArrayList<SeResponseElement>();
         for (SeRequestElement reqElement : request.getElements()) {
 
-            { // This is the target selection code introduced by JP
-                String targetSelector = request.getTargetSelector();
-                if (targetSelector != null && !targetSelector.isEmpty()) {
-                    String selectionMask = protocolsMap.get(targetSelector);
-                    if (selectionMask == null) {
-                        throw new InvalidMessageException("Target selector mask not found!", null);
-                    }
-                    Pattern p = Pattern.compile(selectionMask);
-                    String atr = ByteBufferUtils.toHex(ByteBuffer.wrap(card.getATR().getBytes()));
-                    if (!p.matcher(atr).matches()) {
-                        throw new InvalidMessageException("Unexpected SE!", null);
-                    }
+            // This is the target selection code introduced by JP
+            String protocolFlag = reqElement.getProtocolFlag();
+            if (protocolFlag != null && !protocolFlag.isEmpty()) {
+                String selectionMask = protocolsMap.get(protocolFlag);
+                if (selectionMask == null) {
+                    throw new InvalidMessageException("Target selector mask not found!", null);
                 }
-                // gestion du select application ou du getATR
-                if (request.getAidToSelect() != null && aidCurrentlySelected == null) {
-                    fciDataSelected = connect(request.getAidToSelect());
-                } else if (!atrDefaultSelected) {
-                    fciDataSelected = new ApduResponse(
-                            ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
-                                    ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00})),
-                            true);
-                    atrDefaultSelected = true;
+                Pattern p = Pattern.compile(selectionMask);
+                String atr = ByteBufferUtils.toHex(ByteBuffer.wrap(card.getATR().getBytes()));
+                if (!p.matcher(atr).matches()) {
+                    logger.info("Protocol selection: unmatching SE: " + protocolFlag, "action",
+                            "pcsc_reader.transmit_actual");
+                    respElements.add(null); // add empty response
+                    continue; // try next request
                 }
             }
+            logger.info("Protocol selection: matching SE: " + protocolFlag, "action",
+                    "pcsc_reader.transmit_actual");
 
             List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
-            // florent: #82: I don't see the point of doing simple SE presence check here. We should
-            // either NOT check for SE element presence or directly throw an exception.
-            // if (isSEPresent()) {
             if (reqElement.getAidToSelect() != null && aidCurrentlySelected == null) {
                 fciDataSelected = connect(reqElement.getAidToSelect());
                 // fclairamb(2018-03-03): Is there a more elegant way to do this ?
@@ -194,11 +200,6 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                 atrDefaultSelected = true;
             }
 
-            // fclairamb(2018-03-03): Is there a more elegant way to do this ?
-            if (fciDataSelected.getStatusCode() != 0x9000) {
-                throw new InvalidMessageException("FCI failed !", fciDataSelected);
-            }
-
             for (ApduRequest apduRequest : reqElement.getApduRequests()) {
                 apduResponseList.add(transmit(apduRequest));
             }
@@ -210,11 +211,10 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             if (!reqElement.keepChannelOpen()) {
                 disconnect();
                 previouslyOpen = false;
+                break; // we do not go further, exit for loop
             } else {
                 previouslyOpen = true;
             }
-
-            // }
         }
         return new SeResponse(respElements);
     }
@@ -457,23 +457,12 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      * </ul>
      *
      * @param name Parameter name
-     * @param object Parameter object: string of map
+     * @param value Parameter value
      * @throws IOReaderException This method can fail when disabling the exclusive mode as it's
      *         executed instantly
      */
     @Override
-    public void setParameter(String name, String object) throws IOReaderException {
-
-        String value;
-        if (object == null) {
-            value = null;
-        } else {
-            if (object instanceof String) {
-                value = object.toString();
-            } else {
-                value = "<map>";
-            }
-        }
+    public void setParameter(String name, String value) throws IOReaderException {
         logger.info("PCSC: Set a parameter", "action", "pcsc_reader.set_parameter", "name", name,
                 "value", value);
         if (name == null) {
@@ -532,12 +521,13 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             }
         } else if (name.equals(SETTING_KEY_LOGGING)) {
             logging = Boolean.parseBoolean(value); // default is null and perfectly acceptable
-        }
-        /*
-         * else if (name.equals(SETTING_KEY_PROTOCOLS_MAP)) { protocolsMap = (Map<String, String>)
-         * object; }
-         */
-        else {
+        } else if (name.startsWith(SETTING_KEY_PO_SOLUTION_PREFIX)) {
+            if (value == null || value.length() == 0) {
+                this.protocolsMap.remove(value);
+            } else {
+                this.protocolsMap.put(name, value);
+            }
+        } else {
             throw new InconsistentParameterValueException("This parameter is unknown !", name,
                     value);
         }
@@ -572,12 +562,9 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
                 parameters.put(SETTING_KEY_THREAD_TIMEOUT, Long.toString(threadWaitTimeout));
             }
         }
-        return parameters;
-    }
 
-    @Override
-    public void setProtocols(Map<String, String> protocolsMap) {
-        this.protocolsMap = protocolsMap;
+
+        return parameters;
     }
 
     @Override
