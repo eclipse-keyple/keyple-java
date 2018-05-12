@@ -123,6 +123,17 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
         }
     }
 
+    /**
+     * Do the transmission of all needed request elements contained in the provided request
+     * according to the protocol flag selection logic. The response elements are returned in the
+     * response object. The request elements are ordered at application level and the responses
+     * match this order. When a request is not matching the current PO, the response elements pushed
+     * in the response object is set to null.
+     *
+     * @param request
+     * @return response
+     * @throws IOReaderException
+     */
     private SeResponse transmitActual(SeRequest request) throws IOReaderException {
         try {
             prepareAndConnectToTerminalAndSetChannel();
@@ -168,6 +179,13 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
             // if (isSEPresent()) {
             if (reqElement.getAidToSelect() != null && aidCurrentlySelected == null) {
                 fciDataSelected = connect(reqElement.getAidToSelect());
+                // fclairamb(2018-03-03): Is there a more elegant way to do this ?
+                if (fciDataSelected.getStatusCode() != 0x9000) {
+                    logger.info("Application selection failed!", "action",
+                            "pcsc_reader.transmit_actual");
+                    respElements.add(null); // add empty response
+                    continue; // app selection failed, let's try next request if any
+                }
             } else if (!atrDefaultSelected) {
                 fciDataSelected = new ApduResponse(
                         ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),

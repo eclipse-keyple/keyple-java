@@ -25,11 +25,6 @@ public class SeRequestElement {
     private String protocolFlag;
 
     /**
-     * Answer flag
-     */
-    private String answerFlag;
-
-    /**
      * the final logical channel status: if true, the SE reader keep active the logical channel of
      * the SE application after processing the group of APDU commands. If false, the SE reader will
      * close the logical channel of the SE application after processing the group of APDU commands
@@ -117,14 +112,6 @@ public class SeRequestElement {
 
     public void setProtocolFlag(String protocolFlag) {
         this.protocolFlag = protocolFlag;
-    }
-
-    public String getAnswerFlag() {
-        return answerFlag;
-    }
-
-    public void setAnswerFlag(String answerFlag) {
-        this.answerFlag = answerFlag;
     }
 
     @Override
