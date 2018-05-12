@@ -128,11 +128,6 @@ public class StubReader extends ObservableReader implements ConfigurableReader {
         return parameters;
     }
 
-    @Override
-    public void setProtocols(Map<String, String> protocolsMap) {
-        // we don't do anything with the protocols map at this stage
-    }
-
 
     private boolean test_WillTimeout = false;
     private boolean test_ApplicationError = false;
