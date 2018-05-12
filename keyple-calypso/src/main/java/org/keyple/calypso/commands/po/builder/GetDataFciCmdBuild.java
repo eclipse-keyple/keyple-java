@@ -8,7 +8,6 @@
 
 package org.keyple.calypso.commands.po.builder;
 
-import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.SendableInSession;
 import org.keyple.calypso.commands.po.AbstractPoCommandBuilder;
 import org.keyple.calypso.commands.po.CalypsoPoCommands;

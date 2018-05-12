@@ -164,9 +164,4 @@ public class StubReader extends ObservableReader implements ConfigurableReader {
         logger.debug("Test - set channelIsOpen to " + channelIsOpen);
         test_ChannelIsOpen = channelIsOpen;
     }
-
-    @Override
-    public void setProtocols(Map<String, String> protocolsMap) {
-
-    }
 }

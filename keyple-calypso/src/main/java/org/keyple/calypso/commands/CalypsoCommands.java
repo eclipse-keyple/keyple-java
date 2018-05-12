@@ -8,21 +8,6 @@
 
 package org.keyple.calypso.commands;
 
-import org.keyple.calypso.commands.csm.builder.CsmGetChallengeCmdBuild;
-import org.keyple.calypso.commands.csm.builder.DigestAuthenticateCmdBuild;
-import org.keyple.calypso.commands.csm.builder.DigestCloseCmdBuild;
-import org.keyple.calypso.commands.csm.builder.DigestInitCmdBuild;
-import org.keyple.calypso.commands.csm.builder.DigestUpdateCmdBuild;
-import org.keyple.calypso.commands.csm.builder.DigestUpdateMultipleCmdBuild;
-import org.keyple.calypso.commands.csm.builder.SelectDiversifierCmdBuild;
-import org.keyple.calypso.commands.csm.parser.CsmGetChallengeRespPars;
-import org.keyple.calypso.commands.csm.parser.DigestAuthenticateRespPars;
-import org.keyple.calypso.commands.csm.parser.DigestCloseRespPars;
-import org.keyple.calypso.commands.csm.parser.DigestInitRespPars;
-import org.keyple.calypso.commands.csm.parser.DigestUpdateMultipleRespPars;
-import org.keyple.calypso.commands.csm.parser.DigestUpdateRespPars;
-import org.keyple.calypso.commands.csm.parser.SelectDiversifierRespPars;
-import org.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.*;
 import org.keyple.calypso.commands.po.parser.*;

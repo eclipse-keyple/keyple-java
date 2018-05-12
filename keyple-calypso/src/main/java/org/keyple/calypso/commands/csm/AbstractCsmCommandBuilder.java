@@ -8,7 +8,6 @@
 
 package org.keyple.calypso.commands.csm;
 
-import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.commands.AbstractApduCommandBuilder;
 import org.keyple.commands.CommandsTable;
 import org.keyple.seproxy.ApduRequest;

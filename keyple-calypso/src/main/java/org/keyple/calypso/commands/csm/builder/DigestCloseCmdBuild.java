@@ -8,7 +8,6 @@
 
 package org.keyple.calypso.commands.csm.builder;
 
-import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.csm.AbstractCsmCommandBuilder;
 import org.keyple.calypso.commands.csm.CalypsoSmCommands;
 import org.keyple.calypso.commands.csm.CsmRevision;

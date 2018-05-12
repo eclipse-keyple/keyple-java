@@ -10,7 +10,6 @@ package org.keyple.calypso.commands.utils;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.keyple.seproxy.ApduRequest;
 import org.keyple.seproxy.ByteBufferUtils;

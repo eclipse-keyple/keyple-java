@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
-import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.CommandsTable;

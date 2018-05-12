@@ -9,7 +9,6 @@
 package org.keyple.calypso.commands.utils;
 
 import java.nio.ByteBuffer;
-import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.commands.CommandsTable;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
