@@ -24,7 +24,7 @@ import org.keyple.seproxy.exceptions.InvalidMessageException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public class PcscReader extends ObservableReader implements ConfigurableReader {
+public class PcscReader extends AbstractObservableReader implements ConfigurableReader {
 
     private static final ILogger logger = SLoggerFactory.getLogger(PcscReader.class);
     public static final String SETTING_KEY_PROTOCOL = "protocol";

@@ -10,8 +10,9 @@ package org.keyple.seproxy;
 
 
 /**
- * The Class ReaderEvent. This class is used to notify an event of a specific ObservableReader to
- * its registered ReaderObserver in case of IO Error, SE insertion or removal.
+ * The Class ReaderEvent. This class is used to notify an event of a specific
+ * AbstractObservableReader to its registered ReaderObserver in case of IO Error, SE insertion or
+ * removal.
  *
  * @author Ixxi
  */
@@ -31,7 +32,7 @@ public class ReaderEvent {
     }
 
     /** the reader pushing the notification. */
-    private ObservableReader reader;
+    private AbstractObservableReader reader;
 
     /** the type of the notified event. */
     private EventType event;
@@ -42,7 +43,7 @@ public class ReaderEvent {
      * @param reader the reader
      * @param event the event
      */
-    public ReaderEvent(ObservableReader reader, EventType event) {
+    public ReaderEvent(AbstractObservableReader reader, EventType event) {
         this.reader = reader;
         this.event = event;
     }
@@ -52,7 +53,7 @@ public class ReaderEvent {
      *
      * @return the reader notifying the event.
      */
-    public ObservableReader getReader() {
+    public AbstractObservableReader getReader() {
         return reader;
     }
 
