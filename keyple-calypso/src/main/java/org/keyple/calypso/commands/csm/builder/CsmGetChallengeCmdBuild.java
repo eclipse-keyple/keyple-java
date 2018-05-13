@@ -8,8 +8,8 @@
 
 package org.keyple.calypso.commands.csm.builder;
 
-import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.csm.AbstractCsmCommandBuilder;
+import org.keyple.calypso.commands.csm.CalypsoSmCommands;
 import org.keyple.calypso.commands.csm.CsmRevision;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
@@ -21,7 +21,7 @@ import org.keyple.seproxy.ApduRequest;
 public class CsmGetChallengeCmdBuild extends AbstractCsmCommandBuilder {
 
     /** The command reference. */
-    private static CalypsoCommands command = CalypsoCommands.CSM_GET_CHALLENGE;
+    private static CalypsoSmCommands command = CalypsoSmCommands.GET_CHALLENGE;
 
     /**
      * Instantiates a new CsmGetChallengeCmdBuild.

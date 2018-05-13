@@ -9,8 +9,8 @@
 package org.keyple.calypso.commands.csm.builder;
 
 import java.nio.ByteBuffer;
-import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.calypso.commands.csm.AbstractCsmCommandBuilder;
+import org.keyple.calypso.commands.csm.CalypsoSmCommands;
 import org.keyple.calypso.commands.csm.CsmRevision;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
@@ -26,7 +26,7 @@ import org.keyple.seproxy.ApduRequest;
 public class SelectDiversifierCmdBuild extends AbstractCsmCommandBuilder {
 
     /** The command. */
-    private static CalypsoCommands command = CalypsoCommands.CSM_SELECT_DIVERSIFIER;
+    private static CalypsoSmCommands command = CalypsoSmCommands.SELECT_DIVERSIFIER;
 
     /**
      * Instantiates a new SelectDiversifierCmdBuild.

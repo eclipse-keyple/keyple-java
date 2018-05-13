@@ -159,6 +159,4 @@ public class StubReader extends AbstractObservableReader implements Configurable
         logger.debug("Test - set channelIsOpen to " + channelIsOpen);
         test_ChannelIsOpen = channelIsOpen;
     }
-
-
 }

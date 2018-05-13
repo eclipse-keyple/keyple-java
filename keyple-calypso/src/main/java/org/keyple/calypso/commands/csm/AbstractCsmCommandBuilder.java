@@ -8,8 +8,8 @@
 
 package org.keyple.calypso.commands.csm;
 
-import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.commands.AbstractApduCommandBuilder;
+import org.keyple.commands.CommandsTable;
 import org.keyple.seproxy.ApduRequest;
 
 /**
@@ -22,7 +22,7 @@ public abstract class AbstractCsmCommandBuilder extends AbstractApduCommandBuild
 
     protected CsmRevision defaultRevision = CsmRevision.S1D;// 94
 
-    public AbstractCsmCommandBuilder(CalypsoCommands reference, ApduRequest request) {
+    public AbstractCsmCommandBuilder(CommandsTable reference, ApduRequest request) {
         super(reference, request);
     }
 }
