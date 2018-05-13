@@ -9,13 +9,13 @@
 package org.keyple.calypso.commands.po.parser;
 
 import java.nio.ByteBuffer;
-import org.keyple.commands.ApduResponseParser;
+import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
 /**
  * PO Get challenge response parser. See specs: Calypso / page 108 / 9.54 - Get challenge
  */
-public class PoGetChallengeRespPars extends ApduResponseParser {
+public class PoGetChallengeRespPars extends AbstractApduResponseParser {
 
     /**
      * Instantiates a new PoGetChallengeRespPars.

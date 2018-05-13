@@ -14,7 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.CloseSessionCmdBuild;
-import org.keyple.commands.ApduCommandBuilder;
+import org.keyple.commands.AbstractApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
@@ -27,7 +27,7 @@ public class CloseSessionCmdBuidTest {
                 0x00, (byte) 0x04, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
         ByteBuffer terminalSessionSignature =
                 ByteBuffer.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
-        ApduCommandBuilder apduCommandBuilder =
+        AbstractApduCommandBuilder apduCommandBuilder =
                 new CloseSessionCmdBuild(PoRevision.REV2_4, false, terminalSessionSignature);
         ApduRequest reqApdu = apduCommandBuilder.getApduRequest();
 

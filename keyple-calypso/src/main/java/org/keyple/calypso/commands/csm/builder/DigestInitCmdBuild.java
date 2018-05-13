@@ -10,18 +10,16 @@ package org.keyple.calypso.commands.csm.builder;
 
 import java.nio.ByteBuffer;
 import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.calypso.commands.csm.CsmCommandBuilder;
+import org.keyple.calypso.commands.csm.AbstractCsmCommandBuilder;
 import org.keyple.calypso.commands.csm.CsmRevision;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
 /**
- * This class provides the dedicated constructor to build the CSM Digest Init APDU command.
- *
- * @author Ixxi
+ * Builder for the CSM Digest Init APDU command.
  */
-public class DigestInitCmdBuild extends CsmCommandBuilder {
+public class DigestInitCmdBuild extends AbstractCsmCommandBuilder {
 
     /**
      * The command.

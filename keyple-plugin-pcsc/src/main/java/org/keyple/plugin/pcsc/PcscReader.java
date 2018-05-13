@@ -24,7 +24,7 @@ import org.keyple.seproxy.exceptions.InvalidMessageException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public class PcscReader extends ObservableReader implements ConfigurableReader {
+public class PcscReader extends AbstractObservableReader implements ConfigurableReader {
 
     private static final ILogger logger = SLoggerFactory.getLogger(PcscReader.class);
     public static final String SETTING_KEY_PROTOCOL = "protocol";
@@ -42,9 +42,9 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
     public static final String SETTING_KEY_THREAD_TIMEOUT = "thread_wait_timeout";
     public static final String SETTING_KEY_LOGGING = "logging";
     public static final String SETTING_KEY_PO_SOLUTION_PREFIX = "po_solution"; // TODO To factorize
-                                                                               // in the common
-                                                                               // abstract reader
-                                                                               // class?
+    // in the common
+    // abstract reader
+    // class?
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 5000;
 
     private final CardTerminal terminal;
@@ -144,7 +144,7 @@ public class PcscReader extends ObservableReader implements ConfigurableReader {
      * response object. The request elements are ordered at application level and the responses
      * match this order. When a request is not matching the current PO, the response elements pushed
      * in the response object is set to null.
-     * 
+     *
      * @param request
      * @return response
      * @throws IOReaderException

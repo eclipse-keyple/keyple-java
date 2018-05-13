@@ -9,19 +9,16 @@
 package org.keyple.calypso.commands.csm.builder;
 
 import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.calypso.commands.csm.CsmCommandBuilder;
+import org.keyple.calypso.commands.csm.AbstractCsmCommandBuilder;
 import org.keyple.calypso.commands.csm.CsmRevision;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
 /**
- * This class provides the dedicated constructor to build the CSM Digest Close APDU command.
- *
- * @author Ixxi
- *
+ * Builder for the CSM Digest Close APDU command.
  */
-public class DigestCloseCmdBuild extends CsmCommandBuilder {
+public class DigestCloseCmdBuild extends AbstractCsmCommandBuilder {
 
     /** The command. */
     private static CalypsoCommands command = CalypsoCommands.CSM_DIGEST_CLOSE;

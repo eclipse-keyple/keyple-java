@@ -25,8 +25,8 @@ import org.keyple.calypso.commands.csm.parser.SelectDiversifierRespPars;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.*;
 import org.keyple.calypso.commands.po.parser.*;
-import org.keyple.commands.ApduCommandBuilder;
-import org.keyple.commands.ApduResponseParser;
+import org.keyple.commands.AbstractApduCommandBuilder;
+import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.commands.CommandsTable;
 
 /**
@@ -109,10 +109,10 @@ public enum CalypsoCommands implements CommandsTable {
     private byte instructionbyte;
 
     /** The command builder class. */
-    private Class<? extends ApduCommandBuilder> commandBuilderClass;
+    private Class<? extends AbstractApduCommandBuilder> commandBuilderClass;
 
     /** The response parser class. */
-    private Class<? extends ApduResponseParser> responseParserClass;
+    private Class<? extends AbstractApduResponseParser> responseParserClass;
 
     /**
      * The generic constructor of CalypsoCommands.
@@ -124,8 +124,8 @@ public enum CalypsoCommands implements CommandsTable {
      * @param responseParserClass the response parser class
      */
     CalypsoCommands(CommandType commandType, String name, byte instructionByte,
-            Class<? extends ApduCommandBuilder> commandBuilderClass,
-            Class<? extends ApduResponseParser> responseParserClass) {
+            Class<? extends AbstractApduCommandBuilder> commandBuilderClass,
+            Class<? extends AbstractApduResponseParser> responseParserClass) {
         this.commandType = commandType;
         this.name = name;
         this.instructionbyte = instructionByte;
@@ -165,7 +165,7 @@ public enum CalypsoCommands implements CommandsTable {
      *
      * @return the corresponding command builder class
      */
-    public Class<? extends ApduCommandBuilder> getCommandBuilderClass() {
+    public Class<? extends AbstractApduCommandBuilder> getCommandBuilderClass() {
         return commandBuilderClass;
     }
 
@@ -174,7 +174,7 @@ public enum CalypsoCommands implements CommandsTable {
      *
      * @return the corresponding response parser class
      */
-    public Class<? extends ApduResponseParser> getResponseParserClass() {
+    public Class<? extends AbstractApduResponseParser> getResponseParserClass() {
         return responseParserClass;
     }
 

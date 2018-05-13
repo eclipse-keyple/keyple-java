@@ -14,7 +14,7 @@ import org.hamcrest.core.IsNot;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.csm.parser.SelectDiversifierRespPars;
-import org.keyple.commands.ApduResponseParser;
+import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.SeResponse;
 import org.mockito.Mockito;
@@ -38,7 +38,7 @@ public class SelectDiversifierRespParsTest {
         list2.add(apduResponse2);
 
         Mockito.when(seResponse.getApduResponses()).thenReturn(list);
-        ApduResponseParser apduResponseParser =
+        AbstractApduResponseParser apduResponseParser =
                 new SelectDiversifierRespPars(seResponse.getApduResponses().get(0));
 
         Assert.assertEquals(0x9000, apduResponseParser.getApduResponse().getStatusCode());

@@ -10,19 +10,19 @@ package org.keyple.calypso.commands.po.parser;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.keyple.commands.ApduResponseParser;
+import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
 /**
  * Update records response parser. See specs: Calypso / page 96 / 9.4.1.1 - Update record
  */
-public class AppendRecordRespPars extends ApduResponseParser {
+public class AppendRecordRespPars extends AbstractApduResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
     static {
         Map<Integer, StatusProperties> m =
-                new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);
+                new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
         m.put(0x6B00, new StatusProperties(false, "P1 or P2 vaue not supported."));
         m.put(0x6700, new StatusProperties(false, "Lc value not supported."));
         m.put(0x6400, new StatusProperties(false, "Too many modifications in session."));

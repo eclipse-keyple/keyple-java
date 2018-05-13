@@ -15,7 +15,7 @@ import org.keyple.seproxy.ApduResponse;
 /**
  * Base class for parsing APDU
  */
-public abstract class ApduResponseParser {
+public abstract class AbstractApduResponseParser {
 
     /** the byte array APDU response. */
     protected final ApduResponse response;
@@ -45,7 +45,7 @@ public abstract class ApduResponseParser {
      *
      * @param response response to parse
      */
-    public ApduResponseParser(ApduResponse response) {
+    public AbstractApduResponseParser(ApduResponse response) {
         this.response = response;
     }
 

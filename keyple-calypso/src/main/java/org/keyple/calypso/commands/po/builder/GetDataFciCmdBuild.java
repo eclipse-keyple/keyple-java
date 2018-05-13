@@ -9,9 +9,9 @@
 package org.keyple.calypso.commands.po.builder;
 
 import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.calypso.commands.po.PoCommandBuilder;
+import org.keyple.calypso.commands.SendableInSession;
+import org.keyple.calypso.commands.po.AbstractPoCommandBuilder;
 import org.keyple.calypso.commands.po.PoRevision;
-import org.keyple.calypso.commands.po.SendableInSession;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
@@ -23,7 +23,7 @@ import org.keyple.seproxy.ApduRequest;
  *
  * @author Ixxi
  */
-public class GetDataFciCmdBuild extends PoCommandBuilder implements SendableInSession {
+public class GetDataFciCmdBuild extends AbstractPoCommandBuilder implements SendableInSession {
 
     private static CalypsoCommands command = CalypsoCommands.PO_GET_DATA_FCI;
 

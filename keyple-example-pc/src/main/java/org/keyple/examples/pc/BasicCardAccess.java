@@ -13,7 +13,7 @@ import java.util.List;
 import org.keyple.example.common.BasicCardAccessManager;
 import org.keyple.plugin.pcsc.PcscPlugin;
 import org.keyple.seproxy.*;
-import org.keyple.util.event.Observable;
+import org.keyple.util.Observable;
 
 public class BasicCardAccess {
     private static final Object sync = new Object();
@@ -29,8 +29,8 @@ public class BasicCardAccess {
             for (final ProxyReader pr : rp.getReaders()) {
                 System.out
                         .println("Reader name: " + pr.getName() + ", present: " + pr.isSEPresent());
-                if (pr instanceof ObservableReader) {
-                    ((ObservableReader) pr).addObserver(new ReaderObserver() {
+                if (pr instanceof AbstractObservableReader) {
+                    ((AbstractObservableReader) pr).addObserver(new ReaderObserver() {
                         @Override
                         public void update(Observable<? extends ReaderEvent> observable,
                                 ReaderEvent event) {
@@ -40,7 +40,7 @@ public class BasicCardAccess {
                         }
                     });
                     /*
-                     * ((ObservableReader) pr).addObserver(new ReaderObserver() {
+                     * ((AbstractObservableReader) pr).addObserver(new ReaderObserver() {
                      * 
                      * @Override public void notify(ReaderEvent event) { if (event.getEventType() ==
                      * ReaderEvent.EventType.SE_INSERTED) { parseInfo(pr); } } });

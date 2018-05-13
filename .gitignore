@@ -6,3 +6,4 @@
 **/.gradle
 **/out/production
 **/gradle/wrapper/*
+gradlew*

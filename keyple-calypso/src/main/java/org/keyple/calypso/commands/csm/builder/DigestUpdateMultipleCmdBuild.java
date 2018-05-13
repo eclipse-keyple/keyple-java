@@ -10,7 +10,7 @@ package org.keyple.calypso.commands.csm.builder;
 
 import java.nio.ByteBuffer;
 import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.calypso.commands.csm.CsmCommandBuilder;
+import org.keyple.calypso.commands.csm.AbstractCsmCommandBuilder;
 import org.keyple.calypso.commands.csm.CsmRevision;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
@@ -23,7 +23,7 @@ import org.keyple.commands.InconsistentCommandException;
  * @author Ixxi
  *
  */
-public class DigestUpdateMultipleCmdBuild extends CsmCommandBuilder {
+public class DigestUpdateMultipleCmdBuild extends AbstractCsmCommandBuilder {
 
     /** The command. */
     private static CalypsoCommands command = CalypsoCommands.CSM_DIGEST_UPDATE_MULTIPLE;

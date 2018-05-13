@@ -16,10 +16,16 @@ import java.util.List;
  * Aggregates the elements of a request to a local or remote SE Reader, sent through a ProxyReader,
  * in order to open a logical channel with a SE application to select, and to transfer a group of
  * APDU commands to run.
- * 
+ *
  * @see SeResponse
  */
 public class SeRequest {
+
+    /**
+     * Name of the target for which this request is dedicated. This string is used to select the
+     * filter defined by the PROTOCOLS MAP parameter.
+     */
+    private String targetSelector;
 
     /**
      * List of request elements. Each {@link SeRequestElement} will result in a
@@ -59,7 +65,7 @@ public class SeRequest {
 
     /**
      * Constructor
-     * 
+     *
      * @param elements List of {@link SeRequestElement}s
      */
     public SeRequest(List<SeRequestElement> elements) {
@@ -68,7 +74,7 @@ public class SeRequest {
 
     /**
      * List of request elements
-     * 
+     *
      * @return List of request elements
      */
     public List<SeRequestElement> getElements() {
@@ -84,7 +90,7 @@ public class SeRequest {
 
     /**
      * See {@link SeRequestElement#getApduRequests()}
-     * 
+     *
      * @deprecated Provided only as a compatibility layer with the previous architecture
      */
     @Deprecated
@@ -94,7 +100,7 @@ public class SeRequest {
 
     /**
      * See {@link SeRequestElement#getAidToSelect()}
-     * 
+     *
      * @deprecated Provided only as a compatibility layer with the previous architecture
      */
     @Deprecated
@@ -104,12 +110,30 @@ public class SeRequest {
 
     /**
      * See {@link SeRequestElement#keepChannelOpen()}
-     * 
+     *
      * @deprecated Provided only as a compatibility layer with the previous architecture
      */
     @Deprecated
     public boolean keepChannelOpen() {
         return getSingleElement().keepChannelOpen();
+    }
+
+    /**
+     * Set the answer filter mask
+     *
+     * @param targetSelector
+     */
+    public void setTargetSelector(String targetSelector) {
+        this.targetSelector = targetSelector;
+    }
+
+    /**
+     * Get the answer filter mask
+     *
+     * @return the mask string
+     */
+    public String getTargetSelector() {
+        return targetSelector;
     }
 
     @Override

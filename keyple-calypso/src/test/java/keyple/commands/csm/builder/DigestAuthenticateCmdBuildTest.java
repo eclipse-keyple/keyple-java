@@ -12,11 +12,10 @@ import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.csm.builder.DigestAuthenticateCmdBuild;
-import org.keyple.commands.ApduCommandBuilder;
+import org.keyple.commands.AbstractApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 import org.keyple.seproxy.ByteBufferUtils;
-import org.keyple.seproxy.exceptions.*;
 
 public class DigestAuthenticateCmdBuildTest {
 
@@ -27,7 +26,8 @@ public class DigestAuthenticateCmdBuildTest {
         ByteBuffer request = ByteBuffer.wrap(
                 new byte[] {(byte) 0x94, (byte) 0x82, 0x00, 0x00, 0x04, 0x00, 0x01, 0x02, 0x03});
 
-        ApduCommandBuilder apduCommandBuilder = new DigestAuthenticateCmdBuild(null, signaturePO);
+        AbstractApduCommandBuilder apduCommandBuilder =
+                new DigestAuthenticateCmdBuild(null, signaturePO);
         ApduRequest ApduRequest = apduCommandBuilder.getApduRequest();
 
         Assert.assertEquals(ByteBufferUtils.toHex(request),

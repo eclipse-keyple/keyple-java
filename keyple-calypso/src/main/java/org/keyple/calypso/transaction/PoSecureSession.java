@@ -11,21 +11,21 @@ package org.keyple.calypso.transaction;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import org.keyple.calypso.commands.SendableInSession;
 import org.keyple.calypso.commands.csm.CsmRevision;
 import org.keyple.calypso.commands.csm.builder.*;
 import org.keyple.calypso.commands.csm.parser.CsmGetChallengeRespPars;
 import org.keyple.calypso.commands.csm.parser.DigestAuthenticateRespPars;
 import org.keyple.calypso.commands.csm.parser.DigestCloseRespPars;
-import org.keyple.calypso.commands.po.PoCommandBuilder;
+import org.keyple.calypso.commands.po.AbstractPoCommandBuilder;
 import org.keyple.calypso.commands.po.PoRevision;
-import org.keyple.calypso.commands.po.SendableInSession;
 import org.keyple.calypso.commands.po.builder.AbstractOpenSessionCmdBuild;
 import org.keyple.calypso.commands.po.builder.CloseSessionCmdBuild;
 import org.keyple.calypso.commands.po.parser.AbstractOpenSessionRespPars;
 import org.keyple.calypso.commands.po.parser.CloseSessionRespPars;
 import org.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 import org.keyple.calypso.commands.utils.ApduUtils;
-import org.keyple.commands.ApduCommandBuilder;
+import org.keyple.commands.AbstractApduCommandBuilder;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.*;
 import com.github.structlog4j.ILogger;
@@ -71,7 +71,8 @@ public class PoSecureSession {
     private ByteBuffer poCalypsoInstanceSerial;
 
     /** The PO Calypso Revision. */
-    public PoRevision poRevision = PoRevision.REV3_1;// PoCommandBuilder.defaultRevision; // TODO =>
+    public PoRevision poRevision = PoRevision.REV3_1;// AbstractPoCommandBuilder.defaultRevision; //
+                                                     // TODO =>
                                                      // add a getter
 
     /** The CSM default revision. */
@@ -153,12 +154,12 @@ public class PoSecureSession {
          * ByteBufferUtils.toHex(poCalypsoInstanceSerial));
          */
         // Define CSM Select Diversifier command
-        ApduCommandBuilder selectDiversifier =
+        AbstractApduCommandBuilder selectDiversifier =
                 new SelectDiversifierCmdBuild(this.csmRevision, poCalypsoInstanceSerial);
         csmApduRequestList.add(selectDiversifier.getApduRequest());
 
         // Define CSM Get Challenge command
-        ApduCommandBuilder csmGetChallenge =
+        AbstractApduCommandBuilder csmGetChallenge =
                 new CsmGetChallengeCmdBuild(this.csmRevision, (byte) 0x04);
         csmApduRequestList.add(csmGetChallenge.getApduRequest());
         /*
@@ -299,7 +300,7 @@ public class PoSecureSession {
                 kif = (byte) 0x30;
             }
         }
-        ApduCommandBuilder digestInit = new DigestInitCmdBuild(csmRevision, false,
+        AbstractApduCommandBuilder digestInit = new DigestInitCmdBuild(csmRevision, false,
                 poRevision.equals(PoRevision.REV3_2), defaultKeyIndex, kif,
                 poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
         logger.info("Opening: CSM Request", "action", "po_secure_session.open_csm_digest_init",
@@ -380,8 +381,9 @@ public class PoSecureSession {
         if (poCommandsInsideSession != null) {
             for (SendableInSession cmd : poCommandsInsideSession) {
                 // retour.add(cmd.getAPDURequest()); TODO => suppress all methods getAPDURequest()
-                // from SendableInSession & most of PoCommandBuilder extensions
-                retour.add(((PoCommandBuilder) cmd).getApduRequest()); // Il fallait faire un "CAST"
+                // from SendableInSession & most of AbstractPoCommandBuilder extensions
+                retour.add(((AbstractPoCommandBuilder) cmd).getApduRequest()); // Il fallait faire
+                                                                               // un "CAST"
             }
         }
         return retour;
@@ -519,7 +521,7 @@ public class PoSecureSession {
     // ratification étant un nouveau processOpening)
     public SeResponse processClosing(List<SendableInSession> poCommandsInsideSession,
             List<ApduResponse> poAnticipatedResponseInsideSession,
-            PoCommandBuilder ratificationCommand) throws IOReaderException {
+            AbstractPoCommandBuilder ratificationCommand) throws IOReaderException {
 
         // Get PO ApduRequest List from SendableInSession List - for the first PO exchange
         List<ApduRequest> poApduRequestList =
@@ -643,7 +645,7 @@ public class PoSecureSession {
         sessionCardSignature = poCloseSessionPars.getSignatureLo();
 
         // Build CSM Digest Authenticate command
-        ApduCommandBuilder digestAuth =
+        AbstractApduCommandBuilder digestAuth =
                 new DigestAuthenticateCmdBuild(this.csmRevision, sessionCardSignature);
         csmApduRequestList_2.add(digestAuth.getApduRequest());
 

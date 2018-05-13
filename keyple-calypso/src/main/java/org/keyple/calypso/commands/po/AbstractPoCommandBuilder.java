@@ -9,17 +9,17 @@
 package org.keyple.calypso.commands.po;
 
 import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.commands.ApduCommandBuilder;
+import org.keyple.commands.AbstractApduCommandBuilder;
 import org.keyple.seproxy.ApduRequest;
 
 /**
  * Portable Object command builder
  */
-public abstract class PoCommandBuilder extends ApduCommandBuilder {
+public abstract class AbstractPoCommandBuilder extends AbstractApduCommandBuilder {
 
     protected PoRevision defaultRevision = PoRevision.REV3_1;
 
-    public PoCommandBuilder(CalypsoCommands reference, ApduRequest request) {
+    public AbstractPoCommandBuilder(CalypsoCommands reference, ApduRequest request) {
         super(reference, request);
     }
 }
