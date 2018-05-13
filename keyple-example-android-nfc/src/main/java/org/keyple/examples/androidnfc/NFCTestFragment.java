@@ -16,7 +16,7 @@ import org.keyple.example.common.BasicCardAccessManager;
 import org.keyple.example.common.KeepOpenCardAccessManager;
 import org.keyple.plugin.androidnfc.AndroidNfcFragment;
 import org.keyple.plugin.androidnfc.AndroidNfcPlugin;
-import org.keyple.seproxy.ObservableReader;
+import org.keyple.seproxy.AbstractObservableReader;
 import org.keyple.seproxy.ProxyReader;
 import org.keyple.seproxy.ReaderEvent;
 import org.keyple.seproxy.ReaderObserver;
@@ -90,7 +90,7 @@ public class NFCTestFragment extends Fragment
             // define task as an observer for ReaderEvents
             Log.d(TAG, "Define this view as an observer for ReaderEvents");
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
-            ((ObservableReader) reader).addObserver(this);
+            ((AbstractObservableReader) reader).addObserver(this);
 
             initBasicCardAccessTest();
 
@@ -258,7 +258,7 @@ public class NFCTestFragment extends Fragment
             Log.d(TAG, "Remove task as an observer for ReaderEvents");
             SeProxyService seProxyService = SeProxyService.getInstance();
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
-            ((ObservableReader) reader).removeObserver(this);
+            ((AbstractObservableReader) reader).removeObserver(this);
 
 
             // destroy AndroidNFC fragment
