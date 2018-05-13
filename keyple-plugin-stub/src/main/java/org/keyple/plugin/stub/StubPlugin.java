@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.keyple.seproxy.ObservableReader;
+import org.keyple.seproxy.AbstractObservableReader;
 import org.keyple.seproxy.ReadersPlugin;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import com.github.structlog4j.ILogger;
@@ -22,7 +22,8 @@ public final class StubPlugin implements ReadersPlugin {
 
     private static final StubPlugin uniqueInstance = new StubPlugin();
 
-    private final Map<String, ObservableReader> readers = new HashMap<String, ObservableReader>();
+    private final Map<String, AbstractObservableReader> readers =
+            new HashMap<String, AbstractObservableReader>();
 
     private static final ILogger logger = SLoggerFactory.getLogger(StubPlugin.class);
 
@@ -44,7 +45,7 @@ public final class StubPlugin implements ReadersPlugin {
     }
 
     @Override
-    public List<ObservableReader> getReaders() throws IOReaderException {
+    public List<AbstractObservableReader> getReaders() throws IOReaderException {
         if (readers.size() == 0) {
             logger.info("Stub Reader list is empty, adding one reader");
             StubReader reader = new StubReader();

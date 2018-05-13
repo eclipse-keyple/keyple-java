@@ -14,16 +14,12 @@ import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
 /**
- * The Interface ObservableReader. In order to notify a ticketing application in case of specific
- * reader events, the SE Proxy implements the ‘Observer’ design pattern. The ObservableReader object
- * is optionally proposed by plugins for readers able to notify events in case of IO Error, SE
- * Insertion or removal.
- *
- * @author Ixxi
+ * Abstract definition of an observable reader.
  */
-public abstract class ObservableReader extends Observable<ReaderEvent> implements ProxyReader {
+public abstract class AbstractObservableReader extends Observable<ReaderEvent>
+        implements ProxyReader {
 
-    private static final ILogger logger = SLoggerFactory.getLogger(ObservableReader.class);
+    private static final ILogger logger = SLoggerFactory.getLogger(AbstractObservableReader.class);
 
     /**
      * Add an observer to a terminal reader.
@@ -34,7 +30,7 @@ public abstract class ObservableReader extends Observable<ReaderEvent> implement
      * @param observer Observer to notify
      */
     public void addObserver(Observable.Observer<? super ReaderEvent> observer) {
-        logger.info("ObservableReader: Adding an observer", "action",
+        logger.info("AbstractObservableReader: Adding an observer", "action",
                 "observable_reader.add_observer", "readerName", getName());
         super.addObserver(observer);
     }
@@ -45,21 +41,21 @@ public abstract class ObservableReader extends Observable<ReaderEvent> implement
      * @param observer Observer to stop notifying
      */
     public void removeObserver(Observable.Observer<? super ReaderEvent> observer) {
-        logger.info("ObservableReader: Deleting an observer", "action",
+        logger.info("AbstractObservableReader: Deleting an observer", "action",
                 "observable_reader.delete_observer", "readerName", getName());
         super.removeObserver(observer);
     }
 
     /**
      * This method shall be called only from a SE Proxy plugin by a reader implementing
-     * ObservableReader
+     * AbstractObservableReader
      * 
-     * push a ReaderEvent of the selected ObservableReader to its registered ReaderObserver.
+     * push a ReaderEvent of the selected AbstractObservableReader to its registered ReaderObserver.
      *
      * @param event the event
      */
     public final void notifyObservers(ReaderEvent event) {
-        logger.info("ObservableReader: Notifying of an event", "action",
+        logger.info("AbstractObservableReader: Notifying of an event", "action",
                 "observable_reader.notify_observers", "event", event, "readerName", getName());
         setChanged();
         super.notifyObservers(event);

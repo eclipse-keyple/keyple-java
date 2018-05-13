@@ -171,7 +171,7 @@ public class KeypleTest_ObservablePoTransaction implements Observable.Observer<R
         observer.csmReader = csmReader;
 
         // Set terminal as Observer of the first reader
-        ((ObservableReader) poReader).addObserver(observer);
+        ((AbstractObservableReader) poReader).addObserver(observer);
         synchronized (waitForEnd) {
             waitForEnd.wait();
         }
