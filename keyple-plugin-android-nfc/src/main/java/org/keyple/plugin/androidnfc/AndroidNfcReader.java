@@ -16,7 +16,7 @@ import java.util.List;
 import org.keyple.seproxy.ApduRequest;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ByteBufferUtils;
-import org.keyple.seproxy.ObservableReader;
+import org.keyple.seproxy.AbstractObservableReader;
 import org.keyple.seproxy.ReaderEvent;
 import org.keyple.seproxy.SeRequest;
 import org.keyple.seproxy.SeResponse;
@@ -32,7 +32,7 @@ import android.util.Log;
  * {@link org.keyple.seproxy.ProxyReader} implementation for the communication with the ISO Card by
  * the @{@link NfcAdapter} of the Android system
  */
-public class AndroidNfcReader extends ObservableReader implements NfcAdapter.ReaderCallback {
+public class AndroidNfcReader extends AbstractObservableReader implements NfcAdapter.ReaderCallback {
 
     private final String mName = "AndroidNfcReader";
     public static final String TAG = "AndroidNfcReader";
