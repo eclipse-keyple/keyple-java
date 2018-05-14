@@ -229,10 +229,14 @@ public class PcscReader extends AbstractObservableReader implements Configurable
             elementIndex++;
             if (!reqElement.keepChannelOpen()) {
                 if (lastElementIndex == elementIndex) {
+                    // close the physical channel after the last request
                     disconnect();
                 }
             } else {
                 previouslyOpen = true;
+                // when keepChannelOpen is true, we stop after the first matching requestElement
+                // we exit the for loop here
+                break;
             }
         }
         return new SeResponse(respElements);
