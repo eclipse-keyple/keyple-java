@@ -10,13 +10,13 @@ package org.keyple.plugin.androidnfc;
 
 import java.io.IOException;
 import android.nfc.Tag;
-import android.nfc.tech.IsoDep;
+import android.nfc.tech.MifareClassic;
 
 
-public class IsoDepTransceiver extends TagTransceiver {
+public class MifareClassicTransceiver extends TagTransceiver {
 
 
-    private final IsoDep tag;
+    private final MifareClassic tag;
 
     @Override
     public int getMaxTransceiveLength() {
@@ -25,13 +25,12 @@ public class IsoDepTransceiver extends TagTransceiver {
 
     @Override
     public String getTech() {
-        return "android.nfc.tech.IsoDep";
+        return "android.nfc.tech.MifareClassic";
     }
 
-    IsoDepTransceiver(Tag tag) {
-        this.tag = IsoDep.get(tag);
+    MifareClassicTransceiver(Tag tag) {
+        this.tag = MifareClassic.get(tag);
     }
-
 
     @Override
     public byte[] transceive(byte[] data) throws IOException {
@@ -55,6 +54,7 @@ public class IsoDepTransceiver extends TagTransceiver {
 
     @Override
     public boolean isConnected() {
+
         return tag.isConnected();
     }
 }

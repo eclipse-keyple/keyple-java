@@ -35,14 +35,12 @@ import android.util.Log;
  */
 public class AndroidNfcReader extends ObservableReader implements NfcAdapter.ReaderCallback {
 
-    private final String mName = "AndroidNfcReader";
     private static final String TAG = "AndroidNfcReader";
 
-    //
-    private static TagTransceiver tagTransceiver;
-    private static Tag currentTag;
+    // keep state between session if required
+    private TagTransceiver tagTransceiver;
+    private ByteBuffer previousOpenApplication = null;
 
-    private final List<ByteBuffer> openChannels = new ArrayList<ByteBuffer>();
 
     /**
      * Private constructor
@@ -72,7 +70,8 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
 
     @Override
     public String getName() {
-        return this.mName;
+
+        return "AndroidNfcReader";
     }
 
 
@@ -85,7 +84,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     public void onTagDiscovered(Tag tag) {
 
         Log.i(TAG, "Received Tag Discovered event " + printTagId());
-        processTag(tag);
+        connectTag(tag);
     }
 
 
@@ -95,8 +94,8 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     }
 
     /**
-     * Transmit {@link SeRequest} to the connected Tag Supports protocol argument to filterProtocol
-     * commands for the right connected Tag
+     * Transmit {@link SeRequest} to the connected Tag Supports protocol argument to
+     * filterByProtocol commands for the right connected Tag
      * 
      * @param seRequest the se application request
      * @return {@link SeResponse} : response from the transmitted request
@@ -106,72 +105,68 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
         Log.i(TAG, "Calling transmit on Android NFC Reader");
         Log.d(TAG, "Size of APDU Requests : " + String.valueOf(seRequest.getElements().size()));
 
-        SeRequest seApplicationRequest = filterProtocol(seRequest);
-
-
+        // init response
         List<SeResponseElement> seResponseElements = new ArrayList<SeResponseElement>();
 
-        try {
+        // Filter requestElements whom protocol matches the current tag
+        List<SeRequestElement> seRequestElements = filterByProtocol(seRequest.getElements());
+
+        // no seRequestElements are left after filtering
+        if (seRequestElements.size() < 1) {
+            disconnectTag();
+            return new SeResponse(seResponseElements);
+
+        }
 
 
-            if (isSEPresent()) {
+        // process the request elements
+        for (int i = 0; i < seRequestElements.size(); i++) {
 
-                for (SeRequestElement seRequestElement : seApplicationRequest.getElements()) {
+            SeRequestElement seRequestElement = seRequestElements.get(i);
 
-                    // init
-                    List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
-                    ApduResponse fciResponse = null;
-                    Boolean channelPreviouslyOpen = true;
+            // init response
+            List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
+            ApduResponse fciResponse = null;
 
-                    try {
+            try {
 
-                        // Checking of the presence of the AID request in requests group
-                        ByteBuffer aid = seRequestElement.getAidToSelect();
+                // Checking of the presence of the AID request in requests group
+                ByteBuffer aid = seRequestElement.getAidToSelect();
 
-                        // Open the application channel if not open yet
-                        if (!openChannels.contains(aid)) {
-                            Log.i(TAG, "Connecting to application : " + aid);
-                            channelPreviouslyOpen = false;
-                            fciResponse =
-                                    this.connectApplication(seRequestElement.getAidToSelect());
-                        }
-
-                        // Send all apduRequest
-                        for (ApduRequest apduRequest : seRequestElement.getApduRequests()) {
-                            Log.i(TAG, getName() + " : Sending : "
-                                    + ByteBufferUtils.toHex(apduRequest.getBuffer()));
-                            apduResponses.add(sendAPDUCommand(apduRequest.getBuffer()));
-                        }
-
-                        // Close channel if asked
-                        if (!seRequestElement.keepChannelOpen()) {
-                            disconnectApplication(seRequestElement.getAidToSelect());
-                        }
-
-                    } catch (IOException e) {
-                        Log.e(TAG, "Error executing command");
-                        e.printStackTrace();
-                        apduResponses.add(null);// add empty response
-                    }
-
-
-                    // Add ResponseElements to global SeResponse
-                    SeResponseElement out = new SeResponseElement(channelPreviouslyOpen,
-                            fciResponse, apduResponses);
-                    seResponseElements.add(out);
-
+                // Open the application channel if not open yet
+                if (previousOpenApplication == null || previousOpenApplication != aid) {
+                    Log.i(TAG, "Connecting to application : " + aid);
+                    fciResponse = this.connectApplication(seRequestElement.getAidToSelect());
                 }
 
-            } else {
-                Log.w(TAG, "SE is not present");
+                // Send all apduRequest
+                for (ApduRequest apduRequest : seRequestElement.getApduRequests()) {
+                    apduResponses.add(sendAPDUCommand(apduRequest.getBuffer()));
+                }
 
+                // Add ResponseElements to global SeResponse
+                SeResponseElement out = new SeResponseElement(previousOpenApplication != null,
+                        fciResponse, apduResponses);
+                seResponseElements.add(out);
+
+                // Don't process more seRequestElement if asked
+                if (seRequestElement.keepChannelOpen()) {
+                    Log.i(TAG,
+                            "Keep Channel Open is set to true, abort further seRequestElement if any");
+                    saveChannelState(aid);
+                    break;
+                }
+
+                // For last element, close physical channel if asked
+                if (i == seRequestElements.size() - 1 && !seRequestElement.keepChannelOpen()) {
+                    disconnectTag();
+                }
+
+            } catch (IOException e) {
+                Log.e(TAG, "Error executing command");
+                e.printStackTrace();
+                apduResponses.add(null);// add empty response
             }
-        } catch (IOException e) {
-            Log.e(TAG, "Error while reading SE");
-            List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
-            apduResponses.add(new ApduResponse(ByteBuffer.allocate(0), false));
-            SeResponseElement out = new SeResponseElement(false, null, apduResponses);
-            seResponseElements.add(out);
 
         }
 
@@ -179,16 +174,30 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     }
 
 
-    private SeRequest filterProtocol(SeRequest seRequest) {
+    /**
+     * Filter seRequestElements based on their protocol and the tag detected
+     * 
+     * @param seRequestElements embedding seRequestElements to be filtered
+     * @return filtered seRequest
+     */
+    private List<SeRequestElement> filterByProtocol(List<SeRequestElement> seRequestElements) {
 
+
+        Log.d(TAG, "Filtering # seRequestElements : " + seRequestElements.size());
         List<SeRequestElement> filteredSRE = new ArrayList<SeRequestElement>();
 
-        for (SeRequestElement seRequestElement : seRequest.getElements()) {
-            if (seRequestElement.getProtocolFlag().equals(tagTransceiver.getTech())) {
+        for (SeRequestElement seRequestElement : seRequestElements) {
+
+            Log.d(TAG, "Filtering seRequestElement whom protocol : "
+                    + seRequestElement.getProtocolFlag());
+
+            if (seRequestElement.getProtocolFlag() != null
+                    && seRequestElement.getProtocolFlag().equals(tagTransceiver.getTech())) {
                 filteredSRE.add(seRequestElement);
             }
         }
-        return new SeRequest(filteredSRE);
+        Log.d(TAG, "After Filter seRequestElement : " + filteredSRE.size());
+        return filteredSRE;
 
     }
 
@@ -200,8 +209,7 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
      */
     private ApduResponse connectApplication(ByteBuffer aid) throws IOException {
 
-        Log.i(TAG, "Connecting to application");
-        Log.i(TAG, "AID limit :" + aid.limit());
+        Log.i(TAG, "Connecting to application : " + ByteBufferUtils.toHex(aid));
 
         ByteBuffer command = ByteBuffer.allocate(aid.limit() + 6);
         command.put((byte) 0x00);
@@ -212,38 +220,39 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
         command.put(aid);
         command.put((byte) 0x00);
         command.position(0);
-        Log.i(TAG, " : Selecting AID " + ByteBufferUtils.toHex(aid));
 
-        // mAidCurrentlySelected = aid;
-        openChannels.add(aid);
         return sendAPDUCommand(command);
 
-
     }
+
+
 
     /**
      * Process data from NFC Intent
      *
-     * @param intent : Intent received and filterProtocol by xml tech_list
+     * @param intent : Intent received and filterByProtocol by xml tech_list
      */
     protected void processIntent(Intent intent) {
 
         // Extract Tag from Intent
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        this.processTag(tag);
+        this.connectTag(tag);
     }
 
 
     /**
-     * Process data from the scanned NFC tag
+     * Connect to the tag (physical connect)
      */
-    protected void processTag(Tag tag) {
+    private void connectTag(Tag tag) {
 
-        Log.d(TAG, "Processing Tag");
-        currentTag = tag;
 
         try {
-            processIntent();
+
+            tagTransceiver = TagTransceiver.getTagTransceiver(tag);
+            tagTransceiver.connect();
+
+            Log.i(TAG, "Tag connected successfully : " + printTagId());
+
             notifyObservers(new ReaderEvent(AndroidNfcReader.getInstance(),
                     ReaderEvent.EventType.SE_INSERTED));
 
@@ -254,24 +263,9 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     }
 
 
-    /**
-     * Logical canal with the tag/card
-     *
-     */
-    private void processIntent() throws IOException {
-        Log.i(TAG, "Processing Tag : " + printTagId());
-        Log.i(TAG, "Tag tech list: " + currentTag.getTechList());
-
-        tagTransceiver = IsoDepTransceiver.getTagTransceiver(currentTag);
-        tagTransceiver.connect();
-
-        Log.i(TAG, "Iso Dep tag connected successfully : " + printTagId());
-
-    }
-
 
     /**
-     * Disconnect the NFC reader from its tag (physical disconnect)
+     * Disconnect from the tag (physical disconnect)
      */
     private void disconnectTag() {
         try {
@@ -292,11 +286,11 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     }
 
     /**
-     * Disconnect from the application
+     * Keep the current channel open for further commands
      */
-    private void disconnectApplication(ByteBuffer aid) {
-
-        openChannels.remove(aid);
+    private void saveChannelState(ByteBuffer aid) {
+        Log.d(TAG, "save application id for further commands");
+        previousOpenApplication = aid;
 
     }
 
@@ -309,21 +303,18 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
     private ApduResponse sendAPDUCommand(ByteBuffer command) throws IOException {
         // Initialization
         long commandLenght = command.limit();
-        Log.d(TAG, "Data Length to be sent to ISODEP : " + commandLenght);
-        Log.d(TAG, "Max data possible to be transceived by IsoDep : "
-                + tagTransceiver.getMaxTransceiveLength());
-
-        Log.d(TAG, "Sending data to  tag ");
+        Log.d(TAG, "Data Length to be sent to tag : " + commandLenght);
         byte[] data = ByteBufferUtils.toBytes(command);
+        Log.i(TAG, "Data in : " + data);
         byte[] dataOut = tagTransceiver.transceive(data);
-
-        Log.i(TAG, getName() + " : Recept : " + dataOut);
+        Log.i(TAG, "Data out  : " + dataOut);
         return new ApduResponse(dataOut, true);
-
 
     }
 
     private String printTagId() {
-        return currentTag != null ? currentTag.getId() + currentTag.toString() : "null";
+        return tagTransceiver != null
+                ? tagTransceiver.getTag().getId() + tagTransceiver.getTag().toString()
+                : "null";
     }
 }

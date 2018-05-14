@@ -14,10 +14,15 @@ import java.util.List;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
-import org.keyple.seproxy.*;
+import org.keyple.seproxy.ApduRequest;
+import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.seproxy.ProxyReader;
+import org.keyple.seproxy.SeRequest;
+import org.keyple.seproxy.SeRequestElement;
+import org.keyple.seproxy.SeResponse;
 import org.keyple.seproxy.exceptions.IOReaderException;
 
-public class BasicCardAccessManager extends AbstractLogicManager {
+public class MultiNFCCardAccessManager extends AbstractLogicManager {
 
 
     private ProxyReader poReader;
@@ -46,16 +51,29 @@ public class BasicCardAccessManager extends AbstractLogicManager {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-        SeRequestElement seRequestElement =
+        SeRequestElement isodep =
                 new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+        isodep.setProtocolFlag("android.nfc.tech.IsoDep");
+
+
+        SeRequestElement miFare =
+                new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+        miFare.setProtocolFlag("android.nfc.tech.MifareClassic");
+
+
+
         List<SeRequestElement> seRequestElements = new ArrayList<SeRequestElement>();
-        seRequestElements.add(seRequestElement);
+        seRequestElements.add(miFare);
+        seRequestElements.add(isodep);
+
+
+
         SeRequest poRequest = new SeRequest(seRequestElements);
 
 
         try {
             SeResponse poResponse = poReader.transmit(poRequest);
-            getTopic().post(new Event("Got a response", "poResponse", poResponse.getElements()));
+            getTopic().post(new Event("Got a response", "poResponse", poResponse));
         } catch (IOReaderException e) {
             e.printStackTrace();
             getTopic().post(new Event("Got an error", "error", e.getMessage()));

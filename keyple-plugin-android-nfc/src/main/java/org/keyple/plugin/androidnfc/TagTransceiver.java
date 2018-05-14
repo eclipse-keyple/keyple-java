@@ -13,13 +13,15 @@ import java.util.Arrays;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import android.nfc.Tag;
 import android.nfc.tech.TagTechnology;
+import android.util.Log;
 
 /**
- * Enhance Abstract Class for Tag with transceive method. Invoke getTagTransceiver factory method to
- * get a TagTransceiver object
+ * Decorate @{@link Tag} with transceive method. Invoke getTagTransceiver factory method to get a
+ * TagTransceiver object from a Tag
  */
 public abstract class TagTransceiver implements TagTechnology {
 
+    static private final String TAG = TagTransceiver.class.getSimpleName();
 
     /*
      * Transceive
@@ -30,17 +32,42 @@ public abstract class TagTransceiver implements TagTechnology {
 
     abstract public String getTech();
 
-    static public TagTransceiver getTagTransceiver(Tag tag) throws IOReaderException {
+    static protected TagTransceiver getTagTransceiver(Tag tag) throws IOReaderException {
 
 
+        if (Arrays.asList(tag.getTechList()).contains("android.nfc.tech.MifareClassic")) {
+            Log.d(TAG, "Tag embedded into MifareClassic Transceiver");
+            return new MifareClassicTransceiver(tag);
+        }
+
+        if (Arrays.asList(tag.getTechList()).contains("android.nfc.tech.MifareUltralight")) {
+            Log.d(TAG, "Tag embedded into MifareUltralight Transceiver");
+            return new MifareUltralightTransceiver(tag);
+        }
 
         if (Arrays.asList(tag.getTechList()).contains("android.nfc.tech.IsoDep")) {
-
+            Log.d(TAG, "Tag embedded into IsoDep Transceiver");
             return new IsoDepTransceiver(tag);
         }
 
-        if (Arrays.asList(tag.getTechList()).contains("android.nfc.tech.MifareClassic")) {
-            return new MiFareClassicTransceiver(tag);
+        if (Arrays.asList(tag.getTechList()).contains("android.nfc.tech.NfcA")) {
+            Log.d(TAG, "Tag embedded into NfcA Transceiver");
+            return new NfcATransceiver(tag);
+        }
+
+        if (Arrays.asList(tag.getTechList()).contains("android.nfc.tech.NfcB")) {
+            Log.d(TAG, "Tag embedded into NfcB Transceiver");
+            return new NfcBTransceiver(tag);
+        }
+
+        if (Arrays.asList(tag.getTechList()).contains("android.nfc.tech.NfcF")) {
+            Log.d(TAG, "Tag embedded into NfcF Transceiver");
+            return new NfcFTransceiver(tag);
+        }
+
+        if (Arrays.asList(tag.getTechList()).contains("android.nfc.tech.NfcV")) {
+            Log.d(TAG, "Tag embedded into NfcV Transceiver");
+            return new NfcVTransceiver(tag);
         }
 
         throw new IOReaderException("Unknown tag");

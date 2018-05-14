@@ -8,15 +8,15 @@
 
 package org.keyple.plugin.androidnfc;
 
+
 import java.io.IOException;
 import android.nfc.Tag;
-import android.nfc.tech.MifareClassic;
+import android.nfc.tech.NfcA;
+
+public class NfcATransceiver extends TagTransceiver {
 
 
-public class MiFareClassicTransceiver extends TagTransceiver {
-
-
-    private MifareClassic tag;
+    final private NfcA tag;
 
     @Override
     public int getMaxTransceiveLength() {
@@ -25,11 +25,11 @@ public class MiFareClassicTransceiver extends TagTransceiver {
 
     @Override
     public String getTech() {
-        return "android.nfc.tech.MifareClassic";
+        return "android.nfc.tech.NfcA";
     }
 
-    public MiFareClassicTransceiver(Tag tag) {
-        this.tag = MifareClassic.get(tag);
+    NfcATransceiver(Tag tag) {
+        this.tag = NfcA.get(tag);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class MiFareClassicTransceiver extends TagTransceiver {
 
     @Override
     public void close() throws IOException {
-        tag.connect();
+        tag.close();
     }
 
     @Override

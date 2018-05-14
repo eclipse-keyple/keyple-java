@@ -8,15 +8,15 @@
 
 package org.keyple.plugin.androidnfc;
 
+
 import java.io.IOException;
 import android.nfc.Tag;
-import android.nfc.tech.IsoDep;
+import android.nfc.tech.NfcV;
+
+public class NfcVTransceiver extends TagTransceiver {
 
 
-public class IsoDepTransceiver extends TagTransceiver {
-
-
-    private final IsoDep tag;
+    final private NfcV tag;
 
     @Override
     public int getMaxTransceiveLength() {
@@ -25,13 +25,12 @@ public class IsoDepTransceiver extends TagTransceiver {
 
     @Override
     public String getTech() {
-        return "android.nfc.tech.IsoDep";
+        return "android.nfc.tech.NfcV";
     }
 
-    IsoDepTransceiver(Tag tag) {
-        this.tag = IsoDep.get(tag);
+    NfcVTransceiver(Tag tag) {
+        this.tag = NfcV.get(tag);
     }
-
 
     @Override
     public byte[] transceive(byte[] data) throws IOException {
