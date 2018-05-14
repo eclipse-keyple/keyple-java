@@ -60,7 +60,6 @@ public class PcscReader extends AbstractObservableReader implements Configurable
 
     private ByteBuffer aidCurrentlySelected;
     private ApduResponse fciDataSelected;
-    private boolean atrDefaultSelected = false;
 
     private EventThread thread;
     private static final AtomicInteger threadCount = new AtomicInteger();
@@ -150,21 +149,35 @@ public class PcscReader extends AbstractObservableReader implements Configurable
      * @throws IOReaderException
      */
     private SeResponse transmitActual(SeRequest request) throws IOReaderException {
+        // first step: init of the physical SE channel: if not yet established, opening of the
+        // physical channel
         try {
-            prepareAndConnectToTerminalAndSetChannel();
+            if (card == null) {
+                this.card = this.terminal.connect(parameterCardProtocol);
+                if (cardExclusiveMode) {
+                    card.beginExclusive();
+                    logger.info("Opening of a physical SE channel in exclusive mode.", "action",
+                            "pcsc_reader.transmit_actual");
+                } else {
+                    logger.info("Opening of a physical SE channel in shared mode.", "action",
+                            "pcsc_reader.transmit_actual");
+                }
+            }
+            this.channel = card.getBasicChannel();
         } catch (CardException e) {
             throw new ChannelStateReaderException(e);
         }
 
         boolean previouslyOpen = false;
+        boolean elementMatchProtocol[] = new boolean[request.getElements().size()];
+        int elementIndex = 0, lastElementIndex;
 
-        // #82: Updating the code to support more than one element transmission
-        List<SeResponseElement> respElements = new ArrayList<SeResponseElement>();
+        // Determine which requestElements are matching the current ATR
         for (SeRequestElement reqElement : request.getElements()) {
-
-            // This is the target selection code introduced by JP
+            // Get protocolFlag to check if ATR filtering is required
             String protocolFlag = reqElement.getProtocolFlag();
             if (protocolFlag != null && !protocolFlag.isEmpty()) {
+                // the request will be executed only if the protocol match the requestElement
                 String selectionMask = protocolsMap.get(protocolFlag);
                 if (selectionMask == null) {
                     throw new InvalidMessageException("Target selector mask not found!", null);
@@ -174,46 +187,84 @@ public class PcscReader extends AbstractObservableReader implements Configurable
                 if (!p.matcher(atr).matches()) {
                     logger.info("Protocol selection: unmatching SE: " + protocolFlag, "action",
                             "pcsc_reader.transmit_actual");
-                    respElements.add(null); // add empty response
-                    continue; // try next request
-                }
-            }
-            logger.info("Protocol selection: matching SE: " + protocolFlag, "action",
-                    "pcsc_reader.transmit_actual");
-
-            List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
-
-            if (reqElement.getAidToSelect() != null && aidCurrentlySelected == null) {
-                fciDataSelected = connect(reqElement.getAidToSelect());
-                // fclairamb(2018-03-03): Is there a more elegant way to do this ?
-                if (fciDataSelected.getStatusCode() != 0x9000) {
-                    logger.info("Application selection failed!", "action",
+                    elementMatchProtocol[elementIndex] = false;
+                } else {
+                    logger.info("Protocol selection: matching SE: " + protocolFlag, "action",
                             "pcsc_reader.transmit_actual");
-                    respElements.add(null); // add empty response
-                    continue; // app selection failed, let's try next request if any
+                    elementMatchProtocol[elementIndex] = true;
                 }
-            } else if (!atrDefaultSelected) {
-                fciDataSelected = new ApduResponse(
-                        ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
-                                ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00})),
-                        true);
-                atrDefaultSelected = true;
+            } else {
+                // when no protocol is defined the request has to be executed
+                elementMatchProtocol[elementIndex] = true;
             }
+            elementIndex++;
+        }
 
-            for (ApduRequest apduRequest : reqElement.getApduRequests()) {
-                apduResponseList.add(transmit(apduRequest));
+        // we have now a boolean array saying whether the corresponding requestElement and the
+        // current SE match or not
+
+        lastElementIndex = elementIndex;
+        elementIndex = 0;
+
+        // The current request is possibly made of several APDU command lists
+        // If the elementMatchProtocol is true we process the request
+        // If the elementMatchProtocol is false we skip to the next request
+        // If keepChannelOpen is false, we close the physical channel for the last requestElement.
+        List<SeResponseElement> respElements = new ArrayList<SeResponseElement>();
+        for (SeRequestElement reqElement : request.getElements()) {
+            if (elementMatchProtocol[elementIndex] == true) {
+                boolean executeRequest = true;
+                List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
+                if (reqElement.getAidToSelect() != null && aidCurrentlySelected == null) {
+                    // Opening of a logical channel with a SE application
+                    fciDataSelected = connect(reqElement.getAidToSelect());
+                    if (fciDataSelected.getStatusCode() != 0x9000) {
+                        // TODO: Remark, for a Calypso PO, the status 6283h (DF invalidated) is
+                        // considered as successful for the Select Application command.
+                        logger.info("Application selection failed!", "action",
+                                "pcsc_reader.transmit_actual");
+                        executeRequest = false;
+                    }
+                } else {
+                    // In this case, the SE application is implicitly selected (and only one logical
+                    // channel is managed by the SE).
+                    fciDataSelected = new ApduResponse(
+                            ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
+                                    ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00})),
+                            true);
+                }
+
+                if (executeRequest) {
+                    for (ApduRequest apduRequest : reqElement.getApduRequests()) {
+                        apduResponseList.add(transmit(apduRequest));
+                    }
+                }
+                respElements.add(
+                        new SeResponseElement(previouslyOpen, fciDataSelected, apduResponseList));
+            } else {
+                // in case the protocolFlag of a SeRequestElement doesn't match the reader status, a
+                // null SeResponseElement is added to the SeResponse.
+                respElements.add(null);
             }
-
-            respElements
-                    .add(new SeResponseElement(previouslyOpen, fciDataSelected, apduResponseList));
-
-            // #82: We can now correctly exploit the SeResponseElement.previouslyOpen property
+            elementIndex++;
             if (!reqElement.keepChannelOpen()) {
-                disconnect();
-                previouslyOpen = false;
-                break; // we do not go further, exit for loop
+                if (lastElementIndex == elementIndex) {
+                    // For the processing of the last SeRequestElement with a protocolFlag matching
+                    // the SE reader status, if the logical channel doesn't require to be kept open,
+                    // then the physical channel is closed.
+                    disconnect();
+                    logger.info("Closing of the physical SE channel.", "action",
+                            "pcsc_reader.transmit_actual");
+                }
             } else {
                 previouslyOpen = true;
+                // When keepChannelOpen is true, we stop after the first matching requestElement
+                // we exit the for loop here
+                // For the processing of a SeRequestElement with a protocolFlag which matches the
+                // current SE reader status, in case it's requested to keep the logical channel
+                // open, then the other remaining SeRequestElement are skipped, and null
+                // SeRequestElement are returned for them.
+                break;
             }
         }
         return new SeResponse(respElements);
@@ -261,15 +312,7 @@ public class PcscReader extends AbstractObservableReader implements Configurable
     }
 
     private void prepareAndConnectToTerminalAndSetChannel() throws CardException {
-        // final String protocol = getCardProtocol();
-        if (card == null) {
-            this.card = this.terminal.connect(parameterCardProtocol);
-            if (cardExclusiveMode) {
-                card.beginExclusive();
-            }
-        }
 
-        this.channel = card.getBasicChannel();
     }
 
     /*
@@ -369,7 +412,6 @@ public class PcscReader extends AbstractObservableReader implements Configurable
         try {
             aidCurrentlySelected = null;
             fciDataSelected = null;
-            atrDefaultSelected = false;
 
             if (card != null) {
                 channel = null;

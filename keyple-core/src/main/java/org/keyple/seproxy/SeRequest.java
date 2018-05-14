@@ -22,12 +22,6 @@ import java.util.List;
 public class SeRequest {
 
     /**
-     * Name of the target for which this request is dedicated. This string is used to select the
-     * filter defined by the PROTOCOLS MAP parameter.
-     */
-    private String targetSelector;
-
-    /**
      * List of request elements. Each {@link SeRequestElement} will result in a
      * {@link SeResponseElement} wrapped in a {@link SeResponse}.
      */
@@ -116,24 +110,6 @@ public class SeRequest {
     @Deprecated
     public boolean keepChannelOpen() {
         return getSingleElement().keepChannelOpen();
-    }
-
-    /**
-     * Set the answer filter mask
-     *
-     * @param targetSelector
-     */
-    public void setTargetSelector(String targetSelector) {
-        this.targetSelector = targetSelector;
-    }
-
-    /**
-     * Get the answer filter mask
-     *
-     * @return the mask string
-     */
-    public String getTargetSelector() {
-        return targetSelector;
     }
 
     @Override
