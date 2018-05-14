@@ -32,6 +32,7 @@ public class OpenSession31RespPars extends AbstractOpenSessionRespPars {
 
         return new SecureSession(ByteBufferUtils.subIndex(apduResponse, 0, 3),
                 ByteBufferUtils.subIndex(apduResponse, 3, 4), previousSessionRatified,
-                manageSecureSessionAuthorized, kif, kvc, data, apduResponse);
+                manageSecureSessionAuthorized, kif, kvc, data,
+                ByteBufferUtils.subIndex(apduResponse, 0, apduResponse.limit() - 2));
     }
 }
