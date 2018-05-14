@@ -149,8 +149,21 @@ public class PcscReader extends AbstractObservableReader implements Configurable
      * @throws IOReaderException
      */
     private SeResponse transmitActual(SeRequest request) throws IOReaderException {
+        // first step: init of the physical SE channel: if not yet established, opening of the
+        // physical channel
         try {
-            prepareAndConnectToTerminalAndSetChannel();
+            if (card == null) {
+                this.card = this.terminal.connect(parameterCardProtocol);
+                if (cardExclusiveMode) {
+                    card.beginExclusive();
+                    logger.info("Opening of a physical SE channel in exclusive mode.", "action",
+                            "pcsc_reader.transmit_actual");
+                } else {
+                    logger.info("Opening of a physical SE channel in shared mode.", "action",
+                            "pcsc_reader.transmit_actual");
+                }
+            }
+            this.channel = card.getBasicChannel();
         } catch (CardException e) {
             throw new ChannelStateReaderException(e);
         }
@@ -164,6 +177,7 @@ public class PcscReader extends AbstractObservableReader implements Configurable
             // Get protocolFlag to check if ATR filtering is required
             String protocolFlag = reqElement.getProtocolFlag();
             if (protocolFlag != null && !protocolFlag.isEmpty()) {
+                // the request will be executed only if the protocol match the requestElement
                 String selectionMask = protocolsMap.get(protocolFlag);
                 if (selectionMask == null) {
                     throw new InvalidMessageException("Target selector mask not found!", null);
@@ -180,13 +194,14 @@ public class PcscReader extends AbstractObservableReader implements Configurable
                     elementMatchProtocol[elementIndex] = true;
                 }
             } else {
+                // when no protocol is defined the request has to be executed
                 elementMatchProtocol[elementIndex] = true;
             }
             elementIndex++;
         }
 
-        // we have now an array of boolean saying if the corresponding requestElement match or not
-        // the current SE
+        // we have now a boolean array saying whether the corresponding requestElement and the
+        // current SE match or not
 
         lastElementIndex = elementIndex;
         elementIndex = 0;
@@ -200,16 +215,19 @@ public class PcscReader extends AbstractObservableReader implements Configurable
             if (elementMatchProtocol[elementIndex] == true) {
                 boolean executeRequest = true;
                 List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
-
                 if (reqElement.getAidToSelect() != null && aidCurrentlySelected == null) {
+                    // Opening of a logical channel with a SE application
                     fciDataSelected = connect(reqElement.getAidToSelect());
-                    // fclairamb(2018-03-03): Is there a more elegant way to do this ?
                     if (fciDataSelected.getStatusCode() != 0x9000) {
+                        // TODO: Remark, for a Calypso PO, the status 6283h (DF invalidated) is
+                        // considered as successful for the Select Application command.
                         logger.info("Application selection failed!", "action",
                                 "pcsc_reader.transmit_actual");
                         executeRequest = false;
                     }
                 } else {
+                    // In this case, the SE application is implicitly selected (and only one logical
+                    // channel is managed by the SE).
                     fciDataSelected = new ApduResponse(
                             ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
                                     ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00})),
@@ -224,18 +242,28 @@ public class PcscReader extends AbstractObservableReader implements Configurable
                 respElements.add(
                         new SeResponseElement(previouslyOpen, fciDataSelected, apduResponseList));
             } else {
-                respElements.add(null); // add empty response
+                // in case the protocolFlag of a SeRequestElement doesn't match the reader status, a
+                // null SeResponseElement is added to the SeResponse.
+                respElements.add(null);
             }
             elementIndex++;
             if (!reqElement.keepChannelOpen()) {
                 if (lastElementIndex == elementIndex) {
-                    // close the physical channel after the last request
+                    // For the processing of the last SeRequestElement with a protocolFlag matching
+                    // the SE reader status, if the logical channel doesn't require to be kept open,
+                    // then the physical channel is closed.
                     disconnect();
+                    logger.info("Closing of the physical SE channel.", "action",
+                            "pcsc_reader.transmit_actual");
                 }
             } else {
                 previouslyOpen = true;
-                // when keepChannelOpen is true, we stop after the first matching requestElement
+                // When keepChannelOpen is true, we stop after the first matching requestElement
                 // we exit the for loop here
+                // For the processing of a SeRequestElement with a protocolFlag which matches the
+                // current SE reader status, in case it's requested to keep the logical channel
+                // open, then the other remaining SeRequestElement are skipped, and null
+                // SeRequestElement are returned for them.
                 break;
             }
         }
@@ -284,15 +312,7 @@ public class PcscReader extends AbstractObservableReader implements Configurable
     }
 
     private void prepareAndConnectToTerminalAndSetChannel() throws CardException {
-        // final String protocol = getCardProtocol();
-        if (card == null) {
-            this.card = this.terminal.connect(parameterCardProtocol);
-            if (cardExclusiveMode) {
-                card.beginExclusive();
-            }
-        }
 
-        this.channel = card.getBasicChannel();
     }
 
     /*

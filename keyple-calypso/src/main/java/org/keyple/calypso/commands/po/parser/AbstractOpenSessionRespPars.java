@@ -123,6 +123,8 @@ public abstract class AbstractOpenSessionRespPars extends AbstractApduResponsePa
 
     public ByteBuffer getRecordDataRead() {
         ByteBuffer secureSessionData = secureSession.getSecureSessionData();
+        // we exclude the two last bytes since the status word is not included in the DigestInit
+        // input data
         return ByteBufferUtils.subIndex(secureSessionData, 0, secureSessionData.limit() - 2);
     }
 
