@@ -338,7 +338,7 @@ public class NFCTestFragment extends Fragment
             ((ObservableReader) reader).removeObserver(this);
 
 
-            //destroy AndroidNFC fragment
+            // destroy AndroidNFC fragment
             FragmentManager fm = getFragmentManager();
             Fragment f = fm.findFragmentByTag(TAG_NFC_ANDROID_FRAGMENT);
             if (f != null) {
