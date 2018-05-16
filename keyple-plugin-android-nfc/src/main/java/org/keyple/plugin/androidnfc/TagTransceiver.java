@@ -17,7 +17,7 @@ import android.util.Log;
 
 /**
  * Decorate @{@link Tag} with transceive method. Invoke getTagTransceiver factory method to get a
- * TagTransceiver object from a Tag
+ * @{@link TagTransceiver} object from a @{@link Tag} object
  */
 abstract class TagTransceiver implements TagTechnology {
 

@@ -12,8 +12,10 @@ import java.io.IOException;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 
-
- class MifareClassicTransceiver extends TagTransceiver {
+/**
+ * MifareClassic Implementation of @{@link TagTransceiver}
+ */
+class MifareClassicTransceiver extends TagTransceiver {
 
 
     private final MifareClassic tag;

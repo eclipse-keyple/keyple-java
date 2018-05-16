@@ -13,6 +13,9 @@ import java.io.IOException;
 import android.nfc.Tag;
 import android.nfc.tech.NfcF;
 
+/**
+ * NFC-F Implementation of @{@link TagTransceiver}
+ */
 class NfcFTransceiver extends TagTransceiver {
 
 

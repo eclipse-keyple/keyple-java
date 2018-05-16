@@ -12,8 +12,10 @@ import java.io.IOException;
 import android.nfc.Tag;
 import android.nfc.tech.MifareUltralight;
 
-
- class MifareUltralightTransceiver extends TagTransceiver {
+/**
+ * MifareUltralight Implementation of @{@link TagTransceiver}
+ */
+class MifareUltralightTransceiver extends TagTransceiver {
 
 
     private final MifareUltralight tag;

@@ -13,7 +13,10 @@ import java.io.IOException;
 import android.nfc.Tag;
 import android.nfc.tech.NfcB;
 
- class NfcBTransceiver extends TagTransceiver {
+/**
+ * NFC-B Implementation of @{@link TagTransceiver}
+ */
+class NfcBTransceiver extends TagTransceiver {
 
 
     final private NfcB tag;
