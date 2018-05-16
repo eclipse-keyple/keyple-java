@@ -19,7 +19,7 @@ import android.util.Log;
  * Decorate @{@link Tag} with transceive method. Invoke getTagTransceiver factory method to get a
  * TagTransceiver object from a Tag
  */
-public abstract class TagTransceiver implements TagTechnology {
+abstract class TagTransceiver implements TagTechnology {
 
     static private final String TAG = TagTransceiver.class.getSimpleName();
 
@@ -32,7 +32,7 @@ public abstract class TagTransceiver implements TagTechnology {
 
     abstract public String getTech();
 
-    static protected TagTransceiver getTagTransceiver(Tag tag) throws IOReaderException {
+    static TagTransceiver getTagTransceiver(Tag tag) throws IOReaderException {
 
 
         if (Arrays.asList(tag.getTechList()).contains("android.nfc.tech.MifareClassic")) {

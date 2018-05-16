@@ -13,7 +13,7 @@ import android.nfc.Tag;
 import android.nfc.tech.MifareUltralight;
 
 
-public class MifareUltralightTransceiver extends TagTransceiver {
+ class MifareUltralightTransceiver extends TagTransceiver {
 
 
     private final MifareUltralight tag;

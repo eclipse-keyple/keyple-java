@@ -13,7 +13,7 @@ import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 
 
-public class MifareClassicTransceiver extends TagTransceiver {
+ class MifareClassicTransceiver extends TagTransceiver {
 
 
     private final MifareClassic tag;

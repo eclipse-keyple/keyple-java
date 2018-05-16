@@ -13,7 +13,7 @@ import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 
 
-public class IsoDepTransceiver extends TagTransceiver {
+class IsoDepTransceiver extends TagTransceiver {
 
 
     private final IsoDep tag;

@@ -13,7 +13,7 @@ import java.io.IOException;
 import android.nfc.Tag;
 import android.nfc.tech.NfcV;
 
-public class NfcVTransceiver extends TagTransceiver {
+class NfcVTransceiver extends TagTransceiver {
 
 
     final private NfcV tag;
