@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.keyple.seproxy.ApduRequest;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ByteBufferUtils;
@@ -306,9 +305,9 @@ public class AndroidNfcReader extends ObservableReader implements NfcAdapter.Rea
         long commandLenght = command.limit();
         Log.d(TAG, "Data Length to be sent to tag : " + commandLenght);
         byte[] data = ByteBufferUtils.toBytes(command);
-        Log.i(TAG, "Data in : " + data);
+        Log.d(TAG, "Data in : " + data);
         byte[] dataOut = tagTransceiver.transceive(data);
-        Log.i(TAG, "Data out  : " + dataOut);
+        Log.d(TAG, "Data out  : " + dataOut);
         return new ApduResponse(dataOut, true);
 
     }

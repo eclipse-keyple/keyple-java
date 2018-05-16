@@ -22,6 +22,11 @@ import org.keyple.seproxy.SeRequestElement;
 import org.keyple.seproxy.SeResponse;
 import org.keyple.seproxy.exceptions.IOReaderException;
 
+/**
+ * Set of @{@link SeRequestElement} to test NFC Plugin multiple protocol flags.
+ * Two @{@link SeRequestElement} are sent to the NFC smartcard, one with IsoDep protocol flag and
+ * one with MifareClassic.
+ */
 public class MultiNFCCardAccessManager extends AbstractLogicManager {
 
 

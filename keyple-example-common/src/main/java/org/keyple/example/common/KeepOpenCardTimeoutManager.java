@@ -21,7 +21,10 @@ import org.keyple.seproxy.SeRequest;
 import org.keyple.seproxy.SeRequestElement;
 import org.keyple.seproxy.SeResponse;
 
-
+/**
+ * Set of @{@link SeRequest} to test NFC Plugin with keep Open Channel. Two sets
+ * of @{@link SeRequest} are sent to the NFC smartcard with a timeout of 3 seconds.
+ */
 public class KeepOpenCardTimeoutManager extends AbstractLogicManager {
 
 

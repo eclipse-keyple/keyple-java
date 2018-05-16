@@ -17,6 +17,10 @@ import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.IOReaderException;
 
+
+/**
+ * Basic @{@link SeRequest} to test any SeProxy
+ */
 public class BasicCardAccessManager extends AbstractLogicManager {
 
 

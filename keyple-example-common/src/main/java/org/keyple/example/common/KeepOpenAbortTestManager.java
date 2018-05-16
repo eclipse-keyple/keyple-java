@@ -21,7 +21,12 @@ import org.keyple.seproxy.SeRequest;
 import org.keyple.seproxy.SeRequestElement;
 import org.keyple.seproxy.SeResponse;
 
-
+/**
+ * Set of @{@link SeRequestElement} to test NFC Plugin with keep Open Channel. Two sets
+ * of @{@link SeRequestElement} are sent to the NFC smartcard. Keep open channel parameter is set to
+ * true on the first @{@link SeRequestElement} resulting in the second @{@link SeRequestElement} to
+ * be aborted
+ */
 public class KeepOpenAbortTestManager extends AbstractLogicManager {
 
 

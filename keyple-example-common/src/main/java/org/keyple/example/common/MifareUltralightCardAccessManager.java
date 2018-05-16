@@ -22,6 +22,9 @@ import org.keyple.seproxy.SeRequestElement;
 import org.keyple.seproxy.SeResponse;
 import org.keyple.seproxy.exceptions.IOReaderException;
 
+/**
+ * Basic @{@link SeRequest} to test NFC Plugin with MifareUltralight protocol flag
+ */
 public class MifareUltralightCardAccessManager extends AbstractLogicManager {
 
 
