@@ -8,6 +8,7 @@
 
 package org.keyple.example.common;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.keyple.calypso.commands.po.PoRevision;
@@ -17,10 +18,14 @@ import org.keyple.seproxy.ApduRequest;
 import org.keyple.seproxy.ByteBufferUtils;
 import org.keyple.seproxy.ProxyReader;
 import org.keyple.seproxy.SeRequest;
+import org.keyple.seproxy.SeRequestElement;
 import org.keyple.seproxy.SeResponse;
+import org.keyple.seproxy.exceptions.IOReaderException;
 
-
-public class KeepOpenCardAccessManager extends AbstractLogicManager {
+/**
+ * Basic @{@link SeRequest} to test NFC Plugin with MifareUltralight protocol flag
+ */
+public class MifareUltralightCardAccessManager extends AbstractLogicManager {
 
 
     private ProxyReader poReader;
@@ -49,29 +54,20 @@ public class KeepOpenCardAccessManager extends AbstractLogicManager {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-        SeRequest poRequest =
-                new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, true);
+        SeRequestElement seRequestElement =
+                new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+        seRequestElement.setProtocolFlag("android.nfc.tech.MifareUltralight");
+        List<SeRequestElement> seRequestElements = new ArrayList<SeRequestElement>();
+        seRequestElements.add(seRequestElement);
+        SeRequest poRequest = new SeRequest(seRequestElements);
+
+
         try {
-
-            System.out.println("Transmit 1st SE Request, keep channel open");
             SeResponse poResponse = poReader.transmit(poRequest);
-            getTopic()
-                    .post(new Event("Got a response", "poResponse", poResponse.getApduResponses()));
-
-            System.out.println("Sleeping for 3 seconds");
-            Thread.sleep(3000);
-            System.out.println("Transmit 2nd SE Request, close channel");
-
-            SeRequest poRequest2 =
-                    new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
-
-            SeResponse poResponse2 = poReader.transmit(poRequest2);
-            getTopic().post(
-                    new Event("Got a 2nd response", "poResponse2", poResponse2.getApduResponses()));
-
-
-        } catch (Exception e) {
+            getTopic().post(new Event("Got a response", "poResponse", poResponse));
+        } catch (IOReaderException e) {
             e.printStackTrace();
+            getTopic().post(new Event("Got an error", "error", e.getMessage()));
         }
     }
 

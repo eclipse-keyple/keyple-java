@@ -14,14 +14,20 @@ import java.util.List;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
-import org.keyple.seproxy.*;
-import org.keyple.seproxy.exceptions.IOReaderException;
-
+import org.keyple.seproxy.ApduRequest;
+import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.seproxy.ProxyReader;
+import org.keyple.seproxy.SeRequest;
+import org.keyple.seproxy.SeRequestElement;
+import org.keyple.seproxy.SeResponse;
 
 /**
- * Basic @{@link SeRequest} to test any SeProxy
+ * Set of @{@link SeRequestElement} to test NFC Plugin with keep Open Channel. Two sets
+ * of @{@link SeRequestElement} are sent to the NFC smartcard. Keep open channel parameter is set to
+ * true on the first @{@link SeRequestElement} resulting in the second @{@link SeRequestElement} to
+ * be aborted
  */
-public class BasicCardAccessManager extends AbstractLogicManager {
+public class KeepOpenAbortTestManager extends AbstractLogicManager {
 
 
     private ProxyReader poReader;
@@ -51,18 +57,26 @@ public class BasicCardAccessManager extends AbstractLogicManager {
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
         SeRequestElement seRequestElement =
-                new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+                new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, true);
         List<SeRequestElement> seRequestElements = new ArrayList<SeRequestElement>();
+        seRequestElement.setProtocolFlag("android.nfc.tech.IsoDep");
         seRequestElements.add(seRequestElement);
+
+        SeRequestElement seRequestElement2 =
+                new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+        seRequestElement2.setProtocolFlag("android.nfc.tech.IsoDep");
+        seRequestElements.add(seRequestElement2);
         SeRequest poRequest = new SeRequest(seRequestElements);
 
-
         try {
+
+            System.out.println("Transmit 1st SE Request, keep channel open");
             SeResponse poResponse = poReader.transmit(poRequest);
-            getTopic().post(new Event("Got a response", "poResponse", poResponse.getElements()));
-        } catch (IOReaderException e) {
+            getTopic().post(new Event("Got a response", "poResponse", poResponse));
+
+
+        } catch (Exception e) {
             e.printStackTrace();
-            getTopic().post(new Event("Got an error", "error", e.getMessage()));
         }
     }
 

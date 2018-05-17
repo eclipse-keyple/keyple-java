@@ -9,17 +9,21 @@
 package org.keyple.examples.androidnfc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.example.common.AbstractLogicManager;
-import org.keyple.example.common.BasicCardAccessManager;
-import org.keyple.example.common.KeepOpenCardAccessManager;
+import org.keyple.example.common.IsodepCardAccessManager;
+import org.keyple.example.common.KeepOpenAbortTestManager;
+import org.keyple.example.common.KeepOpenCardTimeoutManager;
+import org.keyple.example.common.MifareClassicCardAccessManager;
+import org.keyple.example.common.MifareUltralightCardAccessManager;
+import org.keyple.example.common.MultiNFCCardAccessManager;
 import org.keyple.plugin.androidnfc.AndroidNfcFragment;
 import org.keyple.plugin.androidnfc.AndroidNfcPlugin;
 import org.keyple.seproxy.AbstractObservableReader;
 import org.keyple.seproxy.ProxyReader;
 import org.keyple.seproxy.ReaderEvent;
-import org.keyple.seproxy.ReaderObserver;
 import org.keyple.seproxy.ReadersPlugin;
 import org.keyple.seproxy.SeProxyService;
 import org.keyple.seproxy.exceptions.IOReaderException;
@@ -39,7 +43,7 @@ import android.widget.TextView;
 
 
 public class NFCTestFragment extends Fragment
-        implements ReaderObserver, Topic.Subscriber<AbstractLogicManager.Event> {
+        implements Observable.Observer<ReaderEvent>, Topic.Subscriber<AbstractLogicManager.Event> {
 
 
     private static final String TAG = NFCTestFragment.class.getSimpleName();
@@ -92,7 +96,7 @@ public class NFCTestFragment extends Fragment
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
             ((AbstractObservableReader) reader).addObserver(this);
 
-            initBasicCardAccessTest();
+            initIsodepTest();
 
         } catch (IOReaderException e) {
             e.printStackTrace();
@@ -116,28 +120,57 @@ public class NFCTestFragment extends Fragment
 
         View view = inflater.inflate(R.layout.fragment_nfc_test, container, false);
 
-        mText = (TextView) view.findViewById(R.id.text);
+        mText = view.findViewById(R.id.text);
 
-        RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
+        RadioGroup radioGroup = view.findViewById(R.id.radioGroup);
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 // checkedId is the RadioButton selected
 
                 switch (checkedId) {
-                    case R.id.simpleTestButton:
-                        Log.i(TAG, "switched to Basic Card Access Test");
+                    case R.id.isoDepTest:
                         clearText();
                         mText.setText(
-                                "When a smartcard is detected, a set of 3 basic commands will be sent");
-                        initBasicCardAccessTest();
+                                "When a smartcard is detected, a set of 3 basic commands will be sent, protocolFlag is set to Isodep");
+                        initIsodepTest();
                         break;
-                    case R.id.keepChannelButton:
-                        Log.i(TAG, "switched to Keep Channel Card Access Test");
+
+
+                    case R.id.mifareClassicTest:
+                        clearText();
+                        mText.setText(
+                                "When a smartcard is detected, a set of 3 basic commands will be sent, protocolFlag is set to mifareClassic");
+                        initMiFareTest();
+                        break;
+
+                    case R.id.mifareLightTest:
+                        clearText();
+                        mText.setText(
+                                "When a smartcard is detected, a set of 3 basic commands will be sent, protocolFlag is set to MifareUltralight");
+                        initMifareUltralightTest();
+                        break;
+
+                    case R.id.multiNFC:
+                        clearText();
+                        mText.setText(
+                                "When a smartcard is detected, 2 sets of 3 basic commands will be sent, protocolFlag is set to Isodep+MifareUltralight");
+                        initMultiNFCTest();
+                        break;
+
+
+                    case R.id.keepChannelTimeout:
                         clearText();
                         mText.setText(
                                 "When a smartcard is detected,  a set of 3 basic commands will be sent, then 3 seconds later, commands will be sent again");
-                        initKeepChannelAccessTest();
+                        initKeepChannelTimeoutTest();
+                        break;
+
+                    case R.id.keepChannelAbortButton:
+                        clearText();
+                        mText.setText(
+                                "When a smartcard is detected,  2 sets of 3 basic commands will be sent, the first one will keep the channel open, the second will be aborted");
+                        initKeepChannelAbortTest();
                         break;
                 }
             }
@@ -148,15 +181,183 @@ public class NFCTestFragment extends Fragment
 
     }
 
+
     /**
-     * Management of SE insertion event to operate a ticketing processing
+     * Init Isodep basic test suite
+     */
+    private void initIsodepTest() {
+
+        try {
+
+            SeProxyService seProxyService = SeProxyService.getInstance();
+            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+
+            cardAccessManager = new IsodepCardAccessManager();
+            ((IsodepCardAccessManager) cardAccessManager).setPoReader(reader);
+
+            cardAccessManager.getTopic().addSubscriber(this);
+        } catch (IOReaderException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    /**
+     * Init miFare basic test suite
+     */
+    private void initMiFareTest() {
+
+        try {
+
+            SeProxyService seProxyService = SeProxyService.getInstance();
+            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+
+            cardAccessManager = new MifareClassicCardAccessManager();
+            ((MifareClassicCardAccessManager) cardAccessManager).setPoReader(reader);
+
+            cardAccessManager.getTopic().addSubscriber(this);
+        } catch (IOReaderException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Init MifareUltralight basic test suite
+     */
+    private void initMifareUltralightTest() {
+
+        try {
+
+            SeProxyService seProxyService = SeProxyService.getInstance();
+            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+
+            cardAccessManager = new MifareUltralightCardAccessManager();
+            ((MifareUltralightCardAccessManager) cardAccessManager).setPoReader(reader);
+
+            cardAccessManager.getTopic().addSubscriber(this);
+        } catch (IOReaderException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Init miFare basic test suite
+     */
+    private void initMultiNFCTest() {
+
+        try {
+
+            SeProxyService seProxyService = SeProxyService.getInstance();
+            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+
+            cardAccessManager = new MultiNFCCardAccessManager();
+            ((MultiNFCCardAccessManager) cardAccessManager).setPoReader(reader);
+
+            cardAccessManager.getTopic().addSubscriber(this);
+        } catch (IOReaderException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    /**
+     * Init advanced test suite (keep channel open between two sets of commands)
+     */
+    private void initKeepChannelTimeoutTest() {
+
+        try {
+
+            SeProxyService seProxyService = SeProxyService.getInstance();
+            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+
+            cardAccessManager = new KeepOpenCardTimeoutManager();
+            ((KeepOpenCardTimeoutManager) cardAccessManager).setPoReader(reader);
+
+            cardAccessManager.getTopic().addSubscriber(this);
+        } catch (IOReaderException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Init advanced test suite (keep channel open into two sets of commands)
+     */
+    private void initKeepChannelAbortTest() {
+
+        try {
+
+            SeProxyService seProxyService = SeProxyService.getInstance();
+            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+
+            cardAccessManager = new KeepOpenAbortTestManager();
+            ((KeepOpenAbortTestManager) cardAccessManager).setPoReader(reader);
+
+            cardAccessManager.getTopic().addSubscriber(this);
+        } catch (IOReaderException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+    /**
+     * Observes Card Access when an event is received
      *
-     * @param readerEvent : event received from SEProxyService
+     * @param event event received from Card Access Logic Manager
+     */
+    public void update(AbstractLogicManager.Event event) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mText.append("\n ---- \n");
+                mText.append(event.getName());
+                // mText.append(Arrays.toString(event.getDetails().entrySet().toArray()));
+                mText.append(Arrays.toString(event.getDetails().values().toArray()));
+            }
+        });
+    }
+
+    /**
+     * Revocation of the Activity from @{@link org.keyple.plugin.androidnfc.AndroidNfcReader} list
+     * of observers
      */
     @Override
-    public void update(final Observable<? extends ReaderEvent> observable,
-            final ReaderEvent readerEvent) {
+    public void onDestroy() {
+        super.onDestroy();
 
+        try {
+            Log.d(TAG, "Remove task as an observer for ReaderEvents");
+            SeProxyService seProxyService = SeProxyService.getInstance();
+            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+            ((AbstractObservableReader) reader).removeObserver(this);
+
+
+            // destroy AndroidNFC fragment
+            FragmentManager fm = getFragmentManager();
+            Fragment f = fm.findFragmentByTag(TAG_NFC_ANDROID_FRAGMENT);
+            if (f != null) {
+                fm.beginTransaction().remove(f).commit();
+            }
+
+        } catch (IOReaderException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void clearText() {
+        mText.setText("");
+    }
+
+
+    @Override
+    public void update(Observable<? extends ReaderEvent> observable, ReaderEvent readerEvent) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -188,94 +389,5 @@ public class NFCTestFragment extends Fragment
                 }
             }
         });
-    }
-
-    /**
-     * Init basic test suite
-     */
-    private void initBasicCardAccessTest() {
-
-        try {
-
-            SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
-
-            cardAccessManager = new BasicCardAccessManager();
-            ((BasicCardAccessManager) cardAccessManager).setPoReader(reader);
-
-            cardAccessManager.getTopic().addSubscriber(this);
-        } catch (IOReaderException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    /**
-     * Init advanced test suite (keep channel open between two sets of commands)
-     */
-    private void initKeepChannelAccessTest() {
-
-        try {
-
-            SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
-
-            cardAccessManager = new KeepOpenCardAccessManager();
-            ((KeepOpenCardAccessManager) cardAccessManager).setPoReader(reader);
-
-            cardAccessManager.getTopic().addSubscriber(this);
-        } catch (IOReaderException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
-    /**
-     * Observes Card Access when an event is received
-     *
-     * @param event
-     */
-    public void update(AbstractLogicManager.Event event) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mText.append("\n ---- \n");
-                mText.append(event.toString());
-            }
-        });
-    }
-
-    /**
-     * Revocation of the Activity from @{@link org.keyple.plugin.androidnfc.AndroidNfcReader} list
-     * of observers
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        try {
-            Log.d(TAG, "Remove task as an observer for ReaderEvents");
-            SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
-            ((AbstractObservableReader) reader).removeObserver(this);
-
-
-            // destroy AndroidNFC fragment
-
-            FragmentManager fm = getFragmentManager();
-            Fragment f = fm.findFragmentByTag(TAG_NFC_ANDROID_FRAGMENT);
-            if (f != null) {
-                fm.beginTransaction().remove(f).commit();
-            }
-
-        } catch (IOReaderException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private void clearText() {
-        mText.setText("");
     }
 }

@@ -14,14 +14,18 @@ import java.util.List;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
-import org.keyple.seproxy.*;
+import org.keyple.seproxy.ApduRequest;
+import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.seproxy.ProxyReader;
+import org.keyple.seproxy.SeRequest;
+import org.keyple.seproxy.SeRequestElement;
+import org.keyple.seproxy.SeResponse;
 import org.keyple.seproxy.exceptions.IOReaderException;
 
-
 /**
- * Basic @{@link SeRequest} to test any SeProxy
+ * Basic @{@link SeRequest} to test NFC Plugin with IsoDep protocol
  */
-public class BasicCardAccessManager extends AbstractLogicManager {
+public class IsodepCardAccessManager extends AbstractLogicManager {
 
 
     private ProxyReader poReader;
@@ -52,6 +56,7 @@ public class BasicCardAccessManager extends AbstractLogicManager {
 
         SeRequestElement seRequestElement =
                 new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+        seRequestElement.setProtocolFlag("android.nfc.tech.IsoDep");
         List<SeRequestElement> seRequestElements = new ArrayList<SeRequestElement>();
         seRequestElements.add(seRequestElement);
         SeRequest poRequest = new SeRequest(seRequestElements);
@@ -59,7 +64,7 @@ public class BasicCardAccessManager extends AbstractLogicManager {
 
         try {
             SeResponse poResponse = poReader.transmit(poRequest);
-            getTopic().post(new Event("Got a response", "poResponse", poResponse.getElements()));
+            getTopic().post(new Event("Got a response", "poResponse", poResponse));
         } catch (IOReaderException e) {
             e.printStackTrace();
             getTopic().post(new Event("Got an error", "error", e.getMessage()));

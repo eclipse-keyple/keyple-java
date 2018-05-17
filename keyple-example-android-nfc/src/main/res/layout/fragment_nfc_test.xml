@@ -14,24 +14,54 @@
         android:id="@+id/radioGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        tools:layout_editor_absoluteX="8dp">
+        tools:layout_editor_absoluteX="8dp"
+        tools:ignore="MissingConstraints">
 
         <RadioButton
-            android:id="@+id/simpleTestButton"
+            android:id="@+id/isoDepTest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:checked="true"
-            android:text="Basic Test" />
+            android:text="Launch one set of IsoDep commands" />
 
         <RadioButton
-            android:id="@+id/keepChannelButton"
+            android:id="@+id/mifareClassicTest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Keep Channel Test" />
+            android:text="Launch one set of MifareClassic commands" />
+
+        <RadioButton
+            android:id="@+id/mifareLightTest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Launch one set of MifareUltraLight commands" />
+
+        <RadioButton
+            android:id="@+id/multiNFC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Launch multiple sets of commands (MifareUltralight+Isodep)" />
+
+        <RadioButton
+            android:id="@+id/keepChannelTimeout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Keep Channel Timeout Test Isodep" />
+
+        <RadioButton
+            android:id="@+id/keepChannelAbortButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Keep Channel Abort Test Isodep" />
+
 
     </RadioGroup>
 

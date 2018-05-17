@@ -8,7 +8,6 @@
 
 package org.keyple.plugin.androidnfc;
 
-import org.keyple.seproxy.exceptions.IOReaderException;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
@@ -62,7 +61,7 @@ public class AndroidNfcFragment extends Fragment {
 
         if (nfcAdapter == null) {
             Log.w(TAG, "Your device does not support NFC");
-        } ;
+        }
 
         if (!nfcAdapter.isEnabled()) {
             Log.w(TAG, "PLease enable NFC to communicate with NFC Elements");
@@ -73,7 +72,6 @@ public class AndroidNfcFragment extends Fragment {
 
     /**
      * This fragment does not include UI
-     *
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -97,18 +95,15 @@ public class AndroidNfcFragment extends Fragment {
         // if the fragment was created following an intent of NfcAdapter.ACTION_TECH_DISCOVERED TAG
         Intent intent = getActivity().getIntent();
         Log.d(TAG, "Intent : " + intent.getAction());
-        if (intent != null && intent.getAction() != null
+        if (intent.getAction() != null
                 && intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED)) {
             // handle intent
-            try {
-                Log.d(TAG, "Handle ACTION TECH intent");
+            Log.d(TAG, "Handle ACTION TECH intent");
 
-                ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().get(0))
-                        .connectTag(intent);
+            ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().get(0))
+                    .processIntent(intent);
 
-            } catch (IOReaderException e) {
-                e.printStackTrace();
-            }
+
         } else {
             Log.d(TAG, "Intent is not of type ACTION TECH, do not process");
 
@@ -118,17 +113,19 @@ public class AndroidNfcFragment extends Fragment {
         Bundle options = new Bundle();
         options.putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, 5000);
 
-        try {
 
-            Log.i(TAG, "Enabling Read Write Mode");
 
-            nfcAdapter.enableReaderMode(getActivity(),
-                    ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().get(0)),
-                    NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, options);
+        Log.i(TAG, "Enabling Read Write Mode");
 
-        } catch (IOReaderException e) {
-            e.printStackTrace();
-        }
+
+        nfcAdapter.enableReaderMode(getActivity(),
+                ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().get(0)),
+                NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_NFC_B
+                        | NfcAdapter.FLAG_READER_NFC_F | NfcAdapter.FLAG_READER_NFC_V
+                        | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
+                options);
+
+
 
     }
 
@@ -138,13 +135,6 @@ public class AndroidNfcFragment extends Fragment {
         Log.i(TAG, "on Pause Fragment - Stopping Read Write Mode");
         nfcAdapter.disableReaderMode(getActivity());
 
-    }
-
-
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
     }
 
 

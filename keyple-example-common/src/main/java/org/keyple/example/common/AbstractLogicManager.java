@@ -106,6 +106,14 @@ public abstract class AbstractLogicManager implements Runnable {
             }
             return output.toString();
         }
+
+        public String getName() {
+            return name;
+        }
+
+        public Map<String, Object> getDetails() {
+            return details;
+        }
     }
 
     /**
