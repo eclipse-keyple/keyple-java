@@ -10,7 +10,7 @@ package org.keyple.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.keyple.util.event.Topic;
+import org.keyple.util.Topic;
 
 public class TopicTest {
     static class Event {

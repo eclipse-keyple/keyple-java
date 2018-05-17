@@ -10,13 +10,13 @@ package org.keyple.calypso.commands.csm.parser;
 
 
 import java.nio.ByteBuffer;
-import org.keyple.commands.ApduResponseParser;
+import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
 /**
  * Digest close response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC computation
  */
-public class DigestCloseRespPars extends ApduResponseParser {
+public class DigestCloseRespPars extends AbstractApduResponseParser {
     /**
      * Instantiates a new DigestCloseRespPars.
      *

@@ -9,27 +9,23 @@
 package org.keyple.calypso.commands.csm.builder;
 
 import java.nio.ByteBuffer;
-import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.calypso.commands.csm.CsmCommandBuilder;
+import org.keyple.calypso.commands.csm.AbstractCsmCommandBuilder;
+import org.keyple.calypso.commands.csm.CalypsoSmCommands;
 import org.keyple.calypso.commands.csm.CsmRevision;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
-// TODO: Auto-generated Javadoc
 /**
- * This class provides the dedicated constructor to build the CSM Digest Update APDU command. This
- * command have to be sent twice for each command executed during a session. First time for the
- * command sent and second time for the answer received
- *
- * @author Ixxi
- *
+ * Builder for the CSM Digest Update APDU command. This command have to be sent twice for each
+ * command executed during a session. First time for the command sent and second time for the answer
+ * received
  */
-public class DigestUpdateCmdBuild extends CsmCommandBuilder {
+public class DigestUpdateCmdBuild extends AbstractCsmCommandBuilder {
 
     /** The command reference. */
 
-    private static CalypsoCommands command = CalypsoCommands.CSM_DIGEST_UPDATE;
+    private static CalypsoSmCommands command = CalypsoSmCommands.DIGEST_UPDATE;
 
     /**
      * Instantiates a new DigestUpdateCmdBuild.

@@ -9,7 +9,6 @@
 package org.keyple.calypso.commands.utils;
 
 import java.nio.ByteBuffer;
-import org.keyple.calypso.commands.CalypsoCommands;
 import org.keyple.commands.CommandsTable;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
@@ -21,7 +20,7 @@ public class RequestUtils {
 
     private RequestUtils() {}
 
-    public static void controlRequestConsistency(CalypsoCommands command, ApduRequest request)
+    public static void controlRequestConsistency(CommandsTable command, ApduRequest request)
             throws InconsistentCommandException {
         // Simplifying the strange logic, but I'm not sure this helps much
         if (request != null && request.getBuffer() != null

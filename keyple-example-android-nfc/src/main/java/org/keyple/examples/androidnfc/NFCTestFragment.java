@@ -21,14 +21,14 @@ import org.keyple.example.common.MifareUltralightCardAccessManager;
 import org.keyple.example.common.MultiNFCCardAccessManager;
 import org.keyple.plugin.androidnfc.AndroidNfcFragment;
 import org.keyple.plugin.androidnfc.AndroidNfcPlugin;
-import org.keyple.seproxy.ObservableReader;
+import org.keyple.seproxy.AbstractObservableReader;
 import org.keyple.seproxy.ProxyReader;
 import org.keyple.seproxy.ReaderEvent;
 import org.keyple.seproxy.ReadersPlugin;
 import org.keyple.seproxy.SeProxyService;
 import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.util.event.Observable;
-import org.keyple.util.event.Topic;
+import org.keyple.util.Observable;
+import org.keyple.util.Topic;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -94,7 +94,7 @@ public class NFCTestFragment extends Fragment
             // define task as an observer for ReaderEvents
             Log.d(TAG, "Define this view as an observer for ReaderEvents");
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
-            ((ObservableReader) reader).addObserver(this);
+            ((AbstractObservableReader) reader).addObserver(this);
 
             initIsodepTest();
 
@@ -335,7 +335,7 @@ public class NFCTestFragment extends Fragment
             Log.d(TAG, "Remove task as an observer for ReaderEvents");
             SeProxyService seProxyService = SeProxyService.getInstance();
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
-            ((ObservableReader) reader).removeObserver(this);
+            ((AbstractObservableReader) reader).removeObserver(this);
 
 
             // destroy AndroidNFC fragment

@@ -9,14 +9,14 @@
 package org.keyple.calypso.commands.csm.parser;
 
 
-import org.keyple.commands.ApduResponseParser;
+import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
 /**
  * Digest update multiple response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC
  * computation
  */
-public class DigestUpdateMultipleRespPars extends ApduResponseParser {
+public class DigestUpdateMultipleRespPars extends AbstractApduResponseParser {
     /**
      * Instantiates a new DigestUpdateMultipleRespPars.
      *

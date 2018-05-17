@@ -12,15 +12,15 @@ package org.keyple.examples.pc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.keyple.calypso.commands.SendableInSession;
 import org.keyple.calypso.commands.po.PoRevision;
-import org.keyple.calypso.commands.po.SendableInSession;
 import org.keyple.calypso.commands.po.builder.AbstractOpenSessionCmdBuild;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.transaction.PoSecureSession;
 import org.keyple.plugin.pcsc.PcscPlugin;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.util.event.Observable;
+import org.keyple.util.Observable;
 
 public class KeypleTest_ObservablePoTransaction implements Observable.Observer<ReaderEvent> {
     private ProxyReader poReader, csmReader;
@@ -171,7 +171,7 @@ public class KeypleTest_ObservablePoTransaction implements Observable.Observer<R
         observer.csmReader = csmReader;
 
         // Set terminal as Observer of the first reader
-        ((ObservableReader) poReader).addObserver(observer);
+        ((AbstractObservableReader) poReader).addObserver(observer);
         synchronized (waitForEnd) {
             waitForEnd.wait();
         }

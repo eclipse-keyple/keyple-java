@@ -18,7 +18,7 @@ import org.keyple.seproxy.exceptions.IOReaderException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public class StubReader extends ObservableReader implements ConfigurableReader {
+public class StubReader extends AbstractObservableReader implements ConfigurableReader {
 
 
     private static final ILogger logger = SLoggerFactory.getLogger(StubReader.class);
@@ -159,6 +159,4 @@ public class StubReader extends ObservableReader implements ConfigurableReader {
         logger.debug("Test - set channelIsOpen to " + channelIsOpen);
         test_ChannelIsOpen = channelIsOpen;
     }
-
-
 }

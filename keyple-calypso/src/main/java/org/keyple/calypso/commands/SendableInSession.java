@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.calypso.commands.po;
+package org.keyple.calypso.commands;
 
 /**
  * The Interface SendableInSession.

@@ -8,23 +8,21 @@
 
 package org.keyple.calypso.commands.csm.builder;
 
-import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.calypso.commands.csm.CsmCommandBuilder;
+import org.keyple.calypso.commands.csm.AbstractCsmCommandBuilder;
+import org.keyple.calypso.commands.csm.CalypsoSmCommands;
 import org.keyple.calypso.commands.csm.CsmRevision;
+import org.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
 /**
- * This class provides the dedicated constructor to build the CSM Digest Close APDU command.
- *
- * @author Ixxi
- *
+ * Builder for the CSM Digest Close APDU command.
  */
-public class DigestCloseCmdBuild extends CsmCommandBuilder {
+public class DigestCloseCmdBuild extends AbstractCsmCommandBuilder {
 
     /** The command. */
-    private static CalypsoCommands command = CalypsoCommands.CSM_DIGEST_CLOSE;
+    private static CalypsoSmCommands command = CalypsoSmCommands.DIGEST_CLOSE;
 
     /**
      * Instantiates a new DigestCloseCmdBuild .
@@ -60,7 +58,7 @@ public class DigestCloseCmdBuild extends CsmCommandBuilder {
      * @throws InconsistentCommandException the inconsistent command exception
      */
     public DigestCloseCmdBuild(ApduRequest request) throws InconsistentCommandException {
-        super(CalypsoCommands.PO_APPEND_RECORD, request);
+        super(CalypsoPoCommands.APPEND_RECORD, request);
         RequestUtils.controlRequestConsistency(command, request);
     }
 

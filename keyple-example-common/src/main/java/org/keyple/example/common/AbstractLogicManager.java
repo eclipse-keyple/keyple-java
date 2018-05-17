@@ -10,7 +10,7 @@ package org.keyple.example.common;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.keyple.util.event.Topic;
+import org.keyple.util.Topic;
 
 
 

@@ -13,7 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.csm.CsmRevision;
 import org.keyple.calypso.commands.csm.builder.DigestCloseCmdBuild;
-import org.keyple.commands.ApduCommandBuilder;
+import org.keyple.commands.AbstractApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
@@ -24,7 +24,7 @@ public class DigestCloseCmdBuildTest {
 
         ByteBuffer request =
                 ByteBuffer.wrap(new byte[] {(byte) 0x94, (byte) 0x8E, 0x00, 0x00, (byte) 0x04});
-        ApduCommandBuilder apduCommandBuilder =
+        AbstractApduCommandBuilder apduCommandBuilder =
                 new DigestCloseCmdBuild(CsmRevision.S1D, (byte) 0x04);// 94
         ApduRequest apduReq = apduCommandBuilder.getApduRequest();
 

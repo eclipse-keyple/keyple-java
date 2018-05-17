@@ -9,11 +9,12 @@
 package org.keyple.calypso.commands.po.builder;
 
 import java.nio.ByteBuffer;
-import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.calypso.commands.po.PoCommandBuilder;
+import org.keyple.calypso.commands.SendableInSession;
+import org.keyple.calypso.commands.po.AbstractPoCommandBuilder;
+import org.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.keyple.calypso.commands.po.PoRevision;
-import org.keyple.calypso.commands.po.SendableInSession;
 import org.keyple.calypso.commands.utils.RequestUtils;
+import org.keyple.commands.CommandsTable;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
@@ -24,9 +25,9 @@ import org.keyple.seproxy.ApduRequest;
  * @author Ixxi
  *
  */
-public class PoGetChallengeCmdBuild extends PoCommandBuilder implements SendableInSession {
+public class PoGetChallengeCmdBuild extends AbstractPoCommandBuilder implements SendableInSession {
 
-    private static CalypsoCommands command = CalypsoCommands.PO_GET_CHALLENGE;
+    private static CommandsTable command = CalypsoPoCommands.GET_CHALLENGE;
 
     /**
      * Instantiates a new PoGetChallengeCmdBuild.

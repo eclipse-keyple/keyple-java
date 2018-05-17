@@ -12,19 +12,20 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import org.keyple.calypso.commands.po.PoRevision;
-import org.keyple.commands.ApduResponseParser;
+import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
+import org.keyple.seproxy.ByteBufferUtils;
 
 /**
  * Open session response parser. See specs: Calypso / page 100 / 9.5.1 - Open secure session
  *
  */
-public abstract class AbstractOpenSessionRespPars extends ApduResponseParser {
+public abstract class AbstractOpenSessionRespPars extends AbstractApduResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
     static {
         Map<Integer, StatusProperties> m =
-                new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);
+                new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
         m.put(0x6700, new StatusProperties(false, "Lc value not supported."));
         m.put(0x6900, new StatusProperties(false, "Transaction Counter is 0"));
         m.put(0x6981, new StatusProperties(false,
@@ -121,7 +122,10 @@ public abstract class AbstractOpenSessionRespPars extends ApduResponseParser {
     }
 
     public ByteBuffer getRecordDataRead() {
-        return secureSession.getSecureSessionData();
+        ByteBuffer secureSessionData = secureSession.getSecureSessionData();
+        // we exclude the two last bytes since the status word is not included in the DigestInit
+        // input data
+        return ByteBufferUtils.subIndex(secureSessionData, 0, secureSessionData.limit() - 2);
     }
 
     /**

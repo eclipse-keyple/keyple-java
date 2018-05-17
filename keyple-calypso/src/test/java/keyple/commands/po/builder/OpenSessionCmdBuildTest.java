@@ -14,7 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.AbstractOpenSessionCmdBuild;
-import org.keyple.commands.ApduCommandBuilder;
+import org.keyple.commands.AbstractApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 import org.keyple.seproxy.ByteBufferUtils;
@@ -24,7 +24,7 @@ public class OpenSessionCmdBuildTest {
 
     ByteBuffer samChallenge = ByteBuffer.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
 
-    ApduCommandBuilder apduCommandBuilder;
+    AbstractApduCommandBuilder apduCommandBuilder;
 
     ApduRequest ApduRequest;
 

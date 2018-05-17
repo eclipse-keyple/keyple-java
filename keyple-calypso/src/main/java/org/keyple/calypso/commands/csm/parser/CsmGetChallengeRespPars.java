@@ -10,13 +10,13 @@ package org.keyple.calypso.commands.csm.parser;
 
 
 import java.nio.ByteBuffer;
-import org.keyple.commands.ApduResponseParser;
+import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 
 /**
  * CSM get challenge. See specs: Calypso / Page 108 / 9.5.4 - Get challenge
  */
-public class CsmGetChallengeRespPars extends ApduResponseParser {
+public class CsmGetChallengeRespPars extends AbstractApduResponseParser {
     /**
      * Instantiates a new CsmGetChallengeRespPars .
      *

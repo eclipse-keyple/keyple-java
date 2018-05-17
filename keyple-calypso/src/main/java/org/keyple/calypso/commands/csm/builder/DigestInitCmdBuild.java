@@ -9,24 +9,22 @@
 package org.keyple.calypso.commands.csm.builder;
 
 import java.nio.ByteBuffer;
-import org.keyple.calypso.commands.CalypsoCommands;
-import org.keyple.calypso.commands.csm.CsmCommandBuilder;
+import org.keyple.calypso.commands.csm.AbstractCsmCommandBuilder;
+import org.keyple.calypso.commands.csm.CalypsoSmCommands;
 import org.keyple.calypso.commands.csm.CsmRevision;
 import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 
 /**
- * This class provides the dedicated constructor to build the CSM Digest Init APDU command.
- *
- * @author Ixxi
+ * Builder for the CSM Digest Init APDU command.
  */
-public class DigestInitCmdBuild extends CsmCommandBuilder {
+public class DigestInitCmdBuild extends AbstractCsmCommandBuilder {
 
     /**
      * The command.
      */
-    private static CalypsoCommands command = CalypsoCommands.CSM_DIGEST_INIT;
+    private static CalypsoSmCommands command = CalypsoSmCommands.DIGEST_INIT;
 
     /**
      * Instantiates a new DigestInitCmdBuild.
@@ -80,7 +78,7 @@ public class DigestInitCmdBuild extends CsmCommandBuilder {
         }
         // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, CalypsoCommands.CSM_DIGEST_INIT,
         // p1, p2, dataIn);
-        request = RequestUtils.constructAPDURequest(cla, CalypsoCommands.CSM_DIGEST_INIT, p1, p2,
+        request = RequestUtils.constructAPDURequest(cla, CalypsoSmCommands.DIGEST_INIT, p1, p2,
                 dataIn);
 
     }

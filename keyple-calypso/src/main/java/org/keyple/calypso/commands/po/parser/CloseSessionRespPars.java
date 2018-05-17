@@ -12,7 +12,7 @@ package org.keyple.calypso.commands.po.parser;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import org.keyple.commands.ApduResponseParser;
+import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ByteBufferUtils;
 
@@ -20,13 +20,13 @@ import org.keyple.seproxy.ByteBufferUtils;
  * Close Secure Session (008E) response parser. See specs: Calypso / page 104 / 9.5.2 - Close Secure
  * Session
  */
-public class CloseSessionRespPars extends ApduResponseParser {
+public class CloseSessionRespPars extends AbstractApduResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
     static {
         Map<Integer, StatusProperties> m =
-                new HashMap<Integer, StatusProperties>(ApduResponseParser.STATUS_TABLE);
+                new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
         m.put(0x6700, new StatusProperties(false,
                 "Lc signatureLo not supported (e.g. Lc=4 with a Revision 3.2 mode for Open Secure Session)."));
         m.put(0x6B00, new StatusProperties(false, "P1 or P2 signatureLo not supported."));

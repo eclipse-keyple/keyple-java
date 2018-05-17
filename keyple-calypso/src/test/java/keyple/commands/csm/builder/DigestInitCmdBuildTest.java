@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.keyple.calypso.commands.csm.CsmRevision;
 import org.keyple.calypso.commands.csm.builder.DigestInitCmdBuild;
-import org.keyple.commands.ApduCommandBuilder;
+import org.keyple.commands.AbstractApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -36,8 +36,9 @@ public class DigestInitCmdBuildTest {
         byte workKeyKVC = (byte) 0x7E;
         CsmRevision revision = CsmRevision.S1D;
 
-        ApduCommandBuilder apduCommandBuilder = new DigestInitCmdBuild(revision, verificationMode,
-                rev3_2Mode, workKeyRecordNumber, workKeyKif, workKeyKVC, digestData);
+        AbstractApduCommandBuilder apduCommandBuilder =
+                new DigestInitCmdBuild(revision, verificationMode, rev3_2Mode, workKeyRecordNumber,
+                        workKeyKif, workKeyKVC, digestData);
     }
 
     @Test(expected = InconsistentCommandException.class)
@@ -54,8 +55,9 @@ public class DigestInitCmdBuildTest {
         byte workKeyKVC = (byte) 0x7E;
         CsmRevision revision = CsmRevision.S1D;
 
-        ApduCommandBuilder apduCommandBuilder = new DigestInitCmdBuild(revision, verificationMode,
-                rev3_2Mode, workKeyRecordNumber, workKeyKif, workKeyKVC, digestData);
+        AbstractApduCommandBuilder apduCommandBuilder =
+                new DigestInitCmdBuild(revision, verificationMode, rev3_2Mode, workKeyRecordNumber,
+                        workKeyKif, workKeyKVC, digestData);
     }
 
     @Test
@@ -79,8 +81,9 @@ public class DigestInitCmdBuildTest {
         ByteBuffer request = ByteBuffer.wrap(new byte[] {cla, (byte) 0x8A, p1_2, p2, (byte) size,
                 workKeyKif, workKeyKVC, (byte) 0x80, (byte) 0x8A, 0x00});
 
-        ApduCommandBuilder apduCommandBuilder = new DigestInitCmdBuild(revision, verificationMode,
-                rev3_2Mode, workKeyRecordNumber, workKeyKif, workKeyKVC, digestData);
+        AbstractApduCommandBuilder apduCommandBuilder =
+                new DigestInitCmdBuild(revision, verificationMode, rev3_2Mode, workKeyRecordNumber,
+                        workKeyKif, workKeyKVC, digestData);
 
         assertEquals(request, apduCommandBuilder.getApduRequest().getBuffer());
     }

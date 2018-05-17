@@ -8,7 +8,7 @@
 
 package org.keyple.seproxy;
 
-import org.keyple.util.event.Observable;
+import org.keyple.util.Observable;
 
 /**
  * An asynchronous update interface for receiving notifications about Reader information as the
