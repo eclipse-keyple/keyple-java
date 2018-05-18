@@ -61,7 +61,6 @@ public class SeRequest {
         this.aidToSelect = aidToSelect;
         this.keepChannelOpen = keepChannelOpen;
         this.apduRequests = apduRequests;
-
     }
 
     /**
