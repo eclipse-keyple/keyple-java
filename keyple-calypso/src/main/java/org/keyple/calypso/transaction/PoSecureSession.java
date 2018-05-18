@@ -112,7 +112,7 @@ public class PoSecureSession {
     /**
      * Process identification. On poReader, generate a SERequest for the specified PO AID, with
      * keepChannelOpen set at true, and apduRequests defined with the optional
-     * poCommands_OutsideSession. Returns the corresponding SEResponse. Identifies the serial and
+     * poCommands_OutsideSession. Returns the corresponding SEResponseElement. Identifies the serial and
      * the revision of the PO from FCI data. On csmSessionReader, automatically operate the Select
      * Diversifier and the Get Challenge.
      *
@@ -121,7 +121,7 @@ public class PoSecureSession {
      * @return the SE response
      * @throws IOReaderException the IO reader exception
      */
-    public SeResponse processIdentification(ByteBuffer poAid,
+    public SeResponseElement processIdentification(ByteBuffer poAid,
             List<SendableInSession> poCommandsOutsideSession) throws IOReaderException {
 
 
@@ -212,13 +212,13 @@ public class PoSecureSession {
         }
 
         currentState = SessionState.PO_IDENTIFIED;
-        return poResponse;
+        return poResponseElement;
     }
 
     /**
      * Process opening. On poReader, generate a SERequest with the current selected AID, with
      * keepChannelOpen set at true, and apduRequests defined with openCommand and the optional
-     * poCommands_InsideSession. Returns the corresponding SEResponse (for openCommand and
+     * poCommands_InsideSession. Returns the corresponding SEResponseElement (for openCommand and
      * poCommands_InsideSession). Identifies the session PO keyset. On csmSessionReader,
      * automatically operate the Digest Init and potentially several Digest Update Multiple.
      *
@@ -229,7 +229,7 @@ public class PoSecureSession {
      */
     // fclariamb(2018-03-02): TODO: Cleanup that mess. There was a lot of commented out code and I
     // added a lot more of it, once this code is tested we should clean it up
-    public SeResponse processOpening(AbstractOpenSessionCmdBuild openCommand,
+    public SeResponseElement processOpening(AbstractOpenSessionCmdBuild openCommand,
             List<SendableInSession> poCommandsInsideSession) throws IOReaderException {
 
         // Get PO ApduRequest List from SendableInSession List
@@ -385,7 +385,7 @@ public class PoSecureSession {
         // List<ApduResponse> csmApduResponseList = csmResponse.getApduResponses();
 
         currentState = SessionState.SESSION_OPEN;
-        return poResponse;
+        return poResponseElement;
     }
 
     /**
@@ -434,7 +434,7 @@ public class PoSecureSession {
     /**
      * Process proceeding. On poReader, generate a SERequest with the current selected AID, with
      * keepChannelOpen set at true, and apduRequests defined with the poCommands_InsideSession.
-     * Returns the corresponding SEResponse (for poCommands_InsideSession). On csmSessionReader,
+     * Returns the corresponding SEResponseElement (for poCommands_InsideSession). On csmSessionReader,
      * automatically operate potentially several Digest Update Multiple.
      *
      * @param poCommandsInsideSession the po commands inside session
@@ -442,7 +442,7 @@ public class PoSecureSession {
      *
      * @throws IOReaderException IO Reader exception
      */
-    public SeResponse processProceeding(List<SendableInSession> poCommandsInsideSession)
+    public SeResponseElement processProceeding(List<SendableInSession> poCommandsInsideSession)
             throws IOReaderException {
 
         // Get PO ApduRequest List from SendableInSession List
@@ -529,7 +529,7 @@ public class PoSecureSession {
         logger.info("Processing: Receiving CSM response", "action",
                 "po_secure_session.process_csm_response", "apduList",
                 csmResponseElement.getApduResponses());
-        return poResponse;
+        return poResponseElement;
     }
 
     /**
@@ -538,19 +538,19 @@ public class PoSecureSession {
      * SERequest with the current selected AID, with keepChannelOpen set at false, and apduRequests
      * defined with poCommands_InsideSession, closeCommand, and ratificationCommand. Identifies the
      * PO signature. On csmSessionReader, automatically operates the Digest Authenticate. Returns
-     * the corresponding SEResponse and the boolean status of the authentication.
+     * the corresponding SEResponseElement and the boolean status of the authentication.
      *
      * @param poCommandsInsideSession the po commands inside session
      * @param poAnticipatedResponseInsideSession The anticipated PO response in the sessions
      * @param ratificationCommand the ratification command
-     * @return SEResponse close session response
+     * @return SEResponseElement close session response
      * @throws IOReaderException the IO reader exception
      */
-    // public SeResponse processClosing(List<SendableInSession> poCommandsInsideSession,
+    // public SeResponseElement processClosing(List<SendableInSession> poCommandsInsideSession,
     // CloseSessionCmdBuild closeCommand, PoGetChallengeCmdBuild ratificationCommand)
     // TODO - prévoir une variante pour enchainer plusieurs session d'affilée (la commande de
     // ratification étant un nouveau processOpening)
-    public SeResponse processClosing(List<SendableInSession> poCommandsInsideSession,
+    public SeResponseElement processClosing(List<SendableInSession> poCommandsInsideSession,
             List<ApduResponse> poAnticipatedResponseInsideSession,
             AbstractPoCommandBuilder ratificationCommand) throws IOReaderException {
 
@@ -714,7 +714,7 @@ public class PoSecureSession {
         // }
 
         currentState = SessionState.SESSION_CLOSED;
-        return poResponse;
+        return poResponseElement;
     }
 
     public static PoRevision computePoRevision(byte applicationTypeByte) {
