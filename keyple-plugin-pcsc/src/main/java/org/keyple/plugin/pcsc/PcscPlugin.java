@@ -23,7 +23,7 @@ public final class PcscPlugin extends AbstractObservablePlugin {
 
     private static final ILogger logger = SLoggerFactory.getLogger(PcscPlugin.class);
 
-    private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 30000;
+    private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
 
     /**
      * Thread wait timeout in ms
@@ -163,6 +163,7 @@ public final class PcscPlugin extends AbstractObservablePlugin {
      */
     class EventThread extends Thread {
         private boolean running = true;
+        private boolean initialized = false;
 
         private Map<String, AbstractObservableReader> previousReaders =
                 new HashMap<String, AbstractObservableReader>();
@@ -181,16 +182,19 @@ public final class PcscPlugin extends AbstractObservablePlugin {
                             new HashMap<String, AbstractObservableReader>(previousReaders);
                     previousReaders = new HashMap<String, AbstractObservableReader>();
 
-
                     for (AbstractObservableReader r : getReaders()) {
                         previousReaders.put(r.getName(), r);
 
                         // If one of the values that are being removed doesn't exist, it means it's
                         // a new reader
-                        if (previous.remove(r.getName()) == null) {
+                        if (previous.remove(r.getName()) == null && initialized == true) {
                             notifyObservers(new ReaderPresencePluginEvent(true, r));
                         }
                     }
+
+                    // the initial readers list is known, we can now send readers change
+                    // notifications
+                    initialized = true;
 
                     // If we have a value left that wasn't removed, it means it's a deleted reader
                     for (AbstractObservableReader r : previous.values()) {
