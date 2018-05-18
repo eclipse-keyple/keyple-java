@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.keyple.calypso.commands.csm.parser.SelectDiversifierRespPars;
 import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.SeResponse;
+import org.keyple.seproxy.SeResponseSet;
 import org.mockito.Mockito;
 
 public class SelectDiversifierRespParsTest {
@@ -27,7 +27,7 @@ public class SelectDiversifierRespParsTest {
         List<ApduResponse> list1 = new ArrayList<ApduResponse>();
         List<ApduResponse> list2 = new ArrayList<ApduResponse>();
 
-        SeResponse seResponse = Mockito.mock(SeResponse.class);
+        SeResponseSet seResponse = Mockito.mock(SeResponseSet.class);
 
         ApduResponse apduResponse = new ApduResponse(null, true, new byte[] {(byte) 0x90, 0x00});
         ApduResponse apduResponse1 = new ApduResponse(null, true, new byte[] {(byte) 0x80, 0x00});

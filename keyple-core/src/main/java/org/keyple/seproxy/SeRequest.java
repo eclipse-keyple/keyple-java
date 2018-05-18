@@ -9,23 +9,44 @@
 package org.keyple.seproxy;
 
 import java.nio.ByteBuffer;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Aggregates the elements of a request to a local or remote SE Reader, sent through a ProxyReader,
- * in order to open a logical channel with a SE application to select, and to transfer a group of
- * APDU commands to run.
- *
+ * List of APDU requests that will result in a {@link SeResponse}
+ * 
  * @see SeResponse
  */
 public class SeRequest {
 
     /**
-     * List of request elements. Each {@link SeRequestElement} will result in a
-     * {@link SeResponseElement} wrapped in a {@link SeResponse}.
+     * Protocol flag
      */
-    private final List<SeRequestElement> elements;
+    private String protocolFlag;
+
+    /**
+     * the final logical channel status: if true, the SE reader keep active the logical channel of
+     * the SE application after processing the group of APDU commands. If false, the SE reader will
+     * close the logical channel of the SE application after processing the group of APDU commands
+     * (i.e. after the receipt of the last APDU response).
+     */
+    private boolean keepChannelOpen;
+
+    /**
+     * contains a group of APDUCommand to operate on the selected SE application by the SE reader.
+     */
+    private List<ApduRequest> apduRequests;
+
+
+    /**
+     * - AID’s bytes of the SE application to select. In case the SE application is currently not
+     * selected, a logical channel is established and the corresponding SE application is selected
+     * by the SE reader, otherwise keep the current channel.
+     *
+     * - Could be missing when operating SE which don’t support the Select Application command (as
+     * it is the case for CSM).
+     */
+    private ByteBuffer aidToSelect;
 
     /**
      * the constructor called by a ProxyReader in order to open a logical channel, to send a set of
@@ -34,86 +55,68 @@ public class SeRequest {
      * @param aidToSelect the aid to select
      * @param apduRequests the apdu requests
      * @param keepChannelOpen the keep channel open
-     * @deprecated Only provided as a compatibility layer. You should now use
-     *             {@link SeRequest#SeRequest(List)} constructor with a list of
-     *             {@link SeRequestElement}s.
      */
-    @Deprecated
     public SeRequest(ByteBuffer aidToSelect, List<ApduRequest> apduRequests,
             boolean keepChannelOpen) {
-        elements = Collections
-                .singletonList(new SeRequestElement(aidToSelect, apduRequests, keepChannelOpen));
+        this.aidToSelect = aidToSelect;
+        this.keepChannelOpen = keepChannelOpen;
+        this.apduRequests = apduRequests;
+
     }
 
     /**
      * @param apduRequests list of APDU requests
-     * @deprecated Only provided as a compatibility layer. You should now use
-     *             {@link SeRequest#SeRequest(List)} constructor with a list of
-     *             {@link SeRequestElement}s.
      */
-    // florent: #82: I had to transform the constructor into a helper method because there
-    // was a signature conflict.
-    public static SeRequest fromApduRequests(List<ApduRequest> apduRequests) {
-        return new SeRequest(Collections.singletonList(new SeRequestElement(apduRequests)));
-    }
+    public SeRequest(List<ApduRequest> apduRequests) {
 
-    /**
-     * Constructor
-     *
-     * @param elements List of {@link SeRequestElement}s
-     */
-    public SeRequest(List<SeRequestElement> elements) {
-        this.elements = elements;
-    }
+        this.keepChannelOpen = true;
+        this.apduRequests = new ArrayList<ApduRequest>();
 
-    /**
-     * List of request elements
-     *
-     * @return List of request elements
-     */
-    public List<SeRequestElement> getElements() {
-        return elements;
-    }
-
-    private SeRequestElement getSingleElement() {
-        if (elements.size() != 1) {
-            throw new IllegalStateException("This method only support ONE element");
+        if (apduRequests != null) {
+            this.apduRequests.addAll(apduRequests);
         }
-        return elements.get(0);
+
     }
 
     /**
-     * See {@link SeRequestElement#getApduRequests()}
+     * Gets the aid to select.
      *
-     * @deprecated Provided only as a compatibility layer with the previous architecture
+     * @return the current AID set to select
      */
-    @Deprecated
-    public List<ApduRequest> getApduRequests() {
-        return getSingleElement().getApduRequests();
-    }
-
-    /**
-     * See {@link SeRequestElement#getAidToSelect()}
-     *
-     * @deprecated Provided only as a compatibility layer with the previous architecture
-     */
-    @Deprecated
     public ByteBuffer getAidToSelect() {
-        return getSingleElement().getAidToSelect();
+        return aidToSelect;
     }
 
     /**
-     * See {@link SeRequestElement#keepChannelOpen()}
+     * Gets the apdu requests.
      *
-     * @deprecated Provided only as a compatibility layer with the previous architecture
+     * @return the group of APDUs to be transmitted to the SE application for this instance of
+     *         SERequest.
      */
-    @Deprecated
+    public List<ApduRequest> getApduRequests() {
+        return apduRequests;
+    }
+
+    /**
+     * Define if the channel should be kept open after the the {@link SeRequestSet} has been
+     * executed.
+     *
+     * @return If the channel should be kept open
+     */
     public boolean keepChannelOpen() {
-        return getSingleElement().keepChannelOpen();
+        return keepChannelOpen;
+    }
+
+    public String getProtocolFlag() {
+        return protocolFlag;
+    }
+
+    public void setProtocolFlag(String protocolFlag) {
+        this.protocolFlag = protocolFlag;
     }
 
     @Override
     public String toString() {
-        return String.format("SeRequest{elements=%s}", getElements());
+        return String.format("SeRequest{requests=%s}", getApduRequests());
     }
 }

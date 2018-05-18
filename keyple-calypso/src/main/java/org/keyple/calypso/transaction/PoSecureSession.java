@@ -112,16 +112,16 @@ public class PoSecureSession {
     /**
      * Process identification. On poReader, generate a SERequest for the specified PO AID, with
      * keepChannelOpen set at true, and apduRequests defined with the optional
-     * poCommands_OutsideSession. Returns the corresponding SEResponseElement. Identifies the serial and
-     * the revision of the PO from FCI data. On csmSessionReader, automatically operate the Select
-     * Diversifier and the Get Challenge.
+     * poCommands_OutsideSession. Returns the corresponding SEResponseElement. Identifies the serial
+     * and the revision of the PO from FCI data. On csmSessionReader, automatically operate the
+     * Select Diversifier and the Get Challenge.
      *
      * @param poAid the po AID
      * @param poCommandsOutsideSession the po commands outside session
      * @return the SE response
      * @throws IOReaderException the IO reader exception
      */
-    public SeResponseElement processIdentification(ByteBuffer poAid,
+    public SeResponse processIdentification(ByteBuffer poAid,
             List<SendableInSession> poCommandsOutsideSession) throws IOReaderException {
 
 
@@ -137,14 +137,14 @@ public class PoSecureSession {
         logger.info("Identification: PO requests", "action", "po_secure_session.ident_po_request");
         // System.out.println("\t========= Identification === Transfert PO commands");
 
-        // create a list of SeRequestElement
-        List<SeRequestElement> poRequestElements = new ArrayList<SeRequestElement>();
-        poRequestElements.add(new SeRequestElement(poAid, poApduRequestList, keepChannelOpen));
-        SeRequest poRequest = new SeRequest(poRequestElements);
+        // create a list of SeRequest
+        List<SeRequest> poRequestElements = new ArrayList<SeRequest>();
+        poRequestElements.add(new SeRequest(poAid, poApduRequestList, keepChannelOpen));
+        SeRequestSet poRequest = new SeRequestSet(poRequestElements);
 
-        // SeRequest poRequest = new SeRequest(poAid, poApduRequestList, keepChannelOpen);
-        SeResponse poResponse = poReader.transmit(poRequest);
-        SeResponseElement poResponseElement = poResponse.getElements().get(0);
+        // SeRequestSet poRequest = new SeRequestSet(poAid, poApduRequestList, keepChannelOpen);
+        SeResponseSet poResponse = poReader.transmit(poRequest);
+        SeResponse poResponseElement = poResponse.getElements().get(0);
 
         // Parse PO FCI - to retrieve Calypso Revision, Serial Number, & DF Name (AID)
         GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(poResponseElement.getFci());
@@ -180,12 +180,12 @@ public class PoSecureSession {
                 "apduReq2", ByteBufferUtils.toHex(csmGetChallenge.getApduRequest().getBuffer()));
 
         // Transfert CSM commands
-        // create a list of SeRequestElement
-        List<SeRequestElement> csmRequestElements = new ArrayList<SeRequestElement>();
-        csmRequestElements.add(new SeRequestElement(null, csmApduRequestList, keepChannelOpen));
-        SeRequest csmRequest = new SeRequest(csmRequestElements);
-        SeResponse csmResponse = csmReader.transmit(csmRequest);
-        SeResponseElement csmResponseElement = csmResponse.getElements().get(0);
+        // create a list of SeRequest
+        List<SeRequest> csmRequestElements = new ArrayList<SeRequest>();
+        csmRequestElements.add(new SeRequest(null, csmApduRequestList, keepChannelOpen));
+        SeRequestSet csmRequest = new SeRequestSet(csmRequestElements);
+        SeResponseSet csmResponse = csmReader.transmit(csmRequest);
+        SeResponse csmResponseElement = csmResponse.getElements().get(0);
         List<ApduResponse> csmApduResponseList = csmResponseElement.getApduResponses();
 
         logger.info("Identification: CSM Response", "action",
@@ -229,7 +229,7 @@ public class PoSecureSession {
      */
     // fclariamb(2018-03-02): TODO: Cleanup that mess. There was a lot of commented out code and I
     // added a lot more of it, once this code is tested we should clean it up
-    public SeResponseElement processOpening(AbstractOpenSessionCmdBuild openCommand,
+    public SeResponse processOpening(AbstractOpenSessionCmdBuild openCommand,
             List<SendableInSession> poCommandsInsideSession) throws IOReaderException {
 
         // Get PO ApduRequest List from SendableInSession List
@@ -252,13 +252,13 @@ public class PoSecureSession {
         // Transfert PO commands
         logger.info("Opening: PO request", "action", "po_secure_session.open_po_request");
         // System.out.println("\t========= Opening ========== Transfert PO commands");
-        // create a list of SeRequestElement
-        List<SeRequestElement> poRequestElements = new ArrayList<SeRequestElement>();
-        poRequestElements.add(new SeRequestElement(poCalypsoInstanceAid, poApduRequestList, true));
-        SeRequest poRequest = new SeRequest(poRequestElements);
+        // create a list of SeRequest
+        List<SeRequest> poRequestElements = new ArrayList<SeRequest>();
+        poRequestElements.add(new SeRequest(poCalypsoInstanceAid, poApduRequestList, true));
+        SeRequestSet poRequest = new SeRequestSet(poRequestElements);
 
-        SeResponse poResponse = poReader.transmit(poRequest);
-        SeResponseElement poResponseElement = poResponse.getElements().get(0);
+        SeResponseSet poResponse = poReader.transmit(poRequest);
+        SeResponse poResponseElement = poResponse.getElements().get(0);
         List<ApduResponse> poApduResponseList = poResponseElement.getApduResponses();
 
         // Parse OpenSession Response to get Card Challenge
@@ -375,12 +375,12 @@ public class PoSecureSession {
         // System.out.println("\t========= Opening ========== Transfert CSM commands");
         logger.info("Opening: CSM Request", "action", "po_secure_session.open_csm_request",
                 "apduList", csmApduRequestList);
-        // create a list of SeRequestElement
-        List<SeRequestElement> csmRequestElements = new ArrayList<SeRequestElement>();
-        csmRequestElements.add(new SeRequestElement(null, csmApduRequestList, true));
-        SeRequest csmRequest = new SeRequest(csmRequestElements);
+        // create a list of SeRequest
+        List<SeRequest> csmRequestElements = new ArrayList<SeRequest>();
+        csmRequestElements.add(new SeRequest(null, csmApduRequestList, true));
+        SeRequestSet csmRequest = new SeRequestSet(csmRequestElements);
 
-        SeResponse csmResponse = csmReader.transmit(csmRequest);
+        SeResponseSet csmResponse = csmReader.transmit(csmRequest);
         // fclairamb(2018-03-02): TODO: We don't check the result ?
         // List<ApduResponse> csmApduResponseList = csmResponse.getApduResponses();
 
@@ -419,8 +419,8 @@ public class PoSecureSession {
      * @throws UnexpectedReaderException the unexpected reader exception
      */
     private AbstractOpenSessionRespPars getSecureSessionBySEResponseAndRevision(
-            SeResponse responseOpenSession) throws UnexpectedReaderException {
-        SeResponseElement responseOpenSessionElement = responseOpenSession.getElements().get(0);
+            SeResponseSet responseOpenSession) throws UnexpectedReaderException {
+        SeResponse responseOpenSessionElement = responseOpenSession.getElements().get(0);
         AbstractOpenSessionRespPars openSessionRespPars = AbstractOpenSessionRespPars
                 .create(responseOpenSessionElement.getApduResponses().get(0), poRevision);
         if (!openSessionRespPars.isSuccessful()) {
@@ -434,15 +434,15 @@ public class PoSecureSession {
     /**
      * Process proceeding. On poReader, generate a SERequest with the current selected AID, with
      * keepChannelOpen set at true, and apduRequests defined with the poCommands_InsideSession.
-     * Returns the corresponding SEResponseElement (for poCommands_InsideSession). On csmSessionReader,
-     * automatically operate potentially several Digest Update Multiple.
+     * Returns the corresponding SEResponseElement (for poCommands_InsideSession). On
+     * csmSessionReader, automatically operate potentially several Digest Update Multiple.
      *
      * @param poCommandsInsideSession the po commands inside session
      * @return a SE Response
      *
      * @throws IOReaderException IO Reader exception
      */
-    public SeResponseElement processProceeding(List<SendableInSession> poCommandsInsideSession)
+    public SeResponse processProceeding(List<SendableInSession> poCommandsInsideSession)
             throws IOReaderException {
 
         // Get PO ApduRequest List from SendableInSession List
@@ -455,16 +455,16 @@ public class PoSecureSession {
 
         // Transfert PO commands
         // System.out.println("\t========= Continuation ===== Transfert PO commands");
-        // create a list of SeRequestElement
-        List<SeRequestElement> poRequestElements = new ArrayList<SeRequestElement>();
-        poRequestElements.add(
-                new SeRequestElement(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen));
-        SeRequest poRequest = new SeRequest(poRequestElements);
+        // create a list of SeRequest
+        List<SeRequest> poRequestElements = new ArrayList<SeRequest>();
+        poRequestElements
+                .add(new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen));
+        SeRequestSet poRequest = new SeRequestSet(poRequestElements);
 
         logger.info("Processing: Sending PO commands", "action",
                 "po_secure_session.process_po_request", "apduList", poApduRequestList);
-        SeResponse poResponse = poReader.transmit(poRequest);
-        SeResponseElement poResponseElement = poResponse.getElements().get(0);
+        SeResponseSet poResponse = poReader.transmit(poRequest);
+        SeResponse poResponseElement = poResponse.getElements().get(0);
         List<ApduResponse> poApduResponseList = poResponseElement.getApduResponses();
         logger.info("Processing: Receiving PO responses", "action",
                 "po_secure_session.process_po_response", "apduList", poApduResponseList);
@@ -516,15 +516,15 @@ public class PoSecureSession {
 
         // Transfert CSM commands
         // System.out.println("\t========= Continuation ===== Transfert CSM commands");
-        // create a list of SeRequestElement
-        List<SeRequestElement> csmRequestElements = new ArrayList<SeRequestElement>();
-        csmRequestElements.add(new SeRequestElement(null, csmApduRequestList, keepChannelOpen));
-        SeRequest csmRequest = new SeRequest(csmRequestElements);
+        // create a list of SeRequest
+        List<SeRequest> csmRequestElements = new ArrayList<SeRequest>();
+        csmRequestElements.add(new SeRequest(null, csmApduRequestList, keepChannelOpen));
+        SeRequestSet csmRequest = new SeRequestSet(csmRequestElements);
 
         logger.info("Processing: Sending CSM requests", "action",
                 "po_secure_session.process_csm_request", "apduList", csmApduRequestList);
-        SeResponse csmResponse = csmReader.transmit(csmRequest);
-        SeResponseElement csmResponseElement = csmResponse.getElements().get(0);
+        SeResponseSet csmResponse = csmReader.transmit(csmRequest);
+        SeResponse csmResponseElement = csmResponse.getElements().get(0);
         // List<ApduResponse> csmApduResponseList = csmResponse.getApduResponses();
         logger.info("Processing: Receiving CSM response", "action",
                 "po_secure_session.process_csm_response", "apduList",
@@ -546,11 +546,11 @@ public class PoSecureSession {
      * @return SEResponseElement close session response
      * @throws IOReaderException the IO reader exception
      */
-    // public SeResponseElement processClosing(List<SendableInSession> poCommandsInsideSession,
+    // public SeResponse processClosing(List<SendableInSession> poCommandsInsideSession,
     // CloseSessionCmdBuild closeCommand, PoGetChallengeCmdBuild ratificationCommand)
     // TODO - prévoir une variante pour enchainer plusieurs session d'affilée (la commande de
     // ratification étant un nouveau processOpening)
-    public SeResponseElement processClosing(List<SendableInSession> poCommandsInsideSession,
+    public SeResponse processClosing(List<SendableInSession> poCommandsInsideSession,
             List<ApduResponse> poAnticipatedResponseInsideSession,
             AbstractPoCommandBuilder ratificationCommand) throws IOReaderException {
 
@@ -566,7 +566,7 @@ public class PoSecureSession {
         boolean keepChannelOpen = true;
         // Next PO & CSM channels will be 'Close' for the last exchanges
 
-        SeResponse poResponse;
+        SeResponseSet poResponse;
 
         // Compute "Anticipated" Digest Update (for optional poCommandsInsideSession)
         if ((poCommandsInsideSession != null) && !poApduRequestList.isEmpty()) {
@@ -610,13 +610,13 @@ public class PoSecureSession {
         // System.out.println("\t========= Closing ========== Transfert CSM commands - #1");
         logger.info("Closing: Sending CSM request", "action", "po_secure_session.close_csm_req",
                 "apduList", csmApduRequestList_1);
-        // create a list of SeRequestElement
-        List<SeRequestElement> csmRequestElements = new ArrayList<SeRequestElement>();
-        csmRequestElements.add(new SeRequestElement(null, csmApduRequestList_1, keepChannelOpen));
-        SeRequest csmRequest = new SeRequest(csmRequestElements);
+        // create a list of SeRequest
+        List<SeRequest> csmRequestElements = new ArrayList<SeRequest>();
+        csmRequestElements.add(new SeRequest(null, csmApduRequestList_1, keepChannelOpen));
+        SeRequestSet csmRequest = new SeRequestSet(csmRequestElements);
 
-        SeResponse csmResponse_1 = csmReader.transmit(csmRequest);
-        SeResponseElement csmResponseElement_1 = csmResponse_1.getElements().get(0);
+        SeResponseSet csmResponse_1 = csmReader.transmit(csmRequest);
+        SeResponse csmResponseElement_1 = csmResponse_1.getElements().get(0);
         List<ApduResponse> csmApduResponseList_1 = csmResponseElement_1.getApduResponses();
         // System.out.println("\t\tDEBUG ##### csmApduResponseList_1.size() : " +
         // csmApduResponseList_1.size());
@@ -652,16 +652,16 @@ public class PoSecureSession {
         }
 
         // Transfert PO commands
-        // create a list of SeRequestElement
-        List<SeRequestElement> poRequestElements = new ArrayList<SeRequestElement>();
-        poRequestElements.add(
-                new SeRequestElement(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen));
-        SeRequest poRequest = new SeRequest(poRequestElements);
+        // create a list of SeRequest
+        List<SeRequest> poRequestElements = new ArrayList<SeRequest>();
+        poRequestElements
+                .add(new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen));
+        SeRequestSet poRequest = new SeRequestSet(poRequestElements);
 
         logger.info("Closing: Sending PO request", "action", "po_secure_session.close_po_req",
                 "apduList", poRequestElements.get(0).getApduRequests());
         poResponse = poReader.transmit(poRequest);
-        SeResponseElement poResponseElement = poResponse.getElements().get(0);
+        SeResponse poResponseElement = poResponse.getElements().get(0);
         List<ApduResponse> poApduResponseList = poResponseElement.getApduResponses();
 
         // TODO => check that PO response is equal to anticipated PO response (that
@@ -692,13 +692,13 @@ public class PoSecureSession {
 
         // ****SECOND**** transfert of CSM commands
         // System.out.println("\t========= Closing ========== Transfert CSM commands - #2");
-        // create a list of SeRequestElement
-        List<SeRequestElement> csmRequestElements_2 = new ArrayList<SeRequestElement>();
-        csmRequestElements_2.add(new SeRequestElement(null, csmApduRequestList_2, keepChannelOpen));
-        SeRequest csmRequest_2 = new SeRequest(csmRequestElements_2);
+        // create a list of SeRequest
+        List<SeRequest> csmRequestElements_2 = new ArrayList<SeRequest>();
+        csmRequestElements_2.add(new SeRequest(null, csmApduRequestList_2, keepChannelOpen));
+        SeRequestSet csmRequest_2 = new SeRequestSet(csmRequestElements_2);
 
-        SeResponse csmResponse_2 = csmReader.transmit(csmRequest_2);
-        SeResponseElement csmResponseElement_2 = csmResponse_2.getElements().get(0);
+        SeResponseSet csmResponse_2 = csmReader.transmit(csmRequest_2);
+        SeResponse csmResponseElement_2 = csmResponse_2.getElements().get(0);
         List<ApduResponse> csmApduResponseList_2 = csmResponseElement_2.getApduResponses();
 
         // Get transaction result

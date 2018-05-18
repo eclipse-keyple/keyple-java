@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.keyple.calypso.commands.po.parser.AppendRecordRespPars;
 import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.SeResponse;
+import org.keyple.seproxy.SeResponseSet;
 
 public class AppendRecordRespParsTest {
 
@@ -24,7 +24,7 @@ public class AppendRecordRespParsTest {
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(new byte[] {90, 00}, true);
         listeResponse.add(apduResponse);
-        SeResponse seResponse = new SeResponse(true, null, listeResponse);
+        SeResponseSet seResponse = new SeResponseSet(true, null, listeResponse);
 
         AbstractApduResponseParser apduResponseParser =
                 new AppendRecordRespPars(seResponse.getApduResponses().get(0));

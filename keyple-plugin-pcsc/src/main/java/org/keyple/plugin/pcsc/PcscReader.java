@@ -115,40 +115,40 @@ public class PcscReader extends AbstractObservableReader implements Configurable
     }
 
     @Override
-    public SeResponse transmit(SeRequest request) throws IOReaderException {
-        return logging ? transmitWithTiming(request) : transmitActual(request);
+    public SeResponseSet transmit(SeRequestSet requestSet) throws IOReaderException {
+        return logging ? transmitWithTiming(requestSet) : transmitActual(requestSet);
     }
 
-    private SeResponse transmitWithTiming(SeRequest request) throws IOReaderException {
+    private SeResponseSet transmitWithTiming(SeRequestSet requestSet) throws IOReaderException {
         long before = System.nanoTime();
         try {
-            SeResponse response = transmitActual(request);
+            SeResponseSet responseSet = transmitActual(requestSet);
             // Switching to the 10th of milliseconds and dividing by 10 to get the ms
             double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-            logger.info("PCSCReader: Data exchange", "action", "pcsc_reader.transmit", "request",
-                    request, "response", response, "elapsedMs", elapsedMs);
-            return response;
+            logger.info("PCSCReader: Data exchange", "action", "pcsc_reader.transmit", "requestSet",
+                    requestSet, "responseSet", responseSet, "elapsedMs", elapsedMs);
+            return responseSet;
         } catch (IOReaderException ex) {
             // Switching to the 10th of milliseconds and dividing by 10 to get the ms
             double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
             logger.info("PCSCReader: Data exchange", "action", "pcsc_reader.transmit_failure",
-                    "request", request, "elapsedMs", elapsedMs);
+                    "requestSet", requestSet, "elapsedMs", elapsedMs);
             throw ex;
         }
     }
 
     /**
-     * Do the transmission of all needed request elements contained in the provided request
-     * according to the protocol flag selection logic. The response elements are returned in the
-     * response object. The request elements are ordered at application level and the responses
-     * match this order. When a request is not matching the current PO, the response elements pushed
-     * in the response object is set to null.
+     * Do the transmission of all needed requestSet elements contained in the provided requestSet
+     * according to the protocol flag selection logic. The responseSet elements are returned in the
+     * responseSet object. The requestSet elements are ordered at application level and the responses
+     * match this order. When a requestSet is not matching the current PO, the responseSet elements pushed
+     * in the responseSet object is set to null.
      *
-     * @param request
-     * @return response
+     * @param requestSet
+     * @return responseSet
      * @throws IOReaderException
      */
-    private SeResponse transmitActual(SeRequest request) throws IOReaderException {
+    private SeResponseSet transmitActual(SeRequestSet requestSet) throws IOReaderException {
         // first step: init of the physical SE channel: if not yet established, opening of the
         // physical channel
         try {
@@ -169,15 +169,15 @@ public class PcscReader extends AbstractObservableReader implements Configurable
         }
 
         boolean previouslyOpen = false;
-        boolean elementMatchProtocol[] = new boolean[request.getElements().size()];
+        boolean elementMatchProtocol[] = new boolean[requestSet.getElements().size()];
         int elementIndex = 0, lastElementIndex;
 
         // Determine which requestElements are matching the current ATR
-        for (SeRequestElement reqElement : request.getElements()) {
+        for (SeRequest reqElement : requestSet.getElements()) {
             // Get protocolFlag to check if ATR filtering is required
             String protocolFlag = reqElement.getProtocolFlag();
             if (protocolFlag != null && !protocolFlag.isEmpty()) {
-                // the request will be executed only if the protocol match the requestElement
+                // the requestSet will be executed only if the protocol match the requestElement
                 String selectionMask = protocolsMap.get(protocolFlag);
                 if (selectionMask == null) {
                     throw new InvalidMessageException("Target selector mask not found!", null);
@@ -194,7 +194,7 @@ public class PcscReader extends AbstractObservableReader implements Configurable
                     elementMatchProtocol[elementIndex] = true;
                 }
             } else {
-                // when no protocol is defined the request has to be executed
+                // when no protocol is defined the requestSet has to be executed
                 elementMatchProtocol[elementIndex] = true;
             }
             elementIndex++;
@@ -206,12 +206,12 @@ public class PcscReader extends AbstractObservableReader implements Configurable
         lastElementIndex = elementIndex;
         elementIndex = 0;
 
-        // The current request is possibly made of several APDU command lists
-        // If the elementMatchProtocol is true we process the request
-        // If the elementMatchProtocol is false we skip to the next request
+        // The current requestSet is possibly made of several APDU command lists
+        // If the elementMatchProtocol is true we process the requestSet
+        // If the elementMatchProtocol is false we skip to the next requestSet
         // If keepChannelOpen is false, we close the physical channel for the last requestElement.
-        List<SeResponseElement> respElements = new ArrayList<SeResponseElement>();
-        for (SeRequestElement reqElement : request.getElements()) {
+        List<SeResponse> respElements = new ArrayList<SeResponse>();
+        for (SeRequest reqElement : requestSet.getElements()) {
             if (elementMatchProtocol[elementIndex] == true) {
                 boolean executeRequest = true;
                 List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
@@ -239,17 +239,16 @@ public class PcscReader extends AbstractObservableReader implements Configurable
                         apduResponseList.add(transmit(apduRequest));
                     }
                 }
-                respElements.add(
-                        new SeResponseElement(previouslyOpen, fciDataSelected, apduResponseList));
+                respElements.add(new SeResponse(previouslyOpen, fciDataSelected, apduResponseList));
             } else {
-                // in case the protocolFlag of a SeRequestElement doesn't match the reader status, a
-                // null SeResponseElement is added to the SeResponse.
+                // in case the protocolFlag of a SeRequest doesn't match the reader status, a
+                // null SeResponse is added to the SeResponseSet.
                 respElements.add(null);
             }
             elementIndex++;
             if (!reqElement.keepChannelOpen()) {
                 if (lastElementIndex == elementIndex) {
-                    // For the processing of the last SeRequestElement with a protocolFlag matching
+                    // For the processing of the last SeRequest with a protocolFlag matching
                     // the SE reader status, if the logical channel doesn't require to be kept open,
                     // then the physical channel is closed.
                     disconnect();
@@ -260,14 +259,14 @@ public class PcscReader extends AbstractObservableReader implements Configurable
                 previouslyOpen = true;
                 // When keepChannelOpen is true, we stop after the first matching requestElement
                 // we exit the for loop here
-                // For the processing of a SeRequestElement with a protocolFlag which matches the
+                // For the processing of a SeRequest with a protocolFlag which matches the
                 // current SE reader status, in case it's requested to keep the logical channel
-                // open, then the other remaining SeRequestElement are skipped, and null
-                // SeRequestElement are returned for them.
+                // open, then the other remaining SeRequest are skipped, and null
+                // SeRequest are returned for them.
                 break;
             }
         }
-        return new SeResponse(respElements);
+        return new SeResponseSet(respElements);
     }
 
     /**

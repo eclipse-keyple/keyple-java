@@ -24,8 +24,8 @@ import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ProxyReader;
-import org.keyple.seproxy.SeRequest;
-import org.keyple.seproxy.SeResponse;
+import org.keyple.seproxy.SeRequestSet;
+import org.keyple.seproxy.SeResponseSet;
 import org.keyple.seproxy.exceptions.*;
 import org.mockito.Mockito;
 
@@ -37,11 +37,11 @@ public class SelectDiversiferCmdBuildTest {
 
     private List<ApduRequest> ApduRequests = new ArrayList<ApduRequest>();
 
-    private SeRequest seRequest;
+    private SeRequestSet seRequest;
 
     private List<ApduResponse> apduResponses;
 
-    private SeResponse seResponseExpected;
+    private SeResponseSet seResponseExpected;
 
     private byte[] returnOK = {(byte) 0x90, 0x00};
 
@@ -62,7 +62,7 @@ public class SelectDiversiferCmdBuildTest {
         ApduRequest apdu = apduCommandBuilder.getApduRequest();
         ApduRequests.add(apdu);
 
-        seRequest = new SeRequest(null, ApduRequests, true);
+        seRequest = new SeRequestSet(null, ApduRequests, true);
         list.add(
                 new ApduResponse(
                         new byte[] {0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54, 0x52, 0x2E,
@@ -78,9 +78,9 @@ public class SelectDiversiferCmdBuildTest {
                                 (byte) 0xB9, 0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01},
                         true, new byte[] {(byte) 0x80, 0x00}));
 
-        SeResponse seResponse = new SeResponse(true, null, list);
+        SeResponseSet seResponse = new SeResponseSet(true, null, list);
 
-        SeResponse responseFci = Mockito.mock(SeResponse.class);
+        SeResponseSet responseFci = Mockito.mock(SeResponseSet.class);
         fakeSpecificReader = Mockito.mock(ProxyReader.class);
 
         Mockito.when(responseFci.getApduResponses()).thenReturn(list);
@@ -99,11 +99,11 @@ public class SelectDiversiferCmdBuildTest {
         apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseExpected);
 
-        seResponseExpected = new SeResponse(true, responseExpected, apduResponses);
-        SeRequest seRequest2 = new SeRequest(null, ApduRequests2, true);
+        seResponseExpected = new SeResponseSet(true, responseExpected, apduResponses);
+        SeRequestSet seRequest2 = new SeRequestSet(null, ApduRequests2, true);
 
         Mockito.when(fakeSpecificReader.transmit(seRequest2)).thenReturn(seResponse);
-        SeResponse seResponse1 = fakeSpecificReader.transmit(seRequest2);
+        SeResponseSet seResponse1 = fakeSpecificReader.transmit(seRequest2);
 
         Assert.assertEquals(seResponseExpected.getApduResponses().get(0).getStatusCode(),
                 seResponse1.getApduResponses().get(0).getStatusCode());

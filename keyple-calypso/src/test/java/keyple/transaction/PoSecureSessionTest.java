@@ -8,6 +8,12 @@
 
 package keyple.transaction;
 
+import static keyple.commands.utils.TestsUtilsResponseTabByteGenerator.*;
+import static org.junit.Assert.*;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,14 +33,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static keyple.commands.utils.TestsUtilsResponseTabByteGenerator.*;
-import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PoSecureSessionTest {
@@ -59,64 +57,62 @@ public class PoSecureSessionTest {
 
     ByteBuffer samchallenge;
 
-    private SeResponse responseTerminalSessionSignature;
-    private SeResponse responseTerminalSessionSignatureError;
-    private SeResponse responseFci;
-    private SeResponse responseFciError;
-    private SeResponse responseOpenSession;
-    private SeResponse responseOpenSessionError;
+    private SeResponseSet responseTerminalSessionSignature;
+    private SeResponseSet responseTerminalSessionSignatureError;
+    private SeResponseSet responseFci;
+    private SeResponseSet responseFciError;
+    private SeResponseSet responseOpenSession;
+    private SeResponseSet responseOpenSessionError;
 
     @Before
     public void setUp() {
         samchallenge = ByteBuffer.wrap(new byte[] {0x01, 0x02, 0x03, 0x04});
 
-        ApduResponse apduResponse =
-                generateApduResponseOpenSessionCmd();
+        ApduResponse apduResponse = generateApduResponseOpenSessionCmd();
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
         apduResponseList.add(apduResponse);
-        responseOpenSession = new SeResponse(true, apduResponse, apduResponseList);
+        responseOpenSession = new SeResponseSet(true, apduResponse, apduResponseList);
 
-        ApduResponse apduResponseErr =
-                generateApduResponseOpenSessionCmdError();
+        ApduResponse apduResponseErr = generateApduResponseOpenSessionCmdError();
         List<ApduResponse> apduResponseListErr = new ArrayList<ApduResponse>();
         apduResponseListErr.add(apduResponseErr);
-        responseOpenSessionError = new SeResponse(true, apduResponseErr, apduResponseListErr);
+        responseOpenSessionError = new SeResponseSet(true, apduResponseErr, apduResponseListErr);
 
 
-        ApduResponse apduResponseTerminalSessionSignature =generateApduResponseTerminalSessionSignatureCmd();
+        ApduResponse apduResponseTerminalSessionSignature =
+                generateApduResponseTerminalSessionSignatureCmd();
         List<ApduResponse> apduResponseTerminalSessionSignatureList = new ArrayList<ApduResponse>();
         apduResponseTerminalSessionSignatureList.add(apduResponseTerminalSessionSignature);
-        responseTerminalSessionSignature = new SeResponse(true,
+        responseTerminalSessionSignature = new SeResponseSet(true,
                 apduResponseTerminalSessionSignature, apduResponseTerminalSessionSignatureList);
 
-        ApduResponse apduResponseTerminalSessionSignatureErr =generateApduResponseTerminalSessionSignatureCmdError();
+        ApduResponse apduResponseTerminalSessionSignatureErr =
+                generateApduResponseTerminalSessionSignatureCmdError();
         List<ApduResponse> apduResponseTerminalSessionSignatureListErr =
                 new ArrayList<ApduResponse>();
         apduResponseTerminalSessionSignatureListErr.add(apduResponseTerminalSessionSignatureErr);
         responseTerminalSessionSignatureError =
-                new SeResponse(true, apduResponseTerminalSessionSignatureErr,
+                new SeResponseSet(true, apduResponseTerminalSessionSignatureErr,
                         apduResponseTerminalSessionSignatureListErr);
 
 
-        ApduResponse apduResponseFci =
-                generateApduResponseFciCmd();
+        ApduResponse apduResponseFci = generateApduResponseFciCmd();
         List<ApduResponse> apduResponseFciList = new ArrayList<ApduResponse>();
         apduResponseFciList.add(apduResponseFci);
-        responseFci = new SeResponse(true, apduResponseFci, apduResponseFciList);
+        responseFci = new SeResponseSet(true, apduResponseFci, apduResponseFciList);
 
-        ApduResponse apduResponseFciErr =
-                generateApduResponseFciCmdError();
+        ApduResponse apduResponseFciErr = generateApduResponseFciCmdError();
         List<ApduResponse> apduResponseFciListErr = new ArrayList<ApduResponse>();
         apduResponseFciListErr.add(apduResponseFciErr);
-        responseFciError = new SeResponse(true, apduResponseFciErr, apduResponseFciListErr);
+        responseFciError = new SeResponseSet(true, apduResponseFciErr, apduResponseFciListErr);
     }
 
     private void setBeforeTest(byte key) throws IOReaderException {
 
         poPlainSecrureSession = new PoSecureSession(poReader, csmSessionReader, key);
-        Mockito.when(poReader.transmit(Matchers.any(SeRequest.class)))
+        Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseOpenSession);
-        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequest.class)))
+        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseOpenSession);
     }
 
@@ -130,7 +126,7 @@ public class PoSecureSessionTest {
         byte sfi = (byte) 0x08;
         byte recordNumber = (byte) 0x01;
 
-        SeResponseElement seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
+        SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
                 responseOpenSession.getApduResponses(), null);
 
         assertEquals(2, seResponse2.getApduResponses().size());
@@ -156,7 +152,7 @@ public class PoSecureSessionTest {
         byte sfi = (byte) 0x08;
         byte recordNumber = (byte) 0x01;
 
-        SeResponseElement seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
+        SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
                 responseOpenSession.getApduResponses(), null);
 
         assertEquals(2, seResponse2.getApduResponses().size());
@@ -182,7 +178,7 @@ public class PoSecureSessionTest {
         byte sfi = (byte) 0x08;
         byte recordNumber = (byte) 0x01;
 
-        SeResponseElement seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
+        SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
                 responseOpenSession.getApduResponses(), null);
 
         assertEquals(2, seResponse2.getApduResponses().size());
@@ -214,7 +210,7 @@ public class PoSecureSessionTest {
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
                 (byte) 0x08, (byte) 0x00);
 
-        SeResponseElement seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
+        SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
                 responseOpenSession.getApduResponses(), poCommandsInsideSession);
 
         assertEquals(3, seResponse2.getApduResponses().size());
@@ -235,7 +231,7 @@ public class PoSecureSessionTest {
 
         byte key = (byte) 0x03;
         this.setBeforeTest(key);
-        Mockito.when(poReader.transmit(Matchers.any(SeRequest.class)))
+        Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseOpenSessionError);
         byte sfi = (byte) 0x08;
         byte recordNumber = (byte) 0x01;
@@ -245,7 +241,7 @@ public class PoSecureSessionTest {
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
                 (byte) 0x08, (byte) 0x00);
 
-        SeResponseElement seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
+        SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
                 responseOpenSession.getApduResponses(), poCommandsInsideSession);
 
     }
@@ -257,7 +253,7 @@ public class PoSecureSessionTest {
             InvalidApduReaderException, ReaderTimeoutException, InconsistentCommandException {
 
         this.setBeforeTest(this.defaultKeyIndex);
-        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequest.class)))
+        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseOpenSessionError);
         byte recordNumber = (byte) 0x01;
 
@@ -266,7 +262,7 @@ public class PoSecureSessionTest {
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
                 (byte) 0x08, (byte) 0x00);
 
-        SeResponseElement seResponse2 = this.poPlainSecrureSession
+        SeResponse seResponse2 = this.poPlainSecrureSession
                 .processProceeding(Arrays.asList(poCommandsInsideSession));
     }
 
@@ -283,7 +279,7 @@ public class PoSecureSessionTest {
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
                 (byte) 0x08, (byte) 0x00);
 
-        SeResponseElement seResponse2 = this.poPlainSecrureSession
+        SeResponse seResponse2 = this.poPlainSecrureSession
                 .processProceeding(Arrays.asList(poCommandsInsideSession));
 
         assertEquals(1, seResponse2.getApduResponses().size());
@@ -302,15 +298,15 @@ public class PoSecureSessionTest {
         this.setBeforeTest(this.defaultKeyIndex);
         SendableInSession[] poCommandsInsideSession = null;
 
-        Mockito.when(poReader.transmit(Matchers.any(SeRequest.class)))
+        Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseTerminalSessionSignatureError);
-        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequest.class)))
+        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseTerminalSessionSignature);
 
         PoGetChallengeCmdBuild ratificationCommand =
                 new PoGetChallengeCmdBuild(this.poPlainSecrureSession.getRevision());
 
-        SeResponseElement seResponse2 = poPlainSecrureSession
+        SeResponse seResponse2 = poPlainSecrureSession
                 .processClosing(Arrays.asList(poCommandsInsideSession), null, ratificationCommand);
     }
 
@@ -320,15 +316,15 @@ public class PoSecureSessionTest {
         this.setBeforeTest(this.defaultKeyIndex);
         // SendableInSession[] poCommandsInsideSession = null;
 
-        Mockito.when(poReader.transmit(Matchers.any(SeRequest.class)))
+        Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseTerminalSessionSignature);
-        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequest.class)))
+        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseTerminalSessionSignature);
 
         PoGetChallengeCmdBuild ratificationCommand =
                 new PoGetChallengeCmdBuild(this.poPlainSecrureSession.getRevision());
 
-        SeResponseElement seResponse2 =
+        SeResponse seResponse2 =
                 poPlainSecrureSession.processClosing(null, null, ratificationCommand);
         // assertEquals(1, seResponse2.getApduResponses().size());
         // Whitebox.getInternalState(seResponse2, "channelPreviouslyOpen").equals(true);
@@ -346,9 +342,9 @@ public class PoSecureSessionTest {
         byte recordNumber = (byte) 0x01;
         SendableInSession[] poCommandsInsideSession = new SendableInSession[1];
 
-        Mockito.when(poReader.transmit(Matchers.any(SeRequest.class)))
+        Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseTerminalSessionSignature);
-        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequest.class)))
+        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseTerminalSessionSignature);
 
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
@@ -356,7 +352,7 @@ public class PoSecureSessionTest {
         PoGetChallengeCmdBuild ratificationCommand =
                 new PoGetChallengeCmdBuild(this.poPlainSecrureSession.getRevision());
 
-        SeResponseElement seResponse2 = poPlainSecrureSession
+        SeResponse seResponse2 = poPlainSecrureSession
                 .processClosing(Arrays.asList(poCommandsInsideSession), null, ratificationCommand);
         assertEquals(2, seResponse2.getApduResponses().size());
         // Whitebox.getInternalState(seResponse2, "channelPreviouslyOpen").equals(true);
@@ -379,8 +375,8 @@ public class PoSecureSessionTest {
 
         this.setBeforeTest(this.defaultKeyIndex);
 
-        Mockito.when(poReader.transmit(Matchers.any(SeRequest.class))).thenReturn(responseFci);
-        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequest.class)))
+        Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class))).thenReturn(responseFci);
+        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseFci);
         byte recordNumber = (byte) 0x01;
 
@@ -391,7 +387,7 @@ public class PoSecureSessionTest {
 
         ByteBuffer aid =
                 ByteBuffer.wrap(new byte[] {0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41});
-        SeResponseElement seResponse2 = this.poPlainSecrureSession.processIdentification(aid,
+        SeResponse seResponse2 = this.poPlainSecrureSession.processIdentification(aid,
                 Arrays.asList(poCommandsInsideSession));
 
         assertEquals(3, seResponse2.getApduResponses().size());
@@ -423,7 +419,7 @@ public class PoSecureSessionTest {
 
     }
 
-    private SeResponseElement processOpeningTestKif0xFFKey(byte key, byte sfi, byte recordNumber,
+    private SeResponse processOpeningTestKif0xFFKey(byte key, byte sfi, byte recordNumber,
             List<ApduResponse> apduExpected, SendableInSession[] poCommandsInsideSession)
             throws IOReaderException, InconsistentCommandException {
         AbstractOpenSessionCmdBuild openCommand =

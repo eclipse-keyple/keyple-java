@@ -133,9 +133,9 @@ public class SmartCardIOReaderTest {
 
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
-        SeRequest seApplicationRequest = new SeRequest(aidToSelect, apduRequests, true);
+        SeRequestSet seApplicationRequest = new SeRequestSet(aidToSelect, apduRequests, true);
 
-        SeResponse reponseActuelle = reader.transmit(seApplicationRequest);
+        SeResponseSet reponseActuelle = reader.transmit(seApplicationRequest);
 
         assertNull(reponseActuelle.getFci());
         assertEquals(reponseActuelle.getApduResponses().size(), 0);
@@ -164,10 +164,10 @@ public class SmartCardIOReaderTest {
 
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
-        SeRequest seApplicationRequest = new SeRequest(aidToSelect, apduRequests, true);
+        SeRequestSet seApplicationRequest = new SeRequestSet(aidToSelect, apduRequests, true);
 
         PcscReader spiedReader = spy(this.reader);
-        SeResponse reponseActuelle = spiedReader.transmit(seApplicationRequest);
+        SeResponseSet reponseActuelle = spiedReader.transmit(seApplicationRequest);
 
         assertEquals(reponseActuelle.getApduResponses().size(),
                 seApplicationRequest.getApduRequests().size());
@@ -199,11 +199,11 @@ public class SmartCardIOReaderTest {
 
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
-        SeRequest seApplicationRequest = new SeRequest(aidToSelect, apduRequests, true);
+        SeRequestSet seApplicationRequest = new SeRequestSet(aidToSelect, apduRequests, true);
 
         PcscReader spiedReader = spy(this.reader);
 
-        SeResponse reponseActuelle = spiedReader.transmit(seApplicationRequest);
+        SeResponseSet reponseActuelle = spiedReader.transmit(seApplicationRequest);
         assertNotNull(reponseActuelle.getFci());
         assertEquals(reponseActuelle.getApduResponses().size(),
                 seApplicationRequest.getApduRequests().size());
@@ -230,11 +230,11 @@ public class SmartCardIOReaderTest {
 
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
-        SeRequest seApplicationRequest = new SeRequest(aidToSelect, apduRequests, false);
+        SeRequestSet seApplicationRequest = new SeRequestSet(aidToSelect, apduRequests, false);
 
         PcscReader spiedReader = spy(this.reader);
 
-        SeResponse reponseActuelle = spiedReader.transmit(seApplicationRequest);
+        SeResponseSet reponseActuelle = spiedReader.transmit(seApplicationRequest);
         assertNotNull(reponseActuelle.getFci());
         assertEquals(reponseActuelle.getApduResponses().size(),
                 seApplicationRequest.getApduRequests().size());

@@ -14,16 +14,12 @@ import java.util.List;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
-import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.ByteBufferUtils;
-import org.keyple.seproxy.ProxyReader;
-import org.keyple.seproxy.SeRequest;
-import org.keyple.seproxy.SeRequestElement;
-import org.keyple.seproxy.SeResponse;
+import org.keyple.seproxy.*;
+import org.keyple.seproxy.SeRequestSet;
 import org.keyple.seproxy.exceptions.IOReaderException;
 
 /**
- * Basic @{@link SeRequest} to test NFC Plugin with IsoDep protocol
+ * Basic @{@link SeRequestSet} to test NFC Plugin with IsoDep protocol
  */
 public class IsodepCardAccessManager extends AbstractLogicManager {
 
@@ -54,16 +50,16 @@ public class IsodepCardAccessManager extends AbstractLogicManager {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-        SeRequestElement seRequestElement =
-                new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+        SeRequest seRequestElement =
+                new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
         seRequestElement.setProtocolFlag("android.nfc.tech.IsoDep");
-        List<SeRequestElement> seRequestElements = new ArrayList<SeRequestElement>();
+        List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
         seRequestElements.add(seRequestElement);
-        SeRequest poRequest = new SeRequest(seRequestElements);
+        SeRequestSet poRequest = new SeRequestSet(seRequestElements);
 
 
         try {
-            SeResponse poResponse = poReader.transmit(poRequest);
+            SeResponseSet poResponse = poReader.transmit(poRequest);
             getTopic().post(new Event("Got a response", "poResponse", poResponse));
         } catch (IOReaderException e) {
             e.printStackTrace();
