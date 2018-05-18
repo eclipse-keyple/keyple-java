@@ -8,15 +8,14 @@
 
 package org.keyple.example.common;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.IOReaderException;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Set of @{@link SeRequest} to test NFC Plugin multiple protocol flags. Two @{@link SeRequest} are
