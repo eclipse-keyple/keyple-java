@@ -140,9 +140,9 @@ public class PcscReader extends AbstractObservableReader implements Configurable
     /**
      * Do the transmission of all needed requestSet elements contained in the provided requestSet
      * according to the protocol flag selection logic. The responseSet elements are returned in the
-     * responseSet object. The requestSet elements are ordered at application level and the responses
-     * match this order. When a requestSet is not matching the current PO, the responseSet elements pushed
-     * in the responseSet object is set to null.
+     * responseSet object. The requestSet elements are ordered at application level and the
+     * responses match this order. When a requestSet is not matching the current PO, the responseSet
+     * elements pushed in the responseSet object is set to null.
      *
      * @param requestSet
      * @return responseSet
