@@ -20,26 +20,26 @@ public class SeRequestTest {
 
     @Test
     public void testSERequest() {
-        SeRequest request = new SeRequest(aid, new ArrayList<ApduRequest>(), true);
+        SeRequestSet request = new SeRequestSet(aid, new ArrayList<ApduRequest>(), true);
         assertNotNull(request);
     }
 
     @Test
     public void testGetAidToSelect() {
-        SeRequest request = new SeRequest(aid, new ArrayList<ApduRequest>(), true);
+        SeRequestSet request = new SeRequestSet(aid, new ArrayList<ApduRequest>(), true);
         assertEquals(aid, request.getAidToSelect());
     }
 
     @Test
     public void testGetApduRequests() {
-        SeRequest request = new SeRequest(aid, new ArrayList<ApduRequest>(), true);
+        SeRequestSet request = new SeRequestSet(aid, new ArrayList<ApduRequest>(), true);
         assertArrayEquals(new ArrayList<ApduRequest>().toArray(),
                 request.getApduRequests().toArray());
     }
 
     @Test
     public void testAskKeepChannelOpen() {
-        SeRequest request = new SeRequest(aid, new ArrayList<ApduRequest>(), true);
+        SeRequestSet request = new SeRequestSet(aid, new ArrayList<ApduRequest>(), true);
         assertTrue(request.keepChannelOpen());
     }
 

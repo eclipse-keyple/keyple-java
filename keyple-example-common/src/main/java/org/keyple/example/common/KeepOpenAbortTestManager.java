@@ -14,18 +14,12 @@ import java.util.List;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
-import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.ByteBufferUtils;
-import org.keyple.seproxy.ProxyReader;
-import org.keyple.seproxy.SeRequest;
-import org.keyple.seproxy.SeRequestElement;
-import org.keyple.seproxy.SeResponse;
+import org.keyple.seproxy.*;
 
 /**
- * Set of @{@link SeRequestElement} to test NFC Plugin with keep Open Channel. Two sets
- * of @{@link SeRequestElement} are sent to the NFC smartcard. Keep open channel parameter is set to
- * true on the first @{@link SeRequestElement} resulting in the second @{@link SeRequestElement} to
- * be aborted
+ * Set of @{@link SeRequest} to test NFC Plugin with keep Open Channel. Two sets
+ * of @{@link SeRequest} are sent to the NFC smartcard. Keep open channel parameter is set to true
+ * on the first @{@link SeRequest} resulting in the second @{@link SeRequest} to be aborted
  */
 public class KeepOpenAbortTestManager extends AbstractLogicManager {
 
@@ -56,22 +50,22 @@ public class KeepOpenAbortTestManager extends AbstractLogicManager {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-        SeRequestElement seRequestElement =
-                new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, true);
-        List<SeRequestElement> seRequestElements = new ArrayList<SeRequestElement>();
+        SeRequest seRequestElement =
+                new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, true);
+        List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
         seRequestElement.setProtocolFlag("android.nfc.tech.IsoDep");
         seRequestElements.add(seRequestElement);
 
-        SeRequestElement seRequestElement2 =
-                new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+        SeRequest seRequestElement2 =
+                new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
         seRequestElement2.setProtocolFlag("android.nfc.tech.IsoDep");
         seRequestElements.add(seRequestElement2);
-        SeRequest poRequest = new SeRequest(seRequestElements);
+        SeRequestSet poRequest = new SeRequestSet(seRequestElements);
 
         try {
 
             System.out.println("Transmit 1st SE Request, keep channel open");
-            SeResponse poResponse = poReader.transmit(poRequest);
+            SeResponseSet poResponse = poReader.transmit(poRequest);
             getTopic().post(new Event("Got a response", "poResponse", poResponse));
 
 

@@ -19,7 +19,7 @@ import org.keyple.seproxy.exceptions.IOReaderException;
 
 
 /**
- * Basic @{@link SeRequest} to test any SeProxy
+ * Basic @{@link SeRequestSet} to test any SeProxy
  */
 public class BasicCardAccessManager extends AbstractLogicManager {
 
@@ -50,15 +50,15 @@ public class BasicCardAccessManager extends AbstractLogicManager {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-        SeRequestElement seRequestElement =
-                new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
-        List<SeRequestElement> seRequestElements = new ArrayList<SeRequestElement>();
+        SeRequest seRequestElement =
+                new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+        List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
         seRequestElements.add(seRequestElement);
-        SeRequest poRequest = new SeRequest(seRequestElements);
+        SeRequestSet poRequest = new SeRequestSet(seRequestElements);
 
 
         try {
-            SeResponse poResponse = poReader.transmit(poRequest);
+            SeResponseSet poResponse = poReader.transmit(poRequest);
             getTopic().post(new Event("Got a response", "poResponse", poResponse.getElements()));
         } catch (IOReaderException e) {
             e.printStackTrace();

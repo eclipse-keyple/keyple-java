@@ -19,7 +19,7 @@ public class SeResponseTest {
     public void testSEResponse() {
         ApduResponse fciData = new ApduResponse(new byte[] {(byte) 0x01, (byte) 02}, true,
                 new byte[] {(byte) 0x03, (byte) 0x04});
-        SeResponse response = new SeResponse(true, fciData, new ArrayList<ApduResponse>());
+        SeResponseSet response = new SeResponseSet(true, fciData, new ArrayList<ApduResponse>());
         // assertNotNull(response);
         assertArrayEquals(new ArrayList<ApduResponse>().toArray(),
                 response.getApduResponses().toArray());
@@ -27,7 +27,7 @@ public class SeResponseTest {
 
     @Test
     public void testWasChannelPreviouslyOpen() {
-        SeResponse response = new SeResponse(true, null, new ArrayList<ApduResponse>());
+        SeResponseSet response = new SeResponseSet(true, null, new ArrayList<ApduResponse>());
         assertTrue(response.wasChannelPreviouslyOpen());
     }
 
@@ -35,7 +35,7 @@ public class SeResponseTest {
     public void testGetFciData() {
         ApduResponse fciData = new ApduResponse(new byte[] {(byte) 0x01, (byte) 02}, true,
                 new byte[] {(byte) 0x03, (byte) 0x04});
-        SeResponse response = new SeResponse(true, fciData, new ArrayList<ApduResponse>());
+        SeResponseSet response = new SeResponseSet(true, fciData, new ArrayList<ApduResponse>());
         assertEquals(fciData, response.getFci());
 
     }
@@ -43,14 +43,14 @@ public class SeResponseTest {
     @Test
     public void testGetFciDataNull() {
         ApduResponse fciData = null;
-        SeResponse response = new SeResponse(false, fciData, new ArrayList<ApduResponse>());
+        SeResponseSet response = new SeResponseSet(false, fciData, new ArrayList<ApduResponse>());
         assertNull(response.getFci());
 
     }
 
     @Test
     public void testGetApduResponses() {
-        SeResponse response = new SeResponse(true, null, new ArrayList<ApduResponse>());
+        SeResponseSet response = new SeResponseSet(true, null, new ArrayList<ApduResponse>());
         assertArrayEquals(new ArrayList<ApduResponse>().toArray(),
                 response.getApduResponses().toArray());
     }
@@ -62,7 +62,7 @@ public class SeResponseTest {
         List<ApduResponse> responses = new ArrayList<ApduResponse>();
         responses.add(fciData);
         responses.add(fciData);
-        SeResponse response = new SeResponse(true, fciData, responses);
+        SeResponseSet response = new SeResponseSet(true, fciData, responses);
         assertEquals(response.getApduResponses().size(), 2);
         assertEquals(fciData, response.getFci());
         for (ApduResponse resp : response.getApduResponses()) {

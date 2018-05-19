@@ -33,7 +33,7 @@ public interface ProxyReader {
      * @return the SE response
      * @throws IOReaderException Exception of type IO Reader
      */
-    SeResponse transmit(SeRequest seApplicationRequest) throws IOReaderException;
+    SeResponseSet transmit(SeRequestSet seApplicationRequest) throws IOReaderException;
 
     /**
      * Checks if is SE present.

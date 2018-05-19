@@ -14,16 +14,11 @@ import java.util.List;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
-import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.ByteBufferUtils;
-import org.keyple.seproxy.ProxyReader;
-import org.keyple.seproxy.SeRequest;
-import org.keyple.seproxy.SeRequestElement;
-import org.keyple.seproxy.SeResponse;
+import org.keyple.seproxy.*;
 
 /**
- * Set of @{@link SeRequest} to test NFC Plugin with keep Open Channel. Two sets
- * of @{@link SeRequest} are sent to the NFC smartcard with a timeout of 3 seconds.
+ * Set of @{@link SeRequestSet} to test NFC Plugin with keep Open Channel. Two sets
+ * of @{@link SeRequestSet} are sent to the NFC smartcard with a timeout of 3 seconds.
  */
 public class KeepOpenCardTimeoutManager extends AbstractLogicManager {
 
@@ -54,33 +49,33 @@ public class KeepOpenCardTimeoutManager extends AbstractLogicManager {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-        SeRequestElement seRequestElement =
-                new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, true);
-        List<SeRequestElement> seRequestElements = new ArrayList<SeRequestElement>();
+        SeRequest seRequestElement =
+                new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, true);
+        List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
         seRequestElement.setProtocolFlag("android.nfc.tech.IsoDep");
         seRequestElements.add(seRequestElement);
 
 
-        SeRequest poRequest = new SeRequest(seRequestElements);
+        SeRequestSet poRequest = new SeRequestSet(seRequestElements);
         try {
 
             System.out.println("Transmit 1st SE Request, keep channel open");
-            SeResponse poResponse = poReader.transmit(poRequest);
+            SeResponseSet poResponse = poReader.transmit(poRequest);
             getTopic().post(new Event("Got a response", "poResponse", poResponse));
 
             System.out.println("Sleeping for 3 seconds");
             Thread.sleep(3000);
             System.out.println("Transmit 2nd SE Request, close channel");
 
-            SeRequestElement seRequestElement2 =
-                    new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
-            List<SeRequestElement> seRequestElements2 = new ArrayList<SeRequestElement>();
+            SeRequest seRequestElement2 =
+                    new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+            List<SeRequest> seRequestElements2 = new ArrayList<SeRequest>();
             seRequestElement2.setProtocolFlag("android.nfc.tech.IsoDep");
 
             seRequestElements2.add(seRequestElement2);
-            SeRequest poRequest2 = new SeRequest(seRequestElements2);
+            SeRequestSet poRequest2 = new SeRequestSet(seRequestElements2);
 
-            SeResponse poResponse2 = poReader.transmit(poRequest2);
+            SeResponseSet poResponse2 = poReader.transmit(poRequest2);
             getTopic().post(new Event("Got a 2nd response", "poResponse2", poResponse2));
 
 

@@ -17,9 +17,9 @@ import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ByteBufferUtils;
 import org.keyple.seproxy.ProxyReader;
 import org.keyple.seproxy.SeRequest;
-import org.keyple.seproxy.SeRequestElement;
+import org.keyple.seproxy.SeRequestSet;
 import org.keyple.seproxy.SeResponse;
-import org.keyple.seproxy.SeResponseElement;
+import org.keyple.seproxy.SeResponseSet;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.simalliance.openmobileapi.Channel;
 import org.simalliance.openmobileapi.Reader;
@@ -46,14 +46,14 @@ public class AndroidOmapiReader implements ProxyReader {
     }
 
     @Override
-    public SeResponse transmit(SeRequest seApplicationRequest) throws IOReaderException {
+    public SeResponseSet transmit(SeRequestSet seApplicationRequest) throws IOReaderException {
 
         Log.i(TAG, "Create Session from reader...");
         Session session = null;
-        List<SeResponseElement> seResponseElements = new ArrayList<SeResponseElement>();
+        List<SeResponse> seResponseElements = new ArrayList<SeResponse>();
 
 
-        for (SeRequestElement seRequestElement : seApplicationRequest.getElements()) {
+        for (SeRequest seRequestElement : seApplicationRequest.getElements()) {
 
             ApduResponse fci = null;
             try {
@@ -69,7 +69,7 @@ public class AndroidOmapiReader implements ProxyReader {
                 throw new IOReaderException(e.getMessage(), e.getCause());
             }
 
-            Log.i(TAG, "Send APDU commands from SeRequest objects");
+            Log.i(TAG, "Send APDU commands from SeRequestSet objects");
             List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
             for (ApduRequest seRequest : seRequestElement.getApduRequests()) {
                 byte[] respApdu = new byte[0];
@@ -82,7 +82,7 @@ public class AndroidOmapiReader implements ProxyReader {
                 }
             }
 
-            seResponseElements.add(new SeResponseElement(false, fci, apduResponses));
+            seResponseElements.add(new SeResponse(false, fci, apduResponses));
 
             if (!seRequestElement.keepChannelOpen()) {
                 channel.close();
@@ -90,7 +90,7 @@ public class AndroidOmapiReader implements ProxyReader {
         }
 
 
-        return new SeResponse(seResponseElements);
+        return new SeResponseSet(seResponseElements);
 
     }
 

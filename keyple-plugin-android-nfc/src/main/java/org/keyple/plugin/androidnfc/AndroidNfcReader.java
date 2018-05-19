@@ -19,9 +19,9 @@ import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ByteBufferUtils;
 import org.keyple.seproxy.ReaderEvent;
 import org.keyple.seproxy.SeRequest;
-import org.keyple.seproxy.SeRequestElement;
+import org.keyple.seproxy.SeRequestSet;
 import org.keyple.seproxy.SeResponse;
-import org.keyple.seproxy.SeResponseElement;
+import org.keyple.seproxy.SeResponseSet;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
@@ -95,27 +95,27 @@ public class AndroidNfcReader extends AbstractObservableReader
     }
 
     /**
-     * Transmit {@link SeRequest} to the connected Tag Supports protocol argument to
+     * Transmit {@link SeRequestSet} to the connected Tag Supports protocol argument to
      * filterByProtocol commands for the right connected Tag
      * 
      * @param seRequest the se application request
-     * @return {@link SeResponse} : response from the transmitted request
+     * @return {@link SeResponseSet} : response from the transmitted request
      */
     @Override
-    public SeResponse transmit(SeRequest seRequest) {
+    public SeResponseSet transmit(SeRequestSet seRequest) {
         Log.i(TAG, "Calling transmit on Android NFC Reader");
         Log.d(TAG, "Size of APDU Requests : " + String.valueOf(seRequest.getElements().size()));
 
         // init response
-        List<SeResponseElement> seResponseElements = new ArrayList<SeResponseElement>();
+        List<SeResponse> seResponseElements = new ArrayList<SeResponse>();
 
         // Filter requestElements whom protocol matches the current tag
-        List<SeRequestElement> seRequestElements = filterByProtocol(seRequest.getElements());
+        List<SeRequest> seRequestElements = filterByProtocol(seRequest.getElements());
 
         // no seRequestElements are left after filtering
         if (seRequestElements.size() < 1) {
             disconnectTag();
-            return new SeResponse(seResponseElements);
+            return new SeResponseSet(seResponseElements);
 
         }
 
@@ -123,7 +123,7 @@ public class AndroidNfcReader extends AbstractObservableReader
         // process the request elements
         for (int i = 0; i < seRequestElements.size(); i++) {
 
-            SeRequestElement seRequestElement = seRequestElements.get(i);
+            SeRequest seRequestElement = seRequestElements.get(i);
 
             // init response
             List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
@@ -145,9 +145,9 @@ public class AndroidNfcReader extends AbstractObservableReader
                     apduResponses.add(sendAPDUCommand(apduRequest.getBuffer()));
                 }
 
-                // Add ResponseElements to global SeResponse
-                SeResponseElement out = new SeResponseElement(previousOpenApplication != null,
-                        fciResponse, apduResponses);
+                // Add ResponseElements to global SeResponseSet
+                SeResponse out =
+                        new SeResponse(previousOpenApplication != null, fciResponse, apduResponses);
                 seResponseElements.add(out);
 
                 // Don't process more seRequestElement if asked
@@ -171,7 +171,7 @@ public class AndroidNfcReader extends AbstractObservableReader
 
         }
 
-        return new SeResponse(seResponseElements);
+        return new SeResponseSet(seResponseElements);
     }
 
 
@@ -181,13 +181,13 @@ public class AndroidNfcReader extends AbstractObservableReader
      * @param seRequestElements embedding seRequestElements to be filtered
      * @return filtered seRequest
      */
-    private List<SeRequestElement> filterByProtocol(List<SeRequestElement> seRequestElements) {
+    private List<SeRequest> filterByProtocol(List<SeRequest> seRequestElements) {
 
 
         Log.d(TAG, "Filtering # seRequestElements : " + seRequestElements.size());
-        List<SeRequestElement> filteredSRE = new ArrayList<SeRequestElement>();
+        List<SeRequest> filteredSRE = new ArrayList<SeRequest>();
 
-        for (SeRequestElement seRequestElement : seRequestElements) {
+        for (SeRequest seRequestElement : seRequestElements) {
 
             Log.d(TAG, "Filtering seRequestElement whom protocol : "
                     + seRequestElement.getProtocolFlag());

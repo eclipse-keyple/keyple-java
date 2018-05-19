@@ -8,92 +8,73 @@
 
 package org.keyple.seproxy;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
- * Aggregates the elements of a response from a local or remote SE Reader, received through a
- * ProxyReader, including a group of APDU responses and the previous status of the logical channel
- * with the targeted SE application.
+ * Group of SE responses received in response to a {@link SeRequest}.
  * 
  * @see SeRequest
  */
 public class SeResponse {
-    /**
-     * List of elements that were received following the transmission of the
-     * {@link SeRequestElement}.
-     */
-    private final List<SeResponseElement> elements;
 
     /**
-     * List of response elements
-     *
-     * @return List of response elements
+     * is defined as true by the SE reader in case a logical channel was already open with the
+     * target SE application.
      */
-    public List<SeResponseElement> getElements() {
-        return elements;
-    }
+    private boolean channelPreviouslyOpen;
 
     /**
-     * Compatibility layer constructor
+     * present if channelPreviouslyOpen is false, contains the FCI response of the channel opening
+     * (either the response of a SelectApplication command, or the response of a GetData(‘FCI’)
+     * command).
+     */
+    private ApduResponse fci;
+
+    /**
+     * could contain a group of APDUResponse returned by the selected SE application on the SE
+     * reader.
+     */
+    private List<ApduResponse> apduResponses;
+
+    /**
+     * the constructor called by a ProxyReader during the processing of the ‘transmit’ method.
      *
-     * @deprecated You should use {@link SeResponse#SeResponse(List)} with
-     *             {@link SeResponseElement#SeResponseElement(boolean, ApduResponse, List)}
+     * @param channelPreviouslyOpen the channel previously open
+     * @param fci the fci data
+     * @param apduResponses the apdu responses
      */
     public SeResponse(boolean channelPreviouslyOpen, ApduResponse fci,
             List<ApduResponse> apduResponses) {
-        elements = Collections
-                .singletonList(new SeResponseElement(channelPreviouslyOpen, fci, apduResponses));
+        this.channelPreviouslyOpen = channelPreviouslyOpen;
+        this.fci = fci;
+        this.apduResponses = apduResponses;
     }
 
     /**
-     * Create an {@link SeResponse} from a list of {@link SeResponseElement}s.
-     * 
-     * @param elements List of elements
-     */
-    public SeResponse(List<SeResponseElement> elements) {
-        this.elements = elements;
-    }
-
-    private SeResponseElement getSingleElement() {
-        if (elements.size() != 1) {
-            throw new IllegalStateException("This method only support ONE element");
-        }
-        return elements.get(0);
-    }
-
-    /**
-     * See {@link SeResponseElement#getApduResponses()}
+     * Was channel previously open.
      *
-     * @deprecated Provided only as a compatibility layer with the previous architecture
+     * @return the previous state of the logical channel.
      */
-    @Deprecated
-    public List<ApduResponse> getApduResponses() {
-        return getSingleElement().getApduResponses();
-    }
-
-    /**
-     * See {@link SeResponseElement#getFci()}
-     *
-     * @deprecated Provided only as a compatibility layer with the previous architecture
-     */
-    @Deprecated
-    public ApduResponse getFci() {
-        return getSingleElement().getFci();
-    }
-
-    /**
-     * See {@link SeResponseElement#wasChannelPreviouslyOpen()}
-     *
-     * @deprecated Provided only as a compatibility layer with the previous architecture
-     */
-    @Deprecated
     public boolean wasChannelPreviouslyOpen() {
-        return getSingleElement().wasChannelPreviouslyOpen();
+        return channelPreviouslyOpen;
     }
 
-    @Override
-    public String toString() {
-        return "SeReponse{elements=" + elements + "}";
+    /**
+     * Gets the fci data.
+     *
+     * @return null or the FCI response if a channel was opened.
+     */
+    public ApduResponse getFci() {
+        return this.fci;
+    }
+
+    /**
+     * Gets the apdu responses.
+     *
+     * @return the group of APDUs responses returned by the SE application for this instance of
+     *         SEResponse.
+     */
+    public List<ApduResponse> getApduResponses() {
+        return apduResponses;
     }
 }

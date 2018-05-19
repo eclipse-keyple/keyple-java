@@ -14,18 +14,12 @@ import java.util.List;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
-import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.ByteBufferUtils;
-import org.keyple.seproxy.ProxyReader;
-import org.keyple.seproxy.SeRequest;
-import org.keyple.seproxy.SeRequestElement;
-import org.keyple.seproxy.SeResponse;
+import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.IOReaderException;
 
 /**
- * Set of @{@link SeRequestElement} to test NFC Plugin multiple protocol flags.
- * Two @{@link SeRequestElement} are sent to the NFC smartcard, one with IsoDep protocol flag and
- * one with MifareClassic.
+ * Set of @{@link SeRequest} to test NFC Plugin multiple protocol flags. Two @{@link SeRequest} are
+ * sent to the NFC smartcard, one with IsoDep protocol flag and one with MifareClassic.
  */
 public class MultiNFCCardAccessManager extends AbstractLogicManager {
 
@@ -56,28 +50,26 @@ public class MultiNFCCardAccessManager extends AbstractLogicManager {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-        SeRequestElement isodep =
-                new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+        SeRequest isodep = new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
         isodep.setProtocolFlag("android.nfc.tech.IsoDep");
 
 
-        SeRequestElement miFare =
-                new SeRequestElement(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+        SeRequest miFare = new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
         miFare.setProtocolFlag("android.nfc.tech.MifareClassic");
 
 
 
-        List<SeRequestElement> seRequestElements = new ArrayList<SeRequestElement>();
+        List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
         seRequestElements.add(miFare);
         seRequestElements.add(isodep);
 
 
 
-        SeRequest poRequest = new SeRequest(seRequestElements);
+        SeRequestSet poRequest = new SeRequestSet(seRequestElements);
 
 
         try {
-            SeResponse poResponse = poReader.transmit(poRequest);
+            SeResponseSet poResponse = poReader.transmit(poRequest);
             getTopic().post(new Event("Got a response", "poResponse", poResponse));
         } catch (IOReaderException e) {
             e.printStackTrace();
