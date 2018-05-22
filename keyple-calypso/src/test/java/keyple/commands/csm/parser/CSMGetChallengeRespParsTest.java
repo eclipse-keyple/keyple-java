@@ -29,8 +29,8 @@ public class CSMGetChallengeRespParsTest {
         listeResponse.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
-        AbstractApduResponseParser apduResponseParser =
-                new CsmGetChallengeRespPars(seResponse.getSingleElement().getApduResponses().get(0));
+        AbstractApduResponseParser apduResponseParser = new CsmGetChallengeRespPars(
+                seResponse.getSingleElement().getApduResponses().get(0));
         ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
         Assert.assertEquals(
                 ByteBuffer

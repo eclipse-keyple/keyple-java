@@ -29,8 +29,8 @@ public class DigestAuthenticateRespParsTest {
         listeResponse.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
-        AbstractApduResponseParser apduResponseParser =
-                new DigestAuthenticateRespPars(seResponse.getSingleElement().getApduResponses().get(0));
+        AbstractApduResponseParser apduResponseParser = new DigestAuthenticateRespPars(
+                seResponse.getSingleElement().getApduResponses().get(0));
         ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
         Assert.assertEquals(ByteBuffer.wrap(new byte[] {90, 00}), reponseActual);
     }

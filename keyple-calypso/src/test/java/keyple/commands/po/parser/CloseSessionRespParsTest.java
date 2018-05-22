@@ -17,6 +17,7 @@ import org.keyple.calypso.commands.po.parser.CloseSessionRespPars;
 import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.seproxy.SeResponse;
 import org.keyple.seproxy.SeResponseSet;
 
 public class CloseSessionRespParsTest {
@@ -27,12 +28,12 @@ public class CloseSessionRespParsTest {
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(response, true);
         listeResponse.add(apduResponse);
-        SeResponseSet seResponse = new SeResponseSet(true, null, listeResponse);
+        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
-                new CloseSessionRespPars(seResponse.getApduResponses().get(0));
-        byte[] reponseActual = apduResponseParser.getApduResponse().getBytes();
-        Assert.assertArrayEquals(response, reponseActual);
+                new CloseSessionRespPars(seResponse.getSingleElement().getApduResponses().get(0));
+        Assert.assertArrayEquals(response,
+                ByteBufferUtils.toBytes(apduResponseParser.getApduResponse().getBuffer()));
     }
 
     @Test

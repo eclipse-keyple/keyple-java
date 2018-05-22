@@ -17,6 +17,7 @@ import org.keyple.calypso.commands.po.parser.ReadRecordsRespPars;
 import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.seproxy.SeResponse;
 import org.keyple.seproxy.SeResponseSet;
 
 public class ReadRecordsRespParsTest {
@@ -29,10 +30,10 @@ public class ReadRecordsRespParsTest {
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(response, true);
         listeResponse.add(apduResponse);
-        SeResponseSet seResponse = new SeResponseSet(true, null, listeResponse);
+        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
         ReadRecordsRespPars readRecordsResponse =
-                new ReadRecordsRespPars(seResponse.getApduResponses().get(0));
+                new ReadRecordsRespPars(seResponse.getSingleElement().getApduResponses().get(0));
         ByteBuffer responseActual = readRecordsResponse.getApduResponse().getBuffer();
         Assert.assertEquals(response, responseActual);
 
@@ -52,10 +53,10 @@ public class ReadRecordsRespParsTest {
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(response, true);
         listeResponse.add(apduResponse);
-        SeResponseSet seResponse = new SeResponseSet(true, null, listeResponse);
+        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
         ReadRecordsRespPars apduResponseParser =
-                new ReadRecordsRespPars(seResponse.getApduResponses().get(0));
+                new ReadRecordsRespPars(seResponse.getSingleElement().getApduResponses().get(0));
         ByteBuffer responseActual = apduResponseParser.getApduResponse().getBuffer();
         Assert.assertEquals(response, responseActual);
 
@@ -95,10 +96,10 @@ public class ReadRecordsRespParsTest {
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(response, true);
         listeResponse.add(apduResponse);
-        SeResponseSet seResponse = new SeResponseSet(true, null, listeResponse);
+        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
-                new ReadRecordsRespPars(seResponse.getApduResponses().get(0));
+                new ReadRecordsRespPars(seResponse.getSingleElement().getApduResponses().get(0));
         ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
         Assert.assertEquals(response, reponseActual);
     }
@@ -110,10 +111,10 @@ public class ReadRecordsRespParsTest {
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(response, true);
         listeResponse.add(apduResponse);
-        SeResponseSet seResponse = new SeResponseSet(true, null, listeResponse);
+        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
-                new ReadRecordsRespPars(seResponse.getApduResponses().get(0));
+                new ReadRecordsRespPars(seResponse.getSingleElement().getApduResponses().get(0));
         ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
         Assert.assertEquals(response, reponseActual);
     }

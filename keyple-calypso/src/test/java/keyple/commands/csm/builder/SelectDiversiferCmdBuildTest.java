@@ -59,22 +59,16 @@ public class SelectDiversiferCmdBuildTest {
         ApduRequests.add(apdu);
 
         seRequest = new SeRequestSet(new SeRequest(null, ApduRequests, true));
-        list.add(
-                new ApduResponse(
-                        new byte[] {0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54, 0x52, 0x2E,
-                                0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13,
-                                (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A,
-                                (byte) 0xB9, 0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01, (byte) 0x90, 0x00},
-                        true));
-        list.add(
-                new ApduResponse(
-                        new byte[] {0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54, 0x52, 0x2E,
-                                0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13,
-                                (byte) 0xC7, 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A,
-                                (byte) 0xB9, 0x53, 0x07, 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01,(byte) 0x80, 0x00},
-                        true));
+        list.add(new ApduResponse(new byte[] {0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54, 0x52,
+                0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13, (byte) 0xC7,
+                0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB9, 0x53, 0x07,
+                0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01, (byte) 0x90, 0x00}, true));
+        list.add(new ApduResponse(new byte[] {0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54, 0x52,
+                0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13, (byte) 0xC7,
+                0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB9, 0x53, 0x07,
+                0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01, (byte) 0x80, 0x00}, true));
 
-        SeResponseSet seResponse = new SeResponseSet(new SeResponse( true, null, list));
+        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, list));
 
         SeResponseSet responseFci = Mockito.mock(SeResponseSet.class);
         fakeSpecificReader = Mockito.mock(ProxyReader.class);
@@ -82,8 +76,8 @@ public class SelectDiversiferCmdBuildTest {
         Mockito.when(responseFci.getSingleElement().getApduResponses()).thenReturn(list);
         Mockito.when(fakeSpecificReader.transmit(seRequest)).thenReturn(seResponse);
 
-        GetDataFciRespPars.FCI fci =
-                GetDataFciRespPars.toFCI(responseFci.getSingleElement().getApduResponses().get(0).getBuffer());
+        GetDataFciRespPars.FCI fci = GetDataFciRespPars
+                .toFCI(responseFci.getSingleElement().getApduResponses().get(0).getBuffer());
         dataIn = fci.getApplicationSN();
 
         AbstractApduCommandBuilder apduCommandBuilder2 =
@@ -95,16 +89,20 @@ public class SelectDiversiferCmdBuildTest {
         apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseExpected);
 
-        seResponseExpected = new SeResponseSet(new SeResponse(true, responseExpected, apduResponses));
+        seResponseExpected =
+                new SeResponseSet(new SeResponse(true, responseExpected, apduResponses));
         SeRequestSet seRequest2 = new SeRequestSet(new SeRequest(null, ApduRequests2, true));
 
         Mockito.when(fakeSpecificReader.transmit(seRequest2)).thenReturn(seResponse);
         SeResponseSet seResponse1 = fakeSpecificReader.transmit(seRequest2);
 
-        Assert.assertEquals(seResponseExpected.getSingleElement().getApduResponses().get(0).getStatusCode(),
+        Assert.assertEquals(
+                seResponseExpected.getSingleElement().getApduResponses().get(0).getStatusCode(),
                 seResponse1.getSingleElement().getApduResponses().get(0).getStatusCode());
 
-        Assert.assertThat(seResponseExpected.getSingleElement().getApduResponses().get(0).getStatusCode(),
-                IsNot.not(IsEqual.equalTo(seResponse1.getSingleElement().getApduResponses().get(1).getStatusCode())));
+        Assert.assertThat(
+                seResponseExpected.getSingleElement().getApduResponses().get(0).getStatusCode(),
+                IsNot.not(IsEqual.equalTo(
+                        seResponse1.getSingleElement().getApduResponses().get(1).getStatusCode())));
     }
 }

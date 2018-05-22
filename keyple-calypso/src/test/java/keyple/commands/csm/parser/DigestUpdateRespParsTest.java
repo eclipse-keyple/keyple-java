@@ -8,6 +8,7 @@
 
 package keyple.commands.csm.parser;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -15,6 +16,7 @@ import org.junit.Test;
 import org.keyple.calypso.commands.csm.parser.DigestUpdateRespPars;
 import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
+import org.keyple.seproxy.ByteBufferUtils;
 import org.keyple.seproxy.SeResponse;
 import org.keyple.seproxy.SeResponseSet;
 
@@ -29,7 +31,7 @@ public class DigestUpdateRespParsTest {
 
         AbstractApduResponseParser apduResponseParser =
                 new DigestUpdateRespPars(seResponse.getSingleElement().getApduResponses().get(0));
-        byte[] reponseActual = apduResponseParser.getApduResponse().getBytes();
-        Assert.assertArrayEquals(new byte[] {90, 00}, reponseActual);
+        ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
+        Assert.assertArrayEquals(new byte[] {90, 00}, ByteBufferUtils.toBytes(reponseActual));
     }
 }
