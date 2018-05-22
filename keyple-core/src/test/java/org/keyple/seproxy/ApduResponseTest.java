@@ -16,8 +16,8 @@ public class ApduResponseTest {
 
     @Test
     public void testAPDUResponse() {
-        ApduResponse response = new ApduResponse(new byte[] {(byte) 0x01, (byte) 0x02}, true,
-                new byte[] {(byte) 0x03, (byte) 0x04});
+        ApduResponse response = new ApduResponse(new byte[] {(byte) 0x01, (byte) 0x02}, (byte) 0x03,
+                (byte) 0x04, true, new byte[] {(byte) 0x03, (byte) 0x04});
         assertNotNull(response);
     }
 

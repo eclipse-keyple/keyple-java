@@ -8,7 +8,7 @@
 
 package org.keyple.seproxy;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,18 +34,6 @@ public class SeResponseSet {
     }
 
     /**
-     * Compatibility layer constructor
-     *
-     * @deprecated You should use {@link SeResponseSet#SeResponseSet(List)} with
-     *             {@link SeResponse#SeResponse(boolean, ApduResponse, List)}
-     */
-    public SeResponseSet(boolean channelPreviouslyOpen, ApduResponse fci,
-            List<ApduResponse> apduResponses) {
-        elements = Collections
-                .singletonList(new SeResponse(channelPreviouslyOpen, fci, apduResponses));
-    }
-
-    /**
      * Create an {@link SeResponseSet} from a list of {@link SeResponse}s.
      * 
      * @param elements List of elements
@@ -54,41 +42,27 @@ public class SeResponseSet {
         this.elements = elements;
     }
 
-    private SeResponse getSingleElement() {
+    /**
+     * Create an {@link SeResponseSet} from a single {@link SeResponse}
+     *
+     * @param response single (@link SeRequest)
+     */
+    public SeResponseSet(SeResponse response) {
+        List<SeResponse> seResponses = new ArrayList<SeResponse>();
+        seResponses.add(response);
+        this.elements = seResponses;
+    }
+
+    /**
+     * Return the response when the list contains only one
+     *
+     * @return response
+     */
+    public SeResponse getSingleElement() {
         if (elements.size() != 1) {
             throw new IllegalStateException("This method only support ONE element");
         }
         return elements.get(0);
-    }
-
-    /**
-     * See {@link SeResponse#getApduResponses()}
-     *
-     * @deprecated Provided only as a compatibility layer with the previous architecture
-     */
-    @Deprecated
-    public List<ApduResponse> getApduResponses() {
-        return getSingleElement().getApduResponses();
-    }
-
-    /**
-     * See {@link SeResponse#getFci()}
-     *
-     * @deprecated Provided only as a compatibility layer with the previous architecture
-     */
-    @Deprecated
-    public ApduResponse getFci() {
-        return getSingleElement().getFci();
-    }
-
-    /**
-     * See {@link SeResponse#wasChannelPreviouslyOpen()}
-     *
-     * @deprecated Provided only as a compatibility layer with the previous architecture
-     */
-    @Deprecated
-    public boolean wasChannelPreviouslyOpen() {
-        return getSingleElement().wasChannelPreviouslyOpen();
     }
 
     @Override

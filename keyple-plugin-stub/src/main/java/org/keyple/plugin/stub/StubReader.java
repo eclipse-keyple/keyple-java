@@ -38,9 +38,9 @@ public class StubReader extends AbstractObservableReader implements Configurable
     }
 
     @Override
-    public SeResponseSet transmit(SeRequestSet request) throws IOReaderException {
+    public SeResponseSet transmit(SeRequestSet requestSet) throws IOReaderException {
 
-        if (request == null) {
+        if (requestSet == null) {
             logger.error("SeRequestSet is null");
             throw new IOReaderException("SeRequestSet is null");
         }
@@ -67,7 +67,7 @@ public class StubReader extends AbstractObservableReader implements Configurable
                 logger.info(
                         "Application error test is enabled, transmit will fail at open application");
                 fci = new ApduResponse(ByteBuffer.allocate(0), false);
-                return new SeResponseSet(channelPreviouslyOpen, fci, apduResponses);
+                return new SeResponseSet(new SeResponse(channelPreviouslyOpen, fci, apduResponses));
             } else {
                 logger.info("Logical channel is opened with aid : " + aid);
                 fci = new ApduResponse(ByteBuffer.allocate(0), true);
@@ -81,12 +81,14 @@ public class StubReader extends AbstractObservableReader implements Configurable
 
 
         // Prepare succesfull responses
-        for (ApduRequest apduRequest : request.getApduRequests()) {
+        for (ApduRequest apduRequest : requestSet.getSingleElement().getApduRequests()) {
             logger.debug("Processing request : " + apduRequest.toString());
             apduResponses.add(new ApduResponse(ByteBuffer.allocate(0), true));
         }
 
-        return new SeResponseSet(channelPreviouslyOpen, fci, apduResponses);
+        List<SeResponse> seResponses = new ArrayList<SeResponse>();
+        seResponses.add(new SeResponse(channelPreviouslyOpen, fci, apduResponses));
+        return new SeResponseSet(seResponses);
     }
 
 

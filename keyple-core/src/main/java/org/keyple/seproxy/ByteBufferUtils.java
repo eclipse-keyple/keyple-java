@@ -137,18 +137,6 @@ public class ByteBufferUtils {
         return buf.slice();
     }
 
-    /**
-     * Temporary conversion method. Every time this method is called it should be replaced by
-     * something else.
-     *
-     * @param array Array to convert to {@link ByteBuffer}
-     * @return {@link ByteBuffer} or null
-     * @deprecated This should be replaced by some proper {@link ByteBuffer} handling
-     */
-    public static ByteBuffer wrap(byte[] array) {
-        return array != null ? ByteBuffer.wrap(array) : null;
-    }
-
     public static ByteBuffer concat(ByteBuffer buf1, ByteBuffer buf2) {
         ByteBuffer result = ByteBuffer.allocate(buf1.remaining() + buf2.remaining());
         result.put(buf1.asReadOnlyBuffer());

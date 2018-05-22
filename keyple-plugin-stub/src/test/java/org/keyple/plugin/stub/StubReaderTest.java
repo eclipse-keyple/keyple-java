@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.keyple.seproxy.ApduRequest;
+import org.keyple.seproxy.SeRequest;
 import org.keyple.seproxy.SeRequestSet;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -46,7 +47,7 @@ public class StubReaderTest {
     @Test
     public void testTransmitNull() throws IOReaderException {
         try {
-            stubReader.transmit(null).getApduResponses().size();
+            stubReader.transmit(null).getSingleElement().getApduResponses().size();
             fail("Should raise exception");
         } catch (IOReaderException e) {
             e.printStackTrace();
@@ -60,8 +61,8 @@ public class StubReaderTest {
     // if SE is not present, transmit fails
     public void testTransmitSEnotPressent() throws IOReaderException {
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
-        SeRequestSet seRequest = SeRequestSet.fromApduRequests(apduRequests);
-        assert (stubReader.transmit(seRequest).getApduResponses().size() == 0);
+        SeRequestSet seRequest = new SeRequestSet(new SeRequest(apduRequests));
+        assert (stubReader.transmit(seRequest).getSingleElement().getApduResponses().size() == 0);
 
     }
 
@@ -69,7 +70,7 @@ public class StubReaderTest {
     @Test
     public void testTimeout() {
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
-        SeRequestSet seRequest = SeRequestSet.fromApduRequests(apduRequests);
+        SeRequestSet seRequest = new SeRequestSet(new SeRequest(apduRequests));
         stubReader.test_SetWillTimeout(true);
 
         try {
@@ -85,7 +86,7 @@ public class StubReaderTest {
     @Test
     public void testTransmitWithoutSE() {
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
-        SeRequestSet seRequest = SeRequestSet.fromApduRequests(apduRequests);
+        SeRequestSet seRequest = new SeRequestSet(new SeRequest(apduRequests));
         stubReader.test_RemoveSE();
 
         try {

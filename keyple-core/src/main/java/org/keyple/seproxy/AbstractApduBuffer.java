@@ -44,18 +44,6 @@ class AbstractApduBuffer {
     }
 
     /**
-     * Get the content as a new byte array. Please note this operation should be avoided as much as
-     * possible
-     *
-     * @return Newly created array with a copy of the content
-     * @deprecated Use something that relies on the ByteBuffer
-     */
-    public byte[] getBytes() {
-        return ByteBufferUtils.toBytes(buffer);
-    }
-
-
-    /**
      * Get a slice from the buffer
      *
      * @param position Position of the new slice in the buffer
