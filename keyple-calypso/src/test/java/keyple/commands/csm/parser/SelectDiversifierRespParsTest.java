@@ -31,7 +31,8 @@ public class SelectDiversifierRespParsTest {
 
         ApduResponse apduResponse = new ApduResponse(new byte[] {(byte) 0x90, 0x00}, true);
         ApduResponse apduResponse1 = new ApduResponse(new byte[] {(byte) 0x80, 0x00}, true);
-        ApduResponse apduResponse2 = new ApduResponse((byte[]) null, true);
+        byte[] empty = new byte[0];;
+        ApduResponse apduResponse2 = new ApduResponse(empty, true);
 
         list.add(apduResponse);
         list1.add(apduResponse1);
