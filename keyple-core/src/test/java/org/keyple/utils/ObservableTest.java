@@ -62,9 +62,9 @@ public class ObservableTest {
         Observer sub1 = new Observer();
         Observer sub2 = new Observer();
         pub.addObserver(sub1);
-        pub.post(new Event("ev1"));
+        pub.notifyObservers(new Event("ev1"));
         pub.addObserver(sub2);
-        pub.post(new EventPlus("ev2"));
+        pub.notifyObservers(new EventPlus("ev2"));
         Assert.assertEquals(2, sub1.getNbCalls());
         Assert.assertEquals(1, sub2.getNbCalls());
     }
