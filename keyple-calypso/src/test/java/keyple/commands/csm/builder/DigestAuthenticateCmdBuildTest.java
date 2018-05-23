@@ -15,7 +15,7 @@ import org.keyple.calypso.commands.csm.builder.DigestAuthenticateCmdBuild;
 import org.keyple.commands.AbstractApduCommandBuilder;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.util.ByteBufferUtils;
 
 public class DigestAuthenticateCmdBuildTest {
 

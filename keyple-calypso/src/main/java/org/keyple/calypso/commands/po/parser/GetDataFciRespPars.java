@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.util.ByteBufferUtils;
 
 /**
  * This class provides status code properties and the getters to access to the structured fields of

@@ -9,6 +9,7 @@
 package org.keyple.seproxy;
 
 import java.nio.ByteBuffer;
+import org.keyple.util.ByteBufferUtils;
 
 /**
  * APDU Buffer. It's mostly to avoid to inherit directly the {@link ByteBuffer} and have many

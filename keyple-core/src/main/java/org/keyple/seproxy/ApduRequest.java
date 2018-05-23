@@ -9,6 +9,7 @@
 package org.keyple.seproxy;
 
 import java.nio.ByteBuffer;
+import org.keyple.util.ByteBufferUtils;
 
 /**
  * Single APDU request wrapper

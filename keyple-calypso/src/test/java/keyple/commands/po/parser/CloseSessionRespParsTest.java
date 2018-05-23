@@ -16,9 +16,9 @@ import org.junit.Test;
 import org.keyple.calypso.commands.po.parser.CloseSessionRespPars;
 import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.ByteBufferUtils;
 import org.keyple.seproxy.SeResponse;
 import org.keyple.seproxy.SeResponseSet;
+import org.keyple.util.ByteBufferUtils;
 
 public class CloseSessionRespParsTest {
 

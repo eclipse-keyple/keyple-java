@@ -10,7 +10,7 @@ package org.keyple.plugin.pcsc.log;
 
 import java.nio.ByteBuffer;
 import javax.smartcardio.*;
-import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.util.ByteBufferUtils;
 
 /**
  * Card channel logging helper. This should allow to properly monitor any exchange being done with

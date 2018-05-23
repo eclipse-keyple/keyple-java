@@ -14,7 +14,7 @@ import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.PoGetChallengeCmdBuild;
 import org.keyple.commands.AbstractApduCommandBuilder;
 import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.util.ByteBufferUtils;
 
 public class POGetChallengeCmdBuildTest {
 

@@ -20,11 +20,11 @@ public class ApduRequestTest {
         assertNotNull(request);
     }
 
-    @Test
-    public void testGetbytes() {
-        ApduRequest request = new ApduRequest(new byte[] {(byte) 0x01, (byte) 0x02}, true);
-        assertArrayEquals(new byte[] {(byte) 0x01, (byte) 0x02}, request.getBytes());
-    }
+    // @Test
+    // public void testGetbytes() {
+    // ApduRequest request = new ApduRequest(new byte[] {(byte) 0x01, (byte) 0x02}, true);
+    // assertArrayEquals(new byte[] {(byte) 0x01, (byte) 0x02}, request.getBytes());
+    // }
 
     @Test
     public void testIsCase4() {

@@ -11,6 +11,7 @@ package org.keyple.seproxy;
 import static org.junit.Assert.*;
 import java.nio.ByteBuffer;
 import org.junit.Test;
+import org.keyple.util.ByteBufferUtils;
 
 public class ByteBufferUtilsTest {
 

@@ -30,6 +30,7 @@ import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.seproxy.exceptions.InvalidMessageException;
 import org.keyple.seproxy.exceptions.UnexpectedReaderException;
+import org.keyple.util.ByteBufferUtils;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
