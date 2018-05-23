@@ -33,7 +33,7 @@ public class SelectDiversiferCmdBuildTest {
 
     private List<ApduRequest> ApduRequests = new ArrayList<ApduRequest>();
 
-    private SeRequestSet seRequest;
+    private SeRequestSet seRequestSet;
 
     private List<ApduResponse> apduResponses;
 
@@ -51,14 +51,14 @@ public class SelectDiversiferCmdBuildTest {
     private List<ApduRequest> ApduRequests2 = new ArrayList<ApduRequest>();
 
     @Test
-    public void selectDiviersifier() throws IOReaderException, UnexpectedReaderException,
+    public void selectDiversifier() throws IOReaderException, UnexpectedReaderException,
             ChannelStateReaderException, InvalidApduReaderException, ReaderTimeoutException,
             InconsistentCommandException, InconsistentParameterValueException {
 
         ApduRequest apdu = apduCommandBuilder.getApduRequest();
         ApduRequests.add(apdu);
 
-        seRequest = new SeRequestSet(new SeRequest(null, ApduRequests, true));
+        seRequestSet = new SeRequestSet(new SeRequest(null, ApduRequests, true));
         list.add(new ApduResponse(new byte[] {0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54, 0x52,
                 0x2E, 0x49, 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13, (byte) 0xC7,
                 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB9, 0x53, 0x07,
@@ -68,13 +68,13 @@ public class SelectDiversiferCmdBuildTest {
                 0x08, 0x00, 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB9, 0x53, 0x07,
                 0x0A, 0x3C, 0x11, 0x32, 0x14, 0x10, 0x01, (byte) 0x80, 0x00}, true));
 
-        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, list));
+        SeResponseSet seResponseSet = new SeResponseSet(new SeResponse(true, null, list));
 
         SeResponseSet responseFci = Mockito.mock(SeResponseSet.class);
         fakeSpecificReader = Mockito.mock(ProxyReader.class);
 
         Mockito.when(responseFci.getSingleElement().getApduResponses()).thenReturn(list);
-        Mockito.when(fakeSpecificReader.transmit(seRequest)).thenReturn(seResponse);
+        Mockito.when(fakeSpecificReader.transmit(seRequestSet)).thenReturn(seResponseSet);
 
         GetDataFciRespPars.FCI fci = GetDataFciRespPars
                 .toFCI(responseFci.getSingleElement().getApduResponses().get(0).getBuffer());
@@ -93,7 +93,7 @@ public class SelectDiversiferCmdBuildTest {
                 new SeResponseSet(new SeResponse(true, responseExpected, apduResponses));
         SeRequestSet seRequest2 = new SeRequestSet(new SeRequest(null, ApduRequests2, true));
 
-        Mockito.when(fakeSpecificReader.transmit(seRequest2)).thenReturn(seResponse);
+        Mockito.when(fakeSpecificReader.transmit(seRequest2)).thenReturn(seResponseSet);
         SeResponseSet seResponse1 = fakeSpecificReader.transmit(seRequest2);
 
         Assert.assertEquals(

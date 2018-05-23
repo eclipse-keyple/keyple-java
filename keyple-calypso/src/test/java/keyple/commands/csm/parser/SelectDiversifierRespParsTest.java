@@ -27,7 +27,7 @@ public class SelectDiversifierRespParsTest {
         List<ApduResponse> list1 = new ArrayList<ApduResponse>();
         List<ApduResponse> list2 = new ArrayList<ApduResponse>();
 
-        SeResponseSet seResponse = Mockito.mock(SeResponseSet.class);
+        SeResponseSet seResponseSet = Mockito.mock(SeResponseSet.class);
 
         ApduResponse apduResponse = new ApduResponse(new byte[] {(byte) 0x90, 0x00}, true);
         ApduResponse apduResponse1 = new ApduResponse(new byte[] {(byte) 0x80, 0x00}, true);
@@ -38,19 +38,19 @@ public class SelectDiversifierRespParsTest {
         list1.add(apduResponse1);
         list2.add(apduResponse2);
 
-        Mockito.when(seResponse.getSingleElement().getApduResponses()).thenReturn(list);
+        Mockito.when(seResponseSet.getSingleElement().getApduResponses()).thenReturn(list);
         AbstractApduResponseParser apduResponseParser = new SelectDiversifierRespPars(
-                seResponse.getSingleElement().getApduResponses().get(0));
+                seResponseSet.getSingleElement().getApduResponses().get(0));
 
         Assert.assertEquals(0x9000, apduResponseParser.getApduResponse().getStatusCode());
 
-        Mockito.when(seResponse.getSingleElement().getApduResponses()).thenReturn(list1);
+        Mockito.when(seResponseSet.getSingleElement().getApduResponses()).thenReturn(list1);
         apduResponseParser = new SelectDiversifierRespPars(
-                seResponse.getSingleElement().getApduResponses().get(0));
+                seResponseSet.getSingleElement().getApduResponses().get(0));
 
         Assert.assertThat(apduResponseParser.getApduResponse().getStatusCode(), IsNot.not(0x9000));
         apduResponseParser = new SelectDiversifierRespPars(
-                seResponse.getSingleElement().getApduResponses().get(0));
+                seResponseSet.getSingleElement().getApduResponses().get(0));
 
     }
 }
