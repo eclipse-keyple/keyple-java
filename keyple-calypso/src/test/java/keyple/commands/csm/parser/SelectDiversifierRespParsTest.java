@@ -19,7 +19,8 @@ public class SelectDiversifierRespParsTest {
 
     @Test
     public void selectDiversifierResp() {
-        // We check here that the value returned by getApduResponse matches the value provided at construct time
+        // We check here that the value returned by getApduResponse matches the value provided at
+        // construct time
         ApduResponse apduResponse = new ApduResponse(new byte[] {(byte) 0x90, 0x00}, true);
         ApduResponse apduResponse1 = new ApduResponse(new byte[] {(byte) 0x80, 0x00}, true);
 

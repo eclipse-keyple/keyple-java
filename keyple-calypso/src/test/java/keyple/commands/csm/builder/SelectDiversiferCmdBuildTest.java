@@ -14,7 +14,6 @@ import java.util.List;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNot;
 import org.junit.Assert;
-import org.junit.Test;
 import org.keyple.calypso.commands.csm.builder.SelectDiversifierCmdBuild;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.GetDataFciCmdBuild;
