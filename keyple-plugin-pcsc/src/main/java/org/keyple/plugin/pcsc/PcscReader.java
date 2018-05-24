@@ -180,7 +180,7 @@ public class PcscReader extends AbstractObservableReader implements Configurable
         // Determine which requestElements are matching the current ATR
         for (SeRequest reqElement : requestSet.getElements()) {
             // Get protocolFlag to check if ATR filtering is required
-            String protocolFlag = reqElement.getSeProtocolFlag();
+            String protocolFlag = ""; // reqElement.getSeProtocolFlag();
             if (protocolFlag != null && !protocolFlag.isEmpty()) {
                 // the requestSet will be executed only if the protocol match the requestElement
                 String selectionMask = protocolsMap.get(protocolFlag);

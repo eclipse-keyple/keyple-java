@@ -9,7 +9,7 @@
 package org.keyple.seproxy;
 
 
-public enum ContactProtocols implements SeProtocol {
+public enum ContactsProtocols implements SeProtocol {
 
     // Contact standard
     PROTOCOL_ISO7816_3("ISO 7816-3");
@@ -17,7 +17,7 @@ public enum ContactProtocols implements SeProtocol {
     /** The protocol name. */
     private String name;
 
-    ContactProtocols(String name) {
+    ContactsProtocols(String name) {
         this.name = name;
     }
 

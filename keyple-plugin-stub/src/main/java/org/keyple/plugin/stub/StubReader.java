@@ -38,6 +38,11 @@ public class StubReader extends AbstractObservableReader implements Configurable
     }
 
     @Override
+    public void setProtocol(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException {
+
+    }
+
+    @Override
     public SeResponseSet transmit(SeRequestSet request) throws IOReaderException {
 
         if (request == null) {
