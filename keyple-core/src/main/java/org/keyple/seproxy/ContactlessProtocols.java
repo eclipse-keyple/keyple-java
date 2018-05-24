@@ -8,7 +8,7 @@
 
 package org.keyple.seproxy;
 
-public enum ContactlessProtocols {
+public enum ContactlessProtocols implements SeProtocol {
 
     // Contactless standard
     PROTOCOL_ISO14443_4("ISO 14443-4"),
