@@ -11,7 +11,7 @@ package org.keyple.seproxy;
 
 /**
  * The Class ReaderEvent. This class is used to notify an event of a specific
- * AbstractObservableReader to its registered ReaderObserver in case of IO Error, SE insertion or
+ * AbstractObservableReader to its registered Observer in case of IO Error, SE insertion or
  * removal.
  *
  * @author Ixxi
