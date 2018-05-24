@@ -72,7 +72,7 @@ public class StubReader extends AbstractObservableReader implements Configurable
                 logger.info(
                         "Application error test is enabled, transmit will fail at open application");
                 fci = new ApduResponse(ByteBuffer.allocate(0), false);
-                return new SeResponseSet(channelPreviouslyOpen, fci, apduResponses);
+                return new SeResponseSet(new SeResponse(channelPreviouslyOpen, fci, apduResponses));
             } else {
                 logger.info("Logical channel is opened with aid : " + aid);
                 fci = new ApduResponse(ByteBuffer.allocate(0), true);
@@ -86,12 +86,12 @@ public class StubReader extends AbstractObservableReader implements Configurable
 
 
         // Prepare succesfull responses
-        for (ApduRequest apduRequest : request.getApduRequests()) {
+        for (ApduRequest apduRequest : request.getSingleElement().getApduRequests()) {
             logger.debug("Processing request : " + apduRequest.toString());
             apduResponses.add(new ApduResponse(ByteBuffer.allocate(0), true));
         }
 
-        return new SeResponseSet(channelPreviouslyOpen, fci, apduResponses);
+        return new SeResponseSet(new SeResponse(channelPreviouslyOpen, fci, apduResponses));
     }
 
 
