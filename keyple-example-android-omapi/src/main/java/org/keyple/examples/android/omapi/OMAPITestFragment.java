@@ -113,7 +113,7 @@ public class OMAPITestFragment extends Fragment
                     mText.append("\nConnected to reader : " + reader.getName());
                     cardAccessManager = new BasicCardAccessManager();
                     cardAccessManager.setPoReader(reader);
-                    cardAccessManager.getTopic().addSubscriber(this);
+                    cardAccessManager.getTopic().addObserver(this);
                     cardAccessManager.run();
                 }
             }

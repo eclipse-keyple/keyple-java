@@ -195,7 +195,7 @@ public class NFCTestFragment extends Fragment
             cardAccessManager = new IsodepCardAccessManager();
             ((IsodepCardAccessManager) cardAccessManager).setPoReader(reader);
 
-            cardAccessManager.getTopic().addSubscriber(this);
+            cardAccessManager.getTopic().addObserver(this);
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
@@ -216,7 +216,7 @@ public class NFCTestFragment extends Fragment
             cardAccessManager = new MifareClassicCardAccessManager();
             ((MifareClassicCardAccessManager) cardAccessManager).setPoReader(reader);
 
-            cardAccessManager.getTopic().addSubscriber(this);
+            cardAccessManager.getTopic().addObserver(this);
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
@@ -236,7 +236,7 @@ public class NFCTestFragment extends Fragment
             cardAccessManager = new MifareUltralightCardAccessManager();
             ((MifareUltralightCardAccessManager) cardAccessManager).setPoReader(reader);
 
-            cardAccessManager.getTopic().addSubscriber(this);
+            cardAccessManager.getTopic().addObserver(this);
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
@@ -256,7 +256,7 @@ public class NFCTestFragment extends Fragment
             cardAccessManager = new MultiNFCCardAccessManager();
             ((MultiNFCCardAccessManager) cardAccessManager).setPoReader(reader);
 
-            cardAccessManager.getTopic().addSubscriber(this);
+            cardAccessManager.getTopic().addObserver(this);
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
@@ -277,7 +277,7 @@ public class NFCTestFragment extends Fragment
             cardAccessManager = new KeepOpenCardTimeoutManager();
             ((KeepOpenCardTimeoutManager) cardAccessManager).setPoReader(reader);
 
-            cardAccessManager.getTopic().addSubscriber(this);
+            cardAccessManager.getTopic().addObserver(this);
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
@@ -297,7 +297,7 @@ public class NFCTestFragment extends Fragment
             cardAccessManager = new KeepOpenAbortTestManager();
             ((KeepOpenAbortTestManager) cardAccessManager).setPoReader(reader);
 
-            cardAccessManager.getTopic().addSubscriber(this);
+            cardAccessManager.getTopic().addObserver(this);
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
