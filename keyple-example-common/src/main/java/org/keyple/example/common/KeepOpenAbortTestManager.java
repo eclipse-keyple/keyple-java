@@ -53,12 +53,12 @@ public class KeepOpenAbortTestManager extends AbstractLogicManager {
         SeRequest seRequestElement =
                 new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, true);
         List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
-        seRequestElement.setProtocolFlag("android.nfc.tech.IsoDep");
+        seRequestElement.setSeProtocolFlag("android.nfc.tech.IsoDep");
         seRequestElements.add(seRequestElement);
 
         SeRequest seRequestElement2 =
                 new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
-        seRequestElement2.setProtocolFlag("android.nfc.tech.IsoDep");
+        seRequestElement2.setSeProtocolFlag("android.nfc.tech.IsoDep");
         seRequestElements.add(seRequestElement2);
         SeRequestSet poRequest = new SeRequestSet(seRequestElements);
 

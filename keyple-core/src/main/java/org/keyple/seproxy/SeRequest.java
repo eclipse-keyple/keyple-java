@@ -22,7 +22,7 @@ public class SeRequest {
     /**
      * Protocol flag
      */
-    private String protocolFlag;
+    private ContactlessProtocols seProtocolFlag;
 
     /**
      * the final logical channel status: if true, the SE reader keep active the logical channel of
@@ -106,12 +106,20 @@ public class SeRequest {
         return keepChannelOpen;
     }
 
-    public String getProtocolFlag() {
-        return protocolFlag;
+    /**
+     * Get the current protocol
+     * @return seProtocolFlag
+     */
+    public ContactlessProtocols getProtocolFlag() {
+        return this.seProtocolFlag;
     }
 
-    public void setProtocolFlag(String protocolFlag) {
-        this.protocolFlag = protocolFlag;
+    /**
+     * Set the expected protocol for the current request
+     * @param seProtocolFlag
+     */
+    public void setProtocolFlag(ContactlessProtocols seProtocolFlag) {
+        this.seProtocolFlag = seProtocolFlag;
     }
 
     @Override

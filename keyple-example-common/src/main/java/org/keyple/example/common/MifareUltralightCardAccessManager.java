@@ -51,7 +51,7 @@ public class MifareUltralightCardAccessManager extends AbstractLogicManager {
 
         SeRequest seRequestElement =
                 new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
-        seRequestElement.setProtocolFlag("android.nfc.tech.MifareUltralight");
+        seRequestElement.setSeProtocolFlag("android.nfc.tech.MifareUltralight");
         List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
         seRequestElements.add(seRequestElement);
         SeRequestSet poRequest = new SeRequestSet(seRequestElements);
