@@ -29,7 +29,7 @@ public interface ProxyReader {
      * @param seProtocolSettings
      * @throws IOReaderException
      */
-    void setProtocol(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException;
+    void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException;
 
     /**
      * Transmits a request to a SE application and get back the corresponding SE response o the

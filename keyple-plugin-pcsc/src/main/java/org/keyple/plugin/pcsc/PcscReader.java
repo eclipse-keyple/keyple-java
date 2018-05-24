@@ -115,7 +115,7 @@ public class PcscReader extends AbstractObservableReader implements Configurable
     }
 
     @Override
-    public void setProtocol(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException {
+    public void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException {
         this.protocolsMap = seProtocolSettings;
     }
 
