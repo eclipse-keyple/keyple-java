@@ -60,10 +60,10 @@ public class IsodepCardAccessManager extends AbstractLogicManager {
 
         try {
             SeResponseSet poResponse = poReader.transmit(poRequest);
-            getTopic().post(new Event("Got a response", "poResponse", poResponse));
+            getObservable().post(new Event("Got a response", "poResponse", poResponse));
         } catch (IOReaderException e) {
             e.printStackTrace();
-            getTopic().post(new Event("Got an error", "error", e.getMessage()));
+            getObservable().post(new Event("Got an error", "error", e.getMessage()));
         }
     }
 
