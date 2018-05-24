@@ -10,9 +10,9 @@ package org.keyple.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.keyple.util.Topic;
+import org.keyple.util.Observable;
 
-public class TopicTest {
+public class ObservableTest {
     static class Event {
         private final String name;
 
@@ -42,29 +42,29 @@ public class TopicTest {
         }
     }
 
-    static class Subscriber implements Topic.Subscriber<Event> {
+    static class Observer implements Observable.Observer<Event> {
         private int nbCalls;
-
-        @Override
-        public void update(Event event) {
-            // System.out.println(name + " received" + event);
-            nbCalls += 1;
-        }
 
         public int getNbCalls() {
             return nbCalls;
+        }
+
+        @Override
+        public void update(Observable<? extends Event> observable, Event arg) {
+            // System.out.println(name + " received" + event);
+            nbCalls += 1;
         }
     }
 
     @Test
     public void sample() {
-        Topic<Event> pub = new Topic<Event>();
-        Subscriber sub1 = new Subscriber();
-        Subscriber sub2 = new Subscriber();
-        pub.addSubscriber(sub1);
-        pub.post(new Event("ev1"));
-        pub.addSubscriber(sub2);
-        pub.post(new EventPlus("ev2"));
+        Observable<Event> pub = new Observable<Event>();
+        Observer sub1 = new Observer();
+        Observer sub2 = new Observer();
+        pub.addObserver(sub1);
+        pub.notifyObservers(new Event("ev1"));
+        pub.addObserver(sub2);
+        pub.notifyObservers(new EventPlus("ev2"));
         Assert.assertEquals(2, sub1.getNbCalls());
         Assert.assertEquals(1, sub2.getNbCalls());
     }

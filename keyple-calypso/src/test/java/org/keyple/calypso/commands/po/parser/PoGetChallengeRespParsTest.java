@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 import java.nio.ByteBuffer;
 import org.junit.Test;
 import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.util.ByteBufferUtils;
 
 public class PoGetChallengeRespParsTest {
 

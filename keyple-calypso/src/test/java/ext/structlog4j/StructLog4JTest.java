@@ -15,7 +15,7 @@ import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
 import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.util.ByteBufferUtils;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 

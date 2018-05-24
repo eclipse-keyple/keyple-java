@@ -16,7 +16,7 @@ import org.keyple.calypso.commands.utils.RequestUtils;
 import org.keyple.commands.CommandsTable;
 import org.keyple.commands.InconsistentCommandException;
 import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.util.ByteBufferUtils;
 
 // TODO: Auto-generated Javadoc
 /**

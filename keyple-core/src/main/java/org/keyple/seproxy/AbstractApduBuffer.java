@@ -9,6 +9,7 @@
 package org.keyple.seproxy;
 
 import java.nio.ByteBuffer;
+import org.keyple.util.ByteBufferUtils;
 
 /**
  * APDU Buffer. It's mostly to avoid to inherit directly the {@link ByteBuffer} and have many
@@ -42,18 +43,6 @@ class AbstractApduBuffer {
     AbstractApduBuffer(byte[] data, int offset, int length) {
         this(ByteBuffer.wrap(data, offset, length).slice());
     }
-
-    /**
-     * Get the content as a new byte array. Please note this operation should be avoided as much as
-     * possible
-     *
-     * @return Newly created array with a copy of the content
-     * @deprecated Use something that relies on the ByteBuffer
-     */
-    public byte[] getBytes() {
-        return ByteBufferUtils.toBytes(buffer);
-    }
-
 
     /**
      * Get a slice from the buffer

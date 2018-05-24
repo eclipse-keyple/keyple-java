@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.util.ByteBufferUtils;
 
 /**
  * Read Records (00B2) response parser. See specs: Calypso / page 89 / 9.4.7 Read Records
@@ -114,22 +114,6 @@ public class ReadRecordsRespPars extends AbstractApduResponseParser {
         return records.size();
     }
 
-    /**
-     * Gets the records data.
-     *
-     * @return the records data
-     * @deprecated I'm not sure it makes sense
-     */
-    public List<ByteBuffer> getRecordsData() {
-        if (records == null) {
-            return null;
-        }
-        List<ByteBuffer> list = new ArrayList<ByteBuffer>(records.size());
-        for (Record r : records) {
-            list.add(r.data);
-        }
-        return list;
-    }
 
     public List<Record> getRecords() {
         return records;

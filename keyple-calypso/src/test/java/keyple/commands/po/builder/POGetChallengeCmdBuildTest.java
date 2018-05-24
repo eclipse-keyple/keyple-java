@@ -14,6 +14,7 @@ import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.PoGetChallengeCmdBuild;
 import org.keyple.commands.AbstractApduCommandBuilder;
 import org.keyple.seproxy.ApduRequest;
+import org.keyple.util.ByteBufferUtils;
 
 public class POGetChallengeCmdBuildTest {
 
@@ -24,9 +25,9 @@ public class POGetChallengeCmdBuildTest {
 
         AbstractApduCommandBuilder apduCommandBuilder =
                 new PoGetChallengeCmdBuild(PoRevision.REV2_4);
-        ApduRequest ApduRequest = apduCommandBuilder.getApduRequest();
+        ApduRequest apduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertArrayEquals(request, ApduRequest.getBytes());
+        Assert.assertArrayEquals(request, ByteBufferUtils.toBytes(apduRequest.getBuffer()));
 
     }
 
@@ -37,9 +38,9 @@ public class POGetChallengeCmdBuildTest {
 
         AbstractApduCommandBuilder apduCommandBuilder =
                 new PoGetChallengeCmdBuild(PoRevision.REV3_1);
-        ApduRequest ApduRequest = apduCommandBuilder.getApduRequest();
+        ApduRequest apduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertArrayEquals(request, ApduRequest.getBytes());
+        Assert.assertArrayEquals(request, ByteBufferUtils.toBytes(apduRequest.getBuffer()));
 
     }
 
@@ -50,9 +51,9 @@ public class POGetChallengeCmdBuildTest {
 
         AbstractApduCommandBuilder apduCommandBuilder =
                 new PoGetChallengeCmdBuild(PoRevision.REV3_2);
-        ApduRequest ApduRequest = apduCommandBuilder.getApduRequest();
+        ApduRequest apduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertArrayEquals(request, ApduRequest.getBytes());
+        Assert.assertArrayEquals(request, ByteBufferUtils.toBytes(apduRequest.getBuffer()));
 
     }
 

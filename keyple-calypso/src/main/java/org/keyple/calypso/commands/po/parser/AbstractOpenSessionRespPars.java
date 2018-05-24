@@ -14,7 +14,7 @@ import java.util.Map;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.util.ByteBufferUtils;
 
 /**
  * Open session response parser. See specs: Calypso / page 100 / 9.5.1 - Open secure session

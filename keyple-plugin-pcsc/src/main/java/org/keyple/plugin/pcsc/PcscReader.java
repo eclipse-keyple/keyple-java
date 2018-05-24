@@ -21,6 +21,7 @@ import org.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.seproxy.exceptions.InconsistentParameterValueException;
 import org.keyple.seproxy.exceptions.InvalidMessageException;
+import org.keyple.util.ByteBufferUtils;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 

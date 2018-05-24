@@ -11,6 +11,11 @@ package org.keyple.util;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Alternate observable class
+ * 
+ * @deprecated
+ */
 public class Topic<T> {
     public interface Subscriber<T> {
         void update(T event);
