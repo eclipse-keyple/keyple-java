@@ -11,9 +11,10 @@ package org.keyple.seproxy;
 public enum ContactlessProtocols implements SeProtocol {
 
     // Contactless standard
-    PROTOCOL_ISO14443_4("ISO 14443-4"),
-    PROTOCOL_ISO14443_4A("ISO 14443-4A"),// ISOA in Android NFC, included in PROTOCOL_ISO14443_4
-    PROTOCOL_ISO14443_4B("ISO 14443-4B"),// ISOB in Android NFC, included in PROTOCOL_ISO14443_4
+    PROTOCOL_ISO14443_4("ISO 14443-4"), PROTOCOL_ISO14443_4A("ISO 14443-4A"), // ISOA in Android
+                                                                              // NFC, included in
+                                                                              // PROTOCOL_ISO14443_4
+    PROTOCOL_ISO14443_4B("ISO 14443-4B"), // ISOB in Android NFC, included in PROTOCOL_ISO14443_4
 
     // Contactless proprietary solutions
     PROTOCOL_B_PRIME("Old Calypso B prime"),

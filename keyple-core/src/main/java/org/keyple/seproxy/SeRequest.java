@@ -108,6 +108,7 @@ public class SeRequest {
 
     /**
      * Get the current protocol
+     * 
      * @return seProtocolFlag
      */
     public SeProtocol getSeProtocolFlag() {
@@ -116,6 +117,7 @@ public class SeRequest {
 
     /**
      * Set the expected protocol for the current request
+     * 
      * @param seProtocolFlag
      */
     public void setSeProtocolFlag(SeProtocol seProtocolFlag) {

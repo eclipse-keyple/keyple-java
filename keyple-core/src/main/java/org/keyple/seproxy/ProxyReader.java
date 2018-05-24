@@ -8,9 +8,8 @@
 
 package org.keyple.seproxy;
 
-import org.keyple.seproxy.exceptions.IOReaderException;
-
 import java.util.Map;
+import org.keyple.seproxy.exceptions.IOReaderException;
 
 /**
  * Interface each {@link ReadersPlugin} should implement
@@ -26,10 +25,11 @@ public interface ProxyReader {
 
     /**
      * Sets the expected protocols to handle SeRequest selection in SeRequestSet
+     * 
      * @param seProtocolSettings
      * @throws IOReaderException
      */
-    void setProtocol(Map< SeProtocol, String> seProtocolSettings) throws IOReaderException;
+    void setProtocol(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException;
 
     /**
      * Transmits a request to a SE application and get back the corresponding SE response o the
