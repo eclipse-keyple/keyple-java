@@ -18,6 +18,7 @@ import org.keyple.seproxy.ApduRequest;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ByteBufferUtils;
 import org.keyple.seproxy.ReaderEvent;
+import org.keyple.seproxy.SeProtocol;
 import org.keyple.seproxy.SeRequest;
 import org.keyple.seproxy.SeRequestSet;
 import org.keyple.seproxy.SeResponse;
