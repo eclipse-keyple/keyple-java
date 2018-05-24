@@ -40,28 +40,6 @@ public class ApduResponse extends AbstractApduBuffer {
     }
 
     /**
-     * The constructor called by a ProxyReader in order to build the APDU command response to push
-     * to a ticketing application.
-     *
-     * @param bytes the bytes
-     * @param successful the successful
-     * @param statusCode the status code
-     * @deprecated Only {@link ApduResponse#ApduResponse(byte[], boolean)} should be used instead.
-     */
-    public ApduResponse(byte[] bytes, boolean successful, byte[] statusCode) {
-        super(ByteBuffer.allocate(
-                (bytes != null ? bytes.length : 0) + (statusCode != null ? statusCode.length : 0)));
-        if (bytes != null) {
-            buffer.put(bytes);
-        }
-        if (statusCode != null) {
-            buffer.put(statusCode);
-        }
-        buffer.position(0);
-        this.successful = successful;
-    }
-
-    /**
      * Checks if is successful.
      *
      * @return the status of the command transmission.
@@ -80,18 +58,6 @@ public class ApduResponse extends AbstractApduBuffer {
         return s;
     }
 
-    /**
-     * Get the old (two bytes) status code
-     * 
-     * @return Old status code format
-     * @deprecated Prefer {@link #getStatusCode()}
-     */
-    public byte[] getStatusCodeOld() {
-        byte[] statusCode = new byte[2];
-        buffer.position(buffer.limit() - 2);
-        buffer.get(statusCode);
-        return statusCode;
-    }
 
     /**
      * Get the data before the statusCode
@@ -103,16 +69,6 @@ public class ApduResponse extends AbstractApduBuffer {
         b.position(0);
         b.limit(b.limit() - 2);
         return b.slice();
-    }
-
-    /**
-     * Get the bytes before the status code
-     * 
-     * @return byte array of data present before the status code
-     * @deprecated Prefer {@link #getDataOut()}
-     */
-    public byte[] getBytesOut() {
-        return ByteBufferUtils.toBytes(getDataOut());
     }
 
     @Override

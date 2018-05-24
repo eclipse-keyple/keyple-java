@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.parser.AbstractOpenSessionRespPars;
 import org.keyple.seproxy.ApduResponse;
+import org.keyple.seproxy.SeResponse;
 import org.keyple.seproxy.SeResponseSet;
 import org.mockito.junit.MockitoJUnitRunner;
 import keyple.commands.utils.TestsUtilsResponseTabByteGenerator;
@@ -37,8 +38,9 @@ public class OpenSessionRespParsTest {
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseMockFci);
 
-        SeResponseSet reponseMock = new SeResponseSet(true, responseMockFci, apduResponses);
-        ApduResponse response = reponseMock.getApduResponses().get(0);
+        SeResponseSet reponseMock =
+                new SeResponseSet(new SeResponse(true, responseMockFci, apduResponses));
+        ApduResponse response = reponseMock.getSingleElement().getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
     }
@@ -53,8 +55,9 @@ public class OpenSessionRespParsTest {
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseMockFci);
 
-        SeResponseSet reponseMock = new SeResponseSet(true, responseMockFci, apduResponses);
-        ApduResponse response = reponseMock.getApduResponses().get(0);
+        SeResponseSet reponseMock =
+                new SeResponseSet(new SeResponse(true, responseMockFci, apduResponses));
+        ApduResponse response = reponseMock.getSingleElement().getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV3_1));
     }
@@ -71,8 +74,9 @@ public class OpenSessionRespParsTest {
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseMockOS);
 
-        SeResponseSet reponseMock = new SeResponseSet(true, responseMockFci, apduResponses);
-        ApduResponse response = reponseMock.getApduResponses().get(0);
+        SeResponseSet reponseMock =
+                new SeResponseSet(new SeResponse(true, responseMockFci, apduResponses));
+        ApduResponse response = reponseMock.getSingleElement().getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV3_2));
     }

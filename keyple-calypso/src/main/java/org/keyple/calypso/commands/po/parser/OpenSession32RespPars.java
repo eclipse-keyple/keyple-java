@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.utils.ApduUtils;
 import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.ByteBufferUtils;
+import org.keyple.util.ByteBufferUtils;
 
 public class OpenSession32RespPars extends AbstractOpenSessionRespPars {
 

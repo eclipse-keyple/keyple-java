@@ -8,6 +8,7 @@
 
 package keyple.commands.utils;
 
+import java.io.ByteArrayOutputStream;
 import org.keyple.seproxy.ApduResponse;
 
 /**
@@ -15,6 +16,23 @@ import org.keyple.seproxy.ApduResponse;
  *
  */
 public class TestsUtilsResponseTabByteGenerator {
+    /**
+     * Append the given byte arrays to one big array
+     *
+     * @param arrays The arrays to append
+     * @return The complete array containing the appended data
+     */
+    public static final byte[] append(final byte[]... arrays) {
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        if (arrays != null) {
+            for (final byte[] array : arrays) {
+                if (array != null) {
+                    out.write(array, 0, array.length);
+                }
+            }
+        }
+        return out.toByteArray();
+    }
 
     public byte[] generate4MultiRecordsTabByte() {
         return new byte[] {0x01, 0x01, 0x01, 0x01, 0x30, 0x01, 0x01, 0x30, 0x01, 0x01, 0x30, 0x01,
@@ -59,47 +77,48 @@ public class TestsUtilsResponseTabByteGenerator {
     }
 
     public static ApduResponse generateApduResponseValideRev2_4() {
-        return new ApduResponse(generateResponseOkTabByteRev2_4(), true,
-                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode());
+        return new ApduResponse(append(generateResponseOkTabByteRev2_4(),
+                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode()), true);
     }
 
     public static ApduResponse generateApduResponseValideRev3_1() {
-        return new ApduResponse(generateResponseOkTabByteRev3_1(), true,
-                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode());
+        return new ApduResponse(append(generateResponseOkTabByteRev3_1(),
+                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode()), true);
     }
 
     public static ApduResponse generateApduResponseValideRev3_2() {
-        return new ApduResponse(generateResponseOkTabByteRev3_2(), true,
-                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode());
+        return new ApduResponse(append(generateResponseOkTabByteRev3_2(),
+                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode()), true);
     }
 
     public static ApduResponse generateApduResponseOpenSessionCmd() {
-        return new ApduResponse(generateDataOpenTabByte(), true,
-                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode());
+        return new ApduResponse(append(generateDataOpenTabByte(),
+                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode()), true);
     }
 
     public static ApduResponse generateApduResponseOpenSessionCmdError() {
-        return new ApduResponse(generateDataOpenTabByte(), true,
-                TestsUtilsStatusCodeGenerator.generateAccessForbiddenStatusCode());
+        return new ApduResponse(append(generateDataOpenTabByte(),
+                TestsUtilsStatusCodeGenerator.generateAccessForbiddenStatusCode()), true);
     }
 
     public static ApduResponse generateApduResponseTerminalSessionSignatureCmd() {
-        return new ApduResponse(generateTerminalSessionSignatureTabByte(), true,
-                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode());
+        return new ApduResponse(append(generateTerminalSessionSignatureTabByte(),
+                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode()), true);
     }
 
     public static ApduResponse generateApduResponseTerminalSessionSignatureCmdError() {
-        return new ApduResponse(generateTerminalSessionSignatureTabByte(), true,
-                TestsUtilsStatusCodeGenerator.generateCommandForbiddenOnBinaryFilesStatusCode());
+        return new ApduResponse(append(generateTerminalSessionSignatureTabByte(),
+                TestsUtilsStatusCodeGenerator.generateCommandForbiddenOnBinaryFilesStatusCode()),
+                true);
     }
 
     public static ApduResponse generateApduResponseFciCmd() {
-        return new ApduResponse(generateFciTabByte(), true,
-                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode());
+        return new ApduResponse(append(generateFciTabByte(),
+                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode()), true);
     }
 
     public static ApduResponse generateApduResponseFciCmdError() {
-        return new ApduResponse(generateFciTabByte(), true,
-                TestsUtilsStatusCodeGenerator.generateFileNotFoundStatusCode());
+        return new ApduResponse(append(generateFciTabByte(),
+                TestsUtilsStatusCodeGenerator.generateFileNotFoundStatusCode()), true);
     }
 }

@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.keyple.calypso.commands.csm.parser.DigestCloseRespPars;
 import org.keyple.commands.AbstractApduResponseParser;
 import org.keyple.seproxy.ApduResponse;
+import org.keyple.seproxy.SeResponse;
 import org.keyple.seproxy.SeResponseSet;
 
 public class DigestCloseRespParsTest {
@@ -26,10 +27,10 @@ public class DigestCloseRespParsTest {
         ApduResponse apduResponse = new ApduResponse(
                 new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, (byte) 0x90, 0x00}, true);
         listeResponse.add(apduResponse);
-        SeResponseSet seResponse = new SeResponseSet(true, null, listeResponse);
+        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
-                new DigestCloseRespPars(seResponse.getApduResponses().get(0));
+                new DigestCloseRespPars(seResponse.getSingleElement().getApduResponses().get(0));
         ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
         Assert.assertEquals(
                 ByteBuffer
