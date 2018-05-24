@@ -190,10 +190,10 @@ public class AndroidNfcReader extends AbstractObservableReader
         for (SeRequest seRequestElement : seRequestElements) {
 
             Log.d(TAG, "Filtering seRequestElement whom protocol : "
-                    + seRequestElement.getProtocolFlag());
+                    + seRequestElement.getSeProtocolFlag());
 
-            if (seRequestElement.getProtocolFlag() != null
-                    && seRequestElement.getProtocolFlag().equals(tagTransceiver.getTech())) {
+            if (seRequestElement.getSeProtocolFlag() != null
+                    && seRequestElement.getSeProtocolFlag().equals(tagTransceiver.getTech())) {
                 filteredSRE.add(seRequestElement);
             }
         }
