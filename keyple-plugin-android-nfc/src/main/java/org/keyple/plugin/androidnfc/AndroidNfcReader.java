@@ -79,7 +79,7 @@ public class AndroidNfcReader extends AbstractObservableReader
     public void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException {
 
     }
-    
+
     /**
      * Callback function invoked when the @{@link NfcAdapter} detects a @{@link Tag}
      * 
