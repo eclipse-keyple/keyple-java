@@ -60,11 +60,11 @@ public class BasicCardAccessManager extends AbstractLogicManager {
 
         try {
             SeResponseSet poResponse = poReader.transmit(poRequest);
-            getObservable()
-                    .post(new Event("Got a response", "poResponse", poResponse.getElements()));
+            getObservable().notifyObservers(
+                    new Event("Got a response", "poResponse", poResponse.getElements()));
         } catch (IOReaderException e) {
             e.printStackTrace();
-            getObservable().post(new Event("Got an error", "error", e.getMessage()));
+            getObservable().notifyObservers(new Event("Got an error", "error", e.getMessage()));
         }
     }
 

@@ -71,10 +71,10 @@ public class MultiNFCCardAccessManager extends AbstractLogicManager {
 
         try {
             SeResponseSet poResponse = poReader.transmit(poRequest);
-            getObservable().post(new Event("Got a response", "poResponse", poResponse));
+            getObservable().notifyObservers(new Event("Got a response", "poResponse", poResponse));
         } catch (IOReaderException e) {
             e.printStackTrace();
-            getObservable().post(new Event("Got an error", "error", e.getMessage()));
+            getObservable().notifyObservers(new Event("Got an error", "error", e.getMessage()));
         }
     }
 
