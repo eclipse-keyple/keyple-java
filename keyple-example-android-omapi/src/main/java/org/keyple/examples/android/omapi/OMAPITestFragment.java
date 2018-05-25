@@ -18,7 +18,6 @@ import org.keyple.seproxy.ProxyReader;
 import org.keyple.seproxy.ReadersPlugin;
 import org.keyple.seproxy.SeProxyService;
 import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.util.observable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;

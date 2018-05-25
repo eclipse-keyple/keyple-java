@@ -41,8 +41,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 
-public class NFCTestFragment extends Fragment
-        implements Observable.Observer<ReaderEvent>, Observable.Observer<AbstractLogicManager.Event> {
+public class NFCTestFragment extends Fragment implements Observable.Observer<ReaderEvent>,
+        Observable.Observer<AbstractLogicManager.Event> {
 
 
     private static final String TAG = NFCTestFragment.class.getSimpleName();
