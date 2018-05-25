@@ -16,12 +16,12 @@ import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.util.Observable;
 
 
-public class ObservableEventTest {
+public class KeypleGenericDemo_ObservableReaderNotification {
 
     private ReaderObserver readerObserver;
     private PluginObserver pluginObserver;
 
-    private ObservableEventTest() {
+    private KeypleGenericDemo_ObservableReaderNotification() {
         readerObserver = new ReaderObserver();
         pluginObserver = new PluginObserver(readerObserver);
     }
@@ -157,7 +157,8 @@ public class ObservableEventTest {
 
     public static void main(String[] args) throws Exception {
 
-        ObservableEventTest testObserver = new ObservableEventTest();
+        KeypleGenericDemo_ObservableReaderNotification testObserver =
+                new KeypleGenericDemo_ObservableReaderNotification();
 
         // Set PCSC plugin
         SeProxyService seProxyService = SeProxyService.getInstance();
