@@ -13,13 +13,12 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.keyple.seproxy.AbstractObservableReader;
 import org.keyple.seproxy.ReaderEvent;
-import org.keyple.seproxy.ReaderObserver;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.util.Observable;
 
 public class PcscReaderActualTest {
 
-    public class MyReaderObserver implements ReaderObserver {
+    public class MyReaderObserver implements Observable.Observer<ReaderEvent> {
 
         private Thread lastThread;
 

@@ -50,7 +50,7 @@ public abstract class AbstractObservableReader extends Observable<ReaderEvent>
      * This method shall be called only from a SE Proxy plugin by a reader implementing
      * AbstractObservableReader
      * 
-     * push a ReaderEvent of the selected AbstractObservableReader to its registered ReaderObserver.
+     * push a ReaderEvent of the selected AbstractObservableReader to its registered Observer.
      *
      * @param event the event
      */

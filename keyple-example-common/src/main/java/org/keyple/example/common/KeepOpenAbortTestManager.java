@@ -67,7 +67,7 @@ public class KeepOpenAbortTestManager extends AbstractLogicManager {
 
             System.out.println("Transmit 1st SE Request, keep channel open");
             SeResponseSet poResponse = poReader.transmit(poRequest);
-            getTopic().post(new Event("Got a response", "poResponse", poResponse));
+            getObservable().notifyObservers(new Event("Got a response", "poResponse", poResponse));
 
 
         } catch (Exception e) {

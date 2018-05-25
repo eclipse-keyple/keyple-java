@@ -10,27 +10,27 @@ package org.keyple.example.common;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.keyple.util.Topic;
-
+import org.keyple.seproxy.ReaderEvent;
+import org.keyple.util.Observable;
 
 
 public abstract class AbstractLogicManager implements Runnable {
     private Thread thread;
 
-    private final Topic<Event> topic = new Topic<Event>();
+    private final Observable observable = new Observable();
 
     protected String getName() {
         return getClass().getName();
     }
 
-    public Topic<Event> getTopic() {
-        return topic;
+    public Observable<Event> getObservable() {
+        return observable;
     }
 
     public void run() {
-        // If we don't have any subscriber, we'll create a default one
-        if (topic.countSubscribers() == 0) {
-            topic.addSubscriber(new ConsoleEventReporter());
+        // If we don't have any observer, we'll create a default one
+        if (observable.countObservers() == 0) {
+            observable.addObserver(new ConsoleEventReporter());
         }
     }
 
@@ -40,19 +40,20 @@ public abstract class AbstractLogicManager implements Runnable {
             @Override
             public void run() {
                 try {
-                    if (topic.countSubscribers() == 0) {
-                        topic.addSubscriber(new Topic.Subscriber<Event>() {
+                    if (observable.countObservers() == 0) {
+                        observable.addObserver(new Observable.Observer<Event>() {
                             @Override
-                            public void update(Event event) {
+                            public void update(Observable<? extends Event> observable,
+                                    Event event) {
                                 System.out.println("Event: " + event);
                             }
                         });
                     }
-                    post("start");
+                    notifyObservers("start");
                     actualTask.run();
-                    post("end");
+                    notifyObservers("end");
                 } catch (Exception ex) { // NOPMD
-                    post("error", "exception", ex);
+                    notifyObservers("error", "exception", ex);
                     System.err.println("Error: " + ex.getClass() + " : " + ex.getMessage());
                 }
             }
@@ -60,8 +61,8 @@ public abstract class AbstractLogicManager implements Runnable {
         thread.start();
     }
 
-    private void post(String name, Object... details) {
-        topic.post(new Event(name, details));
+    private void notifyObservers(String name, Object... details) {
+        observable.notifyObservers(new Event(name, details));
     }
 
     /**
@@ -119,9 +120,9 @@ public abstract class AbstractLogicManager implements Runnable {
     /**
      * Console event reporter
      */
-    private class ConsoleEventReporter implements Topic.Subscriber<Event> {
+    private class ConsoleEventReporter implements Observable.Observer<ReaderEvent> {
         @Override
-        public void update(Event event) {
+        public void update(Observable<? extends ReaderEvent> observable, ReaderEvent event) {
             System.out.println("Event: " + event);
         }
     }
