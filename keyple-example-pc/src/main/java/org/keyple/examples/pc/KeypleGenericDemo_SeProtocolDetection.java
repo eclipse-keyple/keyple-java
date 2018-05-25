@@ -49,7 +49,8 @@ public class KeypleGenericDemo_SeProtocolDetection implements Observable.Observe
             List<SeRequest> poRequests = new ArrayList<SeRequest>();
 
             // create a standard PCSC request for getting the PO S/N
-            ApduRequest getSerialNumberApdu = new ApduRequest(ByteBufferUtils.fromHex("FFCA000000"), false);
+            ApduRequest getSerialNumberApdu =
+                    new ApduRequest(ByteBufferUtils.fromHex("FFCA000000"), false);
             List<ApduRequest> getSerialNumberApduList = new ArrayList<ApduRequest>();
             getSerialNumberApduList.add(getSerialNumberApdu);
 
@@ -66,8 +67,10 @@ public class KeypleGenericDemo_SeProtocolDetection implements Observable.Observe
             getSNMifareULRequest.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_MIFARE_UL);
             poRequests.add(getSNMifareULRequest);
 
-            SeRequest getSNMifareDesfireRequest = new SeRequest(null, getSerialNumberApduList, false);
-            getSNMifareDesfireRequest.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE);
+            SeRequest getSNMifareDesfireRequest =
+                    new SeRequest(null, getSerialNumberApduList, false);
+            getSNMifareDesfireRequest
+                    .setSeProtocolFlag(ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE);
             poRequests.add(getSNMifareDesfireRequest);
 
             SeRequest getSNST25fireRequest = new SeRequest(null, getSerialNumberApduList, false);
@@ -98,7 +101,8 @@ public class KeypleGenericDemo_SeProtocolDetection implements Observable.Observe
                 SeRequest seRequest = seReqIterator.next();
 
                 if (seResponse != null) {
-                    System.out.println("Protocol \"" + seRequest.getSeProtocolFlag().getName() + "\" matched for request number " + String.valueOf(requestIndex));
+                    System.out.println("Protocol \"" + seRequest.getSeProtocolFlag().getName()
+                            + "\" matched for request number " + String.valueOf(requestIndex));
                     List<ApduRequest> poApduRequestList = seRequest.getApduRequests();
                     List<ApduResponse> poApduResponseList = seResponse.getApduResponses();
                     for (int i = 0; i < poApduResponseList.size(); i++) {
