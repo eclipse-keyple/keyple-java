@@ -10,9 +10,7 @@ package org.keyple.examples.pc;
 
 import java.util.*;
 import java.util.regex.Pattern;
-import org.keyple.calypso.commands.po.PoRevision;
-import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
-import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
+import org.keyple.example.common.HoplinkSimpleRead;
 import org.keyple.plugin.pcsc.PcscPlugin;
 import org.keyple.seproxy.*;
 import org.keyple.seproxy.exceptions.IOReaderException;
@@ -50,30 +48,8 @@ public class KeypleGenericDemo_SeProtocolDetection implements Observable.Observe
             // create a list of SeRequest
             List<SeRequest> poRequestElements = new ArrayList<SeRequest>();
 
+            SeRequest poRequestElementHoplink = HoplinkSimpleRead.getSeRequest();
 
-            // create request
-            // Hoplink
-            String poAid = "A000000291A000000191";
-            String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
-                    + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
-
-            ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                    (byte) 0x01, true, (byte) 0x14, (byte) 0x20);
-            ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                    (byte) 0x01, true, (byte) 0x1A, (byte) 0x30);
-            UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
-                    new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x01, (byte) 0x1A,
-                            ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
-
-            // Get PO ApduRequest List
-            List<ApduRequest> poApduRequestListHoplink =
-                    Arrays.asList(poReadRecordCmd_T2Env.getApduRequest(),
-                            poReadRecordCmd_T2Usage.getApduRequest(),
-                            poUpdateRecordCmd_T2UsageFill.getApduRequest());
-
-            // create request
-            SeRequest poRequestElementHoplink =
-                    new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestListHoplink, false);
             poRequestElementHoplink.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_ISO14443_4);
 
             poRequestElements.add(poRequestElementHoplink);
@@ -151,8 +127,8 @@ public class KeypleGenericDemo_SeProtocolDetection implements Observable.Observe
 
         System.out.println("PO Reader  : " + poReader.getName());
 
-        KeypleTest_ObservablePoMultiPoSolution observer =
-                new KeypleTest_ObservablePoMultiPoSolution();
+        KeypleGenericDemo_SeProtocolDetection observer =
+                new KeypleGenericDemo_SeProtocolDetection();
 
         observer.poReader = poReader;
         ((ConfigurableReader) observer.poReader).setParameter("protocol", "T1");

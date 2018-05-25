@@ -8,13 +8,13 @@
 
 package org.keyple.example.common;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import org.keyple.calypso.commands.po.PoRevision;
 import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
 import org.keyple.seproxy.ApduRequest;
+import org.keyple.seproxy.SeRequest;
 import org.keyple.util.ByteBufferUtils;
 
 /**
@@ -22,14 +22,12 @@ import org.keyple.util.ByteBufferUtils;
  * demo transaction
  */
 public class HoplinkSimpleRead {
-
-    final static String poAid = "A000000291A000000191";
-    List<ApduRequest> poApduRequestList;
-
     /**
-     * Constructor: initialize poApduRequestList
+     * @return SeRequest
      */
-    public HoplinkSimpleRead() {
+    public static SeRequest getSeRequest() {
+        String poAid = "A000000291A000000191";
+
         String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
                 + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
 
@@ -43,16 +41,12 @@ public class HoplinkSimpleRead {
                 new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x01, (byte) 0x1A,
                         ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
 
-        this.poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest(),
+        List<ApduRequest> poApduRequestList;
+
+        poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest(),
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
-    }
 
-    public ByteBuffer getPoAid() {
-        return ByteBufferUtils.fromHex(poAid);
-    }
-
-    public List<ApduRequest> getPoApduRequestList() {
-        return poApduRequestList;
+        return new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, true);
     }
 }

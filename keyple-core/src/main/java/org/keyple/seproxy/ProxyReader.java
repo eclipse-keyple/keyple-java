@@ -51,4 +51,10 @@ public interface ProxyReader {
      * @throws IOReaderException Exception of type IO Reader
      */
     boolean isSEPresent() throws IOReaderException;
+
+    /**
+     * Gives the protocol detected for the current SE
+     * @return SeProtocol
+     */
+    SeProtocol getCurrentProtocol();
 }
