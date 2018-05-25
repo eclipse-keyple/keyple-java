@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.examples.pc;
+package org.keyple.examples.pc.deprecated;
 
 import org.keyple.plugin.pcsc.PcscPlugin;
 import org.keyple.seproxy.*;
