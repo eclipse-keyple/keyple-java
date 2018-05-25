@@ -372,16 +372,6 @@ public class PcscReader extends AbstractObservableReader implements Configurable
         }
     }
 
-    @Override
-    public SeProtocol getCurrentProtocol() {
-        SeProtocol seProtocol = null;
-        if(card == null);
-        {
-
-        }
-        return seProtocol;
-    }
-
     /**
      * method to connect to the card from the terminal
      *

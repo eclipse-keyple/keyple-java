@@ -22,7 +22,7 @@ public enum ContactlessProtocols implements SeProtocol {
     // Contactless proprietary solutions
     PROTOCOL_B_PRIME("Old Calypso B prime"),
 
-    PROTOCOL_MIFARE_UL("Mifare Ultra Ligth"),
+    PROTOCOL_MIFARE_UL("Mifare Ultra Light"),
 
     PROTOCOL_MIFARE_1K("Mifare 1k"),
 

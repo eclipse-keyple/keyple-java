@@ -45,41 +45,70 @@ public class KeypleGenericDemo_SeProtocolDetection implements Observable.Observe
 
         try {
 
-            // create a list of SeRequest
-            List<SeRequest> poRequestElements = new ArrayList<SeRequest>();
+            // create an empty list of SeRequest
+            List<SeRequest> poRequests = new ArrayList<SeRequest>();
 
-            SeRequest poRequestElementHoplink = HoplinkSimpleRead.getSeRequest();
+            // create a standard PCSC request for getting the PO S/N
+            ApduRequest getSerialNumberApdu = new ApduRequest(ByteBufferUtils.fromHex("FFCA000000"), false);
+            List<ApduRequest> getSerialNumberApduList = new ArrayList<ApduRequest>();
+            getSerialNumberApduList.add(getSerialNumberApdu);
 
-            poRequestElementHoplink.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_ISO14443_4);
+            // add a request for getting the PO S/N to various PO protocols
+            SeRequest getSNIso144434Request = new SeRequest(null, getSerialNumberApduList, false);
+            getSNIso144434Request.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_ISO14443_4);
+            poRequests.add(getSNIso144434Request);
 
-            poRequestElements.add(poRequestElementHoplink);
+            SeRequest getSNMifare1KRequest = new SeRequest(null, getSerialNumberApduList, false);
+            getSNMifare1KRequest.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_MIFARE_1K);
+            poRequests.add(getSNMifare1KRequest);
 
-            // add 2 more identical Hoplink request elements for test
-            // when keepChannelOpen is set to false, we should have the same scenario 3 times
-            // when keepChannelOpen is set to true, we should only have it once
-            poRequestElements.add(poRequestElementHoplink);
-            poRequestElements.add(poRequestElementHoplink);
+            SeRequest getSNMifareULRequest = new SeRequest(null, getSerialNumberApduList, false);
+            getSNMifareULRequest.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_MIFARE_UL);
+            poRequests.add(getSNMifareULRequest);
+
+            SeRequest getSNMifareDesfireRequest = new SeRequest(null, getSerialNumberApduList, false);
+            getSNMifareDesfireRequest.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE);
+            poRequests.add(getSNMifareDesfireRequest);
+
+            SeRequest getSNST25fireRequest = new SeRequest(null, getSerialNumberApduList, false);
+            getSNST25fireRequest.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_MEMORY_ST25);
+            poRequests.add(getSNST25fireRequest);
+
+            SeRequest getSNBPrimeRequest = new SeRequest(null, getSerialNumberApduList, false);
+            getSNBPrimeRequest.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_B_PRIME);
+            poRequests.add(getSNBPrimeRequest);
 
 
-            SeRequestSet poRequest = new SeRequestSet(poRequestElements);
+            // create a Hoplink simple read request
+            SeRequest poRequestHoplink = HoplinkSimpleRead.getSeRequest();
+
+            // add the request to the list
+            poRequestHoplink.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_ISO14443_4);
+            poRequests.add(poRequestHoplink);
+
+            // create a SeRequestSet from the SeRequest list
+            SeRequestSet poRequest = new SeRequestSet(poRequests);
             // execute request and get response
             SeResponseSet poResponse = poReader.transmit(poRequest);
 
             // output results
-            Iterator<SeRequest> seReqIterator = poRequestElements.iterator();
-            for (SeResponse respElement : poResponse.getElements()) {
-                SeRequest reqElement = seReqIterator.next();
+            Iterator<SeRequest> seReqIterator = poRequests.iterator();
+            int requestIndex = 0;
+            for (SeResponse seResponse : poResponse.getElements()) {
+                SeRequest seRequest = seReqIterator.next();
 
-                if (respElement != null) {
-                    List<ApduRequest> poApduRequestList = reqElement.getApduRequests();
-                    List<ApduResponse> poApduResponseList = respElement.getApduResponses();
+                if (seResponse != null) {
+                    System.out.println("Protocol \"" + seRequest.getSeProtocolFlag().getName() + "\" matched for request number " + String.valueOf(requestIndex));
+                    List<ApduRequest> poApduRequestList = seRequest.getApduRequests();
+                    List<ApduResponse> poApduResponseList = seResponse.getApduResponses();
                     for (int i = 0; i < poApduResponseList.size(); i++) {
-                        System.out.println("######## CMD: "
+                        System.out.println(" CMD: "
                                 + ByteBufferUtils.toHex(poApduRequestList.get(i).getBuffer()));
-                        System.out.println("####### RESP: "
+                        System.out.println("RESP: "
                                 + ByteBufferUtils.toHex(poApduResponseList.get(i).getBuffer()));
                     }
                 }
+                requestIndex++;
             }
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -116,7 +145,7 @@ public class KeypleGenericDemo_SeProtocolDetection implements Observable.Observe
     public static void main(String[] args) throws IOReaderException, InterruptedException {
         SeProxyService seProxyService = SeProxyService.getInstance();
         List<ReadersPlugin> pluginsSet = new ArrayList<ReadersPlugin>();
-        pluginsSet.add(PcscPlugin.getInstance().setLogging(true));
+        pluginsSet.add(PcscPlugin.getInstance().setLogging(false));
         seProxyService.setPlugins(pluginsSet);
 
         ProxyReader poReader = getReader(seProxyService, poReaderName);
@@ -139,14 +168,19 @@ public class KeypleGenericDemo_SeProtocolDetection implements Observable.Observe
 
         protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_1K,
                 "3B8F8001804F0CA000000306030001000000006A");
+
         protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_UL,
                 "3B8F8001804F0CA0000003060300030000000068");
+
         protocolsMap.put(ContactlessProtocols.PROTOCOL_MEMORY_ST25,
                 "3B8F8001804F0CA000000306070007D0020C00B6");
+
         protocolsMap.put(ContactlessProtocols.PROTOCOL_ISO14443_4,
                 "3B8880010000000000718100F9|3B8C800150........00000000007181..");
+
         protocolsMap.put(ContactlessProtocols.PROTOCOL_B_PRIME,
                 "3B8F8001805A0A0103200311........829000..");
+
         protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE, "3B8180018080");
 
         // provide the reader with the map
