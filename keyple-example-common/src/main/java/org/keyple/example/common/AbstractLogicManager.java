@@ -28,7 +28,7 @@ public abstract class AbstractLogicManager implements Runnable {
     }
 
     public void run() {
-        // If we don't have any subscriber, we'll create a default one
+        // If we don't have any observer, we'll create a default one
         if (observable.countObservers() == 0) {
             observable.addObserver(new ConsoleEventReporter());
         }

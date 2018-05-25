@@ -28,7 +28,6 @@ import org.keyple.seproxy.ReadersPlugin;
 import org.keyple.seproxy.SeProxyService;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.util.Observable;
-import org.keyple.util.Topic;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -43,7 +42,7 @@ import android.widget.TextView;
 
 
 public class NFCTestFragment extends Fragment
-        implements Observable.Observer<ReaderEvent>, Topic.Subscriber<AbstractLogicManager.Event> {
+        implements Observable.Observer<ReaderEvent>, Observable.Observer<AbstractLogicManager.Event> {
 
 
     private static final String TAG = NFCTestFragment.class.getSimpleName();
