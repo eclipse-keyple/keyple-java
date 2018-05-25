@@ -40,8 +40,10 @@ import android.view.ViewGroup;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
-public class NFCTestFragment extends Fragment implements Observable.Observer<ReaderEvent> {
+
+public class NFCTestFragment extends Fragment implements Observable.Observer<Object> {
 
 
     private static final String TAG = NFCTestFragment.class.getSimpleName();
@@ -309,7 +311,7 @@ public class NFCTestFragment extends Fragment implements Observable.Observer<Rea
      *
      * @param event event received from Card Access Logic Manager
      */
-    public void update(AbstractLogicManager.Event event) {
+    public void updateCardEvent(Observable<? extends AbstractLogicManager.Event> observable, AbstractLogicManager.Event event) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -320,6 +322,7 @@ public class NFCTestFragment extends Fragment implements Observable.Observer<Rea
             }
         });
     }
+
 
     /**
      * Revocation of the Activity from @{@link org.keyple.plugin.androidnfc.AndroidNfcReader} list
@@ -354,8 +357,7 @@ public class NFCTestFragment extends Fragment implements Observable.Observer<Rea
     }
 
 
-    @Override
-    public void update(Observable<? extends ReaderEvent> observable, ReaderEvent readerEvent) {
+    public void updateReaderEvent(Observable<? extends ReaderEvent> observable, ReaderEvent readerEvent) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -387,5 +389,17 @@ public class NFCTestFragment extends Fragment implements Observable.Observer<Rea
                 }
             }
         });
+    }
+
+    @Override
+    public void update(Observable<?> observable, Object obj) {
+       if(obj instanceof ReaderEvent){
+           updateReaderEvent((Observable<? extends ReaderEvent>) observable, (ReaderEvent) obj);
+       } else if(obj instanceof AbstractLogicManager.Event){
+           updateCardEvent((Observable<? extends AbstractLogicManager.Event>) observable, (AbstractLogicManager.Event) obj);
+       } else {
+           Log.e(TAG, "Unknown event : " + obj.toString());
+       }
+
     }
 }
