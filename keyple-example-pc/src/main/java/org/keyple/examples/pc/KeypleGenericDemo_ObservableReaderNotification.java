@@ -157,7 +157,8 @@ public class KeypleGenericDemo_ObservableReaderNotification {
 
     public static void main(String[] args) throws Exception {
 
-        KeypleGenericDemo_ObservableReaderNotification testObserver = new KeypleGenericDemo_ObservableReaderNotification();
+        KeypleGenericDemo_ObservableReaderNotification testObserver =
+                new KeypleGenericDemo_ObservableReaderNotification();
 
         // Set PCSC plugin
         SeProxyService seProxyService = SeProxyService.getInstance();
