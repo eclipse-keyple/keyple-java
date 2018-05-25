@@ -73,9 +73,9 @@ public class PcscReader extends AbstractObservableReader implements Configurable
     private long threadWaitTimeout;
 
     /**
-     * PO selection map associating po solution and atr regex string
+     * PO selection map associating po protocol and atr regex string
      */
-    private Map<String, String> protocolsMap;
+    private Map<SeProtocol, String> protocolsMap;
 
 
     PcscReader(CardTerminal terminal) { // PcscReader constructor may be
@@ -84,7 +84,7 @@ public class PcscReader extends AbstractObservableReader implements Configurable
         this.terminalName = terminal.getName();
         this.card = null;
         this.channel = null;
-        this.protocolsMap = new HashMap<String, String>();
+        this.protocolsMap = new HashMap<SeProtocol, String>();
 
         // Using null values to use the standard method for defining default values
         try {
@@ -113,6 +113,11 @@ public class PcscReader extends AbstractObservableReader implements Configurable
     @Override
     public String getName() {
         return terminalName;
+    }
+
+    @Override
+    public void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException {
+        this.protocolsMap = seProtocolSettings;
     }
 
     @Override
@@ -176,8 +181,8 @@ public class PcscReader extends AbstractObservableReader implements Configurable
         // Determine which requestElements are matching the current ATR
         for (SeRequest reqElement : requestSet.getElements()) {
             // Get protocolFlag to check if ATR filtering is required
-            String protocolFlag = reqElement.getProtocolFlag();
-            if (protocolFlag != null && !protocolFlag.isEmpty()) {
+            SeProtocol protocolFlag = reqElement.getSeProtocolFlag();
+            if (protocolFlag != null) {
                 // the requestSet will be executed only if the protocol match the requestElement
                 String selectionMask = protocolsMap.get(protocolFlag);
                 if (selectionMask == null) {
@@ -309,10 +314,6 @@ public class PcscReader extends AbstractObservableReader implements Configurable
         } catch (CardException e) {
             throw new ChannelStateReaderException(e);
         }
-    }
-
-    private void prepareAndConnectToTerminalAndSetChannel() throws CardException {
-
     }
 
     /*
@@ -563,12 +564,6 @@ public class PcscReader extends AbstractObservableReader implements Configurable
             }
         } else if (name.equals(SETTING_KEY_LOGGING)) {
             logging = Boolean.parseBoolean(value); // default is null and perfectly acceptable
-        } else if (name.startsWith(SETTING_KEY_PO_SOLUTION_PREFIX)) {
-            if (value == null || value.length() == 0) {
-                this.protocolsMap.remove(value);
-            } else {
-                this.protocolsMap.put(name, value);
-            }
         } else {
             throw new InconsistentParameterValueException("This parameter is unknown !", name,
                     value);

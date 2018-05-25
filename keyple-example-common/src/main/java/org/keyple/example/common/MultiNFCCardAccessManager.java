@@ -52,11 +52,11 @@ public class MultiNFCCardAccessManager extends AbstractLogicManager {
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
         SeRequest isodep = new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
-        isodep.setProtocolFlag("android.nfc.tech.IsoDep");
+        isodep.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_ISO14443_4);
 
 
         SeRequest miFare = new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
-        miFare.setProtocolFlag("android.nfc.tech.MifareClassic");
+        miFare.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC);
 
 
 

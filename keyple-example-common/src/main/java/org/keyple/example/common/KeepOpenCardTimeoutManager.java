@@ -53,7 +53,7 @@ public class KeepOpenCardTimeoutManager extends AbstractLogicManager {
         SeRequest seRequestElement =
                 new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, true);
         List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
-        seRequestElement.setProtocolFlag("android.nfc.tech.IsoDep");
+        seRequestElement.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_ISO14443_4);
         seRequestElements.add(seRequestElement);
 
 
@@ -71,7 +71,7 @@ public class KeepOpenCardTimeoutManager extends AbstractLogicManager {
             SeRequest seRequestElement2 =
                     new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
             List<SeRequest> seRequestElements2 = new ArrayList<SeRequest>();
-            seRequestElement2.setProtocolFlag("android.nfc.tech.IsoDep");
+            seRequestElement2.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_ISO14443_4);
 
             seRequestElements2.add(seRequestElement2);
             SeRequestSet poRequest2 = new SeRequestSet(seRequestElements2);

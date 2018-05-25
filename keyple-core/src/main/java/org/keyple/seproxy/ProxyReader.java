@@ -8,6 +8,7 @@
 
 package org.keyple.seproxy;
 
+import java.util.Map;
 import org.keyple.seproxy.exceptions.IOReaderException;
 
 /**
@@ -21,6 +22,14 @@ public interface ProxyReader {
      * @return returns the ‘unique’ name of the SE reader for the selected plugin.
      */
     String getName();
+
+    /**
+     * Sets the expected protocols to handle SeRequest selection in SeRequestSet
+     * 
+     * @param seProtocolSettings
+     * @throws IOReaderException
+     */
+    void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException;
 
     /**
      * Transmits a request to a SE application and get back the corresponding SE response o the

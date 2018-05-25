@@ -13,10 +13,12 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.keyple.seproxy.AbstractObservableReader;
 import org.keyple.seproxy.ApduRequest;
 import org.keyple.seproxy.ApduResponse;
 import org.keyple.seproxy.ReaderEvent;
+import org.keyple.seproxy.SeProtocol;
 import org.keyple.seproxy.SeRequest;
 import org.keyple.seproxy.SeRequestSet;
 import org.keyple.seproxy.SeResponse;
@@ -75,6 +77,10 @@ public class AndroidNfcReader extends AbstractObservableReader
         return "AndroidNfcReader";
     }
 
+    @Override
+    public void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException {
+
+    }
 
     /**
      * Callback function invoked when the @{@link NfcAdapter} detects a @{@link Tag}
@@ -190,10 +196,10 @@ public class AndroidNfcReader extends AbstractObservableReader
         for (SeRequest seRequestElement : seRequestElements) {
 
             Log.d(TAG, "Filtering seRequestElement whom protocol : "
-                    + seRequestElement.getProtocolFlag());
+                    + seRequestElement.getSeProtocolFlag());
 
-            if (seRequestElement.getProtocolFlag() != null
-                    && seRequestElement.getProtocolFlag().equals(tagTransceiver.getTech())) {
+            if (seRequestElement.getSeProtocolFlag() != null
+                    && seRequestElement.getSeProtocolFlag().equals(tagTransceiver.getTech())) {
                 filteredSRE.add(seRequestElement);
             }
         }

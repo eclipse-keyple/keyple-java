@@ -52,7 +52,7 @@ public class IsodepCardAccessManager extends AbstractLogicManager {
 
         SeRequest seRequestElement =
                 new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
-        seRequestElement.setProtocolFlag("android.nfc.tech.IsoDep");
+        seRequestElement.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_ISO14443_4);
         List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
         seRequestElements.add(seRequestElement);
         SeRequestSet poRequest = new SeRequestSet(seRequestElements);
