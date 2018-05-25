@@ -38,9 +38,14 @@ public class StubReader extends AbstractObservableReader implements Configurable
     }
 
     @Override
-    public SeResponseSet transmit(SeRequestSet requestSet) throws IOReaderException {
+    public void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException {
 
-        if (requestSet == null) {
+    }
+
+    @Override
+    public SeResponseSet transmit(SeRequestSet request) throws IOReaderException {
+
+        if (request == null) {
             logger.error("SeRequestSet is null");
             throw new IOReaderException("SeRequestSet is null");
         }
@@ -81,14 +86,12 @@ public class StubReader extends AbstractObservableReader implements Configurable
 
 
         // Prepare succesfull responses
-        for (ApduRequest apduRequest : requestSet.getSingleElement().getApduRequests()) {
+        for (ApduRequest apduRequest : request.getSingleElement().getApduRequests()) {
             logger.debug("Processing request : " + apduRequest.toString());
             apduResponses.add(new ApduResponse(ByteBuffer.allocate(0), true));
         }
 
-        List<SeResponse> seResponses = new ArrayList<SeResponse>();
-        seResponses.add(new SeResponse(channelPreviouslyOpen, fci, apduResponses));
-        return new SeResponseSet(seResponses);
+        return new SeResponseSet(new SeResponse(channelPreviouslyOpen, fci, apduResponses));
     }
 
 

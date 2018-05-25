@@ -23,10 +23,10 @@ import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.util.ByteBufferUtils;
 import org.keyple.util.Observable;
 
-public class KeypleTest_ObservablePoTransaction implements Observable.Observer<ReaderEvent> {
+public class KeypleCalypsoDemo_HoplinkTransaction implements Observable.Observer<ReaderEvent> {
     private ProxyReader poReader, csmReader;
 
-    public KeypleTest_ObservablePoTransaction() {
+    public KeypleCalypsoDemo_HoplinkTransaction() {
         super();
     }
 
@@ -167,7 +167,7 @@ public class KeypleTest_ObservablePoTransaction implements Observable.Observer<R
         ((ConfigurableReader) csmReader).setParameter("protocol", "T0");
 
         // Setting up ourself as an observer
-        KeypleTest_ObservablePoTransaction observer = new KeypleTest_ObservablePoTransaction();
+        KeypleCalypsoDemo_HoplinkTransaction observer = new KeypleCalypsoDemo_HoplinkTransaction();
         observer.poReader = poReader;
         observer.csmReader = csmReader;
 
