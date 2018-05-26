@@ -62,7 +62,7 @@ public class KeepOpenCardTimeoutManager extends AbstractLogicManager {
 
             System.out.println("Transmit 1st SE Request, keep channel open");
             SeResponseSet poResponse = poReader.transmit(poRequest);
-            getTopic().post(new Event("Got a response", "poResponse", poResponse));
+            getObservable().notifyObservers(new Event("Got a response", "poResponse", poResponse));
 
             System.out.println("Sleeping for 3 seconds");
             Thread.sleep(3000);
@@ -77,7 +77,8 @@ public class KeepOpenCardTimeoutManager extends AbstractLogicManager {
             SeRequestSet poRequest2 = new SeRequestSet(seRequestElements2);
 
             SeResponseSet poResponse2 = poReader.transmit(poRequest2);
-            getTopic().post(new Event("Got a 2nd response", "poResponse2", poResponse2));
+            getObservable()
+                    .notifyObservers(new Event("Got a 2nd response", "poResponse2", poResponse2));
 
 
         } catch (Exception e) {

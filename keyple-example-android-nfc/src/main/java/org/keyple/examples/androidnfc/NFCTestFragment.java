@@ -8,6 +8,7 @@
 
 package org.keyple.examples.androidnfc;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +29,6 @@ import org.keyple.seproxy.ReadersPlugin;
 import org.keyple.seproxy.SeProxyService;
 import org.keyple.seproxy.exceptions.IOReaderException;
 import org.keyple.util.Observable;
-import org.keyple.util.Topic;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -42,8 +42,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 
-public class NFCTestFragment extends Fragment
-        implements Observable.Observer<ReaderEvent>, Topic.Subscriber<AbstractLogicManager.Event> {
+public class NFCTestFragment extends Fragment implements Observable.Observer<Object> {
 
 
     private static final String TAG = NFCTestFragment.class.getSimpleName();
@@ -195,7 +194,7 @@ public class NFCTestFragment extends Fragment
             cardAccessManager = new IsodepCardAccessManager();
             ((IsodepCardAccessManager) cardAccessManager).setPoReader(reader);
 
-            cardAccessManager.getTopic().addSubscriber(this);
+            cardAccessManager.getObservable().addObserver(this);
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
@@ -216,7 +215,7 @@ public class NFCTestFragment extends Fragment
             cardAccessManager = new MifareClassicCardAccessManager();
             ((MifareClassicCardAccessManager) cardAccessManager).setPoReader(reader);
 
-            cardAccessManager.getTopic().addSubscriber(this);
+            cardAccessManager.getObservable().addObserver(this);
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
@@ -236,7 +235,7 @@ public class NFCTestFragment extends Fragment
             cardAccessManager = new MifareUltralightCardAccessManager();
             ((MifareUltralightCardAccessManager) cardAccessManager).setPoReader(reader);
 
-            cardAccessManager.getTopic().addSubscriber(this);
+            cardAccessManager.getObservable().addObserver(this);
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
@@ -256,7 +255,7 @@ public class NFCTestFragment extends Fragment
             cardAccessManager = new MultiNFCCardAccessManager();
             ((MultiNFCCardAccessManager) cardAccessManager).setPoReader(reader);
 
-            cardAccessManager.getTopic().addSubscriber(this);
+            cardAccessManager.getObservable().addObserver(this);
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
@@ -277,7 +276,7 @@ public class NFCTestFragment extends Fragment
             cardAccessManager = new KeepOpenCardTimeoutManager();
             ((KeepOpenCardTimeoutManager) cardAccessManager).setPoReader(reader);
 
-            cardAccessManager.getTopic().addSubscriber(this);
+            cardAccessManager.getObservable().addObserver(this);
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
@@ -297,7 +296,7 @@ public class NFCTestFragment extends Fragment
             cardAccessManager = new KeepOpenAbortTestManager();
             ((KeepOpenAbortTestManager) cardAccessManager).setPoReader(reader);
 
-            cardAccessManager.getTopic().addSubscriber(this);
+            cardAccessManager.getObservable().addObserver(this);
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
@@ -311,7 +310,8 @@ public class NFCTestFragment extends Fragment
      *
      * @param event event received from Card Access Logic Manager
      */
-    public void update(AbstractLogicManager.Event event) {
+    public void updateCardEvent(Observable<? extends AbstractLogicManager.Event> observable,
+            AbstractLogicManager.Event event) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -322,6 +322,7 @@ public class NFCTestFragment extends Fragment
             }
         });
     }
+
 
     /**
      * Revocation of the Activity from @{@link org.keyple.plugin.androidnfc.AndroidNfcReader} list
@@ -356,8 +357,8 @@ public class NFCTestFragment extends Fragment
     }
 
 
-    @Override
-    public void update(Observable<? extends ReaderEvent> observable, ReaderEvent readerEvent) {
+    public void updateReaderEvent(Observable<? extends ReaderEvent> observable,
+            ReaderEvent readerEvent) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -389,5 +390,18 @@ public class NFCTestFragment extends Fragment
                 }
             }
         });
+    }
+
+    @Override
+    public void update(Observable<?> observable, Object obj) {
+        if (obj instanceof ReaderEvent) {
+            updateReaderEvent((Observable<? extends ReaderEvent>) observable, (ReaderEvent) obj);
+        } else if (obj instanceof AbstractLogicManager.Event) {
+            updateCardEvent((Observable<? extends AbstractLogicManager.Event>) observable,
+                    (AbstractLogicManager.Event) obj);
+        } else {
+            Log.e(TAG, "Unknown event : " + obj.toString());
+        }
+
     }
 }
