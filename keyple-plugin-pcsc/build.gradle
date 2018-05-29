@@ -1,4 +1,4 @@
-group 'org.keyple'
+group 'org.eclipse.keyple'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'

@@ -78,7 +78,7 @@ public class AndroidNfcReader extends AbstractObservableReader
     }
 
     @Override
-    public void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException {
+    public void setProtocols(Map<SeProtocol, String> seProtocolSettings) {
 
     }
 
@@ -96,7 +96,7 @@ public class AndroidNfcReader extends AbstractObservableReader
 
 
     @Override
-    public boolean isSEPresent() throws IOReaderException {
+    public boolean isSEPresent() {
         return tagTransceiver != null && tagTransceiver.isConnected();
     }
 
