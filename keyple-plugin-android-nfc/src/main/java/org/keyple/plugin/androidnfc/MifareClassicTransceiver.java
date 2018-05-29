@@ -6,13 +6,13 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.plugin.androidnfc;
+package org.eclipse.keyple.plugin.androidnfc;
 
 import java.io.IOException;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 
-/** MifareClassic Implementation of @{@link org.keyple.plugin.androidnfc.TagTransceiver} */
+/** MifareClassic Implementation of @{@link org.eclipse.keyple.plugin.androidnfc.TagTransceiver} */
 class MifareClassicTransceiver extends TagTransceiver {
 
     private final MifareClassic tag;

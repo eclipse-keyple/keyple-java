@@ -48,7 +48,7 @@ android {
     }
     compileSdkVersion 26
     defaultConfig {
-        applicationId "org.keyple.examples.android.omapi"
+        applicationId "org.eclipse.keyple.examples.android.omapi"
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1

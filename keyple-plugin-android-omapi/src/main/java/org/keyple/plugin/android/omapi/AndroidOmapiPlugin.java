@@ -6,15 +6,15 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.plugin.android.omapi;
+package org.eclipse.keyple.plugin.android.omapi;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.keyple.seproxy.ProxyReader;
-import org.keyple.seproxy.ReadersPlugin;
-import org.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.ReadersPlugin;
+import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.SEService;
 import android.util.Log;

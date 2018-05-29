@@ -6,10 +6,10 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.examples.androidnfc;
+package org.eclipse.keyple.examples.androidnfc;
 
-import org.keyple.plugin.androidnfc.AndroidNfcPlugin;
-import org.keyple.seproxy.SeProxyService;
+import org.eclipse.keyple.plugin.androidnfc.AndroidNfcPlugin;
+import org.eclipse.keyple.seproxy.SeProxyService;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;

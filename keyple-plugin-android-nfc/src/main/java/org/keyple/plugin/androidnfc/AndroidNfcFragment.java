@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.plugin.androidnfc;
+package org.eclipse.keyple.plugin.androidnfc;
 
 import android.content.Intent;
 import android.nfc.NfcAdapter;

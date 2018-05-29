@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.plugin.android.omapi;
+package org.eclipse.keyple.plugin.android.omapi;
 
 import org.simalliance.openmobileapi.SEService;
 import android.os.Bundle;

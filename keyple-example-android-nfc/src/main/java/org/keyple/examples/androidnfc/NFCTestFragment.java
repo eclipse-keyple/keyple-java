@@ -6,29 +6,29 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.examples.androidnfc;
+package org.eclipse.keyple.examples.androidnfc;
 
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.keyple.commands.InconsistentCommandException;
-import org.keyple.example.common.AbstractLogicManager;
-import org.keyple.example.common.IsodepCardAccessManager;
-import org.keyple.example.common.KeepOpenAbortTestManager;
-import org.keyple.example.common.KeepOpenCardTimeoutManager;
-import org.keyple.example.common.MifareClassicCardAccessManager;
-import org.keyple.example.common.MifareUltralightCardAccessManager;
-import org.keyple.example.common.MultiNFCCardAccessManager;
-import org.keyple.plugin.androidnfc.AndroidNfcFragment;
-import org.keyple.plugin.androidnfc.AndroidNfcPlugin;
-import org.keyple.seproxy.AbstractObservableReader;
-import org.keyple.seproxy.ProxyReader;
-import org.keyple.seproxy.ReaderEvent;
-import org.keyple.seproxy.ReadersPlugin;
-import org.keyple.seproxy.SeProxyService;
-import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.util.Observable;
+import org.eclipse.keyple.commands.InconsistentCommandException;
+import org.eclipse.keyple.example.common.AbstractLogicManager;
+import org.eclipse.keyple.example.common.IsodepCardAccessManager;
+import org.eclipse.keyple.example.common.KeepOpenAbortTestManager;
+import org.eclipse.keyple.example.common.KeepOpenCardTimeoutManager;
+import org.eclipse.keyple.example.common.MifareClassicCardAccessManager;
+import org.eclipse.keyple.example.common.MifareUltralightCardAccessManager;
+import org.eclipse.keyple.example.common.MultiNFCCardAccessManager;
+import org.eclipse.keyple.plugin.androidnfc.AndroidNfcFragment;
+import org.eclipse.keyple.plugin.androidnfc.AndroidNfcPlugin;
+import org.eclipse.keyple.seproxy.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.ReaderEvent;
+import org.eclipse.keyple.seproxy.ReadersPlugin;
+import org.eclipse.keyple.seproxy.SeProxyService;
+import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.util.Observable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -48,7 +48,7 @@ public class NFCTestFragment extends Fragment implements Observable.Observer<Obj
     private static final String TAG = NFCTestFragment.class.getSimpleName();
 
     private static final String TAG_NFC_ANDROID_FRAGMENT =
-            "org.keyple.plugin.androidnfc.AndroidNfcFragment";
+            "org.eclipse.keyple.plugin.androidnfc.AndroidNfcFragment";
 
 
     // APDU Commands Test Logic
@@ -325,8 +325,8 @@ public class NFCTestFragment extends Fragment implements Observable.Observer<Obj
 
 
     /**
-     * Revocation of the Activity from @{@link org.keyple.plugin.androidnfc.AndroidNfcReader} list
-     * of observers
+     * Revocation of the Activity
+     * from @{@link org.eclipse.keyple.plugin.androidnfc.AndroidNfcReader} list of observers
      */
     @Override
     public void onDestroy() {

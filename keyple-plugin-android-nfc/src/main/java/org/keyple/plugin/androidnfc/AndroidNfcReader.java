@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.plugin.androidnfc;
+package org.eclipse.keyple.plugin.androidnfc;
 
 
 import java.io.IOException;
@@ -14,17 +14,17 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.keyple.seproxy.AbstractObservableReader;
-import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.ReaderEvent;
-import org.keyple.seproxy.SeProtocol;
-import org.keyple.seproxy.SeRequest;
-import org.keyple.seproxy.SeRequestSet;
-import org.keyple.seproxy.SeResponse;
-import org.keyple.seproxy.SeResponseSet;
-import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.seproxy.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.ApduRequest;
+import org.eclipse.keyple.seproxy.ApduResponse;
+import org.eclipse.keyple.seproxy.ReaderEvent;
+import org.eclipse.keyple.seproxy.SeProtocol;
+import org.eclipse.keyple.seproxy.SeRequest;
+import org.eclipse.keyple.seproxy.SeRequestSet;
+import org.eclipse.keyple.seproxy.SeResponse;
+import org.eclipse.keyple.seproxy.SeResponseSet;
+import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.util.ByteBufferUtils;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
@@ -32,8 +32,8 @@ import android.util.Log;
 
 
 /**
- * Implementation of @{@link org.keyple.seproxy.ProxyReader} for the communication with the ISO Card
- * though Android @{@link NfcAdapter}
+ * Implementation of @{@link org.eclipse.keyple.seproxy.ProxyReader} for the communication with the
+ * ISO Card though Android @{@link NfcAdapter}
  */
 public class AndroidNfcReader extends AbstractObservableReader
         implements NfcAdapter.ReaderCallback {

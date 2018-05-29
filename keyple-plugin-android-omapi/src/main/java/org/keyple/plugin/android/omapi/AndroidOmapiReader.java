@@ -6,21 +6,21 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.plugin.android.omapi;
+package org.eclipse.keyple.plugin.android.omapi;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import org.keyple.seproxy.ApduRequest;
-import org.keyple.seproxy.ApduResponse;
-import org.keyple.seproxy.ProxyReader;
-import org.keyple.seproxy.SeRequest;
-import org.keyple.seproxy.SeRequestSet;
-import org.keyple.seproxy.SeResponse;
-import org.keyple.seproxy.SeResponseSet;
-import org.keyple.seproxy.exceptions.IOReaderException;
-import org.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.seproxy.ApduRequest;
+import org.eclipse.keyple.seproxy.ApduResponse;
+import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.SeRequest;
+import org.eclipse.keyple.seproxy.SeRequestSet;
+import org.eclipse.keyple.seproxy.SeResponse;
+import org.eclipse.keyple.seproxy.SeResponseSet;
+import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.util.ByteBufferUtils;
 import org.simalliance.openmobileapi.Channel;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.Session;

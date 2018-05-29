@@ -6,11 +6,11 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.plugin.androidnfc;
+package org.eclipse.keyple.plugin.androidnfc;
 
 import java.io.IOException;
 import java.util.Arrays;
-import org.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import android.nfc.Tag;
 import android.nfc.tech.TagTechnology;
 import android.util.Log;

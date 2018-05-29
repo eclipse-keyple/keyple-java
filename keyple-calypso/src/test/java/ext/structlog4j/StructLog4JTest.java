@@ -10,12 +10,12 @@ package ext.structlog4j;
 
 import java.util.Arrays;
 import java.util.List;
+import org.eclipse.keyple.calypso.commands.po.PoRevision;
+import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
+import org.eclipse.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
+import org.eclipse.keyple.seproxy.ApduRequest;
+import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Test;
-import org.keyple.calypso.commands.po.PoRevision;
-import org.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
-import org.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
-import org.keyple.seproxy.ApduRequest;
-import org.keyple.util.ByteBufferUtils;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 

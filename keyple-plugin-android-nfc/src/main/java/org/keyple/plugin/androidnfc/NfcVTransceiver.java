@@ -6,14 +6,14 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.plugin.androidnfc;
+package org.eclipse.keyple.plugin.androidnfc;
 
 
 import java.io.IOException;
 import android.nfc.Tag;
 import android.nfc.tech.NfcV;
 
-/** NFC-V Implementation of @{@link org.keyple.plugin.androidnfc.TagTransceiver} */
+/** NFC-V Implementation of @{@link org.eclipse.keyple.plugin.androidnfc.TagTransceiver} */
 class NfcVTransceiver extends TagTransceiver {
 
     final private NfcV tag;

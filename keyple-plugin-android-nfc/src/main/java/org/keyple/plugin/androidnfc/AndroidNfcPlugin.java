@@ -6,12 +6,12 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.plugin.androidnfc;
+package org.eclipse.keyple.plugin.androidnfc;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.keyple.seproxy.ProxyReader;
-import org.keyple.seproxy.ReadersPlugin;
+import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.ReadersPlugin;
 import android.util.Log;
 
 
