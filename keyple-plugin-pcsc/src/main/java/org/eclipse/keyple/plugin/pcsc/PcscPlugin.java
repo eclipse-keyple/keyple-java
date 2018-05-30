@@ -16,7 +16,6 @@ import javax.smartcardio.TerminalFactory;
 import org.eclipse.keyple.plugin.pcsc.log.CardTerminalsLogger;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
-import org.eclipse.keyple.util.Observable;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
@@ -114,15 +113,7 @@ public final class PcscPlugin extends AbstractObservablePlugin {
     }
 
     @Override
-    public final void notifyObservers(PluginEvent event) {
-        logger.info("AbstractObservablePlugin: Notifying of an event", "action",
-                "observable_plugin.notify_observers", "event", event, "pluginName", getName());
-        setChanged();
-        super.notifyObservers(event);
-    }
-
-    @Override
-    public void addObserver(Observable.Observer<? super PluginEvent> observer) {
+    public void addObserver(Observer observer) {
         synchronized (observers) {
             super.addObserver(observer);
             if (observers.size() == 1) {
@@ -138,7 +129,7 @@ public final class PcscPlugin extends AbstractObservablePlugin {
     }
 
     @Override
-    public void removeObserver(Observable.Observer<? super PluginEvent> observer) {
+    public void removeObserver(Observer observer) {
         synchronized (observers) {
             super.removeObserver(observer);
             if (observers.isEmpty()) {

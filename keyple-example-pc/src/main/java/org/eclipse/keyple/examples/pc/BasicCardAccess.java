@@ -36,8 +36,7 @@ public class BasicCardAccess {
                     ((AbstractObservableReader) pr)
                             .addObserver(new Observable.Observer<ReaderEvent>() {
                                 @Override
-                                public void update(Observable<? extends ReaderEvent> observable,
-                                        ReaderEvent event) {
+                                public void update(ReaderEvent event) {
                                     if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
                                         parseInfo(pr);
                                     }

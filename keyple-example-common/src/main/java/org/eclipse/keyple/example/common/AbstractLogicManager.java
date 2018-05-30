@@ -43,8 +43,7 @@ public abstract class AbstractLogicManager implements Runnable {
                     if (observable.countObservers() == 0) {
                         observable.addObserver(new Observable.Observer<Event>() {
                             @Override
-                            public void update(Observable<? extends Event> observable,
-                                    Event event) {
+                            public void update(Event event) {
                                 System.out.println("Event: " + event);
                             }
                         });
@@ -122,7 +121,7 @@ public abstract class AbstractLogicManager implements Runnable {
      */
     private class ConsoleEventReporter implements Observable.Observer<ReaderEvent> {
         @Override
-        public void update(Observable<? extends ReaderEvent> observable, ReaderEvent event) {
+        public void update(ReaderEvent event) {
             System.out.println("Event: " + event);
         }
     }

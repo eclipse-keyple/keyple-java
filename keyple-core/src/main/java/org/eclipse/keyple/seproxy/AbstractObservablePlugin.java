@@ -8,11 +8,9 @@
 
 package org.eclipse.keyple.seproxy;
 
-import org.eclipse.keyple.util.Observable;
-
 /**
  * Observable plugin. These plugin can report when a reader is added or removed.
  */
-public abstract class AbstractObservablePlugin extends Observable<PluginEvent>
+public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginEvent>
         implements ReadersPlugin {
 }

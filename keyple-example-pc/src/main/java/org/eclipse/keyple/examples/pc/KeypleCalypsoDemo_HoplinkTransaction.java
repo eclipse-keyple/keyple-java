@@ -21,9 +21,9 @@ import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
-import org.eclipse.keyple.util.Observable;
 
-public class KeypleCalypsoDemo_HoplinkTransaction implements Observable.Observer<ReaderEvent> {
+public class KeypleCalypsoDemo_HoplinkTransaction
+        implements AbstractObservableReader.Observer<ReaderEvent> {
     private ProxyReader poReader, csmReader;
 
     public KeypleCalypsoDemo_HoplinkTransaction() {
@@ -31,7 +31,7 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements Observable.Observer
     }
 
     @Override
-    public void update(Observable<? extends ReaderEvent> observable, ReaderEvent event) {
+    public void update(ReaderEvent event) {
         switch (event.getEventType()) {
             case SE_INSERTED:
                 System.out.println("SE INSERTED");

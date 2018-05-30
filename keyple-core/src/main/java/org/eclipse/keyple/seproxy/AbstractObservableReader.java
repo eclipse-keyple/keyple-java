@@ -9,56 +9,12 @@
 package org.eclipse.keyple.seproxy;
 
 
-import org.eclipse.keyple.util.Observable;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
-
 /**
+ * 
  * Abstract definition of an observable reader.
+ * 
  */
-public abstract class AbstractObservableReader extends Observable<ReaderEvent>
+
+public abstract class AbstractObservableReader extends AbstractLoggedObservable<ReaderEvent>
         implements ProxyReader {
-
-    private static final ILogger logger = SLoggerFactory.getLogger(AbstractObservableReader.class);
-
-    /**
-     * Add an observer to a terminal reader.
-     * 
-     * This will allow to be notified about all card insertion/removal events. Please note that you
-     * shouldn't reuse the notification threads for your card processing logic.
-     *
-     * @param observer Observer to notify
-     */
-    public void addObserver(Observable.Observer<? super ReaderEvent> observer) {
-        logger.info("AbstractObservableReader: Adding an observer", "action",
-                "observable_reader.add_observer", "readerName", getName());
-        super.addObserver(observer);
-    }
-
-    /**
-     * Remove an observer from a terminal reader.
-     *
-     * @param observer Observer to stop notifying
-     */
-    public void removeObserver(Observable.Observer<? super ReaderEvent> observer) {
-        logger.info("AbstractObservableReader: Deleting an observer", "action",
-                "observable_reader.delete_observer", "readerName", getName());
-        super.removeObserver(observer);
-    }
-
-    /**
-     * This method shall be called only from a SE Proxy plugin by a reader implementing
-     * AbstractObservableReader
-     * 
-     * push a ReaderEvent of the selected AbstractObservableReader to its registered Observer.
-     *
-     * @param event the event
-     */
-    public final void notifyObservers(ReaderEvent event) {
-        logger.info("AbstractObservableReader: Notifying of an event", "action",
-                "observable_reader.notify_observers", "event", event, "readerName", getName());
-        setChanged();
-        super.notifyObservers(event);
-    }
-
 }
