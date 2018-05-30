@@ -20,6 +20,7 @@ import com.github.structlog4j.SLoggerFactory;
  */
 public class AbstractLoggedObservable<T> extends Observable<T> {
     private static final ILogger logger = SLoggerFactory.getLogger(AbstractLoggedObservable.class);
+    private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
 
     /**
      * Add an observer. This will allow to be notified about all readers or plugins events.
@@ -30,11 +31,11 @@ public class AbstractLoggedObservable<T> extends Observable<T> {
     public void addObserver(Observable.Observer<T> observer) {
 
         if (this instanceof AbstractObservableReader) {
-            logger.info("AbstractObservableReader: Adding an observer", "action",
+            logger.info("AbstractObservableReader: Adding an observer", ACTION_STR,
                     "observable_reader.add_observer", "readerName",
                     ((AbstractObservableReader) this).getName());
         } else if (this instanceof AbstractObservablePlugin) {
-            logger.info("AbstractObservablePlugin: Adding an observer", "action",
+            logger.info("AbstractObservablePlugin: Adding an observer", ACTION_STR,
                     "observable_plugin.add_observer", "pluginName",
                     ((AbstractObservablePlugin) this).getName());
         }
@@ -51,11 +52,11 @@ public class AbstractLoggedObservable<T> extends Observable<T> {
     public void removeObserver(Observable.Observer<T> observer) {
 
         if (this instanceof AbstractObservableReader) {
-            logger.info("AbstractObservableReader: Deleting an observer", "action",
+            logger.info("AbstractObservableReader: Deleting an observer", ACTION_STR,
                     "observable_reader.remove_observer", "readerName",
                     ((AbstractObservableReader) this).getName());
         } else if (this instanceof AbstractObservablePlugin) {
-            logger.info("AbstractObservablePlugin: Deleting an observer", "action",
+            logger.info("AbstractObservablePlugin: Deleting an observer", ACTION_STR,
                     "observable_plugin.remove_observer", "pluginName",
                     ((AbstractObservablePlugin) this).getName());
         }
@@ -76,11 +77,11 @@ public class AbstractLoggedObservable<T> extends Observable<T> {
     public final void notifyObservers(T event) {
 
         if (this instanceof AbstractObservableReader) {
-            logger.info("AbstractObservableReader: Notifying of an event", "action",
+            logger.info("AbstractObservableReader: Notifying of an event", ACTION_STR,
                     "observable_reader.notify_observers", "event", event, "readerName",
                     ((AbstractObservableReader) this).getName());
         } else if (this instanceof AbstractObservablePlugin) {
-            logger.info("AbstractObservablePlugin: Notifying of an event", "action",
+            logger.info("AbstractObservablePlugin: Notifying of an event", ACTION_STR,
                     "observable_plugin.notify_observers", "event", event, "pluginName",
                     ((AbstractObservablePlugin) this).getName());
         }
