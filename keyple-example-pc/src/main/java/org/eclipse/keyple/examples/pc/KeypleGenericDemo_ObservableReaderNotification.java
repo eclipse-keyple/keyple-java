@@ -65,7 +65,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         }
     }
 
-    public class ReaderObserver implements Observable.Observer<ReaderEvent> {
+    public class ReaderObserver implements AbstractObservableReader.Observer<ReaderEvent> {
 
         ReaderObserver() {
             super();
