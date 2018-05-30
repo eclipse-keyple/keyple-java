@@ -6,18 +6,18 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.keyple.examples.android.omapi;
+package org.eclipse.keyple.examples.android.omapi;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.keyple.example.common.AbstractLogicManager;
-import org.keyple.example.common.BasicCardAccessManager;
-import org.keyple.plugin.android.omapi.AndroidOmapiFragment;
-import org.keyple.plugin.android.omapi.AndroidOmapiPlugin;
-import org.keyple.seproxy.ProxyReader;
-import org.keyple.seproxy.ReadersPlugin;
-import org.keyple.seproxy.SeProxyService;
-import org.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.example.common.AbstractLogicManager;
+import org.eclipse.keyple.example.common.BasicCardAccessManager;
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiFragment;
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin;
+import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.ReadersPlugin;
+import org.eclipse.keyple.seproxy.SeProxyService;
+import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -38,7 +38,7 @@ public class OMAPITestFragment extends Fragment
 
     private static final String TAG = OMAPITestFragment.class.getSimpleName();
     private static final String TAG_OMAPI_ANDROID_FRAGMENT =
-            "org.keyple.plugin.android.omapi.AndroidOmapiFragment";
+            "org.eclipse.keyple.plugin.android.omapi.AndroidOmapiFragment";
 
     private TextView mText;
 

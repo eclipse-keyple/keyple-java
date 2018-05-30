@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 
-    package="org.keyple.plugin.android.omapi">
+    package="org.eclipse.keyple.plugin.android.omapi">
 
 </manifest>
