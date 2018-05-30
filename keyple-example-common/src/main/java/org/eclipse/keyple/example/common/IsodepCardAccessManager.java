@@ -50,9 +50,8 @@ public class IsodepCardAccessManager extends AbstractLogicManager {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-        SeRequest seRequestElement =
-                new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
-        seRequestElement.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_ISO14443_4);
+        SeRequest seRequestElement = new SeRequest(ByteBufferUtils.fromHex(poAid),
+                poApduRequestList, false, ContactlessProtocols.PROTOCOL_ISO14443_4);
         List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
         seRequestElements.add(seRequestElement);
         SeRequestSet poRequest = new SeRequestSet(seRequestElements);

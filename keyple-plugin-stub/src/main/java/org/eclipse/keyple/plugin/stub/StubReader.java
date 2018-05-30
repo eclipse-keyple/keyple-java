@@ -86,7 +86,7 @@ public class StubReader extends AbstractObservableReader implements Configurable
 
 
         // Prepare succesfull responses
-        for (ApduRequest apduRequest : request.getSingleElement().getApduRequests()) {
+        for (ApduRequest apduRequest : request.getSingleRequest().getApduRequests()) {
             logger.debug("Processing request : " + apduRequest.toString());
             apduResponses.add(new ApduResponse(ByteBuffer.allocate(0), true));
         }
@@ -97,7 +97,7 @@ public class StubReader extends AbstractObservableReader implements Configurable
 
 
     @Override
-    public boolean isSEPresent() throws IOReaderException {
+    public boolean isSePresent() throws IOReaderException {
         return isSEPresent;
     }
 

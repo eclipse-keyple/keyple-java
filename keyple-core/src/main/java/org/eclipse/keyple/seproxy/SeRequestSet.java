@@ -24,16 +24,22 @@ public class SeRequestSet {
      * List of requests. Each {@link SeRequest} will result in a {@link SeResponse} wrapped in a
      * {@link SeResponseSet}.
      */
-    private final List<SeRequest> elements;
+    private final List<SeRequest> sortedRequests;
 
 
     /**
      * Create an {@link SeRequestSet} from a list of {@link SeRequest}s.
+     * <ul>
+     * <li>A SeRequestSet could contain several SeRequest to manage the selection of different types
+     * of PO application.</li>
+     * <li>To exchange APDU commands with a soecific selected PO application a single SeRequest is
+     * necessary.</li>
+     * </ul>
      *
-     * @param elements List of {@link SeRequest}s
+     * @param seRequests List of {@link SeRequest}s
      */
-    public SeRequestSet(List<SeRequest> elements) {
-        this.elements = elements;
+    public SeRequestSet(List<SeRequest> seRequests) {
+        this.sortedRequests = seRequests;
     }
 
     /**
@@ -44,16 +50,16 @@ public class SeRequestSet {
     public SeRequestSet(SeRequest request) {
         List<SeRequest> seRequests = new ArrayList<SeRequest>();
         seRequests.add(request);
-        this.elements = seRequests;
+        this.sortedRequests = seRequests;
     }
 
     /**
      * List of requests
      *
-     * @return List of request elements
+     * @return Sorted list of requests
      */
-    public List<SeRequest> getElements() {
-        return elements;
+    public List<SeRequest> getRequests() {
+        return sortedRequests;
     }
 
     /**
@@ -61,15 +67,15 @@ public class SeRequestSet {
      *
      * @return request
      */
-    public SeRequest getSingleElement() {
-        if (elements.size() != 1) {
+    public SeRequest getSingleRequest() {
+        if (sortedRequests.size() != 1) {
             throw new IllegalStateException("This method only support ONE element");
         }
-        return elements.get(0);
+        return sortedRequests.get(0);
     }
 
     @Override
     public String toString() {
-        return String.format("SeRequestSet{elements=%s}", getElements());
+        return String.format("SeRequestSet{sortedRequests=%s}", getRequests());
     }
 }

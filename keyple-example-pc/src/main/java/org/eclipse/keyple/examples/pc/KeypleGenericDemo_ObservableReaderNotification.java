@@ -34,7 +34,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
             for (ProxyReader reader : plugin.getReaders()) {
                 System.out.println(pluginIndex + "\t" + plugin.getName() + "\t" + readerIndex++
                         + "\t" + reader.getName() + "\t"
-                        + ((reader.isSEPresent()) ? "card_present" : "card_absent") + "\t"
+                        + ((reader.isSePresent()) ? "card_present" : "card_absent") + "\t"
                         + ((((AbstractObservableReader) reader).countObservers() > 0)
                                 ? "observed_reader"
                                 : "not_observed_reader"));
@@ -86,7 +86,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
 
         private void analyseCard(AbstractObservableReader reader) {
             try {
-                System.out.println("Card present = " + reader.isSEPresent());
+                System.out.println("Card present = " + reader.isSePresent());
             } catch (IOReaderException ex) {
                 ex.printStackTrace(System.err);
             }

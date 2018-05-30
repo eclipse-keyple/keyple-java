@@ -28,7 +28,7 @@ public class SeRequestTest {
     public void testGetAidToSelect() {
         SeRequestSet request =
                 new SeRequestSet(new SeRequest(aid, new ArrayList<ApduRequest>(), true));
-        assertEquals(aid, request.getSingleElement().getAidToSelect());
+        assertEquals(aid, request.getSingleRequest().getAidToSelect());
     }
 
     @Test
@@ -36,14 +36,14 @@ public class SeRequestTest {
         SeRequestSet request =
                 new SeRequestSet(new SeRequest(aid, new ArrayList<ApduRequest>(), true));
         assertArrayEquals(new ArrayList<ApduRequest>().toArray(),
-                request.getSingleElement().getApduRequests().toArray());
+                request.getSingleRequest().getApduRequests().toArray());
     }
 
     @Test
     public void testAskKeepChannelOpen() {
         SeRequestSet request =
                 new SeRequestSet(new SeRequest(aid, new ArrayList<ApduRequest>(), true));
-        assertTrue(request.getSingleElement().keepChannelOpen());
+        assertTrue(request.getSingleRequest().isKeepChannelOpen());
     }
 
 }

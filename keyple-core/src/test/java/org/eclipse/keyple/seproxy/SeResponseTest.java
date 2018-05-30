@@ -23,14 +23,14 @@ public class SeResponseTest {
                 new SeResponseSet(new SeResponse(true, fciData, new ArrayList<ApduResponse>()));
         // assertNotNull(response);
         assertArrayEquals(new ArrayList<ApduResponse>().toArray(),
-                response.getSingleElement().getApduResponses().toArray());
+                response.getSingleResponse().getApduResponses().toArray());
     }
 
     @Test
     public void testWasChannelPreviouslyOpen() {
         SeResponseSet response =
                 new SeResponseSet(new SeResponse(true, null, new ArrayList<ApduResponse>()));
-        assertTrue(response.getSingleElement().wasChannelPreviouslyOpen());
+        assertTrue(response.getSingleResponse().wasChannelPreviouslyOpen());
     }
 
     @Test
@@ -39,7 +39,7 @@ public class SeResponseTest {
                 new byte[] {(byte) 0x01, (byte) 02, (byte) 0x03, (byte) 0x04}, true);
         SeResponseSet response =
                 new SeResponseSet(new SeResponse(true, fciData, new ArrayList<ApduResponse>()));
-        assertEquals(fciData, response.getSingleElement().getFci());
+        assertEquals(fciData, response.getSingleResponse().getFci());
 
     }
 
@@ -48,7 +48,7 @@ public class SeResponseTest {
         ApduResponse fciData = null;
         SeResponseSet response =
                 new SeResponseSet(new SeResponse(false, fciData, new ArrayList<ApduResponse>()));
-        assertNull(response.getSingleElement().getFci());
+        assertNull(response.getSingleResponse().getFci());
 
     }
 
@@ -57,7 +57,7 @@ public class SeResponseTest {
         SeResponseSet response =
                 new SeResponseSet(new SeResponse(true, null, new ArrayList<ApduResponse>()));
         assertArrayEquals(new ArrayList<ApduResponse>().toArray(),
-                response.getSingleElement().getApduResponses().toArray());
+                response.getSingleResponse().getApduResponses().toArray());
     }
 
     @Test
@@ -68,9 +68,9 @@ public class SeResponseTest {
         responses.add(fciData);
         responses.add(fciData);
         SeResponseSet response = new SeResponseSet(new SeResponse(true, fciData, responses));
-        assertEquals(response.getSingleElement().getApduResponses().size(), 2);
-        assertEquals(fciData, response.getSingleElement().getFci());
-        for (ApduResponse resp : response.getSingleElement().getApduResponses()) {
+        assertEquals(response.getSingleResponse().getApduResponses().size(), 2);
+        assertEquals(fciData, response.getSingleResponse().getFci());
+        for (ApduResponse resp : response.getSingleResponse().getApduResponses()) {
             assertEquals(resp, fciData);
         }
     }

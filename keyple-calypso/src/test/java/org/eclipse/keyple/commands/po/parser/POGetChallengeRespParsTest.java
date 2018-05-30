@@ -30,8 +30,8 @@ public class POGetChallengeRespParsTest {
         listeResponse.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
-        AbstractApduResponseParser apduResponseParser =
-                new PoGetChallengeRespPars(seResponse.getSingleElement().getApduResponses().get(0));
+        AbstractApduResponseParser apduResponseParser = new PoGetChallengeRespPars(
+                seResponse.getSingleResponse().getApduResponses().get(0));
         Assert.assertArrayEquals(response,
                 ByteBufferUtils.toBytes(apduResponseParser.getApduResponse().getBuffer()));
         Assert.assertEquals("Success", apduResponseParser.getStatusInformation());

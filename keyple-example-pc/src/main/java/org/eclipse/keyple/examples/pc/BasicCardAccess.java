@@ -31,7 +31,7 @@ public class BasicCardAccess {
             System.out.println("Reader plugin: " + rp.getName());
             for (final ProxyReader pr : rp.getReaders()) {
                 System.out
-                        .println("Reader name: " + pr.getName() + ", present: " + pr.isSEPresent());
+                        .println("Reader name: " + pr.getName() + ", present: " + pr.isSePresent());
                 if (pr instanceof AbstractObservableReader) {
                     ((AbstractObservableReader) pr)
                             .addObserver(new Observable.Observer<ReaderEvent>() {

@@ -47,7 +47,7 @@ public class ObservableEventTestImbricated {
                                         private void analyseCard(AbstractObservableReader reader) {
                                             try {
                                                 System.out.println(
-                                                        "Card present = " + reader.isSEPresent());
+                                                        "Card present = " + reader.isSePresent());
                                             } catch (IOReaderException ex) {
                                                 ex.printStackTrace(System.err);
                                             }

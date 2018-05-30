@@ -73,11 +73,11 @@ public class SelectDiversiferCmdBuildTest {
         SeResponseSet responseFci = Mockito.mock(SeResponseSet.class);
         fakeSpecificReader = Mockito.mock(ProxyReader.class);
 
-        Mockito.when(responseFci.getSingleElement().getApduResponses()).thenReturn(list);
+        Mockito.when(responseFci.getSingleResponse().getApduResponses()).thenReturn(list);
         Mockito.when(fakeSpecificReader.transmit(seRequestSet)).thenReturn(seResponseSet);
 
         GetDataFciRespPars.FCI fci = GetDataFciRespPars
-                .toFCI(responseFci.getSingleElement().getApduResponses().get(0).getBuffer());
+                .toFCI(responseFci.getSingleResponse().getApduResponses().get(0).getBuffer());
         dataIn = fci.getApplicationSN();
 
         AbstractApduCommandBuilder apduCommandBuilder2 =
@@ -97,12 +97,12 @@ public class SelectDiversiferCmdBuildTest {
         SeResponseSet seResponse1 = fakeSpecificReader.transmit(seRequest2);
 
         Assert.assertEquals(
-                seResponseExpected.getSingleElement().getApduResponses().get(0).getStatusCode(),
-                seResponse1.getSingleElement().getApduResponses().get(0).getStatusCode());
+                seResponseExpected.getSingleResponse().getApduResponses().get(0).getStatusCode(),
+                seResponse1.getSingleResponse().getApduResponses().get(0).getStatusCode());
 
         Assert.assertThat(
-                seResponseExpected.getSingleElement().getApduResponses().get(0).getStatusCode(),
-                IsNot.not(IsEqual.equalTo(
-                        seResponse1.getSingleElement().getApduResponses().get(1).getStatusCode())));
+                seResponseExpected.getSingleResponse().getApduResponses().get(0).getStatusCode(),
+                IsNot.not(IsEqual.equalTo(seResponse1.getSingleResponse().getApduResponses().get(1)
+                        .getStatusCode())));
     }
 }

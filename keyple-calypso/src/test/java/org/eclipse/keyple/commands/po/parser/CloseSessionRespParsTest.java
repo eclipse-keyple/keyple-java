@@ -31,7 +31,7 @@ public class CloseSessionRespParsTest {
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
-                new CloseSessionRespPars(seResponse.getSingleElement().getApduResponses().get(0));
+                new CloseSessionRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
         Assert.assertArrayEquals(response,
                 ByteBufferUtils.toBytes(apduResponseParser.getApduResponse().getBuffer()));
     }

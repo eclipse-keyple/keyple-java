@@ -175,13 +175,13 @@ public class PcscReader extends AbstractObservableReader implements Configurable
         }
 
         boolean previouslyOpen = false;
-        boolean elementMatchProtocol[] = new boolean[requestSet.getElements().size()];
+        boolean elementMatchProtocol[] = new boolean[requestSet.getRequests().size()];
         int elementIndex = 0, lastElementIndex;
 
         // Determine which requestElements are matching the current ATR
-        for (SeRequest reqElement : requestSet.getElements()) {
+        for (SeRequest reqElement : requestSet.getRequests()) {
             // Get protocolFlag to check if ATR filtering is required
-            SeProtocol protocolFlag = reqElement.getSeProtocolFlag();
+            SeProtocol protocolFlag = reqElement.getProtocolFlag();
             if (protocolFlag != null) {
                 // the requestSet will be executed only if the protocol match the requestElement
                 String selectionMask = protocolsMap.get(protocolFlag);
@@ -217,7 +217,7 @@ public class PcscReader extends AbstractObservableReader implements Configurable
         // If the elementMatchProtocol is false we skip to the next requestSet
         // If keepChannelOpen is false, we close the physical channel for the last requestElement.
         List<SeResponse> respElements = new ArrayList<SeResponse>();
-        for (SeRequest reqElement : requestSet.getElements()) {
+        for (SeRequest reqElement : requestSet.getRequests()) {
             if (elementMatchProtocol[elementIndex] == true) {
                 boolean executeRequest = true;
                 List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
@@ -252,7 +252,7 @@ public class PcscReader extends AbstractObservableReader implements Configurable
                 respElements.add(null);
             }
             elementIndex++;
-            if (!reqElement.keepChannelOpen()) {
+            if (!reqElement.isKeepChannelOpen()) {
                 if (lastElementIndex == elementIndex) {
                     // For the processing of the last SeRequest with a protocolFlag matching
                     // the SE reader status, if the logical channel doesn't require to be kept open,
@@ -364,7 +364,7 @@ public class PcscReader extends AbstractObservableReader implements Configurable
     }
 
     @Override
-    public boolean isSEPresent() throws IOReaderException {
+    public boolean isSePresent() throws IOReaderException {
         try {
             return terminal.isCardPresent();
         } catch (CardException e) {
@@ -698,13 +698,13 @@ public class PcscReader extends AbstractObservableReader implements Configurable
             try {
                 // First thing we'll do is to notify that a card was inserted if one is already
                 // present.
-                if (isSEPresent()) {
+                if (isSePresent()) {
                     cardInserted();
                 }
 
                 while (running) {
                     // If we have a card,
-                    if (isSEPresent()) {
+                    if (isSePresent()) {
                         // we will wait for it to disappear
                         if (terminal.waitForCardAbsent(threadWaitTimeout)) {
                             disconnect();

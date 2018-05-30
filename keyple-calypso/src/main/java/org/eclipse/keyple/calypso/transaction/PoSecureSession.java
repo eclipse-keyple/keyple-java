@@ -145,7 +145,7 @@ public class PoSecureSession {
 
         // SeRequestSet poRequest = new SeRequestSet(poAid, poApduRequestList, keepChannelOpen);
         SeResponseSet poResponse = poReader.transmit(poRequest);
-        SeResponse poResponseElement = poResponse.getElements().get(0);
+        SeResponse poResponseElement = poResponse.getResponses().get(0);
 
         // Parse PO FCI - to retrieve Calypso Revision, Serial Number, & DF Name (AID)
         GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(poResponseElement.getFci());
@@ -186,7 +186,7 @@ public class PoSecureSession {
         csmRequestElements.add(new SeRequest(null, csmApduRequestList, keepChannelOpen));
         SeRequestSet csmRequest = new SeRequestSet(csmRequestElements);
         SeResponseSet csmResponse = csmReader.transmit(csmRequest);
-        SeResponse csmResponseElement = csmResponse.getElements().get(0);
+        SeResponse csmResponseElement = csmResponse.getResponses().get(0);
         List<ApduResponse> csmApduResponseList = csmResponseElement.getApduResponses();
 
         logger.info("Identification: CSM Response", "action",
@@ -259,7 +259,7 @@ public class PoSecureSession {
         SeRequestSet poRequest = new SeRequestSet(poRequestElements);
 
         SeResponseSet poResponse = poReader.transmit(poRequest);
-        SeResponse poResponseElement = poResponse.getElements().get(0);
+        SeResponse poResponseElement = poResponse.getResponses().get(0);
         List<ApduResponse> poApduResponseList = poResponseElement.getApduResponses();
 
         // Parse OpenSession Response to get Card Challenge
@@ -421,7 +421,7 @@ public class PoSecureSession {
      */
     private AbstractOpenSessionRespPars getSecureSessionBySEResponseAndRevision(
             SeResponseSet responseOpenSession) throws UnexpectedReaderException {
-        SeResponse responseOpenSessionElement = responseOpenSession.getElements().get(0);
+        SeResponse responseOpenSessionElement = responseOpenSession.getResponses().get(0);
         AbstractOpenSessionRespPars openSessionRespPars = AbstractOpenSessionRespPars
                 .create(responseOpenSessionElement.getApduResponses().get(0), poRevision);
         if (!openSessionRespPars.isSuccessful()) {
@@ -465,7 +465,7 @@ public class PoSecureSession {
         logger.info("Processing: Sending PO commands", "action",
                 "po_secure_session.process_po_request", "apduList", poApduRequestList);
         SeResponseSet poResponse = poReader.transmit(poRequest);
-        SeResponse poResponseElement = poResponse.getElements().get(0);
+        SeResponse poResponseElement = poResponse.getResponses().get(0);
         List<ApduResponse> poApduResponseList = poResponseElement.getApduResponses();
         logger.info("Processing: Receiving PO responses", "action",
                 "po_secure_session.process_po_response", "apduList", poApduResponseList);
@@ -525,7 +525,7 @@ public class PoSecureSession {
         logger.info("Processing: Sending CSM requests", "action",
                 "po_secure_session.process_csm_request", "apduList", csmApduRequestList);
         SeResponseSet csmResponse = csmReader.transmit(csmRequest);
-        SeResponse csmResponseElement = csmResponse.getElements().get(0);
+        SeResponse csmResponseElement = csmResponse.getResponses().get(0);
         // List<ApduResponse> csmApduResponseList = csmResponse.getApduResponses();
         logger.info("Processing: Receiving CSM response", "action",
                 "po_secure_session.process_csm_response", "apduList",
@@ -617,7 +617,7 @@ public class PoSecureSession {
         SeRequestSet csmRequest = new SeRequestSet(csmRequestElements);
 
         SeResponseSet csmResponse_1 = csmReader.transmit(csmRequest);
-        SeResponse csmResponseElement_1 = csmResponse_1.getElements().get(0);
+        SeResponse csmResponseElement_1 = csmResponse_1.getResponses().get(0);
         List<ApduResponse> csmApduResponseList_1 = csmResponseElement_1.getApduResponses();
         // System.out.println("\t\tDEBUG ##### csmApduResponseList_1.size() : " +
         // csmApduResponseList_1.size());
@@ -662,7 +662,7 @@ public class PoSecureSession {
         logger.info("Closing: Sending PO request", "action", "po_secure_session.close_po_req",
                 "apduList", poRequestElements.get(0).getApduRequests());
         poResponse = poReader.transmit(poRequest);
-        SeResponse poResponseElement = poResponse.getElements().get(0);
+        SeResponse poResponseElement = poResponse.getResponses().get(0);
         List<ApduResponse> poApduResponseList = poResponseElement.getApduResponses();
 
         // TODO => check that PO response is equal to anticipated PO response (that
@@ -699,7 +699,7 @@ public class PoSecureSession {
         SeRequestSet csmRequest_2 = new SeRequestSet(csmRequestElements_2);
 
         SeResponseSet csmResponse_2 = csmReader.transmit(csmRequest_2);
-        SeResponse csmResponseElement_2 = csmResponse_2.getElements().get(0);
+        SeResponse csmResponseElement_2 = csmResponse_2.getResponses().get(0);
         List<ApduResponse> csmApduResponseList_2 = csmResponseElement_2.getApduResponses();
 
         // Get transaction result
