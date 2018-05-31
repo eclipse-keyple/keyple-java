@@ -13,6 +13,7 @@ import java.util.List;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.util.Observable;
 
 
 public class KeypleGenericDemo_ObservableReaderNotification {
@@ -70,7 +71,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
             super();
         }
 
-        public void update(ReaderEvent event) {
+        public void update(Observable observable, ReaderEvent event) {
             if (event.getEventType().equals(ReaderEvent.EventType.SE_INSERTED)) {
                 System.out.println("Card inserted on: " + event.getReader().getName());
                 analyseCard(event.getReader());
@@ -102,7 +103,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         }
 
         @Override
-        public void update(PluginEvent event) {
+        public void update(Observable observable, PluginEvent event) {
             if (event instanceof ReaderPresencePluginEvent) {
                 ReaderPresencePluginEvent presence = (ReaderPresencePluginEvent) event;
                 ProxyReader reader = presence.getReader();
@@ -138,11 +139,12 @@ public class KeypleGenericDemo_ObservableReaderNotification {
 
                 try {
                     listReaders();
-                    /*
-                     * if (((AbstractObservablePlugin) observable).getReaders().isEmpty()) {
-                     * System.out.println("EXIT - no more reader"); synchronized (waitBeforeEnd) {
-                     * waitBeforeEnd.notify(); } }
-                     */
+                    if (((AbstractObservablePlugin) observable).getReaders().isEmpty()) {
+                        System.out.println("EXIT - no more reader");
+                        synchronized (waitBeforeEnd) {
+                            waitBeforeEnd.notify();
+                        }
+                    }
                 } catch (IOReaderException e) {
                     e.printStackTrace();
                 }

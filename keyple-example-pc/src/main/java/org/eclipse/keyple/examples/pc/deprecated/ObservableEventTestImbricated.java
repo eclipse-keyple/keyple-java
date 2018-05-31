@@ -25,7 +25,7 @@ public class ObservableEventTestImbricated {
 
         PcscPlugin.getInstance().addObserver(new Observable.Observer<PluginEvent>() {
             @Override
-            public void update(PluginEvent event) {
+            public void update(Observable observable, PluginEvent event) {
                 if (event instanceof ReaderPresencePluginEvent) {
                     ReaderPresencePluginEvent presence = (ReaderPresencePluginEvent) event;
                     if (presence.isAdded()) {
@@ -35,7 +35,8 @@ public class ObservableEventTestImbricated {
                             ((AbstractObservableReader) reader)
                                     .addObserver(new Observable.Observer<ReaderEvent>() {
                                         @Override
-                                        public void update(ReaderEvent event) {
+                                        public void update(Observable observable,
+                                                ReaderEvent event) {
                                             if (event.getEventType()
                                                     .equals(ReaderEvent.EventType.SE_INSERTED)) {
                                                 System.out.println("Card inserted on: "

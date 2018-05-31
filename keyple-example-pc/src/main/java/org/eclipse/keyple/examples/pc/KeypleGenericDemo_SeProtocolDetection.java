@@ -15,6 +15,7 @@ import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.Observable;
 
 public class KeypleGenericDemo_SeProtocolDetection
         implements AbstractObservableReader.Observer<ReaderEvent> {
@@ -25,7 +26,7 @@ public class KeypleGenericDemo_SeProtocolDetection
     }
 
     @Override
-    public void update(ReaderEvent event) {
+    public void update(Observable observable, ReaderEvent event) {
         switch (event.getEventType()) {
             case SE_INSERTED:
                 System.out.println("SE INSERTED");
