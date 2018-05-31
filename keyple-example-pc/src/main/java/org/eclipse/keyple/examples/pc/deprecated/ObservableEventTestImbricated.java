@@ -10,7 +10,7 @@ package org.eclipse.keyple.examples.pc.deprecated;
 
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.AbstractReader;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderEvent;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
@@ -31,8 +31,8 @@ public class ObservableEventTestImbricated {
                     if (presence.isAdded()) {
                         System.out.println("New reader: " + presence.getReader().getName());
                         ProxyReader reader = presence.getReader();
-                        if (reader instanceof AbstractObservableReader) {
-                            ((AbstractObservableReader) reader)
+                        if (reader instanceof AbstractReader) {
+                            ((AbstractReader) reader)
                                     .addObserver(new Observable.Observer<ReaderEvent>() {
                                         @Override
                                         public void update(Observable observable,
@@ -45,7 +45,7 @@ public class ObservableEventTestImbricated {
                                             }
                                         }
 
-                                        private void analyseCard(AbstractObservableReader reader) {
+                                        private void analyseCard(AbstractReader reader) {
                                             try {
                                                 System.out.println(
                                                         "Card present = " + reader.isSEPresent());
