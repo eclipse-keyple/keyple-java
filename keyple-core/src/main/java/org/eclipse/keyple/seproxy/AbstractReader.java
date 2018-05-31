@@ -15,7 +15,7 @@ package org.eclipse.keyple.seproxy;
  * 
  */
 
-public abstract class AbstractObservableReader extends AbstractLoggedObservable<ReaderEvent>
+public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEvent>
         implements ProxyReader {
     public interface ReaderObserver extends Observer<ReaderEvent> {
         void update(ReaderEvent event);

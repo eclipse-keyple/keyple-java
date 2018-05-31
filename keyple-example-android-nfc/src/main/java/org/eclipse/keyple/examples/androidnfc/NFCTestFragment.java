@@ -23,12 +23,13 @@ import org.eclipse.keyple.example.common.MultiNFCCardAccessManager;
 import org.eclipse.keyple.plugin.androidnfc.AndroidNfcFragment;
 import org.eclipse.keyple.plugin.androidnfc.AndroidNfcPlugin;
 import org.eclipse.keyple.seproxy.AbstractLoggedObservable;
-import org.eclipse.keyple.seproxy.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.AbstractReader;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderEvent;
 import org.eclipse.keyple.seproxy.ReadersPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.util.Observable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -93,7 +94,7 @@ public class NFCTestFragment extends Fragment implements AbstractLoggedObservabl
             // define task as an observer for ReaderEvents
             Log.d(TAG, "Define this view as an observer for ReaderEvents");
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
-            ((AbstractObservableReader) reader).addObserver(this);
+            ((AbstractReader) reader).addObserver(this);
 
             initIsodepTest();
 
@@ -310,7 +311,7 @@ public class NFCTestFragment extends Fragment implements AbstractLoggedObservabl
      *
      * @param event event received from Card Access Logic Manager
      */
-    public void updateCardEvent(AbstractLogicManager.Event event) {
+    public void updateCardEvent(Observable observable, AbstractLogicManager.Event event) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -335,7 +336,7 @@ public class NFCTestFragment extends Fragment implements AbstractLoggedObservabl
             Log.d(TAG, "Remove task as an observer for ReaderEvents");
             SeProxyService seProxyService = SeProxyService.getInstance();
             ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
-            ((AbstractObservableReader) reader).removeObserver(this);
+            ((AbstractReader) reader).removeObserver(this);
 
 
             // destroy AndroidNFC fragment
@@ -391,11 +392,11 @@ public class NFCTestFragment extends Fragment implements AbstractLoggedObservabl
     }
 
     @Override
-    public void update(Object obj) {
+    public void update(Observable observable, Object obj) {
         if (obj instanceof ReaderEvent) {
             updateReaderEvent((ReaderEvent) obj);
         } else if (obj instanceof AbstractLogicManager.Event) {
-            updateCardEvent((AbstractLogicManager.Event) obj);
+            updateCardEvent(observable, (AbstractLogicManager.Event) obj);
         } else {
             Log.e(TAG, "Unknown event : " + obj.toString());
         }
