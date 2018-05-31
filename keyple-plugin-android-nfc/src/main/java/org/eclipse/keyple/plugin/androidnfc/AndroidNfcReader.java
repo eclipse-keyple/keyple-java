@@ -13,17 +13,14 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.eclipse.keyple.seproxy.AbstractReader;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.ReaderEvent;
-import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
@@ -74,11 +71,6 @@ public class AndroidNfcReader extends AbstractReader implements NfcAdapter.Reade
     public String getName() {
 
         return "AndroidNfcReader";
-    }
-
-    @Override
-    public void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException {
-
     }
 
     /**

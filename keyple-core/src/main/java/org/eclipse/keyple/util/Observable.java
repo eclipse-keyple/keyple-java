@@ -23,8 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Observable<T> {
 
     public interface Observer<T> {
-        void update(Observable<T> observable, T event); // the Observable is already present in the
-                                                        // event
+        void update(Observable<T> observable, T event);
     }
 
     private boolean changed = false;

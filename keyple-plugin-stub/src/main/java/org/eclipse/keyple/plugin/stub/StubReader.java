@@ -23,7 +23,7 @@ public class StubReader extends AbstractReader implements ConfigurableReader {
 
     private static final ILogger logger = SLoggerFactory.getLogger(StubReader.class);
 
-    private boolean isSEPresent = false;
+    private boolean isSePresent = false;
     private ByteBuffer aid;
 
     private Map<String, String> parameters = new HashMap<String, String>();
@@ -38,11 +38,6 @@ public class StubReader extends AbstractReader implements ConfigurableReader {
     }
 
     @Override
-    public void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException {
-
-    }
-
-    @Override
     public SeResponseSet transmit(SeRequestSet request) throws IOReaderException {
 
         if (request == null) {
@@ -50,7 +45,7 @@ public class StubReader extends AbstractReader implements ConfigurableReader {
             throw new IOReaderException("SeRequestSet is null");
         }
 
-        if (!isSEPresent) {
+        if (!isSePresent) {
             throw new IOReaderException("SE is not present");
         }
 
@@ -98,7 +93,7 @@ public class StubReader extends AbstractReader implements ConfigurableReader {
 
     @Override
     public boolean isSePresent() throws IOReaderException {
-        return isSEPresent;
+        return isSePresent;
     }
 
 
@@ -139,15 +134,15 @@ public class StubReader extends AbstractReader implements ConfigurableReader {
     private boolean test_ChannelIsOpen = false;
 
     public void test_InsertSE() {
-        isSEPresent = true;
+        isSePresent = true;
         logger.debug("Test - insert SE");
-        notifyObservers(new ReaderEvent(this, ReaderEvent.EventType.SE_INSERTED));
+        notifyObservers(new ReaderEvent(ReaderEvent.EventType.SE_INSERTED));
     }
 
     public void test_RemoveSE() {
-        isSEPresent = false;
+        isSePresent = false;
         logger.debug("Test - remove SE");
-        notifyObservers(new ReaderEvent(this, ReaderEvent.EventType.SE_REMOVAL));
+        notifyObservers(new ReaderEvent(ReaderEvent.EventType.SE_REMOVAL));
     }
 
     public void test_SetWillTimeout(Boolean willTimeout) {

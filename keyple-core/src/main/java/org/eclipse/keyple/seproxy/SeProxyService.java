@@ -48,6 +48,7 @@ public final class SeProxyService {
      * @return the version
      */
     public Integer getVersion() {
+        // TODO improve version management
         return version;
     }
 

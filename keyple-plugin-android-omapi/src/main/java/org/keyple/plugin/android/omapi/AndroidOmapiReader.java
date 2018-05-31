@@ -95,7 +95,7 @@ public class AndroidOmapiReader implements ProxyReader {
     }
 
     @Override
-    public boolean isSEPresent() throws IOReaderException {
+    public boolean isSePresent() throws IOReaderException {
         return omapiReader.isSecureElementPresent();
     }
 

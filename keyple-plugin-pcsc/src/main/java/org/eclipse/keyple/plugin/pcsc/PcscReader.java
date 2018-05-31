@@ -42,16 +42,12 @@ public class PcscReader extends AbstractReader implements ConfigurableReader {
     public static final String SETTING_DISCONNECT_EJECT = "eject";
     public static final String SETTING_KEY_THREAD_TIMEOUT = "thread_wait_timeout";
     public static final String SETTING_KEY_LOGGING = "logging";
-    public static final String SETTING_KEY_PO_SOLUTION_PREFIX = "po_solution"; // TODO To factorize
-    // in the common
-    // abstract reader
-    // class?
+
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 5000;
 
     private final CardTerminal terminal;
     private final String terminalName;
 
-    // private final Map<String, String> settings;
     private String parameterCardProtocol;
     private boolean cardExclusiveMode;
     private boolean cardReset;
@@ -71,12 +67,6 @@ public class PcscReader extends AbstractReader implements ConfigurableReader {
      * Thread wait timeout in ms
      */
     private long threadWaitTimeout;
-
-    /**
-     * PO selection map associating po protocol and atr regex string
-     */
-    private Map<SeProtocol, String> protocolsMap;
-
 
     PcscReader(CardTerminal terminal) { // PcscReader constructor may be
         // called only by PcscPlugin
@@ -109,15 +99,9 @@ public class PcscReader extends AbstractReader implements ConfigurableReader {
         return this;
     }
 
-
     @Override
     public String getName() {
         return terminalName;
-    }
-
-    @Override
-    public void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException {
-        this.protocolsMap = seProtocolSettings;
     }
 
     @Override
@@ -674,11 +658,11 @@ public class PcscReader extends AbstractReader implements ConfigurableReader {
         }
 
         private void cardRemoved() {
-            notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.SE_REMOVAL));
+            notifyObservers(new ReaderEvent(ReaderEvent.EventType.SE_REMOVAL));
         }
 
         private void cardInserted() {
-            notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.SE_INSERTED));
+            notifyObservers(new ReaderEvent(ReaderEvent.EventType.SE_INSERTED));
         }
 
         /**
@@ -690,7 +674,7 @@ public class PcscReader extends AbstractReader implements ConfigurableReader {
             logger.error("PCSC Reader: Error handling events", "action", "pcsc_reader.event_error",
                     "readerName", getName(), "exception", ex);
             if (ex instanceof CardException || ex instanceof IOReaderException) {
-                notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.IO_ERROR));
+                notifyObservers(new ReaderEvent(ReaderEvent.EventType.IO_ERROR));
             }
         }
 

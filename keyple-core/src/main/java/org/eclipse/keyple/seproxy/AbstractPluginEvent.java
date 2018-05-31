@@ -8,6 +8,6 @@
 
 package org.eclipse.keyple.seproxy;
 
-public abstract class PluginEvent {
+public abstract class AbstractPluginEvent {
 
 }

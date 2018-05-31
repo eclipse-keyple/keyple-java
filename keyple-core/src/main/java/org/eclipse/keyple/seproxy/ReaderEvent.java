@@ -30,30 +30,16 @@ public class ReaderEvent {
         SE_REMOVAL
     }
 
-    /** the reader pushing the notification. */
-    private AbstractReader reader;
-
     /** the type of the notified event. */
     private EventType event;
 
     /**
      * Instantiates a new reader event.
      *
-     * @param reader the reader
      * @param event the event
      */
-    public ReaderEvent(AbstractReader reader, EventType event) {
-        this.reader = reader;
+    public ReaderEvent(EventType event) {
         this.event = event;
-    }
-
-    /**
-     * Gets the reader.
-     *
-     * @return the reader notifying the event.
-     */
-    public AbstractReader getReader() {
-        return reader;
     }
 
     /**

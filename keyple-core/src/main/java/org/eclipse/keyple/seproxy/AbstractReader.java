@@ -9,6 +9,9 @@
 package org.eclipse.keyple.seproxy;
 
 
+import java.util.Map;
+import org.eclipse.keyple.util.Observable;
+
 /**
  * 
  * Abstract definition of an observable reader.
@@ -17,7 +20,18 @@ package org.eclipse.keyple.seproxy;
 
 public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEvent>
         implements ProxyReader {
-    public interface ReaderObserver extends Observer<ReaderEvent> {
-        void update(ReaderEvent event);
+    /**
+     * PO selection map associating seProtocols and selection strings (e.g. ATR regex for Pcsc
+     * plugins)
+     */
+    public Map<SeProtocol, String> protocolsMap;
+
+    public interface ReaderObserver extends AbstractLoggedObservable.Observer<ReaderEvent> {
+        void update(Observable reader, ReaderEvent event);
+    }
+
+    @Override
+    public void setProtocols(Map<SeProtocol, String> seProtocolSettings) {
+        this.protocolsMap = seProtocolSettings;
     }
 }

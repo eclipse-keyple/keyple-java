@@ -70,12 +70,13 @@ public class KeypleGenericDemo_ObservableReaderNotification {
             super();
         }
 
-        public void update(ReaderEvent event) {
+        // TODO change Observable to AbstractReader to avoid casts
+        public void update(Observable reader, ReaderEvent event) {
             if (event.getEventType().equals(ReaderEvent.EventType.SE_INSERTED)) {
-                System.out.println("Card inserted on: " + event.getReader().getName());
-                analyseCard(event.getReader());
+                System.out.println("Card inserted on: " + ((AbstractReader) reader).getName());
+                analyseCard((AbstractReader) reader);
             } else if (event.getEventType().equals(ReaderEvent.EventType.SE_REMOVAL)) {
-                System.out.println("Card removed on: " + event.getReader().getName());
+                System.out.println("Card removed on: " + ((AbstractReader) reader).getName());
             }
             try {
                 listReaders();
@@ -93,7 +94,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         }
     }
 
-    public class SpecificPluginObserver implements AbstractPlugin.Observer<PluginEvent> {
+    public class SpecificPluginObserver implements AbstractPlugin.Observer<AbstractPluginEvent> {
 
         SpecificReaderObserver readerObserver;
 
@@ -102,7 +103,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         }
 
         @Override
-        public void update(PluginEvent event) {
+        public void update(Observable observable, AbstractPluginEvent event) {
             if (event instanceof ReaderPresencePluginEvent) {
                 ReaderPresencePluginEvent presence = (ReaderPresencePluginEvent) event;
                 ProxyReader reader = presence.getReader();
