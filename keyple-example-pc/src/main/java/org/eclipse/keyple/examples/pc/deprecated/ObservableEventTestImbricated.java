@@ -10,7 +10,7 @@ package org.eclipse.keyple.examples.pc.deprecated;
 
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.AbstractReader;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderEvent;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
@@ -25,18 +25,17 @@ public class ObservableEventTestImbricated {
 
         PcscPlugin.getInstance().addObserver(new Observable.Observer<PluginEvent>() {
             @Override
-            public void update(Observable<? extends PluginEvent> observable, PluginEvent event) {
+            public void update(Observable observable, PluginEvent event) {
                 if (event instanceof ReaderPresencePluginEvent) {
                     ReaderPresencePluginEvent presence = (ReaderPresencePluginEvent) event;
                     if (presence.isAdded()) {
                         System.out.println("New reader: " + presence.getReader().getName());
                         ProxyReader reader = presence.getReader();
-                        if (reader instanceof AbstractObservableReader) {
-                            ((AbstractObservableReader) reader)
+                        if (reader instanceof AbstractReader) {
+                            ((AbstractReader) reader)
                                     .addObserver(new Observable.Observer<ReaderEvent>() {
                                         @Override
-                                        public void update(
-                                                Observable<? extends ReaderEvent> observable,
+                                        public void update(Observable observable,
                                                 ReaderEvent event) {
                                             if (event.getEventType()
                                                     .equals(ReaderEvent.EventType.SE_INSERTED)) {
@@ -46,7 +45,7 @@ public class ObservableEventTestImbricated {
                                             }
                                         }
 
-                                        private void analyseCard(AbstractObservableReader reader) {
+                                        private void analyseCard(AbstractReader reader) {
                                             try {
                                                 System.out.println(
                                                         "Card present = " + reader.isSEPresent());

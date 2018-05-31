@@ -17,8 +17,7 @@ import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
 
-public class KeypleGenericDemo_SeProtocolDetection
-        implements org.eclipse.keyple.util.Observable.Observer<ReaderEvent> {
+public class KeypleGenericDemo_SeProtocolDetection implements AbstractReader.Observer<ReaderEvent> {
     private ProxyReader poReader, csmReader;
 
     public KeypleGenericDemo_SeProtocolDetection() {
@@ -26,7 +25,7 @@ public class KeypleGenericDemo_SeProtocolDetection
     }
 
     @Override
-    public void update(Observable<? extends ReaderEvent> observable, ReaderEvent event) {
+    public void update(Observable observable, ReaderEvent event) {
         switch (event.getEventType()) {
             case SE_INSERTED:
                 System.out.println("SE INSERTED");
@@ -192,7 +191,7 @@ public class KeypleGenericDemo_SeProtocolDetection
         ((ConfigurableReader) observer.poReader).setProtocols(protocolsMap);
 
         // Set terminal as Observer of the first reader
-        ((AbstractObservableReader) observer.poReader).addObserver(observer);
+        ((AbstractReader) observer.poReader).addObserver(observer);
         synchronized (waitForEnd) {
             waitForEnd.wait();
         }

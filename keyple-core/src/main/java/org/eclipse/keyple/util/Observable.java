@@ -8,37 +8,40 @@
 
 package org.eclipse.keyple.util;
 
+
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+
 /**
- * Observable
- * 
- * @param <T>
+ * Generic Observable class
  *
- *        See https://stackoverflow.com/a/48453679/847202 which is a generics-enabled version of
- *        https://docs.oracle.com/javase/7/docs/api/java/util/Observable.html
+ * @param <T> Generic event
+ *
  */
+
 public class Observable<T> {
 
-    public interface Observer<U> {
-        void update(Observable<? extends U> observable, U arg);
+    public interface Observer<T> {
+        void update(Observable<T> observable, T event); // the Observable is already present in the
+                                                        // event
     }
 
     private boolean changed = false;
-    protected final Collection<Observer<? super T>> observers;
+
+    protected final Collection<Observer<T>> observers;
 
     public Observable() {
-        observers = new CopyOnWriteArrayList<Observer<? super T>>();
+        observers = new CopyOnWriteArrayList<Observer<T>>();
     }
 
-    public void addObserver(final Observer<? super T> observer) {
+    public void addObserver(final Observer<T> observer) {
         if (!observers.contains(observer)) {
             observers.add(observer);
         }
     }
 
-    public void removeObserver(final Observer<? super T> observer) {
+    public void removeObserver(final Observer<T> observer) {
         observers.remove(observer);
     }
 
@@ -66,9 +69,9 @@ public class Observable<T> {
         notifyObservers(null);
     }
 
-    public void notifyObservers(final T value) {
-        for (Observer<? super T> observer : observers) {
-            observer.update(this, value);
+    public void notifyObservers(final T event) {
+        for (Observer<T> observer : observers) {
+            observer.update(this, event); // the Observable is already present in the event
         }
     }
 }

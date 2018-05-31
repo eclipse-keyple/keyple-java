@@ -16,11 +16,10 @@ import javax.smartcardio.TerminalFactory;
 import org.eclipse.keyple.plugin.pcsc.log.CardTerminalsLogger;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
-import org.eclipse.keyple.util.Observable;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public final class PcscPlugin extends AbstractObservablePlugin {
+public final class PcscPlugin extends AbstractPlugin {
 
     private static final ILogger logger = SLoggerFactory.getLogger(PcscPlugin.class);
 
@@ -38,8 +37,7 @@ public final class PcscPlugin extends AbstractObservablePlugin {
 
     private static final TerminalFactory factory = TerminalFactory.getDefault();
 
-    private final Map<String, AbstractObservableReader> readers =
-            new HashMap<String, AbstractObservableReader>();
+    private final Map<String, AbstractReader> readers = new HashMap<String, AbstractReader>();
 
     private boolean logging = false;
 
@@ -73,15 +71,14 @@ public final class PcscPlugin extends AbstractObservablePlugin {
     }
 
     @Override
-    public List<AbstractObservableReader> getReaders() throws IOReaderException {
+    public List<AbstractReader> getReaders() throws IOReaderException {
         CardTerminals terminals = getCardTerminals();
 
         try {
             // florent(2018-04-15): #64: Fixed the previous logic. It was not removing readers once
             // they disappeared.
             synchronized (readers) {
-                Map<String, AbstractObservableReader> previous =
-                        new HashMap<String, AbstractObservableReader>(readers);
+                Map<String, AbstractReader> previous = new HashMap<String, AbstractReader>(readers);
                 for (CardTerminal term : terminals.list()) {
                     if (previous.remove(term.getName()) == null) {
                         PcscReader reader = new PcscReader(term);
@@ -93,10 +90,10 @@ public final class PcscPlugin extends AbstractObservablePlugin {
                         readers.put(reader.getName(), reader);
                     }
                 }
-                for (Map.Entry<String, AbstractObservableReader> en : previous.entrySet()) {
+                for (Map.Entry<String, AbstractReader> en : previous.entrySet()) {
                     readers.remove(en.getKey());
                 }
-                return new ArrayList<AbstractObservableReader>(readers.values());
+                return new ArrayList<AbstractReader>(readers.values());
             }
         } catch (CardException e) {
             logger.error("Terminal list is not accessible", "action", "pcsc_plugin.no_terminals",
@@ -114,15 +111,7 @@ public final class PcscPlugin extends AbstractObservablePlugin {
     }
 
     @Override
-    public final void notifyObservers(PluginEvent event) {
-        logger.info("AbstractObservablePlugin: Notifying of an event", "action",
-                "observable_plugin.notify_observers", "event", event, "pluginName", getName());
-        setChanged();
-        super.notifyObservers(event);
-    }
-
-    @Override
-    public void addObserver(Observable.Observer<? super PluginEvent> observer) {
+    public void addObserver(Observer observer) {
         synchronized (observers) {
             super.addObserver(observer);
             if (observers.size() == 1) {
@@ -138,7 +127,7 @@ public final class PcscPlugin extends AbstractObservablePlugin {
     }
 
     @Override
-    public void removeObserver(Observable.Observer<? super PluginEvent> observer) {
+    public void removeObserver(Observer observer) {
         synchronized (observers) {
             super.removeObserver(observer);
             if (observers.isEmpty()) {
@@ -166,8 +155,7 @@ public final class PcscPlugin extends AbstractObservablePlugin {
         private boolean running = true;
         private boolean initialized = false;
 
-        private Map<String, AbstractObservableReader> previousReaders =
-                new HashMap<String, AbstractObservableReader>();
+        private Map<String, AbstractReader> previousReaders = new HashMap<String, AbstractReader>();
 
         /**
          * Marks the thread as one that should end when the last cardWaitTimeout occurs
@@ -179,11 +167,11 @@ public final class PcscPlugin extends AbstractObservablePlugin {
         public void run() {
             try {
                 while (running) {
-                    Map<String, AbstractObservableReader> previous =
-                            new HashMap<String, AbstractObservableReader>(previousReaders);
-                    previousReaders = new HashMap<String, AbstractObservableReader>();
+                    Map<String, AbstractReader> previous =
+                            new HashMap<String, AbstractReader>(previousReaders);
+                    previousReaders = new HashMap<String, AbstractReader>();
 
-                    for (AbstractObservableReader r : getReaders()) {
+                    for (AbstractReader r : getReaders()) {
                         previousReaders.put(r.getName(), r);
 
                         // If one of the values that are being removed doesn't exist, it means it's
@@ -198,7 +186,7 @@ public final class PcscPlugin extends AbstractObservablePlugin {
                     initialized = true;
 
                     // If we have a value left that wasn't removed, it means it's a deleted reader
-                    for (AbstractObservableReader r : previous.values()) {
+                    for (AbstractReader r : previous.values()) {
                         notifyObservers(new ReaderPresencePluginEvent(false, r));
                     }
 

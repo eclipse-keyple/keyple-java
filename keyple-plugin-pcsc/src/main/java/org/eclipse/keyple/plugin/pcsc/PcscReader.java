@@ -25,7 +25,7 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public class PcscReader extends AbstractObservableReader implements ConfigurableReader {
+public class PcscReader extends AbstractReader implements ConfigurableReader {
 
     private static final ILogger logger = SLoggerFactory.getLogger(PcscReader.class);
     public static final String SETTING_KEY_PROTOCOL = "protocol";
@@ -605,7 +605,7 @@ public class PcscReader extends AbstractObservableReader implements Configurable
     }
 
     @Override
-    public void addObserver(Observer<? super ReaderEvent> observer) {
+    public void addObserver(Observer observer) {
         // We don't need synchronization for the list itself, we need to make sure we're not
         // starting and closing the thread at the same time.
         synchronized (observers) {
@@ -623,7 +623,7 @@ public class PcscReader extends AbstractObservableReader implements Configurable
     }
 
     @Override
-    public void removeObserver(Observer<? super ReaderEvent> observer) {
+    public void removeObserver(Observer observer) {
         synchronized (observers) {
             super.removeObserver(observer);
             if (observers.isEmpty()) {

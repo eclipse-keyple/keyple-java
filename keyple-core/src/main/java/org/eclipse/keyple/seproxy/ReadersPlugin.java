@@ -17,7 +17,7 @@ import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 public interface ReadersPlugin {
 
     // TODO - possibility to force implementatiosn to be singleton?
-    // TODO - add AbstractObservablePlugin interface
+    // TODO - add AbstractPlugin interface
 
     /**
      * Gets the name.
