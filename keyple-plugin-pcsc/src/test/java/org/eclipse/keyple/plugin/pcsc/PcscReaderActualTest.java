@@ -31,7 +31,7 @@ public class PcscReaderActualTest {
          */
 
         @Override
-        public void update(ReaderEvent event) {
+        public void update(Observable observable, ReaderEvent event) {
             lastThread = Thread.currentThread();
             System.out.println("Observer: " + event + " (from thread"
                     + Thread.currentThread().getName() + ")");

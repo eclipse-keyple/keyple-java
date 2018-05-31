@@ -50,7 +50,7 @@ public class ObservableTest {
         }
 
         @Override
-        public void update(Event arg) {
+        public void update(Observable observable, Event arg) {
             // System.out.println(name + " received" + event);
             nbCalls += 1;
         }
