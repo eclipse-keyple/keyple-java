@@ -13,4 +13,7 @@ package org.eclipse.keyple.seproxy;
  */
 public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginEvent>
         implements ReadersPlugin {
+    public interface PluginObserver extends Observer {
+        void update(PluginEvent event);
+    }
 }
