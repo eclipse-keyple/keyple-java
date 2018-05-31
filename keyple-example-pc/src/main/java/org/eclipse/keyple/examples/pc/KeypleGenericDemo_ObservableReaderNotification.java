@@ -13,16 +13,17 @@ import java.util.List;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.util.Observable;
 
 
 public class KeypleGenericDemo_ObservableReaderNotification {
 
-    private ReaderObserver readerObserver;
-    private PluginObserver pluginObserver;
+    private SpecificReaderObserver readerObserver;
+    private SpecificPluginObserver pluginObserver;
 
     private KeypleGenericDemo_ObservableReaderNotification() {
-        readerObserver = new ReaderObserver();
-        pluginObserver = new PluginObserver(readerObserver);
+        readerObserver = new SpecificReaderObserver();
+        pluginObserver = new SpecificPluginObserver(readerObserver);
     }
 
     private static void listReaders() throws IOReaderException {
@@ -35,8 +36,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
                 System.out.println(pluginIndex + "\t" + plugin.getName() + "\t" + readerIndex++
                         + "\t" + reader.getName() + "\t"
                         + ((reader.isSePresent()) ? "card_present" : "card_absent") + "\t"
-                        + ((((AbstractObservableReader) reader).countObservers() > 0)
-                                ? "observed_reader"
+                        + ((((AbstractReader) reader).countObservers() > 0) ? "observed_reader"
                                 : "not_observed_reader"));
             }
         }
@@ -46,17 +46,17 @@ public class KeypleGenericDemo_ObservableReaderNotification {
 
         for (ReadersPlugin plugin : SeProxyService.getInstance().getPlugins()) {
 
-            if (plugin instanceof AbstractObservablePlugin) {
+            if (plugin instanceof AbstractPlugin) {
                 System.out.println("Add observer on the plugin :  " + plugin.getName());
-                ((AbstractObservablePlugin) plugin).addObserver(this.pluginObserver);
+                ((AbstractPlugin) plugin).addObserver(this.pluginObserver);
             } else {
                 System.out.println("Plugin " + plugin.getName() + " isn't observable");
             }
 
             for (ProxyReader reader : plugin.getReaders()) {
-                if (reader instanceof AbstractObservableReader) {
+                if (reader instanceof AbstractReader) {
                     System.out.println("Add observer on the reader :  " + reader.getName());
-                    ((AbstractObservableReader) reader).addObserver(this.readerObserver);
+                    ((AbstractReader) reader).addObserver(this.readerObserver);
                 } else {
                     System.out.println("Reader " + reader.getName() + " isn't observable");
                 }
@@ -64,9 +64,9 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         }
     }
 
-    public class ReaderObserver implements AbstractObservableReader.Observer<ReaderEvent> {
+    public class SpecificReaderObserver implements AbstractReader.ReaderObserver {
 
-        ReaderObserver() {
+        SpecificReaderObserver() {
             super();
         }
 
@@ -84,7 +84,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
             }
         }
 
-        private void analyseCard(AbstractObservableReader reader) {
+        private void analyseCard(AbstractReader reader) {
             try {
                 System.out.println("Card present = " + reader.isSePresent());
             } catch (IOReaderException ex) {
@@ -93,11 +93,11 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         }
     }
 
-    public class PluginObserver implements AbstractObservablePlugin.Observer<PluginEvent> {
+    public class SpecificPluginObserver implements AbstractPlugin.Observer<PluginEvent> {
 
-        ReaderObserver readerObserver;
+        SpecificReaderObserver readerObserver;
 
-        PluginObserver(ReaderObserver readerObserver) {
+        SpecificPluginObserver(SpecificReaderObserver readerObserver) {
             this.readerObserver = readerObserver;
         }
 
@@ -109,10 +109,10 @@ public class KeypleGenericDemo_ObservableReaderNotification {
                 if (presence.isAdded()) {
                     System.out.println("New reader: " + reader.getName());
 
-                    if (reader instanceof AbstractObservableReader) {
+                    if (reader instanceof AbstractReader) {
 
                         if (readerObserver != null) {
-                            ((AbstractObservableReader) reader).addObserver(readerObserver);
+                            ((AbstractReader) reader).addObserver(readerObserver);
                             System.out.println(
                                     "Add observer on the plugged reader :  " + reader.getName());
                         } else {
@@ -123,10 +123,10 @@ public class KeypleGenericDemo_ObservableReaderNotification {
                 } else {
                     System.out.println("Reader removed: " + reader.getName());
 
-                    if (reader instanceof AbstractObservableReader) {
+                    if (reader instanceof AbstractReader) {
 
                         if (readerObserver != null) {
-                            ((AbstractObservableReader) reader).removeObserver(readerObserver);
+                            ((AbstractReader) reader).removeObserver(readerObserver);
                             System.out.println("Remove observer on the unplugged reader :  "
                                     + reader.getName());
                         } else {
@@ -138,11 +138,12 @@ public class KeypleGenericDemo_ObservableReaderNotification {
 
                 try {
                     listReaders();
-                    /*
-                     * if (((AbstractObservablePlugin) observable).getReaders().isEmpty()) {
-                     * System.out.println("EXIT - no more reader"); synchronized (waitBeforeEnd) {
-                     * waitBeforeEnd.notify(); } }
-                     */
+                    if (((AbstractPlugin) observable).getReaders().isEmpty()) {
+                        System.out.println("EXIT - no more reader");
+                        synchronized (waitBeforeEnd) {
+                            waitBeforeEnd.notify();
+                        }
+                    }
                 } catch (IOReaderException e) {
                     e.printStackTrace();
                 }
