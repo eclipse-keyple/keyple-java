@@ -50,10 +50,9 @@ public class KeepOpenCardTimeoutManager extends AbstractLogicManager {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-        SeRequest seRequestElement =
-                new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, true);
+        SeRequest seRequestElement = new SeRequest(ByteBufferUtils.fromHex(poAid),
+                poApduRequestList, true, ContactlessProtocols.PROTOCOL_ISO14443_4);
         List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
-        seRequestElement.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_ISO14443_4);
         seRequestElements.add(seRequestElement);
 
 
@@ -68,10 +67,9 @@ public class KeepOpenCardTimeoutManager extends AbstractLogicManager {
             Thread.sleep(3000);
             System.out.println("Transmit 2nd SE Request, close channel");
 
-            SeRequest seRequestElement2 =
-                    new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+            SeRequest seRequestElement2 = new SeRequest(ByteBufferUtils.fromHex(poAid),
+                    poApduRequestList, false, ContactlessProtocols.PROTOCOL_ISO14443_4);
             List<SeRequest> seRequestElements2 = new ArrayList<SeRequest>();
-            seRequestElement2.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_ISO14443_4);
 
             seRequestElements2.add(seRequestElement2);
             SeRequestSet poRequest2 = new SeRequestSet(seRequestElements2);

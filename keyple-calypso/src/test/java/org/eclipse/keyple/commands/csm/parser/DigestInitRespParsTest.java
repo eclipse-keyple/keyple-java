@@ -29,7 +29,7 @@ public class DigestInitRespParsTest {
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
-                new DigestInitRespPars(seResponse.getSingleElement().getApduResponses().get(0));
+                new DigestInitRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
         Assert.assertEquals(ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}),
                 apduResponseParser.getApduResponse().getBuffer());
     }

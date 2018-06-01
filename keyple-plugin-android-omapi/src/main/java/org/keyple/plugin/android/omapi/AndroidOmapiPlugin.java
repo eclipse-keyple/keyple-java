@@ -72,7 +72,7 @@ public class AndroidOmapiPlugin implements ReadersPlugin, SEService.CallBack {
 
         for (Reader omapiReader : omapiReaders) {
             Log.d(TAG, "Reader available name : " + omapiReader.getName());
-            Log.d(TAG, "Reader available isSEPresent : " + omapiReader.isSecureElementPresent());
+            Log.d(TAG, "Reader available isSePresent : " + omapiReader.isSecureElementPresent());
 
             // http://seek-for-android.github.io/javadoc/V4.0.0/org/simalliance/openmobileapi/Reader.html
             ProxyReader seReader = new AndroidOmapiReader(omapiReader);

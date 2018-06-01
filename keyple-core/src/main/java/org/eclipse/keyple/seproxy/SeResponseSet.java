@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Aggregates the elements of a response from a local or remote SE Reader, received through a
+ * Aggregates the seResponses of a response from a local or remote SE Reader, received through a
  * ProxyReader, including a group of APDU responses and the previous status of the logical channel
  * with the targeted SE application.
  * 
@@ -20,26 +20,26 @@ import java.util.List;
  */
 public class SeResponseSet {
     /**
-     * List of elements that were received following the transmission of the {@link SeRequest}.
+     * List of seResponses that were received following the transmission of the {@link SeRequest}.
      */
-    private final List<SeResponse> elements;
+    private final List<SeResponse> seResponses;
 
     /**
-     * List of response elements
+     * List of response seResponses
      *
-     * @return List of response elements
+     * @return List of response seResponses
      */
-    public List<SeResponse> getElements() {
-        return elements;
+    public List<SeResponse> getResponses() {
+        return seResponses;
     }
 
     /**
      * Create an {@link SeResponseSet} from a list of {@link SeResponse}s.
      * 
-     * @param elements List of elements
+     * @param seResponses List of seResponses
      */
-    public SeResponseSet(List<SeResponse> elements) {
-        this.elements = elements;
+    public SeResponseSet(List<SeResponse> seResponses) {
+        this.seResponses = seResponses;
     }
 
     /**
@@ -50,7 +50,7 @@ public class SeResponseSet {
     public SeResponseSet(SeResponse response) {
         List<SeResponse> seResponses = new ArrayList<SeResponse>();
         seResponses.add(response);
-        this.elements = seResponses;
+        this.seResponses = seResponses;
     }
 
     /**
@@ -58,15 +58,15 @@ public class SeResponseSet {
      *
      * @return response
      */
-    public SeResponse getSingleElement() {
-        if (elements.size() != 1) {
+    public SeResponse getSingleResponse() {
+        if (seResponses.size() != 1) {
             throw new IllegalStateException("This method only support ONE element");
         }
-        return elements.get(0);
+        return seResponses.get(0);
     }
 
     @Override
     public String toString() {
-        return "SeReponse{elements=" + elements + "}";
+        return "SeReponse{seResponses=" + seResponses + "}";
     }
 }

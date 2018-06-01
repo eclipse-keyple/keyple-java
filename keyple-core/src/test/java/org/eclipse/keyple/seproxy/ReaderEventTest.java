@@ -23,13 +23,13 @@ public class ReaderEventTest {
 
     @Test
     public void testReaderEvent() {
-        ReaderEvent event = new ReaderEvent(null, ReaderEvent.EventType.IO_ERROR);
+        ReaderEvent event = new ReaderEvent(ReaderEvent.EventType.IO_ERROR);
         assertNotNull(event);
     }
 
     @Test
     public void testGetEvent() {
-        ReaderEvent event = new ReaderEvent(null, ReaderEvent.EventType.IO_ERROR);
+        ReaderEvent event = new ReaderEvent(ReaderEvent.EventType.IO_ERROR);
         assertEquals(ReaderEvent.EventType.IO_ERROR, event.getEventType());
     }
 

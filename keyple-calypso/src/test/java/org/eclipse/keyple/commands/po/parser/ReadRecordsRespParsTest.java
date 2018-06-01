@@ -33,7 +33,7 @@ public class ReadRecordsRespParsTest {
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
         ReadRecordsRespPars readRecordsResponse =
-                new ReadRecordsRespPars(seResponse.getSingleElement().getApduResponses().get(0));
+                new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
         ByteBuffer responseActual = readRecordsResponse.getApduResponse().getBuffer();
         Assert.assertEquals(response, responseActual);
 
@@ -56,7 +56,7 @@ public class ReadRecordsRespParsTest {
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
         ReadRecordsRespPars apduResponseParser =
-                new ReadRecordsRespPars(seResponse.getSingleElement().getApduResponses().get(0));
+                new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
         ByteBuffer responseActual = apduResponseParser.getApduResponse().getBuffer();
         Assert.assertEquals(response, responseActual);
 
@@ -99,7 +99,7 @@ public class ReadRecordsRespParsTest {
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
-                new ReadRecordsRespPars(seResponse.getSingleElement().getApduResponses().get(0));
+                new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
         ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
         Assert.assertEquals(response, reponseActual);
     }
@@ -114,7 +114,7 @@ public class ReadRecordsRespParsTest {
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
-                new ReadRecordsRespPars(seResponse.getSingleElement().getApduResponses().get(0));
+                new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
         ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
         Assert.assertEquals(response, reponseActual);
     }

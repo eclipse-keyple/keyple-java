@@ -14,6 +14,7 @@ import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.seproxy.ApduRequest;
+import org.eclipse.keyple.seproxy.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
@@ -47,6 +48,7 @@ public class HoplinkSimpleRead {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-        return new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, true);
+        return new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, true,
+                ContactlessProtocols.PROTOCOL_ISO14443_4);
     }
 }

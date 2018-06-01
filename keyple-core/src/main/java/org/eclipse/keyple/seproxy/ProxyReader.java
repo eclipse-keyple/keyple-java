@@ -12,6 +12,18 @@ import java.util.Map;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 
 /**
+ * ProxyReader interface
+ * <ul>
+ * <li>To operate the transmission of SeRequestSet, a specific local reader processes the sorted
+ * list of SeRequest.</li>
+ * <li>According to SeRequest protocolFlag and to the current status of the reader (RF protocol
+ * involved / current ATR) the processing of a specific SeRequest could be skipped.</li>
+ * <li>When processing a SeRequest</li>
+ * <ul>
+ * <li>if necessary a new logical channel is open (for a specific AID if defined)</li>
+ * <li>and ApduRequest are transmited one by one</li>
+ * </ul>
+ * </ul>
  * Interface each {@link ReadersPlugin} should implement
  */
 public interface ProxyReader {
@@ -24,12 +36,12 @@ public interface ProxyReader {
     String getName();
 
     /**
-     * Sets the expected protocols to handle SeRequest selection in SeRequestSet
-     * 
-     * @param seProtocolSettings
-     * @throws IOReaderException
+     * Checks if is SE present.
+     *
+     * @return true if a Secure Element is present in the reader
+     * @throws IOReaderException Exception of type IO Reader
      */
-    void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException;
+    boolean isSePresent() throws IOReaderException;
 
     /**
      * Transmits a request to a SE application and get back the corresponding SE response o the
@@ -45,10 +57,10 @@ public interface ProxyReader {
     SeResponseSet transmit(SeRequestSet seApplicationRequest) throws IOReaderException;
 
     /**
-     * Checks if is SE present.
+     * Sets the expected protocols to handle SeRequest selection in SeRequestSet
      *
-     * @return true if a Secure Element is present in the reader
-     * @throws IOReaderException Exception of type IO Reader
+     * @param seProtocolSettings
+     * @throws IOReaderException
      */
-    boolean isSEPresent() throws IOReaderException;
+    void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException;
 }

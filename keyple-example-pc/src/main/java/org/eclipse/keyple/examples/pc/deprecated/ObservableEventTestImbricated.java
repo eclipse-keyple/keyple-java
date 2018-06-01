@@ -23,9 +23,9 @@ public class ObservableEventTestImbricated {
     public static void main(String[] args) throws Exception {
         final Object waitBeforeEnd = new Object();
 
-        PcscPlugin.getInstance().addObserver(new Observable.Observer<PluginEvent>() {
+        PcscPlugin.getInstance().addObserver(new Observable.Observer<AbstractPluginEvent>() {
             @Override
-            public void update(Observable observable, PluginEvent event) {
+            public void update(Observable observable, AbstractPluginEvent event) {
                 if (event instanceof ReaderPresencePluginEvent) {
                     ReaderPresencePluginEvent presence = (ReaderPresencePluginEvent) event;
                     if (presence.isAdded()) {
@@ -40,15 +40,15 @@ public class ObservableEventTestImbricated {
                                             if (event.getEventType()
                                                     .equals(ReaderEvent.EventType.SE_INSERTED)) {
                                                 System.out.println("Card inserted on: "
-                                                        + event.getReader().getName());
-                                                analyseCard(event.getReader());
+                                                        + ((AbstractReader) observable).getName());
+                                                analyseCard((AbstractReader) observable);
                                             }
                                         }
 
                                         private void analyseCard(AbstractReader reader) {
                                             try {
                                                 System.out.println(
-                                                        "Card present = " + reader.isSEPresent());
+                                                        "Card present = " + reader.isSePresent());
                                             } catch (IOReaderException ex) {
                                                 ex.printStackTrace(System.err);
                                             }

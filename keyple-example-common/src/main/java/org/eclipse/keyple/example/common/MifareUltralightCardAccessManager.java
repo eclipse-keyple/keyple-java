@@ -50,9 +50,8 @@ public class MifareUltralightCardAccessManager extends AbstractLogicManager {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-        SeRequest seRequestElement =
-                new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
-        seRequestElement.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_MIFARE_UL);
+        SeRequest seRequestElement = new SeRequest(ByteBufferUtils.fromHex(poAid),
+                poApduRequestList, false, ContactlessProtocols.PROTOCOL_MIFARE_UL);
         List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
         seRequestElements.add(seRequestElement);
         SeRequestSet poRequest = new SeRequestSet(seRequestElements);

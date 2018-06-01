@@ -55,30 +55,28 @@ public class KeypleGenericDemo_SeProtocolDetection implements AbstractReader.Obs
             getSerialNumberApduList.add(getSerialNumberApdu);
 
             // add a request for getting the PO S/N to various PO protocols
-            SeRequest getSNIso144434Request = new SeRequest(null, getSerialNumberApduList, false);
-            getSNIso144434Request.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_ISO14443_4);
+            SeRequest getSNIso144434Request = new SeRequest(null, getSerialNumberApduList, false,
+                    ContactlessProtocols.PROTOCOL_ISO14443_4);
             poRequests.add(getSNIso144434Request);
 
-            SeRequest getSNMifare1KRequest = new SeRequest(null, getSerialNumberApduList, false);
-            getSNMifare1KRequest.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_MIFARE_1K);
+            SeRequest getSNMifare1KRequest = new SeRequest(null, getSerialNumberApduList, false,
+                    ContactlessProtocols.PROTOCOL_MIFARE_1K);
             poRequests.add(getSNMifare1KRequest);
 
-            SeRequest getSNMifareULRequest = new SeRequest(null, getSerialNumberApduList, false);
-            getSNMifareULRequest.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_MIFARE_UL);
+            SeRequest getSNMifareULRequest = new SeRequest(null, getSerialNumberApduList, false,
+                    ContactlessProtocols.PROTOCOL_MIFARE_UL);
             poRequests.add(getSNMifareULRequest);
 
-            SeRequest getSNMifareDesfireRequest =
-                    new SeRequest(null, getSerialNumberApduList, false);
-            getSNMifareDesfireRequest
-                    .setSeProtocolFlag(ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE);
+            SeRequest getSNMifareDesfireRequest = new SeRequest(null, getSerialNumberApduList,
+                    false, ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE);
             poRequests.add(getSNMifareDesfireRequest);
 
-            SeRequest getSNST25fireRequest = new SeRequest(null, getSerialNumberApduList, false);
-            getSNST25fireRequest.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_MEMORY_ST25);
+            SeRequest getSNST25fireRequest = new SeRequest(null, getSerialNumberApduList, false,
+                    ContactlessProtocols.PROTOCOL_MEMORY_ST25);
             poRequests.add(getSNST25fireRequest);
 
-            SeRequest getSNBPrimeRequest = new SeRequest(null, getSerialNumberApduList, false);
-            getSNBPrimeRequest.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_B_PRIME);
+            SeRequest getSNBPrimeRequest = new SeRequest(null, getSerialNumberApduList, false,
+                    ContactlessProtocols.PROTOCOL_B_PRIME);
             poRequests.add(getSNBPrimeRequest);
 
 
@@ -86,7 +84,6 @@ public class KeypleGenericDemo_SeProtocolDetection implements AbstractReader.Obs
             SeRequest poRequestHoplink = HoplinkSimpleRead.getSeRequest();
 
             // add the request to the list
-            poRequestHoplink.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_ISO14443_4);
             poRequests.add(poRequestHoplink);
 
             // create a SeRequestSet from the SeRequest list
@@ -97,11 +94,11 @@ public class KeypleGenericDemo_SeProtocolDetection implements AbstractReader.Obs
             // output results
             Iterator<SeRequest> seReqIterator = poRequests.iterator();
             int requestIndex = 0;
-            for (SeResponse seResponse : poResponse.getElements()) {
+            for (SeResponse seResponse : poResponse.getResponses()) {
                 SeRequest seRequest = seReqIterator.next();
 
                 if (seResponse != null) {
-                    System.out.println("Protocol \"" + seRequest.getSeProtocolFlag().getName()
+                    System.out.println("Protocol \"" + seRequest.getProtocolFlag().getName()
                             + "\" matched for request number " + String.valueOf(requestIndex));
                     List<ApduRequest> poApduRequestList = seRequest.getApduRequests();
                     List<ApduResponse> poApduResponseList = seResponse.getApduResponses();

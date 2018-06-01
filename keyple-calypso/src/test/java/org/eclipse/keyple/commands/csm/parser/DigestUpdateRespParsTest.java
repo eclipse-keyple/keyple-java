@@ -30,7 +30,7 @@ public class DigestUpdateRespParsTest {
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
-                new DigestUpdateRespPars(seResponse.getSingleElement().getApduResponses().get(0));
+                new DigestUpdateRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
         ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
         Assert.assertArrayEquals(new byte[] {90, 00}, ByteBufferUtils.toBytes(reponseActual));
     }

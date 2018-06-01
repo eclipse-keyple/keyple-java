@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.seproxy;
 
-public class ReaderPresencePluginEvent extends PluginEvent {
+public class ReaderPresencePluginEvent extends AbstractPluginEvent {
     private final boolean added;
     private final ProxyReader reader;
 

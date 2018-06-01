@@ -9,7 +9,6 @@
 package org.eclipse.keyple.seproxy;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,25 +17,6 @@ import java.util.List;
  * @see SeResponse
  */
 public class SeRequest {
-
-    /**
-     * Protocol flag
-     */
-    private SeProtocol seProtocolFlag;
-
-    /**
-     * the final logical channel status: if true, the SE reader keep active the logical channel of
-     * the SE application after processing the group of APDU commands. If false, the SE reader will
-     * close the logical channel of the SE application after processing the group of APDU commands
-     * (i.e. after the receipt of the last APDU response).
-     */
-    private boolean keepChannelOpen;
-
-    /**
-     * contains a group of APDUCommand to operate on the selected SE application by the SE reader.
-     */
-    private List<ApduRequest> apduRequests;
-
 
     /**
      * - AID’s bytes of the SE application to select. In case the SE application is currently not
@@ -49,8 +29,33 @@ public class SeRequest {
     private ByteBuffer aidToSelect;
 
     /**
-     * the constructor called by a ProxyReader in order to open a logical channel, to send a set of
+     * contains a group of APDUCommand to operate on the selected SE application by the SE reader.
+     */
+    private List<ApduRequest> apduRequests;
+
+
+    /**
+     * the protocol flag is used to target specific SE technologies for a given request
+     */
+    private SeProtocol protocolFlag;
+
+    /**
+     * the final logical channel status: if true, the SE reader keep active the logical channel of
+     * the SE application after processing the group of APDU commands. If false, the SE reader will
+     * close the logical channel of the SE application after processing the group of APDU commands
+     * (i.e. after the receipt of the last APDU response).
+     */
+    private boolean keepChannelOpen;
+
+    /**
+     * The constructor called by a ProxyReader in order to open a logical channel, to send a set of
      * APDU commands to a SE application, or both of them.
+     * <ul>
+     * <li>For PO requiring an AID selection, the aidToSelect should be defined with non null
+     * value.</li>
+     * <li>For PO not supporting AID selection, the aidToSelect should be defined as null. - The
+     * protocolFlag parameter is optional.</li>
+     * </ul>
      *
      * @param aidToSelect the aid to select
      * @param apduRequests the apdu requests
@@ -63,18 +68,12 @@ public class SeRequest {
         this.apduRequests = apduRequests;
     }
 
-    /**
-     * @param apduRequests list of APDU requests
-     */
-    public SeRequest(List<ApduRequest> apduRequests) {
-
-        this.keepChannelOpen = true;
-        this.apduRequests = new ArrayList<ApduRequest>();
-
-        if (apduRequests != null) {
-            this.apduRequests.addAll(apduRequests);
-        }
-
+    public SeRequest(ByteBuffer aidToSelect, List<ApduRequest> apduRequests,
+            boolean keepChannelOpen, SeProtocol protocolFlag) {
+        this.aidToSelect = aidToSelect;
+        this.keepChannelOpen = keepChannelOpen;
+        this.apduRequests = apduRequests;
+        this.protocolFlag = protocolFlag;
     }
 
     /**
@@ -102,26 +101,17 @@ public class SeRequest {
      *
      * @return If the channel should be kept open
      */
-    public boolean keepChannelOpen() {
+    public boolean isKeepChannelOpen() {
         return keepChannelOpen;
     }
 
     /**
-     * Get the current protocol
+     * Gets the protocol flag of the request
      * 
-     * @return seProtocolFlag
+     * @return protocolFlag
      */
-    public SeProtocol getSeProtocolFlag() {
-        return this.seProtocolFlag;
-    }
-
-    /**
-     * Set the expected protocol for the current request
-     * 
-     * @param seProtocolFlag
-     */
-    public void setSeProtocolFlag(SeProtocol seProtocolFlag) {
-        this.seProtocolFlag = seProtocolFlag;
+    public SeProtocol getProtocolFlag() {
+        return this.protocolFlag;
     }
 
     @Override

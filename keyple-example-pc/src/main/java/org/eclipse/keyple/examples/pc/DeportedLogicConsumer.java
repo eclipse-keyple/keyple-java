@@ -27,8 +27,8 @@ public class DeportedLogicConsumer {
             System.out.println("Reader plugin: " + rp.getName());
             for (ProxyReader pr : rp.getReaders()) {
                 System.out
-                        .println("Reader name: " + pr.getName() + ", present: " + pr.isSEPresent());
-                if (pr.isSEPresent()) {
+                        .println("Reader name: " + pr.getName() + ", present: " + pr.isSePresent());
+                if (pr.isSePresent()) {
                     // This is what contains the actual test logic
                     BasicCardAccessManager mgr = new BasicCardAccessManager();
                     mgr.setPoReader(pr);

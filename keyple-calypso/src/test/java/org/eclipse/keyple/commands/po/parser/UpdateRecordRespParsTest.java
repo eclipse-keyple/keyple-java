@@ -29,7 +29,7 @@ public class UpdateRecordRespParsTest {
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
-                new UpdateRecordRespPars(seResponse.getSingleElement().getApduResponses().get(0));
+                new UpdateRecordRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
         Assert.assertArrayEquals(new byte[] {90, 00},
                 ByteBufferUtils.toBytes(apduResponseParser.getApduResponse().getBuffer()));
     }

@@ -13,17 +13,14 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.eclipse.keyple.seproxy.AbstractReader;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.ReaderEvent;
-import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
@@ -76,11 +73,6 @@ public class AndroidNfcReader extends AbstractReader implements NfcAdapter.Reade
         return "AndroidNfcReader";
     }
 
-    @Override
-    public void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException {
-
-    }
-
     /**
      * Callback function invoked when the @{@link NfcAdapter} detects a @{@link Tag}
      * 
@@ -95,7 +87,7 @@ public class AndroidNfcReader extends AbstractReader implements NfcAdapter.Reade
 
 
     @Override
-    public boolean isSEPresent() {
+    public boolean isSePresent() {
         return tagTransceiver != null && tagTransceiver.isConnected();
     }
 
@@ -109,13 +101,13 @@ public class AndroidNfcReader extends AbstractReader implements NfcAdapter.Reade
     @Override
     public SeResponseSet transmit(SeRequestSet seRequest) {
         Log.i(TAG, "Calling transmit on Android NFC Reader");
-        Log.d(TAG, "Size of APDU Requests : " + String.valueOf(seRequest.getElements().size()));
+        Log.d(TAG, "Size of APDU Requests : " + String.valueOf(seRequest.getRequests().size()));
 
         // init response
         List<SeResponse> seResponseElements = new ArrayList<SeResponse>();
 
         // Filter requestElements whom protocol matches the current tag
-        List<SeRequest> seRequestElements = filterByProtocol(seRequest.getElements());
+        List<SeRequest> seRequestElements = filterByProtocol(seRequest.getRequests());
 
         // no seRequestElements are left after filtering
         if (seRequestElements.size() < 1) {
@@ -156,7 +148,7 @@ public class AndroidNfcReader extends AbstractReader implements NfcAdapter.Reade
                 seResponseElements.add(out);
 
                 // Don't process more seRequestElement if asked
-                if (seRequestElement.keepChannelOpen()) {
+                if (seRequestElement.isKeepChannelOpen()) {
                     Log.i(TAG,
                             "Keep Channel Open is set to true, abort further seRequestElement if any");
                     saveChannelState(aid);
@@ -164,7 +156,7 @@ public class AndroidNfcReader extends AbstractReader implements NfcAdapter.Reade
                 }
 
                 // For last element, close physical channel if asked
-                if (i == seRequestElements.size() - 1 && !seRequestElement.keepChannelOpen()) {
+                if (i == seRequestElements.size() - 1 && !seRequestElement.isKeepChannelOpen()) {
                     disconnectTag();
                 }
 
@@ -195,10 +187,10 @@ public class AndroidNfcReader extends AbstractReader implements NfcAdapter.Reade
         for (SeRequest seRequestElement : seRequestElements) {
 
             Log.d(TAG, "Filtering seRequestElement whom protocol : "
-                    + seRequestElement.getSeProtocolFlag());
+                    + seRequestElement.getProtocolFlag());
 
-            if (seRequestElement.getSeProtocolFlag() != null
-                    && seRequestElement.getSeProtocolFlag().equals(tagTransceiver.getTech())) {
+            if (seRequestElement.getProtocolFlag() != null
+                    && seRequestElement.getProtocolFlag().equals(tagTransceiver.getTech())) {
                 filteredSRE.add(seRequestElement);
             }
         }
@@ -259,8 +251,7 @@ public class AndroidNfcReader extends AbstractReader implements NfcAdapter.Reade
 
             Log.i(TAG, "Tag connected successfully : " + printTagId());
 
-            notifyObservers(new ReaderEvent(AndroidNfcReader.getInstance(),
-                    ReaderEvent.EventType.SE_INSERTED));
+            notifyObservers(new ReaderEvent(ReaderEvent.EventType.SE_INSERTED));
 
         } catch (IOException e) {
             Log.e(TAG, "Error while connecting to Tag ");
@@ -279,7 +270,7 @@ public class AndroidNfcReader extends AbstractReader implements NfcAdapter.Reade
             if (tagTransceiver != null) {
 
                 tagTransceiver.close();
-                this.notifyObservers(new ReaderEvent(this, ReaderEvent.EventType.SE_REMOVAL));
+                this.notifyObservers(new ReaderEvent(ReaderEvent.EventType.SE_REMOVAL));
 
                 Log.i(TAG, "Disconnected tag : " + printTagId());
             }

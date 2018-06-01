@@ -41,13 +41,13 @@ public class StubReaderTest {
 
     @Test
     public void testIsPresent() throws IOReaderException {
-        assert (!stubReader.isSEPresent());
+        assert (!stubReader.isSePresent());
     }
 
     @Test
     public void testTransmitNull() throws IOReaderException {
         try {
-            stubReader.transmit(null).getSingleElement().getApduResponses().size();
+            stubReader.transmit(null).getSingleResponse().getApduResponses().size();
             fail("Should raise exception");
         } catch (IOReaderException e) {
             e.printStackTrace();
@@ -61,8 +61,8 @@ public class StubReaderTest {
     // if SE is not present, transmit fails
     public void testTransmitSEnotPressent() throws IOReaderException {
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
-        SeRequestSet seRequest = new SeRequestSet(new SeRequest(apduRequests));
-        assert (stubReader.transmit(seRequest).getSingleElement().getApduResponses().size() == 0);
+        SeRequestSet seRequest = new SeRequestSet(new SeRequest(null, apduRequests, false));
+        assert (stubReader.transmit(seRequest).getSingleResponse().getApduResponses().size() == 0);
 
     }
 
@@ -70,7 +70,7 @@ public class StubReaderTest {
     @Test
     public void testTimeout() {
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
-        SeRequestSet seRequest = new SeRequestSet(new SeRequest(apduRequests));
+        SeRequestSet seRequest = new SeRequestSet(new SeRequest(null, apduRequests, false));
         stubReader.test_SetWillTimeout(true);
 
         try {
@@ -86,7 +86,7 @@ public class StubReaderTest {
     @Test
     public void testTransmitWithoutSE() {
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
-        SeRequestSet seRequest = new SeRequestSet(new SeRequest(apduRequests));
+        SeRequestSet seRequest = new SeRequestSet(new SeRequest(null, apduRequests, false));
         stubReader.test_RemoveSE();
 
         try {

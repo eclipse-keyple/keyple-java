@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.seproxy;
 
-public class ErrorPluginEvent extends PluginEvent {
+public class ErrorPluginEvent extends AbstractPluginEvent {
     private final Exception exception;
 
     public ErrorPluginEvent(Exception exception) {

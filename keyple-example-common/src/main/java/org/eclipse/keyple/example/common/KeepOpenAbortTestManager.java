@@ -51,15 +51,13 @@ public class KeepOpenAbortTestManager extends AbstractLogicManager {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-        SeRequest seRequestElement =
-                new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, true);
+        SeRequest seRequestElement = new SeRequest(ByteBufferUtils.fromHex(poAid),
+                poApduRequestList, true, ContactlessProtocols.PROTOCOL_ISO14443_4);
         List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
-        seRequestElement.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_ISO14443_4);
         seRequestElements.add(seRequestElement);
 
-        SeRequest seRequestElement2 =
-                new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
-        seRequestElement2.setSeProtocolFlag(ContactlessProtocols.PROTOCOL_ISO14443_4);
+        SeRequest seRequestElement2 = new SeRequest(ByteBufferUtils.fromHex(poAid),
+                poApduRequestList, false, ContactlessProtocols.PROTOCOL_ISO14443_4);
         seRequestElements.add(seRequestElement2);
         SeRequestSet poRequest = new SeRequestSet(seRequestElements);
 

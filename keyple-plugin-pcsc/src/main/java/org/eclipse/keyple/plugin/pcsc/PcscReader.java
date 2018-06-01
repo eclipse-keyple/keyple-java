@@ -42,16 +42,12 @@ public class PcscReader extends AbstractReader implements ConfigurableReader {
     public static final String SETTING_DISCONNECT_EJECT = "eject";
     public static final String SETTING_KEY_THREAD_TIMEOUT = "thread_wait_timeout";
     public static final String SETTING_KEY_LOGGING = "logging";
-    public static final String SETTING_KEY_PO_SOLUTION_PREFIX = "po_solution"; // TODO To factorize
-    // in the common
-    // abstract reader
-    // class?
+
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 5000;
 
     private final CardTerminal terminal;
     private final String terminalName;
 
-    // private final Map<String, String> settings;
     private String parameterCardProtocol;
     private boolean cardExclusiveMode;
     private boolean cardReset;
@@ -71,12 +67,6 @@ public class PcscReader extends AbstractReader implements ConfigurableReader {
      * Thread wait timeout in ms
      */
     private long threadWaitTimeout;
-
-    /**
-     * PO selection map associating po protocol and atr regex string
-     */
-    private Map<SeProtocol, String> protocolsMap;
-
 
     PcscReader(CardTerminal terminal) { // PcscReader constructor may be
         // called only by PcscPlugin
@@ -109,15 +99,9 @@ public class PcscReader extends AbstractReader implements ConfigurableReader {
         return this;
     }
 
-
     @Override
     public String getName() {
         return terminalName;
-    }
-
-    @Override
-    public void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException {
-        this.protocolsMap = seProtocolSettings;
     }
 
     @Override
@@ -175,13 +159,13 @@ public class PcscReader extends AbstractReader implements ConfigurableReader {
         }
 
         boolean previouslyOpen = false;
-        boolean elementMatchProtocol[] = new boolean[requestSet.getElements().size()];
+        boolean elementMatchProtocol[] = new boolean[requestSet.getRequests().size()];
         int elementIndex = 0, lastElementIndex;
 
         // Determine which requestElements are matching the current ATR
-        for (SeRequest reqElement : requestSet.getElements()) {
+        for (SeRequest reqElement : requestSet.getRequests()) {
             // Get protocolFlag to check if ATR filtering is required
-            SeProtocol protocolFlag = reqElement.getSeProtocolFlag();
+            SeProtocol protocolFlag = reqElement.getProtocolFlag();
             if (protocolFlag != null) {
                 // the requestSet will be executed only if the protocol match the requestElement
                 String selectionMask = protocolsMap.get(protocolFlag);
@@ -217,7 +201,7 @@ public class PcscReader extends AbstractReader implements ConfigurableReader {
         // If the elementMatchProtocol is false we skip to the next requestSet
         // If keepChannelOpen is false, we close the physical channel for the last requestElement.
         List<SeResponse> respElements = new ArrayList<SeResponse>();
-        for (SeRequest reqElement : requestSet.getElements()) {
+        for (SeRequest reqElement : requestSet.getRequests()) {
             if (elementMatchProtocol[elementIndex] == true) {
                 boolean executeRequest = true;
                 List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
@@ -252,7 +236,7 @@ public class PcscReader extends AbstractReader implements ConfigurableReader {
                 respElements.add(null);
             }
             elementIndex++;
-            if (!reqElement.keepChannelOpen()) {
+            if (!reqElement.isKeepChannelOpen()) {
                 if (lastElementIndex == elementIndex) {
                     // For the processing of the last SeRequest with a protocolFlag matching
                     // the SE reader status, if the logical channel doesn't require to be kept open,
@@ -364,7 +348,7 @@ public class PcscReader extends AbstractReader implements ConfigurableReader {
     }
 
     @Override
-    public boolean isSEPresent() throws IOReaderException {
+    public boolean isSePresent() throws IOReaderException {
         try {
             return terminal.isCardPresent();
         } catch (CardException e) {
@@ -674,11 +658,11 @@ public class PcscReader extends AbstractReader implements ConfigurableReader {
         }
 
         private void cardRemoved() {
-            notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.SE_REMOVAL));
+            notifyObservers(new ReaderEvent(ReaderEvent.EventType.SE_REMOVAL));
         }
 
         private void cardInserted() {
-            notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.SE_INSERTED));
+            notifyObservers(new ReaderEvent(ReaderEvent.EventType.SE_INSERTED));
         }
 
         /**
@@ -690,7 +674,7 @@ public class PcscReader extends AbstractReader implements ConfigurableReader {
             logger.error("PCSC Reader: Error handling events", "action", "pcsc_reader.event_error",
                     "readerName", getName(), "exception", ex);
             if (ex instanceof CardException || ex instanceof IOReaderException) {
-                notifyObservers(new ReaderEvent(reader, ReaderEvent.EventType.IO_ERROR));
+                notifyObservers(new ReaderEvent(ReaderEvent.EventType.IO_ERROR));
             }
         }
 
@@ -698,13 +682,13 @@ public class PcscReader extends AbstractReader implements ConfigurableReader {
             try {
                 // First thing we'll do is to notify that a card was inserted if one is already
                 // present.
-                if (isSEPresent()) {
+                if (isSePresent()) {
                     cardInserted();
                 }
 
                 while (running) {
                     // If we have a card,
-                    if (isSEPresent()) {
+                    if (isSePresent()) {
                         // we will wait for it to disappear
                         if (terminal.waitForCardAbsent(threadWaitTimeout)) {
                             disconnect();

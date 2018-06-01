@@ -18,12 +18,12 @@ import org.eclipse.keyple.util.Observable;
 
 public class KeypleGenericDemo_ObservableReaderNotification {
 
-    private ReaderObserver readerObserver;
-    private PluginObserver pluginObserver;
+    private SpecificReaderObserver readerObserver;
+    private SpecificPluginObserver pluginObserver;
 
     private KeypleGenericDemo_ObservableReaderNotification() {
-        readerObserver = new ReaderObserver();
-        pluginObserver = new PluginObserver(readerObserver);
+        readerObserver = new SpecificReaderObserver();
+        pluginObserver = new SpecificPluginObserver(readerObserver);
     }
 
     private static void listReaders() throws IOReaderException {
@@ -35,7 +35,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
             for (ProxyReader reader : plugin.getReaders()) {
                 System.out.println(pluginIndex + "\t" + plugin.getName() + "\t" + readerIndex++
                         + "\t" + reader.getName() + "\t"
-                        + ((reader.isSEPresent()) ? "card_present" : "card_absent") + "\t"
+                        + ((reader.isSePresent()) ? "card_present" : "card_absent") + "\t"
                         + ((((AbstractReader) reader).countObservers() > 0) ? "observed_reader"
                                 : "not_observed_reader"));
             }
@@ -64,18 +64,19 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         }
     }
 
-    public class ReaderObserver implements AbstractReader.Observer<ReaderEvent> {
+    public class SpecificReaderObserver implements AbstractReader.ReaderObserver {
 
-        ReaderObserver() {
+        SpecificReaderObserver() {
             super();
         }
 
-        public void update(Observable observable, ReaderEvent event) {
+        // TODO change Observable to AbstractReader to avoid casts
+        public void update(Observable reader, ReaderEvent event) {
             if (event.getEventType().equals(ReaderEvent.EventType.SE_INSERTED)) {
-                System.out.println("Card inserted on: " + event.getReader().getName());
-                analyseCard(event.getReader());
+                System.out.println("Card inserted on: " + ((AbstractReader) reader).getName());
+                analyseCard((AbstractReader) reader);
             } else if (event.getEventType().equals(ReaderEvent.EventType.SE_REMOVAL)) {
-                System.out.println("Card removed on: " + event.getReader().getName());
+                System.out.println("Card removed on: " + ((AbstractReader) reader).getName());
             }
             try {
                 listReaders();
@@ -86,23 +87,23 @@ public class KeypleGenericDemo_ObservableReaderNotification {
 
         private void analyseCard(AbstractReader reader) {
             try {
-                System.out.println("Card present = " + reader.isSEPresent());
+                System.out.println("Card present = " + reader.isSePresent());
             } catch (IOReaderException ex) {
                 ex.printStackTrace(System.err);
             }
         }
     }
 
-    public class PluginObserver implements AbstractPlugin.Observer<PluginEvent> {
+    public class SpecificPluginObserver implements AbstractPlugin.Observer<AbstractPluginEvent> {
 
-        ReaderObserver readerObserver;
+        SpecificReaderObserver readerObserver;
 
-        PluginObserver(ReaderObserver readerObserver) {
+        SpecificPluginObserver(SpecificReaderObserver readerObserver) {
             this.readerObserver = readerObserver;
         }
 
         @Override
-        public void update(Observable observable, PluginEvent event) {
+        public void update(Observable observable, AbstractPluginEvent event) {
             if (event instanceof ReaderPresencePluginEvent) {
                 ReaderPresencePluginEvent presence = (ReaderPresencePluginEvent) event;
                 ProxyReader reader = presence.getReader();

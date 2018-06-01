@@ -40,7 +40,7 @@ public class OpenSessionRespParsTest {
 
         SeResponseSet reponseMock =
                 new SeResponseSet(new SeResponse(true, responseMockFci, apduResponses));
-        ApduResponse response = reponseMock.getSingleElement().getApduResponses().get(0);
+        ApduResponse response = reponseMock.getSingleResponse().getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
     }
@@ -57,7 +57,7 @@ public class OpenSessionRespParsTest {
 
         SeResponseSet reponseMock =
                 new SeResponseSet(new SeResponse(true, responseMockFci, apduResponses));
-        ApduResponse response = reponseMock.getSingleElement().getApduResponses().get(0);
+        ApduResponse response = reponseMock.getSingleResponse().getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV3_1));
     }
@@ -76,7 +76,7 @@ public class OpenSessionRespParsTest {
 
         SeResponseSet reponseMock =
                 new SeResponseSet(new SeResponse(true, responseMockFci, apduResponses));
-        ApduResponse response = reponseMock.getSingleElement().getApduResponses().get(0);
+        ApduResponse response = reponseMock.getSingleResponse().getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV3_2));
     }
