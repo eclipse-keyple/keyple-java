@@ -18,7 +18,7 @@ import org.eclipse.keyple.util.Observable;
  * 
  */
 
-public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEvent>
+public abstract class AbstractObservableReader extends AbstractLoggedObservable<ReaderEvent>
         implements ProxyReader {
     /**
      * PO selection map associating seProtocols and selection strings (e.g. ATR regex for Pcsc

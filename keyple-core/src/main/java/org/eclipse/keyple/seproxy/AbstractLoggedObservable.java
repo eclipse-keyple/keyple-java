@@ -13,7 +13,7 @@ import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
 /**
- * Intermediate observable class to handle the logging of AbstractReader and AbstractPlugin
+ * Intermediate observable class to handle the logging of AbstractObservableReader and AbstractObservablePlugin
  * 
  * @param <T>
  */
@@ -29,14 +29,14 @@ public class AbstractLoggedObservable<T> extends Observable<T> {
 
     public void addObserver(Observable.Observer<T> observer) {
 
-        if (this instanceof AbstractReader) {
-            logger.info("AbstractReader: Adding an observer", ACTION_STR,
+        if (this instanceof AbstractObservableReader) {
+            logger.info("AbstractObservableReader: Adding an observer", ACTION_STR,
                     "observable_reader.add_observer", "readerName",
-                    ((AbstractReader) this).getName());
-        } else if (this instanceof AbstractPlugin) {
-            logger.info("AbstractPlugin: Adding an observer", ACTION_STR,
+                    ((AbstractObservableReader) this).getName());
+        } else if (this instanceof AbstractObservablePlugin) {
+            logger.info("AbstractObservablePlugin: Adding an observer", ACTION_STR,
                     "observable_plugin.add_observer", "pluginName",
-                    ((AbstractPlugin) this).getName());
+                    ((AbstractObservablePlugin) this).getName());
         }
 
         super.addObserver(observer);
@@ -50,14 +50,14 @@ public class AbstractLoggedObservable<T> extends Observable<T> {
 
     public void removeObserver(Observable.Observer<T> observer) {
 
-        if (this instanceof AbstractReader) {
-            logger.info("AbstractReader: Deleting an observer", ACTION_STR,
+        if (this instanceof AbstractObservableReader) {
+            logger.info("AbstractObservableReader: Deleting an observer", ACTION_STR,
                     "observable_reader.remove_observer", "readerName",
-                    ((AbstractReader) this).getName());
-        } else if (this instanceof AbstractPlugin) {
-            logger.info("AbstractPlugin: Deleting an observer", ACTION_STR,
+                    ((AbstractObservableReader) this).getName());
+        } else if (this instanceof AbstractObservablePlugin) {
+            logger.info("AbstractObservablePlugin: Deleting an observer", ACTION_STR,
                     "observable_plugin.remove_observer", "pluginName",
-                    ((AbstractPlugin) this).getName());
+                    ((AbstractObservablePlugin) this).getName());
         }
 
         super.removeObserver(observer);
@@ -66,23 +66,23 @@ public class AbstractLoggedObservable<T> extends Observable<T> {
 
 
     /**
-     * This method shall be called only from a SE Proxy plugin or reader implementing AbstractReader
-     * or AbstractPlugin. Push a ReaderEvent / AbstractPluginEvent of the selected AbstractReader /
-     * AbstractPlugin to its registered Observer.
+     * This method shall be called only from a SE Proxy plugin or reader implementing AbstractObservableReader
+     * or AbstractObservablePlugin. Push a ReaderEvent / AbstractPluginEvent of the selected AbstractObservableReader /
+     * AbstractObservablePlugin to its registered Observer.
      * 
      * @param event the event
      */
 
     public final void notifyObservers(T event) {
 
-        if (this instanceof AbstractReader) {
-            logger.info("AbstractReader: Notifying of an event", ACTION_STR,
+        if (this instanceof AbstractObservableReader) {
+            logger.info("AbstractObservableReader: Notifying of an event", ACTION_STR,
                     "observable_reader.notify_observers", "event", event, "readerName",
-                    ((AbstractReader) this).getName());
-        } else if (this instanceof AbstractPlugin) {
-            logger.info("AbstractPlugin: Notifying of an event", ACTION_STR,
+                    ((AbstractObservableReader) this).getName());
+        } else if (this instanceof AbstractObservablePlugin) {
+            logger.info("AbstractObservablePlugin: Notifying of an event", ACTION_STR,
                     "observable_plugin.notify_observers", "event", event, "pluginName",
-                    ((AbstractPlugin) this).getName());
+                    ((AbstractObservablePlugin) this).getName());
         }
 
         setChanged();

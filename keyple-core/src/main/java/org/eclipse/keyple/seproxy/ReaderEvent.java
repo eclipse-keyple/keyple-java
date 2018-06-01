@@ -10,7 +10,7 @@ package org.eclipse.keyple.seproxy;
 
 
 /**
- * The Class ReaderEvent. This class is used to notify an event of a specific AbstractReader to its
+ * The Class ReaderEvent. This class is used to notify an event of a specific AbstractObservableReader to its
  * registered Observer in case of IO Error, SE insertion or removal.
  *
  * @author Ixxi

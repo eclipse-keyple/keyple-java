@@ -10,7 +10,7 @@ package org.eclipse.keyple.examples.pc.deprecated;
 
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.AbstractReader;
+import org.eclipse.keyple.seproxy.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderEvent;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
@@ -31,8 +31,8 @@ public class ObservableEventTestImbricated {
                     if (presence.isAdded()) {
                         System.out.println("New reader: " + presence.getReader().getName());
                         ProxyReader reader = presence.getReader();
-                        if (reader instanceof AbstractReader) {
-                            ((AbstractReader) reader)
+                        if (reader instanceof AbstractObservableReader) {
+                            ((AbstractObservableReader) reader)
                                     .addObserver(new Observable.Observer<ReaderEvent>() {
                                         @Override
                                         public void update(Observable observable,
@@ -40,12 +40,12 @@ public class ObservableEventTestImbricated {
                                             if (event.getEventType()
                                                     .equals(ReaderEvent.EventType.SE_INSERTED)) {
                                                 System.out.println("Card inserted on: "
-                                                        + ((AbstractReader) observable).getName());
-                                                analyseCard((AbstractReader) observable);
+                                                        + ((AbstractObservableReader) observable).getName());
+                                                analyseCard((AbstractObservableReader) observable);
                                             }
                                         }
 
-                                        private void analyseCard(AbstractReader reader) {
+                                        private void analyseCard(AbstractObservableReader reader) {
                                             try {
                                                 System.out.println(
                                                         "Card present = " + reader.isSePresent());

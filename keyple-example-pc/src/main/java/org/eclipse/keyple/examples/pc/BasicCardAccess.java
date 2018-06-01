@@ -32,8 +32,8 @@ public class BasicCardAccess {
             for (final ProxyReader pr : rp.getReaders()) {
                 System.out
                         .println("Reader name: " + pr.getName() + ", present: " + pr.isSePresent());
-                if (pr instanceof AbstractReader) {
-                    ((AbstractReader) pr).addObserver(new Observable.Observer<ReaderEvent>() {
+                if (pr instanceof AbstractObservableReader) {
+                    ((AbstractObservableReader) pr).addObserver(new Observable.Observer<ReaderEvent>() {
                         @Override
                         public void update(Observable observable, ReaderEvent event) {
                             if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
@@ -42,7 +42,7 @@ public class BasicCardAccess {
                         }
                     });
                     /*
-                     * ((AbstractReader) pr).addObserver(new Observer() {
+                     * ((AbstractObservableReader) pr).addObserver(new Observer() {
                      * 
                      * @Override public void notify(ReaderEvent event) { if (event.getEventType() ==
                      * ReaderEvent.EventType.SE_INSERTED) { parseInfo(pr); } } });

@@ -23,7 +23,7 @@ import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
 
-public class KeypleCalypsoDemo_HoplinkTransaction implements AbstractReader.Observer<ReaderEvent> {
+public class KeypleCalypsoDemo_HoplinkTransaction implements AbstractObservableReader.Observer<ReaderEvent> {
     private ProxyReader poReader, csmReader;
 
     public KeypleCalypsoDemo_HoplinkTransaction() {
@@ -172,7 +172,7 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements AbstractReader.Obse
         observer.csmReader = csmReader;
 
         // Set terminal as Observer of the first reader
-        ((AbstractReader) poReader).addObserver(observer);
+        ((AbstractObservableReader) poReader).addObserver(observer);
         synchronized (waitForEnd) {
             waitForEnd.wait();
         }
