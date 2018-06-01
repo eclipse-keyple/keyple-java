@@ -43,16 +43,6 @@ public final class SeProxyService {
     }
 
     /**
-     * Gets the version.
-     *
-     * @return the version
-     */
-    public Integer getVersion() {
-        // TODO improve version management
-        return version;
-    }
-
-    /**
      * Sets the plugins.
      *
      * @param plugins the new plugins
@@ -70,4 +60,13 @@ public final class SeProxyService {
         return plugins;
     }
 
+    /**
+     * Gets the version.
+     *
+     * @return the version
+     */
+    public Integer getVersion() {
+        // TODO improve version management
+        return version;
+    }
 }

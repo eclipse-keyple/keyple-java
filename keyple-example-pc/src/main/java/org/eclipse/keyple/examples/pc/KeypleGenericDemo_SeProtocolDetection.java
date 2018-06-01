@@ -62,7 +62,7 @@ public class KeypleGenericDemo_SeProtocolDetection
             poRequests.add(getSNIso144434Request);
 
             SeRequest getSNMifare1KRequest = new SeRequest(null, getSerialNumberApduList, false,
-                    ContactlessProtocols.PROTOCOL_MIFARE_1K);
+                    ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC);
             poRequests.add(getSNMifare1KRequest);
 
             SeRequest getSNMifareULRequest = new SeRequest(null, getSerialNumberApduList, false,
@@ -170,7 +170,7 @@ public class KeypleGenericDemo_SeProtocolDetection
         // create and fill a protocol map
         Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
 
-        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_1K,
+        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC,
                 "3B8F8001804F0CA000000306030001000000006A");
 
         protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_UL,
