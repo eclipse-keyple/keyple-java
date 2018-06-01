@@ -28,7 +28,7 @@ public class KeypleGenericDemo_SeProtocolDetection
 
     @Override
     public void update(Observable observable, ReaderEvent event) {
-        switch (event.getEventType()) {
+        switch (event) {
             case SE_INSERTED:
                 System.out.println("SE INSERTED");
                 System.out.println("\nStart processing of a PO");

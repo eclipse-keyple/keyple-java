@@ -136,13 +136,13 @@ public class StubReader extends AbstractObservableReader {
     public void test_InsertSE() {
         isSePresent = true;
         logger.debug("Test - insert SE");
-        notifyObservers(new ReaderEvent(ReaderEvent.EventType.SE_INSERTED));
+        notifyObservers(ReaderEvent.SE_INSERTED);
     }
 
     public void test_RemoveSE() {
         isSePresent = false;
         logger.debug("Test - remove SE");
-        notifyObservers(new ReaderEvent(ReaderEvent.EventType.SE_REMOVAL));
+        notifyObservers(ReaderEvent.SE_REMOVAL);
     }
 
     public void test_SetWillTimeout(Boolean willTimeout) {

@@ -37,8 +37,7 @@ public class ObservableEventTestImbricated {
                                         @Override
                                         public void update(Observable observable,
                                                 ReaderEvent event) {
-                                            if (event.getEventType()
-                                                    .equals(ReaderEvent.EventType.SE_INSERTED)) {
+                                            if (event.equals(ReaderEvent.SE_INSERTED)) {
                                                 System.out.println("Card inserted on: "
                                                         + ((AbstractObservableReader) observable)
                                                                 .getName());

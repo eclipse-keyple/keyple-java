@@ -361,9 +361,9 @@ public class NFCTestFragment extends Fragment implements AbstractLoggedObservabl
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "New ReaderEvent received : " + readerEvent.getEventType().toString());
+                Log.d(TAG, "New ReaderEvent received : " + readerEvent.toString());
 
-                switch (readerEvent.getEventType()) {
+                switch (readerEvent) {
                     case SE_INSERTED:
                         mText.append("\n ---- \n");
                         mText.append("Tag detected");

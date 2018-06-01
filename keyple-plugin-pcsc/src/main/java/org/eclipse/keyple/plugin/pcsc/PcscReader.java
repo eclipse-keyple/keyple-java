@@ -658,11 +658,11 @@ public class PcscReader extends AbstractObservableReader {
         }
 
         private void cardRemoved() {
-            notifyObservers(new ReaderEvent(ReaderEvent.EventType.SE_REMOVAL));
+            notifyObservers(ReaderEvent.SE_REMOVAL);
         }
 
         private void cardInserted() {
-            notifyObservers(new ReaderEvent(ReaderEvent.EventType.SE_INSERTED));
+            notifyObservers(ReaderEvent.SE_INSERTED);
         }
 
         /**
@@ -674,7 +674,7 @@ public class PcscReader extends AbstractObservableReader {
             logger.error("PCSC Reader: Error handling events", "action", "pcsc_reader.event_error",
                     "readerName", getName(), "exception", ex);
             if (ex instanceof CardException || ex instanceof IOReaderException) {
-                notifyObservers(new ReaderEvent(ReaderEvent.EventType.IO_ERROR));
+                notifyObservers(ReaderEvent.IO_ERROR);
             }
         }
 

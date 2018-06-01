@@ -73,11 +73,11 @@ public class KeypleGenericDemo_ObservableReaderNotification {
 
         // TODO change Observable to AbstractObservableReader to avoid casts
         public void update(Observable reader, ReaderEvent event) {
-            if (event.getEventType().equals(ReaderEvent.EventType.SE_INSERTED)) {
+            if (event.equals(ReaderEvent.SE_INSERTED)) {
                 System.out.println(
                         "Card inserted on: " + ((AbstractObservableReader) reader).getName());
                 analyseCard((AbstractObservableReader) reader);
-            } else if (event.getEventType().equals(ReaderEvent.EventType.SE_REMOVAL)) {
+            } else if (event.equals(ReaderEvent.SE_REMOVAL)) {
                 System.out.println(
                         "Card removed on: " + ((AbstractObservableReader) reader).getName());
             }

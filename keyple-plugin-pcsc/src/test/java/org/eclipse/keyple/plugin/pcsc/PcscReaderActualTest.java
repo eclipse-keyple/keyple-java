@@ -25,9 +25,9 @@ public class PcscReaderActualTest {
         /*
          * @Override public void notify(ReaderEvent event) { lastThread = Thread.currentThread();
          * System.out.println("Observer: " + event + " (from thread" +
-         * Thread.currentThread().getName() + ")"); if (event.getEventType() ==
-         * ReaderEvent.EventType.SE_INSERTED) { synchronized (this) { notify(); // It's the standard
-         * java notify, nothing to do with *our* notify } } }
+         * Thread.currentThread().getName() + ")"); if (event == ReaderEventSE_INSERTED) {
+         * synchronized (this) { notify(); // It's the standard java notify, nothing to do with
+         * *our* notify } } }
          */
 
         @Override
@@ -35,7 +35,7 @@ public class PcscReaderActualTest {
             lastThread = Thread.currentThread();
             System.out.println("Observer: " + event + " (from thread"
                     + Thread.currentThread().getName() + ")");
-            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
+            if (event == ReaderEvent.SE_INSERTED) {
                 synchronized (this) {
                     notify(); // It's the standard java notify, nothing to do with *our* notify
                 }

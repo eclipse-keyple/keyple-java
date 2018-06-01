@@ -10,49 +10,26 @@ package org.eclipse.keyple.seproxy;
 
 
 /**
- * The Class ReaderEvent. This class is used to notify an event of a specific
- * AbstractObservableReader to its registered Observer in case of IO Error, SE insertion or removal.
- *
- * @author Ixxi
  */
-public class ReaderEvent {
+public enum ReaderEvent {
 
-    /**
-     * The Enum EventType. defined with the elements: ‘IOError’, ‘SEInserted’ and ‘SERemoval’.
-     */
-    public enum EventType {
+    /** An io error occurred. */
+    IO_ERROR("IO Error"),
 
-        /** The io error. */
-        IO_ERROR,
-        /** The se inserted. */
-        SE_INSERTED,
-        /** The se removal. */
-        SE_REMOVAL
+    /** A SE has been inserted. */
+    SE_INSERTED("insertion"),
+
+    /** The SE has been inserted. */
+    SE_REMOVAL("removal");
+
+    /** The event name. */
+    private String name;
+
+    ReaderEvent(String name) {
+        this.name = name;
     }
 
-    /** the type of the notified event. */
-    private EventType event;
-
-    /**
-     * Instantiates a new reader event.
-     *
-     * @param event the event
-     */
-    public ReaderEvent(EventType event) {
-        this.event = event;
-    }
-
-    /**
-     * Gets the event.
-     *
-     * @return the type of the event.
-     */
-    public EventType getEventType() {
-        return event;
-    }
-
-    @Override
     public String toString() {
-        return getEventType().toString();
+        return name;
     }
 }

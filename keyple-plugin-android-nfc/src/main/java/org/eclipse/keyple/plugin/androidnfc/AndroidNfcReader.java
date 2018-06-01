@@ -251,7 +251,7 @@ public class AndroidNfcReader extends AbstractReader implements NfcAdapter.Reade
 
             Log.i(TAG, "Tag connected successfully : " + printTagId());
 
-            notifyObservers(new ReaderEvent(ReaderEvent.EventType.SE_INSERTED));
+            notifyObservers(ReaderEvent.SE_INSERTED);
 
         } catch (IOException e) {
             Log.e(TAG, "Error while connecting to Tag ");
@@ -270,7 +270,7 @@ public class AndroidNfcReader extends AbstractReader implements NfcAdapter.Reade
             if (tagTransceiver != null) {
 
                 tagTransceiver.close();
-                this.notifyObservers(new ReaderEvent(ReaderEvent.EventType.SE_REMOVAL));
+                this.notifyObservers(ReaderEvent.SE_REMOVAL);
 
                 Log.i(TAG, "Disconnected tag : " + printTagId());
             }
