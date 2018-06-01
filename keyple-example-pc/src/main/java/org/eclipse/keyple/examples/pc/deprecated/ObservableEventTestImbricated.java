@@ -40,7 +40,8 @@ public class ObservableEventTestImbricated {
                                             if (event.getEventType()
                                                     .equals(ReaderEvent.EventType.SE_INSERTED)) {
                                                 System.out.println("Card inserted on: "
-                                                        + ((AbstractObservableReader) observable).getName());
+                                                        + ((AbstractObservableReader) observable)
+                                                                .getName());
                                                 analyseCard((AbstractObservableReader) observable);
                                             }
                                         }

@@ -20,15 +20,15 @@ import org.eclipse.keyple.util.Observable;
 
 public abstract class AbstractObservableReader extends AbstractLoggedObservable<ReaderEvent>
         implements ProxyReader {
+    public interface ReaderObserver extends AbstractLoggedObservable.Observer<ReaderEvent> {
+        void update(Observable reader, ReaderEvent event);
+    }
+
     /**
      * PO selection map associating seProtocols and selection strings (e.g. ATR regex for Pcsc
      * plugins)
      */
     public Map<SeProtocol, String> protocolsMap;
-
-    public interface ReaderObserver extends AbstractLoggedObservable.Observer<ReaderEvent> {
-        void update(Observable reader, ReaderEvent event);
-    }
 
     @Override
     public void setProtocols(Map<SeProtocol, String> seProtocolSettings) {

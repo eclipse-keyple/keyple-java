@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.examples.pc;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.example.common.HoplinkSimpleRead;
@@ -17,7 +18,8 @@ import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
 
-public class KeypleGenericDemo_SeProtocolDetection implements AbstractObservableReader.Observer<ReaderEvent> {
+public class KeypleGenericDemo_SeProtocolDetection
+        implements AbstractObservableReader.Observer<ReaderEvent> {
     private ProxyReader poReader, csmReader;
 
     public KeypleGenericDemo_SeProtocolDetection() {
@@ -143,7 +145,8 @@ public class KeypleGenericDemo_SeProtocolDetection implements AbstractObservable
 
     private static final Object waitForEnd = new Object();
 
-    public static void main(String[] args) throws IOReaderException, InterruptedException {
+    public static void main(String[] args)
+            throws IOException, IOReaderException, InterruptedException {
         SeProxyService seProxyService = SeProxyService.getInstance();
         List<ReadersPlugin> pluginsSet = new ArrayList<ReadersPlugin>();
         pluginsSet.add(PcscPlugin.getInstance().setLogging(false));
@@ -161,7 +164,7 @@ public class KeypleGenericDemo_SeProtocolDetection implements AbstractObservable
                 new KeypleGenericDemo_SeProtocolDetection();
 
         observer.poReader = poReader;
-        ((ConfigurableReader) observer.poReader).setParameter("protocol", "T1");
+        ((AbstractObservableReader) observer.poReader).setParameter("protocol", "T1");
 
         // Configure the reader to handle various application cases
         // create and fill a protocol map
@@ -185,7 +188,7 @@ public class KeypleGenericDemo_SeProtocolDetection implements AbstractObservable
         protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE, "3B8180018080");
 
         // provide the reader with the map
-        ((ConfigurableReader) observer.poReader).setProtocols(protocolsMap);
+        ((AbstractObservableReader) observer.poReader).setProtocols(protocolsMap);
 
         // Set terminal as Observer of the first reader
         ((AbstractObservableReader) observer.poReader).addObserver(observer);

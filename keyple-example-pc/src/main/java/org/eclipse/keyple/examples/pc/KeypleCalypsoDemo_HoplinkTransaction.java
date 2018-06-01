@@ -9,6 +9,7 @@
 package org.eclipse.keyple.examples.pc;
 // PTE
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -23,7 +24,8 @@ import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
 
-public class KeypleCalypsoDemo_HoplinkTransaction implements AbstractObservableReader.Observer<ReaderEvent> {
+public class KeypleCalypsoDemo_HoplinkTransaction
+        implements AbstractObservableReader.Observer<ReaderEvent> {
     private ProxyReader poReader, csmReader;
 
     public KeypleCalypsoDemo_HoplinkTransaction() {
@@ -146,7 +148,8 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements AbstractObservableR
 
     private static final Object waitForEnd = new Object();
 
-    public static void main(String[] args) throws IOReaderException, InterruptedException {
+    public static void main(String[] args)
+            throws IOException, IOReaderException, InterruptedException {
         SeProxyService seProxyService = SeProxyService.getInstance();
         List<ReadersPlugin> pluginsSet = new ArrayList<ReadersPlugin>();
         pluginsSet.add(PcscPlugin.getInstance().setLogging(true));
@@ -163,8 +166,8 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements AbstractObservableR
         System.out.println("PO Reader  : " + poReader.getName());
         System.out.println("CSM Reader : " + csmReader.getName());
 
-        ((ConfigurableReader) poReader).setParameter("protocol", "T1");
-        ((ConfigurableReader) csmReader).setParameter("protocol", "T0");
+        ((AbstractObservableReader) poReader).setParameter("protocol", "T1");
+        ((AbstractObservableReader) csmReader).setParameter("protocol", "T0");
 
         // Setting up ourself as an observer
         KeypleCalypsoDemo_HoplinkTransaction observer = new KeypleCalypsoDemo_HoplinkTransaction();

@@ -44,8 +44,8 @@ public class PcscReaderActualTest {
     }
 
     /**
-     * This test registers/deregisters on an {@link AbstractObservableReader} twice. This allows to verify we
-     * create and dispose threads correctly.
+     * This test registers/deregisters on an {@link AbstractObservableReader} twice. This allows to
+     * verify we create and dispose threads correctly.
      * 
      * @throws IOReaderException
      * @throws InterruptedException

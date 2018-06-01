@@ -33,14 +33,15 @@ public class BasicCardAccess {
                 System.out
                         .println("Reader name: " + pr.getName() + ", present: " + pr.isSePresent());
                 if (pr instanceof AbstractObservableReader) {
-                    ((AbstractObservableReader) pr).addObserver(new Observable.Observer<ReaderEvent>() {
-                        @Override
-                        public void update(Observable observable, ReaderEvent event) {
-                            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
-                                parseInfo(pr);
-                            }
-                        }
-                    });
+                    ((AbstractObservableReader) pr)
+                            .addObserver(new Observable.Observer<ReaderEvent>() {
+                                @Override
+                                public void update(Observable observable, ReaderEvent event) {
+                                    if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
+                                        parseInfo(pr);
+                                    }
+                                }
+                            });
                     /*
                      * ((AbstractObservableReader) pr).addObserver(new Observer() {
                      * 

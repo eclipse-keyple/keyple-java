@@ -36,7 +36,8 @@ public class KeypleGenericDemo_ObservableReaderNotification {
                 System.out.println(pluginIndex + "\t" + plugin.getName() + "\t" + readerIndex++
                         + "\t" + reader.getName() + "\t"
                         + ((reader.isSePresent()) ? "card_present" : "card_absent") + "\t"
-                        + ((((AbstractObservableReader) reader).countObservers() > 0) ? "observed_reader"
+                        + ((((AbstractObservableReader) reader).countObservers() > 0)
+                                ? "observed_reader"
                                 : "not_observed_reader"));
             }
         }
@@ -73,10 +74,12 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         // TODO change Observable to AbstractObservableReader to avoid casts
         public void update(Observable reader, ReaderEvent event) {
             if (event.getEventType().equals(ReaderEvent.EventType.SE_INSERTED)) {
-                System.out.println("Card inserted on: " + ((AbstractObservableReader) reader).getName());
+                System.out.println(
+                        "Card inserted on: " + ((AbstractObservableReader) reader).getName());
                 analyseCard((AbstractObservableReader) reader);
             } else if (event.getEventType().equals(ReaderEvent.EventType.SE_REMOVAL)) {
-                System.out.println("Card removed on: " + ((AbstractObservableReader) reader).getName());
+                System.out.println(
+                        "Card removed on: " + ((AbstractObservableReader) reader).getName());
             }
             try {
                 listReaders();
@@ -94,7 +97,8 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         }
     }
 
-    public class SpecificPluginObserver implements AbstractObservablePlugin.Observer<AbstractPluginEvent> {
+    public class SpecificPluginObserver
+            implements AbstractObservablePlugin.Observer<AbstractPluginEvent> {
 
         SpecificReaderObserver readerObserver;
 

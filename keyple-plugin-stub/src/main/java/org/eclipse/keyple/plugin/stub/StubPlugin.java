@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.keyple.seproxy.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.ReadersPlugin;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
@@ -23,7 +22,8 @@ public final class StubPlugin implements ReadersPlugin {
 
     private static final StubPlugin uniqueInstance = new StubPlugin();
 
-    private final Map<String, AbstractObservableReader> readers = new HashMap<String, AbstractObservableReader>();
+    private final Map<String, AbstractObservableReader> readers =
+            new HashMap<String, AbstractObservableReader>();
 
     private static final ILogger logger = SLoggerFactory.getLogger(StubPlugin.class);
 

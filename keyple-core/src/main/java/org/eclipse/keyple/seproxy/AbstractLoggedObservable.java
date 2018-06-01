@@ -8,16 +8,19 @@
 
 package org.eclipse.keyple.seproxy;
 
+import java.io.IOException;
+import java.util.Map;
 import org.eclipse.keyple.util.Observable;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
 /**
- * Intermediate observable class to handle the logging of AbstractObservableReader and AbstractObservablePlugin
+ * Intermediate observable class to handle the logging of AbstractObservableReader and
+ * AbstractObservablePlugin
  * 
  * @param <T>
  */
-public class AbstractLoggedObservable<T> extends Observable<T> {
+public class AbstractLoggedObservable<T> extends Observable<T> implements ConfigurableItem {
     private static final ILogger logger = SLoggerFactory.getLogger(AbstractLoggedObservable.class);
     private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
 
@@ -66,9 +69,10 @@ public class AbstractLoggedObservable<T> extends Observable<T> {
 
 
     /**
-     * This method shall be called only from a SE Proxy plugin or reader implementing AbstractObservableReader
-     * or AbstractObservablePlugin. Push a ReaderEvent / AbstractPluginEvent of the selected AbstractObservableReader /
-     * AbstractObservablePlugin to its registered Observer.
+     * This method shall be called only from a SE Proxy plugin or reader implementing
+     * AbstractObservableReader or AbstractObservablePlugin. Push a ReaderEvent /
+     * AbstractPluginEvent of the selected AbstractObservableReader / AbstractObservablePlugin to
+     * its registered Observer.
      * 
      * @param event the event
      */
@@ -88,6 +92,21 @@ public class AbstractLoggedObservable<T> extends Observable<T> {
         setChanged();
 
         super.notifyObservers(event);
+
+    }
+
+    @Override
+    public Map<String, String> getParameters() {
+        return null;
+    }
+
+    @Override
+    public void setParameter(String key, String value) throws IOException {
+
+    }
+
+    @Override
+    public void setParameters(Map<String, String> parameters) throws IOException {
 
     }
 }

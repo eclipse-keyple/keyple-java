@@ -37,7 +37,8 @@ public final class PcscPlugin extends AbstractObservablePlugin {
 
     private static final TerminalFactory factory = TerminalFactory.getDefault();
 
-    private final Map<String, AbstractObservableReader> readers = new HashMap<String, AbstractObservableReader>();
+    private final Map<String, AbstractObservableReader> readers =
+            new HashMap<String, AbstractObservableReader>();
 
     private boolean logging = false;
 
@@ -78,7 +79,8 @@ public final class PcscPlugin extends AbstractObservablePlugin {
             // florent(2018-04-15): #64: Fixed the previous logic. It was not removing readers once
             // they disappeared.
             synchronized (readers) {
-                Map<String, AbstractObservableReader> previous = new HashMap<String, AbstractObservableReader>(readers);
+                Map<String, AbstractObservableReader> previous =
+                        new HashMap<String, AbstractObservableReader>(readers);
                 for (CardTerminal term : terminals.list()) {
                     if (previous.remove(term.getName()) == null) {
                         PcscReader reader = new PcscReader(term);
@@ -155,7 +157,8 @@ public final class PcscPlugin extends AbstractObservablePlugin {
         private boolean running = true;
         private boolean initialized = false;
 
-        private Map<String, AbstractObservableReader> previousReaders = new HashMap<String, AbstractObservableReader>();
+        private Map<String, AbstractObservableReader> previousReaders =
+                new HashMap<String, AbstractObservableReader>();
 
         /**
          * Marks the thread as one that should end when the last cardWaitTimeout occurs
