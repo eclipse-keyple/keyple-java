@@ -188,7 +188,7 @@ public class KeypleGenericDemo_SeProtocolDetection
         protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE, "3B8180018080");
 
         // provide the reader with the map
-        ((AbstractObservableReader) observer.poReader).setProtocols(protocolsMap);
+        ((AbstractObservableReader) observer.poReader).setSeProtocols(protocolsMap);
 
         // Set terminal as Observer of the first reader
         ((AbstractObservableReader) observer.poReader).addObserver(observer);

@@ -62,5 +62,5 @@ public interface ProxyReader {
      * @param seProtocolSettings
      * @throws IOReaderException
      */
-    void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException;
+    void setSeProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException;
 }

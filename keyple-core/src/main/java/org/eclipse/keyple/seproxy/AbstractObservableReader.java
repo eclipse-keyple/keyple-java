@@ -31,7 +31,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     public Map<SeProtocol, String> protocolsMap;
 
     @Override
-    public void setProtocols(Map<SeProtocol, String> seProtocolSettings) {
+    public void setSeProtocols(Map<SeProtocol, String> seProtocolSettings) {
         this.protocolsMap = seProtocolSettings;
     }
 }
