@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.example.common.HoplinkSimpleRead;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscProtocolSettings;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -164,28 +165,29 @@ public class KeypleGenericDemo_SeProtocolDetection
                 new KeypleGenericDemo_SeProtocolDetection();
 
         observer.poReader = poReader;
-        ((AbstractObservableReader) observer.poReader).setParameter("protocol", "T1");
+        ((ConfigurableReader) observer.poReader).setParameter("protocol", "T1");
 
         // Configure the reader to handle various application cases
         // create and fill a protocol map
         Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
 
         protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC,
-                "3B8F8001804F0CA000000306030001000000006A");
+                PcscProtocolSettings.REGEX_PROTOCOL_MIFARE_CLASSIC);
 
         protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_UL,
-                "3B8F8001804F0CA0000003060300030000000068");
+                PcscProtocolSettings.REGEX_PROTOCOL_MIFARE_UL);
 
         protocolsMap.put(ContactlessProtocols.PROTOCOL_MEMORY_ST25,
-                "3B8F8001804F0CA000000306070007D0020C00B6");
+                PcscProtocolSettings.REGEX_PROTOCOL_MEMORY_ST25);
 
         protocolsMap.put(ContactlessProtocols.PROTOCOL_ISO14443_4,
-                "3B8880010000000000718100F9|3B8C800150........00000000007181..");
+                PcscProtocolSettings.REGEX_PROTOCOL_ISO14443_4);
 
         protocolsMap.put(ContactlessProtocols.PROTOCOL_B_PRIME,
-                "3B8F8001805A0A0103200311........829000..");
+                PcscProtocolSettings.REGEX_PROTOCOL_B_PRIME);
 
-        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE, "3B8180018080");
+        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE,
+                PcscProtocolSettings.REGEX_PROTOCOL_DESFIRE);
 
         // provide the reader with the map
         ((AbstractObservableReader) observer.poReader).setSeProtocols(protocolsMap);

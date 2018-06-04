@@ -24,7 +24,7 @@ class IsoDepTransceiver extends TagTransceiver {
 
     @Override
     public String getTech() {
-        return "android.nfc.tech.IsoDep";
+        return AndroidNfcProtocolSettings.TAG_TECHNOLOGY_ISO14443_4;
     }
 
     IsoDepTransceiver(Tag tag) {

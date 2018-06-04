@@ -18,7 +18,7 @@ import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public class StubReader extends AbstractObservableReader {
+public class StubReader extends AbstractLocalReader implements ConfigurableReader {
 
 
     private static final ILogger logger = SLoggerFactory.getLogger(StubReader.class);

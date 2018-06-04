@@ -65,6 +65,7 @@ public final class PcscPlugin extends AbstractObservablePlugin {
      *
      * @param logging If logging is enabled
      * @return Same instance (fluent setter)
+     * @deprecated
      */
     public PcscPlugin setLogging(boolean logging) {
         this.logging = logging;
@@ -84,6 +85,8 @@ public final class PcscPlugin extends AbstractObservablePlugin {
                 for (CardTerminal term : terminals.list()) {
                     if (previous.remove(term.getName()) == null) {
                         PcscReader reader = new PcscReader(term);
+                        // TODO reader logging has to be managed with a protected access of the PCSC
+                        // plugin package
                         if (logging) {
                             reader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
                         }

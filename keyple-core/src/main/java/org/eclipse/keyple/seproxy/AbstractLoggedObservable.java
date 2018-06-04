@@ -8,8 +8,7 @@
 
 package org.eclipse.keyple.seproxy;
 
-import java.io.IOException;
-import java.util.Map;
+
 import org.eclipse.keyple.util.Observable;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
@@ -20,7 +19,7 @@ import com.github.structlog4j.SLoggerFactory;
  * 
  * @param <T>
  */
-public class AbstractLoggedObservable<T> extends Observable<T> implements ConfigurableItem {
+public class AbstractLoggedObservable<T> extends Observable<T> {
     private static final ILogger logger = SLoggerFactory.getLogger(AbstractLoggedObservable.class);
     private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
 
@@ -92,21 +91,6 @@ public class AbstractLoggedObservable<T> extends Observable<T> implements Config
         setChanged();
 
         super.notifyObservers(event);
-
-    }
-
-    @Override
-    public Map<String, String> getParameters() {
-        return null;
-    }
-
-    @Override
-    public void setParameter(String key, String value) throws IOException {
-
-    }
-
-    @Override
-    public void setParameters(Map<String, String> parameters) throws IOException {
 
     }
 }

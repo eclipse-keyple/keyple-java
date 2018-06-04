@@ -8,28 +8,9 @@
 
 package org.eclipse.keyple.seproxy;
 
-
 /**
+ * Manage the loop processing for SeRequest transmission in a set and for SeResponse reception in a
+ * set
  */
-public enum ReaderEvent {
-
-    /** An io error occurred. */
-    IO_ERROR("SE Reader IO Error"),
-
-    /** A SE has been inserted. */
-    SE_INSERTED("SE insertion"),
-
-    /** The SE has been removed. */
-    SE_REMOVAL("SE removal");
-
-    /** The event name. */
-    private String name;
-
-    ReaderEvent(String name) {
-        this.name = name;
-    }
-
-    public String toString() {
-        return name;
-    }
+public abstract class AbstractLocalReader extends AbstractObservableReader {
 }

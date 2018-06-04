@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
-import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponse;
@@ -26,8 +25,10 @@ import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.Session;
 import android.util.Log;
 
-
-public class AndroidOmapiReader implements ProxyReader {
+/**
+ * TODO although AndroidOmapiReader extends AbstractLocalReader, may refuse any addition of observer
+ */
+public class AndroidOmapiReader extends AbstractLocalReader implements ConfigurableReader {
 
 
     private static final String TAG = AndroidOmapiReader.class.getSimpleName();
