@@ -8,6 +8,9 @@
 
 package org.eclipse.keyple.seproxy;
 
+/**
+ * Allow {@link ProxyReader}s and {@link ReadersPlugin}s to be named.
+ */
 public interface NameableItem {
     /**
      *

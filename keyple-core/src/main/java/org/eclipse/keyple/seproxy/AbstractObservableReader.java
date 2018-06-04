@@ -14,8 +14,8 @@ import org.eclipse.keyple.util.Observable;
 
 /**
  * 
- * Abstract definition of an observable reader.
- * Factorizes setSetProtocols and will factorize the transmit method loggin/
+ * Abstract definition of an observable reader. Factorizes setSetProtocols and will factorize the
+ * transmit method logging
  * 
  */
 
