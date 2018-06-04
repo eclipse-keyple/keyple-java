@@ -16,6 +16,9 @@ import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReadersPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 
+/**
+ * @deprecated
+ */
 public class DeportedLogicConsumer {
     public static void main(String[] args) throws Exception {
         SeProxyService seProxyService = SeProxyService.getInstance();

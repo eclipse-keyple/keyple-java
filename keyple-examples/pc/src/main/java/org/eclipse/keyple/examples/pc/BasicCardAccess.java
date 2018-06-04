@@ -18,6 +18,9 @@ import org.eclipse.keyple.seproxy.ReadersPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.util.Observable;
 
+/**
+ * @deprecated
+ */
 public class BasicCardAccess {
     private static final Object sync = new Object();
 

@@ -94,7 +94,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation project(':keyple-calypso')
-    compile project(path: ':keyple-example-common')
+    compile project(path: ':keyple-examples-common')
     compile project(path: ':keyple-plugin-android-omapi')
     provided files('libs/org.simalliance.openmobileapi.jar')
 }
