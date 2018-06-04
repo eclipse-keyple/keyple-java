@@ -34,7 +34,7 @@ abstract class TagTransceiver implements TagTechnology {
 
     static TagTransceiver getTagTransceiver(Tag tag) throws IOReaderException {
 
-
+        // TODO factorize this code
         if (Arrays.asList(tag.getTechList()).contains("android.nfc.tech.MifareClassic")) {
             Log.d(TAG, "Tag embedded into MifareClassic Transceiver");
             return new MifareClassicTransceiver(tag);
@@ -45,7 +45,8 @@ abstract class TagTransceiver implements TagTechnology {
             return new MifareUltralightTransceiver(tag);
         }
 
-        if (Arrays.asList(tag.getTechList()).contains("android.nfc.tech.IsoDep")) {
+        if (Arrays.asList(tag.getTechList())
+                .contains(AndroidNfcProtocolSettings.TAG_TECHNOLOGY_ISO14443_4)) {
             Log.d(TAG, "Tag embedded into IsoDep Transceiver");
             return new IsoDepTransceiver(tag);
         }

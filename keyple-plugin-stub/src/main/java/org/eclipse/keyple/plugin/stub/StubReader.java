@@ -18,7 +18,7 @@ import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public class StubReader extends AbstractReader implements ConfigurableReader {
+public class StubReader extends AbstractLocalReader implements ConfigurableReader {
 
 
     private static final ILogger logger = SLoggerFactory.getLogger(StubReader.class);
@@ -136,13 +136,13 @@ public class StubReader extends AbstractReader implements ConfigurableReader {
     public void test_InsertSE() {
         isSePresent = true;
         logger.debug("Test - insert SE");
-        notifyObservers(new ReaderEvent(ReaderEvent.EventType.SE_INSERTED));
+        notifyObservers(ReaderEvent.SE_INSERTED);
     }
 
     public void test_RemoveSE() {
         isSePresent = false;
         logger.debug("Test - remove SE");
-        notifyObservers(new ReaderEvent(ReaderEvent.EventType.SE_REMOVAL));
+        notifyObservers(ReaderEvent.SE_REMOVAL);
     }
 
     public void test_SetWillTimeout(Boolean willTimeout) {

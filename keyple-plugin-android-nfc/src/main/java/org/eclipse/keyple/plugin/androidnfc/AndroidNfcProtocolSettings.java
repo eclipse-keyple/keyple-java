@@ -6,7 +6,13 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy;
+package org.eclipse.keyple.plugin.androidnfc;
 
-public interface ConfigurableReader extends ProxyReader, ConfigurableItem {
+public interface AndroidNfcProtocolSettings {
+
+    public static String TAG_TECHNOLOGY_ISO14443_4 = "android.nfc.tech.IsoDep";
+
+    public static String TAG_TECHNOLOGY_MIFARE_UL = "android.nfc.tech.MifareUltralight";
+
+    public static String TAG_TECHNOLOGY_MIFARE_CLASSIC = "android.nfc.tech.MifareClassic";
 }

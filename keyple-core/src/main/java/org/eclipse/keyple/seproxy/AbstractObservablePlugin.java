@@ -8,28 +8,12 @@
 
 package org.eclipse.keyple.seproxy;
 
-
 /**
+ * Observable plugin. These plugin can report when a reader is added or removed.
  */
-public enum ReaderEvent {
-
-    /** An io error occurred. */
-    IO_ERROR("SE Reader IO Error"),
-
-    /** A SE has been inserted. */
-    SE_INSERTED("SE insertion"),
-
-    /** The SE has been removed. */
-    SE_REMOVAL("SE removal");
-
-    /** The event name. */
-    private String name;
-
-    ReaderEvent(String name) {
-        this.name = name;
-    }
-
-    public String toString() {
-        return name;
+public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<AbstractPluginEvent>
+        implements ReadersPlugin {
+    public interface PluginObserver extends Observer {
+        void update(AbstractPluginEvent event);
     }
 }

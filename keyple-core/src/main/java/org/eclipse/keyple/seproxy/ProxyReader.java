@@ -26,7 +26,7 @@ import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
  * </ul>
  * Interface each {@link ReadersPlugin} should implement
  */
-public interface ProxyReader {
+public interface ProxyReader extends NameableItem {
 
     /**
      * Gets the name.
@@ -62,5 +62,5 @@ public interface ProxyReader {
      * @param seProtocolSettings
      * @throws IOReaderException
      */
-    void setProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException;
+    void setSeProtocols(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException;
 }

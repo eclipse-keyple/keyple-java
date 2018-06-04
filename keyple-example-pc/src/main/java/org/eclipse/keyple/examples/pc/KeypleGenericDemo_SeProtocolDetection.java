@@ -8,16 +8,19 @@
 
 package org.eclipse.keyple.examples.pc;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.example.common.HoplinkSimpleRead;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscProtocolSettings;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
 
-public class KeypleGenericDemo_SeProtocolDetection implements AbstractReader.Observer<ReaderEvent> {
+public class KeypleGenericDemo_SeProtocolDetection
+        implements AbstractObservableReader.Observer<ReaderEvent> {
     private ProxyReader poReader, csmReader;
 
     public KeypleGenericDemo_SeProtocolDetection() {
@@ -26,7 +29,7 @@ public class KeypleGenericDemo_SeProtocolDetection implements AbstractReader.Obs
 
     @Override
     public void update(Observable observable, ReaderEvent event) {
-        switch (event.getEventType()) {
+        switch (event) {
             case SE_INSERTED:
                 System.out.println("SE INSERTED");
                 System.out.println("\nStart processing of a PO");
@@ -60,7 +63,7 @@ public class KeypleGenericDemo_SeProtocolDetection implements AbstractReader.Obs
             poRequests.add(getSNIso144434Request);
 
             SeRequest getSNMifare1KRequest = new SeRequest(null, getSerialNumberApduList, false,
-                    ContactlessProtocols.PROTOCOL_MIFARE_1K);
+                    ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC);
             poRequests.add(getSNMifare1KRequest);
 
             SeRequest getSNMifareULRequest = new SeRequest(null, getSerialNumberApduList, false,
@@ -143,7 +146,8 @@ public class KeypleGenericDemo_SeProtocolDetection implements AbstractReader.Obs
 
     private static final Object waitForEnd = new Object();
 
-    public static void main(String[] args) throws IOReaderException, InterruptedException {
+    public static void main(String[] args)
+            throws IOException, IOReaderException, InterruptedException {
         SeProxyService seProxyService = SeProxyService.getInstance();
         List<ReadersPlugin> pluginsSet = new ArrayList<ReadersPlugin>();
         pluginsSet.add(PcscPlugin.getInstance().setLogging(false));
@@ -167,28 +171,29 @@ public class KeypleGenericDemo_SeProtocolDetection implements AbstractReader.Obs
         // create and fill a protocol map
         Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
 
-        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_1K,
-                "3B8F8001804F0CA000000306030001000000006A");
+        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC,
+                PcscProtocolSettings.REGEX_PROTOCOL_MIFARE_CLASSIC);
 
         protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_UL,
-                "3B8F8001804F0CA0000003060300030000000068");
+                PcscProtocolSettings.REGEX_PROTOCOL_MIFARE_UL);
 
         protocolsMap.put(ContactlessProtocols.PROTOCOL_MEMORY_ST25,
-                "3B8F8001804F0CA000000306070007D0020C00B6");
+                PcscProtocolSettings.REGEX_PROTOCOL_MEMORY_ST25);
 
         protocolsMap.put(ContactlessProtocols.PROTOCOL_ISO14443_4,
-                "3B8880010000000000718100F9|3B8C800150........00000000007181..");
+                PcscProtocolSettings.REGEX_PROTOCOL_ISO14443_4);
 
         protocolsMap.put(ContactlessProtocols.PROTOCOL_B_PRIME,
-                "3B8F8001805A0A0103200311........829000..");
+                PcscProtocolSettings.REGEX_PROTOCOL_B_PRIME);
 
-        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE, "3B8180018080");
+        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE,
+                PcscProtocolSettings.REGEX_PROTOCOL_DESFIRE);
 
         // provide the reader with the map
-        ((ConfigurableReader) observer.poReader).setProtocols(protocolsMap);
+        ((AbstractObservableReader) observer.poReader).setSeProtocols(protocolsMap);
 
         // Set terminal as Observer of the first reader
-        ((AbstractReader) observer.poReader).addObserver(observer);
+        ((AbstractObservableReader) observer.poReader).addObserver(observer);
         synchronized (waitForEnd) {
             waitForEnd.wait();
         }

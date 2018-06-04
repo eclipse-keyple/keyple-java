@@ -12,25 +12,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
+/**
+ * @deprecated TODO useful???
+ */
 public class ReaderEventTest {
 
     @Test
-    public void testReaderEventEnum() {
-        for (ReaderEvent.EventType el : ReaderEvent.EventType.values()) {
-            assertEquals(el, ReaderEvent.EventType.valueOf(el.toString()));
-        }
-    }
-
-    @Test
     public void testReaderEvent() {
-        ReaderEvent event = new ReaderEvent(ReaderEvent.EventType.IO_ERROR);
+        ReaderEvent event = ReaderEvent.IO_ERROR;
         assertNotNull(event);
     }
 
     @Test
     public void testGetEvent() {
-        ReaderEvent event = new ReaderEvent(ReaderEvent.EventType.IO_ERROR);
-        assertEquals(ReaderEvent.EventType.IO_ERROR, event.getEventType());
+        ReaderEvent event = ReaderEvent.IO_ERROR;
+        assertEquals(ReaderEvent.IO_ERROR, event);
     }
 
 }

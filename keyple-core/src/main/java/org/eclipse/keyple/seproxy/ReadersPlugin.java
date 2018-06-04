@@ -14,7 +14,7 @@ import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 /**
  * Card readers plugin interface. Every single card wanting to implement this interface should
  */
-public interface ReadersPlugin {
+public interface ReadersPlugin extends NameableItem {
 
     // TODO - possibility to force implementatiosn to be singleton?
 

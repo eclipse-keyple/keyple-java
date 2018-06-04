@@ -8,28 +8,13 @@
 
 package org.eclipse.keyple.seproxy;
 
-
 /**
+ * Allow {@link ProxyReader}s and {@link ReadersPlugin}s to be named.
  */
-public enum ReaderEvent {
-
-    /** An io error occurred. */
-    IO_ERROR("SE Reader IO Error"),
-
-    /** A SE has been inserted. */
-    SE_INSERTED("SE insertion"),
-
-    /** The SE has been removed. */
-    SE_REMOVAL("SE removal");
-
-    /** The event name. */
-    private String name;
-
-    ReaderEvent(String name) {
-        this.name = name;
-    }
-
-    public String toString() {
-        return name;
-    }
+public interface NameableItem {
+    /**
+     *
+     * @return the name of the item
+     */
+    String getName();
 }

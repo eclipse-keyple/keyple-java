@@ -10,23 +10,21 @@ package org.eclipse.keyple.seproxy;
 
 public enum ContactlessProtocols implements SeProtocol {
 
-    // Contactless standard
+    /** Contactless standard */
     PROTOCOL_ISO14443_4("ISO 14443-4"), // equivalent IsoDep in Android NFC
 
-    PROTOCOL_ISO14443_4A("ISO 14443-4 Type A"), // ISOA in Android NFC, included in
-                                                // PROTOCOL_ISO14443_4
+    /** Contactless proprietary solutions */
+    PROTOCOL_ISO14443_3A("ISO 14443-3 Type A"),
 
-    PROTOCOL_ISO14443_4B("ISO 14443-4 Type B"), // ISOB in Android NFC, included in
-                                                // PROTOCOL_ISO14443_4
+    PROTOCOL_ISO14443_3B("ISO 14443-3 Type B"),
 
-    // Contactless proprietary solutions
     PROTOCOL_B_PRIME("Old Calypso B prime"),
 
+    /** Mifare Ultralight and Ultralight C */
     PROTOCOL_MIFARE_UL("Mifare Ultra Light"),
 
-    PROTOCOL_MIFARE_1K("Mifare 1k"),
-
-    PROTOCOL_MIFARE_CLASSIC("Mifare classic"),
+    /** Mifare mini, 1K, 2K, 4K */
+    PROTOCOL_MIFARE_CLASSIC("Mifare Classic"),
 
     PROTOCOL_MIFARE_DESFIRE("Mifare DESFire"),
 

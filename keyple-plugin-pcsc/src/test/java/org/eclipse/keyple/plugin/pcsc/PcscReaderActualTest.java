@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.plugin.pcsc;
 
-import org.eclipse.keyple.seproxy.AbstractReader;
+import org.eclipse.keyple.seproxy.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.ReaderEvent;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import org.eclipse.keyple.util.Observable;
@@ -25,9 +25,9 @@ public class PcscReaderActualTest {
         /*
          * @Override public void notify(ReaderEvent event) { lastThread = Thread.currentThread();
          * System.out.println("Observer: " + event + " (from thread" +
-         * Thread.currentThread().getName() + ")"); if (event.getEventType() ==
-         * ReaderEvent.EventType.SE_INSERTED) { synchronized (this) { notify(); // It's the standard
-         * java notify, nothing to do with *our* notify } } }
+         * Thread.currentThread().getName() + ")"); if (event == ReaderEventSE_INSERTED) {
+         * synchronized (this) { notify(); // It's the standard java notify, nothing to do with
+         * *our* notify } } }
          */
 
         @Override
@@ -35,7 +35,7 @@ public class PcscReaderActualTest {
             lastThread = Thread.currentThread();
             System.out.println("Observer: " + event + " (from thread"
                     + Thread.currentThread().getName() + ")");
-            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
+            if (event == ReaderEvent.SE_INSERTED) {
                 synchronized (this) {
                     notify(); // It's the standard java notify, nothing to do with *our* notify
                 }
@@ -44,8 +44,8 @@ public class PcscReaderActualTest {
     }
 
     /**
-     * This test registers/deregisters on an {@link AbstractReader} twice. This allows to verify we
-     * create and dispose threads correctly.
+     * This test registers/deregisters on an {@link AbstractObservableReader} twice. This allows to
+     * verify we create and dispose threads correctly.
      * 
      * @throws IOReaderException
      * @throws InterruptedException
@@ -56,7 +56,7 @@ public class PcscReaderActualTest {
         PcscPlugin plugin = PcscPlugin.getInstance().setLogging(true);
 
         final MyReaderObserver observer = new MyReaderObserver();
-        for (AbstractReader reader : plugin.getReaders()) {
+        for (AbstractObservableReader reader : plugin.getReaders()) {
             reader.addObserver(observer);
         }
 
@@ -80,12 +80,12 @@ public class PcscReaderActualTest {
         System.out.println("First thread: " + firstThread);
 
         // Remove the observer from the observable (thread disappears)
-        for (AbstractReader reader : plugin.getReaders()) {
+        for (AbstractObservableReader reader : plugin.getReaders()) {
             reader.removeObserver(observer);
         }
 
         // Re-add it (thread is created)
-        for (AbstractReader reader : plugin.getReaders()) {
+        for (AbstractObservableReader reader : plugin.getReaders()) {
             reader.addObserver(observer);
         }
 
@@ -112,7 +112,7 @@ public class PcscReaderActualTest {
                 "Thread " + firstThread.getName() + " is now " + firstThread.getState() + " !");
 
         // Remove the observer from the observable (thread disappears)
-        for (AbstractReader reader : plugin.getReaders()) {
+        for (AbstractObservableReader reader : plugin.getReaders()) {
             reader.removeObserver(observer);
         }
         System.out.println("Waiting for last thread...");

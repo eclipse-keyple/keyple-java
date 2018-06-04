@@ -14,24 +14,25 @@ import org.eclipse.keyple.util.Observable;
 
 /**
  * 
- * Abstract definition of an observable reader.
+ * Abstract definition of an observable reader. Factorizes setSetProtocols and will factorize the
+ * transmit method logging
  * 
  */
 
-public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEvent>
+public abstract class AbstractObservableReader extends AbstractLoggedObservable<ReaderEvent>
         implements ProxyReader {
+    public interface ReaderObserver extends AbstractLoggedObservable.Observer<ReaderEvent> {
+        void update(Observable reader, ReaderEvent event);
+    }
+
     /**
      * PO selection map associating seProtocols and selection strings (e.g. ATR regex for Pcsc
      * plugins)
      */
     public Map<SeProtocol, String> protocolsMap;
 
-    public interface ReaderObserver extends AbstractLoggedObservable.Observer<ReaderEvent> {
-        void update(Observable reader, ReaderEvent event);
-    }
-
     @Override
-    public void setProtocols(Map<SeProtocol, String> seProtocolSettings) {
+    public final void setSeProtocols(Map<SeProtocol, String> seProtocolSettings) {
         this.protocolsMap = seProtocolSettings;
     }
 }

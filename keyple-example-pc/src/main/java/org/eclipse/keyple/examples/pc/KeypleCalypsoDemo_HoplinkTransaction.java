@@ -9,8 +9,11 @@
 package org.eclipse.keyple.examples.pc;
 // PTE
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.commands.SendableInSession;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
@@ -18,12 +21,14 @@ import org.eclipse.keyple.calypso.commands.po.builder.AbstractOpenSessionCmdBuil
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscProtocolSettings;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
 
-public class KeypleCalypsoDemo_HoplinkTransaction implements AbstractReader.Observer<ReaderEvent> {
+public class KeypleCalypsoDemo_HoplinkTransaction
+        implements AbstractObservableReader.Observer<ReaderEvent> {
     private ProxyReader poReader, csmReader;
 
     public KeypleCalypsoDemo_HoplinkTransaction() {
@@ -32,7 +37,7 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements AbstractReader.Obse
 
     @Override
     public void update(Observable observable, ReaderEvent event) {
-        switch (event.getEventType()) {
+        switch (event) {
             case SE_INSERTED:
                 System.out.println("SE INSERTED");
                 System.out.println("\nStart processing of a Calypso PO");
@@ -146,7 +151,8 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements AbstractReader.Obse
 
     private static final Object waitForEnd = new Object();
 
-    public static void main(String[] args) throws IOReaderException, InterruptedException {
+    public static void main(String[] args)
+            throws IOException, IOReaderException, InterruptedException {
         SeProxyService seProxyService = SeProxyService.getInstance();
         List<ReadersPlugin> pluginsSet = new ArrayList<ReadersPlugin>();
         pluginsSet.add(PcscPlugin.getInstance().setLogging(true));
@@ -166,13 +172,21 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements AbstractReader.Obse
         ((ConfigurableReader) poReader).setParameter("protocol", "T1");
         ((ConfigurableReader) csmReader).setParameter("protocol", "T0");
 
+        // create and fill a protocol map
+        Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
+        protocolsMap.put(ContactlessProtocols.PROTOCOL_ISO14443_4,
+                PcscProtocolSettings.REGEX_PROTOCOL_ISO14443_4);
+
+        // provide the reader with the map
+        ((ConfigurableReader) poReader).setSeProtocols(protocolsMap);
+
         // Setting up ourself as an observer
         KeypleCalypsoDemo_HoplinkTransaction observer = new KeypleCalypsoDemo_HoplinkTransaction();
         observer.poReader = poReader;
         observer.csmReader = csmReader;
 
         // Set terminal as Observer of the first reader
-        ((AbstractReader) poReader).addObserver(observer);
+        ((AbstractObservableReader) poReader).addObserver(observer);
         synchronized (waitForEnd) {
             waitForEnd.wait();
         }

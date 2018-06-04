@@ -36,7 +36,8 @@ public class KeypleGenericDemo_ObservableReaderNotification {
                 System.out.println(pluginIndex + "\t" + plugin.getName() + "\t" + readerIndex++
                         + "\t" + reader.getName() + "\t"
                         + ((reader.isSePresent()) ? "card_present" : "card_absent") + "\t"
-                        + ((((AbstractReader) reader).countObservers() > 0) ? "observed_reader"
+                        + ((((AbstractObservableReader) reader).countObservers() > 0)
+                                ? "observed_reader"
                                 : "not_observed_reader"));
             }
         }
@@ -46,17 +47,17 @@ public class KeypleGenericDemo_ObservableReaderNotification {
 
         for (ReadersPlugin plugin : SeProxyService.getInstance().getPlugins()) {
 
-            if (plugin instanceof AbstractPlugin) {
+            if (plugin instanceof AbstractObservablePlugin) {
                 System.out.println("Add observer on the plugin :  " + plugin.getName());
-                ((AbstractPlugin) plugin).addObserver(this.pluginObserver);
+                ((AbstractObservablePlugin) plugin).addObserver(this.pluginObserver);
             } else {
                 System.out.println("Plugin " + plugin.getName() + " isn't observable");
             }
 
             for (ProxyReader reader : plugin.getReaders()) {
-                if (reader instanceof AbstractReader) {
+                if (reader instanceof AbstractObservableReader) {
                     System.out.println("Add observer on the reader :  " + reader.getName());
-                    ((AbstractReader) reader).addObserver(this.readerObserver);
+                    ((AbstractObservableReader) reader).addObserver(this.readerObserver);
                 } else {
                     System.out.println("Reader " + reader.getName() + " isn't observable");
                 }
@@ -64,19 +65,21 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         }
     }
 
-    public class SpecificReaderObserver implements AbstractReader.ReaderObserver {
+    public class SpecificReaderObserver implements AbstractObservableReader.ReaderObserver {
 
         SpecificReaderObserver() {
             super();
         }
 
-        // TODO change Observable to AbstractReader to avoid casts
+        // TODO change Observable to AbstractObservableReader to avoid casts
         public void update(Observable reader, ReaderEvent event) {
-            if (event.getEventType().equals(ReaderEvent.EventType.SE_INSERTED)) {
-                System.out.println("Card inserted on: " + ((AbstractReader) reader).getName());
-                analyseCard((AbstractReader) reader);
-            } else if (event.getEventType().equals(ReaderEvent.EventType.SE_REMOVAL)) {
-                System.out.println("Card removed on: " + ((AbstractReader) reader).getName());
+            if (event.equals(ReaderEvent.SE_INSERTED)) {
+                System.out.println(
+                        "Card inserted on: " + ((AbstractObservableReader) reader).getName());
+                analyseCard((AbstractObservableReader) reader);
+            } else if (event.equals(ReaderEvent.SE_REMOVAL)) {
+                System.out.println(
+                        "Card removed on: " + ((AbstractObservableReader) reader).getName());
             }
             try {
                 listReaders();
@@ -85,7 +88,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
             }
         }
 
-        private void analyseCard(AbstractReader reader) {
+        private void analyseCard(AbstractObservableReader reader) {
             try {
                 System.out.println("Card present = " + reader.isSePresent());
             } catch (IOReaderException ex) {
@@ -94,7 +97,8 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         }
     }
 
-    public class SpecificPluginObserver implements AbstractPlugin.Observer<AbstractPluginEvent> {
+    public class SpecificPluginObserver
+            implements AbstractObservablePlugin.Observer<AbstractPluginEvent> {
 
         SpecificReaderObserver readerObserver;
 
@@ -110,10 +114,10 @@ public class KeypleGenericDemo_ObservableReaderNotification {
                 if (presence.isAdded()) {
                     System.out.println("New reader: " + reader.getName());
 
-                    if (reader instanceof AbstractReader) {
+                    if (reader instanceof AbstractObservableReader) {
 
                         if (readerObserver != null) {
-                            ((AbstractReader) reader).addObserver(readerObserver);
+                            ((AbstractObservableReader) reader).addObserver(readerObserver);
                             System.out.println(
                                     "Add observer on the plugged reader :  " + reader.getName());
                         } else {
@@ -124,10 +128,10 @@ public class KeypleGenericDemo_ObservableReaderNotification {
                 } else {
                     System.out.println("Reader removed: " + reader.getName());
 
-                    if (reader instanceof AbstractReader) {
+                    if (reader instanceof AbstractObservableReader) {
 
                         if (readerObserver != null) {
-                            ((AbstractReader) reader).removeObserver(readerObserver);
+                            ((AbstractObservableReader) reader).removeObserver(readerObserver);
                             System.out.println("Remove observer on the unplugged reader :  "
                                     + reader.getName());
                         } else {
@@ -139,7 +143,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
 
                 try {
                     listReaders();
-                    if (((AbstractPlugin) observable).getReaders().isEmpty()) {
+                    if (((AbstractObservablePlugin) observable).getReaders().isEmpty()) {
                         System.out.println("EXIT - no more reader");
                         synchronized (waitBeforeEnd) {
                             waitBeforeEnd.notify();
