@@ -1,6 +1,6 @@
 #!/bin/sh
 
-function save_directories {
+save_directories () {
     for dir in $1
     do
         echo "* Dir $dir:"
