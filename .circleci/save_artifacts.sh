@@ -1,6 +1,6 @@
 #!/bin/sh
 
-save_directories () {
+save_directory () {
     for dir in $1
     do
         echo "* Dir $dir:"
@@ -45,11 +45,12 @@ find . -name "keyple-*.jar" -not -name "*-jmh.jar" \
   -exec cp {} ~/artifacts/jars \; \
   -exec cp {} ~/pages/jars \;
 
-save_directories keyple-*
-save_directories keyple-examples/common
-save_directories keyple-examples/pc
-save_directories keyple-plugins/pcsc
-save_directories keyple-plugins/stub
+save_directory keyple-core
+save_directory keyple-calypso
+save_directory keyple-examples/common
+save_directory keyple-examples/pc
+save_directory keyple-plugins/pcsc
+save_directory keyple-plugins/stub
 
 cp .build/web/* ~/pages/
 
