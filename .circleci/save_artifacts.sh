@@ -1,18 +1,5 @@
 #!/bin/sh
 
-mkdir -p ~/artifacts/jars ~/pages/jars
-find . -name "keyple-*.jar" -not -name "*-jmh.jar" \
-  -exec cp {} ~/artifacts/jars \; \
-  -exec cp {} ~/pages/jars \;
-
-save_directories keyple-*
-save_directories keyple-examples/common
-save_directories keyple-examples/pc
-save_directories keyple-plugins/pcsc
-save_directories keyple-plugins/stub
-
-cp .build/web/* ~/pages/
-
 function save_directories {
     for dir in $1
     do
@@ -52,5 +39,20 @@ function save_directories {
         fi
     done
 }
+
+mkdir -p ~/artifacts/jars ~/pages/jars
+find . -name "keyple-*.jar" -not -name "*-jmh.jar" \
+  -exec cp {} ~/artifacts/jars \; \
+  -exec cp {} ~/pages/jars \;
+
+save_directories keyple-*
+save_directories keyple-examples/common
+save_directories keyple-examples/pc
+save_directories keyple-plugins/pcsc
+save_directories keyple-plugins/stub
+
+cp .build/web/* ~/pages/
+
+
 
 
