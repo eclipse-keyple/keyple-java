@@ -13,6 +13,12 @@ include 'keyple-core'
 include 'keyple-calypso'
 include 'keyple-plugin-pcsc'
 include 'keyple-plugin-stub'
-include 'keyple-example-common'
-include 'keyple-example-pc'
+include 'keyple-examples-common'
+include 'keyple-examples-pc'
 include 'keyple-plugin-stub'
+
+project(':keyple-plugin-pcsc').projectDir = file('./keyple-plugins/pcsc')
+project(':keyple-plugin-stub').projectDir = file('./keyple-plugins/stub')
+
+project(':keyple-examples-pc').projectDir = file('./keyple-examples/pc')
+project(':keyple-examples-common').projectDir = file('./keyple-examples/common')
