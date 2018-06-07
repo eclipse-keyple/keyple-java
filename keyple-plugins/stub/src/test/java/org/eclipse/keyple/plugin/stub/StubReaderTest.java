@@ -67,7 +67,7 @@ public class StubReaderTest {
     }
 
     // Timeout
-    //TODO redesign @Test
+    // TODO redesign @Test
     public void testTimeout() {
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         SeRequestSet seRequest = new SeRequestSet(new SeRequest(null, apduRequests, false));
@@ -83,7 +83,7 @@ public class StubReaderTest {
     }
 
     // SE is not present
-    //TODO redesign @Test
+    // TODO redesign @Test
     public void testTransmitWithoutSE() {
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         SeRequestSet seRequest = new SeRequestSet(new SeRequest(null, apduRequests, false));
