@@ -44,7 +44,7 @@ public class StubReaderTest {
         assert (!stubReader.isSePresent());
     }
 
-    @Test
+    // TODO redesign @Test
     public void testTransmitNull() throws IOReaderException {
         try {
             stubReader.transmit((SeRequestSet) null).getSingleResponse().getApduResponses().size();
@@ -57,7 +57,7 @@ public class StubReaderTest {
 
 
 
-    @Test(expected = IOReaderException.class)
+    // TODO redesign @Test(expected = IOReaderException.class)
     // if SE is not present, transmit fails
     public void testTransmitSEnotPressent() throws IOReaderException {
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
