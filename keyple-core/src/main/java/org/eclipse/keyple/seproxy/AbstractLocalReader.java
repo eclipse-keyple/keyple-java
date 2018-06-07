@@ -36,14 +36,14 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /**
      * Checks the presence of a physical channel. Creates one if needed, generates an exception in
      * case of failure.
-     * 
+     *
      * @throws IOReaderException
      */
     public abstract void checkOrOpenPhysicalChannel() throws IOReaderException;
 
     /**
      * Closes the current physical channel.
-     * 
+     *
      * @throws IOReaderException
      */
     public abstract void closePhysicalChannel() throws IOReaderException;
@@ -52,7 +52,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * Transmits a single APDU and receives its response. The implementation of this abstract method
      * must handle the case where the SE response is 61xy and execute the appropriate get response
      * command
-     * 
+     *
      * @param apduIn byte buffer containing the ingoing data
      * @return apduResponse byte buffer containing the outgoing data.
      * @throws ChannelStateReaderException
@@ -62,14 +62,14 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /**
      * Return a pseudo FCI when no application selection is possible (e.g. ATR from CSM) The FCI
      * data buffer ends with SW1Sw2=9000
-     * 
+     *
      * @return FCI data
      */
     public abstract ByteBuffer getAlternateFci();
 
     /**
      * Test if the current protocol matches the flag
-     * 
+     *
      * @param protocolFlag
      * @return true if the current protocol matches the provided protocol flag
      * @throws InvalidMessageException
@@ -77,8 +77,29 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     public abstract boolean protocolFlagMatches(SeProtocol protocolFlag)
             throws InvalidMessageException;
 
+    /**
+     * Transmits a SeRequestSet and receives the SeResponseSet with time measurement.
+     *
+     * @param requestSet
+     * @return responseSet
+     * @throws IOReaderException
+     */
     public final SeResponseSet transmit(SeRequestSet requestSet) throws IOReaderException {
-        return logging ? transmitWithTiming(requestSet) : transmitActual(requestSet);
+        long before = System.nanoTime();
+        try {
+            SeResponseSet responseSet = transmitActual(requestSet);
+            // Switching to the 10th of milliseconds and dividing by 10 to get the ms
+            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            logger.info("LocalReader: Data exchange", ACTION_STR, "local_reader.transmit",
+                    "requestSet", requestSet, "responseSet", responseSet, "elapsedMs", elapsedMs);
+            return responseSet;
+        } catch (IOReaderException ex) {
+            // Switching to the 10th of milliseconds and dividing by 10 to get the ms
+            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            logger.info("LocalReader: Data exchange", ACTION_STR, "local_reader.transmit_failure",
+                    "requestSet", requestSet, "elapsedMs", elapsedMs);
+            throw ex;
+        }
     }
 
     /**
@@ -162,9 +183,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * 9000 with no data although the command has outgoing data. Note that this method relies on the
      * right get response management by transmitApdu
      *
+     * @return response the response to the get response command
      * @throws CardException
      * @throws ChannelStateReaderException
-     * @return response the response to the get response command
      */
     private ResponseAPDU case4HackGetResponse() throws CardException, ChannelStateReaderException {
         ByteBuffer command = ByteBuffer.allocate(5);
@@ -184,30 +205,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     }
 
 
-    /**
-     * Transmits a SeRequestSet and receives the SeResponseSet with time measurement.
-     * 
-     * @param requestSet
-     * @return
-     * @throws IOReaderException
-     */
-    private SeResponseSet transmitWithTiming(SeRequestSet requestSet) throws IOReaderException {
-        long before = System.nanoTime();
-        try {
-            SeResponseSet responseSet = transmitActual(requestSet);
-            // Switching to the 10th of milliseconds and dividing by 10 to get the ms
-            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-            logger.info("LocalReader: Data exchange", ACTION_STR, "local_reader.transmit",
-                    "requestSet", requestSet, "responseSet", responseSet, "elapsedMs", elapsedMs);
-            return responseSet;
-        } catch (IOReaderException ex) {
-            // Switching to the 10th of milliseconds and dividing by 10 to get the ms
-            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-            logger.info("LocalReader: Data exchange", ACTION_STR, "local_reader.transmit_failure",
-                    "requestSet", requestSet, "elapsedMs", elapsedMs);
-            throw ex;
-        }
-    }
 
     /**
      * Do the transmission of all needed requestSet requests contained in the provided requestSet
@@ -247,30 +244,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         List<SeResponse> responses = new ArrayList<SeResponse>();
         for (SeRequest request : requestSet.getRequests()) {
             if (requestMatchesProtocol[requestIndex] == true) {
-                boolean executeRequest = true;
-                List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
-                if (request.getAidToSelect() != null && aidCurrentlySelected == null) {
-                    // Opening of a logical channel with a SE application
-                    fciDataSelected = connect(request.getAidToSelect());
-                    if (fciDataSelected.getStatusCode() != 0x9000) {
-                        // TODO: Remark, for a Calypso PO, the status 6283h (DF invalidated) is
-                        // considered as successful for the Select Application command.
-                        logger.info("Application selection failed!", ACTION_STR,
-                                "local_reader.transmit_actual");
-                        executeRequest = false;
-                    }
-                } else {
-                    // In this case, the SE application is implicitly selected (and only one logical
-                    // channel is managed by the SE).
-                    fciDataSelected = new ApduResponse(getAlternateFci(), true);
-                }
-
-                if (executeRequest) {
-                    for (ApduRequest apduRequest : request.getApduRequests()) {
-                        apduResponseList.add(transmit(apduRequest));
-                    }
-                }
-                responses.add(new SeResponse(previouslyOpen, fciDataSelected, apduResponseList));
+                responses.add(executeRequest(request, previouslyOpen));
             } else {
                 // in case the protocolFlag of a SeRequest doesn't match the reader status, a
                 // null SeResponse is added to the SeResponseSet.
@@ -303,5 +277,43 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             }
         }
         return new SeResponseSet(responses);
+    }
+
+    /**
+     * Executes a request made of one or more Apdus and receives their answers. The selection of the
+     * application is handled. The methods allows decrease the cyclomatic complexity of
+     * TransmitActual
+     * 
+     * @param request
+     * @param previouslyOpen
+     * @return the SeResponse to the requestS
+     * @throws ChannelStateReaderException
+     */
+    private SeResponse executeRequest(SeRequest request, boolean previouslyOpen)
+            throws ChannelStateReaderException {
+        boolean executeRequest = true;
+        List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
+        if (request.getAidToSelect() != null && aidCurrentlySelected == null) {
+            // Opening of a logical channel with a SE application
+            fciDataSelected = connect(request.getAidToSelect());
+            if (fciDataSelected.getStatusCode() != 0x9000) {
+                // TODO: Remark, for a Calypso PO, the status 6283h (DF invalidated) is
+                // considered as successful for the Select Application command.
+                logger.info("Application selection failed!", ACTION_STR,
+                        "local_reader.transmit_actual");
+                executeRequest = false;
+            }
+        } else {
+            // In this case, the SE application is implicitly selected (and only one logical
+            // channel is managed by the SE).
+            fciDataSelected = new ApduResponse(getAlternateFci(), true);
+        }
+
+        if (executeRequest) {
+            for (ApduRequest apduRequest : request.getApduRequests()) {
+                apduResponseList.add(transmit(apduRequest));
+            }
+        }
+        return new SeResponse(previouslyOpen, fciDataSelected, apduResponseList);
     }
 }

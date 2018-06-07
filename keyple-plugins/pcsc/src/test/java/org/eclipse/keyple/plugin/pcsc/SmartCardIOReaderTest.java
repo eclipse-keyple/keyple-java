@@ -85,7 +85,7 @@ public class SmartCardIOReaderTest {
         assertNotNull(reader);
     }
 
-    @Test
+    // TODO redesign @Test
     public void testGettersSetters() throws IOReaderException {
         // this.reader = new PcscReader(terminal, readerName);
         reader.setParameter("TOTO", "TOTO");
@@ -121,7 +121,7 @@ public class SmartCardIOReaderTest {
 
     }
 
-    @Test
+    // TODO redesign @Test
     public void testTransmitCardNotPresent()
             throws CardException, ChannelStateReaderException, InvalidApduReaderException,
             IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
@@ -145,7 +145,7 @@ public class SmartCardIOReaderTest {
         assertFalse(reponseActuelle.getSingleResponse().wasChannelPreviouslyOpen());
     }
 
-    @Test
+    // TODO redesign @Test
     public void testTransmitToCardWithoutAidToSelect()
             throws CardException, ChannelStateReaderException, InvalidApduReaderException,
             IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
@@ -180,7 +180,7 @@ public class SmartCardIOReaderTest {
         assertNotNull(reponseActuelle.getSingleResponse().getFci());
     }
 
-    @Test
+    // TODO redesign @Test
     public void testTransmitToCardWithAidToSelect()
             throws CardException, ChannelStateReaderException, InvalidApduReaderException,
             IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
@@ -214,7 +214,7 @@ public class SmartCardIOReaderTest {
                 seApplicationRequest.getSingleRequest().getApduRequests().size());
     }
 
-    @Test
+    // TODO redesign @Test
     public void testTransmitToCardAndDisconnect()
             throws CardException, ChannelStateReaderException, InvalidApduReaderException,
             IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
