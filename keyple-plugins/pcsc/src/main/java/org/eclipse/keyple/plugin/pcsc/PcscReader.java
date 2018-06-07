@@ -9,9 +9,7 @@
 package org.eclipse.keyple.plugin.pcsc;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -55,8 +53,7 @@ public class PcscReader extends AbstractLocalReader implements ConfigurableReade
     private Card card;
     private CardChannel channel;
 
-    private ByteBuffer aidCurrentlySelected;
-    private ApduResponse fciDataSelected;
+
 
     private EventThread thread;
     private static final AtomicInteger threadCount = new AtomicInteger();
@@ -104,247 +101,109 @@ public class PcscReader extends AbstractLocalReader implements ConfigurableReade
         return terminalName;
     }
 
-    @Override
-    public SeResponseSet transmit(SeRequestSet requestSet) throws IOReaderException {
-        return logging ? transmitWithTiming(requestSet) : transmitActual(requestSet);
-    }
-
-    private SeResponseSet transmitWithTiming(SeRequestSet requestSet) throws IOReaderException {
-        long before = System.nanoTime();
-        try {
-            SeResponseSet responseSet = transmitActual(requestSet);
-            // Switching to the 10th of milliseconds and dividing by 10 to get the ms
-            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-            logger.info("PCSCReader: Data exchange", "action", "pcsc_reader.transmit", "requestSet",
-                    requestSet, "responseSet", responseSet, "elapsedMs", elapsedMs);
-            return responseSet;
-        } catch (IOReaderException ex) {
-            // Switching to the 10th of milliseconds and dividing by 10 to get the ms
-            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-            logger.info("PCSCReader: Data exchange", "action", "pcsc_reader.transmit_failure",
-                    "requestSet", requestSet, "elapsedMs", elapsedMs);
-            throw ex;
-        }
-    }
-
     /**
-     * Do the transmission of all needed requestSet elements contained in the provided requestSet
-     * according to the protocol flag selection logic. The responseSet elements are returned in the
-     * responseSet object. The requestSet elements are ordered at application level and the
-     * responses match this order. When a requestSet is not matching the current PO, the responseSet
-     * elements pushed in the responseSet object is set to null.
-     *
-     * @param requestSet
-     * @return responseSet
+     * Open (if needed) a physical channel (try to connect a card to the terminal)
+     * 
      * @throws IOReaderException
      */
-    private SeResponseSet transmitActual(SeRequestSet requestSet) throws IOReaderException {
-        // first step: init of the physical SE channel: if not yet established, opening of the
-        // physical channel
+    public void checkOrOpenPhysicalChannel() throws IOReaderException {
+        // init of the physical SE channel: if not yet established, opening of a new physical
+        // channel
         try {
             if (card == null) {
                 this.card = this.terminal.connect(parameterCardProtocol);
                 if (cardExclusiveMode) {
                     card.beginExclusive();
                     logger.info("Opening of a physical SE channel in exclusive mode.", "action",
-                            "pcsc_reader.transmit_actual");
+                            "pcsc_reader.checkOrOpenPhysicalChannel");
                 } else {
                     logger.info("Opening of a physical SE channel in shared mode.", "action",
-                            "pcsc_reader.transmit_actual");
+                            "pcsc_reader.checkOrOpenPhysicalChannel");
                 }
             }
             this.channel = card.getBasicChannel();
         } catch (CardException e) {
             throw new ChannelStateReaderException(e);
         }
+    }
 
-        boolean previouslyOpen = false;
-        boolean elementMatchProtocol[] = new boolean[requestSet.getRequests().size()];
-        int elementIndex = 0, lastElementIndex;
 
-        // Determine which requestElements are matching the current ATR
-        for (SeRequest reqElement : requestSet.getRequests()) {
-            // Get protocolFlag to check if ATR filtering is required
-            SeProtocol protocolFlag = reqElement.getProtocolFlag();
-            if (protocolFlag != null) {
-                // the requestSet will be executed only if the protocol match the requestElement
-                String selectionMask = protocolsMap.get(protocolFlag);
-                if (selectionMask == null) {
-                    throw new InvalidMessageException("Target selector mask not found!", null);
-                }
-                Pattern p = Pattern.compile(selectionMask);
-                String atr = ByteBufferUtils.toHex(ByteBuffer.wrap(card.getATR().getBytes()));
-                if (!p.matcher(atr).matches()) {
-                    logger.info("Protocol selection: unmatching SE: " + protocolFlag, "action",
-                            "pcsc_reader.transmit_actual");
-                    elementMatchProtocol[elementIndex] = false;
-                } else {
-                    logger.info("Protocol selection: matching SE: " + protocolFlag, "action",
-                            "pcsc_reader.transmit_actual");
-                    elementMatchProtocol[elementIndex] = true;
-                }
-            } else {
-                // when no protocol is defined the requestSet has to be executed
-                elementMatchProtocol[elementIndex] = true;
+    /**
+     * Disconnects the card from the terminal
+     *
+     * @throws IOReaderException
+     * @throws CardException
+     */
+    public void closePhysicalChannel() throws IOReaderException {
+        logger.info("Closing of the physical SE channel.", "action",
+                "pcsc_reader.closePhysicalChannel");
+        try {
+            if (card != null) {
+                channel = null;
+                card.disconnect(cardReset);
+                card = null;
             }
-            elementIndex++;
+        } catch (CardException e) {
+            throw new IOReaderException(e);
         }
-
-        // we have now a boolean array saying whether the corresponding requestElement and the
-        // current SE match or not
-
-        lastElementIndex = elementIndex;
-        elementIndex = 0;
-
-        // The current requestSet is possibly made of several APDU command lists
-        // If the elementMatchProtocol is true we process the requestSet
-        // If the elementMatchProtocol is false we skip to the next requestSet
-        // If keepChannelOpen is false, we close the physical channel for the last requestElement.
-        List<SeResponse> respElements = new ArrayList<SeResponse>();
-        for (SeRequest reqElement : requestSet.getRequests()) {
-            if (elementMatchProtocol[elementIndex] == true) {
-                boolean executeRequest = true;
-                List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
-                if (reqElement.getAidToSelect() != null && aidCurrentlySelected == null) {
-                    // Opening of a logical channel with a SE application
-                    fciDataSelected = connect(reqElement.getAidToSelect());
-                    if (fciDataSelected.getStatusCode() != 0x9000) {
-                        // TODO: Remark, for a Calypso PO, the status 6283h (DF invalidated) is
-                        // considered as successful for the Select Application command.
-                        logger.info("Application selection failed!", "action",
-                                "pcsc_reader.transmit_actual");
-                        executeRequest = false;
-                    }
-                } else {
-                    // In this case, the SE application is implicitly selected (and only one logical
-                    // channel is managed by the SE).
-                    fciDataSelected = new ApduResponse(
-                            ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
-                                    ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00})),
-                            true);
-                }
-
-                if (executeRequest) {
-                    for (ApduRequest apduRequest : reqElement.getApduRequests()) {
-                        apduResponseList.add(transmit(apduRequest));
-                    }
-                }
-                respElements.add(new SeResponse(previouslyOpen, fciDataSelected, apduResponseList));
-            } else {
-                // in case the protocolFlag of a SeRequest doesn't match the reader status, a
-                // null SeResponse is added to the SeResponseSet.
-                respElements.add(null);
-            }
-            elementIndex++;
-            if (!reqElement.isKeepChannelOpen()) {
-                if (lastElementIndex == elementIndex) {
-                    // For the processing of the last SeRequest with a protocolFlag matching
-                    // the SE reader status, if the logical channel doesn't require to be kept open,
-                    // then the physical channel is closed.
-                    disconnect();
-                    logger.info("Closing of the physical SE channel.", "action",
-                            "pcsc_reader.transmit_actual");
-                }
-            } else {
-                previouslyOpen = true;
-                // When keepChannelOpen is true, we stop after the first matching requestElement
-                // we exit the for loop here
-                // For the processing of a SeRequest with a protocolFlag which matches the
-                // current SE reader status, in case it's requested to keep the logical channel
-                // open, then the other remaining SeRequest are skipped, and null
-                // SeRequest are returned for them.
-                break;
-            }
-        }
-        return new SeResponseSet(respElements);
     }
 
     /**
-     * Transmission of each APDU request
+     * Transmission of single APDU
      *
-     * @param apduRequest APDU request
-     * @return APDU response
+     * @param apduIn APDU in buffer
+     * @return apduOut buffer
      * @throws ChannelStateReaderException Exception faced
      */
-    private ApduResponse transmit(ApduRequest apduRequest) throws ChannelStateReaderException {
+    public ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
         ResponseAPDU apduResponseData;
-        long before = logging ? System.nanoTime() : 0;
         try {
-            ByteBuffer buffer = apduRequest.getBuffer();
-            { // Sending data
-              // We shouldn't have to re-use the buffer that was used to be sent but we have
-              // some code that does it.
-                final int posBeforeRead = buffer.position();
-                apduResponseData = channel.transmit(new CommandAPDU(buffer));
-                buffer.position(posBeforeRead);
-            }
-
-            byte[] statusCode =
-                    new byte[] {(byte) apduResponseData.getSW1(), (byte) apduResponseData.getSW2()};
-            // gestion du getResponse en case 4 avec reponse valide et
-            // retour vide
-            hackCase4AndGetResponse(apduRequest.isCase4(), statusCode, apduResponseData, channel);
-
-            ApduResponse apduResponse = new ApduResponse(apduResponseData.getBytes(), true);
-
-            if (logging) {
-                double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-                logger.info("PCSCReader: Transmission", "action", "pcsc_reader.transmit",
-                        "apduRequest", apduRequest, "apduResponse", apduResponse, "elapsedMs",
-                        elapsedMs, "apduName", apduRequest.getName());
-            }
-
-            return apduResponse;
+            apduResponseData = channel.transmit(new CommandAPDU(apduIn));
         } catch (CardException e) {
             throw new ChannelStateReaderException(e);
         }
+        return ByteBuffer.wrap(apduResponseData.getBytes());
     }
 
-    /*
-     * private String getCardProtocol() { String protocol = settings.get(SETTING_KEY_PROTOCOL); if
-     * (protocol == null) { protocol = "*"; } return protocol; }
-     */
-
-    private static void hackCase4AndGetResponse(boolean isCase4, byte[] statusCode,
-            ResponseAPDU responseFciData, CardChannel channel) throws CardException {
-        if (isCase4 && statusCode[0] == (byte) 0x90 && statusCode[1] == (byte) 0x00
-                && responseFciData.getData().length == 0) {
-            ByteBuffer command = ByteBuffer.allocate(5);
-            command.put((byte) 0x00);
-            command.put((byte) 0xC0);
-            command.put((byte) 0x00);
-            command.put((byte) 0x00);
-            command.put((byte) 0x00);
-
-
-            responseFciData = channel.transmit(new CommandAPDU(command));
-            logger.info("Case4 hack", "action", "pcsc_reader.case4_hack");
-
-
-            statusCode[0] = (byte) responseFciData.getSW1();
-            statusCode[1] = (byte) responseFciData.getSW2();
-        }
+    @Override
+    public ByteBuffer getAlternateFci() {
+        return ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
+                ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}));
     }
 
-    /*
-     * private static String formatLogRequest(byte[] request) { String c =
-     * DatatypeConverter.printHexBinary(request); String log = c;
-     *
-     * if (request.length == 4) { log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " +
-     * extractData(c, 4, 8); } if (request.length == 5) { log = extractData(c, 0, 2) + " " +
-     * extractData(c, 2, 4) + " " + extractData(c, 4, 8) + " " + extractData(c, 8, 10); } else if
-     * (request.length > 5) { log = extractData(c, 0, 2) + " " + extractData(c, 2, 4) + " " +
-     * extractData(c, 4, 8) + " " + extractData(c, 8, 10) + " " + extractData(c, 10, c.length()); }
-     *
-     * return log; }
+    /**
+     * Tells if the current SE protocol matches the provided protocol flag. If the protocol flag is
+     * not defined (null), we consider here that it matches.
+     * 
+     * @param protocolFlag
+     * @return
+     * @throws InvalidMessageException
      */
-
-    private static String extractData(String str, int pos1, int pos2) {
-        String data = "";
-        for (int i = pos1; i < pos2; i++) {
-            data += str.charAt(i);
+    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws InvalidMessageException {
+        boolean result;
+        // Get protocolFlag to check if ATR filtering is required
+        if (protocolFlag != null) {
+            // the requestSet will be executed only if the protocol match the requestElement
+            String selectionMask = protocolsMap.get(protocolFlag);
+            if (selectionMask == null) {
+                throw new InvalidMessageException("Target selector mask not found!", null);
+            }
+            Pattern p = Pattern.compile(selectionMask);
+            String atr = ByteBufferUtils.toHex(ByteBuffer.wrap(card.getATR().getBytes()));
+            if (!p.matcher(atr).matches()) {
+                logger.info("Protocol selection: unmatching SE: " + protocolFlag, "action",
+                        "pcsc_reader.transmit_actual");
+                result = false;
+            } else {
+                logger.info("Protocol selection: matching SE: " + protocolFlag, "action",
+                        "pcsc_reader.transmit_actual");
+                result = true;
+            }
+        } else {
+            // no protocol defined returns true
+            result = true;
         }
-        return data;
+        return result;
     }
 
     @Override
@@ -354,59 +213,6 @@ public class PcscReader extends AbstractLocalReader implements ConfigurableReade
         } catch (CardException e) {
             throw new IOReaderException(e);
         }
-    }
-
-    /**
-     * method to connect to the card from the terminal
-     *
-     * @throws ChannelStateReaderException
-     */
-    private ApduResponse connect(ByteBuffer aid) throws ChannelStateReaderException {
-        logger.info("Connecting to card", "action", "pcsc_reader.connect", "aid",
-                ByteBufferUtils.toHex(aid), "readerName", getName());
-        try {
-            ByteBuffer command = ByteBuffer.allocate(aid.limit() + 6);
-            command.put((byte) 0x00);
-            command.put((byte) 0xA4);
-            command.put((byte) 0x04);
-            command.put((byte) 0x00);
-            command.put((byte) aid.limit());
-            command.put(aid);
-            command.put((byte) 0x00);
-            command.position(0);
-            ResponseAPDU res = channel.transmit(new CommandAPDU(command));
-
-            byte[] statusCode = new byte[] {(byte) res.getSW1(), (byte) res.getSW2()};
-            hackCase4AndGetResponse(true, statusCode, res, channel);
-            ApduResponse fciResponse = new ApduResponse(res.getBytes(), true);
-            aidCurrentlySelected = aid;
-            return fciResponse;
-        } catch (CardException e1) {
-            throw new ChannelStateReaderException(e1);
-        }
-    }
-
-    /**
-     * method to disconnect the card from the terminal
-     *
-     * @throws IOReaderException
-     * @throws CardException
-     */
-    private void disconnect() throws IOReaderException {
-        logger.info("Disconnecting", "action", "pcsc_reader.disconnect");
-        try {
-            aidCurrentlySelected = null;
-            fciDataSelected = null;
-
-            if (card != null) {
-                channel = null;
-                card.disconnect(cardReset);
-                card = null;
-            }
-        } catch (CardException e) {
-            throw new IOReaderException(e);
-        }
-
     }
 
     /**
@@ -691,7 +497,7 @@ public class PcscReader extends AbstractLocalReader implements ConfigurableReade
                     if (isSePresent()) {
                         // we will wait for it to disappear
                         if (terminal.waitForCardAbsent(threadWaitTimeout)) {
-                            disconnect();
+                            closePhysicalChannel();
                             // and notify about it.
                             cardRemoved();
                         }

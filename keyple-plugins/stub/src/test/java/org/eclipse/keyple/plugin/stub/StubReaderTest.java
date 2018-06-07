@@ -47,7 +47,7 @@ public class StubReaderTest {
     @Test
     public void testTransmitNull() throws IOReaderException {
         try {
-            stubReader.transmit(null).getSingleResponse().getApduResponses().size();
+            stubReader.transmit((SeRequestSet) null).getSingleResponse().getApduResponses().size();
             fail("Should raise exception");
         } catch (IOReaderException e) {
             e.printStackTrace();

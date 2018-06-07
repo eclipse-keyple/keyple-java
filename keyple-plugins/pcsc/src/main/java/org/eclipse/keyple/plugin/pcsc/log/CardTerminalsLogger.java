@@ -14,6 +14,9 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
 
+/**
+ * @deprecated
+ */
 public class CardTerminalsLogger extends CardTerminals {
     private final CardTerminals cardTerminals;
 

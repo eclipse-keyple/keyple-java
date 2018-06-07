@@ -19,7 +19,7 @@ import com.github.structlog4j.SLoggerFactory;
  * 
  * @param <T>
  */
-public class AbstractLoggedObservable<T> extends Observable<T> {
+public abstract class AbstractLoggedObservable<T> extends Observable<T> {
     private static final ILogger logger = SLoggerFactory.getLogger(AbstractLoggedObservable.class);
     private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
 

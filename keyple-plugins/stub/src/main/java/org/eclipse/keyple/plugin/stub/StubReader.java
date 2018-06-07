@@ -9,12 +9,12 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.eclipse.keyple.seproxy.*;
+import org.eclipse.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.exceptions.InvalidMessageException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
@@ -37,57 +37,86 @@ public class StubReader extends AbstractLocalReader implements ConfigurableReade
         return "";
     }
 
-    @Override
-    public SeResponseSet transmit(SeRequestSet request) throws IOReaderException {
-
-        if (request == null) {
-            logger.error("SeRequestSet is null");
-            throw new IOReaderException("SeRequestSet is null");
-        }
-
-        if (!isSePresent) {
-            throw new IOReaderException("SE is not present");
-        }
-
-        if (test_WillTimeout) {
-            logger.info("Timeout test is enabled, transmit raises TimeoutException");
-            throw new IOReaderException("timeout while processing SeRequestSet");
-        }
-
-        boolean channelPreviouslyOpen;
-        ApduResponse fci;
-        List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
-
-        // Open channel commands
-        if (!test_ChannelIsOpen) {
-            channelPreviouslyOpen = false;
-            logger.debug("Logical channel is not open");
-
-            if (test_ApplicationError) {
-                logger.info(
-                        "Application error test is enabled, transmit will fail at open application");
-                fci = new ApduResponse(ByteBuffer.allocate(0), false);
-                return new SeResponseSet(new SeResponse(channelPreviouslyOpen, fci, apduResponses));
-            } else {
-                logger.info("Logical channel is opened with aid : " + aid);
-                fci = new ApduResponse(ByteBuffer.allocate(0), true);
-            }
-        } else {
-            channelPreviouslyOpen = true;
-            aid = ByteBuffer.allocate(0);
-            logger.info("Logical channel is already opened with aid : " + aid);
-            fci = new ApduResponse(aid, true);
-        }
-
-
-        // Prepare succesfull responses
-        for (ApduRequest apduRequest : request.getSingleRequest().getApduRequests()) {
-            logger.debug("Processing request : " + apduRequest.toString());
-            apduResponses.add(new ApduResponse(ByteBuffer.allocate(0), true));
-        }
-
-        return new SeResponseSet(new SeResponse(channelPreviouslyOpen, fci, apduResponses));
+    public ByteBuffer transmit(ByteBuffer apduIn) throws ChannelStateReaderException {
+        return null;
     }
+
+    @Override
+    public void checkOrOpenPhysicalChannel() throws IOReaderException {
+
+    }
+
+    @Override
+    public void closePhysicalChannel() throws IOReaderException {
+
+    }
+
+    @Override
+    public ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
+        return null;
+    }
+
+    @Override
+    public ByteBuffer getAlternateFci() {
+        return null;
+    }
+
+    @Override
+    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws InvalidMessageException {
+        return false;
+    }
+
+    // @Override
+    // public SeResponseSet transmit(SeRequestSet request) throws IOReaderException {
+    //
+    // if (request == null) {
+    // logger.error("SeRequestSet is null");
+    // throw new IOReaderException("SeRequestSet is null");
+    // }
+    //
+    // if (!isSePresent) {
+    // throw new IOReaderException("SE is not present");
+    // }
+    //
+    // if (test_WillTimeout) {
+    // logger.info("Timeout test is enabled, transmit raises TimeoutException");
+    // throw new IOReaderException("timeout while processing SeRequestSet");
+    // }
+    //
+    // boolean channelPreviouslyOpen;
+    // ApduResponse fci;
+    // List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
+    //
+    // // Open channel commands
+    // if (!test_ChannelIsOpen) {
+    // channelPreviouslyOpen = false;
+    // logger.debug("Logical channel is not open");
+    //
+    // if (test_ApplicationError) {
+    // logger.info(
+    // "Application error test is enabled, transmit will fail at open application");
+    // fci = new ApduResponse(ByteBuffer.allocate(0), false);
+    // return new SeResponseSet(new SeResponse(channelPreviouslyOpen, fci, apduResponses));
+    // } else {
+    // logger.info("Logical channel is opened with aid : " + aid);
+    // fci = new ApduResponse(ByteBuffer.allocate(0), true);
+    // }
+    // } else {
+    // channelPreviouslyOpen = true;
+    // aid = ByteBuffer.allocate(0);
+    // logger.info("Logical channel is already opened with aid : " + aid);
+    // fci = new ApduResponse(aid, true);
+    // }
+    //
+    //
+    // // Prepare succesfull responses
+    // for (ApduRequest apduRequest : request.getSingleRequest().getApduRequests()) {
+    // logger.debug("Processing request : " + apduRequest.toString());
+    // apduResponses.add(new ApduResponse(ByteBuffer.allocate(0), true));
+    // }
+    //
+    // return new SeResponseSet(new SeResponse(channelPreviouslyOpen, fci, apduResponses));
+    // }
 
 
 

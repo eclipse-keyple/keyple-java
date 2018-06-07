@@ -11,6 +11,9 @@ package org.eclipse.keyple.plugin.pcsc.log;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
+/**
+ * @deprecated
+ */
 class Logging {
     static final ILogger LOG = SLoggerFactory.getLogger(Logging.class);
 }

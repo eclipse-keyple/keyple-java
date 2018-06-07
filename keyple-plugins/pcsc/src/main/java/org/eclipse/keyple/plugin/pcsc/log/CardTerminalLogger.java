@@ -12,6 +12,9 @@ import javax.smartcardio.Card;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 
+/**
+ * @deprecated
+ */
 public class CardTerminalLogger extends CardTerminal {
     private final String id;
     private final CardTerminal terminal;

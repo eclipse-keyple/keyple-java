@@ -26,9 +26,9 @@ import org.simalliance.openmobileapi.Session;
 import android.util.Log;
 
 /**
- * TODO although AndroidOmapiReader extends AbstractLocalReader, may refuse any addition of observer
+ * TODO although AndroidOmapiReader extends AbstractObservable, may refuse any addition of observer
  */
-public class AndroidOmapiReader extends AbstractLocalReader implements ConfigurableReader {
+public class AndroidOmapiReader extends AbstractObservable implements ConfigurableReader {
 
 
     private static final String TAG = AndroidOmapiReader.class.getSimpleName();

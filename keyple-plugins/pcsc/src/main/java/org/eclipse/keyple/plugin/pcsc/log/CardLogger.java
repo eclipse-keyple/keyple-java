@@ -15,6 +15,9 @@ import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
+/**
+ * @deprecated
+ */
 public class CardLogger extends Card {
 
     private final String id;
