@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.example.common;
+package org.eclipse.keyple.example.common.deprecated;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,15 +15,14 @@ import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.seproxy.*;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
- * Set of @{@link SeRequest} to test NFC Plugin with keep Open Channel. Two sets
- * of @{@link SeRequest} are sent to the NFC smartcard. Keep open channel parameter is set to true
- * on the first @{@link SeRequest} resulting in the second @{@link SeRequest} to be aborted
+ * Basic @{@link SeRequestSet} to test NFC Plugin with MifareUltralight protocol flag
  */
-public class KeepOpenAbortTestManager extends AbstractLogicManager {
+public class MifareUltralightCardAccessManager extends AbstractLogicManager {
 
 
     private ProxyReader poReader;
@@ -53,24 +52,18 @@ public class KeepOpenAbortTestManager extends AbstractLogicManager {
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
         SeRequest seRequestElement = new SeRequest(ByteBufferUtils.fromHex(poAid),
-                poApduRequestList, true, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                poApduRequestList, false, ContactlessProtocols.PROTOCOL_MIFARE_UL);
         List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
         seRequestElements.add(seRequestElement);
-
-        SeRequest seRequestElement2 = new SeRequest(ByteBufferUtils.fromHex(poAid),
-                poApduRequestList, false, ContactlessProtocols.PROTOCOL_ISO14443_4);
-        seRequestElements.add(seRequestElement2);
         SeRequestSet poRequest = new SeRequestSet(seRequestElements);
 
-        try {
 
-            System.out.println("Transmit 1st SE Request, keep channel open");
+        try {
             SeResponseSet poResponse = poReader.transmit(poRequest);
             getObservable().notifyObservers(new Event("Got a response", "poResponse", poResponse));
-
-
-        } catch (Exception e) {
+        } catch (IOReaderException e) {
             e.printStackTrace();
+            getObservable().notifyObservers(new Event("Got an error", "error", e.getMessage()));
         }
     }
 

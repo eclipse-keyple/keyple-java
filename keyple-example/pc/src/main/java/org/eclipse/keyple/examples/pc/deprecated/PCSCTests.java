@@ -12,6 +12,9 @@ import java.nio.ByteBuffer;
 import javax.smartcardio.*;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
+/**
+ * @deprecated
+ */
 public class PCSCTests {
     public static void main(String[] args) throws CardException, InterruptedException {
         TerminalFactory termFactory = TerminalFactory.getDefault();

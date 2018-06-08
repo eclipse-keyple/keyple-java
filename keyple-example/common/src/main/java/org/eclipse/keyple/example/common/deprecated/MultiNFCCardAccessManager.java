@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.example.common;
+package org.eclipse.keyple.example.common.deprecated;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,9 +20,10 @@ import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
- * Basic @{@link SeRequestSet} to test NFC Plugin with MifareClassic protocol flag
+ * Set of @{@link SeRequest} to test NFC Plugin multiple protocol flags. Two @{@link SeRequest} are
+ * sent to the NFC smartcard, one with IsoDep protocol flag and one with MifareClassic.
  */
-public class MifareClassicCardAccessManager extends AbstractLogicManager {
+public class MultiNFCCardAccessManager extends AbstractLogicManager {
 
 
     private ProxyReader poReader;
@@ -51,10 +52,18 @@ public class MifareClassicCardAccessManager extends AbstractLogicManager {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-        SeRequest seRequestElement = new SeRequest(ByteBufferUtils.fromHex(poAid),
-                poApduRequestList, false, ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC);
+        SeRequest isodep = new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false,
+                ContactlessProtocols.PROTOCOL_ISO14443_4);
+
+        SeRequest miFare = new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false,
+                ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC);
+
         List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
-        seRequestElements.add(seRequestElement);
+        seRequestElements.add(miFare);
+        seRequestElements.add(isodep);
+
+
+
         SeRequestSet poRequest = new SeRequestSet(seRequestElements);
 
 

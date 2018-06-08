@@ -181,6 +181,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         // Print reader configuration
         listReaders();
 
+        // the program will stop when the last connected reader is unplugged
         synchronized (waitBeforeEnd) {
             waitBeforeEnd.wait();
         }

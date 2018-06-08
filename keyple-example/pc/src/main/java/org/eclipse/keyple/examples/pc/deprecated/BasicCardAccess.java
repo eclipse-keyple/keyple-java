@@ -6,11 +6,11 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.examples.pc;
+package org.eclipse.keyple.examples.pc.deprecated;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.example.common.BasicCardAccessManager;
+import org.eclipse.keyple.example.common.deprecated.BasicCardAccessManager;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReadersPlugin;

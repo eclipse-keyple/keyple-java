@@ -16,6 +16,10 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
+/**
+ * Abstract definition of an threader local reader. Factorizes the observation mechanism through the
+ * implementation of a monitoring thread.
+ */
 public abstract class AbstractThreadedLocalReader extends AbstractLocalReader {
 
     private static final ILogger logger = SLoggerFactory.getLogger(AbstractLocalReader.class);
@@ -27,7 +31,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractLocalReader {
     protected long threadWaitTimeout;
 
     /**
-     * Flurent setter to change the PC/SC wait timeout in ms. Defaults to 5000.
+     * setter to fix the wait timeout in ms.
      *
      * @param timeout Timeout to use
      * @return Current instance
@@ -36,6 +40,11 @@ public abstract class AbstractThreadedLocalReader extends AbstractLocalReader {
         this.threadWaitTimeout = timeout;
     }
 
+    /**
+     * Adds an observer to the reader event.
+     * 
+     * @param observer Observer to notify
+     */
     @Override
     public final void addObserver(Observer observer) {
         // We don't need synchronization for the list itself, we need to make sure we're not

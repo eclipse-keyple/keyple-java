@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.example.common;
+package org.eclipse.keyple.example.common.deprecated;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,14 +15,14 @@ import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.seproxy.*;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
- * Set of @{@link SeRequestSet} to test NFC Plugin with keep Open Channel. Two sets
- * of @{@link SeRequestSet} are sent to the NFC smartcard with a timeout of 3 seconds.
+ * Basic @{@link SeRequestSet} to test NFC Plugin with MifareClassic protocol flag
  */
-public class KeepOpenCardTimeoutManager extends AbstractLogicManager {
+public class MifareClassicCardAccessManager extends AbstractLogicManager {
 
 
     private ProxyReader poReader;
@@ -52,36 +52,18 @@ public class KeepOpenCardTimeoutManager extends AbstractLogicManager {
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
         SeRequest seRequestElement = new SeRequest(ByteBufferUtils.fromHex(poAid),
-                poApduRequestList, true, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                poApduRequestList, false, ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC);
         List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
         seRequestElements.add(seRequestElement);
-
-
         SeRequestSet poRequest = new SeRequestSet(seRequestElements);
-        try {
 
-            System.out.println("Transmit 1st SE Request, keep channel open");
+
+        try {
             SeResponseSet poResponse = poReader.transmit(poRequest);
             getObservable().notifyObservers(new Event("Got a response", "poResponse", poResponse));
-
-            System.out.println("Sleeping for 3 seconds");
-            Thread.sleep(3000);
-            System.out.println("Transmit 2nd SE Request, close channel");
-
-            SeRequest seRequestElement2 = new SeRequest(ByteBufferUtils.fromHex(poAid),
-                    poApduRequestList, false, ContactlessProtocols.PROTOCOL_ISO14443_4);
-            List<SeRequest> seRequestElements2 = new ArrayList<SeRequest>();
-
-            seRequestElements2.add(seRequestElement2);
-            SeRequestSet poRequest2 = new SeRequestSet(seRequestElements2);
-
-            SeResponseSet poResponse2 = poReader.transmit(poRequest2);
-            getObservable()
-                    .notifyObservers(new Event("Got a 2nd response", "poResponse2", poResponse2));
-
-
-        } catch (Exception e) {
+        } catch (IOReaderException e) {
             e.printStackTrace();
+            getObservable().notifyObservers(new Event("Got an error", "error", e.getMessage()));
         }
     }
 
