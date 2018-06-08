@@ -11,7 +11,6 @@ package org.eclipse.keyple.plugin.pcsc;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.seproxy.*;
@@ -54,9 +53,6 @@ public class PcscReader extends AbstractLocalReader implements ConfigurableReade
     private CardChannel channel;
 
 
-
-    private EventThread thread;
-    private static final AtomicInteger threadCount = new AtomicInteger();
 
     private boolean logging;
 
@@ -127,7 +123,6 @@ public class PcscReader extends AbstractLocalReader implements ConfigurableReade
         }
     }
 
-
     /**
      * Disconnects the card from the terminal
      *
@@ -145,6 +140,30 @@ public class PcscReader extends AbstractLocalReader implements ConfigurableReade
             }
         } catch (CardException e) {
             throw new IOReaderException(e);
+        }
+    }
+
+    @Override
+    public boolean isSePresent() throws IOReaderException {
+        try {
+            return terminal.isCardPresent();
+        } catch (CardException e) {
+            throw new IOReaderException(e);
+        }
+    }
+
+    @Override
+    public boolean waitForCardPresent(long timeout) throws CardException {
+        return terminal.waitForCardPresent(timeout);
+    }
+
+    @Override
+    public boolean waitForCardAbsent(long timeout) throws CardException, IOReaderException {
+        if (terminal.waitForCardAbsent(timeout)) {
+            closePhysicalChannel();
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -204,15 +223,6 @@ public class PcscReader extends AbstractLocalReader implements ConfigurableReade
             result = true;
         }
         return result;
-    }
-
-    @Override
-    public boolean isSePresent() throws IOReaderException {
-        try {
-            return terminal.isCardPresent();
-        } catch (CardException e) {
-            throw new IOReaderException(e);
-        }
     }
 
     /**
@@ -392,129 +402,5 @@ public class PcscReader extends AbstractLocalReader implements ConfigurableReade
 
 
         return parameters;
-    }
-
-    @Override
-    public void addObserver(Observer observer) {
-        // We don't need synchronization for the list itself, we need to make sure we're not
-        // starting and closing the thread at the same time.
-        synchronized (observers) {
-            super.addObserver(observer);
-            if (observers.size() == 1) {
-                if (thread != null) { // <-- This should never happen and can probably be dropped at
-                    // some point
-                    throw new IllegalStateException("The reader thread shouldn't null");
-                }
-
-                thread = new EventThread(this);
-                thread.start();
-            }
-        }
-    }
-
-    @Override
-    public void removeObserver(Observer observer) {
-        synchronized (observers) {
-            super.removeObserver(observer);
-            if (observers.isEmpty()) {
-                if (thread == null) { // <-- This should never happen and can probably be dropped at
-                    // some point
-                    throw new IllegalStateException("The reader thread should be null");
-                }
-
-                // We'll let the thread calmly end its course after the waitForCard(Absent|Present)
-                // timeout occurs
-                thread.end();
-                thread = null;
-            }
-        }
-    }
-
-
-    /**
-     * Thread in charge of reporting live events
-     */
-    class EventThread extends Thread {
-        /**
-         * Reader that we'll report about
-         */
-        private final PcscReader reader;
-
-        /**
-         * If the thread should be kept a alive
-         */
-        private volatile boolean running = true;
-
-        /**
-         * Constructor
-         *
-         * @param reader PcscReader
-         */
-        EventThread(PcscReader reader) {
-            super("pcsc-events-" + threadCount.addAndGet(1));
-            setDaemon(true);
-            this.reader = reader;
-        }
-
-        /**
-         * Marks the thread as one that should end when the last cardWaitTimeout occurs
-         */
-        void end() {
-            running = false;
-        }
-
-        private void cardRemoved() {
-            notifyObservers(ReaderEvent.SE_REMOVAL);
-        }
-
-        private void cardInserted() {
-            notifyObservers(ReaderEvent.SE_INSERTED);
-        }
-
-        /**
-         * Event failed
-         *
-         * @param ex Exception
-         */
-        private void exceptionThrown(Exception ex) {
-            logger.error("PCSC Reader: Error handling events", "action", "pcsc_reader.event_error",
-                    "readerName", getName(), "exception", ex);
-            if (ex instanceof CardException || ex instanceof IOReaderException) {
-                notifyObservers(ReaderEvent.IO_ERROR);
-            }
-        }
-
-        public void run() {
-            try {
-                // First thing we'll do is to notify that a card was inserted if one is already
-                // present.
-                if (isSePresent()) {
-                    cardInserted();
-                }
-
-                while (running) {
-                    // If we have a card,
-                    if (isSePresent()) {
-                        // we will wait for it to disappear
-                        if (terminal.waitForCardAbsent(threadWaitTimeout)) {
-                            closePhysicalChannel();
-                            // and notify about it.
-                            cardRemoved();
-                        }
-                        // false means timeout, and we go back to the beginning of the loop
-                    }
-                    // If we don't,
-                    else {
-                        // we will wait for it to appear
-                        if (terminal.waitForCardPresent(threadWaitTimeout)) {
-                            cardInserted();
-                        }
-                        // false means timeout, and we go back to the beginning of the loop
-                    }
-                }
-            } catch (Exception e) {
-                exceptionThrown(e);
-            }
-        }
     }
 }
