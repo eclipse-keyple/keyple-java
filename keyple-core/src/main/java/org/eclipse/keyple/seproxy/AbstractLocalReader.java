@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import javax.smartcardio.CardException;
-import javax.smartcardio.ResponseAPDU;
 import org.eclipse.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import org.eclipse.keyple.seproxy.exceptions.InvalidMessageException;
@@ -32,6 +31,38 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     private boolean logging;
     private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
 
+    /**
+     * Reduced clone of the smartcardio ResponseAPDU to handle APDU responses elements Avoids the
+     * smartcardio lib dependency here.
+     */
+    private final class ResponseAPDU {
+        private byte[] apdu;
+
+        public ResponseAPDU(byte[] var1) {
+            var1 = (byte[]) var1.clone();
+            check(var1);
+            this.apdu = var1;
+        }
+
+        private void check(byte[] var0) {
+            if (var0.length < 2) {
+                throw new IllegalArgumentException("apdu must be at least 2 bytes long");
+            }
+        }
+
+        public byte[] getBytes() {
+            return (byte[]) this.apdu.clone();
+        }
+
+        public int getNr() {
+            return this.apdu.length - 2;
+        }
+
+        public int getSW() {
+            return (this.apdu[this.apdu.length - 2] & 255) << 8
+                    | (this.apdu[this.apdu.length - 1] & 255);
+        }
+    }
 
     /**
      * Checks the presence of a physical channel. Creates one if needed, generates an exception in
@@ -123,7 +154,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             ResponseAPDU response =
                     new ResponseAPDU(ByteBufferUtils.toBytes(transmitApdu(command)));
 
-            if (response.getData().length == 0 && response.getSW() == 0x9000) {
+            if (response.getNr() == 0 && response.getSW() == 0x9000) {
                 // the select command always returns data
                 // this SE is probably expecting a get response command (e.g. old Calypso cards)
                 response = case4HackGetResponse();
@@ -157,7 +188,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 buffer.position(posBeforeRead);
             }
 
-            if (apduRequest.isCase4() && apduResponseData.getData().length == 0
+            if (apduRequest.isCase4() && apduResponseData.getNr() == 0
                     && apduResponseData.getSW() == 0x9000) {
                 // a get response command is requested by the application for this Apdu
                 apduResponseData = case4HackGetResponse();
