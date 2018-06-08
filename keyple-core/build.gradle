@@ -9,7 +9,7 @@ sourceCompatibility = 1.6
 
 /*
 Deactivate jmh plugin due to conflict with android environnement,
-Error:Unable to find module with Gradle path ':keyple-core' (needed by modules: 'keyple-examples-androidnfc', 'keyple-plugin-android'.)
+Error:Unable to find module with Gradle path ':keyple-core' (needed by modules: 'keyple-example-androidnfc', 'keyple-plugin-android'.)
 
 apply plugin: 'me.champeau.gradle.jmh'
 

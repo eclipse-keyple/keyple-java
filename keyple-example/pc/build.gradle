@@ -16,7 +16,7 @@ dependencies {
     // compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
 
 
-    compile project(':keyple-examples-common')
+    compile project(':keyple-example-common')
     compile project(':keyple-calypso')
     compile project(':keyple-plugin-pcsc')
 
