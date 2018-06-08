@@ -10,8 +10,8 @@ package org.eclipse.keyple.examples.android.omapi;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.example.common.AbstractLogicManager;
-import org.eclipse.keyple.example.common.BasicCardAccessManager;
+import org.eclipse.keyple.example.common.deprecated.AbstractLogicManager;
+import org.eclipse.keyple.example.common.deprecated.BasicCardAccessManager;
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiFragment;
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin;
 import org.eclipse.keyple.seproxy.ProxyReader;
