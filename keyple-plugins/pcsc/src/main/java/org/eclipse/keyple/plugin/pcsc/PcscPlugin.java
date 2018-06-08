@@ -8,14 +8,18 @@
 
 package org.eclipse.keyple.plugin.pcsc;
 
+import java.io.IOException;
 import java.util.*;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
 import org.eclipse.keyple.plugin.pcsc.log.CardTerminalsLogger;
-import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
+import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.event.ErrorPluginEvent;
+import org.eclipse.keyple.seproxy.event.ReaderPresencePluginEvent;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
@@ -58,6 +62,16 @@ public final class PcscPlugin extends AbstractObservablePlugin {
     @Override
     public String getName() {
         return "PcscPlugin";
+    }
+
+    @Override
+    public Map<String, String> getParameters() {
+        return null;
+    }
+
+    @Override
+    public void setParameter(String key, String value) throws IOException {
+
     }
 
     /**

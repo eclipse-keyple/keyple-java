@@ -8,6 +8,9 @@
 
 package org.eclipse.keyple.plugin.pcsc;
 
+/**
+ * These objects are used by the application to build the SeProtocolsMap
+ */
 public interface PcscProtocolSettings {
     public static String REGEX_PROTOCOL_B_PRIME = "3B8F8001805A0A0103200311........829000..";
 

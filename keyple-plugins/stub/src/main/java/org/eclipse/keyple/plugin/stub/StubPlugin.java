@@ -8,17 +8,18 @@
 
 package org.eclipse.keyple.plugin.stub;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.keyple.seproxy.AbstractObservableReader;
-import org.eclipse.keyple.seproxy.ReadersPlugin;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
+import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public final class StubPlugin implements ReadersPlugin {
+public final class StubPlugin extends AbstractObservablePlugin {
 
     private static final StubPlugin uniqueInstance = new StubPlugin();
 
@@ -42,6 +43,16 @@ public final class StubPlugin implements ReadersPlugin {
     @Override
     public String getName() {
         return "StubPlugin";
+    }
+
+    @Override
+    public Map<String, String> getParameters() {
+        return null;
+    }
+
+    @Override
+    public void setParameter(String key, String value) throws IOException {
+
     }
 
     @Override

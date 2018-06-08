@@ -13,7 +13,7 @@ import java.util.List;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

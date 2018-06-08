@@ -9,7 +9,7 @@
 package org.eclipse.keyple.plugin.stub;
 
 
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

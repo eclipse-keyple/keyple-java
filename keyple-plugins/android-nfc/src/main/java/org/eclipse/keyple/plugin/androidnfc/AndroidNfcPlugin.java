@@ -8,8 +8,10 @@
 
 package org.eclipse.keyple.plugin.androidnfc;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReadersPlugin;
 import android.util.Log;
@@ -57,5 +59,19 @@ public class AndroidNfcPlugin implements ReadersPlugin {
         List<ProxyReader> readers = new ArrayList<ProxyReader>();
         readers.add(reader);
         return readers;
+    }
+
+    @Override
+    public final Map<String, String> getParameters() {
+        return null;
+    }
+
+    @Override
+    public final void setParameter(String key, String value) throws IOException {
+
+    }
+
+    public final void setParameters(Map<String, String> parameters) throws IOException {
+        // empty in the Android case
     }
 }

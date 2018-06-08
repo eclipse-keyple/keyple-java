@@ -15,6 +15,8 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 /**
  * Card channel logging helper. This should allow to properly monitor any exchange being done with
  * the card. The behavior of the {@link CardChannel} is not transformed by this class.
+ * 
+ * @deprecated
  */
 public class CardChannelLogger extends CardChannel {
 

@@ -9,7 +9,8 @@
 package org.eclipse.keyple.seproxy;
 
 import java.util.Map;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.util.NameableConfigurable;
 
 /**
  * ProxyReader interface
@@ -26,7 +27,7 @@ import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
  * </ul>
  * Interface each {@link ReadersPlugin} should implement
  */
-public interface ProxyReader extends NameableItem {
+public interface ProxyReader extends NameableConfigurable {
 
     /**
      * Gets the name.
@@ -46,7 +47,7 @@ public interface ProxyReader extends NameableItem {
     /**
      * Transmits a request to a SE application and get back the corresponding SE response o the
      * usage of this method is conditioned to the presence of a SE in the selected reader, this
-     * method could also fail in case of IO error or wrong card state → some reader’s exceptions (SE
+     * method could also fail in case of IO error or wrong card state → some reader’s exception (SE
      * missing, IO error, wrong card state, timeout) have to be caught during the processing of the
      * SE request transmission.
      *

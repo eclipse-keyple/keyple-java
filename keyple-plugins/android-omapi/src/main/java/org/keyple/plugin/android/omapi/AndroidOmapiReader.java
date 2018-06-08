@@ -18,7 +18,7 @@ import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.simalliance.openmobileapi.Channel;
 import org.simalliance.openmobileapi.Reader;
@@ -26,9 +26,9 @@ import org.simalliance.openmobileapi.Session;
 import android.util.Log;
 
 /**
- * TODO although AndroidOmapiReader extends AbstractLocalReader, may refuse any addition of observer
+ * TODO although AndroidOmapiReader extends AbstractObservable, may refuse any addition of observer
  */
-public class AndroidOmapiReader extends AbstractLocalReader implements ConfigurableReader {
+public class AndroidOmapiReader extends AbstractObservableReader {
 
 
     private static final String TAG = AndroidOmapiReader.class.getSimpleName();

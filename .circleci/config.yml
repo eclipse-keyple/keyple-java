@@ -58,7 +58,7 @@ jobs:
 
         - restore_cache:
             keys:
-            - v1-dependencies-{{ checksum "./keyple-examples/android/nfc/build.gradle" }}
+            - v1-dependencies-{{ checksum "./keyple-example/android/nfc/build.gradle" }}
 
         - run:
             name: Assemble Keyple
@@ -66,12 +66,12 @@ jobs:
 
         - run:
             name: Download Dependencies
-            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-examples/android/nfc/build.gradle androidDependencies
+            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example/android/nfc/build.gradle androidDependencies
 
         - save_cache:
             paths:
               - ~/.gradle
-            key: v1-dependencies-{{ checksum "./keyple-examples/android/nfc/build.gradle" }}
+            key: v1-dependencies-{{ checksum "./keyple-example/android/nfc/build.gradle" }}
 
         - run:
             name: Assemble Plugin NFC plugin to aar file
@@ -79,11 +79,11 @@ jobs:
 
         - run:
             name: Assemble Keyple Example Android NFC application to apk file
-            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-examples/android/nfc/build.gradle assembleDebug
+            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example/android/nfc/build.gradle assembleDebug
 
         - store_artifacts:
-              path: ./keyple-examples/android/nfc/build/outputs/apk/debug
-              destination: keyple-examples/android/nfc/
+              path: ./keyple-example/android/nfc/build/outputs/apk/debug
+              destination: keyple-example/android/nfc/
 
         - store_artifacts:
               path: ./keyple-plugins/android-nfc/build/outputs/aar/
