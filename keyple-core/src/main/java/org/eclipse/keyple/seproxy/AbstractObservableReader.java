@@ -10,12 +10,8 @@ package org.eclipse.keyple.seproxy;
 
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.smartcardio.CardException;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
 import org.eclipse.keyple.util.Observable;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+
 
 /**
  * 

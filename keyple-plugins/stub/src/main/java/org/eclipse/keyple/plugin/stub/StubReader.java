@@ -11,7 +11,6 @@ package org.eclipse.keyple.plugin.stub;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import javax.smartcardio.CardException;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exceptions.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
@@ -124,17 +123,6 @@ public class StubReader extends AbstractLocalReader implements ConfigurableReade
     @Override
     public boolean isSePresent() throws IOReaderException {
         return isSePresent;
-    }
-
-
-    @Override
-    public boolean waitForCardPresent(long timeout) throws CardException {
-        return false;
-    }
-
-    @Override
-    public boolean waitForCardAbsent(long timeout) throws CardException, IOReaderException {
-        return false;
     }
 
     /**
