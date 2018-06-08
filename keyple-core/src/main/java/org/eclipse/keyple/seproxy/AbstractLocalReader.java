@@ -32,39 +32,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
 
     /**
-     * Reduced clone of the smartcardio ResponseAPDU to handle APDU responses elements Avoids the
-     * smartcardio lib dependency here.
-     */
-    private final class ResponseAPDU {
-        private byte[] apdu;
-
-        public ResponseAPDU(byte[] var1) {
-            var1 = (byte[]) var1.clone();
-            check(var1);
-            this.apdu = var1;
-        }
-
-        private void check(byte[] var0) {
-            if (var0.length < 2) {
-                throw new IllegalArgumentException("apdu must be at least 2 bytes long");
-            }
-        }
-
-        public byte[] getBytes() {
-            return (byte[]) this.apdu.clone();
-        }
-
-        public int getNr() {
-            return this.apdu.length - 2;
-        }
-
-        public int getSW() {
-            return (this.apdu[this.apdu.length - 2] & 255) << 8
-                    | (this.apdu[this.apdu.length - 1] & 255);
-        }
-    }
-
-    /**
      * Checks the presence of a physical channel. Creates one if needed, generates an exception in
      * case of failure.
      *
@@ -151,16 +118,14 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             command.put(aid);
             command.put((byte) 0x00);
             command.position(0);
-            ResponseAPDU response =
-                    new ResponseAPDU(ByteBufferUtils.toBytes(transmitApdu(command)));
+            ApduResponse fciResponse = new ApduResponse(transmitApdu(command), true);
 
-            if (response.getNr() == 0 && response.getSW() == 0x9000) {
+            if (fciResponse.getDataOut().limit() == 0 && fciResponse.getStatusCode() == 0x9000) {
                 // the select command always returns data
                 // this SE is probably expecting a get response command (e.g. old Calypso cards)
-                response = case4HackGetResponse();
+                fciResponse = case4HackGetResponse();
             }
 
-            ApduResponse fciResponse = new ApduResponse(response.getBytes(), true);
             aidCurrentlySelected = aid;
             return fciResponse;
         } catch (CardException e1) {
@@ -176,7 +141,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @throws ChannelStateReaderException Exception faced
      */
     private ApduResponse transmit(ApduRequest apduRequest) throws ChannelStateReaderException {
-        ResponseAPDU apduResponseData;
+        ApduResponse apduResponse;
         long before = logging ? System.nanoTime() : 0;
         try {
             ByteBuffer buffer = apduRequest.getBuffer();
@@ -184,17 +149,15 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
               // We shouldn't have to re-use the buffer that was used to be sent but we have
               // some code that does it.
                 final int posBeforeRead = buffer.position();
-                apduResponseData = new ResponseAPDU(ByteBufferUtils.toBytes(transmitApdu(buffer)));
+                apduResponse = new ApduResponse(transmitApdu(buffer), true);
                 buffer.position(posBeforeRead);
             }
 
-            if (apduRequest.isCase4() && apduResponseData.getNr() == 0
-                    && apduResponseData.getSW() == 0x9000) {
+            if (apduRequest.isCase4() && apduResponse.getDataOut().limit() == 0
+                    && apduResponse.getStatusCode() == 0x9000) {
                 // a get response command is requested by the application for this Apdu
-                apduResponseData = case4HackGetResponse();
+                apduResponse = case4HackGetResponse();
             }
-
-            ApduResponse apduResponse = new ApduResponse(apduResponseData.getBytes(), true);
 
             if (logging) {
                 double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
@@ -218,7 +181,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @throws CardException
      * @throws ChannelStateReaderException
      */
-    private ResponseAPDU case4HackGetResponse() throws CardException, ChannelStateReaderException {
+    private ApduResponse case4HackGetResponse() throws CardException, ChannelStateReaderException {
         ByteBuffer command = ByteBuffer.allocate(5);
         // build a get response command
         // the actual length expected by the SE in the get response command is handled in
@@ -229,7 +192,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         command.put((byte) 0x00);
         command.put((byte) 0x00);
 
-        ResponseAPDU response = new ResponseAPDU(ByteBufferUtils.toBytes(transmitApdu(command)));
+        ApduResponse response = new ApduResponse(transmitApdu(command), true);
         logger.info("Case4 hack", ACTION_STR, "local_reader.case4_hack");
 
         return response;
