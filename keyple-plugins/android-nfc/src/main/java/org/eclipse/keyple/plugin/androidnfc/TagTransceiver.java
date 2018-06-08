@@ -10,7 +10,7 @@ package org.eclipse.keyple.plugin.androidnfc;
 
 import java.io.IOException;
 import java.util.Arrays;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import android.nfc.Tag;
 import android.nfc.tech.TagTechnology;
 import android.util.Log;

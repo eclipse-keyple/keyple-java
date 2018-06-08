@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReadersPlugin;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.SEService;
 import android.util.Log;

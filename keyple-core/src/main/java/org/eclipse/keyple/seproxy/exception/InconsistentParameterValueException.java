@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy.exceptions;
+package org.eclipse.keyple.seproxy.exception;
 
 /**
  * The parameter specified are inconsistent with what is expected.

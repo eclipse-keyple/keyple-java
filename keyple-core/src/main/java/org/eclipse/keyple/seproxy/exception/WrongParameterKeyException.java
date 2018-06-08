@@ -6,20 +6,13 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy.exceptions;
+package org.eclipse.keyple.seproxy.exception;
 
 /**
- * Unexpected reader exception
- * 
- * @deprecated What could that possibly mean ?
+ * @deprecated Isn't referenced anywhere
  */
-public class UnexpectedReaderException extends Exception {
-    /**
-     * Instantiates a new unExpected reader exception.
-     *
-     * @param message the message
-     */
-    public UnexpectedReaderException(String message) {
+public class WrongParameterKeyException extends Exception {
+    public WrongParameterKeyException(String message) {
         super(message);
     }
 }

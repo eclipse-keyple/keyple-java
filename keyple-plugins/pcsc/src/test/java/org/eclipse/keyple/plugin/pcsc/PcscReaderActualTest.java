@@ -8,9 +8,9 @@
 
 package org.eclipse.keyple.plugin.pcsc;
 
-import org.eclipse.keyple.seproxy.AbstractObservableReader;
-import org.eclipse.keyple.seproxy.ReaderEvent;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.util.Observable;
 import org.junit.Assert;
 import org.junit.Ignore;

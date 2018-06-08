@@ -6,15 +6,16 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy.exceptions;
+package org.eclipse.keyple.seproxy.event;
 
-/**
- * Thrown when a timeout occurs.
- * 
- * @deprecated Do we need it ?
- */
-public class ReaderTimeoutException extends IOReaderException {
-    public ReaderTimeoutException(String message) {
-        super(message);
+public class ErrorPluginEvent extends AbstractPluginEvent {
+    private final Exception exception;
+
+    public ErrorPluginEvent(Exception exception) {
+        this.exception = exception;
+    }
+
+    public Exception getException() {
+        return exception;
     }
 }

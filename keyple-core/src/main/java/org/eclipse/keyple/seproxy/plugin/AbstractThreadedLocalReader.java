@@ -6,11 +6,13 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy;
+package org.eclipse.keyple.seproxy.plugin;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.smartcardio.CardException;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
@@ -19,9 +21,23 @@ public abstract class AbstractThreadedLocalReader extends AbstractLocalReader {
     private static final ILogger logger = SLoggerFactory.getLogger(AbstractLocalReader.class);
     private EventThread thread;
     private static final AtomicInteger threadCount = new AtomicInteger();
+    /**
+     * Thread wait timeout in ms
+     */
+    protected long threadWaitTimeout;
+
+    /**
+     * Flurent setter to change the PC/SC wait timeout in ms. Defaults to 5000.
+     *
+     * @param timeout Timeout to use
+     * @return Current instance
+     */
+    public void setThreadWaitTimeout(long timeout) {
+        this.threadWaitTimeout = timeout;
+    }
 
     @Override
-    public void addObserver(Observer observer) {
+    public final void addObserver(Observer observer) {
         // We don't need synchronization for the list itself, we need to make sure we're not
         // starting and closing the thread at the same time.
         synchronized (observers) {
@@ -39,7 +55,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractLocalReader {
     }
 
     @Override
-    public void removeObserver(Observer observer) {
+    public final void removeObserver(Observer observer) {
         synchronized (observers) {
             super.removeObserver(observer);
             if (observers.isEmpty()) {

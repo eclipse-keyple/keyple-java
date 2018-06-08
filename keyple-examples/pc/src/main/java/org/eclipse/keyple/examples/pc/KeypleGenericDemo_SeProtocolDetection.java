@@ -15,7 +15,10 @@ import org.eclipse.keyple.example.common.HoplinkSimpleRead;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSettings;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
 
@@ -165,7 +168,7 @@ public class KeypleGenericDemo_SeProtocolDetection
                 new KeypleGenericDemo_SeProtocolDetection();
 
         observer.poReader = poReader;
-        ((ConfigurableReader) observer.poReader).setParameter("protocol", "T1");
+        observer.poReader.setParameter("protocol", "T1");
 
         // Configure the reader to handle various application cases
         // create and fill a protocol map

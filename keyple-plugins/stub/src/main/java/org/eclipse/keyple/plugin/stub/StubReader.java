@@ -12,13 +12,15 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.exceptions.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
-import org.eclipse.keyple.seproxy.exceptions.InvalidMessageException;
+import org.eclipse.keyple.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
+import org.eclipse.keyple.seproxy.plugin.AbstractLocalReader;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public class StubReader extends AbstractLocalReader implements ConfigurableReader {
+public class StubReader extends AbstractLocalReader {
 
 
     private static final ILogger logger = SLoggerFactory.getLogger(StubReader.class);
@@ -123,22 +125,6 @@ public class StubReader extends AbstractLocalReader implements ConfigurableReade
     @Override
     public boolean isSePresent() throws IOReaderException {
         return isSePresent;
-    }
-
-    /**
-     * Set a list of parameters on a reader.
-     * <p>
-     * See {@link #setParameter(String, String)} for more details
-     *
-     * @param parameters the new parameters
-     * @throws IOReaderException This method can fail when disabling the exclusive mode as it's
-     *         executed instantly
-     */
-    @Override
-    public void setParameters(Map<String, String> parameters) throws IOReaderException {
-        for (Map.Entry<String, String> en : parameters.entrySet()) {
-            setParameter(en.getKey(), en.getValue());
-        }
     }
 
     @Override

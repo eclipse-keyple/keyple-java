@@ -24,7 +24,7 @@ import org.eclipse.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.exceptions.*;
+import org.eclipse.keyple.seproxy.exception.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

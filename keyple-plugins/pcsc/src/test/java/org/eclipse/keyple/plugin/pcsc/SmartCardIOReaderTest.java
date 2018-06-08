@@ -17,6 +17,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,11 +33,11 @@ import javax.smartcardio.ResponseAPDU;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
-import org.eclipse.keyple.seproxy.exceptions.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
-import org.eclipse.keyple.seproxy.exceptions.InvalidApduReaderException;
-import org.eclipse.keyple.seproxy.exceptions.ReaderTimeoutException;
-import org.eclipse.keyple.seproxy.exceptions.UnexpectedReaderException;
+import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.InvalidApduReaderException;
+import org.eclipse.keyple.seproxy.exception.ReaderTimeoutException;
+import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -86,7 +87,7 @@ public class SmartCardIOReaderTest {
     }
 
     // TODO redesign @Test
-    public void testGettersSetters() throws IOReaderException {
+    public void testGettersSetters() throws IOException {
         // this.reader = new PcscReader(terminal, readerName);
         reader.setParameter("TOTO", "TOTO");
         assertEquals(reader.getParameters().size(), 1);

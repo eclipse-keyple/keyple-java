@@ -22,8 +22,12 @@ import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSettings;
+import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
 
@@ -169,8 +173,8 @@ public class KeypleCalypsoDemo_HoplinkTransaction
         System.out.println("PO Reader  : " + poReader.getName());
         System.out.println("CSM Reader : " + csmReader.getName());
 
-        ((ConfigurableReader) poReader).setParameter("protocol", "T1");
-        ((ConfigurableReader) csmReader).setParameter("protocol", "T0");
+        poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
+        csmReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
         // create and fill a protocol map
         Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
@@ -178,7 +182,7 @@ public class KeypleCalypsoDemo_HoplinkTransaction
                 PcscProtocolSettings.REGEX_PROTOCOL_ISO14443_4);
 
         // provide the reader with the map
-        ((ConfigurableReader) poReader).setSeProtocols(protocolsMap);
+        poReader.setSeProtocols(protocolsMap);
 
         // Setting up ourself as an observer
         KeypleCalypsoDemo_HoplinkTransaction observer = new KeypleCalypsoDemo_HoplinkTransaction();

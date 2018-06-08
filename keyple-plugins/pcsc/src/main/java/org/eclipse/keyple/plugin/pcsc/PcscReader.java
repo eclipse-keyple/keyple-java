@@ -14,15 +14,16 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.exceptions.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
-import org.eclipse.keyple.seproxy.exceptions.InconsistentParameterValueException;
-import org.eclipse.keyple.seproxy.exceptions.InvalidMessageException;
+import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
+import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
+import org.eclipse.keyple.seproxy.plugin.AbstractThreadedLocalReader;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public class PcscReader extends AbstractThreadedLocalReader implements ConfigurableReader {
+public class PcscReader extends AbstractThreadedLocalReader {
 
     private static final ILogger logger = SLoggerFactory.getLogger(PcscReader.class);
     public static final String SETTING_KEY_PROTOCOL = "protocol";
@@ -54,13 +55,16 @@ public class PcscReader extends AbstractThreadedLocalReader implements Configura
 
     private boolean logging;
 
-    /**
-     * Thread wait timeout in ms
-     */
-    private long threadWaitTimeout;
 
-    PcscReader(CardTerminal terminal) { // PcscReader constructor may be
-        // called only by PcscPlugin
+    /**
+     * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
+     * with their default values as defined in setParameter. See
+     * {@link #setParameter(String, String)} for more details
+     * 
+     * @param terminal
+     */
+    protected PcscReader(CardTerminal terminal) {
+        //
         this.terminal = terminal;
         this.terminalName = terminal.getName();
         this.card = null;
@@ -79,19 +83,8 @@ public class PcscReader extends AbstractThreadedLocalReader implements Configura
         }
     }
 
-    /**
-     * Flurent setter to change the PC/SC wait timeout in ms. Defaults to 5000.
-     *
-     * @param timeout Timeout to use
-     * @return Current instance
-     */
-    public PcscReader setThreadWaitTimeout(long timeout) {
-        this.threadWaitTimeout = timeout;
-        return this;
-    }
-
     @Override
-    public String getName() {
+    public final String getName() {
         return terminalName;
     }
 
@@ -100,7 +93,7 @@ public class PcscReader extends AbstractThreadedLocalReader implements Configura
      * 
      * @throws IOReaderException
      */
-    public void checkOrOpenPhysicalChannel() throws IOReaderException {
+    public final void checkOrOpenPhysicalChannel() throws IOReaderException {
         // init of the physical SE channel: if not yet established, opening of a new physical
         // channel
         try {
@@ -127,7 +120,7 @@ public class PcscReader extends AbstractThreadedLocalReader implements Configura
      * @throws IOReaderException
      * @throws CardException
      */
-    public void closePhysicalChannel() throws IOReaderException {
+    public final void closePhysicalChannel() throws IOReaderException {
         logger.info("Closing of the physical SE channel.", "action",
                 "pcsc_reader.closePhysicalChannel");
         try {
@@ -142,7 +135,7 @@ public class PcscReader extends AbstractThreadedLocalReader implements Configura
     }
 
     @Override
-    public boolean isSePresent() throws IOReaderException {
+    public final boolean isSePresent() throws IOReaderException {
         try {
             return terminal.isCardPresent();
         } catch (CardException e) {
@@ -151,12 +144,12 @@ public class PcscReader extends AbstractThreadedLocalReader implements Configura
     }
 
     @Override
-    public boolean waitForCardPresent(long timeout) throws CardException {
+    public final boolean waitForCardPresent(long timeout) throws CardException {
         return terminal.waitForCardPresent(timeout);
     }
 
     @Override
-    public boolean waitForCardAbsent(long timeout) throws CardException, IOReaderException {
+    public final boolean waitForCardAbsent(long timeout) throws CardException, IOReaderException {
         if (terminal.waitForCardAbsent(timeout)) {
             closePhysicalChannel();
             return true;
@@ -172,7 +165,7 @@ public class PcscReader extends AbstractThreadedLocalReader implements Configura
      * @return apduOut buffer
      * @throws ChannelStateReaderException Exception faced
      */
-    public ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
+    public final ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
         ResponseAPDU apduResponseData;
         try {
             apduResponseData = channel.transmit(new CommandAPDU(apduIn));
@@ -182,8 +175,7 @@ public class PcscReader extends AbstractThreadedLocalReader implements Configura
         return ByteBuffer.wrap(apduResponseData.getBytes());
     }
 
-    @Override
-    public ByteBuffer getAlternateFci() {
+    public final ByteBuffer getAlternateFci() {
         return ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
                 ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}));
     }
@@ -196,7 +188,8 @@ public class PcscReader extends AbstractThreadedLocalReader implements Configura
      * @return
      * @throws InvalidMessageException
      */
-    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws InvalidMessageException {
+    public final boolean protocolFlagMatches(SeProtocol protocolFlag)
+            throws InvalidMessageException {
         boolean result;
         // Get protocolFlag to check if ATR filtering is required
         if (protocolFlag != null) {
@@ -221,22 +214,6 @@ public class PcscReader extends AbstractThreadedLocalReader implements Configura
             result = true;
         }
         return result;
-    }
-
-    /**
-     * Set a list of parameters on a reader.
-     * <p>
-     * See {@link #setParameter(String, String)} for more details
-     *
-     * @param parameters the new parameters
-     * @throws IOReaderException This method can fail when disabling the exclusive mode as it's
-     *         executed instantly
-     */
-    @Override
-    public void setParameters(Map<String, String> parameters) throws IOReaderException {
-        for (Map.Entry<String, String> en : parameters.entrySet()) {
-            setParameter(en.getKey(), en.getValue());
-        }
     }
 
     /*

@@ -6,7 +6,13 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy;
+package org.eclipse.keyple.seproxy.exception;
 
-public interface ConfigurableReader extends ProxyReader, ConfigurableItem {
+/**
+ * @deprecated Never used
+ */
+public class ParameterProcessingErrorException extends Exception {
+    public ParameterProcessingErrorException(String message) {
+        super(message);
+    }
 }

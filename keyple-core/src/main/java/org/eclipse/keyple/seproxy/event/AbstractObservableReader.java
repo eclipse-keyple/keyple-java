@@ -6,10 +6,13 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy;
+package org.eclipse.keyple.seproxy.event;
 
 
 import java.util.Map;
+import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.SeProtocol;
+import org.eclipse.keyple.seproxy.plugin.AbstractLoggedObservable;
 import org.eclipse.keyple.util.Observable;
 
 

@@ -6,9 +6,15 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy;
+package org.eclipse.keyple.seproxy.plugin;
 
 
+import java.io.IOException;
+import java.util.Map;
+import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
+import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.util.NameableConfigurable;
 import org.eclipse.keyple.util.Observable;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
@@ -19,7 +25,8 @@ import com.github.structlog4j.SLoggerFactory;
  * 
  * @param <T>
  */
-public abstract class AbstractLoggedObservable<T> extends Observable<T> {
+public abstract class AbstractLoggedObservable<T> extends Observable<T>
+        implements NameableConfigurable {
     private static final ILogger logger = SLoggerFactory.getLogger(AbstractLoggedObservable.class);
     private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
 
@@ -92,5 +99,20 @@ public abstract class AbstractLoggedObservable<T> extends Observable<T> {
 
         super.notifyObservers(event);
 
+    }
+
+    /**
+     * Set a list of parameters on a reader.
+     * <p>
+     * See {@link #setParameter(String, String)} for more details
+     *
+     * @param parameters the new parameters
+     * @throws IOReaderException This method can fail when disabling the exclusive mode as it's
+     *         executed instantly
+     */
+    public final void setParameters(Map<String, String> parameters) throws IOException {
+        for (Map.Entry<String, String> en : parameters.entrySet()) {
+            setParameter(en.getKey(), en.getValue());
+        }
     }
 }

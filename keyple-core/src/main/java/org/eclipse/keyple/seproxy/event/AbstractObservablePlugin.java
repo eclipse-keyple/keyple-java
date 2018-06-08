@@ -6,7 +6,10 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy;
+package org.eclipse.keyple.seproxy.event;
+
+import org.eclipse.keyple.seproxy.ReadersPlugin;
+import org.eclipse.keyple.seproxy.plugin.AbstractLoggedObservable;
 
 /**
  * Observable plugin. These plugin can report when a reader is added or removed.

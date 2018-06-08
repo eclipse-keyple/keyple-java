@@ -6,16 +6,23 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy;
-
+package org.eclipse.keyple.util;
 
 import java.io.IOException;
 import java.util.Map;
+import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.ReadersPlugin;
 
 /**
- * Allow {@link ProxyReader}s and {@link ReadersPlugin}s to receive configuration parameters.
+ * Allow {@link ProxyReader}s and {@link ReadersPlugin}s to be named and receive configuration
+ * parameters.
  */
-public interface ConfigurableItem {
+public interface NameableConfigurable {
+    /**
+     *
+     * @return the name of the item
+     */
+    String getName();
 
     /**
      * Gets the parameters

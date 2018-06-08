@@ -6,15 +6,17 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy;
+package org.eclipse.keyple.seproxy.plugin;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import javax.smartcardio.CardException;
-import org.eclipse.keyple.seproxy.exceptions.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
-import org.eclipse.keyple.seproxy.exceptions.InvalidMessageException;
+import org.eclipse.keyple.seproxy.*;
+import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
@@ -30,6 +32,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     private ApduResponse fciDataSelected;
     private boolean logging;
     private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
+
 
     /**
      * Checks the presence of a physical channel. Creates one if needed, generates an exception in

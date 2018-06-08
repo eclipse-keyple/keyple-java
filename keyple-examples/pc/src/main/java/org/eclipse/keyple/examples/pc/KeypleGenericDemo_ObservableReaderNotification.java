@@ -12,7 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.event.*;
+import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
+import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.util.Observable;
 
 

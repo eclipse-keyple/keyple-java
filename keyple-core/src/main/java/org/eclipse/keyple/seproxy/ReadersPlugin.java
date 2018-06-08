@@ -9,12 +9,13 @@
 package org.eclipse.keyple.seproxy;
 
 import java.util.List;
-import org.eclipse.keyple.seproxy.exceptions.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.util.NameableConfigurable;
 
 /**
  * Card readers plugin interface. Every single card wanting to implement this interface should
  */
-public interface ReadersPlugin extends NameableItem {
+public interface ReadersPlugin extends NameableConfigurable {
 
     // TODO - possibility to force implementatiosn to be singleton?
 

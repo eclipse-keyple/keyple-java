@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.commands.AbstractApduCommandBuilder;
 import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.exceptions.*;
+import org.eclipse.keyple.seproxy.exception.*;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNot;
 import org.junit.Assert;

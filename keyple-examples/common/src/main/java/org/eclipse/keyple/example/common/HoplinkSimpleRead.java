@@ -14,8 +14,8 @@ import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.seproxy.ApduRequest;
-import org.eclipse.keyple.seproxy.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.SeRequest;
+import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**

@@ -6,7 +6,13 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy;
+package org.eclipse.keyple.seproxy.exception;
 
-public interface ConfigurablePlugin extends ReadersPlugin, ConfigurableItem {
+/**
+ * @deprecated Nobody uses it, should we keep it ?
+ */
+public class InvalidApduReaderException extends Exception {
+    public InvalidApduReaderException(String message) {
+        super(message);
+    }
 }
