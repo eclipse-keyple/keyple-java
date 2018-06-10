@@ -217,29 +217,35 @@ public class KeypleGenericDemo_SeProtocolDetection
         observer.poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL,
                 PcscReader.SETTING_PROTOCOL_T1);
 
-        // add a protocol map to handle various application cases
+        // Protocol detection settings.
+        // add expected protocols with two different methods:
+        // - using a protocol map and setSeProtocols
+        // - using addSeProtocolMatcher
+
+        // create and fill the protocol map
         Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
 
-        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC,
-                PcscProtocolSettings.REGEX_PROTOCOL_MIFARE_CLASSIC);
+        protocolsMap.put(PcscProtocolSettings.MATCHER_PROTOCOL_MIFARE_CLASSIC.getFlag(),
+                PcscProtocolSettings.MATCHER_PROTOCOL_MIFARE_CLASSIC.getValue());
 
-        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_UL,
-                PcscProtocolSettings.REGEX_PROTOCOL_MIFARE_UL);
-
-        protocolsMap.put(ContactlessProtocols.PROTOCOL_MEMORY_ST25,
-                PcscProtocolSettings.REGEX_PROTOCOL_MEMORY_ST25);
-
-        protocolsMap.put(ContactlessProtocols.PROTOCOL_ISO14443_4,
-                PcscProtocolSettings.REGEX_PROTOCOL_ISO14443_4);
-
-        protocolsMap.put(ContactlessProtocols.PROTOCOL_B_PRIME,
-                PcscProtocolSettings.REGEX_PROTOCOL_B_PRIME);
-
-        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE,
-                PcscProtocolSettings.REGEX_PROTOCOL_DESFIRE);
+        protocolsMap.put(PcscProtocolSettings.MATCHER_PROTOCOL_MIFARE_UL.getFlag(),
+                PcscProtocolSettings.MATCHER_PROTOCOL_MIFARE_UL.getValue());
 
         // provide the reader with the map
         ((AbstractObservableReader) observer.poReader).setSeProtocols(protocolsMap);
+
+        // add protocols individually
+        ((AbstractObservableReader) observer.poReader)
+                .addSeProtocolMatcher(PcscProtocolSettings.MATCHER_PROTOCOL_MEMORY_ST25);
+
+        ((AbstractObservableReader) observer.poReader)
+                .addSeProtocolMatcher(PcscProtocolSettings.MATCHER_PROTOCOL_ISO14443_4);
+
+        ((AbstractObservableReader) observer.poReader)
+                .addSeProtocolMatcher(PcscProtocolSettings.MATCHER_PROTOCOL_B_PRIME);
+
+        ((AbstractObservableReader) observer.poReader)
+                .addSeProtocolMatcher(PcscProtocolSettings.MATCHER_PROTOCOL_MIFARE_DESFIRE);
 
         // Set terminal as Observer of the first reader
         ((AbstractObservableReader) observer.poReader).addObserver(observer);

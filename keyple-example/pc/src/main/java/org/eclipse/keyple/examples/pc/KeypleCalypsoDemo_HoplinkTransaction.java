@@ -11,9 +11,7 @@ package org.eclipse.keyple.examples.pc;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.commands.SendableInSession;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
@@ -27,7 +25,6 @@ import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
 
@@ -176,13 +173,8 @@ public class KeypleCalypsoDemo_HoplinkTransaction
         poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
         csmReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
-        // create and fill a protocol map
-        Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
-        protocolsMap.put(ContactlessProtocols.PROTOCOL_ISO14443_4,
-                PcscProtocolSettings.REGEX_PROTOCOL_ISO14443_4);
-
         // provide the reader with the map
-        poReader.setSeProtocols(protocolsMap);
+        poReader.addSeProtocolMatcher(PcscProtocolSettings.MATCHER_PROTOCOL_ISO14443_4);
 
         // Setting up ourself as an observer
         KeypleCalypsoDemo_HoplinkTransaction observer = new KeypleCalypsoDemo_HoplinkTransaction();

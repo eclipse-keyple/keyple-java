@@ -13,6 +13,7 @@ import java.util.Map;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.plugin.AbstractLoggedObservable;
+import org.eclipse.keyple.seproxy.protocol.SeProtocolMatcher;
 import org.eclipse.keyple.util.Observable;
 
 
@@ -40,5 +41,9 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     @Override
     public final void setSeProtocols(Map<SeProtocol, String> seProtocolSettings) {
         this.protocolsMap = seProtocolSettings;
+    }
+
+    public final void addSeProtocolMatcher(SeProtocolMatcher seProtocolMatcher) {
+        this.protocolsMap.put(seProtocolMatcher.getFlag(), seProtocolMatcher.getValue());
     }
 }
