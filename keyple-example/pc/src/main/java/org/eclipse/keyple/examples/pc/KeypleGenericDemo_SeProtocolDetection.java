@@ -220,12 +220,26 @@ public class KeypleGenericDemo_SeProtocolDetection
 
         // Protocol detection settings.
         // add 8 expected protocols with three different methods:
-        // - using a protocol map and addSeProtocolSetting
         // - using addSeProtocolSetting
         // - using a custom enum
+        // - using a protocol map and addSeProtocolSetting
         // A real application should use only one method.
 
         // Method 1
+        // add protocols individually
+        ((AbstractObservableReader) observer.poReader)
+                .addSeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_MEMORY_ST25);
+
+        ((AbstractObservableReader) observer.poReader)
+                .addSeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4);
+
+
+        // Method 2
+        // add all settings at once with setting enum
+        ((AbstractObservableReader) observer.poReader)
+                .addSeProtocolSetting(CustomProtocolSetting.class);
+
+        // Method 3
         // create and fill a protocol map
         Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
 
@@ -237,22 +251,6 @@ public class KeypleGenericDemo_SeProtocolDetection
 
         // provide the reader with the map
         ((AbstractObservableReader) observer.poReader).addSeProtocolSetting(protocolsMap);
-
-        // Method 2
-        // add protocols individually
-        ((AbstractObservableReader) observer.poReader)
-                .addSeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_MEMORY_ST25);
-
-        ((AbstractObservableReader) observer.poReader)
-                .addSeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4);
-
-
-        // Method 3
-        // add all settings at once with setting enum
-        ((AbstractObservableReader) observer.poReader)
-                .addSeProtocolSetting(CustomProtocolSetting.class);
-
-
 
         // Set terminal as Observer of the first reader
         ((AbstractObservableReader) observer.poReader).addObserver(observer);
