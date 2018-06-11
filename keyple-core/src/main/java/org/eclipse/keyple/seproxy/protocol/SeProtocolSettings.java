@@ -10,7 +10,7 @@ package org.eclipse.keyple.seproxy.protocol;
 
 import org.eclipse.keyple.seproxy.SeProtocol;
 
-public interface SeProtocolMatcher {
+public interface SeProtocolSettings {
     SeProtocol getFlag();
 
     String getValue();

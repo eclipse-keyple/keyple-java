@@ -19,7 +19,7 @@ import org.eclipse.keyple.calypso.commands.po.builder.AbstractOpenSessionCmdBuil
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
-import org.eclipse.keyple.plugin.pcsc.PcscProtocolSettings;
+import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
@@ -174,7 +174,7 @@ public class KeypleCalypsoDemo_HoplinkTransaction
         csmReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
         // provide the reader with the map
-        poReader.addSeProtocolMatcher(PcscProtocolSettings.MATCHER_PROTOCOL_ISO14443_4);
+        poReader.addSeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4);
 
         // Setting up ourself as an observer
         KeypleCalypsoDemo_HoplinkTransaction observer = new KeypleCalypsoDemo_HoplinkTransaction();

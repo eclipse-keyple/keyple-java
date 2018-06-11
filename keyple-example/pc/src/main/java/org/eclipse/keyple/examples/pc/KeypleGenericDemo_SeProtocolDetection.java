@@ -15,13 +15,14 @@ import java.util.*;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.example.common.HoplinkSimpleRead;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
-import org.eclipse.keyple.plugin.pcsc.PcscProtocolSettings;
+import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.seproxy.protocol.SeProtocolSettings;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
 
@@ -103,16 +104,16 @@ public class KeypleGenericDemo_SeProtocolDetection
                     ContactlessProtocols.PROTOCOL_MIFARE_UL);
             poRequests.add(getSNMifareULRequest);
 
-            SeRequest getSNMifareDesfireRequest = new SeRequest(null, getSerialNumberApduList,
-                    false, ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE);
-            poRequests.add(getSNMifareDesfireRequest);
-
             SeRequest getSNST25fireRequest = new SeRequest(null, getSerialNumberApduList, false,
                     ContactlessProtocols.PROTOCOL_MEMORY_ST25);
             poRequests.add(getSNST25fireRequest);
 
+            SeRequest getSNMifareDesfireRequest = new SeRequest(null, getSerialNumberApduList,
+                    false, CustomProtocols.CUSTOM_PROTOCOL_MIFARE_DESFIRE);
+            poRequests.add(getSNMifareDesfireRequest);
+
             SeRequest getSNBPrimeRequest = new SeRequest(null, getSerialNumberApduList, false,
-                    ContactlessProtocols.PROTOCOL_B_PRIME);
+                    CustomProtocols.CUSTOM_PROTOCOL_B_PRIME);
             poRequests.add(getSNBPrimeRequest);
 
 
@@ -218,34 +219,40 @@ public class KeypleGenericDemo_SeProtocolDetection
                 PcscReader.SETTING_PROTOCOL_T1);
 
         // Protocol detection settings.
-        // add expected protocols with two different methods:
-        // - using a protocol map and setSeProtocols
-        // - using addSeProtocolMatcher
+        // add 8 expected protocols with three different methods:
+        // - using a protocol map and addSeProtocolSetting
+        // - using addSeProtocolSetting
+        // - using a custom enum
+        // A real application should use only one method.
 
-        // create and fill the protocol map
+        // Method 1
+        // create and fill a protocol map
         Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
 
-        protocolsMap.put(PcscProtocolSettings.MATCHER_PROTOCOL_MIFARE_CLASSIC.getFlag(),
-                PcscProtocolSettings.MATCHER_PROTOCOL_MIFARE_CLASSIC.getValue());
+        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC,
+                PcscProtocolSetting.ProtocolSetting.REGEX_PROTOCOL_MIFARE_CLASSIC);
 
-        protocolsMap.put(PcscProtocolSettings.MATCHER_PROTOCOL_MIFARE_UL.getFlag(),
-                PcscProtocolSettings.MATCHER_PROTOCOL_MIFARE_UL.getValue());
+        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_UL,
+                PcscProtocolSetting.ProtocolSetting.REGEX_PROTOCOL_MIFARE_UL);
 
         // provide the reader with the map
-        ((AbstractObservableReader) observer.poReader).setSeProtocols(protocolsMap);
+        ((AbstractObservableReader) observer.poReader).addSeProtocolSetting(protocolsMap);
 
+        // Method 2
         // add protocols individually
         ((AbstractObservableReader) observer.poReader)
-                .addSeProtocolMatcher(PcscProtocolSettings.MATCHER_PROTOCOL_MEMORY_ST25);
+                .addSeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_MEMORY_ST25);
 
         ((AbstractObservableReader) observer.poReader)
-                .addSeProtocolMatcher(PcscProtocolSettings.MATCHER_PROTOCOL_ISO14443_4);
+                .addSeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4);
 
-        ((AbstractObservableReader) observer.poReader)
-                .addSeProtocolMatcher(PcscProtocolSettings.MATCHER_PROTOCOL_B_PRIME);
 
+        // Method 3
+        // add all settings at once with setting enum
         ((AbstractObservableReader) observer.poReader)
-                .addSeProtocolMatcher(PcscProtocolSettings.MATCHER_PROTOCOL_MIFARE_DESFIRE);
+                .addSeProtocolSetting(CustomProtocolSetting.class);
+
+
 
         // Set terminal as Observer of the first reader
         ((AbstractObservableReader) observer.poReader).addObserver(observer);
@@ -265,5 +272,57 @@ public class KeypleGenericDemo_SeProtocolDetection
                 System.exit(0);
             }
         }
+    }
+}
+
+
+/**
+ * Custom protocol definitions to illustrate the extension of the Keyple SDK definitions
+ */
+enum CustomProtocols implements SeProtocol {
+    CUSTOM_PROTOCOL_B_PRIME("Custom Old Calypso B prime"), CUSTOM_PROTOCOL_MIFARE_DESFIRE(
+            "Custom Mifare DESFire");
+
+    /** The protocol name. */
+    private String name;
+
+    CustomProtocols(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+}
+
+
+/**
+ * Custom protocol setting definitions to illustrate the extension of the Keyple SDK definitions
+ */
+enum CustomProtocolSetting implements SeProtocolSettings {
+    CUSTOM_SETTING_PROTOCOL_B_PRIME(CustomProtocols.CUSTOM_PROTOCOL_B_PRIME,
+            "3B8F8001805A0A0103200311........829000.."), CUSTOM_SETTING_PROTOCOL_ISO14443_4(
+                    CustomProtocols.CUSTOM_PROTOCOL_MIFARE_DESFIRE, "3B8180018080");
+
+    /* the protocol flag */
+    SeProtocol flag;
+
+    /* the protocol setting value */
+    String value;
+
+    CustomProtocolSetting(SeProtocol flag, String value) {
+        this.flag = flag;
+        this.value = value;
+    }
+
+    @Override
+    public SeProtocol getFlag() {
+        return flag;
+    }
+
+    @Override
+    public String getValue() {
+        return value;
     }
 }
