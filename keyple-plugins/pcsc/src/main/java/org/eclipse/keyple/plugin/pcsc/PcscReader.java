@@ -13,7 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
-import org.eclipse.keyple.seproxy.*;
+import org.eclipse.keyple.seproxy.ApduRequest;
+import org.eclipse.keyple.seproxy.ApduResponse;
+import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
@@ -43,6 +45,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
 
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 5000;
 
+    private boolean logicalChannelOpen;
+
     private final CardTerminal terminal;
     private final String terminalName;
 
@@ -60,7 +64,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
      * with their default values as defined in setParameter. See
      * {@link #setParameter(String, String)} for more details
-     * 
+     *
      * @param terminal
      */
     protected PcscReader(CardTerminal terminal) {
@@ -90,29 +94,64 @@ public class PcscReader extends AbstractThreadedLocalReader {
 
     /**
      * Open (if needed) a physical channel (try to connect a card to the terminal)
-     * 
+     *
      * @throws IOReaderException
      */
-    public final void checkOrOpenPhysicalChannel() throws IOReaderException {
-        // init of the physical SE channel: if not yet established, opening of a new physical
-        // channel
-        try {
-            if (card == null) {
-                this.card = this.terminal.connect(parameterCardProtocol);
-                if (cardExclusiveMode) {
-                    card.beginExclusive();
-                    logger.info("Opening of a physical SE channel in exclusive mode.", "action",
-                            "pcsc_reader.checkOrOpenPhysicalChannel");
-                } else {
-                    logger.info("Opening of a physical SE channel in shared mode.", "action",
-                            "pcsc_reader.checkOrOpenPhysicalChannel");
+
+    public final ApduResponse openLogicalChannelAndSelect(ByteBuffer aid) throws IOReaderException {
+        if (!logicalChannelOpen) {
+            // init of the physical SE channel: if not yet established, opening of a new physical
+            // channel
+            try {
+                if (card == null) {
+                    this.card = this.terminal.connect(parameterCardProtocol);
+                    if (cardExclusiveMode) {
+                        card.beginExclusive();
+                        logger.info("Opening of a physical SE channel in exclusive mode.", "action",
+                                "pcsc_reader.checkOrOpenPhysicalChannel");
+                    } else {
+                        logger.info("Opening of a physical SE channel in shared mode.", "action",
+                                "pcsc_reader.checkOrOpenPhysicalChannel");
+                    }
                 }
+                this.channel = card.getBasicChannel();
+            } catch (CardException e) {
+                throw new ChannelStateReaderException(e);
             }
-            this.channel = card.getBasicChannel();
-        } catch (CardException e) {
-            throw new ChannelStateReaderException(e);
+        }
+
+        if (aid != null) {
+            logger.info("Connecting to card", "action", "local_reader.openLogicalChannel", "aid",
+                    ByteBufferUtils.toHex(aid), "readerName", getName());
+            try {
+                // build a get response command
+                // the actual length expected by the SE in the get response command is handled in
+                // transmitApdu
+                ByteBuffer selectApplicationCommand = ByteBufferUtils
+                        .fromHex("00A40400" + String.format("%02X", (byte) aid.limit())
+                                + ByteBufferUtils.toHex(aid) + "00");
+
+                ApduResponse fciResponse =
+                        processApduRequest(new ApduRequest(selectApplicationCommand, true)); // to
+                                                                                             // manage
+                                                                                             // case
+                                                                                             // 4
+                                                                                             // hack
+                return fciResponse;
+
+            } catch (ChannelStateReaderException e1) {
+
+                throw new ChannelStateReaderException(e1);
+
+            }
+        } else {
+            return new ApduResponse(
+                    ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
+                            ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00})),
+                    true);
         }
     }
+
 
     /**
      * Disconnects the card from the terminal
@@ -175,7 +214,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
         return ByteBuffer.wrap(apduResponseData.getBytes());
     }
 
-    public final ByteBuffer getAlternateFci() {
+    private ByteBuffer getAlternateFci() {
         return ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
                 ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}));
     }
@@ -183,7 +222,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
     /**
      * Tells if the current SE protocol matches the provided protocol flag. If the protocol flag is
      * not defined (null), we consider here that it matches.
-     * 
+     *
      * @param protocolFlag
      * @return
      * @throws InvalidMessageException

@@ -92,18 +92,21 @@ public class KeypleGenericDemo_SeProtocolDetection
             ApduRequest pcscContactlessReaderGetData =
                     new ApduRequest(ByteBufferUtils.fromHex("FFCA000000"), false);
             List<ApduRequest> pcscContactlessReaderGetDataList = new ArrayList<ApduRequest>();
+            pcscContactlessReaderGetDataList.add(pcscContactlessReaderGetData);
 
             // process SDK defined protocols
             for (ContactlessProtocols protocol : ContactlessProtocols.values()) {
                 switch (protocol) {
                     case PROTOCOL_ISO14443_4:
                         // get Apdu list from HoplinkSimpleRead class
-                        List<ApduRequest> poApduRequestList = HoplinkSimpleRead.getApduList();
+                        // List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
+                        List<ApduRequest> poApduRequestList = pcscContactlessReaderGetDataList;
+                        poApduRequestList.addAll(HoplinkSimpleRead.getApduList());
                         // prepend pcscContactlessReaderGetData to get the SE UID
                         poApduRequestList.add(0, pcscContactlessReaderGetData);
                         // add SeRequest with the AID from HoplinkSimpleRead
-                        poRequests.add(new SeRequest(HoplinkSimpleRead.getAid(),
-                                pcscContactlessReaderGetDataList, false, protocol));
+                        poRequests.add(new SeRequest(HoplinkSimpleRead.getAid(), poApduRequestList,
+                                false, protocol));
                         break;
                     case PROTOCOL_MIFARE_DESFIRE:
                     case PROTOCOL_B_PRIME:
