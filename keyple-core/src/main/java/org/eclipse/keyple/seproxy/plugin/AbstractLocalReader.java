@@ -11,15 +11,20 @@ package org.eclipse.keyple.seproxy.plugin;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.smartcardio.CardException;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
+import org.eclipse.keyple.seproxy.protocol.SeProtocolSettings;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
+
+// TODO remove after refactoring this class to reduce the number of method
+@SuppressWarnings("PMD.TooManyMethods")
 
 /**
  * Manage the loop processing for SeRequest transmission in a set and for SeResponse reception in a
@@ -85,7 +90,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return responseSet
      * @throws IOReaderException
      */
-    public final SeResponseSet transmit(SeRequestSet requestSet) throws IOReaderException {
+    public final SeResponseSet processSeRequestSet(SeRequestSet requestSet)
+            throws IOReaderException {
         long before = System.nanoTime();
         try {
             SeResponseSet responseSet = transmitActual(requestSet);
@@ -312,5 +318,28 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             }
         }
         return new SeResponse(previouslyOpen, fciDataSelected, apduResponseList);
+    }
+
+
+    /**
+     * PO selection map associating seProtocols and selection strings (e.g. ATR regex for Pcsc
+     * plugins)
+     */
+    public Map<SeProtocol, String> protocolsMap;
+
+    public final void addSeProtocolSetting(Map<SeProtocol, String> seProtocolSettings)
+            throws IOReaderException {
+        this.protocolsMap.putAll(seProtocolSettings);
+    }
+
+    public final void addSeProtocolSetting(SeProtocolSettings seProtocolSetting) {
+        this.protocolsMap.put(seProtocolSetting.getFlag(), seProtocolSetting.getValue());
+    }
+
+    // TODO How to force class T to be an enum implementing SeProtocolSettings?
+    public final <T extends Enum<T>> void addSeProtocolSetting(Class<T> settings) {
+        for (Enum<T> setting : settings.getEnumConstants()) {
+            addSeProtocolSetting((SeProtocolSettings) setting);
+        }
     }
 }
