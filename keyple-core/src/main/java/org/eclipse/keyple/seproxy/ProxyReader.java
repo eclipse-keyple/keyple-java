@@ -8,9 +8,8 @@
 
 package org.eclipse.keyple.seproxy;
 
-import java.util.Map;
+
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSettings;
 import org.eclipse.keyple.util.NameableConfigurable;
 
 /**
@@ -57,24 +56,4 @@ public interface ProxyReader extends NameableConfigurable {
      * @throws IOReaderException Exception of type IO Reader
      */
     SeResponseSet transmit(SeRequestSet seApplicationRequest) throws IOReaderException;
-
-    /**
-     * Sets the expected protocols to handle SeRequest selection in SeRequestSet
-     *
-     * @param seProtocolSettings
-     * @throws IOReaderException
-     */
-    void addSeProtocolSetting(Map<SeProtocol, String> seProtocolSettings) throws IOReaderException;
-
-    /**
-     * Adds a protocol setting to the current map
-     * 
-     * @param flag SeProtocol flag
-     * @param value reader's value matching the flag
-     */
-    void addSeProtocolSetting(SeProtocol flag, String value);
-
-    void addSeProtocolSetting(SeProtocolSettings seProtocolSetting);
-
-    <T extends Enum<T>> void addSeProtocolSetting(Class<T> setting);
 }

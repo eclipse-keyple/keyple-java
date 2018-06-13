@@ -44,8 +44,8 @@ public class StubReader extends AbstractLocalReader {
     }
 
     @Override
-    public void checkOrOpenPhysicalChannel() throws IOReaderException {
-
+    public ByteBuffer openLogicalChannelAndSelect(ByteBuffer aid) throws IOReaderException {
+        return null;
     }
 
     @Override
@@ -55,11 +55,6 @@ public class StubReader extends AbstractLocalReader {
 
     @Override
     public ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
-        return null;
-    }
-
-    @Override
-    public ByteBuffer getAlternateFci() {
         return null;
     }
 

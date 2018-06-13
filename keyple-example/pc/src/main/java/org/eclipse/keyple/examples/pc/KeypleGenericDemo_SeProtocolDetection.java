@@ -21,6 +21,7 @@ import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.plugin.AbstractLocalReader;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSettings;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -81,50 +82,57 @@ public class KeypleGenericDemo_SeProtocolDetection
     public void operatePoTransaction() {
 
         try {
+            // create a request set:
+            // * getting the SE UID for all SE protocols except ISO14443-4
+            // * executing a Hoplink simple read scenario for ISO14443-4
 
-            // create an empty list of SeRequest
+            // create a list of requests
             List<SeRequest> poRequests = new ArrayList<SeRequest>();
 
-            // create a standard PCSC request for getting the PO S/N
-            ApduRequest getSerialNumberApdu =
+            ApduRequest pcscContactlessReaderGetData =
                     new ApduRequest(ByteBufferUtils.fromHex("FFCA000000"), false);
-            List<ApduRequest> getSerialNumberApduList = new ArrayList<ApduRequest>();
-            getSerialNumberApduList.add(getSerialNumberApdu);
+            List<ApduRequest> pcscContactlessReaderGetDataList = new ArrayList<ApduRequest>();
+            pcscContactlessReaderGetDataList.add(pcscContactlessReaderGetData);
 
-            // add a request for getting the PO S/N to various PO protocols
-            SeRequest getSNIso144434Request = new SeRequest(null, getSerialNumberApduList, false,
-                    ContactlessProtocols.PROTOCOL_ISO14443_4);
-            poRequests.add(getSNIso144434Request);
+            // process SDK defined protocols
+            for (ContactlessProtocols protocol : ContactlessProtocols.values()) {
+                switch (protocol) {
+                    case PROTOCOL_ISO14443_4:
+                        // get Apdu list from HoplinkSimpleRead class
+                        // List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
+                        List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
+                        // add common get UID command
+                        poApduRequestList.addAll(pcscContactlessReaderGetDataList);
+                        // add Hoplink specific commands
+                        poApduRequestList.addAll(HoplinkSimpleRead.getApduList());
+                        // add a SeRequest with the AID from HoplinkSimpleRead and the requests list
+                        poRequests.add(new SeRequest(HoplinkSimpleRead.getAid(), poApduRequestList,
+                                false, protocol));
+                        break;
+                    case PROTOCOL_ISO14443_3A:
+                    case PROTOCOL_ISO14443_3B:
+                        // not handled in this demo code
+                        break;
+                    case PROTOCOL_MIFARE_DESFIRE:
+                    case PROTOCOL_B_PRIME:
+                        // intentionally ignored for demo purpose
+                        break;
+                    default:
+                        poRequests.add(new SeRequest(null, pcscContactlessReaderGetDataList, false,
+                                protocol));
+                        break;
+                }
+            }
 
-            SeRequest getSNMifare1KRequest = new SeRequest(null, getSerialNumberApduList, false,
-                    ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC);
-            poRequests.add(getSNMifare1KRequest);
-
-            SeRequest getSNMifareULRequest = new SeRequest(null, getSerialNumberApduList, false,
-                    ContactlessProtocols.PROTOCOL_MIFARE_UL);
-            poRequests.add(getSNMifareULRequest);
-
-            SeRequest getSNST25fireRequest = new SeRequest(null, getSerialNumberApduList, false,
-                    ContactlessProtocols.PROTOCOL_MEMORY_ST25);
-            poRequests.add(getSNST25fireRequest);
-
-            SeRequest getSNMifareDesfireRequest = new SeRequest(null, getSerialNumberApduList,
-                    false, CustomProtocols.CUSTOM_PROTOCOL_MIFARE_DESFIRE);
-            poRequests.add(getSNMifareDesfireRequest);
-
-            SeRequest getSNBPrimeRequest = new SeRequest(null, getSerialNumberApduList, false,
-                    CustomProtocols.CUSTOM_PROTOCOL_B_PRIME);
-            poRequests.add(getSNBPrimeRequest);
-
-
-            // create a Hoplink simple read request
-            SeRequest poRequestHoplink = HoplinkSimpleRead.getSeRequest();
-
-            // add the request to the list
-            poRequests.add(poRequestHoplink);
+            // process application specific protocols
+            for (CustomProtocols protocol : CustomProtocols.values()) {
+                poRequests.add(
+                        new SeRequest(null, pcscContactlessReaderGetDataList, false, protocol));
+            }
 
             // create a SeRequestSet from the SeRequest list
             SeRequestSet poRequest = new SeRequestSet(poRequests);
+
             // execute request and get response
             SeResponseSet poResponse = poReader.transmit(poRequest);
 
@@ -227,17 +235,17 @@ public class KeypleGenericDemo_SeProtocolDetection
 
         // Method 1
         // add protocols individually
-        ((AbstractObservableReader) observer.poReader)
+        ((AbstractLocalReader) observer.poReader)
                 .addSeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_MEMORY_ST25);
 
-        ((AbstractObservableReader) observer.poReader)
+
+        ((AbstractLocalReader) observer.poReader)
                 .addSeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4);
 
 
         // Method 2
         // add all settings at once with setting enum
-        ((AbstractObservableReader) observer.poReader)
-                .addSeProtocolSetting(CustomProtocolSetting.class);
+        ((AbstractLocalReader) observer.poReader).addSeProtocolSetting(CustomProtocolSetting.class);
 
         // Method 3
         // create and fill a protocol map
@@ -250,7 +258,7 @@ public class KeypleGenericDemo_SeProtocolDetection
                 PcscProtocolSetting.ProtocolSetting.REGEX_PROTOCOL_MIFARE_UL);
 
         // provide the reader with the map
-        ((AbstractObservableReader) observer.poReader).addSeProtocolSetting(protocolsMap);
+        ((AbstractLocalReader) observer.poReader).addSeProtocolSetting(protocolsMap);
 
         // Set terminal as Observer of the first reader
         ((AbstractObservableReader) observer.poReader).addObserver(observer);

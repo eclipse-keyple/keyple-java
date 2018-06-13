@@ -8,14 +8,13 @@
 
 package org.eclipse.keyple.example.common;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.seproxy.ApduRequest;
-import org.eclipse.keyple.seproxy.SeRequest;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
@@ -26,9 +25,7 @@ public class HoplinkSimpleRead {
     /**
      * @return SeRequest
      */
-    public static SeRequest getSeRequest() {
-        String poAid = "A000000291A000000191";
-
+    public static List<ApduRequest> getApduList() {
         String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
                 + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
 
@@ -48,7 +45,11 @@ public class HoplinkSimpleRead {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-        return new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, true,
-                ContactlessProtocols.PROTOCOL_ISO14443_4);
+        return poApduRequestList;
+    }
+
+    public static ByteBuffer getAid() {
+        String poAid = "A000000291A000000191";
+        return ByteBufferUtils.fromHex(poAid);
     }
 }

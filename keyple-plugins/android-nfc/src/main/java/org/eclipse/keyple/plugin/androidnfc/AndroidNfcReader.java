@@ -111,7 +111,7 @@ public class AndroidNfcReader extends AbstractObservableReader
      * @return {@link SeResponseSet} : response from the transmitted request
      */
     @Override
-    public SeResponseSet transmit(SeRequestSet seRequest) {
+    public SeResponseSet processSeRequestSet(SeRequestSet seRequest) {
         Log.i(TAG, "Calling transmit on Android NFC Reader");
         Log.d(TAG, "Size of APDU Requests : " + String.valueOf(seRequest.getRequests().size()));
 
