@@ -11,63 +11,68 @@ package org.eclipse.keyple.seproxy;
 import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
+import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Test;
 
 public class SeResponseTest {
 
     @Test
-    public void testSEResponse() {
+    public void testSEResponse() throws InconsistentParameterValueException {
         ApduResponse fciData = new ApduResponse(
                 new byte[] {(byte) 0x01, (byte) 02, (byte) 0x03, (byte) 0x04}, true);
-        SeResponseSet response =
-                new SeResponseSet(new SeResponse(true, fciData, new ArrayList<ApduResponse>()));
+        SeResponseSet response = new SeResponseSet(
+                new SeResponse(true, null, fciData, new ArrayList<ApduResponse>()));
         // assertNotNull(response);
         assertArrayEquals(new ArrayList<ApduResponse>().toArray(),
                 response.getSingleResponse().getApduResponses().toArray());
     }
 
     @Test
-    public void testWasChannelPreviouslyOpen() {
-        SeResponseSet response =
-                new SeResponseSet(new SeResponse(true, null, new ArrayList<ApduResponse>()));
+    public void testWasChannelPreviouslyOpen() throws InconsistentParameterValueException {
+        SeResponseSet response = new SeResponseSet(
+                new SeResponse(true, null, new ApduResponse(ByteBufferUtils.fromHex("00"), true),
+                        new ArrayList<ApduResponse>()));
         assertTrue(response.getSingleResponse().wasChannelPreviouslyOpen());
     }
 
     @Test
-    public void testGetFciData() {
+    public void testGetFciData() throws InconsistentParameterValueException {
         ApduResponse fciData = new ApduResponse(
                 new byte[] {(byte) 0x01, (byte) 02, (byte) 0x03, (byte) 0x04}, true);
-        SeResponseSet response =
-                new SeResponseSet(new SeResponse(true, fciData, new ArrayList<ApduResponse>()));
+        SeResponseSet response = new SeResponseSet(
+                new SeResponse(true, null, fciData, new ArrayList<ApduResponse>()));
         assertEquals(fciData, response.getSingleResponse().getFci());
 
     }
 
     @Test
-    public void testGetFciDataNull() {
+    public void testGetFciDataNull() throws InconsistentParameterValueException {
         ApduResponse fciData = null;
-        SeResponseSet response =
-                new SeResponseSet(new SeResponse(false, fciData, new ArrayList<ApduResponse>()));
+        SeResponseSet response = new SeResponseSet(
+                new SeResponse(false, new ApduResponse(ByteBufferUtils.fromHex("00"), true),
+                        fciData, new ArrayList<ApduResponse>()));
         assertNull(response.getSingleResponse().getFci());
 
     }
 
     @Test
-    public void testGetApduResponses() {
-        SeResponseSet response =
-                new SeResponseSet(new SeResponse(true, null, new ArrayList<ApduResponse>()));
+    public void testGetApduResponses() throws InconsistentParameterValueException {
+        SeResponseSet response = new SeResponseSet(
+                new SeResponse(true, null, new ApduResponse(ByteBufferUtils.fromHex("00"), true),
+                        new ArrayList<ApduResponse>()));
         assertArrayEquals(new ArrayList<ApduResponse>().toArray(),
                 response.getSingleResponse().getApduResponses().toArray());
     }
 
     @Test
-    public void testToString() {
+    public void testToString() throws InconsistentParameterValueException {
         ApduResponse fciData = new ApduResponse(
                 new byte[] {(byte) 0x01, (byte) 02, (byte) 0x03, (byte) 0x04}, true);
         List<ApduResponse> responses = new ArrayList<ApduResponse>();
         responses.add(fciData);
         responses.add(fciData);
-        SeResponseSet response = new SeResponseSet(new SeResponse(true, fciData, responses));
+        SeResponseSet response = new SeResponseSet(new SeResponse(true, null, fciData, responses));
         assertEquals(response.getSingleResponse().getApduResponses().size(), 2);
         assertEquals(fciData, response.getSingleResponse().getFci());
         for (ApduResponse resp : response.getSingleResponse().getApduResponses()) {

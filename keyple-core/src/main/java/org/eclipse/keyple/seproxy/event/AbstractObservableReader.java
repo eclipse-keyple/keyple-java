@@ -36,7 +36,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         void update(Observable reader, ReaderEvent event);
     }
 
-    public abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
+    protected abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
             throws IOReaderException;
 
     /**

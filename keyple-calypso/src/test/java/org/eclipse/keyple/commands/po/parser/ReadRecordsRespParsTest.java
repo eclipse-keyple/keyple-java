@@ -16,6 +16,7 @@ import org.eclipse.keyple.commands.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
+import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,13 +25,14 @@ public class ReadRecordsRespParsTest {
 
     @Test
     // TODO: Fix the parsing code so that the test makes sense
-    public void readRecordRespPars_one_record() {
+    public void readRecordRespPars_one_record() throws InconsistentParameterValueException {
         ByteBuffer response =
                 ByteBuffer.wrap(new byte[] {0x04, 0x02, 0x01, 0x01, (byte) 0x90, 0x00});
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(response, true);
         listeResponse.add(apduResponse);
-        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
+        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
+                new ApduResponse(ByteBufferUtils.fromHex("00"), true), listeResponse));
 
         ReadRecordsRespPars readRecordsResponse =
                 new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
@@ -47,13 +49,14 @@ public class ReadRecordsRespParsTest {
 
     @Test
     // TODO: Fix the parsing code so that the test makes sense
-    public void readRecordRespPars_records() {
+    public void readRecordRespPars_records() throws InconsistentParameterValueException {
         ByteBuffer response = ByteBuffer.wrap(new byte[] {0x01, 0x01, 0x01, 0x01, 0x30, 0x01, 0x01,
                 0x30, 0x01, 0x01, 0x30, 0x01, 0x01, 0x30, (byte) 0x90, 0x00});
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(response, true);
         listeResponse.add(apduResponse);
-        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
+        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
+                new ApduResponse(ByteBufferUtils.fromHex("00"), true), listeResponse));
 
         ReadRecordsRespPars apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
@@ -90,13 +93,14 @@ public class ReadRecordsRespParsTest {
     }
 
     @Test
-    public void readRecordRespPars_one_record_sfi() {
+    public void readRecordRespPars_one_record_sfi() throws InconsistentParameterValueException {
         ByteBuffer response = ByteBuffer.wrap(new byte[] {0x01, 0x01, 0x01, 0x01, 0x30, 0x01, 0x01,
                 0x30, 0x01, 0x01, 0x30, 0x01, 0x01, 0x30, (byte) 0x90, 0x00});
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(response, true);
         listeResponse.add(apduResponse);
-        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
+        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
+                new ApduResponse(ByteBufferUtils.fromHex("00"), true), listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
@@ -105,13 +109,14 @@ public class ReadRecordsRespParsTest {
     }
 
     @Test
-    public void readRecordRespPars_records_sfi() {
+    public void readRecordRespPars_records_sfi() throws InconsistentParameterValueException {
         ByteBuffer response = ByteBuffer.wrap(new byte[] {0x01, 0x01, 0x01, 0x01, 0x30, 0x01, 0x01,
                 0x30, 0x01, 0x01, 0x30, 0x01, 0x01, 0x30, (byte) 0x90, 0x00});
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(response, true);
         listeResponse.add(apduResponse);
-        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
+        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
+                new ApduResponse(ByteBufferUtils.fromHex("00"), true), listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));

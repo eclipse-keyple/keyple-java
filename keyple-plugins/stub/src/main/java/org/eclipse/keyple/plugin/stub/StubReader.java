@@ -44,7 +44,7 @@ public class StubReader extends AbstractLocalReader {
     }
 
     @Override
-    public ByteBuffer openLogicalChannelAndSelect(ByteBuffer aid) throws IOReaderException {
+    public ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid) throws IOReaderException {
         return null;
     }
 
