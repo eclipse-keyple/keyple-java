@@ -155,8 +155,8 @@ public class AndroidNfcReader extends AbstractObservableReader
                 }
 
                 // Add ResponseElements to global SeResponseSet
-                SeResponse out =
-                        new SeResponse(previousOpenApplication != null, fciResponse, apduResponses);
+                SeResponse out = new SeResponse(previousOpenApplication != null, null, fciResponse,
+                        apduResponses);
                 seResponseElements.add(out);
 
                 // Don't process more seRequestElement if asked

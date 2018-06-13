@@ -35,8 +35,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
     private ByteBuffer aidCurrentlySelected;
     private ApduResponse fciDataSelected; // if fciDataSelected is NULL, it means that no
-                                          // application is selected
-
+                                          // application is selecte
+    private ApduResponse atrData;
     private boolean logging;
     private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
 
@@ -47,7 +47,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      *
      * @throws IOReaderException
      */
-    public abstract ByteBuffer openLogicalChannelAndSelect(ByteBuffer aid) throws IOReaderException;
+    protected abstract ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid)
+            throws IOReaderException;
 
 
     /**
@@ -55,7 +56,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      *
      * @throws IOReaderException
      */
-    public abstract void closePhysicalChannel() throws IOReaderException;
+    protected abstract void closePhysicalChannel() throws IOReaderException;
 
     /**
      * Transmits a single APDU and receives its response. The implementation of this abstract method
@@ -66,7 +67,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return apduResponse byte buffer containing the outgoing data.
      * @throws ChannelStateReaderException
      */
-    public abstract ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException;
+    protected abstract ByteBuffer transmitApdu(ByteBuffer apduIn)
+            throws ChannelStateReaderException;
 
     /**
      * Test if the current protocol matches the flag
@@ -75,7 +77,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return true if the current protocol matches the provided protocol flag
      * @throws InvalidMessageException
      */
-    public abstract boolean protocolFlagMatches(SeProtocol protocolFlag) throws IOReaderException;
+    protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag)
+            throws IOReaderException;
 
     /**
      * Transmits a SeRequestSet and receives the SeResponseSet with time measurement.
@@ -173,7 +176,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return responseSet
      * @throws IOReaderException
      */
-    public final SeResponseSet processSeRequestSet(SeRequestSet requestSet)
+    protected final SeResponseSet processSeRequestSet(SeRequestSet requestSet)
             throws IOReaderException {
 
         boolean requestMatchesProtocol[] = new boolean[requestSet.getRequests().size()];
@@ -210,15 +213,15 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 requestIndex++;
                 if (!request.isKeepChannelOpen()) {
                     if (lastRequestIndex == requestIndex) {
+                        // reset temporary properties
+                        closeLogicalChannel();
+
                         // For the processing of the last SeRequest with a protocolFlag matching
                         // the SE reader status, if the logical channel doesn't require to be kept
                         // open,
                         // then the physical channel is closed.
                         closePhysicalChannel();
 
-                        // reset temporary properties
-                        aidCurrentlySelected = null;
-                        fciDataSelected = null;
 
                         logger.info("Closing of the physical SE channel.", ACTION_STR,
                                 "local_reader.transmit_actual");
@@ -242,8 +245,14 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * 
      * @return true if the logical channel is open
      */
-    public final boolean isLogicalChannelOpen() {
-        return fciDataSelected != null;
+    protected final boolean isLogicalChannelOpen() {
+        return fciDataSelected != null || atrData != null;
+    }
+
+    protected final void closeLogicalChannel() {
+        fciDataSelected = null;
+        atrData = null;
+        aidCurrentlySelected = null;
     }
 
     /**
@@ -257,6 +266,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      */
     private SeResponse processSeRequest(SeRequest seRequest) throws IOReaderException {
         boolean previouslyOpen = true;
+
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
         if (fciDataSelected == null // if no SE application is explicitely (through an AID) or
@@ -268,17 +278,15 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                                                                          // both AID are null ?)
             previouslyOpen = false;
 
-            ByteBuffer fciDataBytes = openLogicalChannelAndSelect(seRequest.getAidToSelect());
+            ByteBuffer[] atrAndFciDataBytes =
+                    openLogicalChannelAndSelect(seRequest.getAidToSelect());
 
-            if (fciDataBytes != null) { // the logical channel opening is successful
-                if (seRequest.getAidToSelect() != null) {
-                    aidCurrentlySelected = seRequest.getAidToSelect();
-                }
-                fciDataSelected = new ApduResponse(fciDataBytes, true);
-            } else {
-                logger.info("Application selection failed!", ACTION_STR,
-                        "local_reader.transmit_actual");
-                return null;
+            if (atrAndFciDataBytes[0] != null) { // the SE Answer to reset
+                atrData = new ApduResponse(atrAndFciDataBytes[0], true);
+            }
+            if (atrAndFciDataBytes[1] != null) { // the logical channel opening is successful
+                aidCurrentlySelected = seRequest.getAidToSelect();
+                fciDataSelected = new ApduResponse(atrAndFciDataBytes[1], true);
             }
         }
 
@@ -287,7 +295,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             apduResponseList.add(processApduRequest(apduRequest));
         }
 
-        return new SeResponse(previouslyOpen, fciDataSelected, apduResponseList);
+        return new SeResponse(previouslyOpen, atrData, fciDataSelected, apduResponseList);
     }
 
     /**

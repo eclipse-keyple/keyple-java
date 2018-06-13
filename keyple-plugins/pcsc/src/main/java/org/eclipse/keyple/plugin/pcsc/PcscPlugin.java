@@ -170,7 +170,7 @@ public final class PcscPlugin extends AbstractObservablePlugin {
     /**
      * Thread in charge of reporting live events
      */
-    class EventThread extends Thread {
+    private class EventThread extends Thread {
         private boolean running = true;
         private boolean initialized = false;
 
@@ -221,5 +221,4 @@ public final class PcscPlugin extends AbstractObservablePlugin {
             }
         }
     }
-
 }
