@@ -33,7 +33,7 @@ public class PoGetChallengeRespParsTest {
         // Now, just to be clear: All of the zero allocation/copy logic means we're always using the
         // same array,
         // here is the proof:
-        assertEquals(apdu.getBuffer().array(), resp.getPoChallenge().array());
+        assertEquals(apdu.getBytes().array(), resp.getPoChallenge().array());
 
         // Let's still do things the old way
         final ByteBuffer payload = apdu.getDataOut(); // 01 02 03 04

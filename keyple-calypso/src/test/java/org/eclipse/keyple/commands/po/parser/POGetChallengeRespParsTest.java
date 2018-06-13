@@ -33,7 +33,7 @@ public class POGetChallengeRespParsTest {
         AbstractApduResponseParser apduResponseParser = new PoGetChallengeRespPars(
                 seResponse.getSingleResponse().getApduResponses().get(0));
         Assert.assertArrayEquals(response,
-                ByteBufferUtils.toBytes(apduResponseParser.getApduResponse().getBuffer()));
+                ByteBufferUtils.toBytes(apduResponseParser.getApduResponse().getBytes()));
         Assert.assertEquals("Success", apduResponseParser.getStatusInformation());
     }
 }

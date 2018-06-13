@@ -31,6 +31,6 @@ public class DigestAuthenticateCmdBuildTest {
         ApduRequest ApduRequest = apduCommandBuilder.getApduRequest();
 
         Assert.assertEquals(ByteBufferUtils.toHex(request),
-                ByteBufferUtils.toHex(ApduRequest.getBuffer().slice()));
+                ByteBufferUtils.toHex(ApduRequest.getBytes().slice()));
     }
 }

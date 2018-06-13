@@ -54,7 +54,7 @@ public class CloseSessionRespPars extends AbstractApduResponseParser {
      */
     public CloseSessionRespPars(ApduResponse response) {
         super(response);
-        parse(response.getBuffer());
+        parse(response.getBytes());
     }
 
     private void parse(ByteBuffer response) {

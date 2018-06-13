@@ -97,7 +97,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         ByteBuffer apduResponse;
         long before = logging ? System.nanoTime() : 0;
         try {
-            ByteBuffer buffer = apduRequest.getBuffer();
+            ByteBuffer buffer = apduRequest.getBytes();
             { // Sending data
               // We shouldn't have to re-use the buffer that was used to be sent but we have
               // some code that does it.

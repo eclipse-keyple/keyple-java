@@ -53,7 +53,7 @@ public class RequestUtilsTest {
         dataIn = null;
 
         ApduRequest actual = RequestUtils.constructAPDURequest(cla, ins, pUn, pDeux, dataIn);
-        Assert.assertEquals(expected.getBuffer(), actual.getBuffer());
+        Assert.assertEquals(expected.getBytes(), actual.getBytes());
         Assert.assertEquals(expected.isCase4(), actual.isCase4());
     }
 
@@ -71,7 +71,7 @@ public class RequestUtilsTest {
 
         ApduRequest actual =
                 RequestUtils.constructAPDURequest(cla, ins, pUn, pDeux, dataIn, option);
-        Assert.assertEquals(expected.getBuffer(), actual.getBuffer());
+        Assert.assertEquals(expected.getBytes(), actual.getBytes());
         Assert.assertNotEquals(expected.isCase4(), actual.isCase4());
     }
 
@@ -87,7 +87,7 @@ public class RequestUtilsTest {
         dataIn = ByteBuffer.wrap(new byte[] {0x00, 0x00});
 
         ApduRequest actual = RequestUtils.constructAPDURequest(cla, ins, pUn, pDeux, dataIn);
-        Assert.assertEquals(expected.getBuffer(), actual.getBuffer());
+        Assert.assertEquals(expected.getBytes(), actual.getBytes());
         Assert.assertEquals(expected.isCase4(), actual.isCase4());
     }
 
@@ -108,7 +108,7 @@ public class RequestUtilsTest {
 
         ApduRequest actual =
                 RequestUtils.constructAPDURequest(cla, ins, pUn, pDeux, dataIn, option);
-        Assert.assertEquals(expected.getBuffer(), actual.getBuffer());
+        Assert.assertEquals(expected.getBytes(), actual.getBytes());
         Assert.assertEquals(expected.isCase4(), actual.isCase4());
     }
 }

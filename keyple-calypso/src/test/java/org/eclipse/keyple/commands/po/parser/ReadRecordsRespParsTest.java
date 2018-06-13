@@ -34,7 +34,7 @@ public class ReadRecordsRespParsTest {
 
         ReadRecordsRespPars readRecordsResponse =
                 new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
-        ByteBuffer responseActual = readRecordsResponse.getApduResponse().getBuffer();
+        ByteBuffer responseActual = readRecordsResponse.getApduResponse().getBytes();
         Assert.assertEquals(response, responseActual);
 
         // fclairamb (2018-02-28): This is how the code behaves right now but something seems fishy
@@ -57,7 +57,7 @@ public class ReadRecordsRespParsTest {
 
         ReadRecordsRespPars apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
-        ByteBuffer responseActual = apduResponseParser.getApduResponse().getBuffer();
+        ByteBuffer responseActual = apduResponseParser.getApduResponse().getBytes();
         Assert.assertEquals(response, responseActual);
 
         // fclairamb (2018-02-28): This is how the code behaves right now but something seems fishy
@@ -100,7 +100,7 @@ public class ReadRecordsRespParsTest {
 
         AbstractApduResponseParser apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
-        ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
+        ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBytes();
         Assert.assertEquals(response, reponseActual);
     }
 
@@ -115,7 +115,7 @@ public class ReadRecordsRespParsTest {
 
         AbstractApduResponseParser apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
-        ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
+        ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBytes();
         Assert.assertEquals(response, reponseActual);
     }
 }

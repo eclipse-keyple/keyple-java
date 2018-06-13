@@ -36,7 +36,7 @@ public class UpdateRecordCmdBuildTest {
         apduCommandBuilder = new UpdateRecordCmdBuild(PoRevision.REV2_4, record_number, (byte) 0x08,
                 newRecordData);
         ApduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertEquals(request2_4, ApduRequest.getBuffer());
+        Assert.assertEquals(request2_4, ApduRequest.getBytes());
     }
 
     @Test
@@ -47,7 +47,7 @@ public class UpdateRecordCmdBuildTest {
         apduCommandBuilder = new UpdateRecordCmdBuild(PoRevision.REV3_1, record_number, (byte) 0x08,
                 newRecordData);
         ApduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertEquals(request3_1, ApduRequest.getBuffer());
+        Assert.assertEquals(request3_1, ApduRequest.getBytes());
     }
 
     @Test
@@ -58,7 +58,7 @@ public class UpdateRecordCmdBuildTest {
         apduCommandBuilder = new UpdateRecordCmdBuild(PoRevision.REV3_2, record_number, (byte) 0x08,
                 newRecordData);
         ApduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertEquals(request3_2, ApduRequest.getBuffer());
+        Assert.assertEquals(request3_2, ApduRequest.getBytes());
     }
 
 }

@@ -21,6 +21,6 @@ public class RequestUtilsTest {
         ApduRequest req =
                 RequestUtils.constructAPDURequest((byte) 1, CalypsoPoCommands.GET_DATA_FCI,
                         (byte) 3, (byte) 4, ByteBufferUtils.fromHex("0506"), (byte) 0x07);
-        assertEquals("01CA030402050600", ByteBufferUtils.toHex(req.getBuffer()));
+        assertEquals("01CA030402050600", ByteBufferUtils.toHex(req.getBytes()));
     }
 }

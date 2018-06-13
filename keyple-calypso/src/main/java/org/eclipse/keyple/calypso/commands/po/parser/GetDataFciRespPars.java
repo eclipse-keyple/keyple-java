@@ -53,7 +53,7 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
      */
     public GetDataFciRespPars(ApduResponse response) {
         super(response);
-        fci = isSuccessful() ? toFCI(response.getBuffer()) : null;
+        fci = isSuccessful() ? toFCI(response.getBytes()) : null;
     }
 
     public ByteBuffer getDfName() {

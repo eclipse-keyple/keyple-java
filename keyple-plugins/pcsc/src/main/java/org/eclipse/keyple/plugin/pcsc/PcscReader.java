@@ -125,7 +125,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 // we use here processApduRequest to manage case 4 hack
                 ApduResponse fciResponse =
                         processApduRequest(new ApduRequest(selectApplicationCommand, true));
-                return fciResponse.getBuffer();
+                return fciResponse.getBytes();
 
             } catch (ChannelStateReaderException e1) {
 

@@ -48,7 +48,7 @@ public class ApduResponseTest {
     @Test
     public void niceFormat() {
         ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), true);
-        assertEquals("FEDCBA989000", ByteBufferUtils.toHex(response.getBuffer()));
+        assertEquals("FEDCBA989000", ByteBufferUtils.toHex(response.getBytes()));
     }
 
     @Test
