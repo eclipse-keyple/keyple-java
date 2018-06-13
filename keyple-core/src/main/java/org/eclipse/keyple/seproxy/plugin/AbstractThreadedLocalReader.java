@@ -36,7 +36,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractLocalReader {
      * @param timeout Timeout to use
      * @return Current instance
      */
-    public void setThreadWaitTimeout(long timeout) {
+    public final void setThreadWaitTimeout(long timeout) {
         this.threadWaitTimeout = timeout;
     }
 

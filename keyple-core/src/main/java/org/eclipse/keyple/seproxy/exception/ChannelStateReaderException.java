@@ -20,4 +20,8 @@ public class ChannelStateReaderException extends IOReaderException {
     public ChannelStateReaderException(String message, Exception ex) {
         super(message, ex);
     }
+
+    public ChannelStateReaderException(String message) {
+        super(message);
+    }
 }

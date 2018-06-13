@@ -76,8 +76,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return true if the current protocol matches the provided protocol flag
      * @throws InvalidMessageException
      */
-    public abstract boolean protocolFlagMatches(SeProtocol protocolFlag)
-            throws InvalidMessageException;
+    public abstract boolean protocolFlagMatches(SeProtocol protocolFlag) throws IOReaderException;
 
     /**
      * Transmits a SeRequestSet and receives the SeResponseSet with time measurement.
@@ -239,6 +238,14 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         return new SeResponseSet(responses);
     }
 
+    /**
+     * Tells if a logical channel is open
+     * 
+     * @return true if the logical channel is open
+     */
+    public final boolean isLogicalChannelOpen() {
+        return fciDataSelected != null;
+    }
 
     /**
      * Executes a request made of one or more Apdus and receives their answers. The selection of the
@@ -263,7 +270,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             previouslyOpen = false;
             fciDataSelected = openLogicalChannelAndSelect(seRequest.getAidToSelect());
 
-            if (fciDataSelected != null) { // the logical channel opening is successful
+            if (isLogicalChannelOpen()) { // the logical channel opening is successful
                 if (seRequest.getAidToSelect() != null) {
                     aidCurrentlySelected = seRequest.getAidToSelect();
                 }

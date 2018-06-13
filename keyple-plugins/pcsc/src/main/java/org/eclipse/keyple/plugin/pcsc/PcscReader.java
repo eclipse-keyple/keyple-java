@@ -46,6 +46,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 5000;
 
     private boolean logicalChannelOpen;
+    private boolean physicalChannelOpen;
 
     private final CardTerminal terminal;
     private final String terminalName;
@@ -99,24 +100,14 @@ public class PcscReader extends AbstractThreadedLocalReader {
      */
 
     public final ApduResponse openLogicalChannelAndSelect(ByteBuffer aid) throws IOReaderException {
-        if (!logicalChannelOpen) {
+        if (!isLogicalChannelOpen()) {
             // init of the physical SE channel: if not yet established, opening of a new physical
             // channel
-            try {
-                if (card == null) {
-                    this.card = this.terminal.connect(parameterCardProtocol);
-                    if (cardExclusiveMode) {
-                        card.beginExclusive();
-                        logger.info("Opening of a physical SE channel in exclusive mode.", "action",
-                                "pcsc_reader.checkOrOpenPhysicalChannel");
-                    } else {
-                        logger.info("Opening of a physical SE channel in shared mode.", "action",
-                                "pcsc_reader.checkOrOpenPhysicalChannel");
-                    }
-                }
-                this.channel = card.getBasicChannel();
-            } catch (CardException e) {
-                throw new ChannelStateReaderException(e);
+            if (!isPhysicalChannelOpen()) {
+                openPhysicalChannel();
+            }
+            if (!isPhysicalChannelOpen()) {
+                throw new ChannelStateReaderException("Fail to open physical channel.");
             }
         }
 
@@ -227,11 +218,13 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * @return
      * @throws InvalidMessageException
      */
-    public final boolean protocolFlagMatches(SeProtocol protocolFlag)
-            throws InvalidMessageException {
+    public final boolean protocolFlagMatches(SeProtocol protocolFlag) throws IOReaderException {
         boolean result;
         // Get protocolFlag to check if ATR filtering is required
         if (protocolFlag != null) {
+            if (!isPhysicalChannelOpen()) {
+                openPhysicalChannel();
+            }
             // the requestSet will be executed only if the protocol match the requestElement
             String selectionMask = protocolsMap.get(protocolFlag);
             if (selectionMask == null) {
@@ -416,5 +409,45 @@ public class PcscReader extends AbstractThreadedLocalReader {
 
 
         return parameters;
+    }
+
+    /**
+     * Tells if a physical channel is open
+     * 
+     * @return true if the physical channel is open
+     */
+    private boolean isPhysicalChannelOpen() {
+        return card != null;
+    }
+
+    /**
+     * Opens a physical channel
+     * 
+     * @throws IOReaderException
+     */
+    private void openPhysicalChannel() throws IOReaderException, ChannelStateReaderException {
+        // init of the physical SE channel: if not yet established, opening of a new physical
+        // channel
+        try {
+            if (card == null) {
+                if (isLogicalChannelOpen()) {
+                    throw new ChannelStateReaderException(
+                            "Logical channel found open while physical channel is not!");
+                }
+                this.card = this.terminal.connect(parameterCardProtocol);
+                if (cardExclusiveMode) {
+                    card.beginExclusive();
+                    logger.info("Opening of a physical SE channel in exclusive mode.", "action",
+                            "pcsc_reader.openPhysicalChannel");
+
+                } else {
+                    logger.info("Opening of a physical SE channel in shared mode.", "action",
+                            "pcsc_reader.openPhysicalChannel");
+                }
+            }
+            this.channel = card.getBasicChannel();
+        } catch (CardException e) {
+            throw new ChannelStateReaderException(e);
+        }
     }
 }

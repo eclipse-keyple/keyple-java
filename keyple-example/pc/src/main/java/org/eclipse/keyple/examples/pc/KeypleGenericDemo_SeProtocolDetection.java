@@ -108,6 +108,10 @@ public class KeypleGenericDemo_SeProtocolDetection
                         poRequests.add(new SeRequest(HoplinkSimpleRead.getAid(), poApduRequestList,
                                 false, protocol));
                         break;
+                    case PROTOCOL_ISO14443_3A:
+                    case PROTOCOL_ISO14443_3B:
+                        // not handled in this demo code
+                        break;
                     case PROTOCOL_MIFARE_DESFIRE:
                     case PROTOCOL_B_PRIME:
                         // intentionally ignored for demo purpose
