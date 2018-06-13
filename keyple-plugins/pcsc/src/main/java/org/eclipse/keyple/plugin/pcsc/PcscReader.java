@@ -122,12 +122,9 @@ public class PcscReader extends AbstractThreadedLocalReader {
                         .fromHex("00A40400" + String.format("%02X", (byte) aid.limit())
                                 + ByteBufferUtils.toHex(aid) + "00");
 
+                // we use here processApduRequest to manage case 4 hack
                 ApduResponse fciResponse =
-                        processApduRequest(new ApduRequest(selectApplicationCommand, true)); // to
-                                                                                             // manage
-                                                                                             // case
-                                                                                             // 4
-                                                                                             // hack
+                        processApduRequest(new ApduRequest(selectApplicationCommand, true));
                 return fciResponse;
 
             } catch (ChannelStateReaderException e1) {
