@@ -93,8 +93,8 @@ public class KeypleCalypsoDemo_HoplinkTransaction
             // poTransaction.processOpening(poOpenSession, null);
 
             // DONE: Find something better
-            // poReadRecordCmd_T2EnvR1.getApduRequest().getBuffer().position(0);
-            // poReadRecordCmd_T2UsaR1.getApduRequest().getBuffer().position(0);
+            // poReadRecordCmd_T2EnvR1.getApduRequest().getBytes().position(0);
+            // poReadRecordCmd_T2UsaR1.getApduRequest().getBytes().position(0);
 
             // Step 3
             System.out.println(
@@ -102,7 +102,7 @@ public class KeypleCalypsoDemo_HoplinkTransaction
             poTransaction.processProceeding(filesToReadInSession);
 
             // DONE: Find something better
-            // poReadRecordCmd_T2EnvR1.getApduRequest().getBuffer().position(0);
+            // poReadRecordCmd_T2EnvR1.getApduRequest().getBytes().position(0);
 
             // Step 4
             System.out.println(

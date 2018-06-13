@@ -31,6 +31,6 @@ public class DigestInitRespParsTest {
         AbstractApduResponseParser apduResponseParser =
                 new DigestInitRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
         Assert.assertEquals(ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}),
-                apduResponseParser.getApduResponse().getBuffer());
+                apduResponseParser.getApduResponse().getBytes());
     }
 }

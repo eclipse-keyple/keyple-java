@@ -149,9 +149,9 @@ public class KeypleGenericDemo_SeProtocolDetection
                     List<ApduResponse> poApduResponseList = seResponse.getApduResponses();
                     for (int i = 0; i < poApduResponseList.size(); i++) {
                         System.out.println(" CMD: "
-                                + ByteBufferUtils.toHex(poApduRequestList.get(i).getBuffer()));
+                                + ByteBufferUtils.toHex(poApduRequestList.get(i).getBytes()));
                         System.out.println("RESP: "
-                                + ByteBufferUtils.toHex(poApduResponseList.get(i).getBuffer()));
+                                + ByteBufferUtils.toHex(poApduResponseList.get(i).getBytes()));
                     }
                 }
                 requestIndex++;

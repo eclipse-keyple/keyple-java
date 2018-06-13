@@ -31,7 +31,7 @@ public class DigestCloseRespParsTest {
 
         AbstractApduResponseParser apduResponseParser =
                 new DigestCloseRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
-        ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
+        ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBytes();
         Assert.assertEquals(
                 ByteBuffer
                         .wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, (byte) 0x90, 0x00}),

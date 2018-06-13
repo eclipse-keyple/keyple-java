@@ -27,7 +27,7 @@ public class POGetChallengeCmdBuildTest {
                 new PoGetChallengeCmdBuild(PoRevision.REV2_4);
         ApduRequest apduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertArrayEquals(request, ByteBufferUtils.toBytes(apduRequest.getBuffer()));
+        Assert.assertArrayEquals(request, ByteBufferUtils.toBytes(apduRequest.getBytes()));
 
     }
 
@@ -40,7 +40,7 @@ public class POGetChallengeCmdBuildTest {
                 new PoGetChallengeCmdBuild(PoRevision.REV3_1);
         ApduRequest apduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertArrayEquals(request, ByteBufferUtils.toBytes(apduRequest.getBuffer()));
+        Assert.assertArrayEquals(request, ByteBufferUtils.toBytes(apduRequest.getBytes()));
 
     }
 
@@ -53,7 +53,7 @@ public class POGetChallengeCmdBuildTest {
                 new PoGetChallengeCmdBuild(PoRevision.REV3_2);
         ApduRequest apduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertArrayEquals(request, ByteBufferUtils.toBytes(apduRequest.getBuffer()));
+        Assert.assertArrayEquals(request, ByteBufferUtils.toBytes(apduRequest.getBytes()));
 
     }
 

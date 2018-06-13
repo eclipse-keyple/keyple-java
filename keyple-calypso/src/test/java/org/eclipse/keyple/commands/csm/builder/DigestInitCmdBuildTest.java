@@ -85,6 +85,6 @@ public class DigestInitCmdBuildTest {
                 new DigestInitCmdBuild(revision, verificationMode, rev3_2Mode, workKeyRecordNumber,
                         workKeyKif, workKeyKVC, digestData);
 
-        assertEquals(request, apduCommandBuilder.getApduRequest().getBuffer());
+        assertEquals(request, apduCommandBuilder.getApduRequest().getBytes());
     }
 }

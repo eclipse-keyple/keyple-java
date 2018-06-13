@@ -24,7 +24,7 @@ public class GetDataCmdBuildTest {
                 ByteBuffer.wrap(new byte[] {(byte) 0x94, (byte) 0xCA, (byte) 0x00, 0x6F, 0x00});
         AbstractApduCommandBuilder apduCommandBuilder = new GetDataFciCmdBuild(PoRevision.REV2_4);
         ApduRequest apduReq = apduCommandBuilder.getApduRequest();
-        Assert.assertEquals(request, apduReq.getBuffer());
+        Assert.assertEquals(request, apduReq.getBytes());
     }
 
 
@@ -34,6 +34,6 @@ public class GetDataCmdBuildTest {
                 ByteBuffer.wrap(new byte[] {(byte) 0x00, (byte) 0xCA, (byte) 0x00, 0x6F, 0x00});
         AbstractApduCommandBuilder apduCommandBuilder = new GetDataFciCmdBuild(PoRevision.REV3_1);
         ApduRequest apduReq = apduCommandBuilder.getApduRequest();
-        Assert.assertEquals(request2, apduReq.getBuffer());
+        Assert.assertEquals(request2, apduReq.getBytes());
     }
 }

@@ -32,7 +32,7 @@ public class GetDataRespParsTest {
         AbstractApduResponseParser apduResponseParser =
                 new GetDataFciRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
 
-        ByteBuffer responseActual = apduResponseParser.getApduResponse().getBuffer();
+        ByteBuffer responseActual = apduResponseParser.getApduResponse().getBytes();
         Assert.assertEquals(ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}), responseActual);
     }
 }

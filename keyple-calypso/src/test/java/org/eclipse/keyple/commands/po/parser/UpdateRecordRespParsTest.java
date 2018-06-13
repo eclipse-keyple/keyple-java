@@ -31,6 +31,6 @@ public class UpdateRecordRespParsTest {
         AbstractApduResponseParser apduResponseParser =
                 new UpdateRecordRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
         Assert.assertArrayEquals(new byte[] {90, 00},
-                ByteBufferUtils.toBytes(apduResponseParser.getApduResponse().getBuffer()));
+                ByteBufferUtils.toBytes(apduResponseParser.getApduResponse().getBytes()));
     }
 }

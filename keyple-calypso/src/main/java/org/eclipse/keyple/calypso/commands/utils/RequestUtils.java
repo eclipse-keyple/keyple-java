@@ -23,8 +23,8 @@ public class RequestUtils {
     public static void controlRequestConsistency(CommandsTable command, ApduRequest request)
             throws InconsistentCommandException {
         // Simplifying the strange logic, but I'm not sure this helps much
-        if (request != null && request.getBuffer() != null
-                && request.getBuffer().get(1) != command.getInstructionByte()) {
+        if (request != null && request.getBytes() != null
+                && request.getBytes().get(1) != command.getInstructionByte()) {
             throw new InconsistentCommandException();
         }
     }

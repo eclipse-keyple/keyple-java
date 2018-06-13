@@ -77,7 +77,7 @@ public abstract class AbstractOpenSessionRespPars extends AbstractApduResponsePa
     AbstractOpenSessionRespPars(ApduResponse response, PoRevision revision) {
         super(response);
         this.revision = revision;
-        this.secureSession = toSecureSession(response.getBuffer());
+        this.secureSession = toSecureSession(response.getBytes());
     }
 
     public static AbstractOpenSessionRespPars create(ApduResponse response, PoRevision revision) {

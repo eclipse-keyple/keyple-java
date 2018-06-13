@@ -29,7 +29,7 @@ public class DigestUpdateCmdBuildTest {
                 new DigestUpdateCmdBuild(CsmRevision.S1D, true, digestDAta);
         ApduRequest ApduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertEquals(request, ApduRequest.getBuffer());
+        Assert.assertEquals(request, ApduRequest.getBytes());
 
         ByteBuffer request2 = ByteBuffer.wrap(new byte[] {(byte) 0x80, (byte) 0x8C, 0x00,
                 (byte) 0x80, (byte) digestDAta.limit(), (byte) 0x94, (byte) 0xAE, 0x01, 0x02});
@@ -37,6 +37,6 @@ public class DigestUpdateCmdBuildTest {
         AbstractApduCommandBuilder apduCommandBuilder2 =
                 new DigestUpdateCmdBuild(CsmRevision.C1, true, digestDAta);
         ApduRequest apduReq = apduCommandBuilder2.getApduRequest();
-        Assert.assertEquals(request2, apduReq.getBuffer());
+        Assert.assertEquals(request2, apduReq.getBytes());
     }
 }
