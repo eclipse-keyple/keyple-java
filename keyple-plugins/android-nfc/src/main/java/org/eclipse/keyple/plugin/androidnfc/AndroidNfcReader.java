@@ -151,7 +151,7 @@ public class AndroidNfcReader extends AbstractObservableReader
 
                 // Send all apduRequest
                 for (ApduRequest apduRequest : seRequestElement.getApduRequests()) {
-                    apduResponses.add(sendAPDUCommand(apduRequest.getBuffer()));
+                    apduResponses.add(sendAPDUCommand(apduRequest.getBytes()));
                 }
 
                 // Add ResponseElements to global SeResponseSet

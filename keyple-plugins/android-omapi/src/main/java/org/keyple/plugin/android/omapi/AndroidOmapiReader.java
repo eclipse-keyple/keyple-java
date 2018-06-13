@@ -75,7 +75,7 @@ public class AndroidOmapiReader extends AbstractObservableReader {
             for (ApduRequest seRequest : seRequestElement.getApduRequests()) {
                 byte[] respApdu = new byte[0];
                 try {
-                    respApdu = channel.transmit(ByteBufferUtils.toBytes(seRequest.getBuffer()));
+                    respApdu = channel.transmit(ByteBufferUtils.toBytes(seRequest.getBytes()));
                     apduResponses.add(new ApduResponse(respApdu, true));
                 } catch (IOException e) {
                     e.printStackTrace();
