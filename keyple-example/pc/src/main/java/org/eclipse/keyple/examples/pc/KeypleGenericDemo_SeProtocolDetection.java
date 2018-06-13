@@ -100,11 +100,12 @@ public class KeypleGenericDemo_SeProtocolDetection
                     case PROTOCOL_ISO14443_4:
                         // get Apdu list from HoplinkSimpleRead class
                         // List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
-                        List<ApduRequest> poApduRequestList = pcscContactlessReaderGetDataList;
+                        List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
+                        // add common get UID command
+                        poApduRequestList.addAll(pcscContactlessReaderGetDataList);
+                        // add Hoplink specific commands
                         poApduRequestList.addAll(HoplinkSimpleRead.getApduList());
-                        // prepend pcscContactlessReaderGetData to get the SE UID
-                        poApduRequestList.add(0, pcscContactlessReaderGetData);
-                        // add SeRequest with the AID from HoplinkSimpleRead
+                        // add a SeRequest with the AID from HoplinkSimpleRead and the requests list
                         poRequests.add(new SeRequest(HoplinkSimpleRead.getAid(), poApduRequestList,
                                 false, protocol));
                         break;

@@ -47,8 +47,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      *
      * @throws IOReaderException
      */
-    public abstract ApduResponse openLogicalChannelAndSelect(ByteBuffer aid)
-            throws IOReaderException;
+    public abstract ByteBuffer openLogicalChannelAndSelect(ByteBuffer aid) throws IOReaderException;
 
 
     /**
@@ -268,12 +267,14 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                                                                          // comparaison works if
                                                                          // both AID are null ?)
             previouslyOpen = false;
-            fciDataSelected = openLogicalChannelAndSelect(seRequest.getAidToSelect());
 
-            if (isLogicalChannelOpen()) { // the logical channel opening is successful
+            ByteBuffer fciDataBytes = openLogicalChannelAndSelect(seRequest.getAidToSelect());
+
+            if (fciDataBytes != null) { // the logical channel opening is successful
                 if (seRequest.getAidToSelect() != null) {
                     aidCurrentlySelected = seRequest.getAidToSelect();
                 }
+                fciDataSelected = new ApduResponse(fciDataBytes, true);
             } else {
                 logger.info("Application selection failed!", ACTION_STR,
                         "local_reader.transmit_actual");

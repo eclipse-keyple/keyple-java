@@ -99,7 +99,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * @throws IOReaderException
      */
 
-    public final ApduResponse openLogicalChannelAndSelect(ByteBuffer aid) throws IOReaderException {
+    public final ByteBuffer openLogicalChannelAndSelect(ByteBuffer aid) throws IOReaderException {
         if (!isLogicalChannelOpen()) {
             // init of the physical SE channel: if not yet established, opening of a new physical
             // channel
@@ -125,7 +125,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 // we use here processApduRequest to manage case 4 hack
                 ApduResponse fciResponse =
                         processApduRequest(new ApduRequest(selectApplicationCommand, true));
-                return fciResponse;
+                return fciResponse.getBuffer();
 
             } catch (ChannelStateReaderException e1) {
 
@@ -133,10 +133,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
 
             }
         } else {
-            return new ApduResponse(
-                    ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
-                            ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00})),
-                    true);
+            return ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
+                    ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}));
         }
     }
 
