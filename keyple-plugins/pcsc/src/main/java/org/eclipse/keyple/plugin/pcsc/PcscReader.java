@@ -209,7 +209,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
 
     /**
      * Tells if the current SE protocol matches the provided protocol flag. If the protocol flag is
-     * not defined (null), we consider here that it matches.
+     * not defined (null), we consider here that it matches. An exception is returned when the
+     * provided protocolFlag is not found in the current protocolMap.
      *
      * @param protocolFlag
      * @return
