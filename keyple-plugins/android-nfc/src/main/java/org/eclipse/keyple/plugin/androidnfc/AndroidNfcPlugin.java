@@ -9,9 +9,9 @@
 package org.eclipse.keyple.plugin.androidnfc;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReadersPlugin;
 import android.util.Log;
@@ -54,9 +54,9 @@ public class AndroidNfcPlugin implements ReadersPlugin {
      *         singleton @{@link AndroidNfcReader}
      */
     @Override
-    public List<ProxyReader> getReaders() {
+    public SortedSet<ProxyReader> getReaders() {
         // return the only one reader in a list
-        List<ProxyReader> readers = new ArrayList<ProxyReader>();
+        SortedSet<ProxyReader> readers = new ConcurrentSkipListSet<ProxyReader>();
         readers.add(reader);
         return readers;
     }
@@ -73,5 +73,9 @@ public class AndroidNfcPlugin implements ReadersPlugin {
 
     public final void setParameters(Map<String, String> parameters) throws IOException {
         // empty in the Android case
+    }
+
+    public int compareTo(ReadersPlugin o) {
+        return this.getName().compareTo(o.getName());
     }
 }

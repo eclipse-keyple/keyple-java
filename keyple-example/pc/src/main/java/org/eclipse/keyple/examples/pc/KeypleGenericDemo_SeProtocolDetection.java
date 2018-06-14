@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.example.common.HoplinkSimpleRead;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
@@ -204,7 +205,7 @@ public class KeypleGenericDemo_SeProtocolDetection
         SeProxyService seProxyService = SeProxyService.getInstance();
 
         // add the PcscPlugin to the SeProxyService
-        List<ReadersPlugin> pluginsSet = new ArrayList<ReadersPlugin>();
+        SortedSet<ReadersPlugin> pluginsSet = new ConcurrentSkipListSet<ReadersPlugin>();
         pluginsSet.add(PcscPlugin.getInstance().setLogging(false));
         seProxyService.setPlugins(pluginsSet);
 

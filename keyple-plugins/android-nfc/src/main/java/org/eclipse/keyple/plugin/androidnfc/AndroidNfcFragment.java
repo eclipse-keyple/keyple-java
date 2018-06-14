@@ -100,7 +100,7 @@ public class AndroidNfcFragment extends Fragment {
             // handle intent
             Log.d(TAG, "Handle ACTION TECH intent");
 
-            ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().get(0))
+            ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().first())
                     .processIntent(intent);
 
 
@@ -119,7 +119,7 @@ public class AndroidNfcFragment extends Fragment {
 
 
         nfcAdapter.enableReaderMode(getActivity(),
-                ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().get(0)),
+                ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().first()),
                 NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_NFC_B
                         | NfcAdapter.FLAG_READER_NFC_F | NfcAdapter.FLAG_READER_NFC_V
                         | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,
