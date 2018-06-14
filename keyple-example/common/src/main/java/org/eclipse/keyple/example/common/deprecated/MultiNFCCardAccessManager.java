@@ -8,9 +8,7 @@
 
 package org.eclipse.keyple.example.common.deprecated;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
@@ -58,7 +56,7 @@ public class MultiNFCCardAccessManager extends AbstractLogicManager {
         SeRequest miFare = new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false,
                 ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC);
 
-        List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
+        Set<SeRequest> seRequestElements = new LinkedHashSet<SeRequest>();
         seRequestElements.add(miFare);
         seRequestElements.add(isodep);
 

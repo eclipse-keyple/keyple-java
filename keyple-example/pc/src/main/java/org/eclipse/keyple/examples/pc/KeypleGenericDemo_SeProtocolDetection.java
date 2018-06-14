@@ -88,7 +88,7 @@ public class KeypleGenericDemo_SeProtocolDetection
             // * executing a Hoplink simple read scenario for ISO14443-4
 
             // create a list of requests
-            List<SeRequest> poRequests = new ArrayList<SeRequest>();
+            Set<SeRequest> poRequests = new LinkedHashSet<SeRequest>();
 
             ApduRequest pcscContactlessReaderGetData =
                     new ApduRequest(ByteBufferUtils.fromHex("FFCA000000"), false);
