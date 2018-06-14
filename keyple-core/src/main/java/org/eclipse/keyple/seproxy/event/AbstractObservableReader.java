@@ -80,4 +80,8 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         // TODO do a better log of SeReponseSet data
         logger.info("SeResponseSet", "data", responseSet.toString());
     }
+
+    public int compareTo(ProxyReader o) {
+        return this.getName().compareTo(o.getName());
+    }
 }

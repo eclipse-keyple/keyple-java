@@ -12,6 +12,8 @@ package org.eclipse.keyple.examples.pc;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.commands.SendableInSession;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
@@ -156,7 +158,7 @@ public class KeypleCalypsoDemo_HoplinkTransaction
     public static void main(String[] args)
             throws IOException, IOReaderException, InterruptedException {
         SeProxyService seProxyService = SeProxyService.getInstance();
-        List<ReadersPlugin> pluginsSet = new ArrayList<ReadersPlugin>();
+        SortedSet<ReadersPlugin> pluginsSet = new ConcurrentSkipListSet<ReadersPlugin>();
         pluginsSet.add(PcscPlugin.getInstance().setLogging(true));
         seProxyService.setPlugins(pluginsSet);
 

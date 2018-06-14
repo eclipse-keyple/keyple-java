@@ -16,7 +16,7 @@ import java.util.List;
  * 
  * @see SeResponse
  */
-public class SeRequest {
+public final class SeRequest {
 
     /**
      * - AID’s bytes of the SE application to select. In case the SE application is currently not

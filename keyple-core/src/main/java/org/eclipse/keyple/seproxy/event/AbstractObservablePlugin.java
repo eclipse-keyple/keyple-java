@@ -19,4 +19,8 @@ public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<
     public interface PluginObserver extends Observer {
         void update(AbstractPluginEvent event);
     }
+
+    public int compareTo(ReadersPlugin o) {
+        return this.getName().compareTo(o.getName());
+    }
 }

@@ -27,7 +27,7 @@ import org.eclipse.keyple.util.NameableConfigurable;
  * </ul>
  * Interface each {@link ReadersPlugin} should implement
  */
-public interface ProxyReader extends NameableConfigurable {
+public interface ProxyReader extends NameableConfigurable, Comparable<ProxyReader> {
 
     /**
      * Gets the name.

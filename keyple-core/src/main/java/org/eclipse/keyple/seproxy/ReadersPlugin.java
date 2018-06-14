@@ -8,14 +8,15 @@
 
 package org.eclipse.keyple.seproxy;
 
-import java.util.List;
+import java.util.SortedSet;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.util.NameableConfigurable;
+
 
 /**
  * Card readers plugin interface. Every single card wanting to implement this interface should
  */
-public interface ReadersPlugin extends NameableConfigurable {
+public interface ReadersPlugin extends NameableConfigurable, Comparable<ReadersPlugin> {
 
     // TODO - possibility to force implementatiosn to be singleton?
 
@@ -32,5 +33,5 @@ public interface ReadersPlugin extends NameableConfigurable {
      * @return the ‘unique’ name of the readers’ plugin.
      * @throws IOReaderException Exception of type IO Reader
      */
-    List<? extends ProxyReader> getReaders() throws IOReaderException;
+    SortedSet<? extends ProxyReader> getReaders() throws IOReaderException;
 }

@@ -9,9 +9,9 @@
 package org.eclipse.keyple.examples.androidnfc;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.SortedSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.example.common.deprecated.AbstractLogicManager;
 import org.eclipse.keyple.example.common.deprecated.IsodepCardAccessManager;
@@ -76,7 +76,7 @@ public class NFCTestFragment extends Fragment implements AbstractLoggedObservabl
         // initialize SEProxy with Android Plugin
         Log.d(TAG, "Initialize SEProxy with Android Plugin");
         SeProxyService seProxyService = SeProxyService.getInstance();
-        List<ReadersPlugin> plugins = new ArrayList<ReadersPlugin>();
+        SortedSet<ReadersPlugin> plugins = new ConcurrentSkipListSet<ReadersPlugin>();
         plugins.add(AndroidNfcPlugin.getInstance());
         seProxyService.setPlugins(plugins);
 
@@ -93,7 +93,7 @@ public class NFCTestFragment extends Fragment implements AbstractLoggedObservabl
         try {
             // define task as an observer for ReaderEvents
             Log.d(TAG, "Define this view as an observer for ReaderEvents");
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+            ProxyReader reader = seProxyService.getPlugins().first().getReaders().first();
             ((AbstractObservableReader) reader).addObserver(this);
 
             initIsodepTest();
@@ -190,7 +190,7 @@ public class NFCTestFragment extends Fragment implements AbstractLoggedObservabl
         try {
 
             SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+            ProxyReader reader = seProxyService.getPlugins().first().getReaders().first();
 
             cardAccessManager = new IsodepCardAccessManager();
             ((IsodepCardAccessManager) cardAccessManager).setPoReader(reader);
@@ -211,7 +211,7 @@ public class NFCTestFragment extends Fragment implements AbstractLoggedObservabl
         try {
 
             SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+            ProxyReader reader = seProxyService.getPlugins().first().getReaders().first();
 
             cardAccessManager = new MifareClassicCardAccessManager();
             ((MifareClassicCardAccessManager) cardAccessManager).setPoReader(reader);
@@ -231,7 +231,7 @@ public class NFCTestFragment extends Fragment implements AbstractLoggedObservabl
         try {
 
             SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+            ProxyReader reader = seProxyService.getPlugins().first().getReaders().first();
 
             cardAccessManager = new MifareUltralightCardAccessManager();
             ((MifareUltralightCardAccessManager) cardAccessManager).setPoReader(reader);
@@ -251,7 +251,7 @@ public class NFCTestFragment extends Fragment implements AbstractLoggedObservabl
         try {
 
             SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+            ProxyReader reader = seProxyService.getPlugins().first().getReaders().first();
 
             cardAccessManager = new MultiNFCCardAccessManager();
             ((MultiNFCCardAccessManager) cardAccessManager).setPoReader(reader);
@@ -272,7 +272,7 @@ public class NFCTestFragment extends Fragment implements AbstractLoggedObservabl
         try {
 
             SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+            ProxyReader reader = seProxyService.getPlugins().first().getReaders().first();
 
             cardAccessManager = new KeepOpenCardTimeoutManager();
             ((KeepOpenCardTimeoutManager) cardAccessManager).setPoReader(reader);
@@ -292,7 +292,7 @@ public class NFCTestFragment extends Fragment implements AbstractLoggedObservabl
         try {
 
             SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+            ProxyReader reader = seProxyService.getPlugins().first().getReaders().first();
 
             cardAccessManager = new KeepOpenAbortTestManager();
             ((KeepOpenAbortTestManager) cardAccessManager).setPoReader(reader);
@@ -335,7 +335,7 @@ public class NFCTestFragment extends Fragment implements AbstractLoggedObservabl
         try {
             Log.d(TAG, "Remove task as an observer for ReaderEvents");
             SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+            ProxyReader reader = seProxyService.getPlugins().first().getReaders().first();
             ((AbstractObservableReader) reader).removeObserver(this);
 
 

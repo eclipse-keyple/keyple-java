@@ -8,8 +8,8 @@
 
 package org.eclipse.keyple.seproxy;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.SortedSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * The Class SeProxyService. This singleton is the entry point of the SE Proxy Service, its instance
@@ -26,7 +26,7 @@ public final class SeProxyService {
     private Integer version = 1;
 
     /** the list of readers’ plugins interfaced with the SE Proxy Service */
-    private List<ReadersPlugin> plugins = new ArrayList<ReadersPlugin>();
+    private SortedSet<ReadersPlugin> plugins = new ConcurrentSkipListSet<ReadersPlugin>();
 
     /**
      * Instantiates a new SeProxyService.
@@ -47,7 +47,7 @@ public final class SeProxyService {
      *
      * @param plugins the new plugins
      */
-    public void setPlugins(List<ReadersPlugin> plugins) {
+    public void setPlugins(SortedSet<ReadersPlugin> plugins) {
         this.plugins = plugins;
     }
 
@@ -56,7 +56,7 @@ public final class SeProxyService {
      *
      * @return the plugins the list of interfaced reader’s plugins.
      */
-    public List<ReadersPlugin> getPlugins() {
+    public SortedSet<ReadersPlugin> getPlugins() {
         return plugins;
     }
 

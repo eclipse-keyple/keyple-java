@@ -10,6 +10,7 @@ package org.eclipse.keyple.seproxy;
 
 import static org.junit.Assert.*;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentSkipListSet;
 import org.junit.Test;
 
 public class SeProxyServiceTest {
@@ -29,7 +30,7 @@ public class SeProxyServiceTest {
     @Test
     public void testSetPlugins() {
         SeProxyService proxyService = SeProxyService.getInstance();
-        proxyService.setPlugins(new ArrayList<ReadersPlugin>());
+        proxyService.setPlugins(new ConcurrentSkipListSet<ReadersPlugin>());
         assertArrayEquals(new ArrayList<ReadersPlugin>().toArray(),
                 proxyService.getPlugins().toArray());
     }

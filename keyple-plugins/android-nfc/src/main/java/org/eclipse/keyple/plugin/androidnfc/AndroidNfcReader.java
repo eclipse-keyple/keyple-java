@@ -12,8 +12,11 @@ package org.eclipse.keyple.plugin.androidnfc;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeRequest;
@@ -119,7 +122,7 @@ public class AndroidNfcReader extends AbstractObservableReader
         List<SeResponse> seResponseElements = new ArrayList<SeResponse>();
 
         // Filter requestElements whom protocol matches the current tag
-        List<SeRequest> seRequestElements = filterByProtocol(seRequest.getRequests());
+        Set<SeRequest> seRequestElements = filterByProtocol(seRequest.getRequests());
 
         // no seRequestElements are left after filtering
         if (seRequestElements.size() < 1) {
@@ -130,9 +133,9 @@ public class AndroidNfcReader extends AbstractObservableReader
 
 
         // process the request elements
-        for (int i = 0; i < seRequestElements.size(); i++) {
-
-            SeRequest seRequestElement = seRequestElements.get(i);
+        Iterator<SeRequest> it = seRequestElements.iterator();
+        while (it.hasNext()) {
+            SeRequest seRequestElement = it.next();
 
             // init response
             List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
@@ -168,7 +171,7 @@ public class AndroidNfcReader extends AbstractObservableReader
                 }
 
                 // For last element, close physical channel if asked
-                if (i == seRequestElements.size() - 1 && !seRequestElement.isKeepChannelOpen()) {
+                if (!it.hasNext() && !seRequestElement.isKeepChannelOpen()) {
                     disconnectTag();
                 }
 
@@ -190,11 +193,11 @@ public class AndroidNfcReader extends AbstractObservableReader
      * @param seRequestElements embedding seRequestElements to be filtered
      * @return filtered seRequest
      */
-    private List<SeRequest> filterByProtocol(List<SeRequest> seRequestElements) {
+    private Set<SeRequest> filterByProtocol(Set<SeRequest> seRequestElements) {
 
 
         Log.d(TAG, "Filtering # seRequestElements : " + seRequestElements.size());
-        List<SeRequest> filteredSRE = new ArrayList<SeRequest>();
+        Set<SeRequest> filteredSRE = new LinkedHashSet<SeRequest>();
 
         for (SeRequest seRequestElement : seRequestElements) {
 

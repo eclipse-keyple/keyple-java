@@ -8,8 +8,8 @@
 
 package org.eclipse.keyple.seproxy;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Aggregates one or more SeRequests to a local or remote SE Reader, sent through a ProxyReader, in
@@ -18,13 +18,13 @@ import java.util.List;
  *
  * @see SeResponseSet
  */
-public class SeRequestSet {
+public final class SeRequestSet {
 
     /**
      * List of requests. Each {@link SeRequest} will result in a {@link SeResponse} wrapped in a
      * {@link SeResponseSet}.
      */
-    private final List<SeRequest> sortedRequests;
+    private final Set<SeRequest> sortedRequests;
 
 
     /**
@@ -38,7 +38,7 @@ public class SeRequestSet {
      *
      * @param seRequests List of {@link SeRequest}s
      */
-    public SeRequestSet(List<SeRequest> seRequests) {
+    public SeRequestSet(Set<SeRequest> seRequests) {
         this.sortedRequests = seRequests;
     }
 
@@ -48,7 +48,7 @@ public class SeRequestSet {
      * @param request single (@link SeRequest)
      */
     public SeRequestSet(SeRequest request) {
-        List<SeRequest> seRequests = new ArrayList<SeRequest>();
+        Set<SeRequest> seRequests = new LinkedHashSet<SeRequest>();
         seRequests.add(request);
         this.sortedRequests = seRequests;
     }
@@ -58,7 +58,7 @@ public class SeRequestSet {
      *
      * @return Sorted list of requests
      */
-    public List<SeRequest> getRequests() {
+    public Set<SeRequest> getRequests() {
         return sortedRequests;
     }
 
@@ -71,7 +71,7 @@ public class SeRequestSet {
         if (sortedRequests.size() != 1) {
             throw new IllegalStateException("This method only support ONE element");
         }
-        return sortedRequests.get(0);
+        return sortedRequests.iterator().next();
     }
 
     @Override
