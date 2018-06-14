@@ -10,10 +10,9 @@ package org.eclipse.keyple.examples.androidnfc;
 
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.List;
-
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
@@ -36,7 +35,6 @@ import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractLoggedObservable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSettings;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
 import android.app.Fragment;
@@ -99,8 +97,10 @@ public class NFCTestFragment extends Fragment
             ((AndroidNfcReader) reader).addObserver(this);
 
 
-            ((AndroidNfcReader) reader).addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4);
-            ((AndroidNfcReader) reader).addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC);
+            ((AndroidNfcReader) reader)
+                    .addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4);
+            ((AndroidNfcReader) reader).addSeProtocolSetting(
+                    AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC);
 
         } catch (IOReaderException e) {
             e.printStackTrace();
@@ -146,73 +146,69 @@ public class NFCTestFragment extends Fragment
     /**
      * Run Hoplink Simple read command
      */
-     private void runHoplinkSimpleRead() {
-         Log.d(TAG, "Running HopLink Simple Read Tests");
-         ProxyReader reader = null;
-         try {
-             reader = SeProxyService.getInstance().getPlugins().first().getReaders().first();
+    private void runHoplinkSimpleRead() {
+        Log.d(TAG, "Running HopLink Simple Read Tests");
+        ProxyReader reader = null;
+        try {
+            reader = SeProxyService.getInstance().getPlugins().first().getReaders().first();
 
-             String poAid = "A000000291A000000191";
-             String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
-                     + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
+            String poAid = "A000000291A000000191";
+            String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
+                    + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
 
-             ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                     (byte) 0x01, true, (byte) 0x14, (byte) 0x20);
+            ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                    (byte) 0x01, true, (byte) 0x14, (byte) 0x20);
 
-             ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                     (byte) 0x01, true, (byte) 0x1A, (byte) 0x30);
+            ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                    (byte) 0x01, true, (byte) 0x1A, (byte) 0x30);
 
-             UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
-                     new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x01, (byte) 0x1A,
-                             ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
+            UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
+                    new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x01, (byte) 0x1A,
+                            ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
 
-             List<ApduRequest> poApduRequestList;
+            List<ApduRequest> poApduRequestList;
 
-             poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest(),
-                     poReadRecordCmd_T2Usage.getApduRequest(),
-                     poUpdateRecordCmd_T2UsageFill.getApduRequest());
-
-
-             SeRequest seRequest = new SeRequest(ByteBufferUtils.fromHex(poAid),
-                     poApduRequestList,
-                     false,
-                     ContactlessProtocols.PROTOCOL_ISO14443_4);
+            poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest(),
+                    poReadRecordCmd_T2Usage.getApduRequest(),
+                    poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
 
-             SeResponseSet seResponseSet =
-                     reader.transmit(new SeRequestSet(seRequest));
-
-             getActivity().runOnUiThread(new Runnable() {
-                 @Override
-                 public void run() {
-                     mText.append("\n ---- \n");
-                     for (SeResponse response : seResponseSet.getResponses()) {
-                         if (response != null) {
-                             for (ApduResponse apdu : response.getApduResponses()) {
-                                 mText.append("Response : " + apdu.getStatusCode() + " - "
-                                         + ByteBufferUtils.toHex(apdu.getDataOut()));
-                                 mText.append("\n");
-                             }
-                         } else {
-                             mText.append("Response : null");
-                             mText.append("\n");
-                         }
-                     }
-                 }
-             });
-
-         } catch (IOReaderException e) {
-             e.printStackTrace();
-         }
+            SeRequest seRequest = new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList,
+                    false, ContactlessProtocols.PROTOCOL_ISO14443_4);
 
 
-     }
+            SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mText.append("\n ---- \n");
+                    for (SeResponse response : seResponseSet.getResponses()) {
+                        if (response != null) {
+                            for (ApduResponse apdu : response.getApduResponses()) {
+                                mText.append("Response : " + apdu.getStatusCode() + " - "
+                                        + ByteBufferUtils.toHex(apdu.getDataOut()));
+                                mText.append("\n");
+                            }
+                        } else {
+                            mText.append("Response : null");
+                            mText.append("\n");
+                        }
+                    }
+                }
+            });
+
+        } catch (IOReaderException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 
 
 
     /**
-     * Revocation of the Activity
-     * from @{@link AndroidNfcReader} list of observers
+     * Revocation of the Activity from @{@link AndroidNfcReader} list of observers
      */
     @Override
     public void onDestroy() {
@@ -238,8 +234,7 @@ public class NFCTestFragment extends Fragment
 
 
     /**
-     * Catch @{@link AndroidNfcReader} events When a SE is
-     * inserted, launch test commands
+     * Catch @{@link AndroidNfcReader} events When a SE is inserted, launch test commands
      *
      * @param observable
      * @param event
