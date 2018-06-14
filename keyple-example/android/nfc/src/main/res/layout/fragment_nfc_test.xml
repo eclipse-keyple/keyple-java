@@ -20,47 +20,12 @@
         tools:ignore="MissingConstraints">
 
         <RadioButton
-            android:id="@+id/isoDepTest"
+            android:id="@+id/hoplinkSimpleRead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:checked="true"
-            android:text="Launch one set of IsoDep commands" />
-
-        <RadioButton
-            android:id="@+id/mifareClassicTest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Launch one set of MifareClassic commands" />
-
-        <RadioButton
-            android:id="@+id/mifareLightTest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Launch one set of MifareUltraLight commands" />
-
-        <RadioButton
-            android:id="@+id/multiNFC"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Launch multiple sets of commands (MifareUltralight+Isodep)" />
-
-        <RadioButton
-            android:id="@+id/keepChannelTimeout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Keep Channel Timeout Test Isodep" />
-
-        <RadioButton
-            android:id="@+id/keepChannelAbortButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Keep Channel Abort Test Isodep" />
+            android:text="Launch one set of HopLink Simple read commands" />
 
 
     </RadioGroup>

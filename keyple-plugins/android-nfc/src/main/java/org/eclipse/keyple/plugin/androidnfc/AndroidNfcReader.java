@@ -48,6 +48,7 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
     // keep state between session if required
     private TagProxy tagProxy;
 
+
     /**
      * Private constructor
      */
@@ -131,7 +132,9 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
     }
 
     @Override
-    public ByteBuffer openLogicalChannelAndSelect(ByteBuffer aid) throws IOReaderException {
+    public ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid) throws IOReaderException {
+        ByteBuffer[] atrAndFci = new ByteBuffer[2];
+
         if (!isLogicalChannelOpen()) {
             // init of the physical SE channel: if not yet established, opening of a new physical
             // channel
@@ -143,8 +146,12 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
             }
         }
 
+        // Contactless cards do not have an ATR, add a dummy ATR
+        atrAndFci[0] =
+                ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00});
+
         if (aid != null) {
-            Log.i(TAG,"Connecting to card - aid : " + ByteBufferUtils.toHex(aid));
+            Log.i(TAG,"Connecting to card " +ByteBufferUtils.toHex(aid));
             try {
                 // build a get response command
                 // the actual length expected by the SE in the get response command is handled in
@@ -156,23 +163,24 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
                 // we use here processApduRequest to manage case 4 hack
                 ApduResponse fciResponse =
                         processApduRequest(new ApduRequest(selectApplicationCommand, true));
-                return fciResponse.getBuffer();
+
+                // add FCI
+                atrAndFci[1] = fciResponse.getBytes();
 
             } catch (ChannelStateReaderException e1) {
 
                 throw new ChannelStateReaderException(e1);
 
             }
-        } else {
-            return ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00});
         }
+        return atrAndFci;
     }
 
     @Override
     public void closePhysicalChannel() throws IOReaderException {
         try {
             if (tagProxy  != null) {
-                tagProxy .close();
+                tagProxy.close();
                 this.notifyObservers(ReaderEvent.SE_REMOVAL);
                 Log.i(TAG, "Disconnected tag : " + printTagId());
             }

@@ -87,5 +87,4 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation project(':keyple-plugin-android-nfc')
     implementation project(':keyple-calypso')
-    implementation project(':keyple-example-common')
 }
