@@ -10,6 +10,7 @@ package org.eclipse.keyple.plugin.pcsc;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
@@ -87,7 +88,7 @@ public final class PcscPlugin extends AbstractObservablePlugin {
     }
 
     @Override
-    public List<AbstractObservableReader> getReaders() throws IOReaderException {
+    public SortedSet<AbstractObservableReader> getReaders() throws IOReaderException {
         CardTerminals terminals = getCardTerminals();
 
         try {
@@ -112,7 +113,7 @@ public final class PcscPlugin extends AbstractObservablePlugin {
                 for (Map.Entry<String, AbstractObservableReader> en : previous.entrySet()) {
                     readers.remove(en.getKey());
                 }
-                return new ArrayList<AbstractObservableReader>(readers.values());
+                return new ConcurrentSkipListSet<AbstractObservableReader>(readers.values());
             }
         } catch (CardException e) {
             logger.error("Terminal list is not accessible", "action", "pcsc_plugin.no_terminals",

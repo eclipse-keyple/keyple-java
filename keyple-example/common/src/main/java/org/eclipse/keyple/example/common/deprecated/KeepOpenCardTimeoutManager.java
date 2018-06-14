@@ -8,9 +8,7 @@
 
 package org.eclipse.keyple.example.common.deprecated;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
@@ -53,7 +51,7 @@ public class KeepOpenCardTimeoutManager extends AbstractLogicManager {
 
         SeRequest seRequestElement = new SeRequest(ByteBufferUtils.fromHex(poAid),
                 poApduRequestList, true, ContactlessProtocols.PROTOCOL_ISO14443_4);
-        List<SeRequest> seRequestElements = new ArrayList<SeRequest>();
+        Set<SeRequest> seRequestElements = new LinkedHashSet<SeRequest>();
         seRequestElements.add(seRequestElement);
 
 
@@ -70,7 +68,7 @@ public class KeepOpenCardTimeoutManager extends AbstractLogicManager {
 
             SeRequest seRequestElement2 = new SeRequest(ByteBufferUtils.fromHex(poAid),
                     poApduRequestList, false, ContactlessProtocols.PROTOCOL_ISO14443_4);
-            List<SeRequest> seRequestElements2 = new ArrayList<SeRequest>();
+            Set<SeRequest> seRequestElements2 = new LinkedHashSet<SeRequest>();
 
             seRequestElements2.add(seRequestElement2);
             SeRequestSet poRequest2 = new SeRequestSet(seRequestElements2);

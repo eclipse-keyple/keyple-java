@@ -9,8 +9,9 @@
 package org.eclipse.keyple.examples.androidnfc;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.SortedSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.List;
 
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
@@ -80,7 +81,7 @@ public class NFCTestFragment extends Fragment
         // 1 - First initialize SEProxy with Android Plugin
         Log.d(TAG, "Initialize SEProxy with Android Plugin");
         SeProxyService seProxyService = SeProxyService.getInstance();
-        List<ReadersPlugin> plugins = new ArrayList<ReadersPlugin>();
+        SortedSet<ReadersPlugin> plugins = new ConcurrentSkipListSet<ReadersPlugin>();
         plugins.add(AndroidNfcPlugin.getInstance());
         seProxyService.setPlugins(plugins);
 
@@ -94,7 +95,7 @@ public class NFCTestFragment extends Fragment
         try {
             // define task as an observer for ReaderEvents
             Log.d(TAG, "Define this view as an observer for ReaderEvents");
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+            ProxyReader reader = seProxyService.getPlugins().first().getReaders().first();
             ((AndroidNfcReader) reader).addObserver(this);
 
 
@@ -149,7 +150,7 @@ public class NFCTestFragment extends Fragment
          Log.d(TAG, "Running HopLink Simple Read Tests");
          ProxyReader reader = null;
          try {
-             reader = SeProxyService.getInstance().getPlugins().get(0).getReaders().get(0);
+             reader = SeProxyService.getInstance().getPlugins().first().getReaders().first();
 
              String poAid = "A000000291A000000191";
              String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
@@ -220,7 +221,7 @@ public class NFCTestFragment extends Fragment
         try {
             Log.d(TAG, "Remove task as an observer for ReaderEvents");
             SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+            ProxyReader reader = seProxyService.getPlugins().first().getReaders().first();
             ((AbstractObservableReader) reader).removeObserver(this);
 
             // destroy AndroidNFC fragment

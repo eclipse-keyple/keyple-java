@@ -16,7 +16,7 @@ import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
  * 
  * @see SeRequest
  */
-public class SeResponse {
+public final class SeResponse {
 
 
     /**

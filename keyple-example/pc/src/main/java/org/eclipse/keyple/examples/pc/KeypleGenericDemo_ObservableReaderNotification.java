@@ -8,8 +8,8 @@
 
 package org.eclipse.keyple.examples.pc;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.SortedSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.*;
@@ -168,7 +168,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
 
         // Set PCSC plugin
         SeProxyService seProxyService = SeProxyService.getInstance();
-        List<ReadersPlugin> pluginsSet = new ArrayList<ReadersPlugin>();
+        SortedSet<ReadersPlugin> pluginsSet = new ConcurrentSkipListSet<ReadersPlugin>();
         pluginsSet.add(PcscPlugin.getInstance().setLogging(false));
         seProxyService.setPlugins(pluginsSet);
 
