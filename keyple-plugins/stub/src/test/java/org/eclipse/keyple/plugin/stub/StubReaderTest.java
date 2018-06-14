@@ -11,10 +11,7 @@ package org.eclipse.keyple.plugin.stub;
 
 import static org.junit.Assert.fail;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.SeRequestSet;
@@ -31,7 +28,8 @@ public class StubReaderTest {
 
     @Before
     public void SetUp() throws IOReaderException {
-        stubReader = (StubReader) StubPlugin.getInstance().getReaders().get(0);
+        // works if stubreader could be instanciated just once
+        stubReader = (StubReader) StubPlugin.getInstance().getReaders().first();
     }
 
 

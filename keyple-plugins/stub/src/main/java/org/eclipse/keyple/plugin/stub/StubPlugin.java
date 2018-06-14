@@ -9,10 +9,9 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
+import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
@@ -56,14 +55,12 @@ public final class StubPlugin extends AbstractObservablePlugin {
     }
 
     @Override
-    public List<AbstractObservableReader> getReaders() throws IOReaderException {
+    public SortedSet<? extends ProxyReader> getReaders() throws IOReaderException {
         if (readers.size() == 0) {
             logger.info("Stub Reader list is empty, adding one reader");
             StubReader reader = new StubReader();
             readers.put(reader.getName(), reader);
         }
-        return new ArrayList(readers.values());
+        return new ConcurrentSkipListSet(readers.values());
     }
-
-
 }
