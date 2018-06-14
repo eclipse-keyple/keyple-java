@@ -98,19 +98,18 @@ public class NFCTestFragment extends Fragment
             ((AndroidNfcReader) reader).addObserver(this);
 
             reader.setParameter("READER_PRESENCE_CHECK_DELAY", "5000");
-            //reader.setParameter("FLAG_READER", "NO_PLATFORM_SOUNDS");
-            //reader.setParameter("FLAG_READER", "SKIP_NDEF_CHECK");
+            // reader.setParameter("FLAG_READER", "NO_PLATFORM_SOUNDS");
+            // reader.setParameter("FLAG_READER", "SKIP_NDEF_CHECK");
 
 
             ((AndroidNfcReader) reader)
                     .addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4);
 
             /*
-            ((AndroidNfcReader) reader).addSeProtocolSetting(
-                    AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC);
-            ((AndroidNfcReader) reader).addSeProtocolSetting(
-                    AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_UL);
-            */
+             * ((AndroidNfcReader) reader).addSeProtocolSetting(
+             * AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC); ((AndroidNfcReader)
+             * reader).addSeProtocolSetting( AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_UL);
+             */
 
         } catch (IOReaderException e) {
             e.printStackTrace();

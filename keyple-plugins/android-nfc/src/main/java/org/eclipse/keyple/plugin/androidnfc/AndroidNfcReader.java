@@ -33,8 +33,14 @@ import android.util.Log;
 
 
 /**
- * Implementation of {@link org.eclipse.keyple.seproxy.ProxyReader} for the communication with the
- * NFC Tag though Android {@link NfcAdapter}
+ * Implementation of {@link org.eclipse.keyple.seproxy.ProxyReader} to communicate with NFC Tag
+ * though Android {@link NfcAdapter}
+ *
+ * Configure NFCAdapter Protocols with
+ * {@link AndroidNfcReader#addSeProtocolSetting(SeProtocolSettings)} and
+ * {@link AndroidNfcReader#setParameter(String, String)}
+ *
+ *
  */
 public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.ReaderCallback {
 
@@ -46,7 +52,7 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
     // keep state between session if required
     private TagProxy tagProxy;
 
-    //flags for NFCAdapter
+    // flags for NFCAdapter
     private int flags = 0;
     private Bundle options = new Bundle();
 
@@ -79,6 +85,77 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
     }
 
 
+    /**
+     * Add a protocol to the list of listened protocols for the NFC Reader Use the supported
+     * protocols included in {@link AndroidNfcProtocolSettings}
+     * 
+     * @param seProtocolSetting
+     */
+    public void addSeProtocolSetting(SeProtocolSettings seProtocolSetting) {
+
+        if (seProtocolSetting.equals(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4)) {
+            flags = flags | NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_NFC_A;
+        } else if (seProtocolSetting
+                .equals(AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_UL)) {
+            flags = flags | NfcAdapter.FLAG_READER_NFC_A;
+        } else if (seProtocolSetting
+                .equals(AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC)) {
+            flags = flags | NfcAdapter.FLAG_READER_NFC_A;
+        }
+
+        this.protocolsMap.put(seProtocolSetting.getFlag(), seProtocolSetting.getValue());
+    }
+
+    /**
+     * Get Reader parameters
+     * 
+     * @return parameters
+     */
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+
+    /**
+     * Configure NFC Reader AndroidNfcReader supports the following parameters : FLAG_READER:
+     * SKIP_NDEF_CHECK (skip NDEF check when a smartcard is detected) FLAG_READER:
+     * NO_PLATFORM_SOUNDS (disable device sound when nfc smartcard is detected)
+     * EXTRA_READER_PRESENCE_CHECK_DELAY: "Int" (see @NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY)
+     * 
+     * @param key the parameter key
+     * @param value the parameter value
+     * @throws IOException
+     */
+    @Override
+    public void setParameter(String key, String value) throws IOException {
+        Log.i(TAG, "AndroidNfcReader supports the following parameters");
+        Log.i(TAG,
+                "FLAG_READER: SKIP_NDEF_CHECK, NO_PLATFORM_SOUNDS, EXTRA_READER_PRESENCE_CHECK_DELAY:\"int\"");
+
+        Boolean correctParameter = true;
+
+        if (key.equals("FLAG_READER")) {
+            if (value.equals("SKIP_NDEF_CHECK")) {
+                flags = flags | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK;
+            } else if (value.equals("NO_PLATFORM_SOUNDS")) {
+                flags = flags | NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS;
+            } else {
+                Log.w(TAG, "Unknown value for parameter : " + key + " " + value);
+                correctParameter = false;
+            }
+        } else if (key.equals("READER_PRESENCE_CHECK_DELAY")) {
+            Integer timeout = Integer.parseInt(value);
+            options.putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, timeout);
+        } else {
+            Log.w(TAG, "Unknown key for parameter : " + key);
+            correctParameter = false;
+        }
+
+        if (correctParameter) {
+            parameters.put(key, value);
+        }
+
+    }
 
     /**
      * Callback function invoked by @{@link NfcAdapter} when a @{@link Tag} is discovered A
@@ -232,7 +309,8 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
         }
         // Reader mode for NFC reader allows to listen to NFC events without the Intent mechanism.
         // It is active only when the activity thus the fragment is active.
-        Log.i(TAG, "Enabling Read Write Mode with flags : " + flags + " and options : " + options.toString());
+        Log.i(TAG, "Enabling Read Write Mode with flags : " + flags + " and options : "
+                + options.toString());
 
         nfcAdapter.enableReaderMode(activity, this, flags, options);
     }
@@ -242,51 +320,6 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
 
     }
 
-    public void addSeProtocolSetting(SeProtocolSettings seProtocolSetting) {
 
-        if (seProtocolSetting.equals(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4)) {
-            flags = flags | NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_NFC_A;
-        } else if (seProtocolSetting.equals(AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_UL)) {
-            flags = flags | NfcAdapter.FLAG_READER_NFC_A;
-        } else if (seProtocolSetting.equals(AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC)) {
-            flags = flags | NfcAdapter.FLAG_READER_NFC_A;
-        }
-
-        this.protocolsMap.put(seProtocolSetting.getFlag(), seProtocolSetting.getValue());
-    }
-
-    public Map<String, String> getParameters() {
-        return parameters;
-    }
-
-    @Override
-    public void setParameter(String key, String value) throws IOException {
-        Log.i(TAG, "AndroidNfcReader supports the following parameters");
-        Log.i(TAG, "FLAG_READER: SKIP_NDEF_CHECK, FLAG_READER_NO_PLATFORM_SOUNDS, EXTRA_READER_PRESENCE_CHECK_DELAY:\"int\"");
-
-        Boolean correctParameter = true;
-
-        if(key.equals("FLAG_READER")){
-            if(value.equals("SKIP_NDEF_CHECK")){
-                flags = flags | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK;
-            } else if(value.equals("NO_PLATFORM_SOUNDS")){
-                flags = flags | NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS;
-            }else{
-                Log.w(TAG,"Unknown value for parameter : " +key + " " + value);
-                correctParameter = false;
-            }
-        }else if(key.equals("READER_PRESENCE_CHECK_DELAY")){
-            Integer timeout = Integer.parseInt(value);
-            options.putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, timeout);
-        }else{
-            Log.w(TAG,"Unknown key for parameter : " + key);
-            correctParameter = false;
-        }
-
-        if(correctParameter){
-            parameters.put(key,value);
-        }
-
-    }
 
 }
