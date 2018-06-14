@@ -11,14 +11,10 @@ package org.eclipse.keyple.plugin.androidnfc;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 
-import java.util.Set;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeProtocol;
@@ -33,7 +29,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.TagTechnology;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -48,7 +43,6 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
 
     //Android NFC Adapter
     private NfcAdapter nfcAdapter;
-    private Activity activity;
 
     // keep state between session if required
     private TagProxy tagProxy;
@@ -58,23 +52,20 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
      * Private constructor
      */
     private AndroidNfcReader() {
-        Log.i(TAG, "Instanciate singleton NFC Reader");
+        Log.i(TAG, "Init singleton NFC Reader");
     }
 
     /**
      * Holder of singleton
      */
     private static class SingletonHolder {
-        /**
-         * Unique instance no-preinitialized
-         */
         private final static AndroidNfcReader instance = new AndroidNfcReader();
     }
 
     /**
      * Access point for the unique instance of singleton
      */
-    protected static AndroidNfcReader getInstance() {
+    static AndroidNfcReader getInstance() {
         return SingletonHolder.instance;
     }
 
@@ -95,7 +86,7 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
 
     /**
      * Callback function invoked by @{@link NfcAdapter} when a @{@link Tag} is discovered A
-     * TagTransciever is created based on the Tag technology see
+     * TagTransceiver is created based on the Tag technology see
      * {@link TagProxy#getTagProxy(Tag)} Do not call this function directly.
      * 
      * @param tag : detected tag
@@ -130,6 +121,7 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
             } catch (IOException e) {
                 Log.e(TAG, "Error while connecting to Tag ");
                 e.printStackTrace();
+                throw  new IOReaderException(e);
             }
         } else {
             Log.i(TAG, "Tag is already connected to : " + printTagId());
@@ -151,7 +143,7 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
             }
         }
 
-        // Contactless cards do not have an ATR, add a dummy ATR
+        // Contact-less cards do not have an ATR, add a dummy ATR
         atrAndFci[0] =
                 ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00});
 
@@ -199,8 +191,7 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
     @Override
     public ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
         // Initialization
-        long commandLenght = apduIn.limit();
-        Log.d(TAG, "Data Length to be sent to tag : " + commandLenght);
+        Log.d(TAG, "Data Length to be sent to tag : " + apduIn.limit());
         Log.d(TAG, "Data in : " + ByteBufferUtils.toHex(apduIn));
         byte[] data = ByteBufferUtils.toBytes(apduIn);
         byte[] dataOut = new byte[0];
@@ -227,7 +218,7 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
      *
      * @param intent : Intent received and filterByProtocol by xml tech_list
      */
-    protected void processIntent(Intent intent) {
+    void processIntent(Intent intent) {
 
         // Extract Tag from Intent
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -236,16 +227,15 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
 
     private String printTagId() {
         return tagProxy != null && tagProxy.getTag() != null
-                ? tagProxy.getTag().getId() + tagProxy.getTag().toString()
+                ? Arrays.toString(tagProxy.getTag().getId()) + tagProxy.getTag().toString()
                 : "null";
     }
 
-    protected void enableNFCReaderMode(Activity _activity){
-        activity = _activity;
+    void enableNFCReaderMode(Activity activity){
         if(nfcAdapter==null){
             nfcAdapter = NfcAdapter.getDefaultAdapter(activity);
         }
-        // Reader mode for NFC reader allows to listen to NFC events without the Intent mecanism.
+        // Reader mode for NFC reader allows to listen to NFC events without the Intent mechanism.
         // It is active only when the activity thus the fragment is active.
         Log.i(TAG, "Enabling Read Write Mode");
         Bundle options = new Bundle();
@@ -259,8 +249,9 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
                 options);
     }
 
-    protected void disableNFCReaderMode(){
+    void disableNFCReaderMode(Activity activity){
         nfcAdapter.disableReaderMode(activity);
+
     }
 
 }

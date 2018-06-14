@@ -26,17 +26,17 @@ class TagProxy implements TagTechnology {
 
     static private final String TAG = TagProxy.class.getSimpleName();
 
-    private TagTechnology tagTechnology;
-    private String tech;
+    private final TagTechnology tagTechnology;
+    private final String tech;
 
-    TagProxy(TagTechnology tagTechnology, String tech){
+    private TagProxy(TagTechnology tagTechnology, String tech){
         this.tagTechnology = tagTechnology;
         this.tech = tech;
     }
     /*
      * Transceive
      */
-    protected byte[] transceive(byte[] data) throws IOException{
+    byte[] transceive(byte[] data) throws IOException{
 
         if(tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC)){
             return ((MifareClassic) tagTechnology).transceive(data);
@@ -50,11 +50,11 @@ class TagProxy implements TagTechnology {
             return null;//can not happen
         }
 
-    };
+    }
 
-    protected String getTech(){
+    String getTech(){
         return tech;
-    };
+    }
 
     static TagProxy getTagProxy(Tag tag) throws IOReaderException {
 

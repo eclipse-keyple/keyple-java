@@ -75,11 +75,12 @@ public class AndroidNfcFragment extends Fragment {
 
         if (nfcAdapter == null) {
             Log.w(TAG, "Your device does not support NFC");
+        }else{
+            if (!nfcAdapter.isEnabled()) {
+                Log.w(TAG, "PLease enable NFC to communicate with NFC Elements");
+            }
         }
 
-        if (!nfcAdapter.isEnabled()) {
-            Log.w(TAG, "PLease enable NFC to communicate with NFC Elements");
-        }
 
 
     }
@@ -123,7 +124,7 @@ public class AndroidNfcFragment extends Fragment {
 
         //Enable Reader Mode for NFC Adapter
         try{
-            ((AndroidNfcReader)SeProxyService.getInstance().getPlugins().get(0).getReaders().get(0))
+            ((AndroidNfcReader)SeProxyService.getInstance().getPlugins().first().getReaders().first())
                 .enableNFCReaderMode(getActivity());
 
         }catch (IOReaderException e){
@@ -142,8 +143,8 @@ public class AndroidNfcFragment extends Fragment {
 
         try{
             //Disable Reader Mode for NFC Adapter
-            ((AndroidNfcReader)SeProxyService.getInstance().getPlugins().get(0).getReaders().get(0))
-                    .disableNFCReaderMode();
+            ((AndroidNfcReader)SeProxyService.getInstance().getPlugins().first().getReaders().first())
+                    .disableNFCReaderMode(getActivity());
 
         }catch (IOReaderException e){
             e.printStackTrace();

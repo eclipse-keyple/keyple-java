@@ -50,7 +50,7 @@ public class AndroidNfcPlugin implements ReadersPlugin {
     private AndroidNfcPlugin() {
 
         if (this.reader == null) {
-            Log.i(TAG, "Instanciate singleton NFC Plugin");
+            Log.i(TAG, "Init singleton NFC Plugin");
             this.reader = AndroidNfcReader.getInstance();
         }
 

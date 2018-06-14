@@ -18,13 +18,13 @@ public enum AndroidNfcProtocolSettings implements SeProtocolSettings {
     SETTING_PROTOCOL_MIFARE_UL(ContactlessProtocols.PROTOCOL_MIFARE_UL, ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL),
     SETTING_PROTOCOL_MIFARE_CLASSIC(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC, ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC);
 
-    private SeProtocol flag;
-    private String value;
+    private final SeProtocol flag;
+    private final String value;
 
     AndroidNfcProtocolSettings(SeProtocol flag,String value){
         this.flag = flag;
         this.value = value;
-    };
+    }
 
     @Override
     public SeProtocol getFlag() {
@@ -38,11 +38,11 @@ public enum AndroidNfcProtocolSettings implements SeProtocolSettings {
 
     public interface ProtocolSetting {
 
-        public static String NFC_TAG_TYPE_ISODEP = "android.nfc.tech.IsoDep";
+        String NFC_TAG_TYPE_ISODEP = "android.nfc.tech.IsoDep";
 
-        public static String NFC_TAG_TYPE_MIFARE_UL = "android.nfc.tech.MifareUltralight";
+        String NFC_TAG_TYPE_MIFARE_UL = "android.nfc.tech.MifareUltralight";
 
-        public static String NFC_TAG_TYPE_MIFARE_CLASSIC = "android.nfc.tech.MifareClassic";
+        String NFC_TAG_TYPE_MIFARE_CLASSIC = "android.nfc.tech.MifareClassic";
 
 
 
