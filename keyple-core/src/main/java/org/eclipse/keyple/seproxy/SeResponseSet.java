@@ -18,7 +18,7 @@ import java.util.List;
  * 
  * @see SeRequestSet
  */
-public class SeResponseSet {
+public final class SeResponseSet {
     /**
      * List of seResponses that were received following the transmission of the {@link SeRequest}.
      */
