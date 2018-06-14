@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.examples.androidnfc;
 
-import org.eclipse.keyple.plugin.androidnfc.AndroidNfcPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import android.os.Bundle;
 import android.support.annotation.NonNull;

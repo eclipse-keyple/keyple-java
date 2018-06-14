@@ -18,8 +18,27 @@ import android.util.Log;
 
 
 /**
- * Readers Plugin for Android platform based on the NFC Adapter
+ * Enables Keyple to communicate with the the Android device embedded NFC reader. In the Android
+ * platform, NFC reader must be link to an application activity.
+ *
+ *
+ * To activate NFC Keyple capabilities, add {@link AndroidNfcFragment} to the application activity.
+ * getFragmentManager().beginTransaction().add(AndroidNfcFragment.newInstance(),
+ * "myFragmentId").commit();
+ *
+ * Then set the Activity as an observer of the plugin as any Keyple plugin :
+ *
+ * SeProxyService seProxyService = SeProxyService.getInstance(); List<ReadersPlugin> plugins = new
+ * ArrayList<ReadersPlugin>(); plugins.add(AndroidNfcPlugin.getInstance());
+ * seProxyService.setPlugins(plugins);
+ *
+ * ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
+ * ((AbstractObservableReader) reader).addObserver(this);
+ *
+ *
+ *
  */
+
 public class AndroidNfcPlugin implements ReadersPlugin {
 
     private static final String TAG = AndroidNfcPlugin.class.getSimpleName();

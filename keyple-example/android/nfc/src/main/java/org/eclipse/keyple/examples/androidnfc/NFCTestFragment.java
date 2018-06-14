@@ -20,8 +20,6 @@ import org.eclipse.keyple.example.common.deprecated.KeepOpenCardTimeoutManager;
 import org.eclipse.keyple.example.common.deprecated.MifareClassicCardAccessManager;
 import org.eclipse.keyple.example.common.deprecated.MifareUltralightCardAccessManager;
 import org.eclipse.keyple.example.common.deprecated.MultiNFCCardAccessManager;
-import org.eclipse.keyple.plugin.androidnfc.AndroidNfcFragment;
-import org.eclipse.keyple.plugin.androidnfc.AndroidNfcPlugin;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReadersPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
