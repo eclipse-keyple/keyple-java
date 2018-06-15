@@ -62,6 +62,13 @@ public class KeypleCalypsoDemo_HoplinkTransaction
         try {
             // AID - profile Multi 1 App 1
             String poAid = "A000000291A000000191";// "315449432E49434101FFFFFF0000";
+
+            // do the PO selection
+            SeRequestSet selectionRequest =
+                    new SeRequestSet(new SeRequest(ByteBufferUtils.fromHex(poAid), null, true));
+            ApduResponse fciData = poReader.transmit(selectionRequest).getSingleResponse().getFci();
+
+
             // Read first record of SFI 06h - for 78h bytes
             ReadRecordsCmdBuild poReadRecordCmd_T2EnvR1 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
                     (byte) 0x01, true, (byte) 0x14, (byte) 0x20);
@@ -79,7 +86,7 @@ public class KeypleCalypsoDemo_HoplinkTransaction
             // Step 1
             System.out.println(
                     "\n\n========= PO Transaction ======= Identification =====================");
-            poTransaction.processIdentification(ByteBufferUtils.fromHex(poAid), null);
+            poTransaction.processIdentification(fciData);
 
             // Step 2
             System.out.println(

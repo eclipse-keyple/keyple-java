@@ -119,14 +119,14 @@ public class PoSecureSession {
      * @param poFciData the po response to the application selection (FCI)
      * @throws IOReaderException the IO reader exception
      */
-    public void processIdentification(SeResponse poFciData) throws IOReaderException {
+    public void processIdentification(ApduResponse poFciData) throws IOReaderException {
         // Init CSM ApduRequest List
         List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
         // PO & CSM channels to be kept "Open"
         boolean keepChannelOpen = true;
 
         // Parse PO FCI - to retrieve Calypso Revision, Serial Number, & DF Name (AID)
-        GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(poFciData.getFci());
+        GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(poFciData);
         poRevision = computePoRevision(poFciRespPars.getApplicationTypeByte());
         poCalypsoInstanceAid = poFciRespPars.getDfName();
         poCalypsoInstanceSerial = poFciRespPars.getApplicationSerialNumber();
@@ -280,9 +280,6 @@ public class PoSecureSession {
                         poApduRequestList.get(i).getBytes())).getApduRequest());
                 /*
                  * Build "Digest Update" command for each PO APDU Response
-                 * csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
-                 * poApduResponseList.get(i).getBytes())).getApduRequest()); //TODO => this is the
-                 * right command, to fix ApduResponse.getBytes
                  */
                 csmApduRequestList.add(((new DigestUpdateCmdBuild(csmRevision, false,
                         poApduResponseList.get(i).getBytes())).getApduRequest())); // HACK
@@ -296,9 +293,8 @@ public class PoSecureSession {
         // create a SeRequestSet (list of SeRequests)
         SeRequestSet csmRequest = new SeRequestSet(new SeRequest(null, csmApduRequestList, true));
 
-        SeResponseSet csmResponses = csmReader.transmit(csmRequest);
-        // fclairamb(2018-03-02): TODO: We don't check the result ?
-        // List<ApduResponse> csmApduResponseList = csmResponse.getApduResponses();
+        /* transmission of the digest operations to the CSM. We do not check responses intentionally, letting the session process managing it. */
+        csmReader.transmit(csmRequest);
 
         currentState = SessionState.SESSION_OPEN;
         return poResponse;
