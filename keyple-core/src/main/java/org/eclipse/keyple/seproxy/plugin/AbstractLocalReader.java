@@ -290,9 +290,11 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             }
         }
 
-        // process ApduRequest
-        for (ApduRequest apduRequest : seRequest.getApduRequests()) {
-            apduResponseList.add(processApduRequest(apduRequest));
+        // process request if not empty
+        if(seRequest.getApduRequests()!= null) {
+            for (ApduRequest apduRequest : seRequest.getApduRequests()) {
+                apduResponseList.add(processApduRequest(apduRequest));
+            }
         }
 
         return new SeResponse(previouslyOpen, atrData, fciDataSelected, apduResponseList);
