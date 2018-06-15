@@ -202,8 +202,7 @@ public class PoSecureSession {
 
         // Add list of SendableInSession commands to PO ApduRequest
         if ((poCommandsInsideSession != null) && !poCommandsInsideSession.isEmpty()) {
-            poApduRequestList.addAll(
-                    this.getApduRequestListFromSendableInSessionListTo(poCommandsInsideSession));
+            poApduRequestList.addAll(this.getApduRequestsToSendInSession(poCommandsInsideSession));
         }
 
         // Transfert PO commands
@@ -233,10 +232,10 @@ public class PoSecureSession {
                 AbstractOpenSessionRespPars.create(poApduResponseList.get(0), poRevision);
         sessionCardChallenge = poOpenSessionPars.getPoChallenge();
 
-        // HACK - AbstractOpenSessionRespPars.getPoChallengeOld() ne retourne pas la bonne valeur de
-        // PO
-        // challenge
-        // TODO - corriger => AbstractOpenSessionRespPars.getPoChallengeOld()
+        /*
+         * HACK - AbstractOpenSessionRespPars.getPoChallengeOld() ne retourne pas la bonne valeur de
+         * PO challenge TODO - corriger => AbstractOpenSessionRespPars.getPoChallengeOld()
+         */
         sessionCardChallenge = ByteBufferUtils.fromHex(ByteBufferUtils
                 .toHex(poOpenSessionPars.getApduResponse().getBytes()).substring(0, 4 * 2)); // HACK
 
@@ -273,15 +272,18 @@ public class PoSecureSession {
             // TODO => rajouter un contrôle afin de vérifier que poApduResponseList a même taille
             // que poApduRequestList
             for (int i = 1; i < poApduRequestList.size(); i++) { // The loop starts after the Open
-                // Session for the first command
-                // send in session
-                // Build "Digest Update" command for each PO APDU Request
+                /*
+                 * Session for the first command send in session Build "Digest Update" command for
+                 * each PO APDU Request
+                 */
                 csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
                         poApduRequestList.get(i).getBytes())).getApduRequest());
-                // Build "Digest Update" command for each PO APDU Response
-                // csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
-                // poApduResponseList.get(i).getBytes())).getApduRequest()); //TODO => this is the
-                // rigth command, to fix ApduResponse.getBytes
+                /*
+                 * Build "Digest Update" command for each PO APDU Response
+                 * csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
+                 * poApduResponseList.get(i).getBytes())).getApduRequest()); //TODO => this is the
+                 * right command, to fix ApduResponse.getBytes
+                 */
                 csmApduRequestList.add(((new DigestUpdateCmdBuild(csmRevision, false,
                         poApduResponseList.get(i).getBytes())).getApduRequest())); // HACK
             }
@@ -303,25 +305,20 @@ public class PoSecureSession {
     }
 
     /**
-     * Change sendable in session tab to list apdu.
+     * Change SendableInSession List to ApduRequest List .
      *
-     * @param poCommandsInsideSession the po commands inside session
-     * @return the list
+     * @param poCommandsInsideSession the po commands list to be sent in session
+     * @return the ApduRequest list
      */
-    // private List<ApduRequest> changeSendableInSessionTabToListApdu(SendableInSession[]
-    // poCommandsInsideSession) {
-    private List<ApduRequest> getApduRequestListFromSendableInSessionListTo(
+    private List<ApduRequest> getApduRequestsToSendInSession(
             List<SendableInSession> poCommandsInsideSession) {
-        List<ApduRequest> retour = new ArrayList<ApduRequest>();
+        List<ApduRequest> apduRequestList = new ArrayList<ApduRequest>();
         if (poCommandsInsideSession != null) {
             for (SendableInSession cmd : poCommandsInsideSession) {
-                // retour.add(cmd.getAPDURequest()); TODO => suppress all methods getAPDURequest()
-                // from SendableInSession & most of AbstractPoCommandBuilder extensions
-                retour.add(((AbstractPoCommandBuilder) cmd).getApduRequest()); // Il fallait faire
-                // un "CAST"
+                apduRequestList.add(((AbstractPoCommandBuilder) cmd).getApduRequest());
             }
         }
-        return retour;
+        return apduRequestList;
     }
 
 
@@ -361,7 +358,7 @@ public class PoSecureSession {
 
         // Get PO ApduRequest List from SendableInSession List
         List<ApduRequest> poApduRequestList =
-                this.getApduRequestListFromSendableInSessionListTo(poCommandsInsideSession);
+                this.getApduRequestsToSendInSession(poCommandsInsideSession);
         // Init CSM ApduRequest List
         List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
         // PO & CSM to be kept "Open"
@@ -463,7 +460,7 @@ public class PoSecureSession {
 
         // Get PO ApduRequest List from SendableInSession List - for the first PO exchange
         List<ApduRequest> poApduRequestList =
-                this.getApduRequestListFromSendableInSessionListTo(poCommandsInsideSession);
+                this.getApduRequestsToSendInSession(poCommandsInsideSession);
         // Init CSM ApduRequest List - for the first CSM exchange
         List<ApduRequest> csmApduRequestList_1 = new ArrayList<ApduRequest>();
         // Init CSM ApduRequest List - for the second CSM exchange
@@ -597,7 +594,7 @@ public class PoSecureSession {
         SeRequestSet csmRequest_2 =
                 new SeRequestSet(new SeRequest(null, csmApduRequestList_2, keepChannelOpen));
 
-        SeResponse csmResponse_2 =  csmReader.transmit(csmRequest_2).getSingleResponse();
+        SeResponse csmResponse_2 = csmReader.transmit(csmRequest_2).getSingleResponse();
         List<ApduResponse> csmApduResponseList_2 = csmResponse_2.getApduResponses();
 
         // Get transaction result
