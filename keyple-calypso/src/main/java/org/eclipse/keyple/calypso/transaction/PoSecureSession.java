@@ -113,57 +113,29 @@ public class PoSecureSession {
     }
 
     /**
-     * Process identification. On poReader, generate a SERequest for the specified PO AID, with
-     * keepChannelOpen set at true, and apduRequests defined with the optional
-     * poCommands_OutsideSession. Returns the corresponding SeResponse. Identifies the serial
-     * and the revision of the PO from FCI data. On csmSessionReader, automatically operate the
-     * Select Diversifier and the Get Challenge.
-     *
-     * @param poAid the po AID
-     * @param poCommandsOutsideSession the po commands outside session
-     * @return the SE response
+     * Process identification from the previously selected PO application.
+     * No communication is made with the PO
+     * One communication is made with the CSM to operate the diversification and obtain a terminal session challenge.
+     * If the provided FCI isn't a Calypso PO FCI an exception is thrown.
+     * @param poFciData the po response to the application selection (FCI)
      * @throws IOReaderException the IO reader exception
      */
-    public SeResponse processIdentification(ByteBuffer poAid,
-            List<SendableInSession> poCommandsOutsideSession) throws IOReaderException {
-
-
-        // Get PO ApduRequest List from SendableInSession List
-        List<ApduRequest> poApduRequestList =
-                this.getApduRequestListFromSendableInSessionListTo(poCommandsOutsideSession);
+    public void processIdentification(SeResponse poFciData) throws IOReaderException {
         // Init CSM ApduRequest List
         List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
         // PO & CSM channels to be kept "Open"
         boolean keepChannelOpen = true;
 
-        // Transfert PO commands
-        logger.info("Identification: PO requests", "action", "po_secure_session.ident_po_request");
-        // System.out.println("\t========= Identification === Transfert PO commands");
-
-        // create a list of SeRequest
-        Set<SeRequest> poRequests = new LinkedHashSet<SeRequest>();
-        poRequests.add(new SeRequest(poAid, poApduRequestList, keepChannelOpen));
-        SeRequestSet poRequest = new SeRequestSet(poRequests);
-
-        // SeRequestSet poRequest = new SeRequestSet(poAid, poApduRequestList, keepChannelOpen);
-        SeResponseSet poResponses = poReader.transmit(poRequest);
-        SeResponse poResponse = poResponses.getResponses().get(0);
-
         // Parse PO FCI - to retrieve Calypso Revision, Serial Number, & DF Name (AID)
-        GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(poResponse.getFci());
+        GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(poFciData.getFci());
         poRevision = computePoRevision(poFciRespPars.getApplicationTypeByte());
         poCalypsoInstanceAid = poFciRespPars.getDfName();
         poCalypsoInstanceSerial = poFciRespPars.getApplicationSerialNumber();
-        // System.out.println("\t========= Identification === Selected DF Name : " +
-        // ByteBufferUtils.toHex(poCalypsoInstanceAid));
+
         logger.info("Identification: PO Response", "action", "po_secure_session.ident_po_response",
                 "dfName", ByteBufferUtils.toHex(poCalypsoInstanceAid), "serialNumber",
                 ByteBufferUtils.toHex(poCalypsoInstanceSerial));
 
-        /*
-         * System.out.println("\t========= Identification === Calypso Serial Number : " +
-         * ByteBufferUtils.toHex(poCalypsoInstanceSerial));
-         */
         // Define CSM Select Diversifier command
         AbstractApduCommandBuilder selectDiversifier =
                 new SelectDiversifierCmdBuild(this.csmRevision, poCalypsoInstanceSerial);
@@ -173,11 +145,7 @@ public class PoSecureSession {
         AbstractApduCommandBuilder csmGetChallenge =
                 new CsmGetChallengeCmdBuild(this.csmRevision, (byte) 0x04);
         csmApduRequestList.add(csmGetChallenge.getApduRequest());
-        /*
-         * System.out.println(
-         * "\t========= Identification === Generate CSM cmd request - Get Challenge : " +
-         * ByteBufferUtils.toHex(csmGetChallenge.getApduRequest().getBytes()));
-         */
+
         logger.info("Identification: CSM Request", "action", "po_secure_session.ident_csm_request",
                 "apduReq1", ByteBufferUtils.toHex(selectDiversifier.getApduRequest().getBytes()),
                 "apduReq2", ByteBufferUtils.toHex(csmGetChallenge.getApduRequest().getBytes()));
@@ -203,19 +171,12 @@ public class PoSecureSession {
             logger.info("Identification: Done", "action", "po_secure_session.ident_done", "apdu",
                     ByteBufferUtils.toHex(csmChallengePars.getApduResponse().getBytes()),
                     "sessionTerminalChallenge", ByteBufferUtils.toHex(sessionTerminalChallenge));
-            // System.out.println("\t========= Identification === Parse CSM cmd response - Select
-            // Diversifier : " +
-            // ByteBufferUtils.toHex(csmChallengePars.getApduResponse().getBytes()));
-
-            // System.out.println("\t========= Identification === Terminal Challenge : " +
-            // ByteBufferUtils.toHex(sessionTerminalChallenge));
         } else {
             throw new InvalidMessageException("Invalid message received",
                     InvalidMessageException.Type.CSM, csmApduRequestList, csmApduResponseList);
         }
 
         currentState = SessionState.PO_IDENTIFIED;
-        return poResponse;
     }
 
     /**
