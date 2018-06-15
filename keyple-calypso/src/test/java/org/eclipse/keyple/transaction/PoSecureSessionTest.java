@@ -25,6 +25,7 @@ import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.*;
+import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -322,8 +323,8 @@ public class PoSecureSessionTest {
         PoGetChallengeCmdBuild ratificationCommand =
                 new PoGetChallengeCmdBuild(this.poPlainSecrureSession.getRevision());
 
-        SeResponse seResponse2 = poPlainSecrureSession
-                .processClosing(Arrays.asList(poCommandsInsideSession), null, ratificationCommand);
+        SeResponse seResponse2 = poPlainSecrureSession.processClosing(
+                Arrays.asList(poCommandsInsideSession), null, ratificationCommand, true);
     }
 
     @Test
@@ -341,7 +342,7 @@ public class PoSecureSessionTest {
                 new PoGetChallengeCmdBuild(this.poPlainSecrureSession.getRevision());
 
         SeResponse seResponse2 =
-                poPlainSecrureSession.processClosing(null, null, ratificationCommand);
+                poPlainSecrureSession.processClosing(null, null, ratificationCommand, true);
         // assertEquals(1, seResponse2.getApduResponses().size());
         // Whitebox.getInternalState(seResponse2, "channelPreviouslyOpen").equals(true);
         assertNull(seResponse2.getFci());
@@ -368,8 +369,8 @@ public class PoSecureSessionTest {
         PoGetChallengeCmdBuild ratificationCommand =
                 new PoGetChallengeCmdBuild(this.poPlainSecrureSession.getRevision());
 
-        SeResponse seResponse2 = poPlainSecrureSession
-                .processClosing(Arrays.asList(poCommandsInsideSession), null, ratificationCommand);
+        SeResponse seResponse2 = poPlainSecrureSession.processClosing(
+                Arrays.asList(poCommandsInsideSession), null, ratificationCommand, true);
         assertEquals(2, seResponse2.getApduResponses().size());
         // Whitebox.getInternalState(seResponse2, "channelPreviouslyOpen").equals(true);
         assertNull(seResponse2.getFci());
@@ -401,18 +402,12 @@ public class PoSecureSessionTest {
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
                 (byte) 0x08, (byte) 0x00);
 
-        ByteBuffer aid =
-                ByteBuffer.wrap(new byte[] {0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43, 0x41});
-        SeResponse seResponse2 = this.poPlainSecrureSession.processIdentification(aid,
-                Arrays.asList(poCommandsInsideSession));
+        ApduResponse fciData = new ApduResponse(ByteBufferUtils.fromHex(
+                "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA153070A3C230C1410019000"),
+                true);
+        this.poPlainSecrureSession.processIdentification(fciData);
 
-        assertEquals(3, seResponse2.getApduResponses().size());
-        // Whitebox.getInternalState(seResponse2, "channelPreviouslyOpen").equals(true);
-        assertNotNull(seResponse2.getFci());
-        assertEquals(responseFci.getSingleResponse().getApduResponses().get(0).getBytes(),
-                seResponse2.getApduResponses().get(0).getBytes());
-        assertEquals(responseFci.getSingleResponse().getApduResponses().get(0).getStatusCode(),
-                seResponse2.getApduResponses().get(0).getStatusCode());
+        // TODO ???
     }
 
     @Test

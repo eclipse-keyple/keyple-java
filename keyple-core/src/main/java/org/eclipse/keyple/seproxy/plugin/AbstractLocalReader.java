@@ -95,7 +95,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return APDU response
      * @throws ChannelStateReaderException Exception faced
      */
-    public final ApduResponse processApduRequest(ApduRequest apduRequest)
+    protected final ApduResponse processApduRequest(ApduRequest apduRequest)
             throws ChannelStateReaderException {
         ByteBuffer apduResponse;
         long before = logging ? System.nanoTime() : 0;
@@ -290,9 +290,11 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             }
         }
 
-        // process ApduRequest
-        for (ApduRequest apduRequest : seRequest.getApduRequests()) {
-            apduResponseList.add(processApduRequest(apduRequest));
+        // process request if not empty
+        if (seRequest.getApduRequests() != null) {
+            for (ApduRequest apduRequest : seRequest.getApduRequests()) {
+                apduResponseList.add(processApduRequest(apduRequest));
+            }
         }
 
         return new SeResponse(previouslyOpen, atrData, fciDataSelected, apduResponseList);
