@@ -10,9 +10,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import org.eclipse.keyple.calypso.commands.SendableInSession;
 import org.eclipse.keyple.calypso.commands.csm.CsmRevision;
 import org.eclipse.keyple.calypso.commands.csm.builder.*;
@@ -113,10 +111,11 @@ public class PoSecureSession {
     }
 
     /**
-     * Process identification from the previously selected PO application.
-     * No communication is made with the PO
-     * One communication is made with the CSM to operate the diversification and obtain a terminal session challenge.
-     * If the provided FCI isn't a Calypso PO FCI an exception is thrown.
+     * Process identification from the previously selected PO application. No communication is made
+     * with the PO One communication is made with the CSM to operate the diversification and obtain
+     * a terminal session challenge. If the provided FCI isn't a Calypso PO FCI an exception is
+     * thrown.
+     * 
      * @param poFciData the po response to the application selection (FCI)
      * @throws IOReaderException the IO reader exception
      */
@@ -152,7 +151,8 @@ public class PoSecureSession {
 
         // Transfert CSM commands
         // create a SeRequestSet (list of SeRequest)
-        SeRequestSet csmRequest = new SeRequestSet(new SeRequest(null, csmApduRequestList, keepChannelOpen));
+        SeRequestSet csmRequest =
+                new SeRequestSet(new SeRequest(null, csmApduRequestList, keepChannelOpen));
         SeResponseSet csmResponses = csmReader.transmit(csmRequest);
         SeResponse csmResponse = csmResponses.getSingleResponse();
         List<ApduResponse> csmApduResponseList = csmResponse.getApduResponses();
@@ -213,7 +213,8 @@ public class PoSecureSession {
         logger.info("Opening: PO request", "action", "po_secure_session.open_po_request");
 
         // create a SeRequestSet (list of SeRequest)
-        SeRequestSet poRequest = new SeRequestSet(new SeRequest(poCalypsoInstanceAid, poApduRequestList, true));
+        SeRequestSet poRequest =
+                new SeRequestSet(new SeRequest(poCalypsoInstanceAid, poApduRequestList, true));
 
         SeResponseSet poResponses = poReader.transmit(poRequest);
         SeResponse poResponse = poResponses.getSingleResponse();
@@ -391,8 +392,8 @@ public class PoSecureSession {
     /**
      * Process proceeding. On poReader, generate a SERequest with the current selected AID, with
      * keepChannelOpen set at true, and apduRequests defined with the poCommands_InsideSession.
-     * Returns the corresponding SeResponse (for poCommands_InsideSession). On
-     * csmSessionReader, automatically operate potentially several Digest Update Multiple.
+     * Returns the corresponding SeResponse (for poCommands_InsideSession). On csmSessionReader,
+     * automatically operate potentially several Digest Update Multiple.
      *
      * @param poCommandsInsideSession the po commands inside session
      * @return a SE Response
@@ -412,7 +413,8 @@ public class PoSecureSession {
 
         // Transfert PO commands
         // create a SeRequestSet (list of SeRequests)
-        SeRequestSet poRequest = new SeRequestSet(new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen));
+        SeRequestSet poRequest = new SeRequestSet(
+                new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen));
 
         logger.info("Processing: Sending PO commands", "action",
                 "po_secure_session.process_po_request", "apduList", poApduRequestList);
@@ -470,7 +472,8 @@ public class PoSecureSession {
         // Transfert CSM commands
         // System.out.println("\t========= Continuation ===== Transfert CSM commands");
         // create a SeRequestSet (list of SeRequests)
-        SeRequestSet csmRequest = new SeRequestSet(new SeRequest(null, csmApduRequestList, keepChannelOpen));
+        SeRequestSet csmRequest =
+                new SeRequestSet(new SeRequest(null, csmApduRequestList, keepChannelOpen));
 
         logger.info("Processing: Sending CSM requests", "action",
                 "po_secure_session.process_csm_request", "apduList", csmApduRequestList);
@@ -561,7 +564,8 @@ public class PoSecureSession {
         logger.info("Closing: Sending CSM request", "action", "po_secure_session.close_csm_req",
                 "apduList", csmApduRequestList_1);
         // create a SeRequestSet (list of SeRequests)
-        SeRequestSet csmRequest = new SeRequestSet(new SeRequest(null, csmApduRequestList_1, keepChannelOpen));
+        SeRequestSet csmRequest =
+                new SeRequestSet(new SeRequest(null, csmApduRequestList_1, keepChannelOpen));
 
         SeResponseSet csmResponses_1 = csmReader.transmit(csmRequest);
         SeResponse csmResponse_1 = csmResponses_1.getSingleResponse();
@@ -601,7 +605,8 @@ public class PoSecureSession {
 
         // Transfert PO commands
         // create a SeRequestSet (list of SeRequests)
-        SeRequestSet poRequest = new SeRequestSet(new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen));
+        SeRequestSet poRequest = new SeRequestSet(
+                new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen));
 
         logger.info("Closing: Sending PO request", "action", "po_secure_session.close_po_req",
                 "apduList", poRequest.getRequests().iterator().next().getApduRequests());
@@ -638,7 +643,8 @@ public class PoSecureSession {
         // ****SECOND**** transfert of CSM commands
         // System.out.println("\t========= Closing ========== Transfert CSM commands - #2");
         // create a SeRequestSet (list of SeRequests)
-        SeRequestSet csmRequest_2 = new SeRequestSet(new SeRequest(null, csmApduRequestList_2, keepChannelOpen));
+        SeRequestSet csmRequest_2 =
+                new SeRequestSet(new SeRequest(null, csmApduRequestList_2, keepChannelOpen));
 
         SeResponseSet csmResponses_2 = csmReader.transmit(csmRequest_2);
         SeResponse csmResponse_2 = csmResponses_2.getSingleResponse();
