@@ -20,6 +20,7 @@ import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
+import org.eclipse.keyple.example.common.HoplinkCommandsSettings;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -56,79 +57,135 @@ public class KeypleCalypsoDemo_HoplinkTransaction
         }
     }
 
+    private void doHoplinkSimpleAuthentication(PoSecureSession poTransaction, ApduResponse fciData,
+            boolean closeSeChannel) throws IOReaderException {
+        // Read first record of SFI 06h - for 78h bytes
+        ReadRecordsCmdBuild poReadRecordCmd_T2EnvR1 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                (byte) 0x01, true, (byte) 0x14, (byte) 0x20);
+        // ReadRecordsCmdBuild poReadRecordCmd_06 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+        // (byte) 0x01, true, (byte) 0x06, (byte) 0x78);
+        // Read first record of SFI 08h - for 15h bytes
+        ReadRecordsCmdBuild poReadRecordCmd_T2UsaR1 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                (byte) 0x01, true, (byte) 0x1A, (byte) 0x30);
+        // ReadRecordsCmdBuild poReadRecordCmd_08 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+        // (byte) 0x01, true, (byte) 0x08, (byte) 0x15);
+        List<SendableInSession> filesToReadInSession = new ArrayList<SendableInSession>();
+        filesToReadInSession.add(poReadRecordCmd_T2EnvR1);
+        filesToReadInSession.add(poReadRecordCmd_T2UsaR1);
+
+        // Step 1
+        System.out.println(
+                "\n\n========= PO Hoplink 2-step session ======= Identification =====================");
+        poTransaction.processIdentification(fciData);
+
+        // Step 2A
+        System.out.println(
+                "========= PO Hoplink 2-step session ======= Opening + Closing ====================");
+        // Read first record of SFI 08h - for 15h bytes
+        byte debitKeyIndex = 0x03;
+        // Open Session for the debit key #1 - with read of the first record of the cyclic EF of
+        // SFI 0Ah
+        AbstractOpenSessionCmdBuild poOpenSession =
+                AbstractOpenSessionCmdBuild.create(poTransaction.getRevision(), debitKeyIndex,
+                        poTransaction.sessionTerminalChallenge, (byte) 0x1A, (byte) 0x01);
+
+        poTransaction.processOpening(poOpenSession, filesToReadInSession, null, closeSeChannel);
+
+        if (poTransaction.isSuccessful()) {
+            System.out.println(
+                    "========= PO Hoplink 2-step session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        } else {
+            System.out.println(
+                    "========= PO Hoplink 2-step session ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        }
+    }
+
+    private void doHoplinkReadWriteTransaction(PoSecureSession poTransaction, ApduResponse fciData,
+            boolean closeSeChannel) throws IOReaderException {
+
+        // Read first record of SFI 06h - for 78h bytes
+        ReadRecordsCmdBuild poReadRecordCmd_T2EnvR1 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                (byte) 0x01, true, (byte) 0x14, (byte) 0x20);
+        // ReadRecordsCmdBuild poReadRecordCmd_06 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+        // (byte) 0x01, true, (byte) 0x06, (byte) 0x78);
+        // Read first record of SFI 08h - for 15h bytes
+        ReadRecordsCmdBuild poReadRecordCmd_T2UsaR1 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                (byte) 0x01, true, (byte) 0x1A, (byte) 0x30);
+        // ReadRecordsCmdBuild poReadRecordCmd_08 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+        // (byte) 0x01, true, (byte) 0x08, (byte) 0x15);
+        List<SendableInSession> filesToReadInSession = new ArrayList<SendableInSession>();
+        filesToReadInSession.add(poReadRecordCmd_T2EnvR1);
+        filesToReadInSession.add(poReadRecordCmd_T2UsaR1);
+
+        // Step 1
+        System.out.println(
+                "\n\n========= PO Hoplink 3-step session ======= Identification =====================");
+        poTransaction.processIdentification(fciData);
+
+        // Step 2
+        System.out.println(
+                "========= PO Hoplink 3-step session ======= Opening ============================");
+        // Read first record of SFI 08h - for 15h bytes
+        byte debitKeyIndex = 0x03;
+        // Open Session for the debit key #1 - with read of the first record of the cyclic EF of
+        // SFI 0Ah
+        AbstractOpenSessionCmdBuild poOpenSession =
+                AbstractOpenSessionCmdBuild.create(poTransaction.getRevision(), debitKeyIndex,
+                        poTransaction.sessionTerminalChallenge, (byte) 0x1A, (byte) 0x01);
+        poTransaction.processOpening(poOpenSession, filesToReadInSession);
+        // poTransaction.processOpening(poOpenSession, null);
+
+        // DONE: Find something better
+        // poReadRecordCmd_T2EnvR1.getApduRequest().getBytes().position(0);
+        // poReadRecordCmd_T2UsaR1.getApduRequest().getBytes().position(0);
+
+        // Step 3
+        System.out.println(
+                "========= PO Hoplink 3-step session ======= Continuation =======================");
+        poTransaction.processProceeding(filesToReadInSession);
+
+        // DONE: Find something better
+        // poReadRecordCmd_T2EnvR1.getApduRequest().getBytes().position(0);
+
+        // Step 4
+        System.out.println(
+                "========= PO Hoplink 3-step session ======= Closing ============================");
+        // poTransaction.processClosing(filesToReadInSession,
+        // poAnticipatedResponseInsideSession, poReadRecordCmd_06); // TODO - to complete
+        // support of poAnticipatedResponseInsideSession
+        poTransaction.processClosing(null, null, poReadRecordCmd_T2EnvR1, true);
+
+        if (poTransaction.isSuccessful()) {
+            System.out.println(
+                    "========= PO Hoplink 3-step session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        } else {
+            System.out.println(
+                    "========= PO Hoplink 3-step session ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        }
+    }
+
     public void operatePoTransaction() {
         PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, (byte) 0x00);
 
         try {
             // AID - profile Multi 1 App 1
-            String poAid = "A000000291A000000191";// "315449432E49434101FFFFFF0000";
+            String poAid = HoplinkCommandsSettings.AID;
 
+            /*
+             * for tests ApduResponse fciData = new ApduResponse(ByteBufferUtils.fromHex(
+             * "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA153070A3C230C1410019000")
+             * , true);
+             */
             // do the PO selection
             SeRequestSet selectionRequest =
                     new SeRequestSet(new SeRequest(ByteBufferUtils.fromHex(poAid), null, true));
             ApduResponse fciData = poReader.transmit(selectionRequest).getSingleResponse().getFci();
 
+            doHoplinkSimpleAuthentication(poTransaction, fciData, false);
 
-            // Read first record of SFI 06h - for 78h bytes
-            ReadRecordsCmdBuild poReadRecordCmd_T2EnvR1 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                    (byte) 0x01, true, (byte) 0x14, (byte) 0x20);
-            // ReadRecordsCmdBuild poReadRecordCmd_06 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-            // (byte) 0x01, true, (byte) 0x06, (byte) 0x78);
-            // Read first record of SFI 08h - for 15h bytes
-            ReadRecordsCmdBuild poReadRecordCmd_T2UsaR1 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                    (byte) 0x01, true, (byte) 0x1A, (byte) 0x30);
-            // ReadRecordsCmdBuild poReadRecordCmd_08 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-            // (byte) 0x01, true, (byte) 0x08, (byte) 0x15);
-            List<SendableInSession> filesToReadInSession = new ArrayList<SendableInSession>();
-            filesToReadInSession.add(poReadRecordCmd_T2EnvR1);
-            filesToReadInSession.add(poReadRecordCmd_T2UsaR1);
+            doHoplinkReadWriteTransaction(poTransaction, fciData, true);
 
-            // Step 1
-            System.out.println(
-                    "\n\n========= PO Transaction ======= Identification =====================");
-            poTransaction.processIdentification(fciData);
-
-            // Step 2
-            System.out.println(
-                    "========= PO Transaction ======= Opening ============================");
-            // Read first record of SFI 08h - for 15h bytes
-            byte debitKeyIndex = 0x03;
-            // Open Session for the debit key #1 - with read of the first record of the cyclic EF of
-            // SFI 0Ah
-            AbstractOpenSessionCmdBuild poOpenSession =
-                    AbstractOpenSessionCmdBuild.create(poTransaction.getRevision(), debitKeyIndex,
-                            poTransaction.sessionTerminalChallenge, (byte) 0x1A, (byte) 0x01);
-            poTransaction.processOpening(poOpenSession, filesToReadInSession);
-            // poTransaction.processOpening(poOpenSession, null);
-
-            // DONE: Find something better
-            // poReadRecordCmd_T2EnvR1.getApduRequest().getBytes().position(0);
-            // poReadRecordCmd_T2UsaR1.getApduRequest().getBytes().position(0);
-
-            // Step 3
-            System.out.println(
-                    "========= PO Transaction ======= Continuation =======================");
-            poTransaction.processProceeding(filesToReadInSession);
-
-            // DONE: Find something better
-            // poReadRecordCmd_T2EnvR1.getApduRequest().getBytes().position(0);
-
-            // Step 4
-            System.out.println(
-                    "========= PO Transaction ======= Closing ============================");
-            // poTransaction.processClosing(filesToReadInSession,
-            // poAnticipatedResponseInsideSession, poReadRecordCmd_06); // TODO - to complete
-            // support of poAnticipatedResponseInsideSession
-            poTransaction.processClosing(null, null, poReadRecordCmd_T2EnvR1);
-
-            if (poTransaction.isSuccessful()) {
-                System.out.println(
-                        "========= PO Transaction ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            } else {
-                System.out.println(
-                        "========= PO Transaction ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            }
-
+            doHoplinkSimpleAuthentication(poTransaction, fciData, false);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

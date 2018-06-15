@@ -11,7 +11,6 @@ package org.eclipse.keyple.seproxy.event;
 
 import java.io.IOException;
 import java.util.Map;
-
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.util.NameableConfigurable;
 import org.eclipse.keyple.util.Observable;
@@ -24,8 +23,7 @@ import com.github.structlog4j.SLoggerFactory;
  * 
  * @param <T>
  */
-abstract class AbstractLoggedObservable<T> extends Observable<T>
-        implements NameableConfigurable {
+abstract class AbstractLoggedObservable<T> extends Observable<T> implements NameableConfigurable {
     private static final ILogger logger = SLoggerFactory.getLogger(AbstractLoggedObservable.class);
     private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
 
