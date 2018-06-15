@@ -47,7 +47,7 @@ public class ReadRecordsCmdBuildTest {
         apduCommandBuilder = new ReadRecordsCmdBuild(PoRevision.REV2_4, record_number,
                 readJustOneRecord, sfi, expectedLenght);
         apduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertArrayEquals(request2_4, ByteBufferUtils.toBytes(apduRequest.getBuffer()));
+        Assert.assertArrayEquals(request2_4, ByteBufferUtils.toBytes(apduRequest.getBytes()));
     }
 
     @Test
@@ -68,7 +68,7 @@ public class ReadRecordsCmdBuildTest {
         apduCommandBuilder = new ReadRecordsCmdBuild(PoRevision.REV3_1, record_number,
                 readJustOneRecord, sfi, expectedLenght);
         apduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertArrayEquals(request3_1, ByteBufferUtils.toBytes(apduRequest.getBuffer()));
+        Assert.assertArrayEquals(request3_1, ByteBufferUtils.toBytes(apduRequest.getBytes()));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class ReadRecordsCmdBuildTest {
         apduCommandBuilder = new ReadRecordsCmdBuild(PoRevision.REV3_2, record_number,
                 readJustOneRecord, sfi, expectedLenght);
         apduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertArrayEquals(request3_2, ByteBufferUtils.toBytes(apduRequest.getBuffer()));
+        Assert.assertArrayEquals(request3_2, ByteBufferUtils.toBytes(apduRequest.getBytes()));
     }
 
 }

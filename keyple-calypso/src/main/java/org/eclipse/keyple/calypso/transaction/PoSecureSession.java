@@ -10,7 +10,9 @@ package org.eclipse.keyple.calypso.transaction;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import org.eclipse.keyple.calypso.commands.SendableInSession;
 import org.eclipse.keyple.calypso.commands.csm.CsmRevision;
 import org.eclipse.keyple.calypso.commands.csm.builder.*;
@@ -139,7 +141,7 @@ public class PoSecureSession {
         // System.out.println("\t========= Identification === Transfert PO commands");
 
         // create a list of SeRequest
-        List<SeRequest> poRequestElements = new ArrayList<SeRequest>();
+        Set<SeRequest> poRequestElements = new LinkedHashSet<SeRequest>();
         poRequestElements.add(new SeRequest(poAid, poApduRequestList, keepChannelOpen));
         SeRequestSet poRequest = new SeRequestSet(poRequestElements);
 
@@ -174,15 +176,15 @@ public class PoSecureSession {
         /*
          * System.out.println(
          * "\t========= Identification === Generate CSM cmd request - Get Challenge : " +
-         * ByteBufferUtils.toHex(csmGetChallenge.getApduRequest().getBuffer()));
+         * ByteBufferUtils.toHex(csmGetChallenge.getApduRequest().getBytes()));
          */
         logger.info("Identification: CSM Request", "action", "po_secure_session.ident_csm_request",
-                "apduReq1", ByteBufferUtils.toHex(selectDiversifier.getApduRequest().getBuffer()),
-                "apduReq2", ByteBufferUtils.toHex(csmGetChallenge.getApduRequest().getBuffer()));
+                "apduReq1", ByteBufferUtils.toHex(selectDiversifier.getApduRequest().getBytes()),
+                "apduReq2", ByteBufferUtils.toHex(csmGetChallenge.getApduRequest().getBytes()));
 
         // Transfert CSM commands
         // create a list of SeRequest
-        List<SeRequest> csmRequestElements = new ArrayList<SeRequest>();
+        Set<SeRequest> csmRequestElements = new LinkedHashSet<SeRequest>();
         csmRequestElements.add(new SeRequest(null, csmApduRequestList, keepChannelOpen));
         SeRequestSet csmRequest = new SeRequestSet(csmRequestElements);
         SeResponseSet csmResponse = csmReader.transmit(csmRequest);
@@ -199,11 +201,11 @@ public class PoSecureSession {
                     new CsmGetChallengeRespPars(csmApduResponseList.get(1));
             sessionTerminalChallenge = csmChallengePars.getChallenge();
             logger.info("Identification: Done", "action", "po_secure_session.ident_done", "apdu",
-                    ByteBufferUtils.toHex(csmChallengePars.getApduResponse().getBuffer()),
+                    ByteBufferUtils.toHex(csmChallengePars.getApduResponse().getBytes()),
                     "sessionTerminalChallenge", ByteBufferUtils.toHex(sessionTerminalChallenge));
             // System.out.println("\t========= Identification === Parse CSM cmd response - Select
             // Diversifier : " +
-            // ByteBufferUtils.toHex(csmChallengePars.getApduResponse().getBuffer()));
+            // ByteBufferUtils.toHex(csmChallengePars.getApduResponse().getBytes()));
 
             // System.out.println("\t========= Identification === Terminal Challenge : " +
             // ByteBufferUtils.toHex(sessionTerminalChallenge));
@@ -254,7 +256,7 @@ public class PoSecureSession {
         logger.info("Opening: PO request", "action", "po_secure_session.open_po_request");
         // System.out.println("\t========= Opening ========== Transfert PO commands");
         // create a list of SeRequest
-        List<SeRequest> poRequestElements = new ArrayList<SeRequest>();
+        Set<SeRequest> poRequestElements = new LinkedHashSet<SeRequest>();
         poRequestElements.add(new SeRequest(poCalypsoInstanceAid, poApduRequestList, true));
         SeRequestSet poRequest = new SeRequestSet(poRequestElements);
 
@@ -279,7 +281,7 @@ public class PoSecureSession {
         // of
         // poApduResponseList
         // System.out.println("\t========= Opening ========== Parse PO cmd response - Open Session :
-        // " + ByteBufferUtils.toHex(poOpenSessionPars.getApduResponse().getBuffer()));
+        // " + ByteBufferUtils.toHex(poOpenSessionPars.getApduResponse().getBytes()));
         sessionCardChallenge = poOpenSessionPars.getPoChallenge();
         // System.out.println("\t========= Opening ========== WRONG Card Challenge : " +
         // ByteBufferUtils.toHex(sessionCardChallenge));
@@ -289,7 +291,7 @@ public class PoSecureSession {
         // challenge
         // TODO - corriger => AbstractOpenSessionRespPars.getPoChallengeOld()
         sessionCardChallenge = ByteBufferUtils.fromHex(ByteBufferUtils
-                .toHex(poOpenSessionPars.getApduResponse().getBuffer()).substring(0, 4 * 2)); // HACK
+                .toHex(poOpenSessionPars.getApduResponse().getBytes()).substring(0, 4 * 2)); // HACK
 
         // System.out.println("\t========= Opening ========== HACKED Card Challenge : " +
         // ByteBufferUtils.toHex(sessionCardChallenge));
@@ -303,7 +305,7 @@ public class PoSecureSession {
 
         logger.info("Opening: PO response", "action", "po_secure_session.open_po_response",
                 "apduResponse",
-                ByteBufferUtils.toHex(poOpenSessionPars.getApduResponse().getBuffer()),
+                ByteBufferUtils.toHex(poOpenSessionPars.getApduResponse().getBytes()),
                 "sessionCardChallenge", ByteBufferUtils.toHex(sessionCardChallenge), "poKif",
                 String.format("%02X", poOpenSessionPars.getSelectedKif()), "poKvc",
                 String.format("%02X", poOpenSessionPars.getSelectedKvc()));
@@ -322,9 +324,9 @@ public class PoSecureSession {
                 poRevision.equals(PoRevision.REV3_2), defaultKeyIndex, kif,
                 poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
         logger.info("Opening: CSM Request", "action", "po_secure_session.open_csm_digest_init",
-                "apdu", ByteBufferUtils.toHex(digestInit.getApduRequest().getBuffer()));
+                "apdu", ByteBufferUtils.toHex(digestInit.getApduRequest().getBytes()));
         // System.out.println("\t========= Opening ========== Generate CSM cmd request - Digest Init
-        // : " + ByteBufferUtils.toHex(digestInit.getApduRequest().getBuffer()));
+        // : " + ByteBufferUtils.toHex(digestInit.getApduRequest().getBytes()));
         csmApduRequestList.add(digestInit.getApduRequest());
 
         // Browse other PO commands to compute CSM digest
@@ -340,23 +342,23 @@ public class PoSecureSession {
                  * System.out.println(
                  * "\t========= Opening ========== Generate CSM cmd request - Digest Update for PO request : "
                  * + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
-                 * poApduRequestList.get(i).getBuffer())) .getApduRequest().getBuffer()));
+                 * poApduRequestList.get(i).getBytes())) .getApduRequest().getBytes()));
                  */
                 csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
-                        poApduRequestList.get(i).getBuffer())).getApduRequest());
+                        poApduRequestList.get(i).getBytes())).getApduRequest());
                 // Build "Digest Update" command for each PO APDU Response
                 /*
                  * System.out.println(
                  * "\t========= Opening ==WRONG=== Generate CSM cmd request - Digest Update for PO response : "
                  * + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
-                 * poApduResponseList.get(i).getBuffer()) .getApduRequest().getBuffer())));
+                 * poApduResponseList.get(i).getBytes()) .getApduRequest().getBytes())));
                  */
                 // csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
                 // poApduResponseList.get(i).getBytes())).getApduRequest()); //TODO => this is the
                 // rigth command, to fix ApduResponse.getBytes
                 /*
                  * ByteBuffer additionOfGetBytesAndGetStatusCode =
-                 * ArrayUtils.addAll(poApduResponseList.get(i).getBuffer(),
+                 * ArrayUtils.addAll(poApduResponseList.get(i).getBytes(),
                  * poApduResponseList.get(i).getStatusCodeOld()); //
                  * System.out.println("\t\tDEBUG ##### csmApduResponseList.size() : " + //
                  * DatatypeConverter.printHexBinary(additionOfGetBytesAndGetStatusCode));
@@ -365,10 +367,10 @@ public class PoSecureSession {
                  * System.out.println(
                  * "\t========= Opening ==HACK==== Generate CSM cmd request - Digest Update for PO response : "
                  * + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
-                 * poApduResponseList.get(i).getBuffer())) .getApduRequest().getBuffer()));
+                 * poApduResponseList.get(i).getBytes())) .getApduRequest().getBytes()));
                  */
                 csmApduRequestList.add(((new DigestUpdateCmdBuild(csmRevision, false,
-                        poApduResponseList.get(i).getBuffer())).getApduRequest())); // HACK
+                        poApduResponseList.get(i).getBytes())).getApduRequest())); // HACK
             }
         }
 
@@ -377,7 +379,7 @@ public class PoSecureSession {
         logger.info("Opening: CSM Request", "action", "po_secure_session.open_csm_request",
                 "apduList", csmApduRequestList);
         // create a list of SeRequest
-        List<SeRequest> csmRequestElements = new ArrayList<SeRequest>();
+        Set<SeRequest> csmRequestElements = new LinkedHashSet<SeRequest>();
         csmRequestElements.add(new SeRequest(null, csmApduRequestList, true));
         SeRequestSet csmRequest = new SeRequestSet(csmRequestElements);
 
@@ -457,7 +459,7 @@ public class PoSecureSession {
         // Transfert PO commands
         // System.out.println("\t========= Continuation ===== Transfert PO commands");
         // create a list of SeRequest
-        List<SeRequest> poRequestElements = new ArrayList<SeRequest>();
+        Set<SeRequest> poRequestElements = new LinkedHashSet<SeRequest>();
         poRequestElements
                 .add(new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen));
         SeRequestSet poRequest = new SeRequestSet(poRequestElements);
@@ -479,10 +481,10 @@ public class PoSecureSession {
              * System.out.println(
              * "\t========= Continuation ===== Generate CSM cmd request - Digest Update for PO request : "
              * + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
-             * poApduRequestList.get(i).getBuffer())).getApduRequest() .getBuffer()));
+             * poApduRequestList.get(i).getBytes())).getApduRequest() .getBytes()));
              */
             csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
-                    poApduRequestList.get(i).getBuffer())).getApduRequest());
+                    poApduRequestList.get(i).getBytes())).getApduRequest());
             // Build "Digest Update" command for each PO APDU Response
             // System.out.println("\t========= Continuation ===== Generate CSM cmd request - Digest
             // Update for PO response : " + DatatypeConverter.printHexBinary((new
@@ -492,7 +494,7 @@ public class PoSecureSession {
              * System.out.println(
              * "\t==WRONG== Continuation ===== Generate CSM cmd request - Digest Update for PO response : "
              * + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
-             * poApduResponseList.get(i).getBuffer())).getApduRequest() .getBuffer()));
+             * poApduResponseList.get(i).getBytes())).getApduRequest() .getBytes()));
              */
             // csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
             // poApduResponseList.get(i).getBytes())).getApduRequest()); //TODO => this is the rigth
@@ -508,17 +510,17 @@ public class PoSecureSession {
              * System.out.println(
              * "\t==HACK=== Continuation ===== Generate CSM cmd request - Digest Update for PO response : "
              * + ByteBufferUtils.toHex((new DigestUpdateCmdBuild(csmRevision, false,
-             * poApduResponseList.get(i).getBuffer())).getApduRequest() .getBuffer()));
+             * poApduResponseList.get(i).getBytes())).getApduRequest() .getBytes()));
              */
             csmApduRequestList.add(((new DigestUpdateCmdBuild(csmRevision, false,
-                    poApduResponseList.get(i).getBuffer())).getApduRequest())); // HACK
+                    poApduResponseList.get(i).getBytes())).getApduRequest())); // HACK
 
         }
 
         // Transfert CSM commands
         // System.out.println("\t========= Continuation ===== Transfert CSM commands");
         // create a list of SeRequest
-        List<SeRequest> csmRequestElements = new ArrayList<SeRequest>();
+        Set<SeRequest> csmRequestElements = new LinkedHashSet<SeRequest>();
         csmRequestElements.add(new SeRequest(null, csmApduRequestList, keepChannelOpen));
         SeRequestSet csmRequest = new SeRequestSet(csmRequestElements);
 
@@ -582,12 +584,12 @@ public class PoSecureSession {
 
                     // Build "Digest Update" command for each PO APDU Request
                     csmApduRequestList_1.add((new DigestUpdateCmdBuild(csmRevision, false,
-                            poApduRequestList.get(i).getBuffer())).getApduRequest());
+                            poApduRequestList.get(i).getBytes())).getApduRequest());
                     // Build "Digest Update" command for each "ANTICIPATED" PO APDU Response
                     // csmApduRequestList_1.add((new DigestUpdateCmdBuild(csmRevision, false,
                     // poApduResponseList_1.get(i).getBytes())).getApduRequest());
                     csmApduRequestList_1.add((new DigestUpdateCmdBuild(csmRevision, false,
-                            poAnticipatedResponseInsideSession.get(i).getBuffer()))
+                            poAnticipatedResponseInsideSession.get(i).getBytes()))
                                     .getApduRequest());
                 }
             } else {
@@ -603,7 +605,7 @@ public class PoSecureSession {
         /*
          * System.out
          * .println("\t========= Closing ========== Generate CSM cmd request - Digest Close : " +
-         * ByteBufferUtils.toHex(digestClose.getApduRequest().getBuffer()));
+         * ByteBufferUtils.toHex(digestClose.getApduRequest().getBytes()));
          */
         csmApduRequestList_1.add(digestClose.getApduRequest());
 
@@ -612,7 +614,7 @@ public class PoSecureSession {
         logger.info("Closing: Sending CSM request", "action", "po_secure_session.close_csm_req",
                 "apduList", csmApduRequestList_1);
         // create a list of SeRequest
-        List<SeRequest> csmRequestElements = new ArrayList<SeRequest>();
+        Set<SeRequest> csmRequestElements = new LinkedHashSet<SeRequest>();
         csmRequestElements.add(new SeRequest(null, csmApduRequestList_1, keepChannelOpen));
         SeRequestSet csmRequest = new SeRequestSet(csmRequestElements);
 
@@ -629,7 +631,7 @@ public class PoSecureSession {
                     csmApduResponseList_1.get(csmApduResponseList_1.size() - 1)); // .getApduResponses().get(0);
 
             // System.out.println("\t========= Closing ========== Parse CSM cmd response - Digest
-            // Close : " + ByteBufferUtils.toHex(respPars.getApduResponse().getBuffer()));
+            // Close : " + ByteBufferUtils.toHex(respPars.getApduResponse().getBytes()));
             // System.out.println("\t\tDEBUG ##### csmApduResponseList_1.size() : "+
             // csmApduResponseList_1.size());
             sessionTerminalSignature = respPars.getSignature();
@@ -654,13 +656,13 @@ public class PoSecureSession {
 
         // Transfert PO commands
         // create a list of SeRequest
-        List<SeRequest> poRequestElements = new ArrayList<SeRequest>();
+        Set<SeRequest> poRequestElements = new LinkedHashSet<SeRequest>();
         poRequestElements
                 .add(new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen));
         SeRequestSet poRequest = new SeRequestSet(poRequestElements);
 
         logger.info("Closing: Sending PO request", "action", "po_secure_session.close_po_req",
-                "apduList", poRequestElements.get(0).getApduRequests());
+                "apduList", poRequestElements.iterator().next().getApduRequests());
         poResponse = poReader.transmit(poRequest);
         SeResponse poResponseElement = poResponse.getResponses().get(0);
         List<ApduResponse> poApduResponseList = poResponseElement.getApduResponses();
@@ -694,7 +696,7 @@ public class PoSecureSession {
         // ****SECOND**** transfert of CSM commands
         // System.out.println("\t========= Closing ========== Transfert CSM commands - #2");
         // create a list of SeRequest
-        List<SeRequest> csmRequestElements_2 = new ArrayList<SeRequest>();
+        Set<SeRequest> csmRequestElements_2 = new LinkedHashSet<SeRequest>();
         csmRequestElements_2.add(new SeRequest(null, csmApduRequestList_2, keepChannelOpen));
         SeRequestSet csmRequest_2 = new SeRequestSet(csmRequestElements_2);
 

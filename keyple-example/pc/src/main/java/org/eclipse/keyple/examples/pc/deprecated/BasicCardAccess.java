@@ -8,8 +8,8 @@
 
 package org.eclipse.keyple.examples.pc.deprecated;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.SortedSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.example.common.deprecated.BasicCardAccessManager;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.ProxyReader;
@@ -28,7 +28,7 @@ public class BasicCardAccess {
     public static void main(String[] args) throws Exception {
         SeProxyService seProxyService = SeProxyService.getInstance();
         System.out.println("SeProxyServ v" + seProxyService.getVersion());
-        List<ReadersPlugin> plugins = new ArrayList<ReadersPlugin>();
+        SortedSet<ReadersPlugin> plugins = new ConcurrentSkipListSet<ReadersPlugin>();
         plugins.add(PcscPlugin.getInstance().setLogging(true));
         seProxyService.setPlugins(plugins);
         for (ReadersPlugin rp : seProxyService.getPlugins()) {

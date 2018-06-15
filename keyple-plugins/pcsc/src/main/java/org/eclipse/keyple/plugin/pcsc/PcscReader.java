@@ -95,11 +95,16 @@ public class PcscReader extends AbstractThreadedLocalReader {
 
     /**
      * Open (if needed) a physical channel (try to connect a card to the terminal)
-     *
+     * 
+     * @param aid
+     * @return ByteBuffer[0] the SE ATR ByteBuffer[1] the SE FCI
      * @throws IOReaderException
      */
+    @Override
+    protected final ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid)
+            throws IOReaderException {
+        ByteBuffer[] atrAndFci = new ByteBuffer[2];
 
-    public final ByteBuffer openLogicalChannelAndSelect(ByteBuffer aid) throws IOReaderException {
         if (!isLogicalChannelOpen()) {
             // init of the physical SE channel: if not yet established, opening of a new physical
             // channel
@@ -110,6 +115,10 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 throw new ChannelStateReaderException("Fail to open physical channel.");
             }
         }
+
+        // add ATR
+        atrAndFci[0] = ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
+                ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}));
 
         if (aid != null) {
             logger.info("Connecting to card", "action", "local_reader.openLogicalChannel", "aid",
@@ -125,17 +134,17 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 // we use here processApduRequest to manage case 4 hack
                 ApduResponse fciResponse =
                         processApduRequest(new ApduRequest(selectApplicationCommand, true));
-                return fciResponse.getBuffer();
+
+                // add FCI
+                atrAndFci[1] = fciResponse.getBytes();
 
             } catch (ChannelStateReaderException e1) {
 
                 throw new ChannelStateReaderException(e1);
 
             }
-        } else {
-            return ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
-                    ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}));
         }
+        return atrAndFci;
     }
 
 
@@ -145,7 +154,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * @throws IOReaderException
      * @throws CardException
      */
-    public final void closePhysicalChannel() throws IOReaderException {
+    @Override
+    protected final void closePhysicalChannel() throws IOReaderException {
         logger.info("Closing of the physical SE channel.", "action",
                 "pcsc_reader.closePhysicalChannel");
         try {
@@ -176,6 +186,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
     @Override
     public final boolean waitForCardAbsent(long timeout) throws CardException, IOReaderException {
         if (terminal.waitForCardAbsent(timeout)) {
+            closeLogicalChannel();
             closePhysicalChannel();
             return true;
         } else {
@@ -190,7 +201,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * @return apduOut buffer
      * @throws ChannelStateReaderException Exception faced
      */
-    public final ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
+    @Override
+    protected final ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
         ResponseAPDU apduResponseData;
         try {
             apduResponseData = channel.transmit(new CommandAPDU(apduIn));
@@ -198,11 +210,6 @@ public class PcscReader extends AbstractThreadedLocalReader {
             throw new ChannelStateReaderException(e);
         }
         return ByteBuffer.wrap(apduResponseData.getBytes());
-    }
-
-    private ByteBuffer getAlternateFci() {
-        return ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
-                ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}));
     }
 
     /**
@@ -214,7 +221,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * @return
      * @throws InvalidMessageException
      */
-    public final boolean protocolFlagMatches(SeProtocol protocolFlag) throws IOReaderException {
+    @Override
+    protected final boolean protocolFlagMatches(SeProtocol protocolFlag) throws IOReaderException {
         boolean result;
         // Get protocolFlag to check if ATR filtering is required
         if (protocolFlag != null) {
@@ -340,6 +348,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 throw new InconsistentParameterValueException(name, value);
             }
         } else if (name.equals(SETTING_KEY_THREAD_TIMEOUT)) {
+            // TODO use setter
             if (value == null) {
                 threadWaitTimeout = SETTING_THREAD_TIMEOUT_DEFAULT;
             } else {

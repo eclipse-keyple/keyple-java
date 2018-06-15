@@ -36,7 +36,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         void update(Observable reader, ReaderEvent event);
     }
 
-    public abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
+    protected abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
             throws IOReaderException;
 
     /**
@@ -79,5 +79,9 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     private void logSeResponseSet(SeResponseSet responseSet) {
         // TODO do a better log of SeReponseSet data
         logger.info("SeResponseSet", "data", responseSet.toString());
+    }
+
+    public int compareTo(ProxyReader o) {
+        return this.getName().compareTo(o.getName());
     }
 }

@@ -9,19 +9,26 @@
 package org.eclipse.keyple.seproxy;
 
 import java.util.List;
+import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 
 /**
  * Group of SE responses received in response to a {@link SeRequest}.
  * 
  * @see SeRequest
  */
-public class SeResponse {
+public final class SeResponse {
+
 
     /**
      * is defined as true by the SE reader in case a logical channel was already open with the
      * target SE application.
      */
     private boolean channelPreviouslyOpen;
+
+    /**
+     * The SE answer to reset data
+     */
+    private final ApduResponse atr;
 
     /**
      * present if channelPreviouslyOpen is false, contains the FCI response of the channel opening
@@ -40,12 +47,18 @@ public class SeResponse {
      * the constructor called by a ProxyReader during the processing of the ‘transmit’ method.
      *
      * @param channelPreviouslyOpen the channel previously open
+     * @param atr the SE atr (may be null)
      * @param fci the fci data
      * @param apduResponses the apdu responses
      */
-    public SeResponse(boolean channelPreviouslyOpen, ApduResponse fci,
-            List<ApduResponse> apduResponses) {
+    public SeResponse(boolean channelPreviouslyOpen, ApduResponse atr, ApduResponse fci,
+            List<ApduResponse> apduResponses) throws InconsistentParameterValueException {
+        if (atr == null && fci == null) {
+            throw new InconsistentParameterValueException(
+                    "Atr and Fci can't be null at the same time.", null);
+        }
         this.channelPreviouslyOpen = channelPreviouslyOpen;
+        this.atr = atr;
         this.fci = fci;
         this.apduResponses = apduResponses;
     }
@@ -57,6 +70,15 @@ public class SeResponse {
      */
     public boolean wasChannelPreviouslyOpen() {
         return channelPreviouslyOpen;
+    }
+
+    /**
+     * Gets the atr data.
+     *
+     * @return null or the answer to reset.
+     */
+    public ApduResponse getAtr() {
+        return this.atr;
     }
 
     /**

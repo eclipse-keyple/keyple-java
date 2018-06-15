@@ -16,6 +16,7 @@ import org.eclipse.keyple.commands.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
+import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,17 +24,18 @@ import org.junit.Test;
 public class CloseSessionRespParsTest {
 
     @Test
-    public void closeSessionRespPars() { // by ixxi
+    public void closeSessionRespPars() throws InconsistentParameterValueException { // by ixxi
         byte[] response = {0x4D, (byte) 0xBD, (byte) 0xC9, 0x60, (byte) 0x90, 0x00};
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(response, true);
         listeResponse.add(apduResponse);
-        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
+        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
+                new ApduResponse(ByteBufferUtils.fromHex("00"), true), listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
                 new CloseSessionRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
         Assert.assertArrayEquals(response,
-                ByteBufferUtils.toBytes(apduResponseParser.getApduResponse().getBuffer()));
+                ByteBufferUtils.toBytes(apduResponseParser.getApduResponse().getBytes()));
     }
 
     @Test

@@ -15,6 +15,7 @@ import org.eclipse.keyple.commands.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
+import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,18 +23,19 @@ import org.junit.Test;
 public class POGetChallengeRespParsTest {
 
     @Test
-    public void POGetChallengetRespPars() {
+    public void POGetChallengetRespPars() throws InconsistentParameterValueException {
         byte[] response = {0x03, 0x0D, 0x0E, (byte) 0xFA, (byte) 0x9C, (byte) 0x8C, (byte) 0xB7,
                 0x27, (byte) 0x90, 0x00};
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(response, true);
         listeResponse.add(apduResponse);
-        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
+        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
+                new ApduResponse(ByteBufferUtils.fromHex("00"), true), listeResponse));
 
         AbstractApduResponseParser apduResponseParser = new PoGetChallengeRespPars(
                 seResponse.getSingleResponse().getApduResponses().get(0));
         Assert.assertArrayEquals(response,
-                ByteBufferUtils.toBytes(apduResponseParser.getApduResponse().getBuffer()));
+                ByteBufferUtils.toBytes(apduResponseParser.getApduResponse().getBytes()));
         Assert.assertEquals("Success", apduResponseParser.getStatusInformation());
     }
 }

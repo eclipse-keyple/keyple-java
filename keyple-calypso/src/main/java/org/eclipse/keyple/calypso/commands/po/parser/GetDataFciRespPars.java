@@ -53,7 +53,7 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
      */
     public GetDataFciRespPars(ApduResponse response) {
         super(response);
-        fci = isSuccessful() ? toFCI(response.getBuffer()) : null;
+        fci = isSuccessful() ? toFCI(response.getBytes()) : null;
     }
 
     public ByteBuffer getDfName() {
@@ -403,7 +403,8 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
      * Method to get the FCI from the response.
      *
      * @param apduResponse the apdu response
-     * @return the FCI template
+     * @return the FCI template TODO we should check here if the provided FCI data matches an
+     *         Calypso PO FCI and return null if not
      */
     public static FCI toFCI(ByteBuffer apduResponse) {
         StartupInformation startupInformation = StartupInformation.empty();

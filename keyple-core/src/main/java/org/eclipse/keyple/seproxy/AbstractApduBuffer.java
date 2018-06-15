@@ -63,7 +63,7 @@ class AbstractApduBuffer {
      * 
      * @return Buffer
      */
-    public ByteBuffer getBuffer() {
+    public ByteBuffer getBytes() {
         return buffer;
     }
 

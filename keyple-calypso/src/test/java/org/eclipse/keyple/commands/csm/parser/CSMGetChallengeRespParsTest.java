@@ -16,22 +16,25 @@ import org.eclipse.keyple.commands.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
+import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
+import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class CSMGetChallengeRespParsTest {
 
     @Test
-    public void getChallengeRespPars() {
+    public void getChallengeRespPars() throws InconsistentParameterValueException {
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(
                 new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, (byte) 0x90, 0x00}, true);
         listeResponse.add(apduResponse);
-        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null, listeResponse));
+        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
+                new ApduResponse(ByteBufferUtils.fromHex("00"), true), listeResponse));
 
         AbstractApduResponseParser apduResponseParser = new CsmGetChallengeRespPars(
                 seResponse.getSingleResponse().getApduResponses().get(0));
-        ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBuffer();
+        ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBytes();
         Assert.assertEquals(
                 ByteBuffer
                         .wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, (byte) 0x90, 0x00}),
