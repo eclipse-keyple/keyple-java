@@ -151,10 +151,8 @@ public class PoSecureSession {
                 "apduReq2", ByteBufferUtils.toHex(csmGetChallenge.getApduRequest().getBytes()));
 
         // Transfert CSM commands
-        // create a list of SeRequest
-        Set<SeRequest> csmRequests = new LinkedHashSet<SeRequest>();
-        csmRequests.add(new SeRequest(null, csmApduRequestList, keepChannelOpen));
-        SeRequestSet csmRequest = new SeRequestSet(csmRequests);
+        // create a SeRequestSet (list of SeRequest)
+        SeRequestSet csmRequest = new SeRequestSet(new SeRequest(null, csmApduRequestList, keepChannelOpen));
         SeResponseSet csmResponses = csmReader.transmit(csmRequest);
         SeResponse csmResponse = csmResponses.getSingleResponse();
         List<ApduResponse> csmApduResponseList = csmResponse.getApduResponses();
@@ -196,17 +194,15 @@ public class PoSecureSession {
     public SeResponse processOpening(AbstractOpenSessionCmdBuild openCommand,
             List<SendableInSession> poCommandsInsideSession) throws IOReaderException {
 
-        // Get PO ApduRequest List from SendableInSession List
-        // List<ApduRequest> poApduRequestList =
-        // this.getApduRequestListFromSendableInSessionListTo(poCommandsInsideSession);
+        // Init PO ApduRequest List
         List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
+
         // Init CSM ApduRequest List
         List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
-        // PO & CSM channels to be kept "Open"
-        // boolean keepChannelOpen = true;
 
         // Add Open Session command to PO ApduRequest list
         poApduRequestList.add(openCommand.getApduRequest());
+
         // Add list of SendableInSession commands to PO ApduRequest
         if ((poCommandsInsideSession != null) && !poCommandsInsideSession.isEmpty()) {
             poApduRequestList.addAll(
@@ -215,11 +211,9 @@ public class PoSecureSession {
 
         // Transfert PO commands
         logger.info("Opening: PO request", "action", "po_secure_session.open_po_request");
-        // System.out.println("\t========= Opening ========== Transfert PO commands");
-        // create a list of SeRequest
-        Set<SeRequest> poRequests = new LinkedHashSet<SeRequest>();
-        poRequests.add(new SeRequest(poCalypsoInstanceAid, poApduRequestList, true));
-        SeRequestSet poRequest = new SeRequestSet(poRequests);
+
+        // create a SeRequestSet (list of SeRequest)
+        SeRequestSet poRequest = new SeRequestSet(new SeRequest(poCalypsoInstanceAid, poApduRequestList, true));
 
         SeResponseSet poResponses = poReader.transmit(poRequest);
         SeResponse poResponse = poResponses.getSingleResponse();
@@ -339,10 +333,9 @@ public class PoSecureSession {
         // System.out.println("\t========= Opening ========== Transfert CSM commands");
         logger.info("Opening: CSM Request", "action", "po_secure_session.open_csm_request",
                 "apduList", csmApduRequestList);
-        // create a list of SeRequest
-        Set<SeRequest> csmRequests = new LinkedHashSet<SeRequest>();
-        csmRequests.add(new SeRequest(null, csmApduRequestList, true));
-        SeRequestSet csmRequest = new SeRequestSet(csmRequests);
+
+        // create a SeRequestSet (list of SeRequests)
+        SeRequestSet csmRequest = new SeRequestSet(new SeRequest(null, csmApduRequestList, true));
 
         SeResponseSet csmResponses = csmReader.transmit(csmRequest);
         // fclairamb(2018-03-02): TODO: We don't check the result ?
@@ -418,12 +411,8 @@ public class PoSecureSession {
         boolean keepChannelOpen = true;
 
         // Transfert PO commands
-        // System.out.println("\t========= Continuation ===== Transfert PO commands");
-        // create a list of SeRequest
-        Set<SeRequest> poRequests = new LinkedHashSet<SeRequest>();
-        poRequests
-                .add(new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen));
-        SeRequestSet poRequest = new SeRequestSet(poRequests);
+        // create a SeRequestSet (list of SeRequests)
+        SeRequestSet poRequest = new SeRequestSet(new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen));
 
         logger.info("Processing: Sending PO commands", "action",
                 "po_secure_session.process_po_request", "apduList", poApduRequestList);
@@ -480,10 +469,8 @@ public class PoSecureSession {
 
         // Transfert CSM commands
         // System.out.println("\t========= Continuation ===== Transfert CSM commands");
-        // create a list of SeRequest
-        Set<SeRequest> csmRequests = new LinkedHashSet<SeRequest>();
-        csmRequests.add(new SeRequest(null, csmApduRequestList, keepChannelOpen));
-        SeRequestSet csmRequest = new SeRequestSet(csmRequests);
+        // create a SeRequestSet (list of SeRequests)
+        SeRequestSet csmRequest = new SeRequestSet(new SeRequest(null, csmApduRequestList, keepChannelOpen));
 
         logger.info("Processing: Sending CSM requests", "action",
                 "po_secure_session.process_csm_request", "apduList", csmApduRequestList);
@@ -573,10 +560,8 @@ public class PoSecureSession {
         // System.out.println("\t========= Closing ========== Transfert CSM commands - #1");
         logger.info("Closing: Sending CSM request", "action", "po_secure_session.close_csm_req",
                 "apduList", csmApduRequestList_1);
-        // create a list of SeRequest
-        Set<SeRequest> csmRequests = new LinkedHashSet<SeRequest>();
-        csmRequests.add(new SeRequest(null, csmApduRequestList_1, keepChannelOpen));
-        SeRequestSet csmRequest = new SeRequestSet(csmRequests);
+        // create a SeRequestSet (list of SeRequests)
+        SeRequestSet csmRequest = new SeRequestSet(new SeRequest(null, csmApduRequestList_1, keepChannelOpen));
 
         SeResponseSet csmResponses_1 = csmReader.transmit(csmRequest);
         SeResponse csmResponse_1 = csmResponses_1.getSingleResponse();
@@ -615,14 +600,11 @@ public class PoSecureSession {
         }
 
         // Transfert PO commands
-        // create a list of SeRequest
-        Set<SeRequest> poRequests = new LinkedHashSet<SeRequest>();
-        poRequests
-                .add(new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen));
-        SeRequestSet poRequest = new SeRequestSet(poRequests);
+        // create a SeRequestSet (list of SeRequests)
+        SeRequestSet poRequest = new SeRequestSet(new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen));
 
         logger.info("Closing: Sending PO request", "action", "po_secure_session.close_po_req",
-                "apduList", poRequests.iterator().next().getApduRequests());
+                "apduList", poRequest.getRequests().iterator().next().getApduRequests());
         poResponses = poReader.transmit(poRequest);
         SeResponse poResponse = poResponses.getSingleResponse();
         List<ApduResponse> poApduResponseList = poResponse.getApduResponses();
@@ -655,10 +637,8 @@ public class PoSecureSession {
 
         // ****SECOND**** transfert of CSM commands
         // System.out.println("\t========= Closing ========== Transfert CSM commands - #2");
-        // create a list of SeRequest
-        Set<SeRequest> csmRequests_2 = new LinkedHashSet<SeRequest>();
-        csmRequests_2.add(new SeRequest(null, csmApduRequestList_2, keepChannelOpen));
-        SeRequestSet csmRequest_2 = new SeRequestSet(csmRequests_2);
+        // create a SeRequestSet (list of SeRequests)
+        SeRequestSet csmRequest_2 = new SeRequestSet(new SeRequest(null, csmApduRequestList_2, keepChannelOpen));
 
         SeResponseSet csmResponses_2 = csmReader.transmit(csmRequest_2);
         SeResponse csmResponse_2 = csmResponses_2.getSingleResponse();
