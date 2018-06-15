@@ -28,7 +28,7 @@ import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.plugin.AbstractLoggedObservable;
+import org.eclipse.keyple.seproxy.event.AbstractLoggedObservable;
 import org.eclipse.keyple.util.Observable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
