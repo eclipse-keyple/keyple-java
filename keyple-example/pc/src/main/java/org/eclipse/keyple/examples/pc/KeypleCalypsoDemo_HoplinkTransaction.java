@@ -89,7 +89,8 @@ public class KeypleCalypsoDemo_HoplinkTransaction
                 AbstractOpenSessionCmdBuild.create(poTransaction.getRevision(), debitKeyIndex,
                         poTransaction.sessionTerminalChallenge, (byte) 0x1A, (byte) 0x01);
 
-        poTransaction.processOpening(poOpenSession, filesToReadInSession, null, closeSeChannel);
+        poTransaction.processOpeningClosing(poOpenSession, filesToReadInSession, null,
+                closeSeChannel);
 
         if (poTransaction.isSuccessful()) {
             System.out.println(
