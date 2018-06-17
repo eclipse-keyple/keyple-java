@@ -225,7 +225,7 @@ public class PoSecureSession {
             throw new InvalidMessageException("No response", InvalidMessageException.Type.PO,
                     poApduRequestList, poApduResponseList);
         }
-        if (poApduResponseList.get(0).getStatusCode() != 0x9000) {
+        if (poApduResponseList.get(0).isSuccessful()) {
             throw new InvalidMessageException("Invalid PO opening response",
                     InvalidMessageException.Type.PO, poApduRequestList, poApduResponseList);
         }
@@ -236,13 +236,6 @@ public class PoSecureSession {
         AbstractOpenSessionRespPars poOpenSessionPars =
                 AbstractOpenSessionRespPars.create(poApduResponseList.get(0), poRevision);
         sessionCardChallenge = poOpenSessionPars.getPoChallenge();
-
-        /*
-         * HACK - AbstractOpenSessionRespPars.getPoChallengeOld() ne retourne pas la bonne valeur de
-         * PO challenge TODO - corriger => AbstractOpenSessionRespPars.getPoChallengeOld()
-         */
-        sessionCardChallenge = ByteBufferUtils.fromHex(ByteBufferUtils
-                .toHex(poOpenSessionPars.getApduResponse().getBytes()).substring(0, 4 * 2)); // HACK
 
         // Build "Digest Init" command from PO Open Session
         byte kif = poOpenSessionPars.getSelectedKif();
@@ -319,7 +312,7 @@ public class PoSecureSession {
      * @return the SE response
      * @throws IOReaderException the IO reader exception
      */
-    public SeResponse processOpening(AbstractOpenSessionCmdBuild openCommand,
+    public SeResponse processOpeningClosing(AbstractOpenSessionCmdBuild openCommand,
             List<SendableInSession> poCommandsInsideSession,
             AbstractPoCommandBuilder ratificationCommand, boolean closeSeChannel)
             throws IOReaderException {
@@ -355,7 +348,7 @@ public class PoSecureSession {
             throw new InvalidMessageException("No response", InvalidMessageException.Type.PO,
                     poApduRequestList, poApduResponseList);
         }
-        if (poApduResponseList.get(0).getStatusCode() != 0x9000) {
+        if (poApduResponseList.get(0).isSuccessful()) {
             throw new InvalidMessageException("Invalid PO opening response",
                     InvalidMessageException.Type.PO, poApduRequestList, poApduResponseList);
         }
@@ -366,13 +359,6 @@ public class PoSecureSession {
         AbstractOpenSessionRespPars poOpenSessionPars =
                 AbstractOpenSessionRespPars.create(poApduResponseList.get(0), poRevision);
         sessionCardChallenge = poOpenSessionPars.getPoChallenge();
-
-        /*
-         * HACK - AbstractOpenSessionRespPars.getPoChallengeOld() ne retourne pas la bonne valeur de
-         * PO challenge TODO - corriger => AbstractOpenSessionRespPars.getPoChallengeOld()
-         */
-        sessionCardChallenge = ByteBufferUtils.fromHex(ByteBufferUtils
-                .toHex(poOpenSessionPars.getApduResponse().getBytes()).substring(0, 4 * 2)); // HACK
 
         // Build "Digest Init" command from PO Open Session
         byte kif = poOpenSessionPars.getSelectedKif();
@@ -661,7 +647,7 @@ public class PoSecureSession {
     // public SeResponse processClosing(List<SendableInSession> poCommandsInsideSession,
     // CloseSessionCmdBuild closeCommand, PoGetChallengeCmdBuild ratificationCommand)
     // TODO - prévoir une variante pour enchainer plusieurs session d'affilée (la commande de
-    // ratification étant un nouveau processOpening)
+    // ratification étant un nouveau processOpeningClosing)
     public SeResponse processClosing(List<SendableInSession> poCommandsInsideSession,
             List<ApduResponse> poAnticipatedResponseInsideSession,
             AbstractPoCommandBuilder ratificationCommand, boolean closeSeChannel)
