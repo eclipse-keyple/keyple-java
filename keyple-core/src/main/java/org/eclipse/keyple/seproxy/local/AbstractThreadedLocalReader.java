@@ -11,7 +11,6 @@ package org.eclipse.keyple.seproxy.local;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.IOCardException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
@@ -149,7 +148,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractLocalReader {
         private void exceptionThrown(Exception ex) {
             logger.error("Observable Reader: Error handling events", "action",
                     "observable_reader.event_error", "readerName", getName(), "exception", ex);
-            if (ex instanceof IOCardException || ex instanceof IOReaderException) {
+            if (ex instanceof IOReaderException) {
                 notifyObservers(ReaderEvent.IO_ERROR);
             }
         }
