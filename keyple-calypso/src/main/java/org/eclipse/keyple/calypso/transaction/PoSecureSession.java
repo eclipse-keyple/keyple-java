@@ -225,7 +225,7 @@ public class PoSecureSession {
             throw new InvalidMessageException("No response", InvalidMessageException.Type.PO,
                     poApduRequestList, poApduResponseList);
         }
-        if (poApduResponseList.get(0).isSuccessful()) {
+        if (!poApduResponseList.get(0).isSuccessful()) {
             throw new InvalidMessageException("Invalid PO opening response",
                     InvalidMessageException.Type.PO, poApduRequestList, poApduResponseList);
         }
@@ -348,7 +348,7 @@ public class PoSecureSession {
             throw new InvalidMessageException("No response", InvalidMessageException.Type.PO,
                     poApduRequestList, poApduResponseList);
         }
-        if (poApduResponseList.get(0).isSuccessful()) {
+        if (!poApduResponseList.get(0).isSuccessful()) {
             throw new InvalidMessageException("Invalid PO opening response",
                     InvalidMessageException.Type.PO, poApduRequestList, poApduResponseList);
         }
@@ -441,7 +441,7 @@ public class PoSecureSession {
         if ((csmApduResponseList_1 != null) && !csmApduResponseList_1.isEmpty()) {
             // T item = csmApduResponseList.get(csmApduResponseList.size()-1);
             DigestCloseRespPars respPars = new DigestCloseRespPars(
-                    csmApduResponseList_1.get(csmApduResponseList_1.size() - 1)); // .getApduResponses().get(0);
+                    csmApduResponseList_1.get(csmApduResponseList_1.size() - 1));
 
             sessionTerminalSignature = respPars.getSignature();
         }
@@ -710,7 +710,7 @@ public class PoSecureSession {
         if ((csmApduResponseList_1 != null) && !csmApduResponseList_1.isEmpty()) {
             // T item = csmApduResponseList.get(csmApduResponseList.size()-1);
             DigestCloseRespPars respPars = new DigestCloseRespPars(
-                    csmApduResponseList_1.get(csmApduResponseList_1.size() - 1)); // .getApduResponses().get(0);
+                    csmApduResponseList_1.get(csmApduResponseList_1.size() - 1));
 
             sessionTerminalSignature = respPars.getSignature();
         }
