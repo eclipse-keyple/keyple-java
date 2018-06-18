@@ -9,11 +9,12 @@
 package org.eclipse.keyple.plugin.androidnfc;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.ReadersPlugin;
+import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
 import android.util.Log;
 
 
@@ -39,11 +40,14 @@ import android.util.Log;
  *
  */
 
-public class AndroidNfcPlugin implements ReadersPlugin {
+public class AndroidNfcPlugin extends AbstractObservablePlugin {
 
     private static final String TAG = AndroidNfcPlugin.class.getSimpleName();
 
     private final static AndroidNfcPlugin uniqueInstance = new AndroidNfcPlugin();
+
+    private Map<String, String> parameters = new HashMap<String, String>();// not in use in this
+                                                                           // plugin
 
     private ProxyReader reader;
 
@@ -66,6 +70,18 @@ public class AndroidNfcPlugin implements ReadersPlugin {
         return "AndroidNFCPlugin";
     }
 
+    @Override
+    public Map<String, String> getParameters() {
+        Log.w(TAG, "Android NFC Plugin does not support parameters, see AndroidNfcReader instead");
+        return parameters;
+    }
+
+    @Override
+    public void setParameter(String key, String value) throws IOException {
+        Log.w(TAG, "Android NFC Plugin does not support parameters, see AndroidNfcReader instead");
+        parameters.put(key, value);
+    }
+
     /**
      * For an Android NFC device, the Android NFC Plugin manages only one @{@link AndroidNfcReader}.
      * 
@@ -80,21 +96,4 @@ public class AndroidNfcPlugin implements ReadersPlugin {
         return readers;
     }
 
-    @Override
-    public final Map<String, String> getParameters() {
-        return null;
-    }
-
-    @Override
-    public final void setParameter(String key, String value) throws IOException {
-
-    }
-
-    public final void setParameters(Map<String, String> parameters) throws IOException {
-        // empty in the Android case
-    }
-
-    public int compareTo(ReadersPlugin o) {
-        return this.getName().compareTo(o.getName());
-    }
 }

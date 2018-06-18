@@ -34,7 +34,6 @@ import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.plugin.AbstractLoggedObservable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
@@ -50,8 +49,14 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 
+/**
+ * Test the Keyple NFC Plugin
+ * Configure the NFC reader
+ * Configure the Observability
+ * Run test commands when appropriate tag is detected.
+ */
 public class NFCTestFragment extends Fragment
-        implements AbstractLoggedObservable.Observer<ReaderEvent> {
+        implements AbstractObservableReader.Observer<ReaderEvent> {
 
 
     private static final String TAG = NFCTestFragment.class.getSimpleName();
@@ -102,13 +107,19 @@ public class NFCTestFragment extends Fragment
             // reader.setParameter("FLAG_READER", "SKIP_NDEF_CHECK");
 
 
+            //with this protocol settings we activate the nfc for ISO1443_4 protocol
             ((AndroidNfcReader) reader)
                     .addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4);
 
+
             /*
-             * ((AndroidNfcReader) reader).addSeProtocolSetting(
-             * AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC); ((AndroidNfcReader)
-             * reader).addSeProtocolSetting( AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_UL);
+            uncomment to active protocol listening for Mifare ultralight
+             ((AndroidNfcReader)
+             reader).addSeProtocolSetting( AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_UL);
+
+            uncomment to active protocol listening for Mifare Classic
+              ((AndroidNfcReader) reader).addSeProtocolSetting(
+              AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC);
              */
 
         } catch (IOReaderException e) {
@@ -132,23 +143,58 @@ public class NFCTestFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
 
-
+        //Define UI components
         View view = inflater.inflate(R.layout.fragment_nfc_test, container, false);
-
         mText = view.findViewById(R.id.text);
         radioGroup = view.findViewById(R.id.radioGroup);
-
         return view;
-
-
     }
 
+    /**
+     * Catch @{@link AndroidNfcReader} events When a SE is inserted, launch test commands
+     *
+     * @param observable
+     * @param event
+     */
+    @Override
+    public void update(Observable<ReaderEvent> observable, ReaderEvent event) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "New ReaderEvent received : " + event.toString());
+
+                switch (event) {
+                    case SE_INSERTED:
+                        mText.append("\n ---- \n");
+                        mText.append("Tag opened to tag");
+                        try {
+
+                            runTest();
+
+                        } catch (InconsistentCommandException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+
+                    case SE_REMOVAL:
+                        mText.append("\n ---- \n");
+                        mText.append("Connection closed to tag");
+                        break;
+
+                    case IO_ERROR:
+                        mText.append("\n ---- \n");
+                        mText.setText("Error reading card");
+                        break;
+
+                }
+            }
+        });
+    }
 
     /**
-     * Run commands test
+     * Runs the selected commands test
      */
     private void runTest() {
-
         if (radioGroup.getCheckedRadioButtonId() == R.id.hoplinkSimpleRead) {
             runHoplinkSimpleRead();
         }
@@ -212,8 +258,6 @@ public class NFCTestFragment extends Fragment
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
-
-
     }
 
 
@@ -244,44 +288,5 @@ public class NFCTestFragment extends Fragment
     }
 
 
-    /**
-     * Catch @{@link AndroidNfcReader} events When a SE is inserted, launch test commands
-     *
-     * @param observable
-     * @param event
-     */
-    @Override
-    public void update(Observable<ReaderEvent> observable, ReaderEvent event) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "New ReaderEvent received : " + event.toString());
 
-                switch (event) {
-                    case SE_INSERTED:
-                        mText.append("\n ---- \n");
-                        mText.append("Tag opened to tag");
-                        try {
-
-                            runTest();
-
-                        } catch (InconsistentCommandException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-
-                    case SE_REMOVAL:
-                        mText.append("\n ---- \n");
-                        mText.append("Connection closed to tag");
-                        break;
-
-                    case IO_ERROR:
-                        mText.append("\n ---- \n");
-                        mText.setText("Error reading card");
-                        break;
-
-                }
-            }
-        });
-    }
 }

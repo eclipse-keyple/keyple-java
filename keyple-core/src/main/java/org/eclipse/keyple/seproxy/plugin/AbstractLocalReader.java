@@ -305,17 +305,17 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      */
     protected Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
 
-    public void addSeProtocolSetting(Map<SeProtocol, String> seProtocolSettings)
+    public final void addSeProtocolSetting(Map<SeProtocol, String> seProtocolSettings)
             throws IOReaderException {
         this.protocolsMap.putAll(seProtocolSettings);
     }
 
-    public void addSeProtocolSetting(SeProtocolSettings seProtocolSetting) {
+    public final void addSeProtocolSetting(SeProtocolSettings seProtocolSetting) {
         this.protocolsMap.put(seProtocolSetting.getFlag(), seProtocolSetting.getValue());
     }
 
     // TODO How to force class T to be an enum implementing SeProtocolSettings?
-    public <T extends Enum<T>> void addSeProtocolSetting(Class<T> settings) {
+    public final <T extends Enum<T>> void addSeProtocolSetting(Class<T> settings) {
         for (Enum<T> setting : settings.getEnumConstants()) {
             addSeProtocolSetting((SeProtocolSettings) setting);
         }

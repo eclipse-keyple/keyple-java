@@ -22,6 +22,7 @@ import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
 import org.eclipse.keyple.seproxy.plugin.AbstractLocalReader;
+import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSettings;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import android.app.Activity;
@@ -84,27 +85,6 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
         return "AndroidNfcReader";
     }
 
-
-    /**
-     * Add a protocol to the list of listened protocols for the NFC Reader Use the supported
-     * protocols included in {@link AndroidNfcProtocolSettings}
-     * 
-     * @param seProtocolSetting
-     */
-    public void addSeProtocolSetting(SeProtocolSettings seProtocolSetting) {
-
-        if (seProtocolSetting.equals(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4)) {
-            flags = flags | NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_NFC_A;
-        } else if (seProtocolSetting
-                .equals(AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_UL)) {
-            flags = flags | NfcAdapter.FLAG_READER_NFC_A;
-        } else if (seProtocolSetting
-                .equals(AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC)) {
-            flags = flags | NfcAdapter.FLAG_READER_NFC_A;
-        }
-
-        this.protocolsMap.put(seProtocolSetting.getFlag(), seProtocolSetting.getValue());
-    }
 
     /**
      * Get Reader parameters
@@ -307,11 +287,25 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
         if (nfcAdapter == null) {
             nfcAdapter = NfcAdapter.getDefaultAdapter(activity);
         }
-        // Reader mode for NFC reader allows to listen to NFC events without the Intent mechanism.
-        // It is active only when the activity thus the fragment is active.
+
+        // Build flags list for reader mode
+        for (SeProtocol seProtocol : this.protocolsMap.keySet()) {
+            if (seProtocol.equals(ContactlessProtocols.PROTOCOL_ISO14443_4)) {
+                flags = flags | NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_NFC_A;
+            } else if (seProtocol.equals(ContactlessProtocols.PROTOCOL_MIFARE_UL)) {
+                flags = flags | NfcAdapter.FLAG_READER_NFC_A;
+            } else if (seProtocol
+                    .equals(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC)) {
+                flags = flags | NfcAdapter.FLAG_READER_NFC_A;
+            }
+        }
+
         Log.i(TAG, "Enabling Read Write Mode with flags : " + flags + " and options : "
                 + options.toString());
 
+
+        // Reader mode for NFC reader allows to listen to NFC events without the Intent mechanism.
+        // It is active only when the activity thus the fragment is active.
         nfcAdapter.enableReaderMode(activity, this, flags, options);
     }
 
