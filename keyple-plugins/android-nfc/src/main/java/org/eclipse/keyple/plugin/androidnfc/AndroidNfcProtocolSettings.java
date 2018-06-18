@@ -14,16 +14,13 @@ import org.eclipse.keyple.seproxy.protocol.SeProtocolSettings;
 
 public enum AndroidNfcProtocolSettings implements SeProtocolSettings {
 
-    SETTING_PROTOCOL_ISO14443_4(
-            ContactlessProtocols.PROTOCOL_ISO14443_4,
+    SETTING_PROTOCOL_ISO14443_4(ContactlessProtocols.PROTOCOL_ISO14443_4,
             ProtocolSetting.NFC_TAG_TYPE_ISODEP),
 
-    SETTING_PROTOCOL_MIFARE_UL(
-            ContactlessProtocols.PROTOCOL_MIFARE_UL,
+    SETTING_PROTOCOL_MIFARE_UL(ContactlessProtocols.PROTOCOL_MIFARE_UL,
             ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL),
 
-    SETTING_PROTOCOL_MIFARE_CLASSIC(
-            ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC,
+    SETTING_PROTOCOL_MIFARE_CLASSIC(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC,
             ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC);
 
     private final SeProtocol flag;
