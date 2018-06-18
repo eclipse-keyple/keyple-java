@@ -13,7 +13,6 @@ import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.local.AbstractLocalReader;
 import org.eclipse.keyple.util.Observable;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
@@ -29,24 +28,22 @@ import com.github.structlog4j.SLoggerFactory;
 public abstract class AbstractObservableReader extends AbstractLoggedObservable<ReaderEvent>
         implements ProxyReader {
     // TODO check for a better way to log
-    private static final ILogger logger = SLoggerFactory.getLogger(AbstractLocalReader.class);
-
-    public interface ReaderObserver extends AbstractLoggedObservable.Observer<ReaderEvent> {
-        void update(Observable reader, ReaderEvent event);
-    }
+    private static final ILogger logger = SLoggerFactory.getLogger(AbstractObservableReader.class);
 
     protected abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
             throws IOReaderException;
 
     /**
      * Implementation must call logSeRequestSet before transmit and logSeResponseSet after transmit
-     * 
+     *
      * @param requestSet
      * @return responseSet
      * @throws IOReaderException
      */
     public final SeResponseSet transmit(SeRequestSet requestSet) throws IOReaderException {
-        logSeRequestSet(requestSet);
+        // TODO do a better log of SeRequestSet data
+        logger.info("SeRequestSet", "data", requestSet.toString());
+
         long before = System.nanoTime();
         SeResponseSet responseSet;
 
@@ -65,22 +62,17 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         logger.info("LocalReader: Data exchange", "action", "local_reader.transmit", "requestSet",
                 requestSet, "responseSet", responseSet, "elapsedMs", elapsedMs);
 
-        logSeResponseSet(responseSet);
+        // TODO do a better log of SeReponseSet data
+        logger.info("SeResponseSet", "data", responseSet.toString());
 
         return responseSet;
     }
 
-    private void logSeRequestSet(SeRequestSet requestSet) {
-        // TODO do a better log of SeRequestSet data
-        logger.info("SeRequestSet", "data", requestSet.toString());
-    }
-
-    private void logSeResponseSet(SeResponseSet responseSet) {
-        // TODO do a better log of SeReponseSet data
-        logger.info("SeResponseSet", "data", responseSet.toString());
-    }
-
-    public int compareTo(ProxyReader o) {
+    public final int compareTo(ProxyReader o) {
         return this.getName().compareTo(o.getName());
+    }
+
+    public interface ReaderObserver extends AbstractLoggedObservable.Observer<ReaderEvent> {
+        void update(Observable reader, ReaderEvent event);
     }
 }
