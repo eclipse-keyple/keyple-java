@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.example.common.HoplinkSimpleRead;
+import org.eclipse.keyple.example.common.HoplinkSampleCommands;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -99,15 +99,15 @@ public class KeypleGenericDemo_SeProtocolDetection
             for (ContactlessProtocols protocol : ContactlessProtocols.values()) {
                 switch (protocol) {
                     case PROTOCOL_ISO14443_4:
-                        // get Apdu list from HoplinkSimpleRead class
+                        // get Apdu list from HoplinkSampleCommands class
                         // List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
                         List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
                         // add common get UID command
                         poApduRequestList.addAll(pcscContactlessReaderGetDataList);
                         // add Hoplink specific commands
-                        poApduRequestList.addAll(HoplinkSimpleRead.getApduList());
-                        // add a SeRequest with the AID from HoplinkSimpleRead and the requests list
-                        poRequests.add(new SeRequest(HoplinkSimpleRead.getAid(), poApduRequestList,
+                        poApduRequestList.addAll(HoplinkSampleCommands.getApduList());
+                        // add a SeRequest with the AID from HoplinkSampleCommands and the requests list
+                        poRequests.add(new SeRequest(HoplinkSampleCommands.getAid(), poApduRequestList,
                                 false, protocol));
                         break;
                     case PROTOCOL_ISO14443_3A:
