@@ -10,10 +10,10 @@ package org.eclipse.keyple.examples.androidnfc;
 
 import org.eclipse.keyple.plugin.androidnfc.AndroidNfcPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         // init NFC Test Fragment
         Log.d(TAG, "Insert NFC Test View Fragment");
         NFCTestFragment nfcTestFragment = NFCTestFragment.newInstance();
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, nfcTestFragment, TAG_NFC_TEST_VIEW)
                 .addToBackStack(null).commit();
