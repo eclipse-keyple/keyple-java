@@ -13,7 +13,6 @@ import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.local.AbstractLocalReader;
 import org.eclipse.keyple.util.Observable;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
@@ -29,7 +28,7 @@ import com.github.structlog4j.SLoggerFactory;
 public abstract class AbstractObservableReader extends AbstractLoggedObservable<ReaderEvent>
         implements ProxyReader {
     // TODO check for a better way to log
-    private static final ILogger logger = SLoggerFactory.getLogger(AbstractLocalReader.class);
+    private static final ILogger logger = SLoggerFactory.getLogger(AbstractObservableReader.class);
 
     protected abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
             throws IOReaderException;

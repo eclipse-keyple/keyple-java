@@ -11,6 +11,8 @@ package org.eclipse.keyple.calypso.transaction;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.keyple.calypso.commands.CsmSendableInSession;
+import org.eclipse.keyple.calypso.commands.PoSendableInSession;
 import org.eclipse.keyple.calypso.commands.SendableInSession;
 import org.eclipse.keyple.calypso.commands.csm.CsmRevision;
 import org.eclipse.keyple.calypso.commands.csm.builder.*;
@@ -194,7 +196,7 @@ public class PoSecureSession {
      * @throws IOReaderException the IO reader exception
      */
     public SeResponse processOpening(AbstractOpenSessionCmdBuild openCommand,
-            List<SendableInSession> poCommandsInsideSession) throws IOReaderException {
+            List<PoSendableInSession> poCommandsInsideSession) throws IOReaderException {
 
         // Init PO ApduRequest List
         List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
@@ -205,9 +207,10 @@ public class PoSecureSession {
         // Add Open Session command to PO ApduRequest list
         poApduRequestList.add(openCommand.getApduRequest());
 
-        // Add list of SendableInSession commands to PO ApduRequest
+        // Add list of PoSendableInSession commands to PO ApduRequest
         if ((poCommandsInsideSession != null) && !poCommandsInsideSession.isEmpty()) {
-            poApduRequestList.addAll(this.getApduRequestsToSendInSession(poCommandsInsideSession));
+            poApduRequestList.addAll(this.getApduRequestsToSendInSession(
+                    (List<SendableInSession>) (List<?>) poCommandsInsideSession));
         }
 
         // Transfert PO commands
@@ -313,7 +316,7 @@ public class PoSecureSession {
      * @throws IOReaderException the IO reader exception
      */
     public SeResponse processOpeningClosing(AbstractOpenSessionCmdBuild openCommand,
-            List<SendableInSession> poCommandsInsideSession,
+            List<PoSendableInSession> poCommandsInsideSession,
             AbstractPoCommandBuilder ratificationCommand, boolean closeSeChannel)
             throws IOReaderException {
 
@@ -328,9 +331,10 @@ public class PoSecureSession {
         // Add Open Session command to PO ApduRequest list
         poApduRequestList.add(openCommand.getApduRequest());
 
-        // Add list of SendableInSession commands to PO ApduRequest
+        // Add list of PoSendableInSession commands to PO ApduRequest
         if ((poCommandsInsideSession != null) && !poCommandsInsideSession.isEmpty()) {
-            poApduRequestList.addAll(this.getApduRequestsToSendInSession(poCommandsInsideSession));
+            poApduRequestList.addAll(this.getApduRequestsToSendInSession(
+                    (List<SendableInSession>) (List<?>) poCommandsInsideSession));
         }
 
         // Transfert PO commands
@@ -525,19 +529,15 @@ public class PoSecureSession {
     /**
      * Change SendableInSession List to ApduRequest List .
      *
-     * @param poCommandsInsideSession the po commands list to be sent in session
+     * @param poOrCsmCommandsInsideSession a po or csm commands list to be sent in session
      * @return the ApduRequest list
      */
     private List<ApduRequest> getApduRequestsToSendInSession(
-            List<SendableInSession> poCommandsInsideSession) {
+            List<SendableInSession> poOrCsmCommandsInsideSession) {
         List<ApduRequest> apduRequestList = new ArrayList<ApduRequest>();
-        if (poCommandsInsideSession != null) {
-            for (SendableInSession cmd : poCommandsInsideSession) {
-                // apduRequestList.add(cmd.getAPDURequest()); TODO => suppress all methods
-                // getAPDURequest()
-                // from SendableInSession & most of AbstractPoCommandBuilder extensions
-                apduRequestList.add(((AbstractPoCommandBuilder) cmd).getApduRequest());
-                // Il fallait faire un "CAST"
+        if (poOrCsmCommandsInsideSession != null) {
+            for (SendableInSession cmd : poOrCsmCommandsInsideSession) {
+                apduRequestList.add(((AbstractApduCommandBuilder) cmd).getApduRequest());
             }
         }
         return apduRequestList;
@@ -576,12 +576,12 @@ public class PoSecureSession {
      *
      * @throws IOReaderException IO Reader exception
      */
-    public SeResponse processProceeding(List<SendableInSession> poCommandsInsideSession)
+    public SeResponse processProceeding(List<PoSendableInSession> poCommandsInsideSession)
             throws IOReaderException {
 
-        // Get PO ApduRequest List from SendableInSession List
-        List<ApduRequest> poApduRequestList =
-                this.getApduRequestsToSendInSession(poCommandsInsideSession);
+        // Get PO ApduRequest List from PoSendableInSession List
+        List<ApduRequest> poApduRequestList = this.getApduRequestsToSendInSession(
+                (List<SendableInSession>) (List<?>) poCommandsInsideSession);
         // Init CSM ApduRequest List
         List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
         // PO & CSM to be kept "Open"
@@ -644,18 +644,18 @@ public class PoSecureSession {
      * @return SeResponse close session response
      * @throws IOReaderException the IO reader exception
      */
-    // public SeResponse processClosing(List<SendableInSession> poCommandsInsideSession,
+    // public SeResponse processClosing(List<PoSendableInSession> poCommandsInsideSession,
     // CloseSessionCmdBuild closeCommand, PoGetChallengeCmdBuild ratificationCommand)
     // TODO - prévoir une variante pour enchainer plusieurs session d'affilée (la commande de
     // ratification étant un nouveau processOpeningClosing)
-    public SeResponse processClosing(List<SendableInSession> poCommandsInsideSession,
+    public SeResponse processClosing(List<PoSendableInSession> poCommandsInsideSession,
             List<ApduResponse> poAnticipatedResponseInsideSession,
             AbstractPoCommandBuilder ratificationCommand, boolean closeSeChannel)
             throws IOReaderException {
 
-        // Get PO ApduRequest List from SendableInSession List - for the first PO exchange
-        List<ApduRequest> poApduRequestList =
-                this.getApduRequestsToSendInSession(poCommandsInsideSession);
+        // Get PO ApduRequest List from PoSendableInSession List - for the first PO exchange
+        List<ApduRequest> poApduRequestList = this.getApduRequestsToSendInSession(
+                (List<SendableInSession>) (List<?>) poCommandsInsideSession);
         // Init CSM ApduRequest List - for the first CSM exchange
         List<ApduRequest> csmApduRequestList_1 = new ArrayList<ApduRequest>();
         // Init CSM ApduRequest List - for the second CSM exchange
@@ -786,6 +786,25 @@ public class PoSecureSession {
 
         currentState = SessionState.SESSION_CLOSED;
         return poResponse;
+    }
+
+    /**
+     * Process CSM commands. The provided commands have to implements the CsmSendableInSession
+     * interface
+     * 
+     * @param csmSendableInSessions a list of commands to sent to the CSM
+     * @return SeResponse csm responses
+     * @throws IOReaderException
+     */
+    public SeResponse processCsmCommands(List<CsmSendableInSession> csmSendableInSessions)
+            throws IOReaderException {
+        // Init CSM ApduRequest List - for the first CSM exchange
+        List<ApduRequest> csmApduRequestList = this.getApduRequestsToSendInSession(
+                (List<SendableInSession>) (List<?>) csmSendableInSessions);
+        // create a SeRequestSet (list of SeRequest)
+        SeRequestSet csmRequests = new SeRequestSet(new SeRequest(null, csmApduRequestList, true));
+
+        return csmReader.transmit(csmRequests).getSingleResponse();
     }
 
     public static PoRevision computePoRevision(byte applicationTypeByte) {

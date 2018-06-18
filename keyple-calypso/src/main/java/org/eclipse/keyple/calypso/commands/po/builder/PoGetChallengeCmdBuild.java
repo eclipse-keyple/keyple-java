@@ -9,7 +9,7 @@
 package org.eclipse.keyple.calypso.commands.po.builder;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.commands.SendableInSession;
+import org.eclipse.keyple.calypso.commands.PoSendableInSession;
 import org.eclipse.keyple.calypso.commands.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
@@ -25,7 +25,8 @@ import org.eclipse.keyple.seproxy.ApduRequest;
  * @author Ixxi
  *
  */
-public class PoGetChallengeCmdBuild extends AbstractPoCommandBuilder implements SendableInSession {
+public class PoGetChallengeCmdBuild extends AbstractPoCommandBuilder
+        implements PoSendableInSession {
 
     private static CommandsTable command = CalypsoPoCommands.GET_CHALLENGE;
 

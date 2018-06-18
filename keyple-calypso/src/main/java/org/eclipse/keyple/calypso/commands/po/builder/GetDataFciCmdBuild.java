@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.commands.po.builder;
 
-import org.eclipse.keyple.calypso.commands.SendableInSession;
+import org.eclipse.keyple.calypso.commands.PoSendableInSession;
 import org.eclipse.keyple.calypso.commands.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
@@ -18,13 +18,13 @@ import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
- * This class implements SendableInSession, it provides the dedicated constructor to build the Get
+ * This class implements PoSendableInSession, it provides the dedicated constructor to build the Get
  * data APDU commands.
  *
  *
  * @author Ixxi
  */
-public class GetDataFciCmdBuild extends AbstractPoCommandBuilder implements SendableInSession {
+public class GetDataFciCmdBuild extends AbstractPoCommandBuilder implements PoSendableInSession {
 
     private static CommandsTable command = CalypsoPoCommands.GET_DATA_FCI;
 

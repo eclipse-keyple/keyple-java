@@ -176,16 +176,16 @@ public class PcscReader extends AbstractThreadedLocalReader {
     }
 
     @Override
-    public final boolean waitForCardPresent(long timeout) throws IOCardException {
+    public final boolean waitForCardPresent(long timeout) throws IOReaderException {
         try {
             return terminal.waitForCardPresent(timeout);
         } catch (CardException e) {
-            throw new IOCardException(e);
+            throw new IOReaderException(e);
         }
     }
 
     @Override
-    public final boolean waitForCardAbsent(long timeout) throws IOCardException, IOReaderException {
+    public final boolean waitForCardAbsent(long timeout) throws IOReaderException {
         try {
             if (terminal.waitForCardAbsent(timeout)) {
                 closeLogicalChannel();
@@ -195,7 +195,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 return false;
             }
         } catch (CardException e) {
-            throw new IOCardException(e);
+            throw new IOReaderException(e);
         }
     }
 
