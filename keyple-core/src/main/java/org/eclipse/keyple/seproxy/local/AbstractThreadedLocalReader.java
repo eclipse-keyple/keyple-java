@@ -9,7 +9,6 @@
 package org.eclipse.keyple.seproxy.local;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.smartcardio.CardException;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
@@ -88,7 +87,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractLocalReader {
      * @param timeout
      * @return presence status
      */
-    public abstract boolean waitForCardPresent(long timeout) throws CardException;
+    public abstract boolean waitForCardPresent(long timeout) throws IOReaderException;
 
     /**
      * Wait until the card disappears. Returns true if a card has disappeared before the end of the
@@ -98,7 +97,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractLocalReader {
      * @param timeout
      * @return presence status
      */
-    public abstract boolean waitForCardAbsent(long timeout) throws CardException, IOReaderException;
+    public abstract boolean waitForCardAbsent(long timeout) throws IOReaderException;
 
     /**
      * Thread in charge of reporting live events
@@ -149,7 +148,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractLocalReader {
         private void exceptionThrown(Exception ex) {
             logger.error("Observable Reader: Error handling events", "action",
                     "observable_reader.event_error", "readerName", getName(), "exception", ex);
-            if (ex instanceof CardException || ex instanceof IOReaderException) {
+            if (ex instanceof IOReaderException) {
                 notifyObservers(ReaderEvent.IO_ERROR);
             }
         }

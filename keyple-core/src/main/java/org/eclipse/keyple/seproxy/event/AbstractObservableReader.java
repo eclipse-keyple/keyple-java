@@ -30,22 +30,20 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     // TODO check for a better way to log
     private static final ILogger logger = SLoggerFactory.getLogger(AbstractObservableReader.class);
 
-    public interface ReaderObserver extends AbstractLoggedObservable.Observer<ReaderEvent> {
-        void update(Observable reader, ReaderEvent event);
-    }
-
     protected abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
             throws IOReaderException;
 
     /**
      * Implementation must call logSeRequestSet before transmit and logSeResponseSet after transmit
-     * 
+     *
      * @param requestSet
      * @return responseSet
      * @throws IOReaderException
      */
     public final SeResponseSet transmit(SeRequestSet requestSet) throws IOReaderException {
-        logSeRequestSet(requestSet);
+        // TODO do a better log of SeRequestSet data
+        logger.info("SeRequestSet", "data", requestSet.toString());
+
         long before = System.nanoTime();
         SeResponseSet responseSet;
 
@@ -64,22 +62,17 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         logger.info("LocalReader: Data exchange", "action", "local_reader.transmit", "requestSet",
                 requestSet, "responseSet", responseSet, "elapsedMs", elapsedMs);
 
-        logSeResponseSet(responseSet);
+        // TODO do a better log of SeReponseSet data
+        logger.info("SeResponseSet", "data", responseSet.toString());
 
         return responseSet;
     }
 
-    private void logSeRequestSet(SeRequestSet requestSet) {
-        // TODO do a better log of SeRequestSet data
-        logger.info("SeRequestSet", "data", requestSet.toString());
-    }
-
-    private void logSeResponseSet(SeResponseSet responseSet) {
-        // TODO do a better log of SeReponseSet data
-        logger.info("SeResponseSet", "data", responseSet.toString());
-    }
-
-    public int compareTo(ProxyReader o) {
+    public final int compareTo(ProxyReader o) {
         return this.getName().compareTo(o.getName());
+    }
+
+    public interface ReaderObserver extends AbstractLoggedObservable.Observer<ReaderEvent> {
+        void update(Observable reader, ReaderEvent event);
     }
 }

@@ -33,7 +33,7 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
      * @param observer Observer to notify
      */
 
-    public void addObserver(Observable.Observer<T> observer) {
+    public void addObserver(final AbstractLoggedObservable.Observer<T> observer) {
 
         if (this instanceof AbstractObservableReader) {
             logger.info("AbstractObservableReader: Adding an observer", ACTION_STR,
@@ -54,7 +54,7 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
      * @param observer Observer to stop notifying
      */
 
-    public void removeObserver(Observable.Observer<T> observer) {
+    public void removeObserver(final AbstractLoggedObservable.Observer<T> observer) {
 
         if (this instanceof AbstractObservableReader) {
             logger.info("AbstractObservableReader: Deleting an observer", ACTION_STR,
@@ -80,7 +80,7 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
      * @param event the event
      */
 
-    public final void notifyObservers(T event) {
+    public final void notifyObservers(final T event) {
 
         if (this instanceof AbstractObservableReader) {
             logger.info("AbstractObservableReader: Notifying of an event", ACTION_STR,

@@ -16,10 +16,7 @@ import javax.smartcardio.*;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeProtocol;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
-import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
+import org.eclipse.keyple.seproxy.exception.*;
 import org.eclipse.keyple.seproxy.local.AbstractThreadedLocalReader;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import com.github.structlog4j.ILogger;
@@ -179,18 +176,26 @@ public class PcscReader extends AbstractThreadedLocalReader {
     }
 
     @Override
-    public final boolean waitForCardPresent(long timeout) throws CardException {
-        return terminal.waitForCardPresent(timeout);
+    public final boolean waitForCardPresent(long timeout) throws IOReaderException {
+        try {
+            return terminal.waitForCardPresent(timeout);
+        } catch (CardException e) {
+            throw new IOReaderException(e);
+        }
     }
 
     @Override
-    public final boolean waitForCardAbsent(long timeout) throws CardException, IOReaderException {
-        if (terminal.waitForCardAbsent(timeout)) {
-            closeLogicalChannel();
-            closePhysicalChannel();
-            return true;
-        } else {
-            return false;
+    public final boolean waitForCardAbsent(long timeout) throws IOReaderException {
+        try {
+            if (terminal.waitForCardAbsent(timeout)) {
+                closeLogicalChannel();
+                closePhysicalChannel();
+                return true;
+            } else {
+                return false;
+            }
+        } catch (CardException e) {
+            throw new IOReaderException(e);
         }
     }
 

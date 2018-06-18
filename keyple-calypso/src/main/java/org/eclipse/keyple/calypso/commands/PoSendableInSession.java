@@ -8,10 +8,7 @@
 
 package org.eclipse.keyple.calypso.commands;
 
-/**
- * The Interface SendableInSession.
- *
- * @author CNA
- */
-public interface SendableInSession<T> {
+import org.eclipse.keyple.calypso.commands.po.AbstractPoCommandBuilder;
+
+public interface PoSendableInSession extends SendableInSession<AbstractPoCommandBuilder> {
 }

@@ -15,12 +15,11 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.calypso.commands.SendableInSession;
-import org.eclipse.keyple.calypso.commands.po.PoRevision;
+import org.eclipse.keyple.calypso.commands.PoSendableInSession;
 import org.eclipse.keyple.calypso.commands.po.builder.AbstractOpenSessionCmdBuild;
-import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.example.common.HoplinkCommandsSettings;
+import org.eclipse.keyple.example.common.HoplinkSampleCommands;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -57,21 +56,11 @@ public class KeypleCalypsoDemo_HoplinkTransaction
         }
     }
 
-    private void doHoplinkSimpleAuthentication(PoSecureSession poTransaction, ApduResponse fciData,
+    private void doHoplinkTwoStepAuthentication(PoSecureSession poTransaction, ApduResponse fciData,
             boolean closeSeChannel) throws IOReaderException {
-        // Read first record of SFI 06h - for 78h bytes
-        ReadRecordsCmdBuild poReadRecordCmd_T2EnvR1 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                (byte) 0x01, true, (byte) 0x14, (byte) 0x20);
-        // ReadRecordsCmdBuild poReadRecordCmd_06 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-        // (byte) 0x01, true, (byte) 0x06, (byte) 0x78);
-        // Read first record of SFI 08h - for 15h bytes
-        ReadRecordsCmdBuild poReadRecordCmd_T2UsaR1 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                (byte) 0x01, true, (byte) 0x1A, (byte) 0x30);
-        // ReadRecordsCmdBuild poReadRecordCmd_08 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-        // (byte) 0x01, true, (byte) 0x08, (byte) 0x15);
-        List<SendableInSession> filesToReadInSession = new ArrayList<SendableInSession>();
-        filesToReadInSession.add(poReadRecordCmd_T2EnvR1);
-        filesToReadInSession.add(poReadRecordCmd_T2UsaR1);
+        List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
+        filesToReadInSession.add(HoplinkSampleCommands.poReadRecordCmd_T2Env);
+        filesToReadInSession.add(HoplinkSampleCommands.poReadRecordCmd_T2Usage);
 
         // Step 1
         System.out.println(
@@ -89,7 +78,8 @@ public class KeypleCalypsoDemo_HoplinkTransaction
                 AbstractOpenSessionCmdBuild.create(poTransaction.getRevision(), debitKeyIndex,
                         poTransaction.sessionTerminalChallenge, (byte) 0x1A, (byte) 0x01);
 
-        poTransaction.processOpening(poOpenSession, filesToReadInSession, null, closeSeChannel);
+        poTransaction.processOpeningClosing(poOpenSession, filesToReadInSession, null,
+                closeSeChannel);
 
         if (poTransaction.isSuccessful()) {
             System.out.println(
@@ -100,22 +90,14 @@ public class KeypleCalypsoDemo_HoplinkTransaction
         }
     }
 
-    private void doHoplinkReadWriteTransaction(PoSecureSession poTransaction, ApduResponse fciData,
-            boolean closeSeChannel) throws IOReaderException {
+    private void doHoplinkThreeStepReadWriteTransaction(PoSecureSession poTransaction,
+            ApduResponse fciData, boolean closeSeChannel) throws IOReaderException {
 
-        // Read first record of SFI 06h - for 78h bytes
-        ReadRecordsCmdBuild poReadRecordCmd_T2EnvR1 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                (byte) 0x01, true, (byte) 0x14, (byte) 0x20);
-        // ReadRecordsCmdBuild poReadRecordCmd_06 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-        // (byte) 0x01, true, (byte) 0x06, (byte) 0x78);
-        // Read first record of SFI 08h - for 15h bytes
-        ReadRecordsCmdBuild poReadRecordCmd_T2UsaR1 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                (byte) 0x01, true, (byte) 0x1A, (byte) 0x30);
-        // ReadRecordsCmdBuild poReadRecordCmd_08 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-        // (byte) 0x01, true, (byte) 0x08, (byte) 0x15);
-        List<SendableInSession> filesToReadInSession = new ArrayList<SendableInSession>();
-        filesToReadInSession.add(poReadRecordCmd_T2EnvR1);
-        filesToReadInSession.add(poReadRecordCmd_T2UsaR1);
+
+        List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
+        filesToReadInSession.add(HoplinkSampleCommands.poReadRecordCmd_T2Env);
+        filesToReadInSession.add(HoplinkSampleCommands.poReadRecordCmd_T2Usage);
+        // filesToReadInSession.add(HoplinkSampleCommands.poUpdateRecordCmd_T2UsageFill);
 
         // Step 1
         System.out.println(
@@ -133,11 +115,6 @@ public class KeypleCalypsoDemo_HoplinkTransaction
                 AbstractOpenSessionCmdBuild.create(poTransaction.getRevision(), debitKeyIndex,
                         poTransaction.sessionTerminalChallenge, (byte) 0x1A, (byte) 0x01);
         poTransaction.processOpening(poOpenSession, filesToReadInSession);
-        // poTransaction.processOpening(poOpenSession, null);
-
-        // DONE: Find something better
-        // poReadRecordCmd_T2EnvR1.getApduRequest().getBytes().position(0);
-        // poReadRecordCmd_T2UsaR1.getApduRequest().getBytes().position(0);
 
         // Step 3
         System.out.println(
@@ -150,10 +127,7 @@ public class KeypleCalypsoDemo_HoplinkTransaction
         // Step 4
         System.out.println(
                 "========= PO Hoplink 3-step session ======= Closing ============================");
-        // poTransaction.processClosing(filesToReadInSession,
-        // poAnticipatedResponseInsideSession, poReadRecordCmd_06); // TODO - to complete
-        // support of poAnticipatedResponseInsideSession
-        poTransaction.processClosing(null, null, poReadRecordCmd_T2EnvR1, true);
+        poTransaction.processClosing(null, null, HoplinkSampleCommands.poRatificationCommand, true);
 
         if (poTransaction.isSuccessful()) {
             System.out.println(
@@ -171,21 +145,29 @@ public class KeypleCalypsoDemo_HoplinkTransaction
             // AID - profile Multi 1 App 1
             String poAid = HoplinkCommandsSettings.AID;
 
-            /*
-             * for tests ApduResponse fciData = new ApduResponse(ByteBufferUtils.fromHex(
-             * "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA153070A3C230C1410019000")
-             * , true);
-             */
             // do the PO selection
             SeRequestSet selectionRequest =
                     new SeRequestSet(new SeRequest(ByteBufferUtils.fromHex(poAid), null, true));
             ApduResponse fciData = poReader.transmit(selectionRequest).getSingleResponse().getFci();
 
-            doHoplinkSimpleAuthentication(poTransaction, fciData, false);
+            // execute a two-step Calypso session: processIdentification, processOpeningClosing
+            // keep the logical channel opened
+            doHoplinkTwoStepAuthentication(poTransaction, fciData, false);
 
-            doHoplinkReadWriteTransaction(poTransaction, fciData, true);
+            // execute a three-step Calypso session: processIdentification, processOpening,
+            // processClosing
+            // close the logical channel opened
+            doHoplinkThreeStepReadWriteTransaction(poTransaction, fciData, true);
 
-            doHoplinkSimpleAuthentication(poTransaction, fciData, false);
+            // redo the PO selection after logical channel closing (may be not needed with some PO
+            // for which the application is selected by default)
+            selectionRequest =
+                    new SeRequestSet(new SeRequest(ByteBufferUtils.fromHex(poAid), null, true));
+            fciData = poReader.transmit(selectionRequest).getSingleResponse().getFci();
+
+            // execute a two-step Calypso session: processIdentification, processOpeningClosing
+            // close the logical channel opened
+            doHoplinkTwoStepAuthentication(poTransaction, fciData, true);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

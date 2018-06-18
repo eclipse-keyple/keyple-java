@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.eclipse.keyple.calypso.commands.SendableInSession;
+import org.eclipse.keyple.calypso.commands.PoSendableInSession;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.commands.po.builder.OpenSession24CmdBuild;
@@ -216,7 +216,7 @@ public class PoSecureSessionTest {
         byte sfi = (byte) 0x08;
         byte recordNumber = (byte) 0x01;
 
-        SendableInSession[] poCommandsInsideSession = new SendableInSession[1];
+        PoSendableInSession[] poCommandsInsideSession = new PoSendableInSession[1];
 
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
                 (byte) 0x08, (byte) 0x00);
@@ -251,7 +251,7 @@ public class PoSecureSessionTest {
         byte sfi = (byte) 0x08;
         byte recordNumber = (byte) 0x01;
 
-        SendableInSession[] poCommandsInsideSession = new SendableInSession[1];
+        PoSendableInSession[] poCommandsInsideSession = new PoSendableInSession[1];
 
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
                 (byte) 0x08, (byte) 0x00);
@@ -273,7 +273,7 @@ public class PoSecureSessionTest {
                 .thenReturn(responseOpenSessionError);
         byte recordNumber = (byte) 0x01;
 
-        SendableInSession[] poCommandsInsideSession = new SendableInSession[1];
+        PoSendableInSession[] poCommandsInsideSession = new PoSendableInSession[1];
 
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
                 (byte) 0x08, (byte) 0x00);
@@ -290,7 +290,7 @@ public class PoSecureSessionTest {
         this.setBeforeTest(this.defaultKeyIndex);
         byte recordNumber = (byte) 0x01;
 
-        SendableInSession[] poCommandsInsideSession = new SendableInSession[1];
+        PoSendableInSession[] poCommandsInsideSession = new PoSendableInSession[1];
 
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
                 (byte) 0x08, (byte) 0x00);
@@ -313,7 +313,7 @@ public class PoSecureSessionTest {
     public void processClosingTestNoCmdInsideInvalidApduReaderException() throws Exception {
 
         this.setBeforeTest(this.defaultKeyIndex);
-        SendableInSession[] poCommandsInsideSession = null;
+        PoSendableInSession[] poCommandsInsideSession = null;
 
         Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseTerminalSessionSignatureError);
@@ -331,7 +331,7 @@ public class PoSecureSessionTest {
     public void processClosingTestNoCmdInside() throws Exception {
 
         this.setBeforeTest(this.defaultKeyIndex);
-        // SendableInSession[] poCommandsInsideSession = null;
+        // PoSendableInSession[] poCommandsInsideSession = null;
 
         Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseTerminalSessionSignature);
@@ -357,7 +357,7 @@ public class PoSecureSessionTest {
 
         this.setBeforeTest(this.defaultKeyIndex);
         byte recordNumber = (byte) 0x01;
-        SendableInSession[] poCommandsInsideSession = new SendableInSession[1];
+        PoSendableInSession[] poCommandsInsideSession = new PoSendableInSession[1];
 
         Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseTerminalSessionSignature);
@@ -397,7 +397,7 @@ public class PoSecureSessionTest {
                 .thenReturn(responseFci);
         byte recordNumber = (byte) 0x01;
 
-        SendableInSession[] poCommandsInsideSession = new SendableInSession[1];
+        PoSendableInSession[] poCommandsInsideSession = new PoSendableInSession[1];
 
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
                 (byte) 0x08, (byte) 0x00);
@@ -431,7 +431,7 @@ public class PoSecureSessionTest {
     }
 
     private SeResponse processOpeningTestKif0xFFKey(byte key, byte sfi, byte recordNumber,
-            List<ApduResponse> apduExpected, SendableInSession[] poCommandsInsideSession)
+            List<ApduResponse> apduExpected, PoSendableInSession[] poCommandsInsideSession)
             throws IOReaderException, InconsistentCommandException {
         AbstractOpenSessionCmdBuild openCommand =
                 new OpenSession24CmdBuild(key, samchallenge, sfi, recordNumber);
