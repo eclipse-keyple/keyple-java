@@ -69,7 +69,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         return responseSet;
     }
 
-    public int compareTo(ProxyReader o) {
+    public final int compareTo(ProxyReader o) {
         return this.getName().compareTo(o.getName());
     }
 
