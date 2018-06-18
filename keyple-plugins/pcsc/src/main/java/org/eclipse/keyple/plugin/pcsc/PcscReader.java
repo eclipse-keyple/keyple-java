@@ -20,7 +20,7 @@ import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
-import org.eclipse.keyple.seproxy.plugin.AbstractThreadedLocalReader;
+import org.eclipse.keyple.seproxy.local.AbstractThreadedLocalReader;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;

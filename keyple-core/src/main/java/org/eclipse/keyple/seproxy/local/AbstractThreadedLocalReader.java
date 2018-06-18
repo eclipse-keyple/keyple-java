@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy.plugin;
+package org.eclipse.keyple.seproxy.local;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.smartcardio.CardException;
