@@ -294,8 +294,7 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
                 flags = flags | NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_NFC_A;
             } else if (seProtocol.equals(ContactlessProtocols.PROTOCOL_MIFARE_UL)) {
                 flags = flags | NfcAdapter.FLAG_READER_NFC_A;
-            } else if (seProtocol
-                    .equals(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC)) {
+            } else if (seProtocol.equals(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC)) {
                 flags = flags | NfcAdapter.FLAG_READER_NFC_A;
             }
         }

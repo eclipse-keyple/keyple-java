@@ -50,10 +50,8 @@ import android.widget.TextView;
 
 
 /**
- * Test the Keyple NFC Plugin
- * Configure the NFC reader
- * Configure the Observability
- * Run test commands when appropriate tag is detected.
+ * Test the Keyple NFC Plugin Configure the NFC reader Configure the Observability Run test commands
+ * when appropriate tag is detected.
  */
 public class NFCTestFragment extends Fragment
         implements AbstractObservableReader.Observer<ReaderEvent> {
@@ -107,19 +105,18 @@ public class NFCTestFragment extends Fragment
             // reader.setParameter("FLAG_READER", "SKIP_NDEF_CHECK");
 
 
-            //with this protocol settings we activate the nfc for ISO1443_4 protocol
+            // with this protocol settings we activate the nfc for ISO1443_4 protocol
             ((AndroidNfcReader) reader)
                     .addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4);
 
 
             /*
-            uncomment to active protocol listening for Mifare ultralight
-             ((AndroidNfcReader)
-             reader).addSeProtocolSetting( AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_UL);
-
-            uncomment to active protocol listening for Mifare Classic
-              ((AndroidNfcReader) reader).addSeProtocolSetting(
-              AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC);
+             * uncomment to active protocol listening for Mifare ultralight ((AndroidNfcReader)
+             * reader).addSeProtocolSetting( AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_UL);
+             * 
+             * uncomment to active protocol listening for Mifare Classic ((AndroidNfcReader)
+             * reader).addSeProtocolSetting(
+             * AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC);
              */
 
         } catch (IOReaderException e) {
@@ -143,7 +140,7 @@ public class NFCTestFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
 
-        //Define UI components
+        // Define UI components
         View view = inflater.inflate(R.layout.fragment_nfc_test, container, false);
         mText = view.findViewById(R.id.text);
         radioGroup = view.findViewById(R.id.radioGroup);
