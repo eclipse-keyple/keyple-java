@@ -106,9 +106,10 @@ public class KeypleGenericDemo_SeProtocolDetection
                         poApduRequestList.addAll(pcscContactlessReaderGetDataList);
                         // add Hoplink specific commands
                         poApduRequestList.addAll(HoplinkSampleCommands.getApduList());
-                        // add a SeRequest with the AID from HoplinkSampleCommands and the requests list
-                        poRequests.add(new SeRequest(HoplinkSampleCommands.getAid(), poApduRequestList,
-                                false, protocol));
+                        // add a SeRequest with the AID from HoplinkSampleCommands and the requests
+                        // list
+                        poRequests.add(new SeRequest(HoplinkSampleCommands.getAid(),
+                                poApduRequestList, false, protocol));
                         break;
                     case PROTOCOL_ISO14443_3A:
                     case PROTOCOL_ISO14443_3B:

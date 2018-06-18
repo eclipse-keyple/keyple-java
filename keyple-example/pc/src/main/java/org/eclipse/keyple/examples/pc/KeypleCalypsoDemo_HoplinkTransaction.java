@@ -16,9 +16,7 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.commands.SendableInSession;
-import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.AbstractOpenSessionCmdBuild;
-import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.example.common.HoplinkCommandsSettings;
 import org.eclipse.keyple.example.common.HoplinkSampleCommands;
@@ -92,14 +90,14 @@ public class KeypleCalypsoDemo_HoplinkTransaction
         }
     }
 
-    private void doHoplinkThreeStepReadWriteTransaction(PoSecureSession poTransaction, ApduResponse fciData,
-                                                        boolean closeSeChannel) throws IOReaderException {
+    private void doHoplinkThreeStepReadWriteTransaction(PoSecureSession poTransaction,
+            ApduResponse fciData, boolean closeSeChannel) throws IOReaderException {
 
 
         List<SendableInSession> filesToReadInSession = new ArrayList<SendableInSession>();
         filesToReadInSession.add(HoplinkSampleCommands.poReadRecordCmd_T2Env);
         filesToReadInSession.add(HoplinkSampleCommands.poReadRecordCmd_T2Usage);
-//        filesToReadInSession.add(HoplinkSampleCommands.poUpdateRecordCmd_T2UsageFill);
+        // filesToReadInSession.add(HoplinkSampleCommands.poUpdateRecordCmd_T2UsageFill);
 
         // Step 1
         System.out.println(
