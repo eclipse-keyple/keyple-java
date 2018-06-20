@@ -9,12 +9,14 @@
 package org.eclipse.keyple.seproxy;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 
 /**
  * Single APDU request wrapper
  */
-public class ApduRequest extends AbstractApduBuffer {
+public final class ApduRequest extends AbstractApduBuffer {
 
     /**
      * a ‘case 4’ flag in order to explicitly specify, if it’s expected that the APDU command
@@ -23,6 +25,12 @@ public class ApduRequest extends AbstractApduBuffer {
      * returning the 61XYh status).
      */
     private boolean case4;
+
+    /**
+     * List of status codes that should be considered successful although they are different from
+     * 9000
+     */
+    private Set<Short> successfulStatusCodes = new LinkedHashSet<Short>();
 
     /**
      * Name of the request being sent
@@ -35,23 +43,24 @@ public class ApduRequest extends AbstractApduBuffer {
      *
      * @param buffer Buffer of the APDU request
      * @param case4 the case 4
+     * @param successfulStatusCodes the list of status codes to be considered as successful although
+     *        different from 9000
      */
-    public ApduRequest(ByteBuffer buffer, boolean case4) {
+    public ApduRequest(ByteBuffer buffer, boolean case4, Set<Short> successfulStatusCodes) {
         super(buffer);
         this.case4 = case4;
+        this.successfulStatusCodes = successfulStatusCodes;
     }
 
-    public ApduRequest(byte[] data, boolean case4) {
-        super(data);
-        this.case4 = case4;
+    /**
+     * Alternate constructor without status codes list
+     * 
+     * @param buffer
+     * @param case4
+     */
+    public ApduRequest(ByteBuffer buffer, boolean case4) {
+        this(buffer, case4, null);
     }
-
-    public ApduRequest(byte[] data, int offset, int length, boolean case4) {
-        super(data, offset, length);
-        this.case4 = case4;
-    }
-
-    public ApduRequest() {}
 
     /**
      * Checks if is case 4.
@@ -62,13 +71,6 @@ public class ApduRequest extends AbstractApduBuffer {
         return case4;
     }
 
-    public void put(byte b) {
-        buffer.put(b);
-    }
-
-    public void put(byte[] a) {
-        buffer.put(a);
-    }
 
     /**
      * Name this APDU request
@@ -76,9 +78,18 @@ public class ApduRequest extends AbstractApduBuffer {
      * @param name Name of the APDU request
      * @return Name of the APDU request
      */
-    public ApduRequest setName(String name) {
+    public ApduRequest setName(final String name) {
         this.name = name;
         return this;
+    }
+
+    /**
+     * Get the list of successful status codes for the request
+     * 
+     * @return the list of status codes
+     */
+    public Set<Short> getSuccessfulStatusCodes() {
+        return successfulStatusCodes;
     }
 
     /**
@@ -88,29 +99,5 @@ public class ApduRequest extends AbstractApduBuffer {
      */
     public String getName() {
         return name;
-    }
-
-    @Override
-    public String toString() {
-        ByteBuffer b;
-
-        // TODO: Buffer will be read only, as such this code makes no sense anymore
-        if (buffer.position() > 0) {
-            b = buffer.duplicate();
-            b.limit(buffer.position());
-        } else {
-            b = buffer;
-        }
-
-        int len = b.limit();
-        int cuts[];
-        if (len >= 5) {
-            cuts = new int[] {2, 2, 1};
-        } else if (len == 4) {
-            cuts = new int[] {2};
-        } else {
-            cuts = new int[] {};
-        }
-        return "Req{" + ByteBufferUtils.toHexCutLen(b, cuts) + "}";
     }
 }

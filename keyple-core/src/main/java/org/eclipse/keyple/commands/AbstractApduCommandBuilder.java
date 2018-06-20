@@ -38,6 +38,10 @@ public abstract class AbstractApduCommandBuilder {
     public AbstractApduCommandBuilder(CommandsTable commandReference, ApduRequest request) {
         this.commandReference = commandReference;
         this.request = request;
+        // set APDU name for non null request
+        if (request != null) {
+            this.request.setName(commandReference.getName());
+        }
     }
 
     /**
