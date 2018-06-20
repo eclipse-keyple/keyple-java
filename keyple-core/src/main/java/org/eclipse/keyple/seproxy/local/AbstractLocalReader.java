@@ -25,6 +25,8 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
+// TODO remove after refactoring this class to reduce the number of method
+@SuppressWarnings("PMD.TooManyMethods")
 /**
  * Manage the loop processing for SeRequest transmission in a set and for SeResponse reception in a
  * set
