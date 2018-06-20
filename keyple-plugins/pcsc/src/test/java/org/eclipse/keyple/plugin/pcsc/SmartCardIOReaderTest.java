@@ -38,6 +38,7 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.InvalidApduReaderException;
 import org.eclipse.keyple.seproxy.exception.ReaderTimeoutException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
+import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -128,8 +129,8 @@ public class SmartCardIOReaderTest {
             IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
 
         when(terminal.isCardPresent()).thenReturn(false);
-        ApduRequest apduRequestMF = new ApduRequest(
-                new byte[] {(byte) 0x94, (byte) 0xA4, 0x00, 0x00, 0x02, 0x3F, 0x02}, false);
+        ApduRequest apduRequestMF =
+                new ApduRequest(ByteBufferUtils.fromHex("94A40000023F02"), false);
 
         // code de la requete
         ByteBuffer aidToSelect = ByteBuffer.allocate(0);
@@ -160,8 +161,8 @@ public class SmartCardIOReaderTest {
         ApduResponse responseMockMF = new ApduResponse(new byte[] {(byte) 0x85, 0x17, 0x00, 0x01,
                 0x00, 0x00, 0x00, 0x12, 0x12, 0x00, 0x00, 0x01, 0x03, 0x01, 0x01, 0x00, 0x7E, 0x7E,
                 0x7E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0x90, 0x00}, true);
-        ApduRequest apduRequestMF = new ApduRequest(
-                new byte[] {(byte) 0x94, (byte) 0xA4, 0x00, 0x00, 0x02, 0x3F, 0x02}, false);
+        ApduRequest apduRequestMF =
+                new ApduRequest(ByteBufferUtils.fromHex("94A40000023F02"), false);
 
         // code de la requete
         ByteBuffer aidToSelect = null;
@@ -195,8 +196,8 @@ public class SmartCardIOReaderTest {
         ApduResponse responseMockMF = new ApduResponse(new byte[] {(byte) 0x85, 0x17, 0x00, 0x01,
                 0x00, 0x00, 0x00, 0x12, 0x12, 0x00, 0x00, 0x01, 0x03, 0x01, 0x01, 0x00, 0x7E, 0x7E,
                 0x7E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0x90, 0x00}, true);
-        ApduRequest apduRequestMF = new ApduRequest(
-                new byte[] {(byte) 0x94, (byte) 0xA4, 0x00, 0x00, 0x02, 0x3F, 0x02}, false);
+        ApduRequest apduRequestMF =
+                new ApduRequest(ByteBufferUtils.fromHex("94A40000023F02"), false);
 
         // code de la requete
         ByteBuffer aidToSelect =
@@ -227,9 +228,8 @@ public class SmartCardIOReaderTest {
         ApduResponse responseMockMF = new ApduResponse(new byte[] {(byte) 0x85, 0x17, 0x00, 0x01,
                 0x00, 0x00, 0x00, 0x12, 0x12, 0x00, 0x00, 0x01, 0x03, 0x01, 0x01, 0x00, 0x7E, 0x7E,
                 0x7E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0x90, 0x00}, true);
-        ApduRequest apduRequestMF = new ApduRequest(
-                new byte[] {(byte) 0x94, (byte) 0xA4, 0x00, 0x00, 0x02, 0x3F, 0x02}, false);
-
+        ApduRequest apduRequestMF =
+                new ApduRequest(ByteBufferUtils.fromHex("94A40000023F02"), false);
         // code de la requete
         ByteBuffer aidToSelect =
                 ByteBuffer.wrap(new byte[] {(byte) 0x94, (byte) 0xCA, 0x00, 0x4F, 0x00});

@@ -19,6 +19,7 @@ import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
+import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSettings;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import com.github.structlog4j.ILogger;
@@ -38,18 +39,19 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     private ApduResponse fciDataSelected; // if fciDataSelected is NULL, it means that no
                                           // application is selecte
     private ApduResponse atrData;
-    private boolean logging;
+    private boolean logging = true; // TODO make this changeable
     private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
 
 
     /**
-     * Checks the presence of a physical channel. Creates one if needed, generates an exception in
-     * case of failure.
+     * Open (if needed) a physical channel (try to connect a card to the terminal)
      *
+     * @param aid
+     * @return ByteBuffer[0] the SE ATR ByteBuffer[1] the SE FCI
      * @throws IOReaderException
      */
     protected abstract ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid)
-            throws IOReaderException;
+            throws IOReaderException, SelectApplicationException;
 
 
     /**
@@ -100,6 +102,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             throws ChannelStateReaderException {
         ByteBuffer apduResponse;
         long before = logging ? System.nanoTime() : 0;
+        logger.info("processApduRequest: request", "apdu.name", apduRequest.getName(),
+                "command.data", ByteBufferUtils.toHex(apduRequest.getBytes()));
+
         try {
             ByteBuffer buffer = apduRequest.getBytes();
             { // Sending data
@@ -132,14 +137,15 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
             if (logging) {
                 double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-                logger.info("LocalReader: Transmission", ACTION_STR,
-                        "local_reader.processApduRequest", "apduRequest", apduRequest,
-                        "apduResponse", apduResponse, "elapsedMs", elapsedMs, "apduName",
-                        apduRequest.getName());
+                logger.info("processApduRequest: response", "apdu.name", apduRequest.getName(),
+                        "response.data", ByteBufferUtils.toHex(apduResponse), "elapsedMs",
+                        elapsedMs);
             }
 
             return new ApduResponse(apduResponse, successfulStatus);
         } catch (CardException e) {
+            logger.info("processApduRequest: exception", "apdu.name", apduRequest.getName(),
+                    "response.data", "none");
             throw new ChannelStateReaderException(e);
         }
     }
@@ -279,8 +285,13 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                                                                          // both AID are null ?)
             previouslyOpen = false;
 
-            ByteBuffer[] atrAndFciDataBytes =
-                    openLogicalChannelAndSelect(seRequest.getAidToSelect());
+            ByteBuffer[] atrAndFciDataBytes = new ByteBuffer[0];
+            try {
+                atrAndFciDataBytes = openLogicalChannelAndSelect(seRequest.getAidToSelect());
+            } catch (SelectApplicationException e) {
+                // return a null SeReponse when the opening of the logical channel failed
+                return null;
+            }
 
             if (atrAndFciDataBytes[0] != null) { // the SE Answer to reset
                 atrData = new ApduResponse(atrAndFciDataBytes[0], true);

@@ -90,16 +90,9 @@ public class PcscReader extends AbstractThreadedLocalReader {
         return terminalName;
     }
 
-    /**
-     * Open (if needed) a physical channel (try to connect a card to the terminal)
-     * 
-     * @param aid
-     * @return ByteBuffer[0] the SE ATR ByteBuffer[1] the SE FCI
-     * @throws IOReaderException
-     */
     @Override
     protected final ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid)
-            throws IOReaderException {
+            throws IOReaderException, SelectApplicationException {
         ByteBuffer[] atrAndFci = new ByteBuffer[2];
 
         if (!isLogicalChannelOpen()) {
@@ -114,8 +107,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
         }
 
         // add ATR
-        atrAndFci[0] = ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
-                ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}));
+        atrAndFci[0] = ByteBuffer.wrap(card.getATR().getBytes());
 
         if (aid != null) {
             logger.info("Connecting to card", "action", "local_reader.openLogicalChannel", "aid",
@@ -135,22 +127,20 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 // add FCI
                 atrAndFci[1] = fciResponse.getBytes();
 
+                if (!fciResponse.isSuccessful()) {
+                    logger.info("Application selection failed", "action",
+                            "pcsc_reader.openLogicalChannel", "aid", ByteBufferUtils.toHex(aid),
+                            "fci", ByteBufferUtils.toHex(fciResponse.getBytes()));
+                    throw new SelectApplicationException("Application selection failed");
+                }
             } catch (ChannelStateReaderException e1) {
-
                 throw new ChannelStateReaderException(e1);
-
             }
         }
         return atrAndFci;
     }
 
 
-    /**
-     * Disconnects the card from the terminal
-     *
-     * @throws IOReaderException
-     * @throws CardException
-     */
     @Override
     protected final void closePhysicalChannel() throws IOReaderException {
         logger.info("Closing of the physical SE channel.", "action",
