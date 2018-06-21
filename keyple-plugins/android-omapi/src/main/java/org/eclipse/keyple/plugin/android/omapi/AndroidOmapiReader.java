@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
@@ -24,10 +23,10 @@ import org.simalliance.openmobileapi.Session;
 import android.util.Log;
 
 /**
- * Communicates with Android readers throught the Open Mobile API
- * see {@link Reader} Instances of this class represent SE readers supported by this device. These readers can be
- physical devices or virtual devices. They can be removable or not. They can contain one SE
- that can or cannot be removed.
+ * Communicates with Android readers throught the Open Mobile API see {@link Reader} Instances of
+ * this class represent SE readers supported by this device. These readers can be physical devices
+ * or virtual devices. They can be removable or not. They can contain one SE that can or cannot be
+ * removed.
  */
 public class AndroidOmapiReader extends AbstractLocalReader {
 
@@ -45,11 +44,10 @@ public class AndroidOmapiReader extends AbstractLocalReader {
 
     @Override
     /**
-     * Return the name of this reader.
-     * If this reader is a SIM reader, then its name must be "SIM[Slot]"
-     * If the reader is a SD or micro SD reader, then its name must be “SD[slot]”
-     * If the reader is an embedded SE reader, then its name must be “eSE[slot]”
-     * see {@link Reader#getName()}
+     * Return the name of this reader. If this reader is a SIM reader, then its name must be
+     * "SIM[Slot]" If the reader is a SD or micro SD reader, then its name must be “SD[slot]” If the
+     * reader is an embedded SE reader, then its name must be “eSE[slot]” see
+     * {@link Reader#getName()}
      *
      */
     public String getName() {
@@ -58,18 +56,19 @@ public class AndroidOmapiReader extends AbstractLocalReader {
 
     @Override
     public Map<String, String> getParameters() {
-        Log.w(TAG,"No parameters are supported by AndroidOmapiReader");
+        Log.w(TAG, "No parameters are supported by AndroidOmapiReader");
         return parameters;
     }
 
     @Override
     public void setParameter(String key, String value) throws IOException {
-        Log.w(TAG,"No parameters are supported by AndroidOmapiReader");
-        parameters.put(key,value);
+        Log.w(TAG, "No parameters are supported by AndroidOmapiReader");
+        parameters.put(key, value);
     }
 
     /**
      * Check if a SE is present in this reader. see {@link Reader#isSecureElementPresent()}
+     * 
      * @return True if the SE is present, false otherwise
      * @throws IOReaderException
      */
@@ -79,9 +78,9 @@ public class AndroidOmapiReader extends AbstractLocalReader {
     }
 
     /**
-     * Open a Channel to the application AID if not open yet.
-     * see {@link Reader#openSession()}
-     * see {@link Session#openLogicalChannel(byte[])}
+     * Open a Channel to the application AID if not open yet. see {@link Reader#openSession()} see
+     * {@link Session#openLogicalChannel(byte[])}
+     * 
      * @param aid : aid from where to open the channel
      * @return Array : index[0] : ATR and index[1] :FCI
      * @throws IOReaderException
@@ -92,26 +91,26 @@ public class AndroidOmapiReader extends AbstractLocalReader {
 
         try {
 
-            if(openChannel != null && !openChannel.isClosed() && openApplication!=null&& openApplication.equals(aid)){
-                Log.i(TAG, "Channel is already open to aid : "+ ByteBufferUtils.toHex(aid));
+            if (openChannel != null && !openChannel.isClosed() && openApplication != null
+                    && openApplication.equals(aid)) {
+                Log.i(TAG, "Channel is already open to aid : " + ByteBufferUtils.toHex(aid));
 
                 atrAndFci[0] = ByteBuffer.wrap(openChannel.getSession().getATR());
                 atrAndFci[1] = ByteBuffer.wrap(openChannel.getSelectResponse());
 
 
-            }else{
+            } else {
 
-                Log.i(TAG, "Opening channel to aid : "+ ByteBufferUtils.toHex(aid));
+                Log.i(TAG, "Opening channel to aid : " + ByteBufferUtils.toHex(aid));
                 Session session = omapiReader.openSession();
 
-                //get ATR from session
+                // get ATR from session
                 atrAndFci[0] = ByteBuffer.wrap(session.getATR());
 
                 Log.i(TAG, "Create logical openChannel within the session...");
-                openChannel = session.openLogicalChannel(
-                        ByteBufferUtils.toBytes(aid));
+                openChannel = session.openLogicalChannel(ByteBufferUtils.toBytes(aid));
 
-                //get FCI
+                // get FCI
                 atrAndFci[1] = ByteBuffer.wrap(openChannel.getSelectResponse());
 
             }
@@ -123,8 +122,8 @@ public class AndroidOmapiReader extends AbstractLocalReader {
     }
 
     /**
-     * Close session
-     * see {@link Session#close()}
+     * Close session see {@link Session#close()}
+     * 
      * @throws IOReaderException
      */
     @Override
@@ -135,8 +134,8 @@ public class AndroidOmapiReader extends AbstractLocalReader {
     }
 
     /**
-     * Transmit an APDU command (as per ISO/IEC 7816) to the SE
-     * see {@link Channel#transmit(byte[])}
+     * Transmit an APDU command (as per ISO/IEC 7816) to the SE see {@link Channel#transmit(byte[])}
+     * 
      * @param apduIn byte buffer containing the ingoing data
      * @return
      * @throws ChannelStateReaderException
@@ -161,6 +160,7 @@ public class AndroidOmapiReader extends AbstractLocalReader {
 
     /**
      * Does not apply with OMAPI, Always return true
+     * 
      * @param protocolFlag
      * @return true
      * @throws IOReaderException

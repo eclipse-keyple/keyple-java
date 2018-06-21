@@ -9,26 +9,22 @@
 package org.eclipse.keyple.plugin.android.omapi;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.ReadersPlugin;
 import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.SEService;
-
-import android.content.Context;
+import android.app.Application;
 import android.util.Log;
 
 /**
- * Loads and configures {@link AndroidOmapiReader} for each SE Reader in the platform
- * TODO : filters readers to load by parameters with a regex
+ * Loads and configures {@link AndroidOmapiReader} for each SE Reader in the platform TODO : filters
+ * readers to load by parameters with a regex
  */
 public class AndroidOmapiPlugin extends AbstractObservablePlugin implements SEService.CallBack {
 
@@ -42,8 +38,37 @@ public class AndroidOmapiPlugin extends AbstractObservablePlugin implements SESe
     // singleton methods
     private static AndroidOmapiPlugin uniqueInstance = new AndroidOmapiPlugin();
 
+    /**
+     * Initialize plugin by connecting to {@link SEService} Application Context is retrieved
+     * automatically by a reflection invocation to method
+     * {@linkandroid.app.ActivityThread#currentApplication} Make sure to instantiate Android Omapi
+     * Plugin from a Android Context Application
+     */
     private AndroidOmapiPlugin() {
-        // empty constructor
+        try {
+            Log.i(TAG, "Retrieving Application Context with reflection android.app.AppGlobals");
+
+            Application app = (Application) Class.forName("android.app.ActivityThread")
+                    .getMethod("currentApplication").invoke(null, (Object[]) null);
+
+
+            if (seService == null || !seService.isConnected()) {
+                seService = new SEService(app, this);
+                Log.i(TAG, "Connected to SeService " + seService.getVersion());
+
+            } else {
+                Log.w(TAG, "seService was already connected");
+            }
+
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public static AndroidOmapiPlugin getInstance() {
@@ -59,6 +84,7 @@ public class AndroidOmapiPlugin extends AbstractObservablePlugin implements SESe
 
     /**
      * Returns all {@link AndroidOmapiReader} readers loaded by the plugin
+     * 
      * @return {@link AndroidOmapiReader} readers loaded by the plugin
      * @throws IOReaderException
      */
@@ -68,9 +94,9 @@ public class AndroidOmapiPlugin extends AbstractObservablePlugin implements SESe
     }
 
     /**
-     * Do not call this method directly.
-     * Invoked by Open Mobile {@link SEService} when connected
+     * Do not call this method directly. Invoked by Open Mobile {@link SEService} when connected
      * Instanciates {@link AndroidOmapiReader} for each SE Reader detected in the platform
+     * 
      * @param seService
      */
     @Override
@@ -95,24 +121,6 @@ public class AndroidOmapiPlugin extends AbstractObservablePlugin implements SESe
 
         }
 
-    }
-
-    void connectSEService(Context context) throws SecurityException{
-        if (seService == null || !seService.isConnected()) {
-            seService = new SEService(context, this);
-            Log.i(TAG, "Connected to SeService " + seService.getVersion());
-
-        }else{
-            Log.w(TAG,"seService was already connected");
-        }
-    }
-
-    void shutdownSEService(){
-        if (seService != null && seService.isConnected()) {
-            seService.shutdown();
-        }else{
-            Log.w(TAG,"seService was already shutdown");
-        }
     }
 
     private Map<String, String> parameters = new HashMap<String, String>();// not in use in this

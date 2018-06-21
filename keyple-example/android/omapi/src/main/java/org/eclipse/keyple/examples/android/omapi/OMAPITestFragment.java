@@ -8,19 +8,13 @@
 
 package org.eclipse.keyple.examples.android.omapi;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
-import org.eclipse.keyple.commands.InconsistentCommandException;
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiFragment;
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
@@ -37,11 +31,10 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
-
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,7 +44,8 @@ import android.widget.TextView;
 /**
  * View for OMAPI Tests
  */
-public class OMAPITestFragment extends Fragment implements AbstractObservableReader.Observer<ReaderEvent> {
+public class OMAPITestFragment extends Fragment
+        implements AbstractObservableReader.Observer<ReaderEvent> {
 
 
     private static final String TAG = OMAPITestFragment.class.getSimpleName();
@@ -79,14 +73,6 @@ public class OMAPITestFragment extends Fragment implements AbstractObservableRea
         SortedSet<ReadersPlugin> plugins = new TreeSet<ReadersPlugin>();
         plugins.add(AndroidOmapiPlugin.getInstance());
         seProxyService.setPlugins(plugins);
-
-        // add OMAPI Fragment to activity in order to communicate with Android Plugin
-        Log.d(TAG, "Add Keyple OMAPI Fragment to activity in order "
-                + "to communicate with Android OMAPI Plugin");
-        AndroidOmapiFragment omapi = AndroidOmapiFragment.newInstance();
-        getFragmentManager().beginTransaction()
-            .add(omapi, TAG_OMAPI_ANDROID_FRAGMENT)
-            .commit();
 
     }
 
@@ -124,20 +110,18 @@ public class OMAPITestFragment extends Fragment implements AbstractObservableRea
                 mText.append("\nNo readers setup in Keyple Plugin");
             } else {
                 for (ProxyReader reader : readers) {
-                    if(reader.getName().contains("SIM")){
+                    if (reader.getName().contains("SIM")) {
                         Log.d(TAG, "Launching tests for reader : " + reader.getName());
                         mText.append("\nLaunching tests for reader : " + reader.getName());
                         runHoplinkSimpleRead();
                     }
 
                     /*
-                    Exception
-                    if(reader.getName().contains("eSE")){
-                        Log.d(TAG, "Launching tests for reader : " + reader.getName());
-                        mText.append("\nLaunching tests for reader : " + reader.getName());
-                        runHoplinkSimpleRead();
-                    }
-                    */
+                     * Exception if(reader.getName().contains("eSE")){ Log.d(TAG,
+                     * "Launching tests for reader : " + reader.getName());
+                     * mText.append("\nLaunching tests for reader : " + reader.getName());
+                     * runHoplinkSimpleRead(); }
+                     */
                 }
             }
 
@@ -209,9 +193,9 @@ public class OMAPITestFragment extends Fragment implements AbstractObservableRea
 
 
 
-
     /**
-     * Revocation of the Activity from @{@link org.eclipse.keyple.plugin.android.omapi.AndroidOmapiReader} list of observers
+     * Revocation of the Activity
+     * from @{@link org.eclipse.keyple.plugin.android.omapi.AndroidOmapiReader} list of observers
      */
     @Override
     public void onDestroy() {

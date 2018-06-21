@@ -65,8 +65,7 @@ public class MainActivity extends AppCompatActivity {
         // init OMAPI Test Fragment
         Log.d(TAG, "Insert OMAPI Test View  Fragment");
         OMAPITestFragment omapiTestFragment = OMAPITestFragment.newInstance();
-        getFragmentManager()
-                .beginTransaction()
+        getFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, omapiTestFragment, TAG_OMAPI_TEST_VIEW)
                 .addToBackStack(null).commit();
     }

@@ -10,4 +10,3 @@ include 'keyple-core'
 project(':keyple-plugin-android-omapi').projectDir = file('../../../keyple-plugins/android-omapi')
 project(':keyple-calypso').projectDir = file('../../../keyple-calypso')
 project(':keyple-core').projectDir = file('../../../keyple-core')
-
