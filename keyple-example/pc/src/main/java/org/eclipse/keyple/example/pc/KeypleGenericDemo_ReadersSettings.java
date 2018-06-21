@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.examples.pc;
+package org.eclipse.keyple.example.pc;
 
 public interface KeypleGenericDemo_ReadersSettings {
     // This is where you should add patterns of readers you want to use for tests
