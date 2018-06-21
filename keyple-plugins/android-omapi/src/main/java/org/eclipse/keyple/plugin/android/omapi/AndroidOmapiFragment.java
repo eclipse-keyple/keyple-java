@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.plugin.android.omapi;
 
-import org.simalliance.openmobileapi.SEService;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.app.Fragment;
@@ -18,8 +17,6 @@ public class AndroidOmapiFragment extends Fragment {
 
     private static final String TAG = AndroidOmapiFragment.class.getSimpleName();
 
-
-    private SEService seService;
 
     public AndroidOmapiFragment() {
         // Required empty public constructor
@@ -40,15 +37,12 @@ public class AndroidOmapiFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         try {
-            Log.i(TAG, "creating SEService object");
-            seService = new SEService(getActivity(), AndroidOmapiPlugin.getInstance());
+            //connect to SE Service via plugin
+            AndroidOmapiPlugin.getInstance().connectSEService(getActivity());
         } catch (SecurityException e) {
             Log.e(TAG,
                     "Binding not allowed, uses-permission org.simalliance.openmobileapi.SMARTCARD?");
-        } catch (Exception e) {
-            Log.e(TAG, "Exception: " + e.getMessage());
         }
     }
 
@@ -57,10 +51,9 @@ public class AndroidOmapiFragment extends Fragment {
      */
     @Override
     public void onDestroy() {
-        if (seService != null && seService.isConnected()) {
-            seService.shutdown();
-        }
-        super.onDestroy();
+        //shutdown SE Service via plugin
+        AndroidOmapiPlugin.getInstance().shutdownSEService();
+       super.onDestroy();
     }
 
 

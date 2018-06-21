@@ -22,17 +22,21 @@ import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.SEService;
+
+import android.content.Context;
 import android.util.Log;
 
-
+/**
+ * Loads and configures {@link AndroidOmapiReader} for each SE Reader in the platform
+ * TODO : filters readers to load by parameters with a regex
+ */
 public class AndroidOmapiPlugin extends AbstractObservablePlugin implements SEService.CallBack {
 
     private static final String TAG = AndroidOmapiPlugin.class.getSimpleName();
 
-    private Map<String, ProxyReader> proxyReaders;
+    private Map<String, ProxyReader> proxyReaders = new HashMap<String, ProxyReader>();
 
-    private Map<String, String> parameters = new HashMap<String, String>();// not in use in this
-    // plugin
+    private SEService seService;
 
 
     // singleton methods
@@ -40,7 +44,6 @@ public class AndroidOmapiPlugin extends AbstractObservablePlugin implements SESe
 
     private AndroidOmapiPlugin() {
         // empty constructor
-        proxyReaders = new HashMap<String, ProxyReader>();
     }
 
     public static AndroidOmapiPlugin getInstance() {
@@ -53,39 +56,30 @@ public class AndroidOmapiPlugin extends AbstractObservablePlugin implements SESe
         return "OMAPINFCPlugin";
     }
 
-    @Override
-    public Map<String, String> getParameters() {
-        Log.w(TAG, "Android OMAPI Plugin does not support parameters, see OMAPINfcReader instead");
-        return parameters;
-    }
 
-    @Override
-    public void setParameter(String key, String value) throws IOException {
-        Log.w(TAG, "Android OMAPI  Plugin does not support parameters, see OMAPINfcReader instead");
-        parameters.put(key, value);
-    }
-
-
+    /**
+     * Returns all {@link AndroidOmapiReader} readers loaded by the plugin
+     * @return {@link AndroidOmapiReader} readers loaded by the plugin
+     * @throws IOReaderException
+     */
     @Override
     public SortedSet<? extends ProxyReader> getReaders() throws IOReaderException {
         return new TreeSet<ProxyReader>(proxyReaders.values());
     }
 
     /**
-     * /called automatically by omapi platform/ When SE Service is connected, retrieve available
-     * readers
-     * 
+     * Do not call this method directly.
+     * Invoked by Open Mobile {@link SEService} when connected
+     * Instanciates {@link AndroidOmapiReader} for each SE Reader detected in the platform
      * @param seService
      */
     @Override
     public void serviceConnected(SEService seService) {
-        Log.i(TAG, "seviceConnected()");
-
 
         Log.i(TAG, "Retrieve available readers...");
         Reader[] omapiReaders = seService.getReaders();
-        if (omapiReaders.length < 1) {
 
+        if (omapiReaders.length < 1) {
             Log.w(TAG, "No readers found");
             return;
         }
@@ -102,5 +96,39 @@ public class AndroidOmapiPlugin extends AbstractObservablePlugin implements SESe
         }
 
     }
+
+    void connectSEService(Context context) throws SecurityException{
+        if (seService == null || !seService.isConnected()) {
+            seService = new SEService(context, this);
+            Log.i(TAG, "Connected to SeService " + seService.getVersion());
+
+        }else{
+            Log.w(TAG,"seService was already connected");
+        }
+    }
+
+    void shutdownSEService(){
+        if (seService != null && seService.isConnected()) {
+            seService.shutdown();
+        }else{
+            Log.w(TAG,"seService was already shutdown");
+        }
+    }
+
+    private Map<String, String> parameters = new HashMap<String, String>();// not in use in this
+    // plugin
+
+    @Override
+    public Map<String, String> getParameters() {
+        Log.w(TAG, "Android OMAPI Plugin does not support parameters, see OMAPINfcReader instead");
+        return parameters;
+    }
+
+    @Override
+    public void setParameter(String key, String value) throws IOException {
+        Log.w(TAG, "Android OMAPI  Plugin does not support parameters, see OMAPINfcReader instead");
+        parameters.put(key, value);
+    }
+
 
 }
