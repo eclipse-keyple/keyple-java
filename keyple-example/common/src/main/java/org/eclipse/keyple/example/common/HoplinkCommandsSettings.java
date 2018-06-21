@@ -8,6 +8,12 @@
 
 package org.eclipse.keyple.example.common;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public interface HoplinkCommandsSettings {
     String AID = "A000000291A000000191";
+    Set<Short> selectApplicationSuccessfulStatusCodes =
+            new HashSet<Short>(Arrays.asList((short) 0x6283));
 }

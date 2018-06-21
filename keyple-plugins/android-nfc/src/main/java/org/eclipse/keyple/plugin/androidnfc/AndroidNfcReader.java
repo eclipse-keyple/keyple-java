@@ -14,8 +14,6 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.seproxy.ApduRequest;
-import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
@@ -164,7 +162,8 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
         return tagProxy != null && tagProxy.isConnected();
     }
 
-    private void openPhysicalChannel() throws IOReaderException {
+    @Override
+    protected void openPhysicalChannel() throws IOReaderException {
 
         if (!isSePresent()) {
             try {
@@ -182,47 +181,13 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
     }
 
     @Override
-    protected ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid) throws IOReaderException {
-        ByteBuffer[] atrAndFci = new ByteBuffer[2];
+    protected final boolean isPhysicalChannelOpen() {
+        return isSePresent();
+    }
 
-        if (!isLogicalChannelOpen()) {
-            // init of the physical SE channel: if not yet established, opening of a new physical
-            // channel
-            if (!isSePresent()) {
-                openPhysicalChannel();
-            }
-            if (!isSePresent()) {
-                throw new ChannelStateReaderException("Fail to open physical channel.");
-            }
-        }
-
-        // Contact-less cards do not have an ATR, add a dummy ATR
-        atrAndFci[0] = ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00});
-
-        if (aid != null) {
-            Log.i(TAG, "Connecting to card " + ByteBufferUtils.toHex(aid));
-            try {
-                // build a get response command
-                // the actual length expected by the SE in the get response command is handled in
-                // transmitApdu
-                ByteBuffer selectApplicationCommand = ByteBufferUtils
-                        .fromHex("00A40400" + String.format("%02X", (byte) aid.limit())
-                                + ByteBufferUtils.toHex(aid) + "00");
-
-                // we use here processApduRequest to manage case 4 hack
-                ApduResponse fciResponse =
-                        processApduRequest(new ApduRequest(selectApplicationCommand, true));
-
-                // add FCI
-                atrAndFci[1] = fciResponse.getBytes();
-
-            } catch (ChannelStateReaderException e1) {
-
-                throw new ChannelStateReaderException(e1);
-
-            }
-        }
-        return atrAndFci;
+    @Override
+    protected final ByteBuffer getATR() {
+        return null;
     }
 
     @Override

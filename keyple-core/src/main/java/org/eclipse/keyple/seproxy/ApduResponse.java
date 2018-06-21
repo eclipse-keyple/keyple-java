@@ -9,6 +9,7 @@
 package org.eclipse.keyple.seproxy;
 
 import java.nio.ByteBuffer;
+import java.util.Set;
 
 
 /**
@@ -22,9 +23,41 @@ public final class ApduResponse extends AbstractApduBuffer {
      */
     private final boolean successful;
 
+    /**
+     * Create a new ApduResponse, the successful status is set by the caller
+     * 
+     * @param buffer apdu response data buffer (including sw1sw2)
+     * @param successful successful flag
+     */
     public ApduResponse(ByteBuffer buffer, boolean successful) {
         super(buffer);
         this.successful = successful;
+    }
+
+    /**
+     * Create a new ApduResponse from the provided ByteBuffer<br/>
+     * The internal successful status is determined by the current status code and the optional
+     * successful status codes list.<br/>
+     * The list of additional successful status codes is used to set the successful flag if not
+     * equal to 0x9000
+     * 
+     * @param buffer apdu response data buffer (including sw1sw2)
+     * @param successfulStatusCodes optional list of successful status codes other than 0x9000
+     */
+    public ApduResponse(ByteBuffer buffer, Set<Short> successfulStatusCodes) {
+        super(buffer);
+        // TODO shouldn't we check the case where length is < 2 and throw an exception?
+        int statusCode = buffer.getShort(buffer.limit() - 2);
+        // java is signed only
+        if (statusCode < 0) {
+            statusCode += -2 * Short.MIN_VALUE;
+        }
+        if (successfulStatusCodes != null) {
+            this.successful =
+                    statusCode == 0x9000 || successfulStatusCodes.contains((short) statusCode);
+        } else {
+            this.successful = statusCode == 0x9000;
+        }
     }
 
     /**

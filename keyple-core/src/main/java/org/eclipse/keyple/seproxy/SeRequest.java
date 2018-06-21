@@ -69,6 +69,8 @@ public final class SeRequest {
      * @param apduRequests the apdu requests
      * @param keepChannelOpen the keep channel open
      * @param protocolFlag the expected protocol
+     * @param successfulSelectionStatusCodes a list of successful status codes for the select
+     *        application command
      */
     public SeRequest(ByteBuffer aidToSelect, List<ApduRequest> apduRequests,
             boolean keepChannelOpen, SeProtocol protocolFlag,
@@ -81,7 +83,8 @@ public final class SeRequest {
     }
 
     /**
-     * Alternate constructor with no list of successful selection status codes set
+     * Alternate constructor with no list of successful selection status codes set and a protocol
+     * flag
      * 
      * @param aidToSelect
      * @param apduRequests
@@ -91,6 +94,22 @@ public final class SeRequest {
     public SeRequest(ByteBuffer aidToSelect, List<ApduRequest> apduRequests,
             boolean keepChannelOpen, SeProtocol protocolFlag) {
         this(aidToSelect, apduRequests, keepChannelOpen, protocolFlag, null);
+    }
+
+    /**
+     * Alternate constructor with a list of successful selection status codes set and no protocol
+     * flag
+     *
+     * @param aidToSelect
+     * @param apduRequests
+     * @param keepChannelOpen
+     * @param successfulSelectionStatusCodes a list of successful status codes for the select
+     *        application command
+     *
+     */
+    public SeRequest(ByteBuffer aidToSelect, List<ApduRequest> apduRequests,
+            boolean keepChannelOpen, Set<Short> successfulSelectionStatusCodes) {
+        this(aidToSelect, apduRequests, keepChannelOpen, null, successfulSelectionStatusCodes);
     }
 
     /**
