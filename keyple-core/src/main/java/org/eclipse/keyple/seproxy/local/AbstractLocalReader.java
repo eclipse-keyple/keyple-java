@@ -101,10 +101,12 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     protected final ApduResponse processApduRequest(ApduRequest apduRequest)
             throws ChannelStateReaderException {
         ByteBuffer apduResponse;
-        long before = logging ? System.nanoTime() : 0;
-        logger.info("processApduRequest: request", "apdu.name", apduRequest.getName(),
-                "command.data", ByteBufferUtils.toHex(apduRequest.getBytes()));
-
+        long before = 0;
+        if (logging) {
+            before = logging ? System.nanoTime() : 0;
+            logger.info("processApduRequest: request", "apdu.name", apduRequest.getName(),
+                    "command.data", ByteBufferUtils.toHex(apduRequest.getBytes()));
+        }
         try {
             ByteBuffer buffer = apduRequest.getBytes();
             { // Sending data
