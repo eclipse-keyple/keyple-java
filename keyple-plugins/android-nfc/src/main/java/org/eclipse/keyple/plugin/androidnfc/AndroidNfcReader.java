@@ -14,11 +14,15 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import org.eclipse.keyple.seproxy.ApduRequest;
+import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
+import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
 import org.eclipse.keyple.seproxy.local.AbstractLocalReader;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSettings;
@@ -86,7 +90,7 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
 
     /**
      * Get Reader parameters
-     * 
+     *
      * @return parameters
      */
     public Map<String, String> getParameters() {
@@ -99,7 +103,7 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
      * SKIP_NDEF_CHECK (skip NDEF check when a smartcard is detected) FLAG_READER:
      * NO_PLATFORM_SOUNDS (disable device sound when nfc smartcard is detected)
      * EXTRA_READER_PRESENCE_CHECK_DELAY: "Int" (see @NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY)
-     * 
+     *
      * @param key the parameter key
      * @param value the parameter value
      * @throws IOException
@@ -139,7 +143,7 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
      * Callback function invoked by @{@link NfcAdapter} when a @{@link Tag} is discovered A
      * TagTransceiver is created based on the Tag technology see {@link TagProxy#getTagProxy(Tag)}
      * Do not call this function directly.
-     * 
+     *
      * @param tag : detected tag
      */
     @Override
@@ -162,8 +166,7 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
         return tagProxy != null && tagProxy.isConnected();
     }
 
-    @Override
-    protected void openPhysicalChannel() throws IOReaderException {
+    private void openPhysicalChannel() throws IOReaderException {
 
         if (!isSePresent()) {
             try {
@@ -181,13 +184,49 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
     }
 
     @Override
-    protected final boolean isPhysicalChannelOpen() {
-        return isSePresent();
-    }
+    protected ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid,
+            Set<Short> successfulSelectionStatusCodes)
+            throws IOReaderException, SelectApplicationException {
+        ByteBuffer[] atrAndFci = new ByteBuffer[2];
 
-    @Override
-    protected final ByteBuffer getATR() {
-        return null;
+        if (!isLogicalChannelOpen()) {
+            // init of the physical SE channel: if not yet established, opening of a new physical
+            // channel
+            if (!isSePresent()) {
+                openPhysicalChannel();
+            }
+            if (!isSePresent()) {
+                throw new ChannelStateReaderException("Fail to open physical channel.");
+            }
+        }
+
+        // Contact-less cards do not have an ATR, add a dummy ATR
+        atrAndFci[0] = ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00});
+
+        if (aid != null) {
+            Log.i(TAG, "Connecting to card " + ByteBufferUtils.toHex(aid));
+            try {
+                // build a get response command
+                // the actual length expected by the SE in the get response command is handled in
+                // transmitApdu
+                ByteBuffer selectApplicationCommand = ByteBufferUtils
+                        .fromHex("00A40400" + String.format("%02X", (byte) aid.limit())
+                                + ByteBufferUtils.toHex(aid) + "00");
+
+                // we use here processApduRequest to manage case 4 hack
+                ApduResponse fciResponse =
+                        processApduRequest(new ApduRequest(selectApplicationCommand, true));
+
+                // add FCI
+                atrAndFci[1] = fciResponse.getBytes();
+
+            } catch (ChannelStateReaderException e1) {
+
+                throw new ChannelStateReaderException(e1);
+
+            }
+        }
+        return atrAndFci;
     }
 
     @Override

@@ -9,11 +9,7 @@
 package org.eclipse.keyple.seproxy.local;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.smartcardio.CardException;
+import java.util.*;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
@@ -45,87 +41,19 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
     private static final String ADPU_NAME_STR = "apdu.name";
 
-
-    // protected abstract ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid)
-    // throws IOReaderException, SelectApplicationException;
-
     /**
-     * Gets the SE Answer to reset
-     * 
-     * @return ATR returned by the SE or reconstructed by the reader (contactless)
-     */
-    protected abstract ByteBuffer getATR();
-
-    /**
-     * Tells if the physical channel is open or not
-     * 
-     * @return true is the channel is open
-     */
-    protected abstract boolean isPhysicalChannelOpen();
-
-    /**
-     * Attempts to open the physical channel
-     * 
-     * @throws IOReaderException
-     * @throws ChannelStateReaderException
-     */
-    protected abstract void openPhysicalChannel()
-            throws IOReaderException, ChannelStateReaderException;
-
-    /**
-     * Open (if needed) a physical channel (try to connect a card to the terminal)
+     * Open (if needed) a physical channel (try to connect a card to the terminal, attempt to select
+     * the application)
      *
-     * @param seRequest the current SeRequest (possibly containing the app AID and the successful
-     *        status codes list)
-     * @return ByteBuffer[0] the SE ATR ByteBuffer[1] the SE FCI
-     * @throws IOReaderException
+     * @param aid the AID of the application to select
+     * @param successfulSelectionStatusCodes the list of successful status code for the select
+     *        command
+     * @return an array of 2 ByteBuffers: ByteBuffer[0] the SE ATR, ByteBuffer[1] the SE FCI
+     * @throws IOReaderException, SelectApplicationException
      */
-    protected final ApduResponse[] openLogicalChannelAndSelect(SeRequest seRequest)
-            throws IOReaderException, SelectApplicationException {
-        ApduResponse[] atrAndFci = new ApduResponse[2];
-
-        if (!isLogicalChannelOpen()) {
-            // init of the physical SE channel: if not yet established, opening of a new physical
-            // channel
-            if (!isPhysicalChannelOpen()) {
-                openPhysicalChannel();
-            }
-            if (!isPhysicalChannelOpen()) {
-                throw new ChannelStateReaderException("Fail to open physical channel.");
-            }
-        }
-
-        // add ATR
-        atrAndFci[0] = new ApduResponse(getATR(), true);
-        ByteBuffer aid = seRequest.getAidToSelect();
-        if (aid != null) {
-            logger.info("Connecting to card", "action", "local_reader.openLogicalChannel", "aid",
-                    ByteBufferUtils.toHex(aid), "readerName", getName());
-            try {
-                // build a get response command
-                // the actual length expected by the SE in the get response command is handled in
-                // transmitApdu
-                ByteBuffer selectApplicationCommand = ByteBufferUtils
-                        .fromHex("00A40400" + String.format("%02X", (byte) aid.limit())
-                                + ByteBufferUtils.toHex(aid) + "00");
-
-                // we use here processApduRequest to manage case 4 hack
-                // the successful status codes list for this command is provided
-                atrAndFci[1] = processApduRequest(new ApduRequest(selectApplicationCommand, true,
-                        seRequest.getSuccessfulSelectionStatusCodes()));
-
-                if (!atrAndFci[1].isSuccessful()) {
-                    logger.info("Application selection failed", "action",
-                            "pcsc_reader.openLogicalChannel", "aid", ByteBufferUtils.toHex(aid),
-                            "fci", ByteBufferUtils.toHex(atrAndFci[1].getBytes()));
-                    throw new SelectApplicationException("Application selection failed");
-                }
-            } catch (ChannelStateReaderException e1) {
-                throw new ChannelStateReaderException(e1);
-            }
-        }
-        return atrAndFci;
-    }
+    protected abstract ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid,
+            Set<Short> successfulSelectionStatusCodes)
+            throws IOReaderException, SelectApplicationException;
 
     /**
      * Closes the current physical channel.
@@ -180,67 +108,76 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     "command.data", ByteBufferUtils.toHex(apduRequest.getBytes()));
             before = logging ? System.nanoTime() : 0;
         }
-        try {
-            // TODO understand why this code and this comment???
-            // Sending data
-            // We shouldn't have to re-use the buffer that was used to be sent but we have
-            // some code that does it.
-            ByteBuffer buffer = apduRequest.getBytes();
-            final int posBeforeRead = buffer.position();
-            apduResponse =
-                    new ApduResponse(transmitApdu(buffer), apduRequest.getSuccessfulStatusCodes());
-            buffer.position(posBeforeRead);
+        // TODO understand why this code and this comment???
+        // Sending data
+        // We shouldn't have to re-use the buffer that was used to be sent but we have
+        // some code that does it.
+        ByteBuffer buffer = apduRequest.getBytes();
+        final int posBeforeRead = buffer.position();
+        apduResponse =
+                new ApduResponse(transmitApdu(buffer), apduRequest.getSuccessfulStatusCodes());
+        buffer.position(posBeforeRead);
 
-            if (apduRequest.isCase4() && apduResponse.getDataOut().limit() == 0
-                    && apduResponse.isSuccessful()) {
-                apduResponse = new ApduResponse(case4HackGetResponse(), null);
-                // TODO - to check if the status code of the Hack GetResponse command should be
-                // replaced by the status code of the original command.
-            }
-
-            if (logging) {
-                double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-                logger.info("processApduRequest: response", ADPU_NAME_STR, apduRequest.getName(),
-                        "response.data", ByteBufferUtils.toHex(apduResponse.getDataOut()),
-                        "elapsedMs", elapsedMs);
-            }
-            return apduResponse;
-        } catch (CardException e) {
-            logger.info("processApduRequest: exception", ADPU_NAME_STR, apduRequest.getName(),
-                    "response.data", "none");
-            throw new ChannelStateReaderException(e);
+        if (apduRequest.isCase4() && apduResponse.getDataOut().limit() == 0
+                && apduResponse.isSuccessful()) {
+            // do the get response command but keep the original status code
+            apduResponse = case4HackGetResponse(apduResponse.getStatusCode());
         }
+
+        if (logging) {
+            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            logger.info("processApduRequest: response", ADPU_NAME_STR, apduRequest.getName(),
+                    "response.data", ByteBufferUtils.toHex(apduResponse.getDataOut()), "elapsedMs",
+                    elapsedMs);
+        }
+        return apduResponse;
     }
 
     /**
      * Execute a get response command in order to get outgoing data from specific cards answering
      * 9000 with no data although the command has outgoing data. Note that this method relies on the
      * right get response management by transmitApdu
-     *
-     * @return response the response to the get response command
-     * @throws CardException
+     * 
+     * @param originalStatusCode the status code of the command that didn't returned data
+     * @return ApduResponse the response to the get response command
      * @throws ChannelStateReaderException
      */
-    private ByteBuffer case4HackGetResponse() throws CardException, ChannelStateReaderException {
+    private ApduResponse case4HackGetResponse(int originalStatusCode)
+            throws ChannelStateReaderException {
+        long before = 0;
         // build a get response command
         // the actual length expected by the SE in the get response command is handled in
         // transmitApdu
-        ByteBuffer command = ByteBufferUtils.fromHex("00C0000000");
-        long before = 0;
+        ByteBuffer getResponseHackRequestBytes = ByteBufferUtils.fromHex("00C0000000");
         if (logging) {
             logger.info("case4HackGetResponse: request", ADPU_NAME_STR, "Get Response",
-                    "command.data", ByteBufferUtils.toHex(command));
+                    "command.data", ByteBufferUtils.toHex(getResponseHackRequestBytes));
             before = logging ? System.nanoTime() : 0;
         }
 
-        ByteBuffer response = transmitApdu(command);
+        ByteBuffer getResponseHackResponseBytes = transmitApdu(getResponseHackRequestBytes);
 
         if (logging) {
             double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
             logger.info("processApduRequest: response", ADPU_NAME_STR, "Get Response",
-                    "response.data", ByteBufferUtils.toHex(response), "elapsedMs", elapsedMs);
+                    "response.data", ByteBufferUtils.toHex(getResponseHackResponseBytes),
+                    "elapsedMs", elapsedMs);
         }
-        return response;
+
+        // we expect here a 0x9000 status code
+        ApduResponse getResponseHackResponse = new ApduResponse(getResponseHackResponseBytes, null);
+
+        if (getResponseHackResponse.isSuccessful()) {
+            // replace the two last status word bytes by the original status word
+            final int posBeforeChange = getResponseHackResponseBytes.position();
+            int position = getResponseHackResponseBytes.limit();
+            getResponseHackResponseBytes.position(position - 2);
+            getResponseHackResponseBytes.put((byte) (originalStatusCode >> 8));
+            getResponseHackResponseBytes.position(position - 1);
+            getResponseHackResponseBytes.put((byte) (originalStatusCode & 0xFF));
+            getResponseHackResponseBytes.position(posBeforeChange);
+        }
+        return getResponseHackResponse;
     }
 
 
@@ -356,21 +293,24 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                                                                          // comparaison works if
                                                                          // both AID are null ?)
             previouslyOpen = false;
+            ByteBuffer atrAndFciDataBytes[];
 
-            ApduResponse atrAndFciDataBytes[] = new ApduResponse[2];
             try {
-                atrAndFciDataBytes = openLogicalChannelAndSelect(seRequest);
+                atrAndFciDataBytes = openLogicalChannelAndSelect(seRequest.getAidToSelect(),
+                        seRequest.getSuccessfulSelectionStatusCodes());
             } catch (SelectApplicationException e) {
                 // return a null SeReponse when the opening of the logical channel failed
                 return null;
             }
 
             if (atrAndFciDataBytes[0] != null) { // the SE Answer to reset
-                atrData = atrAndFciDataBytes[0];
+                atrData = new ApduResponse(atrAndFciDataBytes[0], true);
             }
+
             if (atrAndFciDataBytes[1] != null) { // the logical channel opening is successful
                 aidCurrentlySelected = seRequest.getAidToSelect();
-                fciDataSelected = atrAndFciDataBytes[1];
+                fciDataSelected = new ApduResponse(atrAndFciDataBytes[1],
+                        seRequest.getSuccessfulSelectionStatusCodes());
             }
         }
 

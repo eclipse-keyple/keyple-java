@@ -137,7 +137,7 @@ public final class PcscPlugin extends AbstractObservablePlugin {
             if (observers.size() == 1) {
                 if (thread != null) { // <-- This should never happen and can probably be dropped at
                     // some point
-                    throw new IllegalStateException("The reader thread shouldn't null");
+                    throw new IllegalStateException("The plugin thread shouldn't null");
                 }
 
                 thread = new EventThread();
@@ -153,7 +153,7 @@ public final class PcscPlugin extends AbstractObservablePlugin {
             if (observers.isEmpty()) {
                 if (thread == null) { // <-- This should never happen and can probably be dropped at
                     // some point
-                    throw new IllegalStateException("The reader thread should be null");
+                    throw new IllegalStateException("The plugin thread should be null");
                 }
 
                 // We'll let the thread calmly end its course after the waitForCard(Absent|Present)
