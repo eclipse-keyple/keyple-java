@@ -8,15 +8,18 @@
 
 package org.eclipse.keyple.plugin.stub;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
+import com.github.structlog4j.ILogger;
+import com.github.structlog4j.SLoggerFactory;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public final class StubPlugin extends AbstractObservablePlugin {
 
@@ -28,7 +31,9 @@ public final class StubPlugin extends AbstractObservablePlugin {
     private static final ILogger logger = SLoggerFactory.getLogger(StubPlugin.class);
 
 
-    private StubPlugin() {}
+    private StubPlugin() {
+        name = "StubPlugin";
+    }
 
     /**
      * Gets the single instance of StubPlugin.
@@ -37,11 +42,6 @@ public final class StubPlugin extends AbstractObservablePlugin {
      */
     public static StubPlugin getInstance() {
         return uniqueInstance;
-    }
-
-    @Override
-    public String getName() {
-        return "StubPlugin";
     }
 
     @Override

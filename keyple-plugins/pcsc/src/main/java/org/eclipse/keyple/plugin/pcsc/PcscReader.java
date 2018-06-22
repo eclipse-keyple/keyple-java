@@ -8,17 +8,21 @@
 
 package org.eclipse.keyple.plugin.pcsc;
 
+import com.github.structlog4j.ILogger;
+import com.github.structlog4j.SLoggerFactory;
+import org.eclipse.keyple.seproxy.SeProtocol;
+import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
+import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
+import org.eclipse.keyple.seproxy.local.AbstractThreadedLocalReader;
+import org.eclipse.keyple.util.ByteBufferUtils;
+
+import javax.smartcardio.*;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-import javax.smartcardio.*;
-import org.eclipse.keyple.seproxy.SeProtocol;
-import org.eclipse.keyple.seproxy.exception.*;
-import org.eclipse.keyple.seproxy.local.AbstractThreadedLocalReader;
-import org.eclipse.keyple.util.ByteBufferUtils;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
 
 public class PcscReader extends AbstractThreadedLocalReader {
 
@@ -44,7 +48,6 @@ public class PcscReader extends AbstractThreadedLocalReader {
     private boolean physicalChannelOpen;
 
     private final CardTerminal terminal;
-    private final String terminalName;
 
     private String parameterCardProtocol;
     private boolean cardExclusiveMode;
@@ -66,7 +69,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
     protected PcscReader(CardTerminal terminal) {
         //
         this.terminal = terminal;
-        this.terminalName = terminal.getName();
+        this.name = terminal.getName();
         this.card = null;
         this.channel = null;
         this.protocolsMap = new HashMap<SeProtocol, String>();
@@ -81,11 +84,6 @@ public class PcscReader extends AbstractThreadedLocalReader {
             // It's actually impossible to reach that state
             throw new IllegalStateException("Could not initialize properly", ex);
         }
-    }
-
-    @Override
-    public final String getName() {
-        return terminalName;
     }
 
     @Override

@@ -8,21 +8,24 @@
 
 package org.eclipse.keyple.plugin.pcsc;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
-import javax.smartcardio.CardException;
-import javax.smartcardio.CardTerminal;
-import javax.smartcardio.CardTerminals;
-import javax.smartcardio.TerminalFactory;
+import com.github.structlog4j.ILogger;
+import com.github.structlog4j.SLoggerFactory;
 import org.eclipse.keyple.plugin.pcsc.log.CardTerminalsLogger;
 import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.ErrorPluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderPresencePluginEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+
+import javax.smartcardio.CardException;
+import javax.smartcardio.CardTerminal;
+import javax.smartcardio.CardTerminals;
+import javax.smartcardio.TerminalFactory;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public final class PcscPlugin extends AbstractObservablePlugin {
 
@@ -49,7 +52,9 @@ public final class PcscPlugin extends AbstractObservablePlugin {
 
     private EventThread thread;
 
-    private PcscPlugin() {}
+    private PcscPlugin() {
+        name = "PcscPlugin";
+    }
 
     /**
      * Gets the single instance of PcscPlugin.
@@ -58,11 +63,6 @@ public final class PcscPlugin extends AbstractObservablePlugin {
      */
     public static PcscPlugin getInstance() {
         return uniqueInstance;
-    }
-
-    @Override
-    public String getName() {
-        return "PcscPlugin";
     }
 
     @Override
