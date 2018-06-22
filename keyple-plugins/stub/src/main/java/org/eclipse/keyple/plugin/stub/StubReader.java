@@ -44,8 +44,18 @@ public class StubReader extends AbstractThreadedLocalReader {
     }
 
     @Override
-    public ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid) throws IOReaderException {
+    protected ByteBuffer getATR() {
         return null;
+    }
+
+    @Override
+    protected boolean isPhysicalChannelOpen() {
+        return false;
+    }
+
+    @Override
+    protected void openPhysicalChannel() throws IOReaderException, ChannelStateReaderException {
+
     }
 
     @Override

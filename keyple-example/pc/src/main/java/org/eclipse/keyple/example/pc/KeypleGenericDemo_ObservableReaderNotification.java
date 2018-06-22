@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.examples.pc;
+package org.eclipse.keyple.example.pc;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;

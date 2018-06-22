@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.examples.pc;
+package org.eclipse.keyple.example.pc;
 
 import java.io.IOException;
 import java.util.*;
@@ -241,7 +241,8 @@ public class KeypleCalypsoDemo_HoplinkTransaction
             requestToExecuteBeforeSession
                     .add(HoplinkSampleCommands.poReadRecordCmd_T2Env.getApduRequest());
             seRequest = new SeRequest(ByteBufferUtils.fromHex(poHoplinkAid),
-                    requestToExecuteBeforeSession, false);
+                    requestToExecuteBeforeSession, false,
+                    HoplinkCommandsSettings.selectApplicationSuccessfulStatusCodes);
             selectionRequests.add(seRequest);
 
             List<SeResponse> seResponses =
@@ -298,7 +299,7 @@ public class KeypleCalypsoDemo_HoplinkTransaction
             throws IOException, IOReaderException, InterruptedException {
         SeProxyService seProxyService = SeProxyService.getInstance();
         SortedSet<ReadersPlugin> pluginsSet = new ConcurrentSkipListSet<ReadersPlugin>();
-        pluginsSet.add(PcscPlugin.getInstance().setLogging(true));
+        pluginsSet.add(PcscPlugin.getInstance());
         seProxyService.setPlugins(pluginsSet);
 
         ProxyReader poReader =

@@ -14,6 +14,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeProtocol;
@@ -21,6 +22,7 @@ import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
+import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
 import org.eclipse.keyple.seproxy.local.AbstractLocalReader;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSettings;
@@ -88,7 +90,7 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
 
     /**
      * Get Reader parameters
-     * 
+     *
      * @return parameters
      */
     public Map<String, String> getParameters() {
@@ -101,7 +103,7 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
      * SKIP_NDEF_CHECK (skip NDEF check when a smartcard is detected) FLAG_READER:
      * NO_PLATFORM_SOUNDS (disable device sound when nfc smartcard is detected)
      * EXTRA_READER_PRESENCE_CHECK_DELAY: "Int" (see @NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY)
-     * 
+     *
      * @param key the parameter key
      * @param value the parameter value
      * @throws IOException
@@ -141,7 +143,7 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
      * Callback function invoked by @{@link NfcAdapter} when a @{@link Tag} is discovered A
      * TagTransceiver is created based on the Tag technology see {@link TagProxy#getTagProxy(Tag)}
      * Do not call this function directly.
-     * 
+     *
      * @param tag : detected tag
      */
     @Override
@@ -182,7 +184,9 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
     }
 
     @Override
-    protected ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid) throws IOReaderException {
+    protected ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid,
+            Set<Short> successfulSelectionStatusCodes)
+            throws IOReaderException, SelectApplicationException {
         ByteBuffer[] atrAndFci = new ByteBuffer[2];
 
         if (!isLogicalChannelOpen()) {
