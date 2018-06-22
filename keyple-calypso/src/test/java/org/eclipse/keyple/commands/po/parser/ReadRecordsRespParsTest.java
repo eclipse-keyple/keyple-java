@@ -29,10 +29,10 @@ public class ReadRecordsRespParsTest {
         ByteBuffer response =
                 ByteBuffer.wrap(new byte[] {0x04, 0x02, 0x01, 0x01, (byte) 0x90, 0x00});
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse = new ApduResponse(response, true);
+        ApduResponse apduResponse = new ApduResponse(response, null);
         listeResponse.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
-                new ApduResponse(ByteBufferUtils.fromHex("00"), true), listeResponse));
+                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), listeResponse));
 
         ReadRecordsRespPars readRecordsResponse =
                 new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
@@ -53,10 +53,10 @@ public class ReadRecordsRespParsTest {
         ByteBuffer response = ByteBuffer.wrap(new byte[] {0x01, 0x01, 0x01, 0x01, 0x30, 0x01, 0x01,
                 0x30, 0x01, 0x01, 0x30, 0x01, 0x01, 0x30, (byte) 0x90, 0x00});
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse = new ApduResponse(response, true);
+        ApduResponse apduResponse = new ApduResponse(response, null);
         listeResponse.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
-                new ApduResponse(ByteBufferUtils.fromHex("00"), true), listeResponse));
+                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), listeResponse));
 
         ReadRecordsRespPars apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
@@ -82,7 +82,7 @@ public class ReadRecordsRespParsTest {
     // TODO: Fix the parsing code so that the test makes sense
     public void sampleMultipleRecordsParsing() {
         ByteBuffer apdu = ByteBufferUtils.fromHex("1415 2425 3435 4445 9000h");
-        ReadRecordsRespPars recordsPasing = new ReadRecordsRespPars(new ApduResponse(apdu, true));
+        ReadRecordsRespPars recordsPasing = new ReadRecordsRespPars(new ApduResponse(apdu, null));
         List<ReadRecordsRespPars.Record> records = recordsPasing.getRecords();
         Assert.assertEquals(1, records.size());
         {
@@ -97,10 +97,10 @@ public class ReadRecordsRespParsTest {
         ByteBuffer response = ByteBuffer.wrap(new byte[] {0x01, 0x01, 0x01, 0x01, 0x30, 0x01, 0x01,
                 0x30, 0x01, 0x01, 0x30, 0x01, 0x01, 0x30, (byte) 0x90, 0x00});
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse = new ApduResponse(response, true);
+        ApduResponse apduResponse = new ApduResponse(response, null);
         listeResponse.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
-                new ApduResponse(ByteBufferUtils.fromHex("00"), true), listeResponse));
+                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
@@ -113,10 +113,10 @@ public class ReadRecordsRespParsTest {
         ByteBuffer response = ByteBuffer.wrap(new byte[] {0x01, 0x01, 0x01, 0x01, 0x30, 0x01, 0x01,
                 0x30, 0x01, 0x01, 0x30, 0x01, 0x01, 0x30, (byte) 0x90, 0x00});
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse = new ApduResponse(response, true);
+        ApduResponse apduResponse = new ApduResponse(response, null);
         listeResponse.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
-                new ApduResponse(ByteBufferUtils.fromHex("00"), true), listeResponse));
+                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));

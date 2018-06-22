@@ -8,11 +8,13 @@
 
 package org.eclipse.keyple.calypso.commands.po.parser;
 
-import static org.junit.Assert.assertEquals;
-import java.nio.ByteBuffer;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Test;
+
+import java.nio.ByteBuffer;
+
+import static org.junit.Assert.assertEquals;
 
 public class PoGetChallengeRespParsTest {
 
@@ -20,7 +22,7 @@ public class PoGetChallengeRespParsTest {
     @Test
     public void getPoChallenge() {
         final ApduResponse apdu =
-                new ApduResponse(ByteBufferUtils.fromHex("01 02 03 04 9000"), true);
+                new ApduResponse(ByteBufferUtils.fromHex("01 02 03 04 9000"), null);
 
         PoGetChallengeRespPars resp = new PoGetChallengeRespPars(apdu);
 

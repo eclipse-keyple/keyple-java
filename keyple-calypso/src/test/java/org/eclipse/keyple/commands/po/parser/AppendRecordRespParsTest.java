@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.commands.po.parser;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.commands.po.parser.AppendRecordRespPars;
@@ -25,10 +26,10 @@ public class AppendRecordRespParsTest {
     @Test
     public void appendRecordRespPars() throws InconsistentParameterValueException {
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse = new ApduResponse(new byte[] {90, 00}, true);
+        ApduResponse apduResponse = new ApduResponse(ByteBuffer.wrap(new byte[] {90, 00}), null);
         listeResponse.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
-                new ApduResponse(ByteBufferUtils.fromHex("00"), true), listeResponse));
+                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
                 new AppendRecordRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
