@@ -8,13 +8,11 @@
 
 package org.eclipse.keyple.calypso.commands.po.parser;
 
+import static org.junit.Assert.assertEquals;
+import java.nio.ByteBuffer;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Test;
-
-import java.nio.ByteBuffer;
-
-import static org.junit.Assert.assertEquals;
 
 public class PoGetChallengeRespParsTest {
 

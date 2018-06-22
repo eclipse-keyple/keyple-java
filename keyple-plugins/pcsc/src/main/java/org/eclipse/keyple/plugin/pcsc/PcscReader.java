@@ -8,8 +8,11 @@
 
 package org.eclipse.keyple.plugin.pcsc;
 
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+import javax.smartcardio.*;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
@@ -17,12 +20,8 @@ import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
 import org.eclipse.keyple.seproxy.local.AbstractThreadedLocalReader;
 import org.eclipse.keyple.util.ByteBufferUtils;
-
-import javax.smartcardio.*;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
+import com.github.structlog4j.ILogger;
+import com.github.structlog4j.SLoggerFactory;
 
 public class PcscReader extends AbstractThreadedLocalReader {
 

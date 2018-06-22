@@ -8,18 +8,17 @@
 
 package org.eclipse.keyple.plugin.stub;
 
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
-import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
-import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
+import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
+import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import com.github.structlog4j.ILogger;
+import com.github.structlog4j.SLoggerFactory;
 
 public final class StubPlugin extends AbstractObservablePlugin {
 

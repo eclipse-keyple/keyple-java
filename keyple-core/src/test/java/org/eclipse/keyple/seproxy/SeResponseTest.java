@@ -8,15 +8,13 @@
 
 package org.eclipse.keyple.seproxy;
 
-import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
-import org.eclipse.keyple.util.ByteBufferUtils;
-import org.junit.Test;
-
+import static org.junit.Assert.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.*;
+import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
+import org.eclipse.keyple.util.ByteBufferUtils;
+import org.junit.Test;
 
 public class SeResponseTest {
 
