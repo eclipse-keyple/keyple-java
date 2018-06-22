@@ -80,7 +80,9 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     }
 
     /**
-     *  Compare the name of the current ProxyReader to the name of the ProxyReader provided in argument
+     * Compare the name of the current ProxyReader to the name of the ProxyReader provided in
+     * argument
+     * 
      * @param proxyReader
      * @return true if the names match (The method is needed for the SortedSet lists)
      */

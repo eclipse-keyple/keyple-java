@@ -28,7 +28,8 @@ public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<
     }
 
     /**
-     * Compare the name of the current ReadersPlugin to the name of the ReadersPlugin provided in argument
+     * Compare the name of the current ReadersPlugin to the name of the ReadersPlugin provided in
+     * argument
      * 
      * @param plugin
      * @return true if the names match (The method is needed for the SortedSet lists)

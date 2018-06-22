@@ -66,6 +66,7 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
      */
     private AndroidNfcReader() {
         Log.i(TAG, "Init singleton NFC Reader");
+        name = "AndroidNfcReader";
     }
 
     /**
@@ -81,12 +82,6 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
     static AndroidNfcReader getInstance() {
         return SingletonHolder.instance;
     }
-
-    @Override
-    public String getName() {
-        return "AndroidNfcReader";
-    }
-
 
     /**
      * Get Reader parameters

@@ -32,18 +32,12 @@ public class AndroidOmapiPlugin implements ReadersPlugin, SEService.CallBack {
     private AndroidOmapiPlugin() {
         // empty constructor
         proxyReaders = new HashMap<String, ProxyReader>();
+        name = TAG;
     }
 
     public static AndroidOmapiPlugin getInstance() {
         return uniqueInstance;
     }
-
-
-    @Override
-    public String getName() {
-        return TAG;
-    }
-
 
     @Override
     public List<? extends ProxyReader> getReaders() throws IOReaderException {
