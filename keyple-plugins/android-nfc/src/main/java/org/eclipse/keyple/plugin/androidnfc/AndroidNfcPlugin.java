@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.event.AbstractStaticPlugin;
 import android.util.Log;
 
 
@@ -40,7 +40,7 @@ import android.util.Log;
  *
  */
 
-public class AndroidNfcPlugin extends AbstractObservablePlugin {
+public class AndroidNfcPlugin extends AbstractStaticPlugin {
 
     private static final String TAG = AndroidNfcPlugin.class.getSimpleName();
 
