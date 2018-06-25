@@ -34,7 +34,7 @@ public class StubReader extends AbstractThreadedLocalReader {
     public static final String ALLOWED_PARAMETER_2 = "parameter2";
 
     public StubReader() {
-        name = "StubReader";
+        super("StubReader");
     }
 
     public ByteBuffer transmit(ByteBuffer apduIn) throws ChannelStateReaderException {
