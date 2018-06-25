@@ -15,36 +15,17 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 /**
  * Observable plugin. These plugin can report when a reader is added or removed.
  */
-public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<AbstractPluginEvent>
+abstract class AbstractObservablePlugin extends AbstractLoggedObservable<AbstractPluginEvent>
         implements ReadersPlugin {
-
-    /**
-     * The plugin name (must be unique)
-     */
-    private final String name;
 
     /**
      * The list of readers
      */
     protected SortedSet<AbstractObservableReader> readers = null;
 
-    /**
-     * Plugin constructor<br/>
-     * Force the definition of a name through the use of super method.
-     * 
-     * @param name
-     */
-    protected AbstractObservablePlugin(String name) {
-        this.name = name;
-    }
 
-    /**
-     * Gets the reader name
-     * 
-     * @return the reader name string
-     */
-    public final String getName() {
-        return name;
+    protected AbstractObservablePlugin(String name) {
+        super(name);
     }
 
     /**
@@ -57,6 +38,8 @@ public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<
      * @return
      */
     public final SortedSet<AbstractObservableReader> getReaders() {
+        // TODO should be in the constructor by finally here because of singleton/static code
+        // constraints
         if (readers == null) {
             try {
                 readers = getNativeReaders();

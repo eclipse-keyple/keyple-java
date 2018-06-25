@@ -30,8 +30,6 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     // TODO check for a better way to log
     private static final ILogger logger = SLoggerFactory.getLogger(AbstractObservableReader.class);
 
-    private final String name;
-
     protected abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
             throws IOReaderException;
 
@@ -42,16 +40,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * @param name
      */
     protected AbstractObservableReader(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Gets the reader name
-     * 
-     * @return the reader name string
-     */
-    public final String getName() {
-        return name;
+        super(name);
     }
 
     /**
