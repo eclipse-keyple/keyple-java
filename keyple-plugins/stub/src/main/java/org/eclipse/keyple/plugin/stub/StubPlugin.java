@@ -14,12 +14,12 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
-import org.eclipse.keyple.seproxy.event.AbstractStaticPlugin;
+import org.eclipse.keyple.seproxy.event.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public final class StubPlugin extends AbstractStaticPlugin {
+public final class StubPlugin extends AbstractThreadedObservablePlugin {
 
     private static final StubPlugin uniqueInstance = new StubPlugin();
 
@@ -63,6 +63,11 @@ public final class StubPlugin extends AbstractStaticPlugin {
     @Override
     protected AbstractObservableReader getNativeReader(String name) throws IOReaderException {
         // TODO check what to do here
+        return null;
+    }
+
+    @Override
+    protected SortedSet<String> getNativeReadersNames() throws IOReaderException {
         return null;
     }
 }
