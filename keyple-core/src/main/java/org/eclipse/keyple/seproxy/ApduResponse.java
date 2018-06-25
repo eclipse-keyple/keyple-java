@@ -24,17 +24,6 @@ public final class ApduResponse extends AbstractApduBuffer {
     private final boolean successful;
 
     /**
-     * Create a new ApduResponse, the successful status is set by the caller
-     * 
-     * @param buffer apdu response data buffer (including sw1sw2)
-     * @param successful successful flag
-     */
-    public ApduResponse(ByteBuffer buffer, boolean successful) {
-        super(buffer);
-        this.successful = successful;
-    }
-
-    /**
      * Create a new ApduResponse from the provided ByteBuffer<br/>
      * The internal successful status is determined by the current status code and the optional
      * successful status codes list.<br/>
@@ -58,18 +47,6 @@ public final class ApduResponse extends AbstractApduBuffer {
         } else {
             this.successful = statusCode == 0x9000;
         }
-    }
-
-    /**
-     * the constructor called by a ProxyReader in order to build the APDU command response to push
-     * to a ticketing application.
-     *
-     * @param bytes the bytes
-     * @param successful the successful
-     */
-    public ApduResponse(byte[] bytes, boolean successful) {
-        super(bytes);
-        this.successful = successful;
     }
 
     /**

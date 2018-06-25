@@ -30,8 +30,19 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     // TODO check for a better way to log
     private static final ILogger logger = SLoggerFactory.getLogger(AbstractObservableReader.class);
 
+    protected String name;
+
     protected abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
             throws IOReaderException;
+
+    /**
+     * Gets the reader name
+     * 
+     * @return the reader name string
+     */
+    public final String getName() {
+        return name;
+    }
 
     /**
      * Implementation must call logSeRequestSet before transmit and logSeResponseSet after transmit
@@ -68,8 +79,15 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         return responseSet;
     }
 
-    public final int compareTo(ProxyReader o) {
-        return this.getName().compareTo(o.getName());
+    /**
+     * Compare the name of the current ProxyReader to the name of the ProxyReader provided in
+     * argument
+     * 
+     * @param proxyReader
+     * @return true if the names match (The method is needed for the SortedSet lists)
+     */
+    public final int compareTo(ProxyReader proxyReader) {
+        return this.getName().compareTo(proxyReader.getName());
     }
 
     public interface ReaderObserver extends AbstractLoggedObservable.Observer<ReaderEvent> {

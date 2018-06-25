@@ -9,7 +9,9 @@
 package org.eclipse.keyple.plugin.pcsc;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
@@ -49,7 +51,9 @@ public final class PcscPlugin extends AbstractObservablePlugin {
 
     private EventThread thread;
 
-    private PcscPlugin() {}
+    private PcscPlugin() {
+        name = "PcscPlugin";
+    }
 
     /**
      * Gets the single instance of PcscPlugin.
@@ -58,11 +62,6 @@ public final class PcscPlugin extends AbstractObservablePlugin {
      */
     public static PcscPlugin getInstance() {
         return uniqueInstance;
-    }
-
-    @Override
-    public String getName() {
-        return "PcscPlugin";
     }
 
     @Override

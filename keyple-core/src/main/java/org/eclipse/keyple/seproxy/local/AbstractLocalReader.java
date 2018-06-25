@@ -304,7 +304,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             }
 
             if (atrAndFciDataBytes[0] != null) { // the SE Answer to reset
-                atrData = new ApduResponse(atrAndFciDataBytes[0], true);
+                atrData = new ApduResponse(atrAndFciDataBytes[0], null);
             }
 
             if (atrAndFciDataBytes[1] != null) { // the logical channel opening is successful

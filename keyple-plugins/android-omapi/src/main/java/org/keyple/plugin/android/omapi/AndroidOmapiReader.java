@@ -39,11 +39,7 @@ public class AndroidOmapiReader extends AbstractObservableReader {
 
     protected AndroidOmapiReader(Reader omapiReader) {
         this.omapiReader = omapiReader;
-    }
-
-    @Override
-    public String getName() {
-        return omapiReader.getName();
+        name = omapiReader.getName();
     }
 
     @Override

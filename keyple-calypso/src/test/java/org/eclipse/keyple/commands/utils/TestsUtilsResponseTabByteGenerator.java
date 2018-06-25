@@ -9,6 +9,7 @@
 package org.eclipse.keyple.commands.utils;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 import org.eclipse.keyple.seproxy.ApduResponse;
 
 /**
@@ -77,48 +78,48 @@ public class TestsUtilsResponseTabByteGenerator {
     }
 
     public static ApduResponse generateApduResponseValideRev2_4() {
-        return new ApduResponse(append(generateResponseOkTabByteRev2_4(),
-                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode()), true);
+        return new ApduResponse(ByteBuffer.wrap(append(generateResponseOkTabByteRev2_4(),
+                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode())), null);
     }
 
     public static ApduResponse generateApduResponseValideRev3_1() {
-        return new ApduResponse(append(generateResponseOkTabByteRev3_1(),
-                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode()), true);
+        return new ApduResponse(ByteBuffer.wrap(append(generateResponseOkTabByteRev3_1(),
+                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode())), null);
     }
 
     public static ApduResponse generateApduResponseValideRev3_2() {
-        return new ApduResponse(append(generateResponseOkTabByteRev3_2(),
-                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode()), true);
+        return new ApduResponse(ByteBuffer.wrap(append(generateResponseOkTabByteRev3_2(),
+                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode())), null);
     }
 
     public static ApduResponse generateApduResponseOpenSessionCmd() {
-        return new ApduResponse(append(generateDataOpenTabByte(),
-                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode()), true);
+        return new ApduResponse(ByteBuffer.wrap(append(generateDataOpenTabByte(),
+                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode())), null);
     }
 
     public static ApduResponse generateApduResponseOpenSessionCmdError() {
-        return new ApduResponse(append(generateDataOpenTabByte(),
-                TestsUtilsStatusCodeGenerator.generateAccessForbiddenStatusCode()), true);
+        return new ApduResponse(ByteBuffer.wrap(append(generateDataOpenTabByte(),
+                TestsUtilsStatusCodeGenerator.generateAccessForbiddenStatusCode())), null);
     }
 
     public static ApduResponse generateApduResponseTerminalSessionSignatureCmd() {
-        return new ApduResponse(append(generateTerminalSessionSignatureTabByte(),
-                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode()), true);
+        return new ApduResponse(ByteBuffer.wrap(append(generateTerminalSessionSignatureTabByte(),
+                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode())), null);
     }
 
     public static ApduResponse generateApduResponseTerminalSessionSignatureCmdError() {
-        return new ApduResponse(append(generateTerminalSessionSignatureTabByte(),
-                TestsUtilsStatusCodeGenerator.generateCommandForbiddenOnBinaryFilesStatusCode()),
-                true);
+        return new ApduResponse(ByteBuffer.wrap(append(generateTerminalSessionSignatureTabByte(),
+                TestsUtilsStatusCodeGenerator.generateCommandForbiddenOnBinaryFilesStatusCode())),
+                null);
     }
 
     public static ApduResponse generateApduResponseFciCmd() {
-        return new ApduResponse(append(generateFciTabByte(),
-                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode()), true);
+        return new ApduResponse(ByteBuffer.wrap(append(generateFciTabByte(),
+                TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode())), null);
     }
 
     public static ApduResponse generateApduResponseFciCmdError() {
-        return new ApduResponse(append(generateFciTabByte(),
-                TestsUtilsStatusCodeGenerator.generateFileNotFoundStatusCode()), true);
+        return new ApduResponse(ByteBuffer.wrap(append(generateFciTabByte(),
+                TestsUtilsStatusCodeGenerator.generateFileNotFoundStatusCode())), null);
     }
 }

@@ -15,11 +15,30 @@ import org.eclipse.keyple.seproxy.ReadersPlugin;
  */
 public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<AbstractPluginEvent>
         implements ReadersPlugin {
-    public interface PluginObserver extends Observer {
-        void update(AbstractPluginEvent event);
+
+    protected String name;
+
+    /**
+     * Gets the reader name
+     * 
+     * @return the reader name string
+     */
+    public final String getName() {
+        return name;
     }
 
-    public final int compareTo(ReadersPlugin o) {
-        return this.getName().compareTo(o.getName());
+    /**
+     * Compare the name of the current ReadersPlugin to the name of the ReadersPlugin provided in
+     * argument
+     * 
+     * @param plugin
+     * @return true if the names match (The method is needed for the SortedSet lists)
+     */
+    public final int compareTo(ReadersPlugin plugin) {
+        return this.getName().compareTo(plugin.getName());
+    }
+
+    public interface PluginObserver extends Observer {
+        void update(AbstractPluginEvent event);
     }
 }

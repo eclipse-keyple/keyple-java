@@ -56,18 +56,13 @@ public class AndroidNfcPlugin extends AbstractObservablePlugin {
         if (this.reader == null) {
             Log.i(TAG, "Init singleton NFC Plugin");
             this.reader = AndroidNfcReader.getInstance();
+            this.name = "AndroidNFCPlugin";
         }
 
     }
 
     public static AndroidNfcPlugin getInstance() {
         return uniqueInstance;
-    }
-
-
-    @Override
-    public String getName() {
-        return "AndroidNFCPlugin";
     }
 
     @Override
