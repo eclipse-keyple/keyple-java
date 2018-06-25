@@ -29,6 +29,10 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      */
     protected long threadWaitTimeout;
 
+    public AbstractThreadedLocalReader(String name) {
+        super(name);
+    }
+
     /**
      * setter to fix the wait timeout in ms.
      *

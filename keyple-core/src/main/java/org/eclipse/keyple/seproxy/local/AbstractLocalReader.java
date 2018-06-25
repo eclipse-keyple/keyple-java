@@ -41,6 +41,10 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
     private static final String ADPU_NAME_STR = "apdu.name";
 
+    public AbstractLocalReader(String name) {
+        super(name);
+    }
+
     /**
      * Open (if needed) a physical channel (try to connect a card to the terminal, attempt to select
      * the application)

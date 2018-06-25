@@ -66,9 +66,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * @param terminal
      */
     protected PcscReader(CardTerminal terminal) {
-        //
+        super(terminal.getName());
         this.terminal = terminal;
-        this.name = terminal.getName();
         this.card = null;
         this.channel = null;
         this.protocolsMap = new HashMap<SeProtocol, String>();

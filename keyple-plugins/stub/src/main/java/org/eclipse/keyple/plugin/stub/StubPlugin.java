@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
@@ -31,7 +30,7 @@ public final class StubPlugin extends AbstractObservablePlugin {
 
 
     private StubPlugin() {
-        name = "StubPlugin";
+        super("StubPlugin");
     }
 
     /**
@@ -54,12 +53,16 @@ public final class StubPlugin extends AbstractObservablePlugin {
     }
 
     @Override
-    public SortedSet<? extends ProxyReader> getReaders() throws IOReaderException {
-        if (readers.size() == 0) {
-            logger.info("Stub Reader list is empty, adding one reader");
-            StubReader reader = new StubReader();
-            readers.put(reader.getName(), reader);
-        }
+    protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
+        logger.info("Create Stub plugin native reader");
+        StubReader reader = new StubReader();
+        readers.put(reader.getName(), reader);
         return new ConcurrentSkipListSet(readers.values());
+    }
+
+    @Override
+    protected AbstractObservableReader getNativeReader(String name) throws IOReaderException {
+        // TODO check what to do here
+        return null;
     }
 }
