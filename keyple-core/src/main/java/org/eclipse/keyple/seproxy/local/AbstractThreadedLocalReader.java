@@ -9,7 +9,6 @@
 package org.eclipse.keyple.seproxy.local;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import com.github.structlog4j.ILogger;
@@ -110,7 +109,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
         /**
          * Reader that we'll report about
          */
-        private final AbstractObservableReader reader;
+        private final AbstractThreadedLocalReader reader;
 
         /**
          * If the thread should be kept a alive
@@ -123,7 +122,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
          *
          * @param reader AbstractObservableReader
          */
-        EventThread(AbstractObservableReader reader) {
+        EventThread(AbstractThreadedLocalReader reader) {
             super("observable-reader-events-" + threadCount.addAndGet(1));
             setDaemon(true);
             this.reader = reader;
