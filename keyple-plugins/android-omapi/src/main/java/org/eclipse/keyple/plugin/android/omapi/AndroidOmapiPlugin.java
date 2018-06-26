@@ -20,6 +20,8 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.SEService;
 import android.app.Application;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 /**
@@ -45,12 +47,17 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
     private AndroidOmapiPlugin() {
         super(TAG);
         try {
+
             Log.i(TAG, "Retrieving Application Context with reflection android.app.AppGlobals");
 
             Application app = (Application) Class.forName("android.app.ActivityThread")
                     .getMethod("currentApplication").invoke(null, (Object[]) null);
 
+            final String SMARTCARD_SERVICE_PACKAGE = "org.simalliance.openmobileapi.service";
+            PackageInfo pi = app.getPackageManager().getPackageInfo(SMARTCARD_SERVICE_PACKAGE, 0);
+            // smartcard service present
 
+            //connect to Secure Element Service
             if (seService == null || !seService.isConnected()) {
                 seService = new SEService(app, this);
                 Log.i(TAG, "Connected to SeService " + seService.getVersion());
@@ -67,6 +74,9 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+        }   catch (PackageManager.NameNotFoundException ex) {
+            ex.printStackTrace();
+            Log.e(TAG, "org.simalliance.openmobileapi.service smartcard service package was not found in the platform");
         }
     }
 
