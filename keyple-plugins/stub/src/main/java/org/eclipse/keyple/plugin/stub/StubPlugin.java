@@ -9,16 +9,17 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.event.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public final class StubPlugin extends AbstractObservablePlugin {
+public final class StubPlugin extends AbstractThreadedObservablePlugin {
 
     private static final StubPlugin uniqueInstance = new StubPlugin();
 
@@ -28,7 +29,9 @@ public final class StubPlugin extends AbstractObservablePlugin {
     private static final ILogger logger = SLoggerFactory.getLogger(StubPlugin.class);
 
 
-    private StubPlugin() {}
+    private StubPlugin() {
+        super("StubPlugin");
+    }
 
     /**
      * Gets the single instance of StubPlugin.
@@ -37,11 +40,6 @@ public final class StubPlugin extends AbstractObservablePlugin {
      */
     public static StubPlugin getInstance() {
         return uniqueInstance;
-    }
-
-    @Override
-    public String getName() {
-        return "StubPlugin";
     }
 
     @Override
@@ -55,12 +53,21 @@ public final class StubPlugin extends AbstractObservablePlugin {
     }
 
     @Override
-    public SortedSet<? extends ProxyReader> getReaders() throws IOReaderException {
-        if (readers.size() == 0) {
-            logger.info("Stub Reader list is empty, adding one reader");
-            StubReader reader = new StubReader();
-            readers.put(reader.getName(), reader);
-        }
+    protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
+        logger.info("Create Stub plugin native reader");
+        StubReader reader = new StubReader();
+        readers.put(reader.getName(), reader);
         return new ConcurrentSkipListSet(readers.values());
+    }
+
+    @Override
+    protected AbstractObservableReader getNativeReader(String name) throws IOReaderException {
+        // TODO check what to do here
+        return null;
+    }
+
+    @Override
+    protected SortedSet<String> getNativeReadersNames() throws IOReaderException {
+        return null;
     }
 }

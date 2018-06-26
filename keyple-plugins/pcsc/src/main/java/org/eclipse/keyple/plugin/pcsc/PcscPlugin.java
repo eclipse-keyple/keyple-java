@@ -9,31 +9,27 @@
 package org.eclipse.keyple.plugin.pcsc;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
 import org.eclipse.keyple.plugin.pcsc.log.CardTerminalsLogger;
-import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
-import org.eclipse.keyple.seproxy.event.ErrorPluginEvent;
-import org.eclipse.keyple.seproxy.event.ReaderPresencePluginEvent;
+import org.eclipse.keyple.seproxy.event.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public final class PcscPlugin extends AbstractObservablePlugin {
+public final class PcscPlugin extends AbstractThreadedObservablePlugin {
 
     private static final ILogger logger = SLoggerFactory.getLogger(PcscPlugin.class);
 
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
-
-    /**
-     * Thread wait timeout in ms
-     */
-    private long threadWaitTimeout = SETTING_THREAD_TIMEOUT_DEFAULT;
 
     /**
      * singleton instance of SeProxyService
@@ -42,14 +38,12 @@ public final class PcscPlugin extends AbstractObservablePlugin {
 
     private static final TerminalFactory factory = TerminalFactory.getDefault();
 
-    private final Map<String, AbstractObservableReader> readers =
-            new HashMap<String, AbstractObservableReader>();
 
     private boolean logging = false;
 
-    private EventThread thread;
-
-    private PcscPlugin() {}
+    private PcscPlugin() {
+        super("PcscPlugin");
+    }
 
     /**
      * Gets the single instance of PcscPlugin.
@@ -58,11 +52,6 @@ public final class PcscPlugin extends AbstractObservablePlugin {
      */
     public static PcscPlugin getInstance() {
         return uniqueInstance;
-    }
-
-    @Override
-    public String getName() {
-        return "PcscPlugin";
     }
 
     @Override
@@ -87,39 +76,72 @@ public final class PcscPlugin extends AbstractObservablePlugin {
         return this;
     }
 
-    @Override
-    public SortedSet<AbstractObservableReader> getReaders() throws IOReaderException {
+    protected SortedSet<String> getNativeReadersNames() throws IOReaderException {
+        SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
         CardTerminals terminals = getCardTerminals();
-
         try {
-            // florent(2018-04-15): #64: Fixed the previous logic. It was not removing readers once
-            // they disappeared.
-            synchronized (readers) {
-                Map<String, AbstractObservableReader> previous =
-                        new HashMap<String, AbstractObservableReader>(readers);
-                for (CardTerminal term : terminals.list()) {
-                    if (previous.remove(term.getName()) == null) {
-                        PcscReader reader = new PcscReader(term);
-                        // TODO reader logging has to be managed with a protected access of the PCSC
-                        // plugin package
-                        if (logging) {
-                            reader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
-                        }
-                        logger.info("New terminal found", "action", "pcsc_plugin.new_terminal",
-                                "terminalName", reader.getName());
-                        readers.put(reader.getName(), reader);
-                    }
-                }
-                for (Map.Entry<String, AbstractObservableReader> en : previous.entrySet()) {
-                    readers.remove(en.getKey());
-                }
-                return new ConcurrentSkipListSet<AbstractObservableReader>(readers.values());
+            for (CardTerminal term : terminals.list()) {
+                nativeReadersNames.add(term.getName());
             }
         } catch (CardException e) {
             logger.error("Terminal list is not accessible", "action", "pcsc_plugin.no_terminals",
                     "exception", e);
             throw new IOReaderException("Could not access terminals list", e);
         }
+        return nativeReadersNames;
+    }
+
+    /**
+     * Gets the list of all native readers<br/>
+     * New reader objects are created.<br/>
+     * 
+     * @return the list of new readers.
+     * @throws IOReaderException
+     */
+    @Override
+    protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
+        SortedSet<AbstractObservableReader> nativeReaders =
+                new ConcurrentSkipListSet<AbstractObservableReader>();
+
+        // parse the current readers list to create the ProxyReader(s) associated with new reader(s)
+        CardTerminals terminals = getCardTerminals();
+        try {
+            for (CardTerminal term : terminals.list()) {
+                nativeReaders.add(new PcscReader(term));
+            }
+        } catch (CardException e) {
+            logger.error("Terminal list is not accessible", "action", "pcsc_plugin.no_terminals",
+                    "exception", e);
+            throw new IOReaderException("Could not access terminals list", e);
+        }
+        return nativeReaders;
+    }
+
+    /**
+     * Gets the reader whose name is provided as an argument
+     * 
+     * @param name name of the reader
+     * @return the reader object
+     * @throws IOReaderException
+     */
+    @Override
+    protected AbstractObservableReader getNativeReader(String name) throws IOReaderException {
+        AbstractObservableReader reader = null;
+        // parse the current readers list to create the ProxyReader(s) associated with new reader(s)
+        CardTerminals terminals = getCardTerminals();
+        List<String> terminalList = new ArrayList<String>();
+        try {
+            for (CardTerminal term : terminals.list()) {
+                if (term.getName().equals(name)) {
+                    reader = new PcscReader(term);
+                }
+            }
+        } catch (CardException e) {
+            logger.error("Terminal list is not accessible", "action", "pcsc_plugin.no_terminals",
+                    "exception", e);
+            throw new IOReaderException("Could not access terminals list", e);
+        }
+        return reader;
     }
 
     private CardTerminals getCardTerminals() {
@@ -128,98 +150,5 @@ public final class PcscPlugin extends AbstractObservablePlugin {
             terminals = new CardTerminalsLogger(terminals);
         }
         return terminals;
-    }
-
-    @Override
-    public void addObserver(Observer observer) {
-        synchronized (observers) {
-            super.addObserver(observer);
-            if (observers.size() == 1) {
-                if (thread != null) { // <-- This should never happen and can probably be dropped at
-                    // some point
-                    throw new IllegalStateException("The reader thread shouldn't null");
-                }
-
-                thread = new EventThread();
-                thread.start();
-            }
-        }
-    }
-
-    @Override
-    public void removeObserver(Observer observer) {
-        synchronized (observers) {
-            super.removeObserver(observer);
-            if (observers.isEmpty()) {
-                if (thread == null) { // <-- This should never happen and can probably be dropped at
-                    // some point
-                    throw new IllegalStateException("The reader thread should be null");
-                }
-
-                // We'll let the thread calmly end its course after the waitForCard(Absent|Present)
-                // timeout occurs
-                thread.end();
-                thread = null;
-            }
-        }
-    }
-
-    private void exceptionThrown(Exception e) {
-        notifyObservers(new ErrorPluginEvent(e));
-    }
-
-    /**
-     * Thread in charge of reporting live events
-     */
-    private class EventThread extends Thread {
-        private boolean running = true;
-        private boolean initialized = false;
-
-        private Map<String, AbstractObservableReader> previousReaders =
-                new HashMap<String, AbstractObservableReader>();
-
-        /**
-         * Marks the thread as one that should end when the last cardWaitTimeout occurs
-         */
-        void end() {
-            running = false;
-        }
-
-        public void run() {
-            try {
-                while (running) {
-                    Map<String, AbstractObservableReader> previous =
-                            new HashMap<String, AbstractObservableReader>(previousReaders);
-                    previousReaders = new HashMap<String, AbstractObservableReader>();
-
-                    for (AbstractObservableReader r : getReaders()) {
-                        previousReaders.put(r.getName(), r);
-
-                        // If one of the values that are being removed doesn't exist, it means it's
-                        // a new reader
-                        if (previous.remove(r.getName()) == null && initialized == true) {
-                            notifyObservers(new ReaderPresencePluginEvent(true, r));
-                        }
-                    }
-
-                    // the initial readers list is known, we can now send readers change
-                    // notifications
-                    initialized = true;
-
-                    // If we have a value left that wasn't removed, it means it's a deleted reader
-                    for (AbstractObservableReader r : previous.values()) {
-                        notifyObservers(new ReaderPresencePluginEvent(false, r));
-                    }
-
-                    try {
-                        factory.terminals().waitForChange(threadWaitTimeout);
-                    } catch (IllegalStateException ex) {
-                        Thread.sleep(1000);
-                    }
-                }
-            } catch (Exception e) {
-                exceptionThrown(e);
-            }
-        }
     }
 }

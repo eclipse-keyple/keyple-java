@@ -11,7 +11,7 @@ package org.eclipse.keyple.plugin.stub;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.seproxy.*;
+import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
@@ -33,10 +33,8 @@ public class StubReader extends AbstractThreadedLocalReader {
     public static final String ALLOWED_PARAMETER_1 = "parameter1";
     public static final String ALLOWED_PARAMETER_2 = "parameter2";
 
-
-    @Override
-    public String getName() {
-        return "";
+    public StubReader() {
+        super("StubReader");
     }
 
     public ByteBuffer transmit(ByteBuffer apduIn) throws ChannelStateReaderException {
@@ -44,8 +42,18 @@ public class StubReader extends AbstractThreadedLocalReader {
     }
 
     @Override
-    public ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid) throws IOReaderException {
+    protected ByteBuffer getATR() {
         return null;
+    }
+
+    @Override
+    protected boolean isPhysicalChannelOpen() {
+        return false;
+    }
+
+    @Override
+    protected void openPhysicalChannel() throws IOReaderException, ChannelStateReaderException {
+
     }
 
     @Override

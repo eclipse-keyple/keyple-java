@@ -23,7 +23,6 @@ public class StubPluginTest {
     @Before
     public void setUp() throws IOReaderException {
         stubPlugin = StubPlugin.getInstance();
-
     }
 
     @Test
@@ -35,5 +34,4 @@ public class StubPluginTest {
     public void testGetName() throws IOReaderException {
         assert (stubPlugin.getName() != null);
     }
-
 }

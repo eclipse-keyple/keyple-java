@@ -27,6 +27,31 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
     private static final ILogger logger = SLoggerFactory.getLogger(AbstractLoggedObservable.class);
     private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
 
+
+    /**
+     * The item name (must be unique)
+     */
+    private final String name;
+
+    /**
+     * Item constructor<br/>
+     * Force the definition of a name through the use of super method.
+     *
+     * @param name
+     */
+    AbstractLoggedObservable(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Gets the reader name
+     *
+     * @return the reader name string
+     */
+    public final String getName() {
+        return name;
+    }
+
     /**
      * Add an observer. This will allow to be notified about all readers or plugins events.
      * 

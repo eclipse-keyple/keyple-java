@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
+import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.event.AbstractStaticPlugin;
 import android.util.Log;
 
 
@@ -40,7 +40,7 @@ import android.util.Log;
  *
  */
 
-public class AndroidNfcPlugin extends AbstractObservablePlugin {
+public class AndroidNfcPlugin extends AbstractStaticPlugin {
 
     private static final String TAG = AndroidNfcPlugin.class.getSimpleName();
 
@@ -49,10 +49,10 @@ public class AndroidNfcPlugin extends AbstractObservablePlugin {
     private Map<String, String> parameters = new HashMap<String, String>();// not in use in this
                                                                            // plugin
 
-    private ProxyReader reader;
+    private AbstractObservableReader reader;
 
     private AndroidNfcPlugin() {
-
+        super("AndroidNFCPlugin");
         if (this.reader == null) {
             Log.i(TAG, "Init singleton NFC Plugin");
             this.reader = AndroidNfcReader.getInstance();
@@ -62,12 +62,6 @@ public class AndroidNfcPlugin extends AbstractObservablePlugin {
 
     public static AndroidNfcPlugin getInstance() {
         return uniqueInstance;
-    }
-
-
-    @Override
-    public String getName() {
-        return "AndroidNFCPlugin";
     }
 
     @Override
@@ -82,18 +76,30 @@ public class AndroidNfcPlugin extends AbstractObservablePlugin {
         parameters.put(key, value);
     }
 
+
     /**
      * For an Android NFC device, the Android NFC Plugin manages only one @{@link AndroidNfcReader}.
      * 
-     * @return List<ProxyReader> : contains only one element, the
+     * @return SortedSet<ProxyReader> : contains only one element, the
      *         singleton @{@link AndroidNfcReader}
      */
     @Override
-    public SortedSet<ProxyReader> getReaders() {
+    public SortedSet<AbstractObservableReader> getNativeReaders() {
         // return the only one reader in a list
-        SortedSet<ProxyReader> readers = new ConcurrentSkipListSet<ProxyReader>();
+        SortedSet<AbstractObservableReader> readers =
+                new ConcurrentSkipListSet<AbstractObservableReader>();
         readers.add(reader);
         return readers;
     }
 
+
+    /**
+     * Return the AndroidNfcReader whatever is the porvide name
+     * 
+     * @param name
+     * @return
+     */
+    protected AbstractObservableReader getNativeReader(String name) {
+        return reader;
+    }
 }

@@ -9,7 +9,9 @@
 package org.eclipse.keyple.seproxy;
 
 import java.nio.ByteBuffer;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * List of APDU requests that will result in a {@link SeResponse}
@@ -29,6 +31,12 @@ public final class SeRequest {
     private ByteBuffer aidToSelect;
 
     /**
+     * List of status codes in response to the select application command that should be considered
+     * successful although they are different from 9000
+     */
+    private Set<Short> successfulSelectionStatusCodes = new LinkedHashSet<Short>();
+
+    /**
      * contains a group of APDUCommand to operate on the selected SE application by the SE reader.
      */
     private List<ApduRequest> apduRequests;
@@ -37,7 +45,7 @@ public final class SeRequest {
     /**
      * the protocol flag is used to target specific SE technologies for a given request
      */
-    private SeProtocol protocolFlag;
+    private SeProtocol protocolFlag = null;
 
     /**
      * the final logical channel status: if true, the SE reader keep active the logical channel of
@@ -60,21 +68,62 @@ public final class SeRequest {
      * @param aidToSelect the aid to select
      * @param apduRequests the apdu requests
      * @param keepChannelOpen the keep channel open
+     * @param protocolFlag the expected protocol
+     * @param successfulSelectionStatusCodes a list of successful status codes for the select
+     *        application command
+     */
+    public SeRequest(ByteBuffer aidToSelect, List<ApduRequest> apduRequests,
+            boolean keepChannelOpen, SeProtocol protocolFlag,
+            Set<Short> successfulSelectionStatusCodes) {
+        this.aidToSelect = aidToSelect;
+        this.apduRequests = apduRequests;
+        this.keepChannelOpen = keepChannelOpen;
+        this.protocolFlag = protocolFlag;
+        this.successfulSelectionStatusCodes = successfulSelectionStatusCodes;
+    }
+
+    /**
+     * Alternate constructor with no list of successful selection status codes set and a protocol
+     * flag
+     * 
+     * @param aidToSelect
+     * @param apduRequests
+     * @param keepChannelOpen
+     * @param protocolFlag
+     */
+    public SeRequest(ByteBuffer aidToSelect, List<ApduRequest> apduRequests,
+            boolean keepChannelOpen, SeProtocol protocolFlag) {
+        this(aidToSelect, apduRequests, keepChannelOpen, protocolFlag, null);
+    }
+
+    /**
+     * Alternate constructor with a list of successful selection status codes set and no protocol
+     * flag
+     *
+     * @param aidToSelect
+     * @param apduRequests
+     * @param keepChannelOpen
+     * @param successfulSelectionStatusCodes a list of successful status codes for the select
+     *        application command
+     *
+     */
+    public SeRequest(ByteBuffer aidToSelect, List<ApduRequest> apduRequests,
+            boolean keepChannelOpen, Set<Short> successfulSelectionStatusCodes) {
+        this(aidToSelect, apduRequests, keepChannelOpen, null, successfulSelectionStatusCodes);
+    }
+
+    /**
+     * Alternate constructor with no protocol flag set
+     * 
+     * @param aidToSelect
+     * @param apduRequests
+     * @param keepChannelOpen
      */
     public SeRequest(ByteBuffer aidToSelect, List<ApduRequest> apduRequests,
             boolean keepChannelOpen) {
-        this.aidToSelect = aidToSelect;
-        this.keepChannelOpen = keepChannelOpen;
-        this.apduRequests = apduRequests;
+        this(aidToSelect, apduRequests, keepChannelOpen, null, null);
     }
 
-    public SeRequest(ByteBuffer aidToSelect, List<ApduRequest> apduRequests,
-            boolean keepChannelOpen, SeProtocol protocolFlag) {
-        this.aidToSelect = aidToSelect;
-        this.keepChannelOpen = keepChannelOpen;
-        this.apduRequests = apduRequests;
-        this.protocolFlag = protocolFlag;
-    }
 
     /**
      * Gets the aid to select.
@@ -112,6 +161,15 @@ public final class SeRequest {
      */
     public SeProtocol getProtocolFlag() {
         return this.protocolFlag;
+    }
+
+    /**
+     * Gets the list of successful selection status codes
+     * 
+     * @return the list of status codes
+     */
+    public Set<Short> getSuccessfulSelectionStatusCodes() {
+        return successfulSelectionStatusCodes;
     }
 
     @Override

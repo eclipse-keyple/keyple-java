@@ -13,10 +13,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
-import org.eclipse.keyple.seproxy.ApduRequest;
-import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeProtocol;
-import org.eclipse.keyple.seproxy.exception.*;
+import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
+import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
 import org.eclipse.keyple.seproxy.local.AbstractThreadedLocalReader;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import com.github.structlog4j.ILogger;
@@ -46,7 +47,6 @@ public class PcscReader extends AbstractThreadedLocalReader {
     private boolean physicalChannelOpen;
 
     private final CardTerminal terminal;
-    private final String terminalName;
 
     private String parameterCardProtocol;
     private boolean cardExclusiveMode;
@@ -66,9 +66,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * @param terminal
      */
     protected PcscReader(CardTerminal terminal) {
-        //
+        super(terminal.getName());
         this.terminal = terminal;
-        this.terminalName = terminal.getName();
         this.card = null;
         this.channel = null;
         this.protocolsMap = new HashMap<SeProtocol, String>();
@@ -85,72 +84,6 @@ public class PcscReader extends AbstractThreadedLocalReader {
         }
     }
 
-    @Override
-    public final String getName() {
-        return terminalName;
-    }
-
-    /**
-     * Open (if needed) a physical channel (try to connect a card to the terminal)
-     * 
-     * @param aid
-     * @return ByteBuffer[0] the SE ATR ByteBuffer[1] the SE FCI
-     * @throws IOReaderException
-     */
-    @Override
-    protected final ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid)
-            throws IOReaderException {
-        ByteBuffer[] atrAndFci = new ByteBuffer[2];
-
-        if (!isLogicalChannelOpen()) {
-            // init of the physical SE channel: if not yet established, opening of a new physical
-            // channel
-            if (!isPhysicalChannelOpen()) {
-                openPhysicalChannel();
-            }
-            if (!isPhysicalChannelOpen()) {
-                throw new ChannelStateReaderException("Fail to open physical channel.");
-            }
-        }
-
-        // add ATR
-        atrAndFci[0] = ByteBufferUtils.concat(ByteBuffer.wrap(card.getATR().getBytes()),
-                ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}));
-
-        if (aid != null) {
-            logger.info("Connecting to card", "action", "local_reader.openLogicalChannel", "aid",
-                    ByteBufferUtils.toHex(aid), "readerName", getName());
-            try {
-                // build a get response command
-                // the actual length expected by the SE in the get response command is handled in
-                // transmitApdu
-                ByteBuffer selectApplicationCommand = ByteBufferUtils
-                        .fromHex("00A40400" + String.format("%02X", (byte) aid.limit())
-                                + ByteBufferUtils.toHex(aid) + "00");
-
-                // we use here processApduRequest to manage case 4 hack
-                ApduResponse fciResponse =
-                        processApduRequest(new ApduRequest(selectApplicationCommand, true));
-
-                // add FCI
-                atrAndFci[1] = fciResponse.getBytes();
-
-            } catch (ChannelStateReaderException e1) {
-
-                throw new ChannelStateReaderException(e1);
-
-            }
-        }
-        return atrAndFci;
-    }
-
-
-    /**
-     * Disconnects the card from the terminal
-     *
-     * @throws IOReaderException
-     * @throws CardException
-     */
     @Override
     protected final void closePhysicalChannel() throws IOReaderException {
         logger.info("Closing of the physical SE channel.", "action",
@@ -421,12 +354,18 @@ public class PcscReader extends AbstractThreadedLocalReader {
         return parameters;
     }
 
+    @Override
+    protected final ByteBuffer getATR() {
+        return ByteBuffer.wrap(card.getATR().getBytes());
+    }
+
     /**
      * Tells if a physical channel is open
      * 
      * @return true if the physical channel is open
      */
-    private boolean isPhysicalChannelOpen() {
+    @Override
+    protected final boolean isPhysicalChannelOpen() {
         return card != null;
     }
 
@@ -435,7 +374,9 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * 
      * @throws IOReaderException
      */
-    private void openPhysicalChannel() throws IOReaderException, ChannelStateReaderException {
+    @Override
+    protected final void openPhysicalChannel()
+            throws IOReaderException, ChannelStateReaderException {
         // init of the physical SE channel: if not yet established, opening of a new physical
         // channel
         try {

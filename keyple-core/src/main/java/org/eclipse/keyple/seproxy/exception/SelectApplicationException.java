@@ -6,14 +6,16 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.example.common;
+package org.eclipse.keyple.seproxy.exception;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
-public interface HoplinkCommandsSettings {
-    String AID = "A000000291A000000191";
-    Set<Short> selectApplicationSuccessfulStatusCodes =
-            new HashSet<Short>(Arrays.asList((short) 0x6283));
+import org.eclipse.keyple.seproxy.ProxyReader;
+
+/**
+ * Application selection failure {@link ProxyReader}
+ */
+public class SelectApplicationException extends Exception {
+    public SelectApplicationException(String message) {
+        super(message);
+    }
 }

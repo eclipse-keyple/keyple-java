@@ -9,6 +9,7 @@
 package org.eclipse.keyple.seproxy;
 
 import static org.junit.Assert.*;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
@@ -20,7 +21,8 @@ public class SeResponseTest {
     @Test
     public void testSEResponse() throws InconsistentParameterValueException {
         ApduResponse fciData = new ApduResponse(
-                new byte[] {(byte) 0x01, (byte) 02, (byte) 0x03, (byte) 0x04}, true);
+                ByteBuffer.wrap(new byte[] {(byte) 0x01, (byte) 02, (byte) 0x03, (byte) 0x04}),
+                null);
         SeResponseSet response = new SeResponseSet(
                 new SeResponse(true, null, fciData, new ArrayList<ApduResponse>()));
         // assertNotNull(response);
@@ -31,7 +33,7 @@ public class SeResponseTest {
     @Test
     public void testWasChannelPreviouslyOpen() throws InconsistentParameterValueException {
         SeResponseSet response = new SeResponseSet(
-                new SeResponse(true, null, new ApduResponse(ByteBufferUtils.fromHex("00"), true),
+                new SeResponse(true, null, new ApduResponse(ByteBufferUtils.fromHex("9000"), null),
                         new ArrayList<ApduResponse>()));
         assertTrue(response.getSingleResponse().wasChannelPreviouslyOpen());
     }
@@ -39,7 +41,8 @@ public class SeResponseTest {
     @Test
     public void testGetFciData() throws InconsistentParameterValueException {
         ApduResponse fciData = new ApduResponse(
-                new byte[] {(byte) 0x01, (byte) 02, (byte) 0x03, (byte) 0x04}, true);
+                ByteBuffer.wrap(new byte[] {(byte) 0x01, (byte) 02, (byte) 0x03, (byte) 0x04}),
+                null);
         SeResponseSet response = new SeResponseSet(
                 new SeResponse(true, null, fciData, new ArrayList<ApduResponse>()));
         assertEquals(fciData, response.getSingleResponse().getFci());
@@ -50,7 +53,7 @@ public class SeResponseTest {
     public void testGetFciDataNull() throws InconsistentParameterValueException {
         ApduResponse fciData = null;
         SeResponseSet response = new SeResponseSet(
-                new SeResponse(false, new ApduResponse(ByteBufferUtils.fromHex("00"), true),
+                new SeResponse(false, new ApduResponse(ByteBufferUtils.fromHex("9000"), null),
                         fciData, new ArrayList<ApduResponse>()));
         assertNull(response.getSingleResponse().getFci());
 
@@ -59,7 +62,7 @@ public class SeResponseTest {
     @Test
     public void testGetApduResponses() throws InconsistentParameterValueException {
         SeResponseSet response = new SeResponseSet(
-                new SeResponse(true, null, new ApduResponse(ByteBufferUtils.fromHex("00"), true),
+                new SeResponse(true, null, new ApduResponse(ByteBufferUtils.fromHex("9000"), null),
                         new ArrayList<ApduResponse>()));
         assertArrayEquals(new ArrayList<ApduResponse>().toArray(),
                 response.getSingleResponse().getApduResponses().toArray());
@@ -68,7 +71,8 @@ public class SeResponseTest {
     @Test
     public void testToString() throws InconsistentParameterValueException {
         ApduResponse fciData = new ApduResponse(
-                new byte[] {(byte) 0x01, (byte) 02, (byte) 0x03, (byte) 0x04}, true);
+                ByteBuffer.wrap(new byte[] {(byte) 0x01, (byte) 02, (byte) 0x03, (byte) 0x04}),
+                null);
         List<ApduResponse> responses = new ArrayList<ApduResponse>();
         responses.add(fciData);
         responses.add(fciData);

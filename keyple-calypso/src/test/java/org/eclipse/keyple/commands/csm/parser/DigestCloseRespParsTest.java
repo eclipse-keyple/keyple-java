@@ -27,10 +27,12 @@ public class DigestCloseRespParsTest {
     public void digestCloseRespPars() throws InconsistentParameterValueException {
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(
-                new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, (byte) 0x90, 0x00}, true);
+                ByteBuffer
+                        .wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, (byte) 0x90, 0x00}),
+                null);
         listeResponse.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
-                new ApduResponse(ByteBufferUtils.fromHex("00"), true), listeResponse));
+                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
                 new DigestCloseRespPars(seResponse.getSingleResponse().getApduResponses().get(0));

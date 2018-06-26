@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.commands.csm.parser;
 
+import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.commands.csm.parser.SelectDiversifierRespPars;
 import org.eclipse.keyple.commands.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
@@ -21,8 +22,10 @@ public class SelectDiversifierRespParsTest {
     public void selectDiversifierResp() {
         // We check here that the value returned by getApduResponse matches the value provided at
         // construct time
-        ApduResponse apduResponse = new ApduResponse(new byte[] {(byte) 0x90, 0x00}, true);
-        ApduResponse apduResponse1 = new ApduResponse(new byte[] {(byte) 0x80, 0x00}, true);
+        ApduResponse apduResponse =
+                new ApduResponse(ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}), null);
+        ApduResponse apduResponse1 =
+                new ApduResponse(ByteBuffer.wrap(new byte[] {(byte) 0x80, 0x00}), null);
 
         AbstractApduResponseParser apduResponseParser = new SelectDiversifierRespPars(apduResponse);
 

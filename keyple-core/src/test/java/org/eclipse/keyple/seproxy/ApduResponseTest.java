@@ -9,6 +9,7 @@
 package org.eclipse.keyple.seproxy;
 
 import static org.junit.Assert.*;
+import java.nio.ByteBuffer;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Test;
 
@@ -18,7 +19,8 @@ public class ApduResponseTest {
     @Test
     public void testAPDUResponse() {
         ApduResponse response = new ApduResponse(
-                new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04}, true);
+                ByteBuffer.wrap(new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04}),
+                null);
         assertNotNull(response);
     }
 
@@ -33,27 +35,29 @@ public class ApduResponseTest {
     @Test
     public void testIsSuccessful() {
         ApduResponse response = new ApduResponse(
-                new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04}, true);
+                ByteBuffer.wrap(new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x90, (byte) 0x00}),
+                null);
         assertTrue(response.isSuccessful());
     }
 
     @Test
     public void testGetStatusCode() {
         ApduResponse response = new ApduResponse(
-                new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04}, true);
+                ByteBuffer.wrap(new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04}),
+                null);
         assertEquals(0x03 * 256 + 0x04, response.getStatusCode());
         // assertArrayEquals(new byte[] {(byte) 0x03, (byte) 0x04}, response.getStatusCodeOld());
     }
 
     @Test
     public void niceFormat() {
-        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), true);
+        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), null);
         assertEquals("FEDCBA989000", ByteBufferUtils.toHex(response.getBytes()));
     }
 
     @Test
     public void statusCode() {
-        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), true);
+        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), null);
         assertEquals(0x9000, response.getStatusCode());
     }
 

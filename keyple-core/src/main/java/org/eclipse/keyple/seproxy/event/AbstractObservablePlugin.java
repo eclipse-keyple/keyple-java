@@ -8,18 +8,80 @@
 
 package org.eclipse.keyple.seproxy.event;
 
+import java.util.SortedSet;
 import org.eclipse.keyple.seproxy.ReadersPlugin;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
 
 /**
  * Observable plugin. These plugin can report when a reader is added or removed.
  */
-public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<AbstractPluginEvent>
+abstract class AbstractObservablePlugin extends AbstractLoggedObservable<AbstractPluginEvent>
         implements ReadersPlugin {
-    public interface PluginObserver extends Observer {
-        void update(AbstractPluginEvent event);
+
+    /**
+     * The list of readers
+     */
+    protected SortedSet<AbstractObservableReader> readers = null;
+
+
+    protected AbstractObservablePlugin(String name) {
+        super(name);
     }
 
-    public final int compareTo(ReadersPlugin o) {
-        return this.getName().compareTo(o.getName());
+    /**
+     * Retrieve the current readers list.<br/>
+     * Gets the list for the native method the first time (null)<br/>
+     * Returns the current list after.<br/>
+     * The list may be updated in background in the case of a threaded plugin
+     * {@link AbstractThreadedObservablePlugin}
+     * 
+     * @return
+     */
+    public final SortedSet<AbstractObservableReader> getReaders() {
+        // TODO should be in the constructor by finally here because of singleton/static code
+        // constraints
+        if (readers == null) {
+            try {
+                readers = getNativeReaders();
+            } catch (IOReaderException e) {
+                // TODO add log
+                e.printStackTrace();
+            }
+        }
+        return readers;
+    }
+
+    /**
+     * Gets a list of native readers from the native methods
+     * 
+     * @return the list of AbstractObservableReader objects.
+     * @throws IOReaderException
+     */
+    protected abstract SortedSet<AbstractObservableReader> getNativeReaders()
+            throws IOReaderException;
+
+    /**
+     * Gets the specific reader whose is provided as an argument.
+     * 
+     * @param name
+     * @return the AbstractObservableReader object (null if not found)
+     * @throws IOReaderException
+     */
+    protected abstract AbstractObservableReader getNativeReader(String name)
+            throws IOReaderException;
+
+    /**
+     * Compare the name of the current ReadersPlugin to the name of the ReadersPlugin provided in
+     * argument
+     * 
+     * @param plugin
+     * @return true if the names match (The method is needed for the SortedSet lists)
+     */
+    public final int compareTo(ReadersPlugin plugin) {
+        return this.getName().compareTo(plugin.getName());
+    }
+
+    public interface PluginObserver extends Observer {
+        void update(AbstractPluginEvent event);
     }
 }

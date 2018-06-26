@@ -6,15 +6,15 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.examples.pc;
+package org.eclipse.keyple.example.pc;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.*;
-import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.event.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.util.Observable;
 
@@ -50,9 +50,9 @@ public class KeypleGenericDemo_ObservableReaderNotification {
 
         for (ReadersPlugin plugin : SeProxyService.getInstance().getPlugins()) {
 
-            if (plugin instanceof AbstractObservablePlugin) {
+            if (plugin instanceof AbstractThreadedObservablePlugin) {
                 System.out.println("Add observer on the plugin :  " + plugin.getName());
-                ((AbstractObservablePlugin) plugin).addObserver(this.pluginObserver);
+                ((AbstractThreadedObservablePlugin) plugin).addObserver(this.pluginObserver);
             } else {
                 System.out.println("Plugin " + plugin.getName() + " isn't observable");
             }
@@ -101,7 +101,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
     }
 
     public class SpecificPluginObserver
-            implements AbstractObservablePlugin.Observer<AbstractPluginEvent> {
+            implements AbstractThreadedObservablePlugin.Observer<AbstractPluginEvent> {
 
         SpecificReaderObserver readerObserver;
 
@@ -146,7 +146,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
 
                 try {
                     listReaders();
-                    if (((AbstractObservablePlugin) observable).getReaders().isEmpty()) {
+                    if (((AbstractThreadedObservablePlugin) observable).getReaders().isEmpty()) {
                         System.out.println("EXIT - no more reader");
                         synchronized (waitBeforeEnd) {
                             waitBeforeEnd.notify();

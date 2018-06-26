@@ -27,10 +27,10 @@ public class CloseSessionRespParsTest {
     public void closeSessionRespPars() throws InconsistentParameterValueException { // by ixxi
         byte[] response = {0x4D, (byte) 0xBD, (byte) 0xC9, 0x60, (byte) 0x90, 0x00};
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse = new ApduResponse(response, true);
+        ApduResponse apduResponse = new ApduResponse(ByteBuffer.wrap(response), null);
         listeResponse.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
-                new ApduResponse(ByteBufferUtils.fromHex("00"), true), listeResponse));
+                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
                 new CloseSessionRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
@@ -55,19 +55,19 @@ public class CloseSessionRespParsTest {
 
         {// Case Length = 4
             CloseSessionRespPars pars =
-                    new CloseSessionRespPars(new ApduResponse(apduResponse, true));
+                    new CloseSessionRespPars(new ApduResponse(apduResponse, null));
             Assert.assertEquals(sessionSignature, pars.getSignatureLo());
         }
 
         {// Case Length = 8
             CloseSessionRespPars pars =
-                    new CloseSessionRespPars(new ApduResponse(apduResponseCaseTwo, true));
+                    new CloseSessionRespPars(new ApduResponse(apduResponseCaseTwo, null));
             Assert.assertEquals(sessionSignatureCaseTwo, pars.getSignatureLo());
         }
 
         {// Case Other
             CloseSessionRespPars pars =
-                    new CloseSessionRespPars(new ApduResponse(apduResponseCaseThree, true));
+                    new CloseSessionRespPars(new ApduResponse(apduResponseCaseThree, null));
             Assert.assertEquals("", ByteBufferUtils.toHex(pars.getSignatureLo()));
         }
     }
@@ -75,7 +75,7 @@ public class CloseSessionRespParsTest {
     @Test
     public void existingTestConverted() {
         CloseSessionRespPars parser =
-                new CloseSessionRespPars(new ApduResponse(ByteBufferUtils.fromHex("9000h"), true));
+                new CloseSessionRespPars(new ApduResponse(ByteBufferUtils.fromHex("9000h"), null));
         // This assert wasn't passing
         Assert.assertEquals("", ByteBufferUtils.toHex(parser.getSignatureLo()));
         Assert.assertEquals("", ByteBufferUtils.toHex(parser.getPostponedData()));
@@ -84,13 +84,13 @@ public class CloseSessionRespParsTest {
     @Test // Calypso / page 105 / Example command aborting a session:
     public void abortingASession() {
         CloseSessionRespPars parser = new CloseSessionRespPars(
-                new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), true));
+                new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), null));
     }
 
     @Test // Calypso / page 105 / Example command, Lc=4, without postponed data:
     public void lc4withoutPostponedData() {
         CloseSessionRespPars parser = new CloseSessionRespPars(
-                new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), true));
+                new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), null));
         Assert.assertEquals("FEDCBA98", ByteBufferUtils.toHex(parser.getSignatureLo()));
         Assert.assertEquals("", ByteBufferUtils.toHex(parser.getPostponedData()));
     }
@@ -98,7 +98,7 @@ public class CloseSessionRespParsTest {
     @Test // Calypso / page 105 / Example command, Lc=4, with postponed data:
     public void lc4WithPostponedData() {
         CloseSessionRespPars parser = new CloseSessionRespPars(
-                new ApduResponse(ByteBufferUtils.fromHex("04 345678 FEDCBA98 9000h"), true));
+                new ApduResponse(ByteBufferUtils.fromHex("04 345678 FEDCBA98 9000h"), null));
         Assert.assertEquals("FEDCBA98", ByteBufferUtils.toHex(parser.getSignatureLo()));
         Assert.assertEquals("04345678", ByteBufferUtils.toHex(parser.getPostponedData()));
     }

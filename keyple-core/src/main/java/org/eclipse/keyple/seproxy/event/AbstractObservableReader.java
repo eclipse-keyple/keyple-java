@@ -34,6 +34,16 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             throws IOReaderException;
 
     /**
+     * Reader constructor<br/>
+     * Force the definition of a name through the use of super method.
+     * 
+     * @param name
+     */
+    protected AbstractObservableReader(String name) {
+        super(name);
+    }
+
+    /**
      * Implementation must call logSeRequestSet before transmit and logSeResponseSet after transmit
      *
      * @param requestSet
@@ -68,8 +78,15 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         return responseSet;
     }
 
-    public final int compareTo(ProxyReader o) {
-        return this.getName().compareTo(o.getName());
+    /**
+     * Compare the name of the current ProxyReader to the name of the ProxyReader provided in
+     * argument
+     * 
+     * @param proxyReader
+     * @return true if the names match (The method is needed for the SortedSet lists)
+     */
+    public final int compareTo(ProxyReader proxyReader) {
+        return this.getName().compareTo(proxyReader.getName());
     }
 
     public interface ReaderObserver extends AbstractLoggedObservable.Observer<ReaderEvent> {

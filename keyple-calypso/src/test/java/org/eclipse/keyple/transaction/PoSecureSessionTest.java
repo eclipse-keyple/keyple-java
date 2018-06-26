@@ -9,7 +9,8 @@
 package org.eclipse.keyple.transaction;
 
 import static org.eclipse.keyple.commands.utils.TestsUtilsResponseTabByteGenerator.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -404,7 +405,7 @@ public class PoSecureSessionTest {
 
         ApduResponse fciData = new ApduResponse(ByteBufferUtils.fromHex(
                 "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA153070A3C230C1410019000"),
-                true);
+                null);
         this.poPlainSecrureSession.processIdentification(fciData);
 
         // TODO ???

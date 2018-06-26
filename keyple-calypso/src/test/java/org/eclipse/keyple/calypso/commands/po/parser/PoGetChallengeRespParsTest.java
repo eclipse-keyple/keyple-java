@@ -20,7 +20,7 @@ public class PoGetChallengeRespParsTest {
     @Test
     public void getPoChallenge() {
         final ApduResponse apdu =
-                new ApduResponse(ByteBufferUtils.fromHex("01 02 03 04 9000"), true);
+                new ApduResponse(ByteBufferUtils.fromHex("01 02 03 04 9000"), null);
 
         PoGetChallengeRespPars resp = new PoGetChallengeRespPars(apdu);
 

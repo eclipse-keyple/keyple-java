@@ -19,7 +19,7 @@ import com.github.structlog4j.SLoggerFactory;
  * Abstract definition of an threader local reader. Factorizes the observation mechanism through the
  * implementation of a monitoring thread.
  */
-public abstract class AbstractThreadedLocalReader extends AbstractLocalReader {
+public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocalReader {
 
     private static final ILogger logger = SLoggerFactory.getLogger(AbstractLocalReader.class);
     private EventThread thread;
@@ -28,6 +28,10 @@ public abstract class AbstractThreadedLocalReader extends AbstractLocalReader {
      * Thread wait timeout in ms
      */
     protected long threadWaitTimeout;
+
+    public AbstractThreadedLocalReader(String name) {
+        super(name);
+    }
 
     /**
      * setter to fix the wait timeout in ms.

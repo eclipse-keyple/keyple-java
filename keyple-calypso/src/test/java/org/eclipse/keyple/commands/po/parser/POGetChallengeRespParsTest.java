@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.commands.po.parser;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.commands.po.parser.PoGetChallengeRespPars;
@@ -27,10 +28,10 @@ public class POGetChallengeRespParsTest {
         byte[] response = {0x03, 0x0D, 0x0E, (byte) 0xFA, (byte) 0x9C, (byte) 0x8C, (byte) 0xB7,
                 0x27, (byte) 0x90, 0x00};
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse = new ApduResponse(response, true);
+        ApduResponse apduResponse = new ApduResponse(ByteBuffer.wrap(response), null);
         listeResponse.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
-                new ApduResponse(ByteBufferUtils.fromHex("00"), true), listeResponse));
+                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), listeResponse));
 
         AbstractApduResponseParser apduResponseParser = new PoGetChallengeRespPars(
                 seResponse.getSingleResponse().getApduResponses().get(0));

@@ -26,10 +26,11 @@ public class DigestInitRespParsTest {
     @Test
     public void digestInitRespPars() throws InconsistentParameterValueException {
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse = new ApduResponse(new byte[] {(byte) 0x90, 0x00}, true);
+        ApduResponse apduResponse =
+                new ApduResponse(ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}), null);
         listeResponse.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
-                new ApduResponse(ByteBufferUtils.fromHex("00"), true), listeResponse));
+                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), listeResponse));
 
         AbstractApduResponseParser apduResponseParser =
                 new DigestInitRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
