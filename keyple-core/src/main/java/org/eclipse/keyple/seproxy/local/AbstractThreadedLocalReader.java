@@ -106,7 +106,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
     /**
      * Thread in charge of reporting live events
      */
-    class EventThread extends Thread {
+    private class EventThread extends Thread {
         /**
          * Reader that we'll report about
          */
