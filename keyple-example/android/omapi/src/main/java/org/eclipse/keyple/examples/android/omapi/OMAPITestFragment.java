@@ -183,8 +183,8 @@ public class OMAPITestFragment extends Fragment
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                 e.printStackTrace();
-                mText.append("IOReader Exception : " + e.getMessage());
+                    e.printStackTrace();
+                    mText.append("IOReader Exception : " + e.getMessage());
 
                 }
             });

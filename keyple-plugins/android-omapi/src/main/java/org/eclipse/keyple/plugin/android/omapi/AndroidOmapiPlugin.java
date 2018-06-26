@@ -41,8 +41,8 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
     /**
      * Initialize plugin by connecting to {@link SEService} Application Context is retrieved
      * automatically by a reflection invocation to method
-     * android.app.ActivityThread#currentApplication; Make sure to instantiate Android Omapi
-     * Plugin from a Android Context Application
+     * android.app.ActivityThread#currentApplication; Make sure to instantiate Android Omapi Plugin
+     * from a Android Context Application
      */
     private AndroidOmapiPlugin() {
         super(TAG);
@@ -57,7 +57,7 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
             PackageInfo pi = app.getPackageManager().getPackageInfo(SMARTCARD_SERVICE_PACKAGE, 0);
             // smartcard service present
 
-            //connect to Secure Element Service
+            // connect to Secure Element Service
             if (seService == null || !seService.isConnected()) {
                 seService = new SEService(app, this);
                 Log.i(TAG, "Connected to SeService " + seService.getVersion());
@@ -74,9 +74,10 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        }   catch (PackageManager.NameNotFoundException ex) {
+        } catch (PackageManager.NameNotFoundException ex) {
             ex.printStackTrace();
-            Log.e(TAG, "org.simalliance.openmobileapi.service smartcard service package was not found in the platform");
+            Log.e(TAG,
+                    "org.simalliance.openmobileapi.service smartcard service package was not found in the platform");
         }
     }
 
@@ -92,48 +93,48 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
      * @throws IOReaderException
      */
     /*
-    @Override
-    public SortedSet<? extends ProxyReader> getReaders() throws IOReaderException {
-        return new TreeSet<ProxyReader>(proxyReaders.values());
-    }
-    */
+     * @Override public SortedSet<? extends ProxyReader> getReaders() throws IOReaderException {
+     * return new TreeSet<ProxyReader>(proxyReaders.values()); }
+     */
 
     @Override
     protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
 
         SortedSet<AbstractObservableReader> readers = new TreeSet<AbstractObservableReader>();
 
-        if(seService.isConnected()){
+        if (seService.isConnected()) {
             Reader[] omapiReaders = seService.getReaders();
 
             if (omapiReaders == null) {
                 Log.w(TAG, "No readers found");
-                return readers;//empty list
+                return readers;// empty list
             }
 
 
             for (Reader omapiReader : omapiReaders) {
                 Log.d(TAG, "Reader available name : " + omapiReader.getName());
-                Log.d(TAG, "Reader available isSePresent : " + omapiReader.isSecureElementPresent());
+                Log.d(TAG,
+                        "Reader available isSePresent : " + omapiReader.isSecureElementPresent());
 
                 // http://seek-for-android.github.io/javadoc/V4.0.0/org/simalliance/openmobileapi/Reader.html
-                AbstractObservableReader seReader = new AndroidOmapiReader(omapiReader, omapiReader.getName());
+                AbstractObservableReader seReader =
+                        new AndroidOmapiReader(omapiReader, omapiReader.getName());
                 readers.add(seReader);
             }
 
             return readers;
 
-        }else{
+        } else {
             Log.w(TAG, "OMAPI SeService is not connected yet");
-            return readers;//empty list
+            return readers;// empty list
         }
 
     }
 
     @Override
     protected AbstractObservableReader getNativeReader(String name) throws IOReaderException {
-        for(AbstractObservableReader aReader :readers){
-            if(aReader.getName().equals(name)){
+        for (AbstractObservableReader aReader : readers) {
+            if (aReader.getName().equals(name)) {
                 return aReader;
             }
         }
@@ -153,8 +154,8 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
         Log.i(TAG, "Retrieve available readers...");
 
         try {
-            //init readers
-            readers  = getNativeReaders();
+            // init readers
+            readers = getNativeReaders();
         } catch (IOReaderException e) {
             e.printStackTrace();
             Log.e(TAG, e.getMessage());

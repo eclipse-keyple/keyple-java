@@ -13,11 +13,9 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
 import org.eclipse.keyple.seproxy.local.AbstractLocalReader;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.simalliance.openmobileapi.Channel;
@@ -46,7 +44,7 @@ public class AndroidOmapiReader extends AbstractLocalReader {
         this.omapiReader = omapiReader;
     }
 
-    //@Override
+    // @Override
     /**
      * Return the name of this reader. If this reader is a SIM reader, then its name must be
      * "SIM[Slot]" If the reader is a SD or micro SD reader, then its name must be “SD[slot]” If the
@@ -55,10 +53,8 @@ public class AndroidOmapiReader extends AbstractLocalReader {
      *
      */
     /*
-    public String getName() {
-        return omapiReader.getName();
-    }
-    */
+     * public String getName() { return omapiReader.getName(); }
+     */
 
     @Override
     public Map<String, String> getParameters() {
@@ -92,7 +88,8 @@ public class AndroidOmapiReader extends AbstractLocalReader {
      * @throws IOReaderException
      */
     @Override
-    protected ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid, Set<Short> successfulSelectionStatusCodes) throws IOReaderException {
+    protected ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid,
+            Set<Short> successfulSelectionStatusCodes) throws IOReaderException {
         ByteBuffer[] atrAndFci = new ByteBuffer[2];
 
         try {
@@ -112,7 +109,8 @@ public class AndroidOmapiReader extends AbstractLocalReader {
 
                 // get ATR from session
                 Log.i(TAG, "Retrieveing ATR from session...");
-                atrAndFci[0] = ByteBuffer.wrap(session.getATR() !=null? session.getATR() : new byte[0]);
+                atrAndFci[0] =
+                        ByteBuffer.wrap(session.getATR() != null ? session.getATR() : new byte[0]);
 
                 Log.i(TAG, "Create logical openChannel within the session...");
                 openChannel = session.openLogicalChannel(ByteBufferUtils.toBytes(aid));
