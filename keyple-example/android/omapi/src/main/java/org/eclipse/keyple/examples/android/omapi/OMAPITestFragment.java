@@ -106,23 +106,17 @@ public class OMAPITestFragment extends Fragment
             SortedSet<? extends ProxyReader> readers =
                     SeProxyService.getInstance().getPlugins().first().getReaders();
 
-            if (readers.size() < 1) {
+            if (readers == null || readers.size() < 1) {
                 mText.append("\nNo readers setup in Keyple Plugin");
             } else {
-                for (ProxyReader reader : readers) {
-                    if (reader.getName().contains("SIM")) {
-                        Log.d(TAG, "Launching tests for reader : " + reader.getName());
-                        mText.append("\nLaunching tests for reader : " + reader.getName());
-                        runHoplinkSimpleRead();
-                    }
 
-                    /*
-                     * Exception if(reader.getName().contains("eSE")){ Log.d(TAG,
-                     * "Launching tests for reader : " + reader.getName());
-                     * mText.append("\nLaunching tests for reader : " + reader.getName());
-                     * runHoplinkSimpleRead(); }
-                     */
+
+                for (ProxyReader aReader : readers) {
+                    Log.d(TAG, "Launching tests for reader : " + aReader.getName());
+                    mText.append("\nLaunching tests for reader : " + aReader.getName());
+                    runHoplinkSimpleRead(aReader);
                 }
+
             }
 
         } catch (IOReaderException e) {
@@ -134,11 +128,10 @@ public class OMAPITestFragment extends Fragment
     /**
      * Run Hoplink Simple read command
      */
-    private void runHoplinkSimpleRead() {
+    private void runHoplinkSimpleRead(ProxyReader reader) {
         Log.d(TAG, "Running HopLink Simple Read Tests");
-        ProxyReader reader = null;
+
         try {
-            reader = SeProxyService.getInstance().getPlugins().first().getReaders().first();
 
             String poAid = "A000000291A000000191";
             String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
@@ -186,8 +179,15 @@ public class OMAPITestFragment extends Fragment
                 }
             });
 
-        } catch (IOReaderException e) {
-            e.printStackTrace();
+        } catch (final IOReaderException e) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                 e.printStackTrace();
+                mText.append("IOReader Exception : " + e.getMessage());
+
+                }
+            });
         }
     }
 

@@ -14,8 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.event.AbstractObservablePlugin;
+import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.event.AbstractStaticPlugin;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.SEService;
@@ -26,11 +26,9 @@ import android.util.Log;
  * Loads and configures {@link AndroidOmapiReader} for each SE Reader in the platform TODO : filters
  * readers to load by parameters with a regex
  */
-public class AndroidOmapiPlugin extends AbstractObservablePlugin implements SEService.CallBack {
+public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEService.CallBack {
 
     private static final String TAG = AndroidOmapiPlugin.class.getSimpleName();
-
-    private Map<String, ProxyReader> proxyReaders = new HashMap<String, ProxyReader>();
 
     private SEService seService;
 
@@ -41,10 +39,11 @@ public class AndroidOmapiPlugin extends AbstractObservablePlugin implements SESe
     /**
      * Initialize plugin by connecting to {@link SEService} Application Context is retrieved
      * automatically by a reflection invocation to method
-     * {@linkandroid.app.ActivityThread#currentApplication} Make sure to instantiate Android Omapi
+     * android.app.ActivityThread#currentApplication; Make sure to instantiate Android Omapi
      * Plugin from a Android Context Application
      */
     private AndroidOmapiPlugin() {
+        super(TAG);
         try {
             Log.i(TAG, "Retrieving Application Context with reflection android.app.AppGlobals");
 
@@ -76,21 +75,60 @@ public class AndroidOmapiPlugin extends AbstractObservablePlugin implements SESe
     }
 
 
-    @Override
-    public String getName() {
-        return "OMAPINFCPlugin";
-    }
-
-
     /**
      * Returns all {@link AndroidOmapiReader} readers loaded by the plugin
      * 
      * @return {@link AndroidOmapiReader} readers loaded by the plugin
      * @throws IOReaderException
      */
+    /*
     @Override
     public SortedSet<? extends ProxyReader> getReaders() throws IOReaderException {
         return new TreeSet<ProxyReader>(proxyReaders.values());
+    }
+    */
+
+    @Override
+    protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
+
+        SortedSet<AbstractObservableReader> readers = new TreeSet<AbstractObservableReader>();
+
+        if(seService.isConnected()){
+            Reader[] omapiReaders = seService.getReaders();
+
+            if (omapiReaders == null) {
+                Log.w(TAG, "No readers found");
+                return readers;//empty list
+            }
+
+
+            for (Reader omapiReader : omapiReaders) {
+                Log.d(TAG, "Reader available name : " + omapiReader.getName());
+                Log.d(TAG, "Reader available isSePresent : " + omapiReader.isSecureElementPresent());
+
+                // http://seek-for-android.github.io/javadoc/V4.0.0/org/simalliance/openmobileapi/Reader.html
+                AbstractObservableReader seReader = new AndroidOmapiReader(omapiReader, omapiReader.getName());
+                readers.add(seReader);
+            }
+
+            return readers;
+
+        }else{
+            Log.w(TAG, "OMAPI SeService is not connected yet");
+            return readers;//empty list
+        }
+
+    }
+
+    @Override
+    protected AbstractObservableReader getNativeReader(String name) throws IOReaderException {
+        for(AbstractObservableReader aReader :readers){
+            if(aReader.getName().equals(name)){
+                return aReader;
+            }
+        }
+        return null;
+
     }
 
     /**
@@ -103,22 +141,13 @@ public class AndroidOmapiPlugin extends AbstractObservablePlugin implements SESe
     public void serviceConnected(SEService seService) {
 
         Log.i(TAG, "Retrieve available readers...");
-        Reader[] omapiReaders = seService.getReaders();
 
-        if (omapiReaders.length < 1) {
-            Log.w(TAG, "No readers found");
-            return;
-        }
-
-
-        for (Reader omapiReader : omapiReaders) {
-            Log.d(TAG, "Reader available name : " + omapiReader.getName());
-            Log.d(TAG, "Reader available isSePresent : " + omapiReader.isSecureElementPresent());
-
-            // http://seek-for-android.github.io/javadoc/V4.0.0/org/simalliance/openmobileapi/Reader.html
-            ProxyReader seReader = new AndroidOmapiReader(omapiReader);
-            proxyReaders.put(omapiReader.getName(), seReader);
-
+        try {
+            //init readers
+            readers  = getNativeReaders();
+        } catch (IOReaderException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         }
 
     }
