@@ -84,10 +84,6 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
         }
     }
 
-    private void exceptionThrown(Exception e) {
-        notifyObservers(new ErrorPluginEvent(e));
-    }
-
     /**
      * Thread in charge of reporting live events
      */
@@ -99,6 +95,10 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
          */
         void end() {
             running = false;
+        }
+
+        private void exceptionThrown(Exception e) {
+            notifyObservers(new ErrorPluginEvent(e));
         }
 
         public void run() {

@@ -115,6 +115,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
          * If the thread should be kept a alive
          */
         private volatile boolean running = true;
+
         private long threadWaitTimeout;
 
         /**
