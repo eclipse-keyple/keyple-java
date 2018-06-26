@@ -91,7 +91,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      * @param timeout
      * @return presence status
      */
-    public abstract boolean waitForCardPresent(long timeout) throws IOReaderException;
+    protected abstract boolean waitForCardPresent(long timeout) throws IOReaderException;
 
     /**
      * Wait until the card disappears. Returns true if a card has disappeared before the end of the
@@ -101,7 +101,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      * @param timeout
      * @return presence status
      */
-    public abstract boolean waitForCardAbsent(long timeout) throws IOReaderException;
+    protected abstract boolean waitForCardAbsent(long timeout) throws IOReaderException;
 
     /**
      * Thread in charge of reporting live events
