@@ -101,7 +101,7 @@ jobs:
         #Assemble Example App OMAPI
         - run:
             name: Assemble Keyple Example Android OMAPI application to apk file
-            command: gradle -b ./keyple-example/android/omapi/build.gradle assembleDebug
+            command: gradle -b ./keyple-example/android/omapi/build.gradle assembleCircle_ci
 
         #store Example App NFC
         - store_artifacts:
