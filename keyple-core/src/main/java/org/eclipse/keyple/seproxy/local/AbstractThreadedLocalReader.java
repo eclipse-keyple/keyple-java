@@ -9,7 +9,6 @@
 package org.eclipse.keyple.seproxy.local;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import com.github.structlog4j.ILogger;
@@ -29,7 +28,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      */
     protected long threadWaitTimeout;
 
-    public AbstractThreadedLocalReader(String name) {
+    protected AbstractThreadedLocalReader(String name) {
         super(name);
     }
 
@@ -91,7 +90,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      * @param timeout
      * @return presence status
      */
-    public abstract boolean waitForCardPresent(long timeout) throws IOReaderException;
+    protected abstract boolean waitForCardPresent(long timeout) throws IOReaderException;
 
     /**
      * Wait until the card disappears. Returns true if a card has disappeared before the end of the
@@ -101,21 +100,22 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      * @param timeout
      * @return presence status
      */
-    public abstract boolean waitForCardAbsent(long timeout) throws IOReaderException;
+    protected abstract boolean waitForCardAbsent(long timeout) throws IOReaderException;
 
     /**
      * Thread in charge of reporting live events
      */
-    class EventThread extends Thread {
+    private class EventThread extends Thread {
         /**
          * Reader that we'll report about
          */
-        private final AbstractObservableReader reader;
+        private final AbstractThreadedLocalReader reader;
 
         /**
          * If the thread should be kept a alive
          */
         private volatile boolean running = true;
+
         private long threadWaitTimeout;
 
         /**
@@ -123,7 +123,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
          *
          * @param reader AbstractObservableReader
          */
-        EventThread(AbstractObservableReader reader) {
+        EventThread(AbstractThreadedLocalReader reader) {
             super("observable-reader-events-" + threadCount.addAndGet(1));
             setDaemon(true);
             this.reader = reader;

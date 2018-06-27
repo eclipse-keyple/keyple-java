@@ -27,7 +27,7 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader {
     private static final ILogger logger =
             SLoggerFactory.getLogger(AbstractSelectionLocalReader.class);
 
-    public AbstractSelectionLocalReader(String name) {
+    protected AbstractSelectionLocalReader(String name) {
         super(name);
     }
 

@@ -89,15 +89,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             throws IOReaderException;
 
     /**
-     * Transmits a SeRequestSet and receives the SeResponseSet with time measurement.
-     *
-     * @param requestSet
-     * @return responseSet
-     * @throws IOReaderException
-     */
-
-    /**
-     * Transmission of each APDU request
+     * Transmits an ApduRequest and receives the ApduResponse with time measurement.
      *
      * @param apduRequest APDU request
      * @return APDU response
@@ -334,6 +326,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      */
     protected Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
 
+    // TODO try to optimize this by reducing the number of addSeProtocolSetting methods
     public final void addSeProtocolSetting(Map<SeProtocol, String> seProtocolSettings)
             throws IOReaderException {
         this.protocolsMap.putAll(seProtocolSettings);
