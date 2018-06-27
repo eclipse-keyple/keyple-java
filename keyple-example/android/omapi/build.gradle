@@ -47,7 +47,6 @@ android {
             storeFile file('/path/to/yourownkeystore')
             storePassword '0rangeLabs'
         }
-
     }
     compileSdkVersion 26
     defaultConfig {
@@ -103,8 +102,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation project(':keyple-calypso')
-    compile project(path: ':keyple-plugin-android-omapi')
-    provided files('libs/org.simalliance.openmobileapi.jar')
+    implementation project(path: ':keyple-plugin-android-omapi')
+    compileOnly files('libs/org.simalliance.openmobileapi.jar')
 }
 
 //Override signing properties from local file
