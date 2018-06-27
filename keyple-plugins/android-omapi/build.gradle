@@ -55,6 +55,10 @@ android {
         release {
             minifyEnabled false
         }
+        circle_ci {
+            debuggable false
+            minifyEnabled true
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
@@ -112,8 +116,6 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:26.1.0'
     testCompile 'junit:junit:4.12'
     implementation project(':keyple-calypso')
-
     //compile with OMAPI jar but do not include it
     provided files('libs/org.simalliance.openmobileapi.jar')
-
 }

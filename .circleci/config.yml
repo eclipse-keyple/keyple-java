@@ -51,6 +51,8 @@ jobs:
 
       environment:
             JVM_OPTS: -Xmx3200m
+            ANDROID_HOME: /home/user/android-sdk-linux
+            BUILD_ENV : circle_ci
 
       steps:
 
@@ -63,17 +65,17 @@ jobs:
         #assemble keyple core and calypso
         - run:
             name: Assemble Keyple
-            command: ANDROID_HOME=/home/user/android-sdk-linux gradle build
+            command:  gradle build
 
         #Download NFC project dependencies
         - run:
             name: Download Dependencies for Example Android NFC
-            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example/android/nfc/build.gradle androidDependencies
+            command: gradle -b ./keyple-example/android/nfc/build.gradle androidDependencies
 
         #Download OMAPI project dependencies
         - run:
             name: Download Dependencies for Example Android OMAPI
-            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example/android/omapi/build.gradle androidDependencies
+            command: gradle -b ./keyple-example/android/omapi/build.gradle androidDependencies
 
         #Save dependencies in cache
         - save_cache:
@@ -84,22 +86,22 @@ jobs:
         #Assemble Plugin NFC
         - run:
             name: Assemble Plugin NFC plugin to aar file
-            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-plugins/android-nfc/build.gradle assembleDebug generateDebugJavadoc
+            command: gradle -b ./keyple-plugins/android-nfc/build.gradle assembleDebug generateDebugJavadoc
 
         #Assemble Example App NFC
         - run:
             name: Assemble Keyple Example Android NFC application to apk file
-            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example/android/nfc/build.gradle assembleDebug
+            command: gradle -b ./keyple-example/android/nfc/build.gradle assembleDebug
 
         #Assemble Plugin OMAPI
         - run:
             name: Assemble Plugin OMAPI plugin to aar file
-            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-plugins/android-omapi/build.gradle assembleDebug generateDebugJavadoc
+            command: gradle -b ./keyple-plugins/android-omapi/build.gradle assembleCircle_ci generateDebugJavadoc
 
         #Assemble Example App OMAPI
         - run:
             name: Assemble Keyple Example Android OMAPI application to apk file
-            command: ANDROID_HOME=/home/user/android-sdk-linux gradle -b ./keyple-example/android/omapi/build.gradle assembleDebug
+            command: gradle -b ./keyple-example/android/omapi/build.gradle assembleDebug
 
         #store Example App NFC
         - store_artifacts:

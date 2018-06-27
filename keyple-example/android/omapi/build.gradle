@@ -37,6 +37,8 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'com.android.application'
 
+
+
 android {
     signingConfigs {
         release {
@@ -45,6 +47,7 @@ android {
             storeFile file('/path/to/yourownkeystore')
             storePassword '0rangeLabs'
         }
+
     }
     compileSdkVersion 26
     defaultConfig {
@@ -56,15 +59,22 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.release
     }
+
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            debuggable true
             signingConfig signingConfigs.release
         }
         debug {
             signingConfig signingConfigs.release
+            debuggable true
+            minifyEnabled false
+        }
+        circle_ci {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable true
         }
     }
     compileOptions {
