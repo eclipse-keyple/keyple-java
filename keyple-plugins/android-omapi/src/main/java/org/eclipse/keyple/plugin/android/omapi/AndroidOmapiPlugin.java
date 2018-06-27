@@ -20,6 +20,7 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.SEService;
 import android.app.Application;
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
@@ -38,6 +39,26 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
     // singleton methods
     private static AndroidOmapiPlugin uniqueInstance = new AndroidOmapiPlugin();
 
+
+    private String getOMAPIVersion(Context context){
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo("android.smartcard", 0);
+            return packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e1) {
+            try {
+                PackageInfo packageInfo =  context.getPackageManager().getPackageInfo("org.simalliance.openmobileapi.service", 0);
+                return packageInfo.versionName;
+            } catch (PackageManager.NameNotFoundException e2) {
+                try {
+                    PackageInfo packageInfo = context.getPackageManager().getPackageInfo("com.sonyericsson.smartcard", 0);
+                    return packageInfo.versionName;
+                } catch (PackageManager.NameNotFoundException e3) {
+                    return "";
+                }
+            }
+        }
+    }
+
     /**
      * Initialize plugin by connecting to {@link SEService} Application Context is retrieved
      * automatically by a reflection invocation to method
@@ -53,17 +74,20 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
             Application app = (Application) Class.forName("android.app.ActivityThread")
                     .getMethod("currentApplication").invoke(null, (Object[]) null);
 
-            final String SMARTCARD_SERVICE_PACKAGE = "org.simalliance.openmobileapi.service";
-            PackageInfo pi = app.getPackageManager().getPackageInfo(SMARTCARD_SERVICE_PACKAGE, 0);
-            // smartcard service present
+            String omapiVersion = getOMAPIVersion(app);
 
-            // connect to Secure Element Service
-            if (seService == null || !seService.isConnected()) {
-                seService = new SEService(app, this);
-                Log.i(TAG, "Connected to SeService " + seService.getVersion());
+            if (omapiVersion.equals("")){
+                Log.e(TAG,"Open Mobile API library not found in the platform");
+            }else{
+                Log.e(TAG,"Open Mobile API library version found : " + omapiVersion);
+                // connect to Secure Element Service
+                if (seService == null || !seService.isConnected()) {
+                    seService = new SEService(app, this);
+                    Log.i(TAG, "Connected to SeService " + seService.getVersion());
 
-            } else {
-                Log.w(TAG, "seService was already connected");
+                } else {
+                    Log.w(TAG, "seService was already connected");
+                }
             }
 
         } catch (IllegalAccessException e) {
@@ -74,10 +98,6 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        } catch (PackageManager.NameNotFoundException ex) {
-            ex.printStackTrace();
-            Log.e(TAG,
-                    "org.simalliance.openmobileapi.service smartcard service package was not found in the platform");
         }
     }
 

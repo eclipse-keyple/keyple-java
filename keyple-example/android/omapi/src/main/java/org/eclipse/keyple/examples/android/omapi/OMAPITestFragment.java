@@ -184,6 +184,7 @@ public class OMAPITestFragment extends Fragment
                 @Override
                 public void run() {
                     e.printStackTrace();
+                    mText.append("\n ---- \n");
                     mText.append("IOReader Exception : " + e.getMessage());
 
                 }
