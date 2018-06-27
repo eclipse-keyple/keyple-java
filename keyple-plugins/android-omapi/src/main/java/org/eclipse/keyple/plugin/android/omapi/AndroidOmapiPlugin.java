@@ -40,17 +40,20 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
     private static AndroidOmapiPlugin uniqueInstance = new AndroidOmapiPlugin();
 
 
-    private String getOMAPIVersion(Context context){
+    private String getOMAPIVersion(Context context) {
         try {
-            PackageInfo packageInfo = context.getPackageManager().getPackageInfo("android.smartcard", 0);
+            PackageInfo packageInfo =
+                    context.getPackageManager().getPackageInfo("android.smartcard", 0);
             return packageInfo.versionName;
         } catch (PackageManager.NameNotFoundException e1) {
             try {
-                PackageInfo packageInfo =  context.getPackageManager().getPackageInfo("org.simalliance.openmobileapi.service", 0);
+                PackageInfo packageInfo = context.getPackageManager()
+                        .getPackageInfo("org.simalliance.openmobileapi.service", 0);
                 return packageInfo.versionName;
             } catch (PackageManager.NameNotFoundException e2) {
                 try {
-                    PackageInfo packageInfo = context.getPackageManager().getPackageInfo("com.sonyericsson.smartcard", 0);
+                    PackageInfo packageInfo = context.getPackageManager()
+                            .getPackageInfo("com.sonyericsson.smartcard", 0);
                     return packageInfo.versionName;
                 } catch (PackageManager.NameNotFoundException e3) {
                     return "";
@@ -76,10 +79,10 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
 
             String omapiVersion = getOMAPIVersion(app);
 
-            if (omapiVersion.equals("")){
-                Log.e(TAG,"Open Mobile API library not found in the platform");
-            }else{
-                Log.e(TAG,"Open Mobile API library version found : " + omapiVersion);
+            if (omapiVersion.equals("")) {
+                Log.e(TAG, "Open Mobile API library not found in the platform");
+            } else {
+                Log.e(TAG, "Open Mobile API library version found : " + omapiVersion);
                 // connect to Secure Element Service
                 if (seService == null || !seService.isConnected()) {
                     seService = new SEService(app, this);
