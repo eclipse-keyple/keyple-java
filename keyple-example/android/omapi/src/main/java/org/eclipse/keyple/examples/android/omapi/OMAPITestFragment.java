@@ -25,14 +25,10 @@ import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
-import org.eclipse.keyple.util.Observable;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -202,13 +198,10 @@ public class OMAPITestFragment extends Fragment {
 
 
         /*
-        // destroy AndroidNFC fragment if needed
-        FragmentManager fm = getFragmentManager();
-        Fragment f = fm.findFragmentByTag(TAG_OMAPI_ANDROID_FRAGMENT);
-        if (f != null) {
-            fm.beginTransaction().remove(f).commit();
-        }
-        */
+         * // destroy AndroidNFC fragment if needed FragmentManager fm = getFragmentManager();
+         * Fragment f = fm.findFragmentByTag(TAG_OMAPI_ANDROID_FRAGMENT); if (f != null) {
+         * fm.beginTransaction().remove(f).commit(); }
+         */
 
     }
 
