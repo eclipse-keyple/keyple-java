@@ -44,13 +44,10 @@ import android.widget.TextView;
 /**
  * View for OMAPI Tests
  */
-public class OMAPITestFragment extends Fragment
-        implements AbstractObservableReader.Observer<ReaderEvent> {
+public class OMAPITestFragment extends Fragment {
 
 
     private static final String TAG = OMAPITestFragment.class.getSimpleName();
-    private static final String TAG_OMAPI_ANDROID_FRAGMENT =
-            "org.eclipse.keyple.plugin.android.omapi.AndroidOmapiFragment";
 
     private TextView mText;
 
@@ -107,7 +104,8 @@ public class OMAPITestFragment extends Fragment
                     SeProxyService.getInstance().getPlugins().first().getReaders();
 
             if (readers == null || readers.size() < 1) {
-                mText.append("\nNo readers setup in Keyple Plugin");
+                mText.append("\nNo readers found in Keyple Plugin");
+                mText.append("\nTry to reload..");
             } else {
 
 
@@ -202,50 +200,17 @@ public class OMAPITestFragment extends Fragment
     public void onDestroy() {
         super.onDestroy();
 
-        try {
-            Log.d(TAG, "Remove task as an observer for ReaderEvents");
-            SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().first().getReaders().first();
-            ((AbstractObservableReader) reader).removeObserver(this);
 
-            // destroy AndroidNFC fragment
-            FragmentManager fm = getFragmentManager();
-            Fragment f = fm.findFragmentByTag(TAG_OMAPI_ANDROID_FRAGMENT);
-            if (f != null) {
-                fm.beginTransaction().remove(f).commit();
-            }
-
-        } catch (IOReaderException e) {
-            e.printStackTrace();
+        /*
+        // destroy AndroidNFC fragment if needed
+        FragmentManager fm = getFragmentManager();
+        Fragment f = fm.findFragmentByTag(TAG_OMAPI_ANDROID_FRAGMENT);
+        if (f != null) {
+            fm.beginTransaction().remove(f).commit();
         }
+        */
+
     }
 
 
-    @Override
-    public void update(Observable<ReaderEvent> observable, ReaderEvent event) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "New ReaderEvent received : " + event.toString());
-
-                switch (event) {
-                    case SE_INSERTED:
-                        mText.append("\n ---- \n");
-                        mText.append("Connected to SE");
-                        break;
-
-                    case SE_REMOVAL:
-                        mText.append("\n ---- \n");
-                        mText.append("Disconnected from SE");
-                        break;
-
-                    case IO_ERROR:
-                        mText.append("\n ---- \n");
-                        mText.setText("Error reading card");
-                        break;
-
-                }
-            }
-        });
-    }
 }
