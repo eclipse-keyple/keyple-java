@@ -17,7 +17,6 @@ import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.event.AbstractStaticReader;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.local.AbstractLocalReader;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.simalliance.openmobileapi.Channel;
 import org.simalliance.openmobileapi.Reader;
@@ -107,7 +106,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
 
                 Log.i(TAG, "Opening channel to aid : " + ByteBufferUtils.toHex(aid));
 
-                //open physical channel
+                // open physical channel
                 Session session = omapiReader.openSession();
 
                 // get ATR from session

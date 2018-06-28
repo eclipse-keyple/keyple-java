@@ -14,15 +14,18 @@ import org.eclipse.keyple.seproxy.local.AbstractLocalReader;
  * Abstract Observable Reader class dedicated to static reader configurations
  */
 public abstract class AbstractStaticReader extends AbstractLocalReader {
+
     protected AbstractStaticReader(String name) {
         super(name);
     }
 
     public final void addObserver(Observer observer) {
-        throw new RuntimeException("Abstract Static Reader does not support Observers, do not use this function");
+        throw new RuntimeException(
+                "Abstract Static Reader does not support Observers, do not use this function");
     }
 
     public final void removeObserver(Observer observer) {
-        throw new RuntimeException("Abstract Static Reader does not support Observers, do not use this function");
+        throw new RuntimeException(
+                "Abstract Static Reader does not support Observers, do not use this function");
     }
 }
