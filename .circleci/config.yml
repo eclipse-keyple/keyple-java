@@ -52,9 +52,12 @@ jobs:
       environment:
             JVM_OPTS: -Xmx3200m
             ANDROID_HOME: /home/user/android-sdk-linux
-            BUILD_ENV : circle_ci
 
       steps:
+
+        #########################################
+        #### RESTORE DEPENDENCIES FROM CACHE ####
+        #########################################
 
         - checkout
 
@@ -83,6 +86,11 @@ jobs:
               - ~/.gradle
             key: v1-dependencies-{{ checksum "./keyple-example/android/nfc/build.gradle" }}
 
+
+        ############################
+        #### ANDROID NFC PLUGIN ####
+        ############################
+
         #Assemble Plugin NFC
         - run:
             name: Assemble Plugin NFC plugin to aar file
@@ -92,6 +100,20 @@ jobs:
         - run:
             name: Assemble Keyple Example Android NFC application to apk file
             command: gradle -b ./keyple-example/android/nfc/build.gradle assembleDebug
+
+        #store Plugin NFC
+        - store_artifacts:
+            path: ./keyple-plugins/android-nfc/build/outputs/aar/
+            destination: keyple-plugins/android-nfc/
+
+        #store Example App NFC
+        - store_artifacts:
+            path: ./keyple-example/android/nfc/build/outputs/apk/debug
+            destination: keyple-example/android/nfc/
+
+        ##############################
+        #### ANDROID OMAPI PLUGIN ####
+        ##############################
 
         #Assemble Plugin OMAPI
         - run:
@@ -103,20 +125,10 @@ jobs:
             name: Assemble Keyple Example Android OMAPI application to apk file
             command: gradle -b ./keyple-example/android/omapi/build.gradle assembleDebug
 
-        #store Example App NFC
-        - store_artifacts:
-            path: ./keyple-example/android/nfc/build/outputs/apk/debug
-            destination: keyple-example/android/nfc/
-
         #store Example App OMAPI
         - store_artifacts:
             path: ./keyple-example/android/omapi/build/outputs/apk/debug
             destination: keyple-example/android/omapi/
-
-        #store Plugin NFC
-        - store_artifacts:
-            path: ./keyple-plugins/android-nfc/build/outputs/aar/
-            destination: keyple-plugins/android-nfc/
 
         #store Plugin OMAPI
         - store_artifacts:

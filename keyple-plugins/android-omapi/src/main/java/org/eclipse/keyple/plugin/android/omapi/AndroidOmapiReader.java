@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.keyple.seproxy.SeProtocol;
+import org.eclipse.keyple.seproxy.event.AbstractStaticReader;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.local.AbstractLocalReader;
@@ -29,7 +30,7 @@ import android.util.Log;
  * or virtual devices. They can be removable or not. They can contain one SE that can or cannot be
  * removed.
  */
-public class AndroidOmapiReader extends AbstractLocalReader {
+public class AndroidOmapiReader extends AbstractStaticReader {
 
 
     private static final String TAG = AndroidOmapiReader.class.getSimpleName();
@@ -105,6 +106,8 @@ public class AndroidOmapiReader extends AbstractLocalReader {
             } else {
 
                 Log.i(TAG, "Opening channel to aid : " + ByteBufferUtils.toHex(aid));
+
+                //open physical channel
                 Session session = omapiReader.openSession();
 
                 // get ATR from session
