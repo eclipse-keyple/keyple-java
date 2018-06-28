@@ -11,7 +11,7 @@ package org.eclipse.keyple.seproxy.event;
 import org.eclipse.keyple.seproxy.local.AbstractLocalReader;
 
 /**
- * Abstract Observable Plugin class dedicated to static reader configurations
+ * Abstract Observable Reader class dedicated to static reader configurations
  */
 public abstract class AbstractStaticReader extends AbstractLocalReader {
     protected AbstractStaticReader(String name) {
