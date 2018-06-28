@@ -11,7 +11,6 @@ package org.eclipse.keyple.examples.android.omapi;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -66,8 +65,7 @@ public class MainActivity extends AppCompatActivity {
         // init OMAPI Test Fragment
         Log.d(TAG, "Insert OMAPI Test View  Fragment");
         OMAPITestFragment omapiTestFragment = OMAPITestFragment.newInstance();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
+        getFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, omapiTestFragment, TAG_OMAPI_TEST_VIEW)
                 .addToBackStack(null).commit();
     }
