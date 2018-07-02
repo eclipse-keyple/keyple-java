@@ -88,6 +88,23 @@ class TagProxy implements TagTechnology {
         );
     }
 
+
+    public byte[] getATR() {
+
+        if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC)) {
+            return new byte[] {(byte) 0x90, 0x00};// Mifare does not have ATR
+        } else if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL)) {
+            return new byte[] {(byte) 0x90, 0x00};// Mifare does not have ATR
+        } else if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_ISODEP)) {
+            return ((IsoDep) tagTechnology).getHiLayerResponse() != null
+                    ? ((IsoDep) tagTechnology).getHiLayerResponse()
+                    : ((IsoDep) tagTechnology).getHistoricalBytes();
+        } else {
+            return null;// can not happen
+        }
+
+    }
+
     @Override
     public Tag getTag() {
         return tagTechnology.getTag();

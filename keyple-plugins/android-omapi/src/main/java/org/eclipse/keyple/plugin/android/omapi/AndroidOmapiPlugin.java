@@ -40,6 +40,11 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
     private static AndroidOmapiPlugin uniqueInstance = new AndroidOmapiPlugin();
 
 
+    /**
+     * Retrieve the version of the Open Mobile API of the platform
+     * @param context : Android Application context
+     * @return Version Name of the mobile API deployed, returns "" is no OMAPI found
+     */
     private String getOMAPIVersion(Context context) {
         try {
             PackageInfo packageInfo =

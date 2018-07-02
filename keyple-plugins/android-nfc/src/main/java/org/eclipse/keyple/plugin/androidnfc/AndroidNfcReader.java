@@ -14,16 +14,12 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import org.eclipse.keyple.seproxy.ApduRequest;
-import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
-import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
-import org.eclipse.keyple.seproxy.local.AbstractLocalReader;
+import org.eclipse.keyple.seproxy.local.AbstractSelectionLocalReader;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSettings;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -45,7 +41,8 @@ import android.util.Log;
  *
  *
  */
-public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.ReaderCallback {
+public class AndroidNfcReader extends AbstractSelectionLocalReader
+        implements NfcAdapter.ReaderCallback {
 
     private static final String TAG = "AndroidNfcReader";
 
@@ -161,7 +158,18 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
         return tagProxy != null && tagProxy.isConnected();
     }
 
-    private void openPhysicalChannel() throws IOReaderException {
+    @Override
+    protected ByteBuffer getATR() {
+        return ByteBuffer.wrap(tagProxy.getATR());
+    }
+
+    @Override
+    protected boolean isPhysicalChannelOpen() {
+        return tagProxy != null && tagProxy.isConnected();
+    }
+
+    @Override
+    protected void openPhysicalChannel() throws IOReaderException, ChannelStateReaderException {
 
         if (!isSePresent()) {
             try {
@@ -176,52 +184,6 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
         } else {
             Log.i(TAG, "Tag is already connected to : " + printTagId());
         }
-    }
-
-    @Override
-    protected ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid,
-            Set<Short> successfulSelectionStatusCodes)
-            throws IOReaderException, SelectApplicationException {
-        ByteBuffer[] atrAndFci = new ByteBuffer[2];
-
-        if (!isLogicalChannelOpen()) {
-            // init of the physical SE channel: if not yet established, opening of a new physical
-            // channel
-            if (!isSePresent()) {
-                openPhysicalChannel();
-            }
-            if (!isSePresent()) {
-                throw new ChannelStateReaderException("Fail to open physical channel.");
-            }
-        }
-
-        // Contact-less cards do not have an ATR, add a dummy ATR
-        atrAndFci[0] = ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00});
-
-        if (aid != null) {
-            Log.i(TAG, "Connecting to card " + ByteBufferUtils.toHex(aid));
-            try {
-                // build a get response command
-                // the actual length expected by the SE in the get response command is handled in
-                // transmitApdu
-                ByteBuffer selectApplicationCommand = ByteBufferUtils
-                        .fromHex("00A40400" + String.format("%02X", (byte) aid.limit())
-                                + ByteBufferUtils.toHex(aid) + "00");
-
-                // we use here processApduRequest to manage case 4 hack
-                ApduResponse fciResponse =
-                        processApduRequest(new ApduRequest(selectApplicationCommand, true));
-
-                // add FCI
-                atrAndFci[1] = fciResponse.getBytes();
-
-            } catch (ChannelStateReaderException e1) {
-
-                throw new ChannelStateReaderException(e1);
-
-            }
-        }
-        return atrAndFci;
     }
 
     @Override
@@ -287,14 +249,15 @@ public class AndroidNfcReader extends AbstractLocalReader implements NfcAdapter.
             nfcAdapter = NfcAdapter.getDefaultAdapter(activity);
         }
 
+
         // Build flags list for reader mode
         for (SeProtocol seProtocol : this.protocolsMap.keySet()) {
-            if (seProtocol.equals(ContactlessProtocols.PROTOCOL_ISO14443_4)) {
+            if (ContactlessProtocols.PROTOCOL_ISO14443_4 == seProtocol) {
                 flags = flags | NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_NFC_A;
-            } else if (seProtocol.equals(ContactlessProtocols.PROTOCOL_MIFARE_UL)) {
-                flags = flags | NfcAdapter.FLAG_READER_NFC_A;
-            } else if (seProtocol.equals(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC)) {
-                flags = flags | NfcAdapter.FLAG_READER_NFC_A;
+
+            } else if (seProtocol == ContactlessProtocols.PROTOCOL_MIFARE_UL
+                    ||  seProtocol == ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC ) {
+                    flags = flags | NfcAdapter.FLAG_READER_NFC_A;
             }
         }
 

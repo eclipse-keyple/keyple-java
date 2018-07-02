@@ -122,6 +122,15 @@ dependencies {
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testImplementation 'junit:junit:4.12'
+    /**Power mock**/
+    androidTestCompile "org.mockito:mockito-android:2.7.21"
+    androidTestCompile "org.powermock:powermock-api-mockito:1.6.6"
+    androidTestCompile 'org.powermock:powermock-module-junit4:1.6.6'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.powermock:powermock-api-mockito:1.6.6'
+    testCompile 'org.powermock:powermock-module-junit4:1.6.6'
+
+    /**End of power mock **/
     implementation project(':keyple-calypso')
 }
