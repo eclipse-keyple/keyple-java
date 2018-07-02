@@ -100,9 +100,9 @@ public class NFCTestFragment extends Fragment
             ProxyReader reader = seProxyService.getPlugins().first().getReaders().first();
             ((AndroidNfcReader) reader).addObserver(this);
 
-            reader.setParameter("READER_PRESENCE_CHECK_DELAY", "5000");
-            // reader.setParameter("FLAG_READER", "NO_PLATFORM_SOUNDS");
-            // reader.setParameter("FLAG_READER", "SKIP_NDEF_CHECK");
+            reader.setParameter("FLAG_READER_PRESENCE_CHECK_DELAY", "5000");
+            reader.setParameter("FLAG_READER_NO_PLATFORM_SOUNDS","0");
+            reader.setParameter("FLAG_READER_SKIP_NDEF_CHECK","0");
 
 
             // with this protocol settings we activate the nfc for ISO1443_4 protocol

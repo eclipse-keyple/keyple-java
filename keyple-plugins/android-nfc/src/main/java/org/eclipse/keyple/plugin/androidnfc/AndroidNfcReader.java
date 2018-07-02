@@ -46,6 +46,11 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
 
     private static final String TAG = "AndroidNfcReader";
 
+    public static final String FLAG_READER_SKIP_NDEF_CHECK = "FLAG_READER_SKIP_NDEF_CHECK";
+    public static final String FLAG_READER_NO_PLATFORM_SOUNDS = "FLAG_READER_NO_PLATFORM_SOUNDS";
+    public static final String FLAG_READER_PRESENCE_CHECK_DELAY = "FLAG_READER_PRESENCE_CHECK_DELAY";
+
+
     // Android NFC Adapter
     private NfcAdapter nfcAdapter;
 
@@ -53,7 +58,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
     private TagProxy tagProxy;
 
     // flags for NFCAdapter
-    private int flags = 0;
+    //private int flags = 0;
     private Bundle options = new Bundle();
 
     private Map<String, String> parameters = new HashMap<String, String>();
@@ -61,7 +66,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
     /**
      * Private constructor
      */
-    private AndroidNfcReader() {
+    AndroidNfcReader() {
         super("AndroidNfcReader");
         Log.i(TAG, "Init singleton NFC Reader");
     }
@@ -104,29 +109,20 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
     public void setParameter(String key, String value) throws IOException {
         Log.i(TAG, "AndroidNfcReader supports the following parameters");
         Log.i(TAG,
-                "FLAG_READER: SKIP_NDEF_CHECK, NO_PLATFORM_SOUNDS, EXTRA_READER_PRESENCE_CHECK_DELAY:\"int\"");
+                "FLAG_READER_SKIP_NDEF_CHECK:\"int\", FLAG_READER_NO_PLATFORM_SOUNDS:\"int\", FLAG_READER_PRESENCE_CHECK_DELAY:\"int\"");
 
-        Boolean correctParameter = true;
+        Boolean correctParameter = (key.equals(AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK) && value.equals("1") || value.equals("0"))
+                || (key.equals(AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS) && value.equals("1") || value.equals("0"))
+                || (key.equals(AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY) && Integer.parseInt(value) > -1);
 
-        if (key.equals("FLAG_READER")) {
-            if (value.equals("SKIP_NDEF_CHECK")) {
-                flags = flags | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK;
-            } else if (value.equals("NO_PLATFORM_SOUNDS")) {
-                flags = flags | NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS;
-            } else {
-                Log.w(TAG, "Unknown value for parameter : " + key + " " + value);
-                correctParameter = false;
-            }
-        } else if (key.equals("READER_PRESENCE_CHECK_DELAY")) {
-            Integer timeout = Integer.parseInt(value);
-            options.putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, timeout);
-        } else {
-            Log.w(TAG, "Unknown key for parameter : " + key);
-            correctParameter = false;
-        }
 
         if (correctParameter) {
+            Log.w(TAG, "Adding parameter : " + key + " - " + value);
             parameters.put(key, value);
+        }else{
+
+            Log.w(TAG, "Unrecognized parameter : " + key);
+            throw  new IOException("Unrecognized  parameter");
         }
 
     }
@@ -160,11 +156,14 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
 
     @Override
     protected ByteBuffer getATR() {
-        return ByteBuffer.wrap(tagProxy.getATR());
+        byte[] atr = tagProxy.getATR();
+        Log.d(TAG, "ATR length : " +  atr.length + " - ATR content : " + atr);
+        return atr !=null && atr.length > 0 ? ByteBuffer.wrap(atr) : null;
     }
 
     @Override
     protected boolean isPhysicalChannelOpen() {
+
         return tagProxy != null && tagProxy.isConnected();
     }
 
@@ -191,7 +190,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
         try {
             if (tagProxy != null) {
                 tagProxy.close();
-                this.notifyObservers(ReaderEvent.SE_REMOVAL);
+                notifyObservers(ReaderEvent.SE_REMOVAL);
                 Log.i(TAG, "Disconnected tag : " + printTagId());
             }
         } catch (IOException e) {
@@ -244,11 +243,24 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
                 : "null";
     }
 
-    void enableNFCReaderMode(Activity activity) {
-        if (nfcAdapter == null) {
-            nfcAdapter = NfcAdapter.getDefaultAdapter(activity);
+    /**
+     * Build flags for readermode from parameters
+     * @return
+     */
+    int getFlags(){
+
+        int flags = 0;
+
+        String ndef = parameters.get(AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK);
+        String nosounds = parameters.get(AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS);
+
+        if (ndef!=null && ndef.equals("1")) {
+            flags = flags | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK;
         }
 
+        if (nosounds!=null &&  nosounds.equals("1")) {
+            flags = flags | NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS;
+        }
 
         // Build flags list for reader mode
         for (SeProtocol seProtocol : this.protocolsMap.keySet()) {
@@ -257,12 +269,34 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
 
             } else if (seProtocol == ContactlessProtocols.PROTOCOL_MIFARE_UL
                     ||  seProtocol == ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC ) {
-                    flags = flags | NfcAdapter.FLAG_READER_NFC_A;
+                flags = flags | NfcAdapter.FLAG_READER_NFC_A;
             }
         }
 
+        return flags;
+    }
+
+    Bundle getOptions(){
+        Bundle out = new Bundle();
+        Integer delay = Integer.parseInt(parameters.get(AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY));
+        out.putInt(nfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, delay);
+        return out;
+
+    }
+
+    void enableNFCReaderMode(Activity activity) {
+        if (nfcAdapter == null) {
+            nfcAdapter = NfcAdapter.getDefaultAdapter(activity);
+        }
+
+        int flags = getFlags();
+
+        Bundle options = getOptions();
+
+
         Log.i(TAG, "Enabling Read Write Mode with flags : " + flags + " and options : "
                 + options.toString());
+
 
 
         // Reader mode for NFC reader allows to listen to NFC events without the Intent mechanism.

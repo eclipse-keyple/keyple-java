@@ -55,6 +55,12 @@ class TagProxy implements TagTechnology {
         return tech;
     }
 
+    /**
+     * Create a TagProxy based  on a {@link Tag}
+     * @param tag : tag to be proxied
+     * @return tagProxy
+     * @throws IOReaderException
+     */
     static TagProxy getTagProxy(Tag tag) throws IOReaderException {
 
         Log.i(TAG, "Matching Tag Type : " + tag.toString());
@@ -89,12 +95,12 @@ class TagProxy implements TagTechnology {
     }
 
 
-    public byte[] getATR() {
+    byte[] getATR() {
 
         if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC)) {
-            return new byte[] {(byte) 0x90, 0x00};// Mifare does not have ATR
+            return null;
         } else if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL)) {
-            return new byte[] {(byte) 0x90, 0x00};// Mifare does not have ATR
+            return null;
         } else if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_ISODEP)) {
             return ((IsoDep) tagTechnology).getHiLayerResponse() != null
                     ? ((IsoDep) tagTechnology).getHiLayerResponse()
