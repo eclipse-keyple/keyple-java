@@ -10,6 +10,7 @@ package org.eclipse.keyple.seproxy;
 
 import java.util.SortedSet;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclipse.keyple.util.NameableConfigurable;
 
 
@@ -34,4 +35,12 @@ public interface ReadersPlugin extends NameableConfigurable, Comparable<ReadersP
      * @throws IOReaderException Exception of type IO Reader
      */
     SortedSet<? extends ProxyReader> getReaders() throws IOReaderException;
+
+    /**
+     * Gets the reader whose name is provided as an argument
+     * 
+     * @param name of the reader
+     * @return the ProxyReader object.
+     */
+    ProxyReader getReader(String name) throws UnexpectedReaderException;
 }

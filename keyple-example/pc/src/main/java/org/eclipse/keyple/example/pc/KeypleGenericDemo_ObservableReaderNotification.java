@@ -16,6 +16,8 @@ import org.eclipse.keyple.seproxy.event.*;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
+import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclipse.keyple.util.Observable;
 
 
@@ -113,7 +115,15 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         public void update(Observable observable, AbstractPluginEvent event) {
             if (event instanceof ReaderPresencePluginEvent) {
                 ReaderPresencePluginEvent presence = (ReaderPresencePluginEvent) event;
-                ProxyReader reader = presence.getReader();
+                ProxyReader reader = null;
+                try {
+                    reader = SeProxyService.getInstance().getPlugin(presence.getPluginName())
+                            .getReader(presence.getReaderName());
+                } catch (UnexpectedReaderException e) {
+                    e.printStackTrace();
+                } catch (UnexpectedPluginException e) {
+                    e.printStackTrace();
+                }
                 if (presence.isAdded()) {
                     System.out.println("New reader: " + reader.getName());
 
