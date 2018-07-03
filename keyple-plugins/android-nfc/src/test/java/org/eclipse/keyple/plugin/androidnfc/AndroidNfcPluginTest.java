@@ -30,7 +30,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(TagProxy.class)
 public class AndroidNfcPluginTest {
 
     private static final ILogger logger = SLoggerFactory.getLogger(AndroidNfcPluginTest.class);

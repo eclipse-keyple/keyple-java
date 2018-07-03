@@ -59,7 +59,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
 
     // flags for NFCAdapter
     //private int flags = 0;
-    private Map<String, String> parameters = new HashMap<String, String>();
+    private final Map<String, String> parameters = new HashMap<String, String>();
 
     /**
      * Private constructor
@@ -155,7 +155,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
     @Override
     protected ByteBuffer getATR() {
         byte[] atr = tagProxy.getATR();
-        Log.d(TAG, "ATR length : " +  atr.length + " - ATR content : " + atr);
+        Log.d(TAG, "ATR : " + Arrays.toString(atr));
         return atr !=null && atr.length > 0 ? ByteBuffer.wrap(atr) : null;
     }
 
@@ -166,7 +166,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
     }
 
     @Override
-    protected void openPhysicalChannel() throws IOReaderException, ChannelStateReaderException {
+    protected void openPhysicalChannel() throws ChannelStateReaderException {
 
         if (!isSePresent()) {
             try {
@@ -184,7 +184,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
     }
 
     @Override
-    protected void closePhysicalChannel() throws IOReaderException, ChannelStateReaderException  {
+    protected void closePhysicalChannel() throws ChannelStateReaderException  {
         try {
             if (tagProxy != null) {
                 tagProxy.close();
@@ -205,16 +205,15 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
         Log.d(TAG, "Data Length to be sent to tag : " + apduIn.limit());
         Log.d(TAG, "Data in : " + ByteBufferUtils.toHex(apduIn));
         byte[] data = ByteBufferUtils.toBytes(apduIn);
-        byte[] dataOut = new byte[0];
+        byte[] dataOut;
         try {
             dataOut = tagProxy.transceive(data);
         } catch (IOException e) {
             e.printStackTrace();
             throw new ChannelStateReaderException(e);
         }
-        ByteBuffer out = ByteBuffer.wrap(dataOut);
-        Log.d(TAG, "Data out : " + ByteBufferUtils.toHex(out));
-        return out;
+        Log.d(TAG, "Data out : " + Arrays.toString(dataOut));
+        return ByteBuffer.wrap(dataOut);
     }
 
 
@@ -243,8 +242,8 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
     }
 
     /**
-     * Build flags for readermode from parameters
-     * @return
+     * Build Reader Mode flags Integer from parameters
+     * @return flags Integer
      */
     int getFlags(){
 
@@ -275,6 +274,10 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
         return flags;
     }
 
+    /**
+     * Build Reader Mode options Bundle from parameters
+     * @return options
+     */
     Bundle getOptions(){
         Bundle options = new Bundle(1);
         if(parameters.containsKey(AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY)){

@@ -46,7 +46,7 @@ public class AndroidNfcPlugin extends AbstractStaticPlugin {
 
     private final static AndroidNfcPlugin uniqueInstance = new AndroidNfcPlugin();
 
-    private Map<String, String> parameters = new HashMap<String, String>();// not in use in this
+    private final Map<String, String> parameters = new HashMap<String, String>();// not in use in this
                                                                            // plugin
 
     private AbstractObservableReader reader;
@@ -94,10 +94,10 @@ public class AndroidNfcPlugin extends AbstractStaticPlugin {
 
 
     /**
-     * Return the AndroidNfcReader whatever is the porvide name
+     * Return the AndroidNfcReader whatever is the provided name
      * 
      * @param name
-     * @return
+     * @return instance of @{@link AndroidNfcReader}
      */
     protected AbstractObservableReader getNativeReader(String name) {
         return reader;
