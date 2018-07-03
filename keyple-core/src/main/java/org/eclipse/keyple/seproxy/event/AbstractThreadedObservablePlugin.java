@@ -131,8 +131,8 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
     }
 
     /**
-     * Called when the class is unloaded.
-     * Attempt to do a clean exit.
+     * Called when the class is unloaded. Attempt to do a clean exit.
+     * 
      * @throws Throwable
      */
     @Override

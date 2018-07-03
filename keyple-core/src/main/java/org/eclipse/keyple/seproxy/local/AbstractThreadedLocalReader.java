@@ -169,8 +169,8 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
     }
 
     /**
-     * Called when the class is unloaded.
-     * Attempt to do a clean exit.
+     * Called when the class is unloaded. Attempt to do a clean exit.
+     * 
      * @throws Throwable
      */
     @Override

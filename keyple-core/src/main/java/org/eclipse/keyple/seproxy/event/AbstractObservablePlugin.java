@@ -27,9 +27,9 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<Abstrac
 
 
     /**
-     * Instanciates a new readersplugin.
-     * Retrieve the current readers list.<br/>
+     * Instanciates a new readersplugin. Retrieve the current readers list.<br/>
      * Gets the list for the native method the first time (null)<br/>
+     * 
      * @param name name of the plugin
      */
     protected AbstractObservablePlugin(String name) {
@@ -45,8 +45,8 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<Abstrac
 
     /**
      * Returns the current readers list.<br/>
-     * The list is initialized in the constructor and may be updated in background in the case of a threaded plugin
-     * {@link AbstractThreadedObservablePlugin}
+     * The list is initialized in the constructor and may be updated in background in the case of a
+     * threaded plugin {@link AbstractThreadedObservablePlugin}
      * 
      * @return
      */
@@ -86,6 +86,7 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<Abstrac
 
     /**
      * Gets a specific reader designated by its name in the current readers list
+     * 
      * @param name of the reader
      * @return the reader
      * @throws UnexpectedReaderException
