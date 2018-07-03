@@ -48,53 +48,38 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
 
     public AbstractThreadedObservablePlugin(String name) {
         super(name);
+        /// create and launch the monitoring thread
+        thread = new EventThread(this.getName());
+        thread.start();
     }
 
     @Override
-    public void addObserver(Observer observer) {
-        synchronized (observers) {
-            super.addObserver(observer);
-            if (observers.size() == 1) {
-                if (thread != null) { // <-- This should never happen and can probably be dropped at
-                    // some point
-                    throw new IllegalStateException("The plugin thread shouldn't null");
-                }
-
-                thread = new EventThread();
-                thread.start();
-            }
-        }
+    public final void addObserver(Observer observer) {
+        super.addObserver(observer);
     }
 
     @Override
-    public void removeObserver(Observer observer) {
-        synchronized (observers) {
-            super.removeObserver(observer);
-            if (observers.isEmpty()) {
-                if (thread == null) { // <-- This should never happen and can probably be dropped at
-                    // some point
-                    throw new IllegalStateException("The plugin thread should be null");
-                }
-
-                // We'll let the thread calmly end its course after the waitForCard(Absent|Present)
-                // timeout occurs
-                thread.end();
-                thread = null;
-            }
-        }
+    public final void removeObserver(Observer observer) {
+        super.addObserver(observer);
     }
 
     /**
      * Thread in charge of reporting live events
      */
     private class EventThread extends Thread {
+        private final String pluginName;
         private boolean running = true;
+
+        private EventThread(String pluginName) {
+            this.pluginName = pluginName;
+        }
 
         /**
          * Marks the thread as one that should end when the last cardWaitTimeout occurs
          */
         void end() {
             running = false;
+            this.interrupt();
         }
 
         private void exceptionThrown(Exception e) {
@@ -113,8 +98,10 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                         // readers list
                         for (AbstractObservableReader reader : readers) {
                             if (!actualNativeReadersNames.contains(reader.getName())) {
-                                notifyObservers(new ReaderPresencePluginEvent(false, reader));
+                                notifyObservers(new ReaderPresencePluginEvent(false,
+                                        this.pluginName, reader.getName()));
                                 readers.remove(reader);
+                                reader = null;
                                 logger.info("Remove unplugged reader from readers list", "reader",
                                         reader);
                             }
@@ -125,7 +112,8 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                             if (!nativeReadersNames.contains(readerName)) {
                                 AbstractObservableReader reader = getNativeReader(readerName);
                                 readers.add(reader);
-                                notifyObservers(new ReaderPresencePluginEvent(true, reader));
+                                notifyObservers(new ReaderPresencePluginEvent(true, this.pluginName,
+                                        reader.getName()));
                                 logger.info("Add plugged reader to readers list", "reader", reader);
                             }
                         }
@@ -140,5 +128,18 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                 // TODO add log
             }
         }
+    }
+
+    /**
+     * Called when the class is unloaded. Attempt to do a clean exit.
+     * 
+     * @throws Throwable
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        thread.end();
+        thread = null;
+        logger.info("Observable Plugin thread ended.", "name", this.getName());
+        super.finalize();
     }
 }

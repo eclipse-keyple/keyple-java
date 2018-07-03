@@ -36,7 +36,7 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
      */
     private static final PcscPlugin uniqueInstance = new PcscPlugin();
 
-    private static final TerminalFactory factory = TerminalFactory.getDefault();
+    private static TerminalFactory factory;
 
 
     private boolean logging = false;
@@ -145,6 +145,9 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
     }
 
     private CardTerminals getCardTerminals() {
+        if (factory == null) {
+            factory = TerminalFactory.getDefault();
+        }
         CardTerminals terminals = factory.terminals();
         if (logging) {
             terminals = new CardTerminalsLogger(terminals);
