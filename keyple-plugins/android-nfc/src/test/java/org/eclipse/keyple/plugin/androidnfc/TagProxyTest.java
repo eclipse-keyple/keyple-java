@@ -4,6 +4,7 @@ import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.nfc.tech.MifareClassic;
 import android.nfc.tech.MifareUltralight;
+import android.nfc.tech.TagTechnology;
 
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
@@ -27,10 +28,17 @@ public class TagProxyTest {
     private static final ILogger logger = SLoggerFactory.getLogger(TagProxyTest.class);
 
     Tag tag;
+    TagTechnology isodoDep;
+    TagTechnology mifare;
+    TagTechnology mifareUL;
 
     @Before
     public void SetUp() throws IOReaderException {
         tag = Mockito.mock(Tag.class);
+        isodoDep = Mockito.mock(TagTechnology.class);
+        mifare = Mockito.mock(TagTechnology.class);
+        mifareUL = Mockito.mock(TagTechnology.class);
+
     }
 
     @Test
@@ -63,6 +71,9 @@ public class TagProxyTest {
         Mockito.when(tag.getTechList()).thenReturn(new String[]{"unknown tag"});
         TagProxy tagProxy= TagProxy.getTagProxy(tag);
     }
+
+
+
 
 
 }
