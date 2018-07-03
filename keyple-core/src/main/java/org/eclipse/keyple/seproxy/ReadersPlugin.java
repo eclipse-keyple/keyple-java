@@ -14,7 +14,7 @@ import org.eclipse.keyple.util.NameableConfigurable;
 
 
 /**
- * Card readers plugin interface. Every single card wanting to implement this interface should
+ * Card readers plugin interface.
  */
 public interface ReadersPlugin extends NameableConfigurable, Comparable<ReadersPlugin> {
 
