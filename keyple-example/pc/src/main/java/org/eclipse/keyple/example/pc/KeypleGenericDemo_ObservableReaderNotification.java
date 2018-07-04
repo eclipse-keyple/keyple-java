@@ -16,6 +16,7 @@ import org.eclipse.keyple.seproxy.event.*;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclipse.keyple.util.Observable;
@@ -38,12 +39,16 @@ public class KeypleGenericDemo_ObservableReaderNotification {
             pluginIndex++;
             int readerIndex = 0;
             for (ProxyReader reader : plugin.getReaders()) {
-                System.out.println(pluginIndex + "\t" + plugin.getName() + "\t" + readerIndex++
-                        + "\t" + reader.getName() + "\t"
-                        + ((reader.isSePresent()) ? "card_present" : "card_absent") + "\t"
-                        + ((((AbstractObservableReader) reader).countObservers() > 0)
-                                ? "observed_reader"
-                                : "not_observed_reader"));
+                try {
+                    System.out.println(pluginIndex + "\t" + plugin.getName() + "\t" + readerIndex++
+                            + "\t" + reader.getName() + "\t"
+                            + ((reader.isSePresent()) ? "card_present" : "card_absent") + "\t"
+                            + ((((AbstractObservableReader) reader).countObservers() > 0)
+                                    ? "observed_reader"
+                                    : "not_observed_reader"));
+                } catch (NoStackTraceThrowable noStackTraceThrowable) {
+                    noStackTraceThrowable.printStackTrace();
+                }
             }
         }
     }
@@ -96,7 +101,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         private void analyseCard(AbstractObservableReader reader) {
             try {
                 System.out.println("Card present = " + reader.isSePresent());
-            } catch (IOReaderException ex) {
+            } catch (NoStackTraceThrowable ex) {
                 ex.printStackTrace(System.err);
             }
         }
@@ -148,8 +153,8 @@ public class KeypleGenericDemo_ObservableReaderNotification {
                             System.out.println("Remove observer on the unplugged reader :  "
                                     + presence.getReaderName());
                         } else {
-                            System.out.println(
-                                    "Unplugged reader " + presence.getReaderName() + " wasn't observed");
+                            System.out.println("Unplugged reader " + presence.getReaderName()
+                                    + " wasn't observed");
                         }
                     }
                 }

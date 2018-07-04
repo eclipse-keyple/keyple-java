@@ -101,9 +101,9 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                                 notifyObservers(new ReaderPresencePluginEvent(false,
                                         this.pluginName, reader.getName()));
                                 readers.remove(reader);
+                                logger.info("Remove unplugged reader from readers list", "plugin",
+                                        pluginName, "reader", reader.getName());
                                 reader = null;
-                                logger.info("Remove unplugged reader from readers list", "plugin", pluginName, "reader",
-                                        reader.getName());
                             }
                         }
                         // parse the new readers list, notify for readers appearance, update readers
@@ -114,7 +114,8 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                                 readers.add(reader);
                                 notifyObservers(new ReaderPresencePluginEvent(true, this.pluginName,
                                         reader.getName()));
-                                logger.info("Add plugged reader to readers list", "reader", reader);
+                                logger.info("Add plugged reader to readers list", "reader",
+                                        reader.getName());
                             }
                         }
                         // update the readers names list

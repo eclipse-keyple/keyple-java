@@ -15,7 +15,7 @@ import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.AbstractPluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.event.ReaderPresencePluginEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclipse.keyple.util.Observable;
@@ -62,7 +62,7 @@ public class ObservableEventTestImbricated {
                                             try {
                                                 System.out.println(
                                                         "Card present = " + reader.isSePresent());
-                                            } catch (IOReaderException ex) {
+                                            } catch (NoStackTraceThrowable ex) {
                                                 ex.printStackTrace(System.err);
                                             }
                                         }

@@ -17,6 +17,7 @@ import org.eclipse.keyple.seproxy.ReadersPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.util.Observable;
 
 /**
@@ -34,8 +35,12 @@ public class BasicCardAccess {
         for (ReadersPlugin rp : seProxyService.getPlugins()) {
             System.out.println("Reader plugin: " + rp.getName());
             for (final ProxyReader pr : rp.getReaders()) {
-                System.out
-                        .println("Reader name: " + pr.getName() + ", present: " + pr.isSePresent());
+                try {
+                    System.out.println(
+                            "Reader name: " + pr.getName() + ", present: " + pr.isSePresent());
+                } catch (NoStackTraceThrowable noStackTraceThrowable) {
+                    noStackTraceThrowable.printStackTrace();
+                }
                 if (pr instanceof AbstractObservableReader) {
                     ((AbstractObservableReader) pr)
                             .addObserver(new Observable.Observer<ReaderEvent>() {
