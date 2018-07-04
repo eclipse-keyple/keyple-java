@@ -102,8 +102,8 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                                         this.pluginName, reader.getName()));
                                 readers.remove(reader);
                                 reader = null;
-                                logger.info("Remove unplugged reader from readers list", "reader",
-                                        reader);
+                                logger.info("Remove unplugged reader from readers list", "plugin", pluginName, "reader",
+                                        reader.getName());
                             }
                         }
                         // parse the new readers list, notify for readers appearance, update readers

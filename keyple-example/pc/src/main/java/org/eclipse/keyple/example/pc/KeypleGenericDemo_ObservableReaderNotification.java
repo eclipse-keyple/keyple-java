@@ -139,17 +139,17 @@ public class KeypleGenericDemo_ObservableReaderNotification {
                         }
                     }
                 } else {
-                    System.out.println("Reader removed: " + reader.getName());
+                    System.out.println("Reader removed: " + presence.getReaderName());
 
                     if (reader instanceof AbstractObservableReader) {
 
                         if (readerObserver != null) {
                             ((AbstractObservableReader) reader).removeObserver(readerObserver);
                             System.out.println("Remove observer on the unplugged reader :  "
-                                    + reader.getName());
+                                    + presence.getReaderName());
                         } else {
                             System.out.println(
-                                    "Unplugged reader " + reader.getName() + " wasn't observed");
+                                    "Unplugged reader " + presence.getReaderName() + " wasn't observed");
                         }
                     }
                 }
