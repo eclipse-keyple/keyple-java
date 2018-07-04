@@ -56,7 +56,8 @@ class TagProxy implements TagTechnology {
     }
 
     /**
-     * Create a TagProxy based  on a {@link Tag}
+     * Create a TagProxy based on a {@link Tag}
+     * 
      * @param tag : tag to be proxied
      * @return tagProxy
      * @throws IOReaderException

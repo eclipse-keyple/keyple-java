@@ -46,8 +46,12 @@ public class AndroidNfcPlugin extends AbstractStaticPlugin {
 
     private final static AndroidNfcPlugin uniqueInstance = new AndroidNfcPlugin();
 
-    private final Map<String, String> parameters = new HashMap<String, String>();// not in use in this
-                                                                           // plugin
+    static final String PLUGIN_NAME = "AndroidNFCPlugin";
+
+    private final Map<String, String> parameters = new HashMap<String, String>();// not in use in
+                                                                                 // this
+
+    // plugin
 
     private AbstractObservableReader reader;
 
@@ -84,7 +88,7 @@ public class AndroidNfcPlugin extends AbstractStaticPlugin {
      *         singleton @{@link AndroidNfcReader}
      */
     @Override
-    public SortedSet<AbstractObservableReader> getNativeReaders() {
+    protected SortedSet<AbstractObservableReader> getNativeReaders() {
         // return the only one reader in a list
         SortedSet<AbstractObservableReader> readers =
                 new ConcurrentSkipListSet<AbstractObservableReader>();

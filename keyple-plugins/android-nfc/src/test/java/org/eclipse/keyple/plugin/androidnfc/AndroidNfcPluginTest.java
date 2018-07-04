@@ -1,33 +1,24 @@
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
+
 package org.eclipse.keyple.plugin.androidnfc;
 
-import android.content.Intent;
-import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
-
-import junit.framework.Assert;
-
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+import java.io.IOException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.util.Observable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-
-import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import com.github.structlog4j.ILogger;
+import com.github.structlog4j.SLoggerFactory;
+import junit.framework.Assert;
 
 @RunWith(PowerMockRunner.class)
 public class AndroidNfcPluginTest {
@@ -39,21 +30,64 @@ public class AndroidNfcPluginTest {
 
     @Before
     public void SetUp() throws IOReaderException {
-
-        plugin = Mockito.spy(AndroidNfcPlugin.class);
-
+        plugin = AndroidNfcPlugin.getInstance();
     }
 
 
 
     /*
-     * Test Parameters
-     *
+     * TEST PUBLIC METHODS
      */
 
-    @Test(expected = IOException.class)
-    public void setUnknownParameter() throws IOException {
+
+
+    @Test
+    public void getInstance() throws IOException {
+        Assert.assertTrue(plugin != null);
     }
+
+
+    @Test
+    public void getParameters() throws IOException {
+        Assert.assertTrue(plugin.getParameters() != null);
+        Assert.assertTrue(plugin.getParameters().size() == 0);
+    }
+
+
+    @Test
+    public void setParameter() throws IOException {
+        plugin.setParameter("key", "value");
+        Assert.assertTrue(plugin.getParameters().size() == 1);
+        Assert.assertTrue(plugin.getParameters().get("key").equals("value"));
+    }
+
+    @Test
+    public void getReaders() throws IOException {
+        Assert.assertTrue(plugin.getReaders().size() == 1);
+        assertThat(plugin.getReaders().first(), instanceOf(AndroidNfcReader.class));
+    }
+
+    @Test
+    public void getName() throws IOException {
+        Assert.assertTrue(plugin.getName().equals(AndroidNfcPlugin.PLUGIN_NAME));
+    }
+
+    /*
+     * TEST INTERNAL METHODS
+     */
+
+    @Test
+    public void getNativeReader() throws IOException {
+        assertThat(plugin.getNativeReader(AndroidNfcReader.TAG),
+                instanceOf(AndroidNfcReader.class));
+    }
+
+    @Test
+    public void getNativeReaders() throws IOException {
+        Assert.assertTrue(plugin.getNativeReaders().size() == 1);
+        assertThat(plugin.getNativeReaders().first(), instanceOf(AndroidNfcReader.class));
+    }
+
 
 
 }
