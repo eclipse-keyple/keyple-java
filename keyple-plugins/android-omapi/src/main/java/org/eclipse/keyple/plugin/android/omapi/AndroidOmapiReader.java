@@ -17,6 +17,7 @@ import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.event.AbstractStaticReader;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.simalliance.openmobileapi.Channel;
 import org.simalliance.openmobileapi.Reader;
@@ -75,7 +76,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
      * @throws IOReaderException
      */
     @Override
-    public boolean isSePresent() throws IOReaderException {
+    public boolean isSePresent() throws NoStackTraceThrowable {
         return omapiReader.isSecureElementPresent();
     }
 
