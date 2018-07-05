@@ -94,7 +94,7 @@ jobs:
         #Assemble Plugin NFC
         - run:
             name: Assemble Plugin NFC plugin to aar file
-            command: gradle -b ./keyple-plugins/android-nfc/build.gradle test assembleDebug generateDebugJavadoc
+            command: gradle -b ./keyple-plugins/android-nfc/build.gradle build test assembleDebug generateDebugJavadoc
 
         #Assemble Example App NFC
         - run:

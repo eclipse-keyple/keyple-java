@@ -53,15 +53,8 @@ public class AndroidNfcPlugin extends AbstractStaticPlugin {
 
     // plugin
 
-    private AbstractObservableReader reader;
-
     private AndroidNfcPlugin() {
         super("AndroidNFCPlugin");
-        if (this.reader == null) {
-            Log.i(TAG, "Init singleton NFC Plugin");
-            this.reader = AndroidNfcReader.getInstance();
-        }
-
     }
 
     public static AndroidNfcPlugin getInstance() {
@@ -92,7 +85,7 @@ public class AndroidNfcPlugin extends AbstractStaticPlugin {
         // return the only one reader in a list
         SortedSet<AbstractObservableReader> readers =
                 new ConcurrentSkipListSet<AbstractObservableReader>();
-        readers.add(reader);
+        readers.add(AndroidNfcReader.getInstance());
         return readers;
     }
 
@@ -104,6 +97,6 @@ public class AndroidNfcPlugin extends AbstractStaticPlugin {
      * @return instance of @{@link AndroidNfcReader}
      */
     protected AbstractObservableReader getNativeReader(String name) {
-        return reader;
+        return readers.first();
     }
 }

@@ -8,30 +8,37 @@
 
 package org.eclipse.keyple.plugin.androidnfc;
 
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.powermock.api.mockito.PowerMockito.when;
 import java.io.IOException;
 import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
 import junit.framework.Assert;
 
 @RunWith(PowerMockRunner.class)
+@PrepareForTest({AndroidNfcReader.class})
 public class AndroidNfcPluginTest {
-
-    private static final ILogger logger = SLoggerFactory.getLogger(AndroidNfcPluginTest.class);
 
     AndroidNfcPlugin plugin;
 
-
+    // init before each test
     @Before
     public void SetUp() throws IOException {
+        PowerMockito.mockStatic(AndroidNfcReader.class);
+        when(AndroidNfcReader.getInstance()).thenReturn(PowerMockito.mock(AndroidNfcReader.class));
+
+        // get unique instance
         plugin = AndroidNfcPlugin.getInstance();
-        plugin.setParameters(new HashMap<String, String>());// re-init parameters
+
+        // reset parameters
+        plugin.setParameters(new HashMap<String, String>());
     }
 
 
@@ -39,7 +46,6 @@ public class AndroidNfcPluginTest {
     /*
      * TEST PUBLIC METHODS
      */
-
 
 
     @Test

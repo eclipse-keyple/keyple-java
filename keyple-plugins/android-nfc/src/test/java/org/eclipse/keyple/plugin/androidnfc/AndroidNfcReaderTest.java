@@ -34,8 +34,6 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
 import android.app.Activity;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
@@ -46,8 +44,6 @@ import junit.framework.Assert;
 @PrepareForTest({TagProxy.class, NfcAdapter.class})
 public class AndroidNfcReaderTest {
 
-    private static final ILogger logger = SLoggerFactory.getLogger(AndroidNfcReaderTest.class);
-
     AndroidNfcReader reader;
     NfcAdapter nfcAdapter;
     Tag tag;
@@ -55,11 +51,9 @@ public class AndroidNfcReaderTest {
     Intent intent;
     Activity activity;
 
+    // init before each test
     @Before
     public void SetUp() throws IOReaderException {
-
-        // instantiate Reader with SPY Mode
-        reader = Mockito.spy(AndroidNfcReader.class);
 
         // Mock others objects
         tagProxy = Mockito.mock(TagProxy.class);
@@ -75,6 +69,8 @@ public class AndroidNfcReaderTest {
         PowerMockito.mockStatic(NfcAdapter.class);
         when(NfcAdapter.getDefaultAdapter(activity)).thenReturn(nfcAdapter);
 
+        // instantiate a new Reader for each test
+        reader = new AndroidNfcReader();
     }
 
 

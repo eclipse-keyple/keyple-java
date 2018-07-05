@@ -21,8 +21,6 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.nfc.tech.MifareClassic;
@@ -33,7 +31,6 @@ import junit.framework.Assert;
 @PrepareForTest({IsoDep.class, MifareUltralight.class, MifareClassic.class})
 public class TagProxyTest {
 
-    private static final ILogger logger = SLoggerFactory.getLogger(TagProxyTest.class);
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -47,6 +44,7 @@ public class TagProxyTest {
     MifareClassic mifare;
     MifareUltralight mifareUL;
 
+    // init before each test
     @Before
     public void SetUp() throws IOReaderException {
         initIsoDep();
