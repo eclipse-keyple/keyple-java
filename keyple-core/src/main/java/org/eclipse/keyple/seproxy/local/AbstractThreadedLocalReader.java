@@ -11,6 +11,7 @@ package org.eclipse.keyple.seproxy.local;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
@@ -67,7 +68,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      * @param timeout
      * @return presence status
      */
-    protected abstract boolean waitForCardPresent(long timeout) throws IOReaderException;
+    protected abstract boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable;
 
     /**
      * Wait until the card disappears. Returns true if a card has disappeared before the end of the
@@ -77,7 +78,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      * @param timeout
      * @return presence status
      */
-    protected abstract boolean waitForCardAbsent(long timeout) throws IOReaderException;
+    protected abstract boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable;
 
     /**
      * Thread in charge of reporting live events
@@ -162,8 +163,8 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                         // false means timeout, and we go back to the beginning of the loop
                     }
                 }
-            } catch (Exception e) {
-                exceptionThrown(e);
+            } catch (NoStackTraceThrowable e) {
+                logger.error("Exception occured in monitoring thread.", "reader", reader.getName());
             }
         }
     }

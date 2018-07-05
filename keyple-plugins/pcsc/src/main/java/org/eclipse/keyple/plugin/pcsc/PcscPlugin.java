@@ -118,7 +118,10 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
     }
 
     /**
-     * Gets the reader whose name is provided as an argument
+     * Gets the reader whose name is provided as an argument.<br/>
+     * Returns the current reader if it is already listed.<br/>
+     * Creates and returns a new reader if not.<br/>
+     * Throws an exception if the wanted reader is not found.
      * 
      * @param name name of the reader
      * @return the reader object
@@ -126,8 +129,15 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
      */
     @Override
     protected AbstractObservableReader getNativeReader(String name) throws IOReaderException {
+        // return the current reader if it is already listed
+        for (AbstractObservableReader reader : readers) {
+            if (reader.getName().equals(name)) {
+                return reader;
+            }
+        }
+        // parse the current PC/SC readers list to create the ProxyReader(s) associated with new
+        // reader(s)
         AbstractObservableReader reader = null;
-        // parse the current readers list to create the ProxyReader(s) associated with new reader(s)
         CardTerminals terminals = getCardTerminals();
         List<String> terminalList = new ArrayList<String>();
         try {
@@ -140,6 +150,9 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
             logger.error("Terminal list is not accessible", "action", "pcsc_plugin.no_terminals",
                     "exception", e);
             throw new IOReaderException("Could not access terminals list", e);
+        }
+        if (reader == null) {
+            throw new IOReaderException("Reader " + name + " not found!");
         }
         return reader;
     }

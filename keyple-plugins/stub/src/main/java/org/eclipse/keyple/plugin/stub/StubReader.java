@@ -16,6 +16,7 @@ import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
+import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.local.AbstractThreadedLocalReader;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
@@ -126,7 +127,7 @@ public class StubReader extends AbstractThreadedLocalReader {
 
 
     @Override
-    public boolean isSePresent() throws IOReaderException {
+    public boolean isSePresent() throws NoStackTraceThrowable {
         return isSePresent;
     }
 
@@ -177,12 +178,12 @@ public class StubReader extends AbstractThreadedLocalReader {
     }
 
     @Override
-    public boolean waitForCardPresent(long timeout) throws IOReaderException {
+    public boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable {
         return false;
     }
 
     @Override
-    public boolean waitForCardAbsent(long timeout) throws IOReaderException {
+    public boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable {
         return false;
     }
 }

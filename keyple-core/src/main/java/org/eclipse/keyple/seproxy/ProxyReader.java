@@ -10,6 +10,7 @@ package org.eclipse.keyple.seproxy;
 
 
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.util.NameableConfigurable;
 
 /**
@@ -42,7 +43,7 @@ public interface ProxyReader extends NameableConfigurable, Comparable<ProxyReade
      * @return true if a Secure Element is present in the reader
      * @throws IOReaderException Exception of type IO Reader
      */
-    boolean isSePresent() throws IOReaderException;
+    boolean isSePresent() throws NoStackTraceThrowable;
 
     /**
      * Transmits a request to a SE application and get back the corresponding SE response o the

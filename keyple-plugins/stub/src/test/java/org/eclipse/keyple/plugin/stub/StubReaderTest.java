@@ -16,6 +16,7 @@ import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +40,7 @@ public class StubReaderTest {
     }
 
     @Test
-    public void testIsPresent() throws IOReaderException {
+    public void testIsPresent() throws NoStackTraceThrowable {
         assert (!stubReader.isSePresent());
     }
 
