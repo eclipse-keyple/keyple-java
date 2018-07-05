@@ -131,7 +131,7 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
 
         SortedSet<AbstractObservableReader> readers = new TreeSet<AbstractObservableReader>();
 
-        if (seService.isConnected()) {
+        if (seService != null && seService.isConnected()) {
             Reader[] omapiReaders = seService.getReaders();
 
             if (omapiReaders == null) {
