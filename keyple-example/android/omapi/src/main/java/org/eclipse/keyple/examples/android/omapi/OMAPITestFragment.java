@@ -26,7 +26,7 @@ import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import android.app.Fragment;
 import android.os.Bundle;
@@ -149,7 +149,7 @@ public class OMAPITestFragment extends Fragment {
 
 
             SeRequest seRequest = new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList,
-                    false, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                    false, ContactsProtocols.PROTOCOL_ISO7816_3);
 
 
             SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
