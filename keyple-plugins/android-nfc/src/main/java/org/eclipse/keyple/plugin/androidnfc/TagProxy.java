@@ -19,8 +19,8 @@ import android.nfc.tech.TagTechnology;
 import android.util.Log;
 
 /**
- * Decorate {@link Tag} with transceive method. Invoke getTagTransceiver factory method to get a
- * TagProxy object from a @{@link Tag} object
+ * Proxy Tag for {@link IsoDep}, {@link MifareClassic}, {@link MifareUltralight} Invoke
+ * getTagTransceiver factory method to get a TagProxy object from a @{@link Tag} object
  */
 class TagProxy implements TagTechnology {
 
@@ -55,6 +55,13 @@ class TagProxy implements TagTechnology {
         return tech;
     }
 
+    /**
+     * Create a TagProxy based on a {@link Tag}
+     * 
+     * @param tag : tag to be proxied
+     * @return tagProxy
+     * @throws IOReaderException
+     */
     static TagProxy getTagProxy(Tag tag) throws IOReaderException {
 
         Log.i(TAG, "Matching Tag Type : " + tag.toString());
@@ -86,6 +93,23 @@ class TagProxy implements TagTechnology {
                 + AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_ISODEP
 
         );
+    }
+
+
+    byte[] getATR() {
+
+        if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC)) {
+            return null;
+        } else if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL)) {
+            return null;
+        } else if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_ISODEP)) {
+            return ((IsoDep) tagTechnology).getHiLayerResponse() != null
+                    ? ((IsoDep) tagTechnology).getHiLayerResponse()
+                    : ((IsoDep) tagTechnology).getHistoricalBytes();
+        } else {
+            return null;// can not happen
+        }
+
     }
 
     @Override
