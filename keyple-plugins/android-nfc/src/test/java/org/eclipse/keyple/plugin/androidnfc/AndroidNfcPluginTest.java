@@ -11,6 +11,8 @@ package org.eclipse.keyple.plugin.androidnfc;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import java.io.IOException;
+import java.util.HashMap;
+
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,8 +31,9 @@ public class AndroidNfcPluginTest {
 
 
     @Before
-    public void SetUp() throws IOReaderException {
+    public void SetUp() throws IOException {
         plugin = AndroidNfcPlugin.getInstance();
+        plugin.setParameters(new HashMap<String, String>());//re-init parameters
     }
 
 
