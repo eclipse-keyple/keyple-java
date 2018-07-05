@@ -15,7 +15,6 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,8 +57,8 @@ public class AndroidNfcPluginTest {
     @Test
     public void setParameters() throws IOException {
 
-        Map<String, String> parameters =  new HashMap<String, String>();
-        parameters.put("key1","value1");
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("key1", "value1");
         plugin.setParameters(parameters);
         Assert.assertTrue(plugin.getParameters().size() > 0);
         Assert.assertTrue(plugin.getParameters().get("key1").equals("value1"));
