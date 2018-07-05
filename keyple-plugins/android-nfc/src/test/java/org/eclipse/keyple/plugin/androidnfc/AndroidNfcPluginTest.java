@@ -14,6 +14,8 @@ import static org.junit.Assert.assertThat;
 import static org.powermock.api.mockito.PowerMockito.when;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +40,7 @@ public class AndroidNfcPluginTest {
         plugin = AndroidNfcPlugin.getInstance();
 
         // reset parameters
-        plugin.setParameters(new HashMap<String, String>());
+
     }
 
 
@@ -53,19 +55,28 @@ public class AndroidNfcPluginTest {
         Assert.assertTrue(plugin != null);
     }
 
+    @Test
+    public void setParameters() throws IOException {
+
+        Map<String, String> parameters =  new HashMap<String, String>();
+        parameters.put("key1","value1");
+        plugin.setParameters(parameters);
+        Assert.assertTrue(plugin.getParameters().size() > 0);
+        Assert.assertTrue(plugin.getParameters().get("key1").equals("value1"));
+
+    }
 
     @Test
     public void getParameters() throws IOException {
         Assert.assertTrue(plugin.getParameters() != null);
-        Assert.assertTrue(plugin.getParameters().size() == 0);
     }
 
 
     @Test
     public void setParameter() throws IOException {
-        plugin.setParameter("key", "value");
-        Assert.assertTrue(plugin.getParameters().size() == 1);
-        Assert.assertTrue(plugin.getParameters().get("key").equals("value"));
+        plugin.setParameter("key2", "value2");
+        Assert.assertTrue(plugin.getParameters().size() > 0);
+        Assert.assertTrue(plugin.getParameters().get("key2").equals("value2"));
     }
 
     @Test
