@@ -8,18 +8,19 @@
 
 package org.eclipse.keyple.seproxy.exception;
 
+
 /**
- * Unexpected reader exception
- * 
+ * Unexpected plugin exception
+ *
  *
  */
-public class UnexpectedReaderException extends Exception {
+public class UnexpectedPluginException extends Exception {
     /**
-     * Instantiates a new unExpected reader exception.
+     * Instantiates a new Unexpected plugin exception.
      *
      * @param message the message
      */
-    public UnexpectedReaderException(String message) {
+    public UnexpectedPluginException(String message) {
         super(message);
     }
 }
