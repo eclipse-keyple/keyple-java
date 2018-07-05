@@ -25,14 +25,10 @@ import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
-import org.eclipse.keyple.util.Observable;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -44,13 +40,10 @@ import android.widget.TextView;
 /**
  * View for OMAPI Tests
  */
-public class OMAPITestFragment extends Fragment
-        implements AbstractObservableReader.Observer<ReaderEvent> {
+public class OMAPITestFragment extends Fragment {
 
 
     private static final String TAG = OMAPITestFragment.class.getSimpleName();
-    private static final String TAG_OMAPI_ANDROID_FRAGMENT =
-            "org.eclipse.keyple.plugin.android.omapi.AndroidOmapiFragment";
 
     private TextView mText;
 
@@ -107,7 +100,8 @@ public class OMAPITestFragment extends Fragment
                     SeProxyService.getInstance().getPlugins().first().getReaders();
 
             if (readers == null || readers.size() < 1) {
-                mText.append("\nNo readers setup in Keyple Plugin");
+                mText.append("\nNo readers found in Keyple Plugin");
+                mText.append("\nTry to reload..");
             } else {
 
 
@@ -155,7 +149,7 @@ public class OMAPITestFragment extends Fragment
 
 
             SeRequest seRequest = new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList,
-                    false, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                    false, ContactsProtocols.PROTOCOL_ISO7816_3);
 
 
             SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
@@ -202,50 +196,14 @@ public class OMAPITestFragment extends Fragment
     public void onDestroy() {
         super.onDestroy();
 
-        try {
-            Log.d(TAG, "Remove task as an observer for ReaderEvents");
-            SeProxyService seProxyService = SeProxyService.getInstance();
-            ProxyReader reader = seProxyService.getPlugins().first().getReaders().first();
-            ((AbstractObservableReader) reader).removeObserver(this);
 
-            // destroy AndroidNFC fragment
-            FragmentManager fm = getFragmentManager();
-            Fragment f = fm.findFragmentByTag(TAG_OMAPI_ANDROID_FRAGMENT);
-            if (f != null) {
-                fm.beginTransaction().remove(f).commit();
-            }
+        /*
+         * // destroy AndroidNFC fragment if needed FragmentManager fm = getFragmentManager();
+         * Fragment f = fm.findFragmentByTag(TAG_OMAPI_ANDROID_FRAGMENT); if (f != null) {
+         * fm.beginTransaction().remove(f).commit(); }
+         */
 
-        } catch (IOReaderException e) {
-            e.printStackTrace();
-        }
     }
 
 
-    @Override
-    public void update(Observable<ReaderEvent> observable, ReaderEvent event) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "New ReaderEvent received : " + event.toString());
-
-                switch (event) {
-                    case SE_INSERTED:
-                        mText.append("\n ---- \n");
-                        mText.append("Connected to SE");
-                        break;
-
-                    case SE_REMOVAL:
-                        mText.append("\n ---- \n");
-                        mText.append("Disconnected from SE");
-                        break;
-
-                    case IO_ERROR:
-                        mText.append("\n ---- \n");
-                        mText.setText("Error reading card");
-                        break;
-
-                }
-            }
-        });
-    }
 }

@@ -18,6 +18,7 @@ import org.eclipse.keyple.seproxy.event.AbstractStaticReader;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.simalliance.openmobileapi.Channel;
 import org.simalliance.openmobileapi.Reader;
@@ -169,7 +170,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
     }
 
     /**
-     * Does not apply with OMAPI, Always return true
+     * The only protocol Flag supported is ContactsProtocols.PROTOCOL_ISO7816_3
      * 
      * @param protocolFlag
      * @return true
@@ -177,6 +178,6 @@ public class AndroidOmapiReader extends AbstractStaticReader {
      */
     @Override
     protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws IOReaderException {
-        return true;
+        return protocolFlag.equals(ContactsProtocols.PROTOCOL_ISO7816_3);
     }
 }
