@@ -12,8 +12,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import java.io.IOException;
 import java.util.HashMap;
-
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +31,7 @@ public class AndroidNfcPluginTest {
     @Before
     public void SetUp() throws IOException {
         plugin = AndroidNfcPlugin.getInstance();
-        plugin.setParameters(new HashMap<String, String>());//re-init parameters
+        plugin.setParameters(new HashMap<String, String>());// re-init parameters
     }
 
 
