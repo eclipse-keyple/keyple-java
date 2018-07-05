@@ -14,10 +14,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.seproxy.SeProtocol;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
-import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
+import org.eclipse.keyple.seproxy.exception.*;
 import org.eclipse.keyple.seproxy.local.AbstractThreadedLocalReader;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import com.github.structlog4j.ILogger;
@@ -100,25 +97,27 @@ public class PcscReader extends AbstractThreadedLocalReader {
     }
 
     @Override
-    public final boolean isSePresent() throws IOReaderException {
+    public final boolean isSePresent() throws NoStackTraceThrowable {
         try {
             return terminal.isCardPresent();
         } catch (CardException e) {
-            throw new IOReaderException(e);
+            logger.error("Exception occured in isSePresent", "cause", e);
+            throw new NoStackTraceThrowable();
         }
     }
 
     @Override
-    public final boolean waitForCardPresent(long timeout) throws IOReaderException {
+    public final boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable {
         try {
             return terminal.waitForCardPresent(timeout);
         } catch (CardException e) {
-            throw new IOReaderException(e);
+            logger.error("Exception occured in waitForCardPresent", "cause", e);
+            throw new NoStackTraceThrowable();
         }
     }
 
     @Override
-    public final boolean waitForCardAbsent(long timeout) throws IOReaderException {
+    public final boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable {
         try {
             if (terminal.waitForCardAbsent(timeout)) {
                 closeLogicalChannel();
@@ -127,8 +126,12 @@ public class PcscReader extends AbstractThreadedLocalReader {
             } else {
                 return false;
             }
+        } catch (IOReaderException e) {
+            logger.error("IOReaderException occured in waitForCardAbsent", "cause", e);
+            throw new NoStackTraceThrowable();
         } catch (CardException e) {
-            throw new IOReaderException(e);
+            logger.error("CardException occured in waitForCardAbsent", "cause", e);
+            throw new NoStackTraceThrowable();
         }
     }
 

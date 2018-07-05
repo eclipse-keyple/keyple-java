@@ -10,11 +10,14 @@ package org.eclipse.keyple.example.pc.deprecated;
 
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.AbstractPluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.event.ReaderPresencePluginEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
+import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclipse.keyple.util.Observable;
 
 /**
@@ -30,8 +33,17 @@ public class ObservableEventTestImbricated {
                 if (event instanceof ReaderPresencePluginEvent) {
                     ReaderPresencePluginEvent presence = (ReaderPresencePluginEvent) event;
                     if (presence.isAdded()) {
-                        System.out.println("New reader: " + presence.getReader().getName());
-                        ProxyReader reader = presence.getReader();
+                        ProxyReader reader = null;
+                        try {
+                            reader = SeProxyService.getInstance()
+                                    .getPlugin(presence.getPluginName())
+                                    .getReader(presence.getReaderName());
+                        } catch (UnexpectedReaderException e) {
+                            e.printStackTrace();
+                        } catch (UnexpectedPluginException e) {
+                            e.printStackTrace();
+                        }
+                        System.out.println("New reader: " + reader.getName());
                         if (reader instanceof AbstractObservableReader) {
                             ((AbstractObservableReader) reader)
                                     .addObserver(new Observable.Observer<ReaderEvent>() {
@@ -50,14 +62,14 @@ public class ObservableEventTestImbricated {
                                             try {
                                                 System.out.println(
                                                         "Card present = " + reader.isSePresent());
-                                            } catch (IOReaderException ex) {
+                                            } catch (NoStackTraceThrowable ex) {
                                                 ex.printStackTrace(System.err);
                                             }
                                         }
                                     });
                         }
                     } else {
-                        System.out.println("Removed reader: " + presence.getReader().getName());
+                        System.out.println("Removed reader: " + presence.getReaderName());
                         synchronized (waitBeforeEnd) {
                             waitBeforeEnd.notify();
                         }

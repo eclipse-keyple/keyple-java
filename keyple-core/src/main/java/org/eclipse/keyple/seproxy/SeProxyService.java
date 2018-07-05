@@ -10,6 +10,7 @@ package org.eclipse.keyple.seproxy;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
+import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
 
 /**
  * The Class SeProxyService. This singleton is the entry point of the SE Proxy Service, its instance
@@ -58,6 +59,20 @@ public final class SeProxyService {
      */
     public SortedSet<ReadersPlugin> getPlugins() {
         return plugins;
+    }
+
+    /**
+     * Gets the plugin whose name is provided as an argument.
+     *
+     * @return the plugin.
+     */
+    public ReadersPlugin getPlugin(String name) throws UnexpectedPluginException {
+        for (ReadersPlugin plugin : plugins) {
+            if (plugin.getName().equals(name)) {
+                return plugin;
+            }
+        }
+        throw new UnexpectedPluginException("Plugin " + name + "not found.");
     }
 
     /**
