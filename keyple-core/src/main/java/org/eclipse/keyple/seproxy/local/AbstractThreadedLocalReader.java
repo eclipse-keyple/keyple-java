@@ -11,6 +11,7 @@ package org.eclipse.keyple.seproxy.local;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
@@ -30,6 +31,9 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
 
     protected AbstractThreadedLocalReader(String name) {
         super(name);
+        /// create and launch a monitoring thread
+        thread = new EventThread(this);
+        thread.start();
     }
 
     /**
@@ -49,38 +53,12 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      */
     @Override
     public final void addObserver(Observer observer) {
-        // We don't need synchronization for the list itself, we need to make sure we're not
-        // starting and closing the thread at the same time.
-        synchronized (observers) {
-            super.addObserver(observer);
-            if (observers.size() == 1) {
-                if (thread != null) { // <-- This should never happen and can probably be dropped at
-                    // some point
-                    throw new IllegalStateException("The reader thread shouldn't null");
-                }
-
-                thread = new EventThread(this);
-                thread.start();
-            }
-        }
+        super.addObserver(observer);
     }
 
     @Override
     public final void removeObserver(Observer observer) {
-        synchronized (observers) {
-            super.removeObserver(observer);
-            if (observers.isEmpty()) {
-                if (thread == null) { // <-- This should never happen and can probably be dropped at
-                    // some point
-                    throw new IllegalStateException("The reader thread should be null");
-                }
-
-                // We'll let the thread calmly end its course after the waitForCard(Absent|Present)
-                // timeout occurs
-                thread.end();
-                thread = null;
-            }
-        }
+        super.removeObserver(observer);
     }
 
     /**
@@ -90,7 +68,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      * @param timeout
      * @return presence status
      */
-    protected abstract boolean waitForCardPresent(long timeout) throws IOReaderException;
+    protected abstract boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable;
 
     /**
      * Wait until the card disappears. Returns true if a card has disappeared before the end of the
@@ -100,7 +78,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      * @param timeout
      * @return presence status
      */
-    protected abstract boolean waitForCardAbsent(long timeout) throws IOReaderException;
+    protected abstract boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable;
 
     /**
      * Thread in charge of reporting live events
@@ -134,6 +112,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
          */
         void end() {
             running = false;
+            this.interrupt(); // exit io wait if needed
         }
 
         private void cardRemoved() {
@@ -184,9 +163,22 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                         // false means timeout, and we go back to the beginning of the loop
                     }
                 }
-            } catch (Exception e) {
-                exceptionThrown(e);
+            } catch (NoStackTraceThrowable e) {
+                logger.error("Exception occured in monitoring thread.", "reader", reader.getName());
             }
         }
+    }
+
+    /**
+     * Called when the class is unloaded. Attempt to do a clean exit.
+     * 
+     * @throws Throwable
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        thread.end();
+        thread = null;
+        logger.info("Observable Reader thread ended.", "name", this.getName());
+        super.finalize();
     }
 }

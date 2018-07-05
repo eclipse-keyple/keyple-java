@@ -9,17 +9,12 @@
 package org.eclipse.keyple.seproxy.exception;
 
 /**
- * Unexpected reader exception
- * 
- *
+ * Exception that do not print stack trace<br/>
+ * Useful when the exceptions are expected and managed.
  */
-public class UnexpectedReaderException extends Exception {
-    /**
-     * Instantiates a new unExpected reader exception.
-     *
-     * @param message the message
-     */
-    public UnexpectedReaderException(String message) {
-        super(message);
+public class NoStackTraceThrowable extends Throwable {
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        return this;
     }
 }

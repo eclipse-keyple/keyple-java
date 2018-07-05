@@ -85,7 +85,7 @@ public class SmartCardIOReaderTest {
     }
 
     @Test
-    public void testIsSEPresent() throws CardException, IOReaderException {
+    public void testIsSEPresent() throws CardException, NoStackTraceThrowable {
 
         // this.reader = new PcscReader(terminal, readerName);
         when(terminal.isCardPresent()).thenReturn(true);
@@ -96,7 +96,7 @@ public class SmartCardIOReaderTest {
     }
 
     @Test(expected = IOReaderException.class)
-    public void testIsSEPresentWithException() throws CardException, IOReaderException {
+    public void testIsSEPresentWithException() throws CardException, NoStackTraceThrowable {
 
         when(terminal.waitForCardAbsent(0)).thenReturn(false);
         doThrow(new CardException("erreur", new Exception())).when(terminal).isCardPresent();

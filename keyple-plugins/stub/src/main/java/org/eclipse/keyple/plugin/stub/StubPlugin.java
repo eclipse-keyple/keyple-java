@@ -54,10 +54,12 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
 
     @Override
     protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
-        logger.info("Create Stub plugin native reader");
-        StubReader reader = new StubReader();
-        readers.put(reader.getName(), reader);
-        return new ConcurrentSkipListSet(readers.values());
+        // logger may not be initialized when getNativeReaders is called from
+        // AbstractObservablePlugin logger.info("Create Stub plugin native reader");
+        SortedSet<AbstractObservableReader> nativeReaders =
+                new ConcurrentSkipListSet<AbstractObservableReader>();
+        nativeReaders.add(new StubReader());
+        return nativeReaders;
     }
 
     @Override

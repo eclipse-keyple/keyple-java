@@ -15,12 +15,13 @@ import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReadersPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
+import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 
 /**
  * @deprecated
  */
 public class DeportedLogicConsumer {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception, NoStackTraceThrowable {
         SeProxyService seProxyService = SeProxyService.getInstance();
         System.out.println("SeProxyServ v" + seProxyService.getVersion());
         SortedSet<ReadersPlugin> plugins = new ConcurrentSkipListSet<ReadersPlugin>();

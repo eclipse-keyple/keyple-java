@@ -8,15 +8,16 @@
 
 package org.eclipse.keyple.seproxy.event;
 
-import org.eclipse.keyple.seproxy.ProxyReader;
 
 public class ReaderPresencePluginEvent extends AbstractPluginEvent {
     private final boolean added;
-    private final ProxyReader reader;
+    private final String pluginName;
+    private final String readerName;
 
-    public ReaderPresencePluginEvent(boolean added, ProxyReader reader) {
+    public ReaderPresencePluginEvent(boolean added, String pluginName, String readerName) {
         this.added = added;
-        this.reader = reader;
+        this.pluginName = pluginName;
+        this.readerName = readerName;
     }
 
     /**
@@ -29,11 +30,20 @@ public class ReaderPresencePluginEvent extends AbstractPluginEvent {
     }
 
     /**
-     * Reader that was added or removed
-     * 
-     * @return Reader
+     * Gets the name of the plugin that produced the event
+     *
+     * @return String plugin name
      */
-    public ProxyReader getReader() {
-        return reader;
+    public String getPluginName() {
+        return pluginName;
+    }
+
+    /**
+     * Gets the name of the reader that was added or removed
+     * 
+     * @return String reader name
+     */
+    public String getReaderName() {
+        return readerName;
     }
 }
