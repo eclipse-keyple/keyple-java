@@ -19,8 +19,8 @@ import android.nfc.tech.TagTechnology;
 import android.util.Log;
 
 /**
- * Decorate {@link Tag} with transceive method. Invoke getTagTransceiver factory method to get a
- * TagProxy object from a @{@link Tag} object
+ * Proxy Tag for {@link IsoDep}, {@link MifareClassic}, {@link MifareUltralight} Invoke
+ * getTagTransceiver factory method to get a TagProxy object from a @{@link Tag} object
  */
 class TagProxy implements TagTechnology {
 

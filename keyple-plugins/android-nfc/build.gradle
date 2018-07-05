@@ -61,7 +61,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_6
     }
     testOptions {
-        unitTests.returnDefaultValues = true
+        unitTests.returnDefaultValues = true//mock Log Android object
     }
 
     buildToolsVersion '26.0.2'
