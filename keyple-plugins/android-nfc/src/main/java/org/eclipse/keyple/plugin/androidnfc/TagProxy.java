@@ -11,6 +11,7 @@ package org.eclipse.keyple.plugin.androidnfc;
 import java.io.IOException;
 import java.util.Arrays;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.util.ByteBufferUtils;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.nfc.tech.MifareClassic;
@@ -95,17 +96,24 @@ class TagProxy implements TagTechnology {
         );
     }
 
-
+    /**
+     * Retrieve Answer to reset from Tag. For Isodep, getHiLayerResponse and getHiLayerResponse are
+     * used to retrieve ATR. For Mifare (Classic and UL) Smartcard, a virtual ATR is returned
+     * inspired by PS/SC standard 3B8F8001804F0CA000000306030001000000006A for Mifare Classic
+     * 3B8F8001804F0CA0000003060300030000000068 for Mifare Ultralight
+     *
+     * @return
+     */
     byte[] getATR() {
 
         if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC)) {
-            return null;
+            return ByteBufferUtils.fromHex("3B8F8001804F0CA000000306030001000000006A").array();
         } else if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL)) {
-            return null;
+            return ByteBufferUtils.fromHex("3B8F8001804F0CA0000003060300030000000068").array();
         } else if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_ISODEP)) {
             return ((IsoDep) tagTechnology).getHiLayerResponse() != null
                     ? ((IsoDep) tagTechnology).getHiLayerResponse()
-                    : ((IsoDep) tagTechnology).getHistoricalBytes();
+                    : ((IsoDep) tagTechnology).getHiLayerResponse();
         } else {
             return null;// can not happen
         }

@@ -22,7 +22,6 @@ import android.view.MenuItem;
 
 /**
  * Example of @{@link SeProxyService} implementation based on the
- * 
  * @{@link org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin}
  *
  */
