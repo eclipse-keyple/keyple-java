@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import org.eclipse.keyple.plugin.android.omapi.SeService.ISeServiceFactory;
-import org.eclipse.keyple.plugin.android.omapi.SeService.SeServiceFactory;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.AbstractStaticPlugin;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
@@ -32,14 +30,14 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
     public static final String PLUGIN_NAME = "AndroidOmapiPlugin";
 
     private SEService seService;
-    private SeServiceFactory seServiceFactory;
+    private ISeServiceFactory seServiceFactory;
 
 
     // singleton methods
     private static AndroidOmapiPlugin uniqueInstance = null;
 
-    static SeServiceFactory getSeServiceFactory() {
-        return new ISeServiceFactory();
+    static ISeServiceFactory getSeServiceFactory() {
+        return new SeServiceFactoryImpl();
     };
 
 

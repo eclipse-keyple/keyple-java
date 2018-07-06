@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.plugin.android.omapi.SeService;
+package org.eclipse.keyple.plugin.android.omapi;
 
 import java.lang.reflect.InvocationTargetException;
 import org.simalliance.openmobileapi.SEService;
@@ -18,9 +18,9 @@ import android.util.Log;
 
 
 
-public class ISeServiceFactory implements SeServiceFactory {
+class SeServiceFactoryImpl implements ISeServiceFactory {
 
-    static String TAG = ISeServiceFactory.class.getSimpleName();
+    static String TAG = SeServiceFactoryImpl.class.getSimpleName();
 
     @Override
     public SEService connectToSe(SEService.CallBack callBack) {

@@ -6,16 +6,12 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.plugin.android.omapi.SeService;
+package org.eclipse.keyple.plugin.android.omapi;
 
 import org.simalliance.openmobileapi.SEService;
 
 
-/**
- * Created by bonitasoft on 05/07/2018.
- */
-
-public interface SeServiceFactory {
+interface ISeServiceFactory {
 
     SEService connectToSe(SEService.CallBack callBack);
 }
