@@ -170,7 +170,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
     }
 
     /**
-     * The only protocol Flag supported is ContactsProtocols.PROTOCOL_ISO7816_3
+     * The only protocol Fla
      * 
      * @param protocolFlag
      * @return true
