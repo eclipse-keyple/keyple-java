@@ -21,12 +21,13 @@ import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
+import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
-import org.eclipse.keyple.util.Observable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,7 +83,8 @@ public class AndroidNfcReaderTest {
     public void transmitSuccessfull() throws IOException {
 
         // config
-        reader.addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4);
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4));
 
         // input
         SeRequestSet requests = getRequestIsoDepSetSample();
@@ -113,7 +115,8 @@ public class AndroidNfcReaderTest {
     public void transmitWrongProtocols() throws IOException {
 
         // config reader with Isodep protocols
-        reader.addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4);
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4));
 
         // input
         SeRequestSet requests = getRequestIsoDepSetSample();
@@ -144,7 +147,8 @@ public class AndroidNfcReaderTest {
     public void transmitWrongProtocol2() throws IOException {
 
         // config reader with Mifare protocols
-        reader.addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC);
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC));
 
         // input
         SeRequestSet requests = getRequestIsoDepSetSample();
@@ -175,7 +179,8 @@ public class AndroidNfcReaderTest {
     public void transmitCardNotConnected() throws IOException {
 
         // config reader with Isodep protocols
-        reader.addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4);
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4));
 
         // input
         SeRequestSet requests = getRequestIsoDepSetSample();
@@ -207,7 +212,8 @@ public class AndroidNfcReaderTest {
     public void transmitUnkownCard() throws IOException {
 
         // config reader with Isodep protocols
-        reader.addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4);
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4));
 
         // input
         SeRequestSet requests = getRequestIsoDepSetSample();
@@ -239,7 +245,8 @@ public class AndroidNfcReaderTest {
     public void transmitUnknownApplication() throws IOException {
 
         // config reader with Isodep protocols
-        reader.addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4);
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4));
 
         // input
         SeRequestSet requests = getRequestIsoDepSetSample();
@@ -312,20 +319,23 @@ public class AndroidNfcReaderTest {
 
     @Test
     public void setIsoDepProtocol() {
-        reader.addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4);
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4));
         assertEquals(NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_NFC_A,
                 reader.getFlags());
     }
 
     @Test
     public void setMifareProtocol() {
-        reader.addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC);
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC));
         assertEquals(NfcAdapter.FLAG_READER_NFC_A, reader.getFlags());
     }
 
     @Test
     public void setMifareULProtocol() {
-        reader.addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_UL);
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_UL));
         assertEquals(NfcAdapter.FLAG_READER_NFC_A, reader.getFlags());
     }
 
@@ -333,9 +343,9 @@ public class AndroidNfcReaderTest {
     @Test
     public void insertEvent() {
 
-        reader.addObserver(new Observable.Observer<ReaderEvent>() {
+        reader.addObserver(new ObservableReader.ReaderObserver() {
             @Override
-            public void update(Observable<ReaderEvent> observable, ReaderEvent event) {
+            public void update(ReaderEvent event) {
                 assertEquals(ReaderEvent.SE_INSERTED, event);
             }
         });
@@ -451,7 +461,8 @@ public class AndroidNfcReaderTest {
     public void protocolFlagMatchesTrue() throws IOException {
         // init
         insertSe();
-        reader.addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4);
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4));
         when(tagProxy.getTech())
                 .thenReturn(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4.getValue());
 
