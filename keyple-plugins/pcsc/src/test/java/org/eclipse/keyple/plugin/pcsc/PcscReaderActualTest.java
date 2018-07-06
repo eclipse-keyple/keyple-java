@@ -8,9 +8,9 @@
 
 package org.eclipse.keyple.plugin.pcsc;
 
-import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.util.Observable;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -31,7 +31,7 @@ public class PcscReaderActualTest {
          */
 
         @Override
-        public void update(Observable observable, ReaderEvent event) {
+        public void update(ReaderEvent event) {
             lastThread = Thread.currentThread();
             System.out.println("Observer: " + event + " (from thread"
                     + Thread.currentThread().getName() + ")");

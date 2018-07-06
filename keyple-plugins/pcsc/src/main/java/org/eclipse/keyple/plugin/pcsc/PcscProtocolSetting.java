@@ -10,12 +10,12 @@ package org.eclipse.keyple.plugin.pcsc;
 
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSettings;
+import org.eclipse.keyple.seproxy.protocol.SeProtocolSettingList;
 
 /**
  * These objects are used by the application to build the SeProtocolsMap
  */
-public enum PcscProtocolSetting implements SeProtocolSettings {
+public enum PcscProtocolSetting implements SeProtocolSettingList {
 
     SETTING_PROTOCOL_ISO14443_4(ContactlessProtocols.PROTOCOL_ISO14443_4,
             ProtocolSetting.REGEX_PROTOCOL_ISO14443_4),

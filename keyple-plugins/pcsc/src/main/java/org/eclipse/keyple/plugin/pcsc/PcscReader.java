@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.exception.*;
-import org.eclipse.keyple.seproxy.local.AbstractThreadedLocalReader;
+import org.eclipse.keyple.seproxy.plugin.AbstractThreadedLocalReader;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;

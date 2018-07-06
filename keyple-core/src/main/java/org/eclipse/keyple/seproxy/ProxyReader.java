@@ -11,6 +11,7 @@ package org.eclipse.keyple.seproxy;
 
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.NameableConfigurable;
 
 /**
@@ -57,4 +58,6 @@ public interface ProxyReader extends NameableConfigurable, Comparable<ProxyReade
      * @throws IOReaderException Exception of type IO Reader
      */
     SeResponseSet transmit(SeRequestSet seApplicationRequest) throws IOReaderException;
+
+    void addSeProtocolSetting(SeProtocolSetting seProtocolSetting);
 }
