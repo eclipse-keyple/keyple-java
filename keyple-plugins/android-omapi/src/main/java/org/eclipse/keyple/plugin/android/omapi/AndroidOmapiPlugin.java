@@ -9,7 +9,6 @@
 package org.eclipse.keyple.plugin.android.omapi;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
@@ -19,10 +18,6 @@ import org.eclipse.keyple.seproxy.event.AbstractStaticPlugin;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.SEService;
-import android.app.Application;
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.util.Log;
 
 /**
@@ -32,86 +27,38 @@ import android.util.Log;
 public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEService.CallBack {
 
     private static final String TAG = AndroidOmapiPlugin.class.getSimpleName();
+    public static final String PLUGIN_NAME = "AndroidOmapiPlugin";
 
     private SEService seService;
+    private ISeServiceFactory seServiceFactory;
 
 
     // singleton methods
-    private static AndroidOmapiPlugin uniqueInstance = new AndroidOmapiPlugin();
+    private static AndroidOmapiPlugin uniqueInstance = null;
+
+    static ISeServiceFactory getSeServiceFactory() {
+        return new SeServiceFactoryImpl();
+    };
 
 
     /**
-     * Retrieve the version of the Open Mobile API of the platform
-     * 
-     * @param context : Android Application context
-     * @return Version Name of the mobile API deployed, returns "" is no OMAPI found
+     * Initialize plugin by connecting to {@link SEService} ; Make sure to instantiate Android Omapi
+     * Plugin from a Android Context Application
      */
-    private String getOMAPIVersion(Context context) {
-        try {
-            PackageInfo packageInfo =
-                    context.getPackageManager().getPackageInfo("android.smartcard", 0);
-            return packageInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e1) {
-            try {
-                PackageInfo packageInfo = context.getPackageManager()
-                        .getPackageInfo("org.simalliance.openmobileapi.service", 0);
-                return packageInfo.versionName;
-            } catch (PackageManager.NameNotFoundException e2) {
-                try {
-                    PackageInfo packageInfo = context.getPackageManager()
-                            .getPackageInfo("com.sonyericsson.smartcard", 0);
-                    return packageInfo.versionName;
-                } catch (PackageManager.NameNotFoundException e3) {
-                    return "";
-                }
-            }
-        }
+    AndroidOmapiPlugin() {
+        super(PLUGIN_NAME);
+        seServiceFactory = AndroidOmapiPlugin.getSeServiceFactory();
+        seService = seServiceFactory.connectToSe(this);
     }
 
-    /**
-     * Initialize plugin by connecting to {@link SEService} Application Context is retrieved
-     * automatically by a reflection invocation to method
-     * android.app.ActivityThread#currentApplication; Make sure to instantiate Android Omapi Plugin
-     * from a Android Context Application
-     */
-    private AndroidOmapiPlugin() {
-        super(TAG);
-        try {
-
-            Log.i(TAG, "Retrieving Application Context with reflection android.app.AppGlobals");
-
-            Application app = (Application) Class.forName("android.app.ActivityThread")
-                    .getMethod("currentApplication").invoke(null, (Object[]) null);
-
-            String omapiVersion = getOMAPIVersion(app);
-
-            if (omapiVersion.equals("")) {
-                Log.e(TAG, "Open Mobile API library not found in the platform");
-            } else {
-                Log.e(TAG, "Open Mobile API library version found : " + omapiVersion);
-                // connect to Secure Element Service
-                if (seService == null || !seService.isConnected()) {
-                    seService = new SEService(app, this);
-                    Log.i(TAG, "Connected to SeService " + seService.getVersion());
-
-                } else {
-                    Log.w(TAG, "seService was already connected");
-                }
-            }
-
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 
     public static AndroidOmapiPlugin getInstance() {
+        if (uniqueInstance == null) {
+            uniqueInstance = new AndroidOmapiPlugin();
+        }
         return uniqueInstance;
+
+
     }
 
 
@@ -127,19 +74,20 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
      */
 
     @Override
-    protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
+    protected SortedSet<AbstractObservableReader> getNativeReaders() {
 
         SortedSet<AbstractObservableReader> readers = new TreeSet<AbstractObservableReader>();
 
         if (seService != null && seService.isConnected()) {
             Reader[] omapiReaders = seService.getReaders();
 
+            // no readers found in the environment, don't return any readers for keyple
             if (omapiReaders == null) {
                 Log.w(TAG, "No readers found");
                 return readers;// empty list
             }
 
-
+            // Build a keyple reader for each readers found by the OMAPI
             for (Reader omapiReader : omapiReaders) {
                 Log.d(TAG, "Reader available name : " + omapiReader.getName());
                 Log.d(TAG,
@@ -182,14 +130,8 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
 
         Log.i(TAG, "Retrieve available readers...");
 
-        try {
-            // init readers
-            readers = getNativeReaders();
-        } catch (IOReaderException e) {
-            e.printStackTrace();
-            Log.e(TAG, e.getMessage());
-        }
-
+        // init readers
+        readers = getNativeReaders();
     }
 
     private Map<String, String> parameters = new HashMap<String, String>();// not in use in this
