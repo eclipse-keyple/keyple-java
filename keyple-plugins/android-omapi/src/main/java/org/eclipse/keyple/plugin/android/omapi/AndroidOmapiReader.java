@@ -12,12 +12,14 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.event.AbstractStaticReader;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.simalliance.openmobileapi.Channel;
@@ -46,17 +48,6 @@ public class AndroidOmapiReader extends AbstractStaticReader {
         this.omapiReader = omapiReader;
     }
 
-    // @Override
-    /**
-     * Return the name of this reader. If this reader is a SIM reader, then its name must be
-     * "SIM[Slot]" If the reader is a SD or micro SD reader, then its name must be “SD[slot]” If the
-     * reader is an embedded SE reader, then its name must be “eSE[slot]” see
-     * {@link Reader#getName()}
-     *
-     */
-    /*
-     * public String getName() { return omapiReader.getName(); }
-     */
 
     @Override
     public Map<String, String> getParameters() {
@@ -91,7 +82,8 @@ public class AndroidOmapiReader extends AbstractStaticReader {
      */
     @Override
     protected ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid,
-            Set<Short> successfulSelectionStatusCodes) throws IOReaderException {
+            Set<Short> successfulSelectionStatusCodes)
+            throws IOReaderException, SelectApplicationException {
         ByteBuffer[] atrAndFci = new ByteBuffer[2];
 
         try {
@@ -113,8 +105,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
 
                 // get ATR from session
                 Log.i(TAG, "Retrieveing ATR from session...");
-                atrAndFci[0] =
-                        ByteBuffer.wrap(session.getATR() != null ? session.getATR() : new byte[0]);
+                atrAndFci[0] = session.getATR() != null ? ByteBuffer.wrap(session.getATR()) : null;
 
                 Log.i(TAG, "Create logical openChannel within the session...");
                 openChannel = session.openLogicalChannel(ByteBufferUtils.toBytes(aid));
@@ -127,6 +118,8 @@ public class AndroidOmapiReader extends AbstractStaticReader {
             throw new IOReaderException(e.getMessage(), e.getCause());
         } catch (SecurityException e) {
             throw new IOReaderException(e.getMessage(), e.getCause());
+        } catch (NoSuchElementException e) {
+            throw new SelectApplicationException(e.getMessage());
         }
 
         return atrAndFci;
@@ -139,9 +132,12 @@ public class AndroidOmapiReader extends AbstractStaticReader {
      */
     @Override
     protected void closePhysicalChannel() throws IOReaderException {
-        openChannel.getSession().close();
-        openChannel = null;
-        openApplication = null;
+        // close physical channel if exists
+        if (openApplication != null) {
+            openChannel.getSession().close();
+            openChannel = null;
+            openApplication = null;
+        }
     }
 
     /**

@@ -1,14 +1,20 @@
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
+
 package org.eclipse.keyple.plugin.android.omapi.SeService;
 
+import java.lang.reflect.InvocationTargetException;
+import org.simalliance.openmobileapi.SEService;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
-
-import org.simalliance.openmobileapi.SEService;
-
-import java.lang.reflect.InvocationTargetException;
 
 
 
@@ -18,31 +24,31 @@ public class ISeServiceFactory implements SeServiceFactory {
 
     @Override
     public SEService connectToSe(SEService.CallBack callBack) {
-        if(isEnvironmentReady()){
-            Log.w(TAG,"Environment is ready for OMAPI, connecting to SeService");
-            return new SEService(getApplicationContext(),callBack);
-        }else{
-            Log.w(TAG,"Environment is not ready for OMAPI");
+        if (isEnvironmentReady()) {
+            Log.w(TAG, "Environment is ready for OMAPI, connecting to SeService");
+            return new SEService(getApplicationContext(), callBack);
+        } else {
+            Log.w(TAG, "Environment is not ready for OMAPI");
             return null;
         }
     }
 
-    static Boolean isEnvironmentReady(){
+    static Boolean isEnvironmentReady() {
         return getOMAPIVersion(getApplicationContext()) != "";
     }
 
     /**
-     * Retrieves Application Context
-     * automatically by a reflection invocation to method
+     * Retrieves Application Context automatically by a reflection invocation to method
      * android.app.ActivityThread#currentApplication
+     * 
      * @return App context
      */
-    static protected Application getApplicationContext(){
+    static protected Application getApplicationContext() {
         Application app = null;
 
         Log.i(TAG, "Retrieving Application Context with reflection android.app.AppGlobals");
 
-        try{
+        try {
 
             app = (Application) Class.forName("android.app.ActivityThread")
                     .getMethod("currentApplication").invoke(null, (Object[]) null);
@@ -54,7 +60,7 @@ public class ISeServiceFactory implements SeServiceFactory {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             return app;
         }
 

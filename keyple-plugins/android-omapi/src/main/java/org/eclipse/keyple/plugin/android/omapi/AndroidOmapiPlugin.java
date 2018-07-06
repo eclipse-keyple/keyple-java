@@ -9,12 +9,10 @@
 package org.eclipse.keyple.plugin.android.omapi;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import org.eclipse.keyple.plugin.android.omapi.SeService.ISeServiceFactory;
 import org.eclipse.keyple.plugin.android.omapi.SeService.SeServiceFactory;
 import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
@@ -22,10 +20,6 @@ import org.eclipse.keyple.seproxy.event.AbstractStaticPlugin;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.SEService;
-import android.app.Application;
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.util.Log;
 
 /**
@@ -35,32 +29,33 @@ import android.util.Log;
 public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEService.CallBack {
 
     private static final String TAG = AndroidOmapiPlugin.class.getSimpleName();
+    public static final String PLUGIN_NAME = "AndroidOmapiPlugin";
 
     private SEService seService;
     private SeServiceFactory seServiceFactory;
 
 
     // singleton methods
-    private static AndroidOmapiPlugin uniqueInstance = null ;
+    private static AndroidOmapiPlugin uniqueInstance = null;
 
-    static SeServiceFactory getSeServiceFactory(){
+    static SeServiceFactory getSeServiceFactory() {
         return new ISeServiceFactory();
     };
 
 
     /**
-     * Initialize plugin by connecting to {@link SEService} ; Make sure to instantiate Android Omapi Plugin
-     * from a Android Context Application
+     * Initialize plugin by connecting to {@link SEService} ; Make sure to instantiate Android Omapi
+     * Plugin from a Android Context Application
      */
     AndroidOmapiPlugin() {
-        super(TAG);
+        super(PLUGIN_NAME);
         seServiceFactory = AndroidOmapiPlugin.getSeServiceFactory();
         seService = seServiceFactory.connectToSe(this);
     }
 
 
     public static AndroidOmapiPlugin getInstance() {
-        if(uniqueInstance == null){
+        if (uniqueInstance == null) {
             uniqueInstance = new AndroidOmapiPlugin();
         }
         return uniqueInstance;
@@ -88,13 +83,13 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
         if (seService != null && seService.isConnected()) {
             Reader[] omapiReaders = seService.getReaders();
 
-            //no readers found in the environment, don't return any readers for keyple
+            // no readers found in the environment, don't return any readers for keyple
             if (omapiReaders == null) {
                 Log.w(TAG, "No readers found");
                 return readers;// empty list
             }
 
-            //Build a keyple reader for each readers found by the OMAPI
+            // Build a keyple reader for each readers found by the OMAPI
             for (Reader omapiReader : omapiReaders) {
                 Log.d(TAG, "Reader available name : " + omapiReader.getName());
                 Log.d(TAG,
