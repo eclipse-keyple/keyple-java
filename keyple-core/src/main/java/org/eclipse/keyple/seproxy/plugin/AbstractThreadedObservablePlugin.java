@@ -6,15 +6,21 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy.event;
+package org.eclipse.keyple.seproxy.plugin;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
+import org.eclipse.keyple.seproxy.event.AbstractPluginEvent;
+import org.eclipse.keyple.seproxy.event.ErrorPluginEvent;
+import org.eclipse.keyple.seproxy.event.ObservablePlugin;
+import org.eclipse.keyple.seproxy.event.ReaderPresencePluginEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.util.Observable;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public abstract class AbstractThreadedObservablePlugin extends AbstractObservablePlugin {
+public abstract class AbstractThreadedObservablePlugin extends AbstractObservablePlugin
+        implements ObservablePlugin {
 
     private static final ILogger logger =
             SLoggerFactory.getLogger(AbstractThreadedObservablePlugin.class);
@@ -142,5 +148,13 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
         thread = null;
         logger.info("Observable Plugin thread ended.", "name", this.getName());
         super.finalize();
+    }
+
+    public final void addObserver(PluginObserver observer) {
+        super.addObserver((Observable.Observer<AbstractPluginEvent>) observer);
+    }
+
+    public final void removeObserver(PluginObserver observer) {
+        super.removeObserver((Observable.Observer<AbstractPluginEvent>) observer);
     }
 }

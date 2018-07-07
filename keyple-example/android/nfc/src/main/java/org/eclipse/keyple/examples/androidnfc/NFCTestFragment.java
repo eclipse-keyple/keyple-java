@@ -31,12 +31,12 @@ import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
-import org.eclipse.keyple.util.Observable;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
@@ -53,8 +53,7 @@ import android.widget.TextView;
  * Test the Keyple NFC Plugin Configure the NFC reader Configure the Observability Run test commands
  * when appropriate tag is detected.
  */
-public class NFCTestFragment extends Fragment
-        implements AbstractObservableReader.Observer<ReaderEvent> {
+public class NFCTestFragment extends Fragment implements ObservableReader.ReaderObserver {
 
 
     private static final String TAG = NFCTestFragment.class.getSimpleName();
@@ -106,8 +105,8 @@ public class NFCTestFragment extends Fragment
 
 
             // with this protocol settings we activate the nfc for ISO1443_4 protocol
-            ((AndroidNfcReader) reader)
-                    .addSeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4);
+            ((AndroidNfcReader) reader).addSeProtocolSetting(
+                    new SeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4));
 
 
             /*
@@ -154,7 +153,7 @@ public class NFCTestFragment extends Fragment
      * @param event
      */
     @Override
-    public void update(Observable<ReaderEvent> observable, ReaderEvent event) {
+    public void update(ReaderEvent event) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -270,7 +269,7 @@ public class NFCTestFragment extends Fragment
             Log.d(TAG, "Remove task as an observer for ReaderEvents");
             SeProxyService seProxyService = SeProxyService.getInstance();
             ProxyReader reader = seProxyService.getPlugins().first().getReaders().first();
-            ((AbstractObservableReader) reader).removeObserver(this);
+            ((ObservableReader) reader).removeObserver(this);
 
             // destroy AndroidNFC fragment
             FragmentManager fm = getFragmentManager();

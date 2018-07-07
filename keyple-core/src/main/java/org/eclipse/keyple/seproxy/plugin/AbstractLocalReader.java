@@ -6,17 +6,16 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy.local;
+package org.eclipse.keyple.seproxy.plugin;
 
 import java.nio.ByteBuffer;
 import java.util.*;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
 import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSettings;
+import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
@@ -326,20 +325,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      */
     protected Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
 
-    // TODO try to optimize this by reducing the number of addSeProtocolSetting methods
-    public final void addSeProtocolSetting(Map<SeProtocol, String> seProtocolSettings)
-            throws IOReaderException {
-        this.protocolsMap.putAll(seProtocolSettings);
-    }
-
-    public final void addSeProtocolSetting(SeProtocolSettings seProtocolSetting) {
-        this.protocolsMap.put(seProtocolSetting.getFlag(), seProtocolSetting.getValue());
-    }
-
-    // TODO How to force class T to be an enum implementing SeProtocolSettings?
-    public final <T extends Enum<T>> void addSeProtocolSetting(Class<T> settings) {
-        for (Enum<T> setting : settings.getEnumConstants()) {
-            addSeProtocolSetting((SeProtocolSettings) setting);
-        }
+    public void addSeProtocolSetting(SeProtocolSetting seProtocolSetting) {
+        this.protocolsMap.putAll(seProtocolSetting.getProtocolsMap());
     }
 }

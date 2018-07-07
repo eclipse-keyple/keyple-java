@@ -11,13 +11,12 @@ package org.eclipse.keyple.example.pc.deprecated;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.AbstractPluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.event.ReaderPresencePluginEvent;
-import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
+import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.util.Observable;
 
 /**
@@ -29,7 +28,7 @@ public class ObservableEventTestImbricated {
 
         PcscPlugin.getInstance().addObserver(new Observable.Observer<AbstractPluginEvent>() {
             @Override
-            public void update(Observable observable, AbstractPluginEvent event) {
+            public void update(AbstractPluginEvent event) {
                 if (event instanceof ReaderPresencePluginEvent) {
                     ReaderPresencePluginEvent presence = (ReaderPresencePluginEvent) event;
                     if (presence.isAdded()) {
@@ -48,22 +47,10 @@ public class ObservableEventTestImbricated {
                             ((AbstractObservableReader) reader)
                                     .addObserver(new Observable.Observer<ReaderEvent>() {
                                         @Override
-                                        public void update(Observable observable,
-                                                ReaderEvent event) {
+                                        public void update(ReaderEvent event) {
                                             if (event.equals(ReaderEvent.SE_INSERTED)) {
-                                                System.out.println("Card inserted on: "
-                                                        + ((AbstractObservableReader) observable)
-                                                                .getName());
-                                                analyseCard((AbstractObservableReader) observable);
-                                            }
-                                        }
-
-                                        private void analyseCard(AbstractObservableReader reader) {
-                                            try {
                                                 System.out.println(
-                                                        "Card present = " + reader.isSePresent());
-                                            } catch (NoStackTraceThrowable ex) {
-                                                ex.printStackTrace(System.err);
+                                                        "Card inserted on: " + event.getName());
                                             }
                                         }
                                     });

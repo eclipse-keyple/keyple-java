@@ -6,14 +6,14 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy.event;
+package org.eclipse.keyple.seproxy.plugin;
 
 
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
+import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.util.Observable;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
@@ -87,9 +87,5 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      */
     public final int compareTo(ProxyReader proxyReader) {
         return this.getName().compareTo(proxyReader.getName());
-    }
-
-    public interface ReaderObserver extends AbstractLoggedObservable.Observer<ReaderEvent> {
-        void update(Observable reader, ReaderEvent event);
     }
 }

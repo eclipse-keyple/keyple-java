@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy.event;
+package org.eclipse.keyple.seproxy.plugin;
 
 
 import java.io.IOException;
@@ -60,15 +60,7 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
 
     public void addObserver(final AbstractLoggedObservable.Observer<T> observer) {
 
-        if (this instanceof AbstractObservableReader) {
-            logger.info("AbstractObservableReader: Adding an observer", ACTION_STR,
-                    "observable_reader.add_observer", "readerName",
-                    ((AbstractObservableReader) this).getName());
-        } else if (this instanceof AbstractObservablePlugin) {
-            logger.info("AbstractObservablePlugin: Adding an observer", ACTION_STR,
-                    "observable_plugin.add_observer", "pluginName",
-                    ((AbstractObservablePlugin) this).getName());
-        }
+        logger.info("Adding an observer", "class", this.getClass(), "name", this.getName());
 
         super.addObserver(observer);
     }

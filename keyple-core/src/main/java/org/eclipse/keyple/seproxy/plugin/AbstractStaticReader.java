@@ -6,9 +6,8 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy.event;
+package org.eclipse.keyple.seproxy.plugin;
 
-import org.eclipse.keyple.seproxy.local.AbstractLocalReader;
 
 /**
  * Abstract Observable Reader class dedicated to static reader configurations

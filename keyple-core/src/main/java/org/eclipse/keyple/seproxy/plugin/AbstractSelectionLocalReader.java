@@ -6,16 +6,19 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy.local;
+package org.eclipse.keyple.seproxy.plugin;
 
 import java.nio.ByteBuffer;
 import java.util.Set;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
+import org.eclipse.keyple.seproxy.event.ObservableReader;
+import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
 import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.Observable;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
@@ -23,7 +26,8 @@ import com.github.structlog4j.SLoggerFactory;
  * Local reader class implementing the logical channel opening based on the selection of the SE
  * application
  */
-public abstract class AbstractSelectionLocalReader extends AbstractLocalReader {
+public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
+        implements ObservableReader {
     private static final ILogger logger =
             SLoggerFactory.getLogger(AbstractSelectionLocalReader.class);
 
@@ -113,5 +117,13 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader {
             }
         }
         return atrAndFci;
+    }
+
+    public final void addObserver(ReaderObserver observer) {
+        super.addObserver((Observable.Observer<ReaderEvent>) observer);
+    }
+
+    public final void removeObserver(ReaderObserver observer) {
+        super.removeObserver((Observable.Observer<ReaderEvent>) observer);
     }
 }

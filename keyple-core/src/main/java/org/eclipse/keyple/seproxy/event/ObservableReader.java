@@ -8,5 +8,16 @@
 
 package org.eclipse.keyple.seproxy.event;
 
-public abstract class AbstractPluginEvent {
+import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.util.Observable;
+
+public interface ObservableReader extends ProxyReader {
+    interface ReaderObserver extends Observable.Observer<ReaderEvent> {
+    }
+
+    void addObserver(ReaderObserver observer);
+
+    void removeObserver(ReaderObserver observer);
+
+    void notifyObservers(ReaderEvent event);
 }

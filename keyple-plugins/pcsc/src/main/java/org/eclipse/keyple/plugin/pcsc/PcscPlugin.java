@@ -19,9 +19,9 @@ import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
 import org.eclipse.keyple.plugin.pcsc.log.CardTerminalsLogger;
-import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
-import org.eclipse.keyple.seproxy.event.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.plugin.AbstractThreadedObservablePlugin;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 

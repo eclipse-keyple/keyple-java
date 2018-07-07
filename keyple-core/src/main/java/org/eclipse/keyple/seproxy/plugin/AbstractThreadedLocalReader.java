@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy.local;
+package org.eclipse.keyple.seproxy.plugin;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
@@ -21,7 +21,8 @@ import com.github.structlog4j.SLoggerFactory;
  */
 public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocalReader {
 
-    private static final ILogger logger = SLoggerFactory.getLogger(AbstractLocalReader.class);
+    private static final ILogger logger =
+            SLoggerFactory.getLogger(AbstractThreadedLocalReader.class);
     private EventThread thread;
     private static final AtomicInteger threadCount = new AtomicInteger();
     /**

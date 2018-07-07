@@ -6,11 +6,12 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy.event;
+package org.eclipse.keyple.seproxy.plugin;
 
 import java.util.SortedSet;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReadersPlugin;
+import org.eclipse.keyple.seproxy.event.AbstractPluginEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 
@@ -98,9 +99,5 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<Abstrac
             }
         }
         throw new UnexpectedReaderException("Reader " + name + "not found.");
-    }
-
-    public interface PluginObserver extends Observer {
-        void update(AbstractPluginEvent event);
     }
 }

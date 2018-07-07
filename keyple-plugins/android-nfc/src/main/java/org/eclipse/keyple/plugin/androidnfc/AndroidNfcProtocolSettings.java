@@ -10,9 +10,9 @@ package org.eclipse.keyple.plugin.androidnfc;
 
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSettings;
+import org.eclipse.keyple.seproxy.protocol.SeProtocolSettingList;
 
-public enum AndroidNfcProtocolSettings implements SeProtocolSettings {
+public enum AndroidNfcProtocolSettings implements SeProtocolSettingList {
 
     SETTING_PROTOCOL_ISO14443_4(ContactlessProtocols.PROTOCOL_ISO14443_4,
             ProtocolSetting.NFC_TAG_TYPE_ISODEP),

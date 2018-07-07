@@ -23,12 +23,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Observable<T> {
 
     public interface Observer<T> {
-        void update(Observable<T> observable, T event);
+        void update(T event);
     }
 
     private boolean changed = false;
 
-    protected final Collection<Observer<T>> observers;
+    private final Collection<Observer<T>> observers;
 
     public Observable() {
         observers = new CopyOnWriteArrayList<Observer<T>>();
@@ -70,7 +70,7 @@ public class Observable<T> {
 
     public void notifyObservers(final T event) {
         for (Observer<T> observer : observers) {
-            observer.update(this, event); // the Observable is already present in the event
+            observer.update(event); // the Observable is already present in the event
         }
     }
 }
