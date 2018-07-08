@@ -76,11 +76,11 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         }
 
         public void update(ReaderEvent event) {
-            if (event.equals(ReaderEvent.SE_INSERTED)) {
-                System.out.println("Card inserted on: " + event.name());
+            if (event.getEventType().equals(ReaderEvent.EventType.SE_INSERTED)) {
+                System.out.println("Card inserted on: " + event.getReaderName());
                 // analyseCard((AbstractObservableReader) reader);
-            } else if (event.equals(ReaderEvent.SE_REMOVAL)) {
-                System.out.println("Card removed on: " + event.name());
+            } else if (event.getEventType().equals(ReaderEvent.EventType.SE_REMOVAL)) {
+                System.out.println("Card removed on: " + event.getReaderName());
             }
             try {
                 listReaders();
@@ -170,7 +170,6 @@ public class KeypleGenericDemo_ObservableReaderNotification {
     private final static Object waitBeforeEnd = new Object();
 
     public static void main(String[] args) throws Exception {
-
         KeypleGenericDemo_ObservableReaderNotification testObserver =
                 new KeypleGenericDemo_ObservableReaderNotification();
 

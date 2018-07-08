@@ -14,20 +14,21 @@ import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.junit.Test;
 
 /**
- * @deprecated TODO useful???
  */
 public class ReaderEventTest {
 
     @Test
     public void testReaderEvent() {
-        ReaderEvent event = ReaderEvent.IO_ERROR;
+        ReaderEvent event = new ReaderEvent("plugin", "reader", ReaderEvent.EventType.IO_ERROR);
         assertNotNull(event);
     }
 
     @Test
     public void testGetEvent() {
-        ReaderEvent event = ReaderEvent.IO_ERROR;
-        assertEquals(ReaderEvent.IO_ERROR, event);
+        ReaderEvent event = new ReaderEvent("plugin", "reader", ReaderEvent.EventType.IO_ERROR);
+        assertEquals(event.getReaderName(), "reader");
+        assertEquals(event.getPluginName(), "plugin");
+        assertEquals(event.getEventType(), ReaderEvent.EventType.IO_ERROR);
     }
 
 }

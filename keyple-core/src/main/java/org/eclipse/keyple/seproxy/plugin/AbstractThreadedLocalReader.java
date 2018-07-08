@@ -9,6 +9,8 @@
 package org.eclipse.keyple.seproxy.plugin;
 
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.sun.org.apache.regexp.internal.RE;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
@@ -117,11 +119,11 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
         }
 
         private void cardRemoved() {
-            notifyObservers(ReaderEvent.SE_REMOVAL);
+            notifyObservers(new ReaderEvent("plugin", this.reader.getName(), ReaderEvent.EventType.SE_REMOVAL));
         }
 
         private void cardInserted() {
-            notifyObservers(ReaderEvent.SE_INSERTED);
+            notifyObservers(new ReaderEvent("plugin", this.reader.getName(), ReaderEvent.EventType.SE_INSERTED));
         }
 
         /**
@@ -133,7 +135,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
             logger.error("Observable Reader: Error handling events", "action",
                     "observable_reader.event_error", "readerName", getName(), "exception", ex);
             if (ex instanceof IOReaderException) {
-                notifyObservers(ReaderEvent.IO_ERROR);
+                notifyObservers(new ReaderEvent("plugin", this.reader.getName(), ReaderEvent.EventType.IO_ERROR));
             }
         }
 

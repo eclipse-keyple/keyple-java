@@ -48,9 +48,9 @@ public class ObservableEventTestImbricated {
                                     .addObserver(new Observable.Observer<ReaderEvent>() {
                                         @Override
                                         public void update(ReaderEvent event) {
-                                            if (event.equals(ReaderEvent.SE_INSERTED)) {
+                                            if (event.getEventType().equals(ReaderEvent.EventType.SE_INSERTED)) {
                                                 System.out.println(
-                                                        "Card inserted on: " + event.getName());
+                                                        "Card inserted on: " + event.getReaderName());
                                             }
                                         }
                                     });

@@ -10,26 +10,76 @@ package org.eclipse.keyple.seproxy.event;
 
 
 /**
+ * ReaderEvent used to notify changes at reader level
  */
-public enum ReaderEvent {
+public class ReaderEvent {
+    /**
+     * The name of the plugin handling the reader that produced the event
+     */
+    private final String pluginName;
 
-    /** An io error occurred. */
-    IO_ERROR("SE Reader IO Error"),
+    /**
+     * The name of the reader that produced the event
+     */
+    private final String readerName;
 
-    /** A SE has been inserted. */
-    SE_INSERTED("SE insertion"),
+    /**
+     * The type of event
+     */
+    private final EventType eventType;
 
-    /** The SE has been removed. */
-    SE_REMOVAL("SE removal");
+    /**
+     * The different types of event
+     */
+    public enum EventType {
+        /**
+         * An io error occurred.
+         */
+        IO_ERROR("SE Reader IO Error"),
 
-    /** The event name. */
-    private String name;
+        /**
+         * A SE has been inserted.
+         */
+        SE_INSERTED("SE insertion"),
 
-    ReaderEvent(String name) {
-        this.name = name;
+        /**
+         * The SE has been removed.
+         */
+        SE_REMOVAL("SE removal");
+
+        /** The event name. */
+        private String name;
+
+        EventType(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 
-    public String getName() {
-        return name;
+    /**
+     * ReaderEvent constructor
+     * @param pluginName
+     * @param readerName
+     * @param eventType
+     */
+    public ReaderEvent(String pluginName, String readerName, EventType eventType) {
+        this.pluginName = pluginName;
+        this.readerName = readerName;
+        this.eventType = eventType;
+    }
+
+    public String getPluginName() {
+        return pluginName;
+    }
+
+    public String getReaderName() {
+        return readerName;
+    }
+
+    public EventType getEventType() {
+        return eventType;
     }
 }

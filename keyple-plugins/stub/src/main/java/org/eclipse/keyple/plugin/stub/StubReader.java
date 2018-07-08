@@ -153,13 +153,13 @@ public class StubReader extends AbstractThreadedLocalReader {
     public void test_InsertSE() {
         isSePresent = true;
         logger.debug("Test - insert SE");
-        notifyObservers(ReaderEvent.SE_INSERTED);
+        notifyObservers(new ReaderEvent("plugin", this.getName(), ReaderEvent.EventType.SE_INSERTED));
     }
 
     public void test_RemoveSE() {
         isSePresent = false;
         logger.debug("Test - remove SE");
-        notifyObservers(ReaderEvent.SE_REMOVAL);
+        notifyObservers(new ReaderEvent("plugin", this.getName(), ReaderEvent.EventType.SE_REMOVAL));
     }
 
     public void test_SetWillTimeout(Boolean willTimeout) {
