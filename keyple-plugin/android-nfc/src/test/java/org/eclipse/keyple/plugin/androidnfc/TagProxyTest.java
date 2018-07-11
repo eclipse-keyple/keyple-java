@@ -11,7 +11,9 @@ package org.eclipse.keyple.plugin.androidnfc;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
+import java.util.Arrays;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -133,7 +135,8 @@ public class TagProxyTest {
 
         TagProxy tagProxy = TagProxy.getTagProxy(tagMifare);
 
-        Assert.assertNull(tagProxy.getATR());
+        Assert.assertTrue(Arrays.equals(tagProxy.getATR(),
+                ByteBufferUtils.fromHex("3B8F8001804F0CA000000306030001000000006A").array()));
     }
 
     @Test(expected = Test.None.class /* no exception expected */)
@@ -142,6 +145,14 @@ public class TagProxyTest {
         TagProxy tagProxy = TagProxy.getTagProxy(tagIso);
 
         Assert.assertNull(tagProxy.getATR());
+    }
+
+    @Test(expected = Test.None.class /* no exception expected */)
+    public void getATRMifareUL() throws IOException {
+
+        TagProxy tagProxy = TagProxy.getTagProxy(tagMifareUL);
+        Assert.assertTrue(Arrays.equals(tagProxy.getATR(),
+                ByteBufferUtils.fromHex("3B8F8001804F0CA0000003060300030000000068").array()));
     }
 
 
