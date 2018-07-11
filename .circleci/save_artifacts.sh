@@ -49,8 +49,8 @@ save_directory keyple-core
 save_directory keyple-calypso
 save_directory keyple-example/common
 save_directory keyple-example/pc
-save_directory keyple-plugins/pcsc
-save_directory keyple-plugins/stub
+save_directory keyple-plugin/pcsc
+save_directory keyple-plugin/stub
 
 cp .build/web/* ~/pages/
 
