@@ -41,7 +41,7 @@ import org.simalliance.openmobileapi.Session;
 @RunWith(PowerMockRunner.class)
 public class AndroidOmapiReaderTest {
 
-
+    final String PLUGIN_NAME = "AndroidOmapiPlugin";
     final String poAid = "A000000291A000000191";
     final String poAidResponse =
             "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000";
@@ -56,7 +56,7 @@ public class AndroidOmapiReaderTest {
         omapiReader = mockReader();
 
         // instanciate proxyReader with omapiReader
-        proxyReader = new AndroidOmapiReader(omapiReader, omapiReader.getName());
+        proxyReader = new AndroidOmapiReader(PLUGIN_NAME, omapiReader, omapiReader.getName());
     }
 
 
@@ -122,7 +122,7 @@ public class AndroidOmapiReaderTest {
 
         // init
         omapiReader = mockReaderWithNoAid();
-        proxyReader = new AndroidOmapiReader(omapiReader, omapiReader.getName());
+        proxyReader = new AndroidOmapiReader(PLUGIN_NAME, omapiReader, omapiReader.getName());
 
         // test
         SeResponseSet seResponse = proxyReader.transmit(getCalypsoRequestSample());
@@ -160,7 +160,7 @@ public class AndroidOmapiReaderTest {
         when(omapiReader.getName()).thenReturn("SIM1");
         when(omapiReader.isSecureElementPresent()).thenReturn(false);
         when(omapiReader.openSession()).thenThrow(new IOException());
-        proxyReader = new AndroidOmapiReader(omapiReader, omapiReader.getName());
+        proxyReader = new AndroidOmapiReader(PLUGIN_NAME, omapiReader, omapiReader.getName());
 
         // test
         SeResponseSet seResponse = proxyReader.transmit(getCalypsoRequestSample());

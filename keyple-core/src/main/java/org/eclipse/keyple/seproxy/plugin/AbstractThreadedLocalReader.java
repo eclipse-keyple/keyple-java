@@ -9,8 +9,6 @@
 package org.eclipse.keyple.seproxy.plugin;
 
 import java.util.concurrent.atomic.AtomicInteger;
-
-import com.sun.org.apache.regexp.internal.RE;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
@@ -32,10 +30,10 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      */
     protected long threadWaitTimeout;
 
-    protected AbstractThreadedLocalReader(String name) {
-        super(name);
+    protected AbstractThreadedLocalReader(String pluginName, String readerName) {
+        super(pluginName, readerName);
         /// create and launch a monitoring thread
-        thread = new EventThread(this);
+        thread = new EventThread(this.getPluginName(), this.getName());
         thread.start();
     }
 
@@ -88,9 +86,14 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      */
     private class EventThread extends Thread {
         /**
+         * Plugin name
+         */
+        private final String pluginName;
+
+        /**
          * Reader that we'll report about
          */
-        private final AbstractThreadedLocalReader reader;
+        private final String readerName;
 
         /**
          * If the thread should be kept a alive
@@ -101,13 +104,15 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
 
         /**
          * Constructor
-         *
-         * @param reader AbstractObservableReader
+         * 
+         * @param pluginName name of the plugin that instantiated the reader
+         * @param readerName name of the reader who owns this thread
          */
-        EventThread(AbstractThreadedLocalReader reader) {
+        EventThread(String pluginName, String readerName) {
             super("observable-reader-events-" + threadCount.addAndGet(1));
             setDaemon(true);
-            this.reader = reader;
+            this.pluginName = pluginName;
+            this.readerName = readerName;
         }
 
         /**
@@ -119,11 +124,13 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
         }
 
         private void cardRemoved() {
-            notifyObservers(new ReaderEvent("plugin", this.reader.getName(), ReaderEvent.EventType.SE_REMOVAL));
+            notifyObservers(new ReaderEvent(this.pluginName, this.readerName,
+                    ReaderEvent.EventType.SE_REMOVAL));
         }
 
         private void cardInserted() {
-            notifyObservers(new ReaderEvent("plugin", this.reader.getName(), ReaderEvent.EventType.SE_INSERTED));
+            notifyObservers(new ReaderEvent(this.pluginName, this.readerName,
+                    ReaderEvent.EventType.SE_INSERTED));
         }
 
         /**
@@ -133,9 +140,10 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
          */
         private void exceptionThrown(Exception ex) {
             logger.error("Observable Reader: Error handling events", "action",
-                    "observable_reader.event_error", "readerName", getName(), "exception", ex);
+                    "observable_reader.event_error", "readerName", readerName, "exception", ex);
             if (ex instanceof IOReaderException) {
-                notifyObservers(new ReaderEvent("plugin", this.reader.getName(), ReaderEvent.EventType.IO_ERROR));
+                notifyObservers(new ReaderEvent(this.pluginName, this.readerName,
+                        ReaderEvent.EventType.IO_ERROR));
             }
         }
 
@@ -167,7 +175,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                     }
                 }
             } catch (NoStackTraceThrowable e) {
-                logger.error("Exception occured in monitoring thread.", "reader", reader.getName());
+                logger.error("Exception occured in monitoring thread.", "reader", readerName);
             }
         }
     }
