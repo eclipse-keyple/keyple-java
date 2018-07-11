@@ -20,7 +20,7 @@ import android.view.MenuItem;
 
 
 /**
- * Example of @{@link SeProxyService} implementation based on the
+ * Example of Android application to test
  * 
  * @{@link org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin}
  *
