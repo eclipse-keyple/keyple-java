@@ -10,10 +10,7 @@ package org.eclipse.keyple.seproxy.plugin;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.seproxy.event.AbstractPluginEvent;
-import org.eclipse.keyple.seproxy.event.ErrorPluginEvent;
-import org.eclipse.keyple.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.seproxy.event.ReaderPresencePluginEvent;
+import org.eclipse.keyple.seproxy.event.*;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.util.Observable;
 import com.github.structlog4j.ILogger;
@@ -88,10 +85,6 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
             this.interrupt();
         }
 
-        private void exceptionThrown(Exception e) {
-            notifyObservers(new ErrorPluginEvent(e));
-        }
-
         public void run() {
             try {
                 while (running) {
@@ -104,11 +97,11 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                         // readers list
                         for (AbstractObservableReader reader : readers) {
                             if (!actualNativeReadersNames.contains(reader.getName())) {
-                                notifyObservers(new ReaderPresencePluginEvent(false,
-                                        this.pluginName, reader.getName()));
+                                notifyObservers(new PluginEvent(this.pluginName, reader.getName(),
+                                        PluginEvent.EventType.READER_DISCONNECTED));
                                 readers.remove(reader);
-                                logger.info("Remove unplugged reader from readers list", "plugin",
-                                        pluginName, "reader", reader.getName());
+                                logger.info("Remove unplugged reader from readers list",
+                                        this.pluginName, pluginName, "reader", reader.getName());
                                 reader = null;
                             }
                         }
@@ -118,8 +111,8 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                             if (!nativeReadersNames.contains(readerName)) {
                                 AbstractObservableReader reader = getNativeReader(readerName);
                                 readers.add(reader);
-                                notifyObservers(new ReaderPresencePluginEvent(true, this.pluginName,
-                                        reader.getName()));
+                                notifyObservers(new PluginEvent(this.pluginName, reader.getName(),
+                                        PluginEvent.EventType.READER_CONNECTED));
                                 logger.info("Add plugged reader to readers list", "reader",
                                         reader.getName());
                             }
@@ -131,8 +124,8 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                     Thread.sleep(threadWaitTimeout);
                 }
             } catch (Exception e) {
-                exceptionThrown(e);
-                // TODO add log
+                logger.error("An exception occurred while monitoring plugin: " + this.pluginName,
+                        "exception", e.getMessage(), "cause", e.getCause());
             }
         }
     }
@@ -151,10 +144,10 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
     }
 
     public final void addObserver(PluginObserver observer) {
-        super.addObserver((Observable.Observer<AbstractPluginEvent>) observer);
+        super.addObserver((Observable.Observer<PluginEvent>) observer);
     }
 
     public final void removeObserver(PluginObserver observer) {
-        super.removeObserver((Observable.Observer<AbstractPluginEvent>) observer);
+        super.removeObserver((Observable.Observer<PluginEvent>) observer);
     }
 }

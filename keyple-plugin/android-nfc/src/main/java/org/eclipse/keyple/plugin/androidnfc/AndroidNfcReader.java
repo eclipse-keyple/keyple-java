@@ -42,6 +42,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
         implements NfcAdapter.ReaderCallback {
 
     static final String TAG = "AndroidNfcReader";
+    static final String PLUGIN_NAME = "AndroidNFCPlugin";
 
 
     public static final String FLAG_READER_SKIP_NDEF_CHECK = "FLAG_READER_SKIP_NDEF_CHECK";
@@ -64,7 +65,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
      * Private constructor
      */
     AndroidNfcReader() {
-        super(TAG);
+        super(PLUGIN_NAME, TAG);
         Log.i(TAG, "Init singleton NFC Reader");
     }
 
@@ -139,7 +140,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
         Log.i(TAG, "Received Tag Discovered event");
         try {
             tagProxy = TagProxy.getTagProxy(tag);
-            notifyObservers(ReaderEvent.SE_INSERTED);
+            notifyObservers(new ReaderEvent(PLUGIN_NAME, TAG, ReaderEvent.EventType.SE_INSERTED));
 
         } catch (IOReaderException e) {
             // print and do nothing
@@ -190,7 +191,8 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
         try {
             if (tagProxy != null) {
                 tagProxy.close();
-                notifyObservers(ReaderEvent.SE_REMOVAL);
+                notifyObservers(
+                        new ReaderEvent(PLUGIN_NAME, TAG, ReaderEvent.EventType.SE_REMOVAL));
                 Log.i(TAG, "Disconnected tag : " + printTagId());
             }
         } catch (IOException e) {

@@ -159,7 +159,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
             public void run() {
                 Log.d(TAG, "New ReaderEvent received : " + event.toString());
 
-                switch (event) {
+                switch (event.getEventType()) {
                     case SE_INSERTED:
                         mText.append("\n ---- \n");
                         mText.append("Tag opened to tag");

@@ -40,8 +40,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
     private static final String ADPU_NAME_STR = "apdu.name";
 
-    public AbstractLocalReader(String name) {
-        super(name);
+    public AbstractLocalReader(String pluginName, String readerName) {
+        super(pluginName, readerName);
     }
 
     /**

@@ -8,18 +8,14 @@
 
 package org.eclipse.keyple.seproxy.event;
 
-
-/**
- * ReaderEvent used to notify changes at reader level
- */
-public class ReaderEvent {
+public final class PluginEvent {
     /**
      * The name of the plugin handling the reader that produced the event
      */
     private final String pluginName;
 
     /**
-     * The name of the reader that produced the event
+     * The name of the reader involved
      */
     private final String readerName;
 
@@ -33,19 +29,14 @@ public class ReaderEvent {
      */
     public enum EventType {
         /**
-         * An io error occurred.
+         * A reader has been connected.
          */
-        IO_ERROR("SE Reader IO Error"),
+        READER_CONNECTED("Reader connected"),
 
         /**
-         * A SE has been inserted.
+         * A reader has been disconnected.
          */
-        SE_INSERTED("SE insertion"),
-
-        /**
-         * The SE has been removed.
-         */
-        SE_REMOVAL("SE removal");
+        READER_DISCONNECTED("Reader disconnected");
 
         /** The event name. */
         private String name;
@@ -59,14 +50,7 @@ public class ReaderEvent {
         }
     }
 
-    /**
-     * ReaderEvent constructor
-     * 
-     * @param pluginName
-     * @param readerName
-     * @param eventType
-     */
-    public ReaderEvent(String pluginName, String readerName, EventType eventType) {
+    public PluginEvent(String pluginName, String readerName, EventType eventType) {
         this.pluginName = pluginName;
         this.readerName = readerName;
         this.eventType = eventType;

@@ -59,8 +59,8 @@ public class SmartCardIOReaderTest {
                 0x00, 0x00};
         res = new ResponseAPDU(responseApduByte);
 
-        readerName = "lecteur";
-        reader = new PcscReader(terminal);
+        readerName = "reader";
+        reader = new PcscReader("pcscPlugin", terminal);
         reader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
     }
 

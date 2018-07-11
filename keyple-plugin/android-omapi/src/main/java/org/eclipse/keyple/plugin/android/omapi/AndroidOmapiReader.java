@@ -43,8 +43,8 @@ public class AndroidOmapiReader extends AbstractStaticReader {
     private ByteBuffer openApplication = null;
     private Map<String, String> parameters = new HashMap<String, String>();
 
-    protected AndroidOmapiReader(Reader omapiReader, String name) {
-        super(name);
+    protected AndroidOmapiReader(String pluginName, Reader omapiReader, String readerName) {
+        super(pluginName, readerName);
         this.omapiReader = omapiReader;
     }
 
