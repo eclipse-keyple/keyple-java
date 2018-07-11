@@ -111,6 +111,7 @@ jobs:
             path: ./keyple-example/android/nfc/build/outputs/apk/debug
             destination: keyple-example/android/nfc/
 
+
         ##############################
         #### ANDROID OMAPI PLUGIN ####
         ##############################
@@ -134,6 +135,19 @@ jobs:
         - store_artifacts:
             path: ./keyple-plugins/android-omapi/build/outputs/aar/
             destination: keyple-plugins/android-omapi/
+
+
+        ##################
+        #### JAVADOCS ####
+        ##################
+
+        - run: .circleci/push_gh_pages.sh
+
+        ###################
+        #### ARTIFACTS ####
+        ###################
+
+        - run: .circleci/save_artifacts.sh
 
 
 workflows:
