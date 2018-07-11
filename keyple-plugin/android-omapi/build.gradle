@@ -105,7 +105,9 @@ android {
             exclude '**/R.java'
             failOnError = false
             //destinationDir = file("${project.docsDir}/javadoc")
-            destinationDir = file("~/pages")
+            destinationDir = file(System.getProperty("user.home") +"/pages")
+
+            println 'destinationDir : ' + destinationDir
         }
 
     }
