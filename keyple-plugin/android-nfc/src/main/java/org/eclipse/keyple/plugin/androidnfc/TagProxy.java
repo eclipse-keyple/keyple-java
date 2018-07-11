@@ -113,7 +113,7 @@ class TagProxy implements TagTechnology {
         } else if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_ISODEP)) {
             return ((IsoDep) tagTechnology).getHiLayerResponse() != null
                     ? ((IsoDep) tagTechnology).getHiLayerResponse()
-                    : ((IsoDep) tagTechnology).getHiLayerResponse();
+                    : ((IsoDep) tagTechnology).getHistoricalBytes();
         } else {
             return null;// can not happen
         }
