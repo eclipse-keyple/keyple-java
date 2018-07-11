@@ -9,5 +9,4 @@
 package org.eclipse.keyple.seproxy.event;
 
 public abstract class AbstractPluginEvent {
-
 }

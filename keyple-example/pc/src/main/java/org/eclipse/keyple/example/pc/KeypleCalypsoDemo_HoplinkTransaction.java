@@ -21,18 +21,16 @@ import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
+import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.local.AbstractLocalReader;
+import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
-import org.eclipse.keyple.util.Observable;
 
 /**
  * List of treatments 2 readers (match interface) fake aid navigo aid hoplink -> 3 sessions
  */
-public class KeypleCalypsoDemo_HoplinkTransaction
-        implements AbstractObservableReader.Observer<ReaderEvent> {
+public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.ReaderObserver {
     private ProxyReader poReader, csmReader;
 
     public KeypleCalypsoDemo_HoplinkTransaction() {
@@ -40,7 +38,7 @@ public class KeypleCalypsoDemo_HoplinkTransaction
     }
 
     @Override
-    public void update(Observable observable, ReaderEvent event) {
+    public void update(ReaderEvent event) {
         switch (event) {
             case SE_INSERTED:
                 System.out.println("SE INSERTED");
@@ -319,8 +317,8 @@ public class KeypleCalypsoDemo_HoplinkTransaction
         csmReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
         // provide the reader with the map
-        ((AbstractLocalReader) poReader)
-                .addSeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4);
+        poReader.addSeProtocolSetting(
+                new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
 
         // Setting up ourself as an observer
         KeypleCalypsoDemo_HoplinkTransaction observer = new KeypleCalypsoDemo_HoplinkTransaction();
@@ -328,11 +326,9 @@ public class KeypleCalypsoDemo_HoplinkTransaction
         observer.csmReader = csmReader;
 
         // Set terminal as Observer of the first reader
-        ((AbstractObservableReader) poReader).addObserver(observer);
+        ((ObservableReader) poReader).addObserver(observer);
         synchronized (waitForEnd) {
             waitForEnd.wait();
         }
     }
-
-
 }

@@ -15,9 +15,9 @@ import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReadersPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.event.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.util.Observable;
 
 /**
@@ -45,7 +45,7 @@ public class BasicCardAccess {
                     ((AbstractObservableReader) pr)
                             .addObserver(new Observable.Observer<ReaderEvent>() {
                                 @Override
-                                public void update(Observable observable, ReaderEvent event) {
+                                public void update(ReaderEvent event) {
                                     if (event == ReaderEvent.SE_INSERTED) {
                                         parseInfo(pr);
                                     }
