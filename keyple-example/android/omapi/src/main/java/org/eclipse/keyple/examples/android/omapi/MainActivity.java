@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.examples.android.omapi;
 
-import org.eclipse.keyple.seproxy.SeProxyService;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,6 +21,7 @@ import android.view.MenuItem;
 
 /**
  * Example of @{@link SeProxyService} implementation based on the
+ * 
  * @{@link org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin}
  *
  */
