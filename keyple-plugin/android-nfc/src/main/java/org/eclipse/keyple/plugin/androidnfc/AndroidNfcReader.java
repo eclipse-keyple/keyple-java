@@ -21,7 +21,6 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
 import org.eclipse.keyple.seproxy.plugin.AbstractSelectionLocalReader;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSettingList;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import android.app.Activity;
 import android.content.Intent;
@@ -35,9 +34,7 @@ import android.util.Log;
  * Implementation of {@link org.eclipse.keyple.seproxy.ProxyReader} to communicate with NFC Tag
  * though Android {@link NfcAdapter}
  *
- * Configure NFCAdapter Protocols with
- * {@link AndroidNfcReader#addSeProtocolSetting(SeProtocolSettingList)} and
- * {@link AndroidNfcReader#setParameter(String, String)}
+ * Configure NFCAdapter Protocols with {@link AndroidNfcReader#setParameter(String, String)}
  *
  *
  */
