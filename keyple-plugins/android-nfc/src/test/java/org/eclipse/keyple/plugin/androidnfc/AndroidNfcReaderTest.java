@@ -346,7 +346,7 @@ public class AndroidNfcReaderTest {
         reader.addObserver(new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
-                assertEquals(ReaderEvent.EventType.SE_INSERTED, event);
+                assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
             }
         });
 
