@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. functions.sh
+. .circleci/functions.sh
 
 mkdir -p ~/artifacts/jars ~/pages/jars
 find . -name "keyple-*.jar" -not -name "*-jmh.jar" \
