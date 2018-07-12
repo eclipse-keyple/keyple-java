@@ -11,9 +11,8 @@ package org.eclipse.keyple.example.pc.deprecated;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.event.AbstractPluginEvent;
+import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.event.ReaderPresencePluginEvent;
 import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
@@ -26,17 +25,15 @@ public class ObservableEventTestImbricated {
     public static void main(String[] args) throws Exception {
         final Object waitBeforeEnd = new Object();
 
-        PcscPlugin.getInstance().addObserver(new Observable.Observer<AbstractPluginEvent>() {
+        PcscPlugin.getInstance().addObserver(new Observable.Observer<PluginEvent>() {
             @Override
-            public void update(AbstractPluginEvent event) {
-                if (event instanceof ReaderPresencePluginEvent) {
-                    ReaderPresencePluginEvent presence = (ReaderPresencePluginEvent) event;
-                    if (presence.isAdded()) {
+            public void update(PluginEvent event) {
+                switch (event.getEventType()) {
+                    case READER_CONNECTED:
                         ProxyReader reader = null;
                         try {
-                            reader = SeProxyService.getInstance()
-                                    .getPlugin(presence.getPluginName())
-                                    .getReader(presence.getReaderName());
+                            reader = SeProxyService.getInstance().getPlugin(event.getPluginName())
+                                    .getReader(event.getReaderName());
                         } catch (UnexpectedReaderException e) {
                             e.printStackTrace();
                         } catch (UnexpectedPluginException e) {
@@ -48,19 +45,25 @@ public class ObservableEventTestImbricated {
                                     .addObserver(new Observable.Observer<ReaderEvent>() {
                                         @Override
                                         public void update(ReaderEvent event) {
-                                            if (event.equals(ReaderEvent.SE_INSERTED)) {
-                                                System.out.println(
-                                                        "Card inserted on: " + event.getName());
+                                            if (event.getEventType()
+                                                    .equals(ReaderEvent.EventType.SE_INSERTED)) {
+                                                System.out.println("Card inserted on: "
+                                                        + event.getReaderName());
                                             }
                                         }
                                     });
                         }
-                    } else {
-                        System.out.println("Removed reader: " + presence.getReaderName());
+                        break;
+                    case READER_DISCONNECTED:
+                        System.out.println("Removed reader: " + event.getReaderName());
                         synchronized (waitBeforeEnd) {
                             waitBeforeEnd.notify();
                         }
-                    }
+                        break;
+                    default:
+                        System.out.println(
+                                "Unexpected reader event: " + event.getEventType().getName());
+                        break;
                 }
             }
         });

@@ -39,7 +39,7 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
 
     @Override
     public void update(ReaderEvent event) {
-        switch (event) {
+        switch (event.getEventType()) {
             case SE_INSERTED:
                 System.out.println("SE INSERTED");
                 System.out.println("\nStart processing of a Calypso PO");

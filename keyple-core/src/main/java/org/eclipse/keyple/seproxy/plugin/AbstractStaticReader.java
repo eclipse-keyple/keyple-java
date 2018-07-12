@@ -14,8 +14,8 @@ package org.eclipse.keyple.seproxy.plugin;
  */
 public abstract class AbstractStaticReader extends AbstractLocalReader {
 
-    protected AbstractStaticReader(String name) {
-        super(name);
+    protected AbstractStaticReader(String pluginName, String readerName) {
+        super(pluginName, readerName);
     }
 
     public final void addObserver(Observer observer) {

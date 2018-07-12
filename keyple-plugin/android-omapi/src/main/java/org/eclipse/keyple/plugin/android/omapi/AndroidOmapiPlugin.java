@@ -95,7 +95,7 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
 
                 // http://seek-for-android.github.io/javadoc/V4.0.0/org/simalliance/openmobileapi/Reader.html
                 AbstractObservableReader seReader =
-                        new AndroidOmapiReader(omapiReader, omapiReader.getName());
+                        new AndroidOmapiReader(PLUGIN_NAME, omapiReader, omapiReader.getName());
                 readers.add(seReader);
             }
 

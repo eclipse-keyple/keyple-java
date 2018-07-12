@@ -16,7 +16,6 @@ import org.eclipse.keyple.seproxy.event.*;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
-import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 
 
 public class KeypleGenericDemo_ObservableReaderNotification {
@@ -76,11 +75,21 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         }
 
         public void update(ReaderEvent event) {
-            if (event.equals(ReaderEvent.SE_INSERTED)) {
-                System.out.println("Card inserted on: " + event.name());
-                // analyseCard((AbstractObservableReader) reader);
-            } else if (event.equals(ReaderEvent.SE_REMOVAL)) {
-                System.out.println("Card removed on: " + event.name());
+            switch (event.getEventType()) {
+                case SE_INSERTED:
+                    System.out.println("Plugin: " + event.getPluginName() + ", card inserted on: "
+                            + event.getReaderName());
+                    // analyseCard((AbstractObservableReader) reader);
+                    break;
+                case SE_REMOVAL:
+                    System.out.println("Plugin: " + event.getPluginName() + ", card removed on: "
+                            + event.getReaderName());
+                    break;
+                default:
+                    System.out.println("Plugin: " + event.getPluginName()
+                            + ", unexpected event on: " + event.getReaderName() + ", event: "
+                            + event.getEventType().getName());
+                    break;
             }
             try {
                 listReaders();
@@ -107,19 +116,11 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         }
 
         @Override
-        public void update(AbstractPluginEvent event) {
-            if (event instanceof ReaderPresencePluginEvent) {
-                ReaderPresencePluginEvent presence = (ReaderPresencePluginEvent) event;
-                ProxyReader reader = null;
-                try {
-                    reader = SeProxyService.getInstance().getPlugin(presence.getPluginName())
-                            .getReader(presence.getReaderName());
-                } catch (UnexpectedReaderException e) {
-                    e.printStackTrace();
-                } catch (UnexpectedPluginException e) {
-                    e.printStackTrace();
-                }
-                if (presence.isAdded()) {
+        public void update(PluginEvent event) {
+            ProxyReader reader = null;
+
+            switch (event.getEventType()) {
+                case READER_CONNECTED:
                     System.out.println("New reader: " + reader.getName());
 
                     if (reader instanceof ObservableReader) {
@@ -133,36 +134,41 @@ public class KeypleGenericDemo_ObservableReaderNotification {
                                     + reader.getName());
                         }
                     }
-                } else {
-                    System.out.println("Reader removed: " + presence.getReaderName());
+                    break;
+                case READER_DISCONNECTED:
+                    System.out.println("Reader removed: " + event.getReaderName());
 
                     if (reader instanceof ObservableReader) {
 
                         if (readerObserver != null) {
                             ((ObservableReader) reader).removeObserver(readerObserver);
                             System.out.println("Remove observer on the unplugged reader :  "
-                                    + presence.getReaderName());
+                                    + event.getReaderName());
                         } else {
-                            System.out.println("Unplugged reader " + presence.getReaderName()
+                            System.out.println("Unplugged reader " + event.getReaderName()
                                     + " wasn't observed");
                         }
                     }
-                }
+                    break;
+                default:
+                    System.out
+                            .println("Unexpected reader event: " + event.getEventType().getName());
+                    break;
+            }
 
-                try {
-                    listReaders();
-                    if (SeProxyService.getInstance().getPlugin(presence.getPluginName())
-                            .getReaders().isEmpty()) {
-                        System.out.println("EXIT - no more reader");
-                        synchronized (waitBeforeEnd) {
-                            waitBeforeEnd.notify();
-                        }
+            try {
+                listReaders();
+                if (SeProxyService.getInstance().getPlugin(event.getPluginName()).getReaders()
+                        .isEmpty()) {
+                    System.out.println("EXIT - no more reader");
+                    synchronized (waitBeforeEnd) {
+                        waitBeforeEnd.notify();
                     }
-                } catch (IOReaderException e) {
-                    e.printStackTrace();
-                } catch (UnexpectedPluginException e) {
-                    e.printStackTrace();
                 }
+            } catch (IOReaderException e) {
+                e.printStackTrace();
+            } catch (UnexpectedPluginException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -170,7 +176,6 @@ public class KeypleGenericDemo_ObservableReaderNotification {
     private final static Object waitBeforeEnd = new Object();
 
     public static void main(String[] args) throws Exception {
-
         KeypleGenericDemo_ObservableReaderNotification testObserver =
                 new KeypleGenericDemo_ObservableReaderNotification();
 

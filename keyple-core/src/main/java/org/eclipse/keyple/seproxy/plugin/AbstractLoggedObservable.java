@@ -90,9 +90,8 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
 
     /**
      * This method shall be called only from a SE Proxy plugin or reader implementing
-     * AbstractObservableReader or AbstractObservablePlugin. Push a ReaderEvent /
-     * AbstractPluginEvent of the selected AbstractObservableReader / AbstractObservablePlugin to
-     * its registered Observer.
+     * AbstractObservableReader or AbstractObservablePlugin. Push a ReaderEvent / PluginEvent of the
+     * selected AbstractObservableReader / AbstractObservablePlugin to its registered Observer.
      * 
      * @param event the event
      */
