@@ -44,7 +44,7 @@ android {
     }
     compileSdkVersion 26
     defaultConfig {
-        applicationId "org.eclipse.keyple.examples.androidnfc"
+        applicationId "org.eclipse.keyple.example.android.nfc"
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
