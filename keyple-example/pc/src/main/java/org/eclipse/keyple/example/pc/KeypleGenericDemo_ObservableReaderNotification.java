@@ -16,6 +16,7 @@ import org.eclipse.keyple.seproxy.event.*;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
+import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 
 
 public class KeypleGenericDemo_ObservableReaderNotification {
@@ -48,6 +49,9 @@ public class KeypleGenericDemo_ObservableReaderNotification {
 
     private void setObservers() throws IOReaderException {
 
+        // we add an observer to each plugin (only one in this example)
+        // the readers observers will be added upon plugin notification
+        // (see SpecificPluginObserver.update)
         for (ReadersPlugin plugin : SeProxyService.getInstance().getPlugins()) {
 
             if (plugin instanceof ObservablePlugin) {
@@ -55,15 +59,6 @@ public class KeypleGenericDemo_ObservableReaderNotification {
                 ((ObservablePlugin) plugin).addObserver(this.pluginObserver);
             } else {
                 System.out.println("Plugin " + plugin.getName() + " isn't observable");
-            }
-
-            for (ProxyReader reader : plugin.getReaders()) {
-                if (reader instanceof ObservableReader) {
-                    System.out.println("Add observer on the reader :  " + reader.getName());
-                    ((ObservableReader) reader).addObserver(this.readerObserver);
-                } else {
-                    System.out.println("Reader " + reader.getName() + " isn't observable");
-                }
             }
         }
     }
@@ -118,7 +113,14 @@ public class KeypleGenericDemo_ObservableReaderNotification {
         @Override
         public void update(PluginEvent event) {
             ProxyReader reader = null;
-
+            try {
+                reader = SeProxyService.getInstance().getPlugin(event.getPluginName())
+                        .getReader(event.getReaderName());
+            } catch (UnexpectedPluginException e) {
+                e.printStackTrace();
+            } catch (UnexpectedReaderException e) {
+                e.printStackTrace();
+            }
             switch (event.getEventType()) {
                 case READER_CONNECTED:
                     System.out.println("New reader: " + reader.getName());
