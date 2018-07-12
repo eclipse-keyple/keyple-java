@@ -136,18 +136,18 @@ jobs:
             path: ./keyple-plugins/android-omapi/build/outputs/aar/
             destination: keyple-plugins/android-omapi/
 
-
-        ##################
-        #### JAVADOCS ####
-        ##################
-
-        - run: .circleci/push_gh_pages.sh
-
         ###################
         #### ARTIFACTS ####
         ###################
 
-        - run: .circleci/save_artifacts.sh
+        - run: .circleci/save_artifacts_android.sh
+
+        ######################
+        #### GitHub Pages ####
+        ######################
+
+        - run: .circleci/push_gh_pages.sh
+
 
 
 workflows:

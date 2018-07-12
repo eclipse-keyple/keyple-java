@@ -7,12 +7,11 @@ find . -name "keyple-*.jar" -not -name "*-jmh.jar" \
   -exec cp {} ~/artifacts/jars \; \
   -exec cp {} ~/pages/jars \;
 
-save_directory keyple-core
-save_directory keyple-calypso
-save_directory keyple-example/common
-save_directory keyple-example/pc
-save_directory keyple-plugins/pcsc
-save_directory keyple-plugins/stub
+
+save_directory keyple-example/android/nfc
+save_directory keyple-example/android/omapi
+save_directory keyple-plugin/android-nfc
+save_directory keyple-plugin/android-omapi
 
 cp .build/web/* ~/pages/
 
