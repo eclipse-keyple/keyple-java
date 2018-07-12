@@ -6,9 +6,9 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.examples.androidnfc;
+package org.eclipse.keyple.example.android.nfc;
 
-import org.eclipse.keyple.plugin.androidnfc.AndroidNfcPlugin;
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import android.app.FragmentManager;
 import android.os.Bundle;
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
          * Define UI elements
          */
         Log.d(TAG, "onCreate");
-        setContentView(R.layout.activity_main);
+        setContentView(org.eclipse.keyple.examples.androidnfc.R.layout.activity_main);
 
         setupNavDrawer();
         /*
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         NFCTestFragment nfcTestFragment = NFCTestFragment.newInstance();
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, nfcTestFragment, TAG_NFC_TEST_VIEW)
+                .replace(org.eclipse.keyple.examples.androidnfc.R.id.fragment_container, nfcTestFragment, TAG_NFC_TEST_VIEW)
                 .addToBackStack(null).commit();
     }
 
@@ -84,10 +84,10 @@ public class MainActivity extends AppCompatActivity {
      * Configure Navigation Drawer
      */
     private void setupNavDrawer() {
-        mDrawerLayout = findViewById(R.id.drawer_layout);
+        mDrawerLayout = findViewById(org.eclipse.keyple.examples.androidnfc.R.id.drawer_layout);
 
         // Drawer configuration
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(org.eclipse.keyple.examples.androidnfc.R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG, "Item selected from drawer: " + menuItem.getTitle());
 
                         switch (menuItem.getItemId()) {
-                            case R.id.nav_nfc:
+                            case org.eclipse.keyple.examples.androidnfc.R.id.nav_nfc:
                                 activateNFCTestView();
                                 break;
 
@@ -115,14 +115,14 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         // Toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(org.eclipse.keyple.examples.androidnfc.R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Hamburger icon
         ActionBar actionbar = getSupportActionBar();
         assert actionbar != null;
         actionbar.setDisplayHomeAsUpEnabled(true);
-        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+        actionbar.setHomeAsUpIndicator(org.eclipse.keyple.examples.androidnfc.R.drawable.ic_menu_black_24dp);
 
     }
 
