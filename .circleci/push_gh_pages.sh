@@ -47,6 +47,7 @@ fi
 git rm -rf $CIRCLE_BRANCH/* ||:
 mkdir -p $CIRCLE_BRANCH
 cp -a ~/pages/* $CIRCLE_BRANCH/
+ls -l ~/pages
 
 # stage any changes and new files
 git add -A
