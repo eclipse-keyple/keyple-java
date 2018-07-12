@@ -119,7 +119,7 @@ jobs:
         #Assemble Plugin OMAPI
         - run:
             name: Assemble Plugin OMAPI plugin to aar file
-            command: gradle -b ./keyple-plugin/android-omapi/build.gradle build test assembleDebug generateDebugJavadoc
+            command: gradle -b ./keyple-plugin/android-omapi/build.gradle build test git assembleDebug generateDebugJavadoc
 
         #Assemble Example App OMAPI
         - run:
