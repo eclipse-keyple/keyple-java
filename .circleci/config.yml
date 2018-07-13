@@ -22,8 +22,8 @@ jobs:
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+          #(disabled) fallback to using the latest cache if no exact match is found
+          #- v1-dependencies-
 
       - run: gradle build javadoc fatjar # jmh - Disabling JMH as it's very unreliable under CircleCI
       - run: .circleci/save_artifacts.sh Android build takes care of it
