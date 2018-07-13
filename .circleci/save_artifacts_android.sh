@@ -6,7 +6,7 @@
 /bin/bash .circleci/save_artifacts.sh
 
 mkdir -p ~/artifacts/jars ~/pages/jars
-find . -name "*.aar"  \
+find . -name "*debug.aar"  \
   -exec cp {} ~/artifacts/jars \; \
   -exec cp {} ~/pages/jars \;
 
