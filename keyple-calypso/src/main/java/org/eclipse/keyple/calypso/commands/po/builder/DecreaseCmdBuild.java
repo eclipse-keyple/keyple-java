@@ -35,7 +35,7 @@ public class DecreaseCmdBuild extends AbstractPoCommandBuilder implements PoSend
      * @param counterNumber >= 01h: Counters file, number of the counter. 00h: Simulated Counter
      *        file.
      * @param sfi SFI of the file to select or 00h for current EF
-     * @param decValue Value to subtract from the counter (3 bytes)
+     * @param decValue Value to subtract from the counter (defined as a 3 bytes, MSB first)
      * @throws InconsistentCommandException the inconsistent command exception
      */
     public DecreaseCmdBuild(PoRevision revision, byte counterNumber, byte sfi, ByteBuffer decValue)
@@ -54,6 +54,33 @@ public class DecreaseCmdBuild extends AbstractPoCommandBuilder implements PoSend
         byte p2 = (byte) (sfi * 8);
 
         this.request = RequestUtils.constructAPDURequest(cla, command, p1, p2, decValue, (byte) 3);
+    }
+
+    /**
+     * Instantiates a new decrease cmd build from command parameters.
+     *
+     * @param revision the revision of the PO
+     * @param counterNumber >= 01h: Counters file, number of the counter. 00h: Simulated Counter
+     *        file.
+     * @param sfi SFI of the file to select or 00h for current EF
+     * @param decValue Value to subtract to the counter (defined as a positive int <= 16777215
+     *        [FFFFFFh])
+     * @throws InconsistentCommandException the inconsistent command exception
+     */
+
+    public DecreaseCmdBuild(PoRevision revision, byte counterNumber, byte sfi, int decValue)
+            throws InconsistentCommandException {
+        super(command, null);
+        // check if the incValue is in the allowed interval
+        if (decValue < 0 || decValue > 0xFFFFFF) {
+            throw new InconsistentCommandException();
+        }
+        // convert the integer value into a 3-byte buffer
+        ByteBuffer decValueBuffer = ByteBuffer.allocate(3);
+        decValueBuffer.put(0, (byte) ((decValue >> 16) & 0xFF));
+        decValueBuffer.put(1, (byte) ((decValue >> 8) & 0xFF));
+        decValueBuffer.put(2, (byte) (decValue & 0xFF));
+        new DecreaseCmdBuild(revision, counterNumber, sfi, decValueBuffer);
     }
 
     /**

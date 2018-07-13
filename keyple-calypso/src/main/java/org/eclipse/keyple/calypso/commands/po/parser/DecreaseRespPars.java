@@ -56,8 +56,23 @@ public class DecreaseRespPars extends AbstractApduResponseParser {
         super(response);
     }
 
+    /**
+     * Returns the new counter value as a 3-byte buffer (MSB first)
+     *
+     * @return the new value (3 bytes)
+     */
     public ByteBuffer getNewValue() {
         return getApduResponse().getDataOut();
+    }
+
+    /**
+     * Returns the new counter value as an int between 0 and 16777215
+     *
+     * @return the new value (int)
+     */
+    public int getNewValueAsInt() {
+        ByteBuffer newValueBuffer = getNewValue();
+        return (newValueBuffer.get(0) << 16) + (newValueBuffer.get(1) << 8) + newValueBuffer.get(2);
     }
 
     @Override

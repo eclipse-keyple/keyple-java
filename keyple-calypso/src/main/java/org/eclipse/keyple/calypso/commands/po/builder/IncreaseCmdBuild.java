@@ -35,7 +35,7 @@ public class IncreaseCmdBuild extends AbstractPoCommandBuilder implements PoSend
      * @param counterNumber >= 01h: Counters file, number of the counter. 00h: Simulated Counter
      *        file.
      * @param sfi SFI of the file to select or 00h for current EF
-     * @param incValue Value to add to the counter (3 bytes)
+     * @param incValue Value to add to the counter (defined as a 3-byte buffer, MSB first)
      * @throws InconsistentCommandException the inconsistent command exception
      */
     public IncreaseCmdBuild(PoRevision revision, byte counterNumber, byte sfi, ByteBuffer incValue)
@@ -54,6 +54,31 @@ public class IncreaseCmdBuild extends AbstractPoCommandBuilder implements PoSend
         byte p2 = (byte) (sfi * 8);
 
         this.request = RequestUtils.constructAPDURequest(cla, command, p1, p2, incValue, (byte) 3);
+    }
+
+    /**
+     * Instantiates a new increase cmd build from command parameters.
+     *
+     * @param revision the revision of the PO
+     * @param counterNumber >= 01h: Counters file, number of the counter. 00h: Simulated Counter
+     *        file.
+     * @param sfi SFI of the file to select or 00h for current EF
+     * @param incValue Value to add to the counter (defined as a positive int <= 16777215 [FFFFFFh])
+     * @throws InconsistentCommandException the inconsistent command exception
+     */
+    public IncreaseCmdBuild(PoRevision revision, byte counterNumber, byte sfi, int incValue)
+            throws InconsistentCommandException {
+        super(command, null);
+        // check if the incValue is in the allowed interval
+        if (incValue < 0 || incValue > 0xFFFFFF) {
+            throw new InconsistentCommandException();
+        }
+        // convert the integer value into a 3-byte buffer
+        ByteBuffer incValueBuffer = ByteBuffer.allocate(3);
+        incValueBuffer.put(0, (byte) ((incValue >> 16) & 0xFF));
+        incValueBuffer.put(1, (byte) ((incValue >> 8) & 0xFF));
+        incValueBuffer.put(2, (byte) (incValue & 0xFF));
+        new IncreaseCmdBuild(revision, counterNumber, sfi, incValueBuffer);
     }
 
     /**
