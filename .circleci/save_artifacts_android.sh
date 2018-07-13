@@ -14,6 +14,5 @@ save_directory keyple-plugin/android-nfc
 save_directory keyple-plugin/android-omapi
 
 echo "End of save artifacts android"
-tree -if --noreport  ~/pages
-
+find . -name "*.html"
 
