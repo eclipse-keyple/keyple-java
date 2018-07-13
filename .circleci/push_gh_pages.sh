@@ -56,7 +56,7 @@ echo "*** stage any changes and new files"
 # stage any changes and new files
 git add -A
 # now commit, ignoring branch gh-pages doesn't seem to work, so trying skip
-message=$1
+message=${1:-"default message"}
 
 git commit --allow-empty -m "$message"
 
