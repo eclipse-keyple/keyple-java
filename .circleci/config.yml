@@ -103,8 +103,8 @@ jobs:
 
         #store Plugin NFC
         - store_artifacts:
-            path: ./keyple-plugins/android-nfc/build/outputs/aar/
-            destination: keyple-plugins/android-nfc/
+            path: ./keyple-plugin/android-nfc/build/outputs/aar/
+            destination: keyple-plugin/android-nfc/
 
         #store Example App NFC
         - store_artifacts:
@@ -133,8 +133,8 @@ jobs:
 
         #store Plugin OMAPI
         - store_artifacts:
-            path: ./keyple-plugins/android-omapi/build/outputs/aar/
-            destination: keyple-plugins/android-omapi/
+            path: ./keyple-plugin/android-omapi/build/outputs/aar/
+            destination: keyple-plugin/android-omapi/
 
         ###################
         #### ARTIFACTS ####

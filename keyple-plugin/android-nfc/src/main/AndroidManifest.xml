@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 
-    package="org.eclipse.keyple.plugin.androidnfc">
+    package="org.eclipse.keyple.plugin.android.nfc">
 
 
     <uses-permission android:name="android.permission.NFC"/>

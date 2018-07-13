@@ -30,17 +30,21 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     // TODO check for a better way to log
     private static final ILogger logger = SLoggerFactory.getLogger(AbstractObservableReader.class);
 
+    private final String pluginName;
+
     protected abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
             throws IOReaderException;
 
     /**
      * Reader constructor<br/>
      * Force the definition of a name through the use of super method.
-     * 
-     * @param name
+     *
+     * @param pluginName the name of the plugin that instantiated the reader
+     * @param readerName the name of the reader
      */
-    protected AbstractObservableReader(String name) {
-        super(name);
+    protected AbstractObservableReader(String pluginName, String readerName) {
+        super(readerName);
+        this.pluginName = pluginName;
     }
 
     /**
@@ -76,6 +80,13 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         logger.info("SeResponseSet", "data", responseSet.toString());
 
         return responseSet;
+    }
+
+    /**
+     * @return Plugin name
+     */
+    protected final String getPluginName() {
+        return pluginName;
     }
 
     /**

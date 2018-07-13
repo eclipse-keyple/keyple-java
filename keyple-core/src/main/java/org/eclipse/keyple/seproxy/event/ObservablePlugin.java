@@ -12,12 +12,13 @@ import org.eclipse.keyple.seproxy.ReadersPlugin;
 import org.eclipse.keyple.util.Observable;
 
 public interface ObservablePlugin extends ReadersPlugin {
-    interface PluginObserver extends Observable.Observer<AbstractPluginEvent> {
+    interface PluginObserver extends Observable.Observer<PluginEvent> {
+        void update(PluginEvent event);
     }
 
     void addObserver(PluginObserver observer);
 
     void removeObserver(PluginObserver observer);
 
-    void notifyObservers(AbstractPluginEvent event);
+    void notifyObservers(PluginEvent event);
 }

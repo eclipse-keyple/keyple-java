@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.examples.androidnfc;
+package org.eclipse.keyple.example.android.nfc;
 
 
 import java.io.IOException;
@@ -18,10 +18,10 @@ import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.commands.InconsistentCommandException;
-import org.eclipse.keyple.plugin.androidnfc.AndroidNfcFragment;
-import org.eclipse.keyple.plugin.androidnfc.AndroidNfcPlugin;
-import org.eclipse.keyple.plugin.androidnfc.AndroidNfcProtocolSettings;
-import org.eclipse.keyple.plugin.androidnfc.AndroidNfcReader;
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcFragment;
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin;
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings;
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.ProxyReader;
@@ -58,7 +58,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
     private static final String TAG = NFCTestFragment.class.getSimpleName();
     private static final String TAG_NFC_ANDROID_FRAGMENT =
-            "org.eclipse.keyple.plugin.androidnfc.AndroidNfcFragment";
+            "org.eclipse.keyple.plugin.android.nfc.AndroidNfcFragment";
 
     // UI
     private TextView mText;
@@ -140,16 +140,17 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
             @Nullable Bundle savedInstanceState) {
 
         // Define UI components
-        View view = inflater.inflate(R.layout.fragment_nfc_test, container, false);
-        mText = view.findViewById(R.id.text);
-        radioGroup = view.findViewById(R.id.radioGroup);
+        View view =
+                inflater.inflate(org.eclipse.keyple.example.android.nfc.R.layout.fragment_nfc_test,
+                        container, false);
+        mText = view.findViewById(org.eclipse.keyple.example.android.nfc.R.id.text);
+        radioGroup = view.findViewById(org.eclipse.keyple.example.android.nfc.R.id.radioGroup);
         return view;
     }
 
     /**
      * Catch @{@link AndroidNfcReader} events When a SE is inserted, launch test commands
-     *
-     * @param observable
+     ** 
      * @param event
      */
     @Override
@@ -159,7 +160,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
             public void run() {
                 Log.d(TAG, "New ReaderEvent received : " + event.toString());
 
-                switch (event) {
+                switch (event.getEventType()) {
                     case SE_INSERTED:
                         mText.append("\n ---- \n");
                         mText.append("Tag opened to tag");
@@ -191,7 +192,8 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
      * Runs the selected commands test
      */
     private void runTest() {
-        if (radioGroup.getCheckedRadioButtonId() == R.id.hoplinkSimpleRead) {
+        if (radioGroup
+                .getCheckedRadioButtonId() == org.eclipse.keyple.example.android.nfc.R.id.hoplinkSimpleRead) {
             runHoplinkSimpleRead();
         }
     }

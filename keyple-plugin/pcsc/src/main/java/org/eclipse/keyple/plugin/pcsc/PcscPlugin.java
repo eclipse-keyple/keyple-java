@@ -107,7 +107,7 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
         CardTerminals terminals = getCardTerminals();
         try {
             for (CardTerminal term : terminals.list()) {
-                nativeReaders.add(new PcscReader(term));
+                nativeReaders.add(new PcscReader(this.getName(), term));
             }
         } catch (CardException e) {
             logger.error("Terminal list is not accessible", "action", "pcsc_plugin.no_terminals",
@@ -143,7 +143,7 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
         try {
             for (CardTerminal term : terminals.list()) {
                 if (term.getName().equals(name)) {
-                    reader = new PcscReader(term);
+                    reader = new PcscReader(this.getName(), term);
                 }
             }
         } catch (CardException e) {

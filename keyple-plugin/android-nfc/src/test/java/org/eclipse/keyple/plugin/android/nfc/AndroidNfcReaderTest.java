@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.plugin.androidnfc;
+package org.eclipse.keyple.plugin.android.nfc;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.doThrow;
@@ -346,7 +346,7 @@ public class AndroidNfcReaderTest {
         reader.addObserver(new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
-                assertEquals(ReaderEvent.SE_INSERTED, event);
+                assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
             }
         });
 
