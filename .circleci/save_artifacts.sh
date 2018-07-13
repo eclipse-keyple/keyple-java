@@ -16,6 +16,7 @@ save_directory keyple-plugins/stub
 
 cp .build/web/* ~/pages/
 
+echo "End of save artifacts java"
 
 
 
