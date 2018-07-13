@@ -38,13 +38,13 @@ then
     git checkout gh-pages
     # delete any old site as we are going to replace it
     # Note: this explodes if there aren't any, so moving it here for now
-    # git rm -rf .
+    git rm -rf .
 else
     git checkout --orphan gh-pages
 fi
 
 # copy over or recompile the new site
-git rm -rf $CIRCLE_BRANCH/* ||:
+git rm -rfq $CIRCLE_BRANCH/* ||:
 mkdir -p $CIRCLE_BRANCH
 cp -a ~/pages/* $CIRCLE_BRANCH/
 
@@ -61,6 +61,6 @@ git push --force --quiet origin gh-pages
 # go back to where we started and remove the gh-pages git repo we made and used
 # for deployment
 cd ..
-rm -rf gh-pages-branch
+rm -rfq gh-pages-branch
 
 echo "Finished Deployment!"
