@@ -47,9 +47,9 @@ fi
 
 # copy over or recompile the new site
 echo "*** copy over or recompile the new site"
-#git rm -rf $CIRCLE_BRANCH/* ||:
-#mkdir -p $CIRCLE_BRANCH
-#cp -a ~/pages/* $CIRCLE_BRANCH/
+git rm -rf $CIRCLE_BRANCH/* ||:
+mkdir -p $CIRCLE_BRANCH #create if not exists
+cp -a ~/pages/* $CIRCLE_BRANCH/
 
 
 echo "*** stage any changes and new files"
