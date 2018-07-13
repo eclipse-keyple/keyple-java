@@ -146,7 +146,7 @@ jobs:
         #### GitHub Pages ####
         ######################
 
-        - run: .circleci/push_gh_pages.sh
+        - run: .circleci/push_gh_pages.sh "CircleCI Android job"
 
 
 

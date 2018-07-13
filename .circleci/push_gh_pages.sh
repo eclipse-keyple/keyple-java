@@ -56,7 +56,9 @@ echo "*** stage any changes and new files"
 # stage any changes and new files
 git add -A
 # now commit, ignoring branch gh-pages doesn't seem to work, so trying skip
-git commit --allow-empty -m "Deploy to GitHub pages [ci skip]"
+message=$1
+
+git commit --allow-empty -m $message
 
 sed -i -e "s/git@github.com:calypsonet/https:\/\/${GITHUB_TOKEN}:x-oauth-basic@github.com\/calypsonet/" .git/config
 
