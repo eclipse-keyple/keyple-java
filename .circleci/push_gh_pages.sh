@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # ideas used from https://gist.github.com/motemen/8595451
 
 # Based on https://github.com/eldarlabs/ghpages-deploy-script/blob/master/scripts/deploy-ghpages.sh
@@ -47,9 +47,9 @@ fi
 
 # copy over or recompile the new site
 echo "*** copy over or recompile the new site"
-git rm -rf $CIRCLE_BRANCH/* ||:
-mkdir -p $CIRCLE_BRANCH
-cp -a ~/pages/* $CIRCLE_BRANCH/
+#git rm -rf $CIRCLE_BRANCH/* ||:
+#mkdir -p $CIRCLE_BRANCH
+#cp -a ~/pages/* $CIRCLE_BRANCH/
 
 
 echo "*** stage any changes and new files"
