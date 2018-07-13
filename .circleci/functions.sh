@@ -6,6 +6,13 @@ save_directory () {
     do
         echo "* Dir $dir:"
 
+        if [ -d $dir/ ]; then
+            echo "   * Dir $dir found"
+        else
+            echo "   ! Dir $dir not found"
+        fi
+
+
         # Junit tests --> ~/tests
         if [ -d $dir/build/test-results/test ]; then
             echo "   * Found junit tests"

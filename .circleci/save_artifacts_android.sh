@@ -5,8 +5,8 @@
 #save artifacts of keyple core projects (java)
 /bin/bash .circleci/save_artifacts.sh
 
-mkdir -p ~/artifacts/aar ~/pages/aar
-find . -name "keyple-*.aar"  \
+mkdir -p ~/artifacts/jar ~/pages/jar
+find . -name "*.aar"  \
   -exec cp {} ~/artifacts/jar \; \
   -exec cp {} ~/pages/jar \;
 
