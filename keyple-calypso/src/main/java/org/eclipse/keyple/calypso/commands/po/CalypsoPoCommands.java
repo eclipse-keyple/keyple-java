@@ -48,8 +48,13 @@ public enum CalypsoPoCommands implements CommandsTable {
 
     /** The po get challenge. */
     GET_CHALLENGE("Get Challenge", (byte) 0x84, PoGetChallengeCmdBuild.class,
-            PoGetChallengeRespPars.class);
+            PoGetChallengeRespPars.class),
 
+    /** The po increase counter. */
+    INCREASE("Increase", (byte) 0x32, IncreaseCmdBuild.class, IncreaseRespPars.class),
+
+    /** The po decrease counter. */
+    DECREASE("Decrease", (byte) 0x30, DecreaseCmdBuild.class, DecreaseRespPars.class);
 
     /** The name. */
     private String name;
