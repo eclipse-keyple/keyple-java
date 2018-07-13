@@ -58,7 +58,7 @@ git add -A
 # now commit, ignoring branch gh-pages doesn't seem to work, so trying skip
 message=$1
 
-git commit --allow-empty -m $message
+git commit --allow-empty -m "$message"
 
 sed -i -e "s/git@github.com:calypsonet/https:\/\/${GITHUB_TOKEN}:x-oauth-basic@github.com\/calypsonet/" .git/config
 
