@@ -68,7 +68,7 @@ jobs:
         #assemble keyple core and calypso
         - run:
             name: Assemble Keyple
-            command:  gradle build
+            command:  gradle build javadoc fatjar
 
         #Download NFC project dependencies
         - run:
