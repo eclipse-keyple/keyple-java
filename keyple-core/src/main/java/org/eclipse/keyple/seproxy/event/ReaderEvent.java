@@ -12,7 +12,7 @@ package org.eclipse.keyple.seproxy.event;
 /**
  * ReaderEvent used to notify changes at reader level
  */
-public class ReaderEvent {
+public final class ReaderEvent {
     /**
      * The name of the plugin handling the reader that produced the event
      */
