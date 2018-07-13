@@ -6,9 +6,7 @@ save_directory () {
     do
         echo "* Dir $dir:"
 
-        if [ -d $dir/ ]; then
-            echo "   * Dir $dir found"
-        else
+        if [ ! -d $dir/ ]; then
             echo "   ! Dir $dir not found"
         fi
 
