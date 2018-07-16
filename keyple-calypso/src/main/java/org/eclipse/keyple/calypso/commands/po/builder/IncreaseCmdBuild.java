@@ -42,6 +42,10 @@ public class IncreaseCmdBuild extends AbstractPoCommandBuilder implements PoSend
             throws InconsistentCommandException {
         super(command, null);
 
+        if (revision != null) {
+            this.defaultRevision = revision;
+        }
+
         // check if the incValue is in the allowed interval
         if (incValue < 0 || incValue > 0xFFFFFF) {
             throw new InconsistentCommandException();
