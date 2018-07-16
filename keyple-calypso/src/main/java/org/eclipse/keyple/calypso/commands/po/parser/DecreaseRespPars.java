@@ -56,22 +56,21 @@ public class DecreaseRespPars extends AbstractApduResponseParser {
     }
 
     /**
-     * When the Decrease command is successful, returns the new counter value as an int between 0
-     * and 16777215<br/>
-     * If the current response was not a valid counter value, the returned value is set to -1
+     * Returns the new counter value as an int between 0
      *
-     * @return the new value (int)
+     * @return the new value
+     * @throws java.lang.IllegalStateException - if the counter value is not available from the
+     *         command response.
      */
-    public int getNewValue() {
+    public int getNewValue() throws IllegalStateException {
         ByteBuffer newValueBuffer = getApduResponse().getDataOut();
-        int newValue;
         if (newValueBuffer.limit() == 3) {
-            newValue = (newValueBuffer.get(0) << 16) + (newValueBuffer.get(1) << 8)
+            return (newValueBuffer.get(0) << 16) + (newValueBuffer.get(1) << 8)
                     + newValueBuffer.get(2);
         } else {
-            newValue = -1;
+            throw new IllegalStateException(String
+                    .format("No counter value available in response to the Decrease command."));
         }
-        return newValue;
     }
 
     @Override
