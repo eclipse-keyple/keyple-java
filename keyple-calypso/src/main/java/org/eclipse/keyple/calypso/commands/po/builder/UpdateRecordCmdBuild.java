@@ -33,12 +33,12 @@ public class UpdateRecordCmdBuild extends AbstractPoCommandBuilder implements Po
      * Instantiates a new UpdateRecordCmdBuild.
      *
      * @param revision the revision of the PO
-     * @param recordNumber the record number to update
      * @param sfi the sfi to select
+     * @param recordNumber the record number to update
      * @param newRecordData the new record data to write
      * @throws InconsistentCommandException the inconsistent command exception
      */
-    public UpdateRecordCmdBuild(PoRevision revision, byte recordNumber, byte sfi,
+    public UpdateRecordCmdBuild(PoRevision revision, byte sfi, byte recordNumber,
             ByteBuffer newRecordData) throws InconsistentCommandException {
         super(command, null);
         if (revision != null) {

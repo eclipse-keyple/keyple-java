@@ -137,7 +137,7 @@ public class AndroidOmapiReaderTest {
         // init
         String poAid = "A000000291A000000191";
         ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                (byte) 0x01, true, (byte) 0x14, (byte) 0x20);
+                (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
         List<ApduRequest> poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
         // wrong protocol
@@ -220,7 +220,7 @@ public class AndroidOmapiReaderTest {
         String poAid = "A000000291A000000191";
 
         ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                (byte) 0x01, true, (byte) 0x14, (byte) 0x20);
+                (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
 
         List<ApduRequest> poApduRequestList;
 

@@ -33,16 +33,15 @@ public class ReadRecordsCmdBuild extends AbstractPoCommandBuilder implements PoS
      * Instantiates a new read records cmd build.
      *
      * @param revision the revision of the PO
+     * @param sfi the sfi top select
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
      * @param readJustOneRecord the read just one record
-     * @param sfi the sfi top select
      * @param expectedLength the expected lenght of the record(s)
      * @throws InconsistentCommandException the inconsistent command exception
      */
-    public ReadRecordsCmdBuild(PoRevision revision, byte firstRecordNumber,
-            boolean readJustOneRecord, byte sfi, byte expectedLength)
-            throws InconsistentCommandException {
+    public ReadRecordsCmdBuild(PoRevision revision, byte sfi, byte firstRecordNumber,
+            boolean readJustOneRecord, byte expectedLength) throws InconsistentCommandException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;

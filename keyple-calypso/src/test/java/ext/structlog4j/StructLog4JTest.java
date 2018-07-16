@@ -33,7 +33,7 @@ public class StructLog4JTest {
         List<ApduRequest> list = Arrays.asList(
                 new UpdateRecordCmdBuild(PoRevision.REV3_2, (byte) 0x01, (byte) 0x02,
                         ByteBufferUtils.fromHex("01020304")).getApduRequest(),
-                new ReadRecordsCmdBuild(PoRevision.REV3_2, (byte) 0x01, true, (byte) 0x02, (byte) 4)
+                new ReadRecordsCmdBuild(PoRevision.REV3_2, (byte) 0x02, (byte) 0x01, true, (byte) 4)
                         .getApduRequest());
         logger.info("Apdu list", "action", "demo.listing_apdus", "apduList", list);
     }

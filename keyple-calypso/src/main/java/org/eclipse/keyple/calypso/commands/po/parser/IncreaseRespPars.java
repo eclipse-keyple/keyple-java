@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.commands.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
-import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
  * Increase (0032) response parser. See specs: Calypso / page 85 / 9.4.4 Increase
@@ -58,26 +57,26 @@ public class IncreaseRespPars extends AbstractApduResponseParser {
     }
 
     /**
-     * Returns the new counter value as a 3-byte buffer (MSB first)
-     * 
-     * @return the new value (3 bytes)
-     */
-    public ByteBuffer getNewValue() {
-        return getApduResponse().getDataOut();
-    }
-
-    /**
-     * Returns the new counter value as an int between 0 and 16777215
+     * When the Increase command is successful, returns the new counter value as an int between 0
+     * and 16777215<br/>
+     * If the current response was not a valid counter value, the returned value is set to -1
      * 
      * @return the new value (int)
      */
-    public int getNewValueAsInt() {
-        ByteBuffer newValueBuffer = getNewValue();
-        return (newValueBuffer.get(0) << 16) + (newValueBuffer.get(1) << 8) + newValueBuffer.get(2);
+    public int getNewValue() {
+        ByteBuffer newValueBuffer = getApduResponse().getDataOut();
+        int newValue;
+        if (newValueBuffer.limit() == 3) {
+            newValue = (newValueBuffer.get(0) << 16) + (newValueBuffer.get(1) << 8)
+                    + newValueBuffer.get(2);
+        } else {
+            newValue = -1;
+        }
+        return newValue;
     }
 
     @Override
     public String toString() {
-        return "New counter value: " + ByteBufferUtils.toHex(getNewValue());
+        return String.format("New counter value: %d", getNewValue());
     }
 }
