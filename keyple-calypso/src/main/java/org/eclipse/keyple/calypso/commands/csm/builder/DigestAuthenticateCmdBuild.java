@@ -13,7 +13,6 @@ import org.eclipse.keyple.calypso.commands.csm.AbstractCsmCommandBuilder;
 import org.eclipse.keyple.calypso.commands.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.commands.csm.CsmRevision;
 import org.eclipse.keyple.calypso.commands.utils.RequestUtils;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
@@ -29,26 +28,24 @@ public class DigestAuthenticateCmdBuild extends AbstractCsmCommandBuilder {
      *
      * @param revision of the CSM(SAM)
      * @param signature the signature
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the signature is null or has a wrong length.
      */
     public DigestAuthenticateCmdBuild(CsmRevision revision, ByteBuffer signature)
-            throws InconsistentCommandException {
+            throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
         }
         if (signature == null) {
-            throw new InconsistentCommandException("Signature can't be null");
+            throw new IllegalArgumentException("Signature can't be null");
         }
         if (signature.limit() != 4 && signature.limit() != 8 && signature.limit() != 16) {
-            throw new InconsistentCommandException(
+            throw new IllegalArgumentException(
                     "Signature is not the right length : length is " + signature.limit());
         }
         byte cla = CsmRevision.S1D.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x80;
         byte p1 = 0x00;
         byte p2 = (byte) 0x00;
-
-        // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, signature);
 
         request = RequestUtils.constructAPDURequest(cla, command, p1, p2, signature);
     }
@@ -57,9 +54,9 @@ public class DigestAuthenticateCmdBuild extends AbstractCsmCommandBuilder {
      * Instantiates a new digest authenticate cmd build.
      *
      * @param request the request
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
-    public DigestAuthenticateCmdBuild(ApduRequest request) throws InconsistentCommandException {
+    public DigestAuthenticateCmdBuild(ApduRequest request) throws IllegalArgumentException {
         super(command, request);
         RequestUtils.controlRequestConsistency(command, request);
     }

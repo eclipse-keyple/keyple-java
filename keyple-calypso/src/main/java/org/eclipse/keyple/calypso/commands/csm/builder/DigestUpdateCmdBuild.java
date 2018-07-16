@@ -13,7 +13,6 @@ import org.eclipse.keyple.calypso.commands.csm.AbstractCsmCommandBuilder;
 import org.eclipse.keyple.calypso.commands.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.commands.csm.CsmRevision;
 import org.eclipse.keyple.calypso.commands.utils.RequestUtils;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
@@ -33,10 +32,11 @@ public class DigestUpdateCmdBuild extends AbstractCsmCommandBuilder {
      * @param revision of the CSM(SAM)
      * @param encryptedSession the encrypted session
      * @param digestData all bytes from command sent by the PO or response from the command
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the digest data is null or has a length > 255
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public DigestUpdateCmdBuild(CsmRevision revision, boolean encryptedSession,
-            ByteBuffer digestData) throws InconsistentCommandException {
+            ByteBuffer digestData) throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -49,7 +49,7 @@ public class DigestUpdateCmdBuild extends AbstractCsmCommandBuilder {
         }
 
         if (digestData != null && digestData.limit() > 255) {
-            throw new InconsistentCommandException();
+            throw new IllegalArgumentException("Digest data null or too long!");
         }
 
         // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, digestData);
@@ -61,9 +61,9 @@ public class DigestUpdateCmdBuild extends AbstractCsmCommandBuilder {
      * Instantiates a new digest update cmd build.
      *
      * @param request the request
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
-    public DigestUpdateCmdBuild(ApduRequest request) throws InconsistentCommandException {
+    public DigestUpdateCmdBuild(ApduRequest request) throws IllegalArgumentException {
         super(command, request);
         RequestUtils.controlRequestConsistency(command, request);
     }

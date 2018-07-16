@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.utils.RequestUtils;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 
 public class OpenSession32CmdBuild extends AbstractOpenSessionCmdBuild {
     /**
@@ -22,10 +21,10 @@ public class OpenSession32CmdBuild extends AbstractOpenSessionCmdBuild {
      * @param samChallenge the sam challenge returned by the CSM Get Challenge APDU command
      * @param sfiToSelect the sfi to select
      * @param recordNumberToRead the record number to read
-     * @throws InconsistentCommandException thrown if rev 2.4 and key index is 0
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public OpenSession32CmdBuild(byte keyIndex, ByteBuffer samChallenge, byte sfiToSelect,
-            byte recordNumberToRead) throws InconsistentCommandException {
+            byte recordNumberToRead) throws IllegalArgumentException {
         super(PoRevision.REV3_2);
 
         byte p1 = (byte) ((recordNumberToRead * 8) + keyIndex);

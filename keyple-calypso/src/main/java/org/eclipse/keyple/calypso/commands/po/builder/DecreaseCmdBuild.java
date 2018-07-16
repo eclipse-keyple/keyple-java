@@ -15,7 +15,6 @@ import org.eclipse.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.utils.RequestUtils;
 import org.eclipse.keyple.commands.CommandsTable;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
@@ -37,11 +36,12 @@ public class DecreaseCmdBuild extends AbstractPoCommandBuilder implements PoSend
      *        file.
      * @param decValue Value to subtract to the counter (defined as a positive int <= 16777215
      *        [FFFFFFh])
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the decrement value is out of range
+     * @throws java.lang.IllegalArgumentException - if the command is inconsistent
      */
 
     public DecreaseCmdBuild(PoRevision revision, byte sfi, byte counterNumber, int decValue)
-            throws InconsistentCommandException {
+            throws IllegalArgumentException {
         super(command, null);
 
         if (revision != null) {
@@ -50,7 +50,7 @@ public class DecreaseCmdBuild extends AbstractPoCommandBuilder implements PoSend
 
         // check if the incValue is in the allowed interval
         if (decValue < 0 || decValue > 0xFFFFFF) {
-            throw new InconsistentCommandException();
+            throw new IllegalArgumentException("Decrement value out of range!");
         }
 
         // convert the integer value into a 3-byte buffer
@@ -71,9 +71,9 @@ public class DecreaseCmdBuild extends AbstractPoCommandBuilder implements PoSend
      * Instantiates a new decrease cmd build from an ApduRequest.
      *
      * @param request the request
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
-    public DecreaseCmdBuild(ApduRequest request) throws InconsistentCommandException {
+    public DecreaseCmdBuild(ApduRequest request) throws IllegalArgumentException {
         super(command, request);
         RequestUtils.controlRequestConsistency(command, request);
     }

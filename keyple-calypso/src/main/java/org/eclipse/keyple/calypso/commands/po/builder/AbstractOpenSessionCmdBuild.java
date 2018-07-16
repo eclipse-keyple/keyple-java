@@ -13,13 +13,10 @@ import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.commands.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 
 /**
  * The Class AbstractOpenSessionCmdBuild. This class provides the dedicated constructor to build the
  * Open Secure Session APDU command.
- *
- * @author Ixxi
  *
  */
 public abstract class AbstractOpenSessionCmdBuild extends AbstractPoCommandBuilder {
@@ -28,7 +25,8 @@ public abstract class AbstractOpenSessionCmdBuild extends AbstractPoCommandBuild
      * Instantiates a new AbstractOpenSessionCmdBuild.
      *
      * @param revision the revision of the PO
-     * @throws InconsistentCommandException thrown if rev 2.4 and key index is 0
+     * @throws java.lang.IllegalArgumentException - if the key index is 0 and rev is 2.4
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public AbstractOpenSessionCmdBuild(PoRevision revision) {
         super(CalypsoPoCommands.getOpenSessionForRev(revision), null);

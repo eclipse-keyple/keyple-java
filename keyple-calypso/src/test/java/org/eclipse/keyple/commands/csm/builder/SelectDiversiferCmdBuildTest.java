@@ -16,7 +16,6 @@ import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.GetDataFciCmdBuild;
 import org.eclipse.keyple.calypso.commands.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.commands.AbstractApduCommandBuilder;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.*;
 import org.hamcrest.core.IsEqual;
@@ -53,7 +52,7 @@ public class SelectDiversiferCmdBuildTest {
     // Removed temporarily @Test
     public void selectDiversifier() throws IOReaderException, UnexpectedReaderException,
             ChannelStateReaderException, InvalidApduReaderException, ReaderTimeoutException,
-            InconsistentCommandException, InconsistentParameterValueException {
+            IllegalArgumentException, InconsistentParameterValueException {
 
         ApduRequest apdu = apduCommandBuilder.getApduRequest();
         ApduRequests.add(apdu);

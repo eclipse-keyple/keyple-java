@@ -13,7 +13,6 @@ import org.eclipse.keyple.calypso.commands.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.commands.csm.CsmRevision;
 import org.eclipse.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.commands.utils.RequestUtils;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
@@ -29,16 +28,17 @@ public class DigestCloseCmdBuild extends AbstractCsmCommandBuilder {
      *
      * @param revision of the CSM(SAM)
      * @param expectedResponseLength the expected response length
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the expected response length is wrong.
      */
     public DigestCloseCmdBuild(CsmRevision revision, byte expectedResponseLength)
-            throws InconsistentCommandException {
+            throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
         }
         if (expectedResponseLength != 0x04 && expectedResponseLength != 0x08) {
-            throw new InconsistentCommandException();
+            throw new IllegalArgumentException(String
+                    .format("Bad digest length! Expected 4 or 8, got %s", expectedResponseLength));
         }
 
         byte cla = CsmRevision.S1D.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x80;
@@ -55,9 +55,9 @@ public class DigestCloseCmdBuild extends AbstractCsmCommandBuilder {
      * Instantiates a new digest close cmd build.
      *
      * @param request the request
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
-    public DigestCloseCmdBuild(ApduRequest request) throws InconsistentCommandException {
+    public DigestCloseCmdBuild(ApduRequest request) throws IllegalArgumentException {
         super(CalypsoPoCommands.APPEND_RECORD, request);
         RequestUtils.controlRequestConsistency(command, request);
     }

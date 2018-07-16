@@ -11,7 +11,6 @@ package org.eclipse.keyple.commands.csm.builder;
 import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.commands.csm.builder.DigestAuthenticateCmdBuild;
 import org.eclipse.keyple.commands.AbstractApduCommandBuilder;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
@@ -20,7 +19,7 @@ import org.junit.Test;
 public class DigestAuthenticateCmdBuildTest {
 
     @Test
-    public void digestAuthenticate() throws InconsistentCommandException {
+    public void digestAuthenticate() throws IllegalArgumentException {
 
         ByteBuffer signaturePO = ByteBuffer.wrap(new byte[] {0x00, 0x01, 0x02, 0x03});
         ByteBuffer request = ByteBuffer.wrap(

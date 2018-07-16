@@ -13,7 +13,6 @@ import org.eclipse.keyple.calypso.commands.csm.AbstractCsmCommandBuilder;
 import org.eclipse.keyple.calypso.commands.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.commands.csm.CsmRevision;
 import org.eclipse.keyple.calypso.commands.utils.RequestUtils;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -33,10 +32,10 @@ public class DigestUpdateMultipleCmdBuild extends AbstractCsmCommandBuilder {
      *
      * @param revision the revision
      * @param digestData the digest data
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public DigestUpdateMultipleCmdBuild(CsmRevision revision, ByteBuffer digestData)
-            throws InconsistentCommandException {
+            throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
