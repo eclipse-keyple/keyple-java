@@ -93,7 +93,7 @@ public class AndroidNfcPlugin extends AbstractStaticPlugin {
     /**
      * Return the AndroidNfcReader whatever is the provided name
      * 
-     * @param name
+     * @param name : name of the reader to retrieve
      * @return instance of @{@link AndroidNfcReader}
      */
     protected AbstractObservableReader getNativeReader(String name) {
