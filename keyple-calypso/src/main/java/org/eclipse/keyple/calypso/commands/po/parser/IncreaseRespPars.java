@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.commands.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
-import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
  * Increase (0032) response parser. See specs: Calypso / page 85 / 9.4.4 Increase
@@ -57,12 +56,26 @@ public class IncreaseRespPars extends AbstractApduResponseParser {
         super(response);
     }
 
-    public ByteBuffer getNewValue() {
-        return getApduResponse().getDataOut();
+    /**
+     * Returns the new counter value as an int between 0
+     *
+     * @return the new value
+     * @throws java.lang.IllegalStateException - if the counter value is not available from the
+     *         command response.
+     */
+    public int getNewValue() throws IllegalStateException {
+        ByteBuffer newValueBuffer = getApduResponse().getDataOut();
+        if (newValueBuffer.limit() == 3) {
+            return (newValueBuffer.get(0) << 16) + (newValueBuffer.get(1) << 8)
+                    + newValueBuffer.get(2);
+        } else {
+            throw new IllegalStateException(String
+                    .format("No counter value available in response to the Increase command."));
+        }
     }
 
     @Override
     public String toString() {
-        return "New counter value: " + ByteBufferUtils.toHex(getNewValue());
+        return String.format("New counter value: %d", getNewValue());
     }
 }

@@ -38,11 +38,11 @@ public class KeepOpenAbortTestManager extends AbstractLogicManager {
                 + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
 
         ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                (byte) 0x01, true, (byte) 0x14, (byte) 0x20);
+                (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
         ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                (byte) 0x01, true, (byte) 0x1A, (byte) 0x30);
+                (byte) 0x1A, (byte) 0x01, true, (byte) 0x30);
         UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
-                new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x01, (byte) 0x1A,
+                new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
                         ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
 
         // Get PO ApduRequest List

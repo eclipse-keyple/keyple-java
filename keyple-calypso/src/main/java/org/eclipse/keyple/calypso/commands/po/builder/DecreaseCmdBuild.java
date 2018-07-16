@@ -32,28 +32,39 @@ public class DecreaseCmdBuild extends AbstractPoCommandBuilder implements PoSend
      * Instantiates a new decrease cmd build from command parameters.
      *
      * @param revision the revision of the PO
+     * @param sfi SFI of the file to select or 00h for current EF
      * @param counterNumber >= 01h: Counters file, number of the counter. 00h: Simulated Counter
      *        file.
-     * @param sfi SFI of the file to select or 00h for current EF
-     * @param decValue Value to subtract from the counter (3 bytes)
+     * @param decValue Value to subtract to the counter (defined as a positive int <= 16777215
+     *        [FFFFFFh])
      * @throws InconsistentCommandException the inconsistent command exception
      */
-    public DecreaseCmdBuild(PoRevision revision, byte counterNumber, byte sfi, ByteBuffer decValue)
+
+    public DecreaseCmdBuild(PoRevision revision, byte sfi, byte counterNumber, int decValue)
             throws InconsistentCommandException {
         super(command, null);
+
         if (revision != null) {
             this.defaultRevision = revision;
         }
 
-        if (decValue.limit() != 3) {
+        // check if the incValue is in the allowed interval
+        if (decValue < 0 || decValue > 0xFFFFFF) {
             throw new InconsistentCommandException();
         }
+
+        // convert the integer value into a 3-byte buffer
+        ByteBuffer decValueBuffer = ByteBuffer.allocate(3);
+        decValueBuffer.put(0, (byte) ((decValue >> 16) & 0xFF));
+        decValueBuffer.put(1, (byte) ((decValue >> 8) & 0xFF));
+        decValueBuffer.put(2, (byte) (decValue & 0xFF));
 
         byte cla = PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00;
         byte p1 = counterNumber;
         byte p2 = (byte) (sfi * 8);
 
-        this.request = RequestUtils.constructAPDURequest(cla, command, p1, p2, decValue, (byte) 3);
+        this.request =
+                RequestUtils.constructAPDURequest(cla, command, p1, p2, decValueBuffer, (byte) 3);
     }
 
     /**
@@ -66,5 +77,4 @@ public class DecreaseCmdBuild extends AbstractPoCommandBuilder implements PoSend
         super(command, request);
         RequestUtils.controlRequestConsistency(command, request);
     }
-
 }

@@ -219,8 +219,8 @@ public class PoSecureSessionTest {
 
         PoSendableInSession[] poCommandsInsideSession = new PoSendableInSession[1];
 
-        poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
-                (byte) 0x08, (byte) 0x00);
+        poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, (byte) 0x08,
+                recordNumber, false, (byte) 0x00);
 
         SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
                 responseOpenSession.getSingleResponse().getApduResponses(),
@@ -254,8 +254,8 @@ public class PoSecureSessionTest {
 
         PoSendableInSession[] poCommandsInsideSession = new PoSendableInSession[1];
 
-        poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
-                (byte) 0x08, (byte) 0x00);
+        poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, (byte) 0x08,
+                recordNumber, false, (byte) 0x00);
 
         SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
                 responseOpenSession.getSingleResponse().getApduResponses(),
@@ -276,8 +276,8 @@ public class PoSecureSessionTest {
 
         PoSendableInSession[] poCommandsInsideSession = new PoSendableInSession[1];
 
-        poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
-                (byte) 0x08, (byte) 0x00);
+        poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, (byte) 0x08,
+                recordNumber, false, (byte) 0x00);
 
         SeResponse seResponse2 = this.poPlainSecrureSession
                 .processProceeding(Arrays.asList(poCommandsInsideSession));
@@ -293,8 +293,8 @@ public class PoSecureSessionTest {
 
         PoSendableInSession[] poCommandsInsideSession = new PoSendableInSession[1];
 
-        poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
-                (byte) 0x08, (byte) 0x00);
+        poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, (byte) 0x08,
+                recordNumber, false, (byte) 0x00);
 
         SeResponse seResponse2 = this.poPlainSecrureSession
                 .processProceeding(Arrays.asList(poCommandsInsideSession));
@@ -365,8 +365,8 @@ public class PoSecureSessionTest {
         Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseTerminalSessionSignature);
 
-        poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
-                (byte) 0x08, (byte) 0x00);
+        poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, (byte) 0x08,
+                recordNumber, false, (byte) 0x00);
         PoGetChallengeCmdBuild ratificationCommand =
                 new PoGetChallengeCmdBuild(this.poPlainSecrureSession.getRevision());
 
@@ -400,8 +400,8 @@ public class PoSecureSessionTest {
 
         PoSendableInSession[] poCommandsInsideSession = new PoSendableInSession[1];
 
-        poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, recordNumber, false,
-                (byte) 0x08, (byte) 0x00);
+        poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, (byte) 0x08,
+                recordNumber, false, (byte) 0x00);
 
         ApduResponse fciData = new ApduResponse(ByteBufferUtils.fromHex(
                 "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA153070A3C230C1410019000"),
