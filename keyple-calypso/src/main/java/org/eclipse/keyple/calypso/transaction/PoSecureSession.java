@@ -518,7 +518,7 @@ public class PoSecureSession {
 
         // TODO => to check:
         // if (!digestCloseRespPars.isSuccessful()) {
-        // throw new InconsistentCommandException(digestCloseRespPars.getStatusInformation());
+        // throw new IllegalArgumentException(digestCloseRespPars.getStatusInformation());
         // }
 
         currentState = SessionState.SESSION_CLOSED;
@@ -781,7 +781,7 @@ public class PoSecureSession {
 
         // TODO => to check:
         // if (!digestCloseRespPars.isSuccessful()) {
-        // throw new InconsistentCommandException(digestCloseRespPars.getStatusInformation());
+        // throw new IllegalArgumentException(digestCloseRespPars.getStatusInformation());
         // }
 
         currentState = SessionState.SESSION_CLOSED;

@@ -15,7 +15,6 @@ import org.eclipse.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.utils.RequestUtils;
 import org.eclipse.keyple.commands.CommandsTable;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
@@ -52,8 +51,13 @@ public class PoGetChallengeCmdBuild extends AbstractPoCommandBuilder
 
     }
 
-
-    public PoGetChallengeCmdBuild(ApduRequest request) throws InconsistentCommandException {
+    /**
+     * Instantiates a new Get Challenge cmd build from an ApduRequest.
+     *
+     * @param request the request
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
+     */
+    public PoGetChallengeCmdBuild(ApduRequest request) throws IllegalArgumentException {
         super(command, request);
         RequestUtils.controlRequestConsistency(command, request);
     }

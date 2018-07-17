@@ -10,7 +10,6 @@ package org.eclipse.keyple.calypso.commands.utils;
 
 import java.nio.ByteBuffer;
 import org.eclipse.keyple.commands.CommandsTable;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
@@ -20,12 +19,20 @@ public class RequestUtils {
 
     private RequestUtils() {}
 
+    /**
+     * Checks the consistency of the request
+     * 
+     * @param command
+     * @param request
+     * @throws java.lang.IllegalArgumentException - if the instruction byte is not the expected one
+     */
     public static void controlRequestConsistency(CommandsTable command, ApduRequest request)
-            throws InconsistentCommandException {
+            throws IllegalArgumentException {
         // Simplifying the strange logic, but I'm not sure this helps much
         if (request != null && request.getBytes() != null
                 && request.getBytes().get(1) != command.getInstructionByte()) {
-            throw new InconsistentCommandException();
+            throw new IllegalArgumentException(
+                    "Inconsistent request: instruction bytes don't match!");
         }
     }
 

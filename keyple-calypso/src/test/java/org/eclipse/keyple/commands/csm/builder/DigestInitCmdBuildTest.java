@@ -13,7 +13,6 @@ import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.commands.csm.CsmRevision;
 import org.eclipse.keyple.calypso.commands.csm.builder.DigestInitCmdBuild;
 import org.eclipse.keyple.commands.AbstractApduCommandBuilder;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -21,8 +20,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class DigestInitCmdBuildTest {
 
-    @Test(expected = InconsistentCommandException.class)
-    public void digestInitCmd_inconsistent() throws InconsistentCommandException {
+    @Test(expected = IllegalArgumentException.class)
+    public void digestInitCmd_inconsistent() throws IllegalArgumentException {
 
         ByteBuffer digestData =
                 ByteBuffer.wrap(new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07});
@@ -41,8 +40,8 @@ public class DigestInitCmdBuildTest {
                         workKeyKif, workKeyKVC, digestData);
     }
 
-    @Test(expected = InconsistentCommandException.class)
-    public void digestInitCmd_inconsistent_digestNull() throws InconsistentCommandException {
+    @Test(expected = IllegalArgumentException.class)
+    public void digestInitCmd_inconsistent_digestNull() throws IllegalArgumentException {
 
         ByteBuffer digestData = null;
         ByteBuffer request = ByteBuffer.wrap(new byte[] {(byte) 0x80, (byte) 0x8A, 0x00,
@@ -61,7 +60,7 @@ public class DigestInitCmdBuildTest {
     }
 
     @Test
-    public void digestInitCmd() throws InconsistentCommandException {
+    public void digestInitCmd() throws IllegalArgumentException {
 
         ByteBuffer digestData = ByteBuffer.wrap(new byte[] {(byte) 0x80, (byte) 0x8A, 0x00});
         byte cla = (byte) 0x94;

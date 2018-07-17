@@ -12,7 +12,6 @@ import org.eclipse.keyple.calypso.commands.csm.AbstractCsmCommandBuilder;
 import org.eclipse.keyple.calypso.commands.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.commands.csm.CsmRevision;
 import org.eclipse.keyple.calypso.commands.utils.RequestUtils;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
@@ -28,16 +27,17 @@ public class CsmGetChallengeCmdBuild extends AbstractCsmCommandBuilder {
      *
      * @param revision of the CSM (SAM)
      * @param expectedResponseLength the expected response length
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the expected response length has wrong value.
      */
     public CsmGetChallengeCmdBuild(CsmRevision revision, byte expectedResponseLength)
-            throws InconsistentCommandException {
+            throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
         }
         if (expectedResponseLength != 0x04 && expectedResponseLength != 0x08) {
-            throw new InconsistentCommandException();
+            throw new IllegalArgumentException(String.format(
+                    "Bad challenge length! Expected 4 or 8, got %s", expectedResponseLength));
         }
         byte cla = CsmRevision.S1D.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00;
         byte p1 = 0x00;
@@ -52,9 +52,9 @@ public class CsmGetChallengeCmdBuild extends AbstractCsmCommandBuilder {
      * Instantiates a new csm get challenge cmd build.
      *
      * @param request the request
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
-    public CsmGetChallengeCmdBuild(ApduRequest request) throws InconsistentCommandException {
+    public CsmGetChallengeCmdBuild(ApduRequest request) throws IllegalArgumentException {
         super(command, request);
         RequestUtils.controlRequestConsistency(command, request);
     }

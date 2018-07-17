@@ -14,7 +14,6 @@ import org.eclipse.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.utils.RequestUtils;
 import org.eclipse.keyple.commands.CommandsTable;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
@@ -42,7 +41,13 @@ public class GetDataFciCmdBuild extends AbstractPoCommandBuilder implements PoSe
                 (byte) 0x00);
     }
 
-    public GetDataFciCmdBuild(ApduRequest request) throws InconsistentCommandException {
+    /**
+     * Instantiates a new get data fci cmd build.
+     * 
+     * @param request
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
+     */
+    public GetDataFciCmdBuild(ApduRequest request) throws IllegalArgumentException {
         super(command, request);
         RequestUtils.controlRequestConsistency(command, request);
     }

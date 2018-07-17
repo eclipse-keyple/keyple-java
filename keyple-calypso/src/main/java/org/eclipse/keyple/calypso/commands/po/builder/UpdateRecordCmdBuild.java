@@ -15,7 +15,6 @@ import org.eclipse.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.utils.RequestUtils;
 import org.eclipse.keyple.commands.CommandsTable;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 // TODO: Auto-generated Javadoc
@@ -36,16 +35,17 @@ public class UpdateRecordCmdBuild extends AbstractPoCommandBuilder implements Po
      * @param sfi the sfi to select
      * @param recordNumber the record number to update
      * @param newRecordData the new record data to write
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if record number is < 1
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public UpdateRecordCmdBuild(PoRevision revision, byte sfi, byte recordNumber,
-            ByteBuffer newRecordData) throws InconsistentCommandException {
+            ByteBuffer newRecordData) throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
         }
         if (recordNumber < 1) {
-            throw new InconsistentCommandException();
+            throw new IllegalArgumentException("Bad record number (< 1)");
         }
         byte cla = PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00;
         byte p1 = recordNumber;
@@ -58,9 +58,9 @@ public class UpdateRecordCmdBuild extends AbstractPoCommandBuilder implements Po
      * Instantiates a new update record cmd build.
      *
      * @param request the request
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
-    public UpdateRecordCmdBuild(ApduRequest request) throws InconsistentCommandException {
+    public UpdateRecordCmdBuild(ApduRequest request) throws IllegalArgumentException {
         super(command, request);
         RequestUtils.controlRequestConsistency(command, request);
     }
