@@ -11,7 +11,6 @@ package org.eclipse.keyple.seproxy;
 import static org.junit.Assert.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Test;
 
@@ -19,7 +18,8 @@ public class SeRequestTest {
 
     private static final ByteBuffer aid = ByteBufferUtils.fromHex("1122334455667788");
     private static final ByteBuffer aidTooShort = ByteBufferUtils.fromHex("11223344");
-    private static final ByteBuffer aidTooLong = ByteBufferUtils.fromHex("11223344556677889900AABBCCDDEEFF0011");
+    private static final ByteBuffer aidTooLong =
+            ByteBufferUtils.fromHex("11223344556677889900AABBCCDDEEFF0011");
 
     @Test
     public void testSERequest() {
@@ -38,14 +38,15 @@ public class SeRequestTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetAidToSelectTooShort() {
-        SeRequestSet request = new SeRequestSet(
-                new SeRequest(new SeRequest.AidSelector(aidTooShort), new ArrayList<ApduRequest>(), true));
+        SeRequestSet request =
+                new SeRequestSet(new SeRequest(new SeRequest.AidSelector(aidTooShort),
+                        new ArrayList<ApduRequest>(), true));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetAidToSelectTooLong() {
-        SeRequestSet request = new SeRequestSet(
-                new SeRequest(new SeRequest.AidSelector(aidTooLong), new ArrayList<ApduRequest>(), true));
+        SeRequestSet request = new SeRequestSet(new SeRequest(new SeRequest.AidSelector(aidTooLong),
+                new ArrayList<ApduRequest>(), true));
     }
 
     @Test
