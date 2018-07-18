@@ -72,7 +72,7 @@ public final class SeProxyService {
                 return plugin;
             }
         }
-        throw new UnexpectedPluginException("Plugin " + name + "not found.");
+        throw new UnexpectedPluginException("Plugin " + name + " not found.");
     }
 
     /**
