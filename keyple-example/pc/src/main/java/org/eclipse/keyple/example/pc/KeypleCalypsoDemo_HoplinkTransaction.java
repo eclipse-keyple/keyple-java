@@ -221,6 +221,9 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
             String poFakeAid = "AABBCCDDEE"; //
             String poNavigoAid = "A0000004040125090101"; // Navigo AID
             String poHoplinkAid = HoplinkCommandsSettings.AID; // commands before session, keep true
+            String poHoplinkATR = HoplinkCommandsSettings.ATR; // the ATR regex (used here with a
+                                                               // complete string for an exact
+                                                               // match)
 
             // prepare the PO selection SeRequestSet
 
@@ -242,9 +245,18 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
             List<ApduRequest> requestToExecuteBeforeSession = new ArrayList<ApduRequest>();
             requestToExecuteBeforeSession
                     .add(HoplinkSampleCommands.poReadRecordCmd_T2Env.getApduRequest());
+
+            // AID based selection
             seRequest = new SeRequest(new SeRequest.Selector(ByteBufferUtils.fromHex(poHoplinkAid)),
                     requestToExecuteBeforeSession, false,
                     HoplinkCommandsSettings.selectApplicationSuccessfulStatusCodes);
+
+            // alternate method:
+            // ATR based selection (works here because the application is selected by default)
+            // seRequest = new SeRequest(new SeRequest.Selector(poHoplinkATR),
+            // requestToExecuteBeforeSession, false,
+            // HoplinkCommandsSettings.selectApplicationSuccessfulStatusCodes);
+
             selectionRequests.add(seRequest);
 
             List<SeResponse> seResponses =

@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.util.Set;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
+import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
@@ -61,14 +62,14 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
     /**
      * Opens a logical channel
      * 
-     * @param aid the AID of the application to select
+     * @param selector the SE Selector: AID of the application to select or ATR regex
      * @param successfulSelectionStatusCodes the list of successful status code for the select
      *        command
      * @return 2 ByteBuffers: ATR and FCI data
      * @throws IOReaderException
      * @throws SelectApplicationException
      */
-    protected final ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid,
+    protected final ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Short> successfulSelectionStatusCodes)
             throws IOReaderException, SelectApplicationException {
         ByteBuffer[] atrAndFci = new ByteBuffer[2];
@@ -86,6 +87,7 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
 
         // add ATR
         atrAndFci[0] = getATR();
+        ByteBuffer aid = selector.getAidToSelect();
         if (aid != null) {
             logger.info("Connecting to card", "action", "local_reader.openLogicalChannel", "aid",
                     ByteBufferUtils.toHex(aid), "readerName", getName());
@@ -108,12 +110,18 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
 
                 if (!fciResponse.isSuccessful()) {
                     logger.info("Application selection failed", "action",
-                            "pcsc_reader.openLogicalChannel", "aid", ByteBufferUtils.toHex(aid),
-                            "fci", ByteBufferUtils.toHex(fciResponse.getBytes()));
+                            "openLogicalChannelAndSelect", "selector", selector, "fci",
+                            ByteBufferUtils.toHex(fciResponse.getBytes()));
                     throw new SelectApplicationException("Application selection failed");
                 }
             } catch (ChannelStateReaderException e1) {
                 throw new ChannelStateReaderException(e1);
+            }
+        } else {
+            if (!selector.atrMatches(atrAndFci[0])) {
+                logger.info("ATR selection failed", "action", "openLogicalChannelAndSelect",
+                        "selector", selector, "atr", ByteBufferUtils.toHex(atrAndFci[0]));
+                throw new SelectApplicationException("ATR selection failed");
             }
         }
         return atrAndFci;

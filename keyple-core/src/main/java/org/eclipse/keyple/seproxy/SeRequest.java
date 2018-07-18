@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
@@ -21,6 +22,12 @@ import org.eclipse.keyple.util.ByteBufferUtils;
  */
 public final class SeRequest {
 
+    /**
+     * The Selector inner class is dedicated to handle the selection of the SE either through a
+     * selection command with AID or through a matching test between the SE ATR and a regular
+     * expression.
+     *
+     */
     public static final class Selector {
 
         /**
@@ -37,11 +44,21 @@ public final class SeRequest {
          */
         private String atrRegex;
 
+        /**
+         * AID based selection
+         * 
+         * @param aidToSelect ByteBuffer
+         */
         public Selector(ByteBuffer aidToSelect) {
             this.aidToSelect = aidToSelect;
             this.atrRegex = "";
         }
 
+        /**
+         * ATR based selection
+         * 
+         * @param atrRegex String hex regular expression
+         */
         public Selector(String atrRegex) {
             this.aidToSelect = null;
             this.atrRegex = atrRegex;
@@ -51,8 +68,23 @@ public final class SeRequest {
             return aidToSelect;
         }
 
-        public String getAtrRegex() {
-            return atrRegex;
+        /**
+         * Tells if the provided ATR matches the registered regular expression<br/>
+         * If the registered regular expression is empty, the ATR is always matching.
+         * 
+         * @param atr
+         * @return a boolean
+         */
+        public boolean atrMatches(ByteBuffer atr) {
+            boolean m;
+            if (atrRegex.length() != 0) {
+                Pattern p = Pattern.compile(atrRegex);
+                String atrString = ByteBufferUtils.toHex(atr);
+                m = p.matcher(atrString).matches();
+            } else {
+                m = true;
+            }
+            return m;
         }
 
         public String toString() {

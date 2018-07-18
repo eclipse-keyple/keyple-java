@@ -48,13 +48,14 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * Open (if needed) a physical channel (try to connect a card to the terminal, attempt to select
      * the application)
      *
-     * @param aid the AID of the application to select
+     * @param selector the SE Selector: either the AID of the application to select or an ATR
+     *        selection regular expression
      * @param successfulSelectionStatusCodes the list of successful status code for the select
      *        command
      * @return an array of 2 ByteBuffers: ByteBuffer[0] the SE ATR, ByteBuffer[1] the SE FCI
      * @throws IOReaderException, SelectApplicationException
      */
-    protected abstract ByteBuffer[] openLogicalChannelAndSelect(ByteBuffer aid,
+    protected abstract ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Short> successfulSelectionStatusCodes)
             throws IOReaderException, SelectApplicationException;
 
@@ -289,10 +290,11 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             ByteBuffer atrAndFciDataBytes[];
 
             try {
-                atrAndFciDataBytes =
-                        openLogicalChannelAndSelect(seRequest.getSelector().getAidToSelect(),
-                                seRequest.getSuccessfulSelectionStatusCodes());
+                atrAndFciDataBytes = openLogicalChannelAndSelect(seRequest.getSelector(),
+                        seRequest.getSuccessfulSelectionStatusCodes());
+                logger.debug("Logicial channel opening", "status", "success");
             } catch (SelectApplicationException e) {
+                logger.debug("Logicial channel opening", "status", "failure");
                 // return a null SeReponse when the opening of the logical channel failed
                 return null;
             }
