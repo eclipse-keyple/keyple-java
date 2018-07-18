@@ -9,56 +9,77 @@
 package org.eclipse.keyple.seproxy;
 
 import static org.junit.Assert.*;
-import java.nio.ByteBuffer;
+import java.util.HashSet;
+import java.util.Set;
 import org.eclipse.keyple.util.ByteBufferUtils;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
-
+@RunWith(MockitoJUnitRunner.class)
 public class ApduResponseTest {
 
-    @Test
-    public void testAPDUResponse() {
-        ApduResponse response = new ApduResponse(
-                ByteBuffer.wrap(new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04}),
-                null);
-        assertNotNull(response);
+
+    @Before
+    public void setUp() throws Exception {
+
     }
 
-    // @Test
-    // public void testGetbytes() {
-    // ApduResponse response = new ApduResponse(new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03,
-    // (byte) 0x04}, true);
-    // assertArrayEquals(new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04},
-    // response.getBytes());
-    // }
+
 
     @Test
-    public void testIsSuccessful() {
-        ApduResponse response = new ApduResponse(
-                ByteBuffer.wrap(new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x90, (byte) 0x00}),
-                null);
+    public void constructorSuccessFullResponse() {
+        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), null);
+        assertNotNull(response);
+        assertEquals(0x9000, response.getStatusCode());
+        assertEquals("FEDCBA989000", ByteBufferUtils.toHex(response.getBytes()));
+        assertEquals(ByteBufferUtils.fromHex("FEDCBA98"), response.getDataOut());
         assertTrue(response.isSuccessful());
     }
 
     @Test
-    public void testGetStatusCode() {
-        ApduResponse response = new ApduResponse(
-                ByteBuffer.wrap(new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04}),
-                null);
-        assertEquals(0x03 * 256 + 0x04, response.getStatusCode());
-        // assertArrayEquals(new byte[] {(byte) 0x03, (byte) 0x04}, response.getStatusCodeOld());
+    public void constructorSuccessFullResponseWithCustomCode() {
+        ApduResponse response =
+                new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9005h"), getCustomCode());
+        assertNotNull(response);
+        assertEquals(0x9005, response.getStatusCode());
+        assertEquals("FEDCBA989005", ByteBufferUtils.toHex(response.getBytes()));
+        assertEquals(ByteBufferUtils.fromHex("FEDCBA98"), response.getDataOut());
+        assertTrue(response.isSuccessful());
     }
 
     @Test
-    public void niceFormat() {
-        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), null);
-        assertEquals("FEDCBA989000", ByteBufferUtils.toHex(response.getBytes()));
+    public void constructorFailResponse() {
+        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9004h"), null);;
+        assertNotNull(response);
+        assertEquals("FEDCBA989004", ByteBufferUtils.toHex(response.getBytes()));
+        assertEquals(ByteBufferUtils.fromHex("FEDCBA98"), response.getDataOut());
+        assertEquals(0x9004, response.getStatusCode());
+        assertFalse(response.isSuccessful());
     }
 
     @Test
-    public void statusCode() {
-        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), null);
-        assertEquals(0x9000, response.getStatusCode());
+    public void constructorFailResponseWithCustomCode() {
+        ApduResponse response =
+                new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9004h"), getCustomCode());;
+        assertNotNull(response);
+        assertEquals("FEDCBA989004", ByteBufferUtils.toHex(response.getBytes()));
+        assertEquals(ByteBufferUtils.fromHex("FEDCBA98"), response.getDataOut());
+        assertEquals(0x9004, response.getStatusCode());
+        assertFalse(response.isSuccessful());
     }
+
+    /*
+     * HELPERS
+     */
+
+
+    static Set<Short> getCustomCode() {
+        Set<Short> successfulStatusCodes = new HashSet<Short>();
+        successfulStatusCodes.add((short) 0x9005);
+        return successfulStatusCodes;
+    }
+
 
 }

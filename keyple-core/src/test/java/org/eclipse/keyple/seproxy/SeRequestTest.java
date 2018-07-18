@@ -11,11 +11,9 @@ package org.eclipse.keyple.seproxy;
 import static org.junit.Assert.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,17 +43,10 @@ public class SeRequestTest {
     @Before
     public void setUp() throws Exception {
 
-        ByteBuffer bytes = ByteBufferUtils.fromHex("01");
-        apdus = new ArrayList<ApduRequest>();
-        apdus.add(new ApduRequest(bytes, true));
-        apdus.add(new ApduRequest(bytes, false));
-
+        apdus = getAapduLists();
         keepChannelOpen = true;
-
-        seProtocol = ContactlessProtocols.PROTOCOL_B_PRIME;
-
-        selectionStatusCode = new HashSet<Short>();
-        selectionStatusCode.add(new Short("1"));
+        seProtocol = getASeProtocol();
+        selectionStatusCode = ApduRequestTest.getASuccessFulStatusCode();
 
         seRequest = new SeRequest(aid, apdus, keepChannelOpen, seProtocol, selectionStatusCode);
     }
@@ -159,26 +150,26 @@ public class SeRequestTest {
      */
 
     static SeRequest getSeRequestSample() {
-        List<ApduRequest> apdus;
-        Boolean keepChannelOpen;
-        SeProtocol seProtocol;
-        Set<Short> selectionStatusCode;
-        ByteBuffer bytes = ByteBufferUtils.fromHex("01");
 
-
-        apdus = new ArrayList<ApduRequest>();
-        apdus.add(new ApduRequest(bytes, true));
-        apdus.add(new ApduRequest(bytes, false));
-
-        keepChannelOpen = true;
-
-        seProtocol = ContactlessProtocols.PROTOCOL_B_PRIME;
-
-        selectionStatusCode = new HashSet<Short>();
-        selectionStatusCode.add(new Short("1"));
+        List<ApduRequest> apdus = getAapduLists();
+        Boolean keepChannelOpen = true;
+        SeProtocol seProtocol = getASeProtocol();
+        Set<Short> selectionStatusCode = ApduRequestTest.getASuccessFulStatusCode();
 
         return new SeRequest(aid, apdus, keepChannelOpen, seProtocol, selectionStatusCode);
 
+    }
+
+    static List<ApduRequest> getAapduLists() {
+        List<ApduRequest> apdus;
+        apdus = new ArrayList<ApduRequest>();
+        apdus.add(ApduRequestTest.getApduSample());
+        apdus.add(ApduRequestTest.getApduSample());
+        return apdus;
+    }
+
+    static SeProtocol getASeProtocol() {
+        return ContactlessProtocols.PROTOCOL_B_PRIME;
     }
 
 

@@ -9,32 +9,76 @@
 package org.eclipse.keyple.seproxy;
 
 import static org.junit.Assert.*;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import java.nio.ByteBuffer;
+import java.util.HashSet;
+import java.util.Set;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ApduRequestTest {
+
+
+
+    @Before
+    public void setUp() throws Exception {
+
+    }
+
+
 
     @Test
     public void testAPDURequest() {
-        ApduRequest request = new ApduRequest(ByteBufferUtils.fromHex("0102"), true);
+        ApduRequest request = getApduSample();
         assertNotNull(request);
+        assertTrue(request.isCase4());
+        assertEquals(getACommand(), request.getBytes());
+        assertEquals(getAName(), request.getName());
+        assertEquals(getASuccessFulStatusCode(), request.getSuccessfulStatusCodes());
+        assertEquals("Req{ca}", request.toString());
     }
 
-    // @Test
-    // public void testGetbytes() {
-    // ApduRequest request = new ApduRequest(new byte[] {(byte) 0x01, (byte) 0x02}, true);
-    // assertArrayEquals(new byte[] {(byte) 0x01, (byte) 0x02}, request.getBytes());
-    // }
 
     @Test
-    public void testIsCase4() {
-        ApduRequest request = new ApduRequest(ByteBufferUtils.fromHex("0102"), true);
-        assertTrue(request.isCase4());
+    public void testSlice() {
+        ApduRequest request = getApduSample();
+        request.slice(1, 0);
+
+
     }
 
-    // @Test
-    // public void testToString() {
-    // ApduRequest request = new ApduRequest(ByteBufferUtils.fromHex("0102"), true);
-    // assertEquals("Req{0102}", request.toString());
-    // }
+
+    /*
+     * HELPERS
+     */
+
+    static ApduRequest getApduSample() {
+        String name = getAName();
+        Set<Short> successfulStatusCodes = getASuccessFulStatusCode();
+        Boolean case4 = true;
+        ByteBuffer command = getACommand();
+        ApduRequest request = new ApduRequest(command, case4, successfulStatusCodes);
+        request.setName(getAName());
+        return request;
+    };
+
+    static ByteBuffer getACommand() {
+        ByteBuffer command = ByteBuffer.allocate(2);
+        command.putChar('c');
+        command.putChar('a');
+        return command;
+    }
+
+    static Set<Short> getASuccessFulStatusCode() {
+        Set<Short> successfulStatusCodes = new HashSet<Short>();
+        successfulStatusCodes.add(new Short("1"));
+        return successfulStatusCodes;
+    }
+
+    static String getAName() {
+        return "TEST";
+    }
+
 }
