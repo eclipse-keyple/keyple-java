@@ -218,7 +218,8 @@ public class PoSecureSession {
 
         // create a SeRequestSet (list of SeRequest)
         SeRequestSet poRequests =
-                new SeRequestSet(new SeRequest(poCalypsoInstanceAid, poApduRequestList, true));
+                new SeRequestSet(new SeRequest(new SeRequest.Selector(poCalypsoInstanceAid),
+                        poApduRequestList, true));
 
         SeResponse poResponse = poReader.transmit(poRequests).getSingleResponse();
         List<ApduResponse> poApduResponseList = poResponse.getApduResponses();
@@ -342,7 +343,8 @@ public class PoSecureSession {
 
         // create a SeRequestSet (list of SeRequest)
         SeRequestSet poRequests =
-                new SeRequestSet(new SeRequest(poCalypsoInstanceAid, poApduRequestList, true));
+                new SeRequestSet(new SeRequest(new SeRequest.Selector(poCalypsoInstanceAid),
+                        poApduRequestList, true));
 
         SeResponse poResponse = poReader.transmit(poRequests).getSingleResponse();
         List<ApduResponse> poApduResponseList = poResponse.getApduResponses();
@@ -470,8 +472,9 @@ public class PoSecureSession {
 
         // Transfert PO commands
         // create a SeRequestSet (list of SeRequests)
-        SeRequestSet poRequest = new SeRequestSet(new SeRequest(poCalypsoInstanceAid,
-                poApduRequestList, closeSeChannel ? false : true));
+        SeRequestSet poRequest =
+                new SeRequestSet(new SeRequest(new SeRequest.Selector(poCalypsoInstanceAid),
+                        poApduRequestList, closeSeChannel ? false : true));
 
         logger.info("Closing: Sending PO request", "action", "po_secure_session.close_po_req",
                 "apduList", poRequest.getRequests().iterator().next().getApduRequests());
@@ -590,9 +593,9 @@ public class PoSecureSession {
         // Transfert PO commands
         logger.info("Processing: Sending PO commands", "action",
                 "po_secure_session.process_po_request", "apduList", poApduRequestList);
-        SeResponse poResponse = poReader
-                .transmit(new SeRequestSet(
-                        new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen)))
+        SeResponse poResponse = poReader.transmit(
+                new SeRequestSet(new SeRequest(new SeRequest.Selector(poCalypsoInstanceAid),
+                        poApduRequestList, keepChannelOpen)))
                 .getSingleResponse();
 
         List<ApduResponse> poApduResponseList = poResponse.getApduResponses();
@@ -734,8 +737,9 @@ public class PoSecureSession {
 
         // Transfert PO commands
         // create a SeRequestSet (list of SeRequests)
-        SeRequestSet poRequest = new SeRequestSet(new SeRequest(poCalypsoInstanceAid,
-                poApduRequestList, closeSeChannel ? false : true));
+        SeRequestSet poRequest =
+                new SeRequestSet(new SeRequest(new SeRequest.Selector(poCalypsoInstanceAid),
+                        poApduRequestList, closeSeChannel ? false : true));
 
         logger.info("Closing: Sending PO request", "action", "po_secure_session.close_po_req",
                 "apduList", poRequest.getRequests().iterator().next().getApduRequests());

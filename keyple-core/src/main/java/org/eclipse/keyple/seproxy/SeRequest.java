@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
  * List of APDU requests that will result in a {@link SeResponse}
@@ -20,15 +21,51 @@ import java.util.Set;
  */
 public final class SeRequest {
 
+    public static final class Selector {
+
+        /**
+         * - AID’s bytes of the SE application to select. In case the SE application is currently
+         * not selected, a logical channel is established and the corresponding SE application is
+         * selected by the SE reader, otherwise keep the current channel.
+         *
+         * - Could be missing when operating SE which don’t support the Select Application command
+         * (as it is the case for CSM).
+         */
+        private ByteBuffer aidToSelect;
+        /**
+         * Regular expression dedicated to handle SE logical channel opening based on ATR pattern
+         */
+        private String atrRegex;
+
+        public Selector(ByteBuffer aidToSelect) {
+            this.aidToSelect = aidToSelect;
+            this.atrRegex = "";
+        }
+
+        public Selector(String atrRegex) {
+            this.aidToSelect = null;
+            this.atrRegex = atrRegex;
+        }
+
+        public ByteBuffer getAidToSelect() {
+            return aidToSelect;
+        }
+
+        public String getAtrRegex() {
+            return atrRegex;
+        }
+
+        public String toString() {
+            return String.format("SeRequest.Selector{aid=%s, atrRegex=%s}",
+                    aidToSelect == null ? "null" : ByteBufferUtils.toHex(aidToSelect),
+                    atrRegex.length() != 0 ? atrRegex : "empty");
+        }
+    }
+
     /**
-     * - AID’s bytes of the SE application to select. In case the SE application is currently not
-     * selected, a logical channel is established and the corresponding SE application is selected
-     * by the SE reader, otherwise keep the current channel.
-     *
-     * - Could be missing when operating SE which don’t support the Select Application command (as
-     * it is the case for CSM).
+     * SE selector is either an AID or an ATR regular expression
      */
-    private ByteBuffer aidToSelect;
+    private final Selector selector;
 
     /**
      * List of status codes in response to the select application command that should be considered
@@ -59,23 +96,29 @@ public final class SeRequest {
      * The constructor called by a ProxyReader in order to open a logical channel, to send a set of
      * APDU commands to a SE application, or both of them.
      * <ul>
-     * <li>For PO requiring an AID selection, the aidToSelect should be defined with non null
-     * value.</li>
-     * <li>For PO not supporting AID selection, the aidToSelect should be defined as null. - The
-     * protocolFlag parameter is optional.</li>
+     * <li>For SE requiring an AID based selection, the Selector should be defined with a non null
+     * ByteBuffer value.</li>
+     * <li>For SE requiring an ATR based selection, the Selector should be defined with a non null
+     * String regular expression.</li>
+     * <li>For SE supporting neither AID selection nor ATR selection, the Selector should be defined
+     * as null.</li>
+     * <li>The protocolFlag parameter is optional.</li>
      * </ul>
      *
-     * @param aidToSelect the aid to select
+     * @param selector the SE selector
      * @param apduRequests the apdu requests
      * @param keepChannelOpen the keep channel open
      * @param protocolFlag the expected protocol
      * @param successfulSelectionStatusCodes a list of successful status codes for the select
      *        application command
      */
-    public SeRequest(ByteBuffer aidToSelect, List<ApduRequest> apduRequests,
-            boolean keepChannelOpen, SeProtocol protocolFlag,
-            Set<Short> successfulSelectionStatusCodes) {
-        this.aidToSelect = aidToSelect;
+    public SeRequest(Selector selector, List<ApduRequest> apduRequests, boolean keepChannelOpen,
+            SeProtocol protocolFlag, Set<Short> successfulSelectionStatusCodes) {
+        if (selector != null) {
+            this.selector = selector;
+        } else {
+            this.selector = new Selector((ByteBuffer) null);
+        }
         this.apduRequests = apduRequests;
         this.keepChannelOpen = keepChannelOpen;
         this.protocolFlag = protocolFlag;
@@ -86,52 +129,51 @@ public final class SeRequest {
      * Alternate constructor with no list of successful selection status codes set and a protocol
      * flag
      * 
-     * @param aidToSelect
+     * @param selector
      * @param apduRequests
      * @param keepChannelOpen
      * @param protocolFlag
      */
-    public SeRequest(ByteBuffer aidToSelect, List<ApduRequest> apduRequests,
-            boolean keepChannelOpen, SeProtocol protocolFlag) {
-        this(aidToSelect, apduRequests, keepChannelOpen, protocolFlag, null);
+    public SeRequest(Selector selector, List<ApduRequest> apduRequests, boolean keepChannelOpen,
+            SeProtocol protocolFlag) {
+        this(selector, apduRequests, keepChannelOpen, protocolFlag, null);
     }
 
     /**
      * Alternate constructor with a list of successful selection status codes set and no protocol
      * flag
      *
-     * @param aidToSelect
+     * @param selector
      * @param apduRequests
      * @param keepChannelOpen
      * @param successfulSelectionStatusCodes a list of successful status codes for the select
      *        application command
      *
      */
-    public SeRequest(ByteBuffer aidToSelect, List<ApduRequest> apduRequests,
-            boolean keepChannelOpen, Set<Short> successfulSelectionStatusCodes) {
-        this(aidToSelect, apduRequests, keepChannelOpen, null, successfulSelectionStatusCodes);
+    public SeRequest(Selector selector, List<ApduRequest> apduRequests, boolean keepChannelOpen,
+            Set<Short> successfulSelectionStatusCodes) {
+        this(selector, apduRequests, keepChannelOpen, null, successfulSelectionStatusCodes);
     }
 
     /**
      * Alternate constructor with no protocol flag set
      * 
-     * @param aidToSelect
+     * @param selector
      * @param apduRequests
      * @param keepChannelOpen
      */
-    public SeRequest(ByteBuffer aidToSelect, List<ApduRequest> apduRequests,
-            boolean keepChannelOpen) {
-        this(aidToSelect, apduRequests, keepChannelOpen, null, null);
+    public SeRequest(Selector selector, List<ApduRequest> apduRequests, boolean keepChannelOpen) {
+        this(selector, apduRequests, keepChannelOpen, null, null);
     }
 
 
     /**
-     * Gets the aid to select.
+     * Gets the SE selector.
      *
-     * @return the current AID set to select
+     * @return the current SE selector
      */
-    public ByteBuffer getAidToSelect() {
-        return aidToSelect;
+    public Selector getSelector() {
+        return this.selector;
     }
 
     /**
@@ -174,6 +216,7 @@ public final class SeRequest {
 
     @Override
     public String toString() {
-        return String.format("SeRequest{requests=%s}", getApduRequests());
+        return String.format("SeRequest{requests=%s, selector=%s}", getApduRequests(),
+                getSelector());
     }
 }

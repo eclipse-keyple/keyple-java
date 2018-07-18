@@ -59,7 +59,8 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
         int i;
         System.out.println("===== " + message);
         System.out.println("* Request:");
-        System.out.println("AID: " + ByteBufferUtils.toHex(seRequest.getAidToSelect()));
+        System.out
+                .println("AID: " + ByteBufferUtils.toHex(seRequest.getSelector().getAidToSelect()));
         List<ApduRequest> apduRequests = seRequest.getApduRequests();
         i = 0;
         if (apduRequests != null && apduRequests.size() > 0) {
@@ -202,8 +203,9 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
         // redo the Hoplink PO selection after logical channel closing (may be not needed with some
         // PO
         // for which the application is selected by default)
-        SeRequestSet selectionRequest = new SeRequestSet(
-                new SeRequest(ByteBufferUtils.fromHex(HoplinkCommandsSettings.AID), null, true));
+        SeRequestSet selectionRequest = new SeRequestSet(new SeRequest(
+                new SeRequest.Selector(ByteBufferUtils.fromHex(HoplinkCommandsSettings.AID)), null,
+                true));
         fciData = poReader.transmit(selectionRequest).getSingleResponse().getFci();
 
         // execute a two-step Calypso session: processIdentification, processOpeningClosing
@@ -226,11 +228,13 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
             Set<SeRequest> selectionRequests = new LinkedHashSet<SeRequest>();
 
             // fake application seRequest preparation, addition to the list
-            SeRequest seRequest = new SeRequest(ByteBufferUtils.fromHex(poFakeAid), null, false);
+            SeRequest seRequest = new SeRequest(
+                    new SeRequest.Selector(ByteBufferUtils.fromHex(poFakeAid)), null, false);
             selectionRequests.add(seRequest);
 
             // Navigo application seRequest preparation, addition to the list
-            seRequest = new SeRequest(ByteBufferUtils.fromHex(poNavigoAid), null, false);
+            seRequest = new SeRequest(new SeRequest.Selector(ByteBufferUtils.fromHex(poNavigoAid)),
+                    null, false);
             selectionRequests.add(seRequest);
 
             // Hoplink application seRequest preparation, addition to the list
@@ -238,7 +242,7 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
             List<ApduRequest> requestToExecuteBeforeSession = new ArrayList<ApduRequest>();
             requestToExecuteBeforeSession
                     .add(HoplinkSampleCommands.poReadRecordCmd_T2Env.getApduRequest());
-            seRequest = new SeRequest(ByteBufferUtils.fromHex(poHoplinkAid),
+            seRequest = new SeRequest(new SeRequest.Selector(ByteBufferUtils.fromHex(poHoplinkAid)),
                     requestToExecuteBeforeSession, false,
                     HoplinkCommandsSettings.selectApplicationSuccessfulStatusCodes);
             selectionRequests.add(seRequest);

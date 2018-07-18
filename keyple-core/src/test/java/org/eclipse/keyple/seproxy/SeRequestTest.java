@@ -19,30 +19,30 @@ public class SeRequestTest {
 
     @Test
     public void testSERequest() {
-        SeRequestSet request =
-                new SeRequestSet(new SeRequest(aid, new ArrayList<ApduRequest>(), true));
+        SeRequestSet request = new SeRequestSet(
+                new SeRequest(new SeRequest.Selector(aid), new ArrayList<ApduRequest>(), true));
         assertNotNull(request);
     }
 
     @Test
     public void testGetAidToSelect() {
-        SeRequestSet request =
-                new SeRequestSet(new SeRequest(aid, new ArrayList<ApduRequest>(), true));
-        assertEquals(aid, request.getSingleRequest().getAidToSelect());
+        SeRequestSet request = new SeRequestSet(
+                new SeRequest(new SeRequest.Selector(aid), new ArrayList<ApduRequest>(), true));
+        assertEquals(aid, request.getSingleRequest().getSelector().getAidToSelect());
     }
 
     @Test
     public void testGetApduRequests() {
-        SeRequestSet request =
-                new SeRequestSet(new SeRequest(aid, new ArrayList<ApduRequest>(), true));
+        SeRequestSet request = new SeRequestSet(
+                new SeRequest(new SeRequest.Selector(aid), new ArrayList<ApduRequest>(), true));
         assertArrayEquals(new ArrayList<ApduRequest>().toArray(),
                 request.getSingleRequest().getApduRequests().toArray());
     }
 
     @Test
     public void testAskKeepChannelOpen() {
-        SeRequestSet request =
-                new SeRequestSet(new SeRequest(aid, new ArrayList<ApduRequest>(), true));
+        SeRequestSet request = new SeRequestSet(
+                new SeRequest(new SeRequest.Selector(aid), new ArrayList<ApduRequest>(), true));
         assertTrue(request.getSingleRequest().isKeepChannelOpen());
     }
 

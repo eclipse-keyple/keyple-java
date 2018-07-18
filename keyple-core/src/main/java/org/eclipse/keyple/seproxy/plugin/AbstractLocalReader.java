@@ -282,17 +282,16 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
         if (fciDataSelected == null // if no SE application is explicitely (through an AID) or
                                     // implicitely (without AID) selected
-                || aidCurrentlySelected != seRequest.getAidToSelect()) { // or if selected AID is
-                                                                         // different than requested
-                                                                         // AID (does the
-                                                                         // comparaison works if
-                                                                         // both AID are null ?)
+                || aidCurrentlySelected != seRequest.getSelector().getAidToSelect()) {
+            // or if selected AID is different than requested AID (does the comparaison works if
+            // both AID are null ?)
             previouslyOpen = false;
             ByteBuffer atrAndFciDataBytes[];
 
             try {
-                atrAndFciDataBytes = openLogicalChannelAndSelect(seRequest.getAidToSelect(),
-                        seRequest.getSuccessfulSelectionStatusCodes());
+                atrAndFciDataBytes =
+                        openLogicalChannelAndSelect(seRequest.getSelector().getAidToSelect(),
+                                seRequest.getSuccessfulSelectionStatusCodes());
             } catch (SelectApplicationException e) {
                 // return a null SeReponse when the opening of the logical channel failed
                 return null;
@@ -303,7 +302,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             }
 
             if (atrAndFciDataBytes[1] != null) { // the logical channel opening is successful
-                aidCurrentlySelected = seRequest.getAidToSelect();
+                aidCurrentlySelected = seRequest.getSelector().getAidToSelect();
                 fciDataSelected = new ApduResponse(atrAndFciDataBytes[1],
                         seRequest.getSuccessfulSelectionStatusCodes());
             }

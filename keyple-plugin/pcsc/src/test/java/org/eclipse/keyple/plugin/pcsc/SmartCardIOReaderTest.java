@@ -119,8 +119,8 @@ public class SmartCardIOReaderTest {
 
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
-        SeRequestSet seApplicationRequest =
-                new SeRequestSet(new SeRequest(aidToSelect, apduRequests, true));
+        SeRequestSet seApplicationRequest = new SeRequestSet(
+                new SeRequest(new SeRequest.Selector(aidToSelect), apduRequests, true));
 
         SeResponseSet reponseActuelle = reader.transmit(seApplicationRequest);
 
@@ -154,8 +154,8 @@ public class SmartCardIOReaderTest {
 
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
-        SeRequestSet seApplicationRequest =
-                new SeRequestSet(new SeRequest(aidToSelect, apduRequests, true));
+        SeRequestSet seApplicationRequest = new SeRequestSet(
+                new SeRequest(new SeRequest.Selector(aidToSelect), apduRequests, true));
 
         PcscReader spiedReader = spy(this.reader);
         SeResponseSet reponseActuelle = spiedReader.transmit(seApplicationRequest);
@@ -193,8 +193,8 @@ public class SmartCardIOReaderTest {
 
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
-        SeRequestSet seApplicationRequest =
-                new SeRequestSet(new SeRequest(aidToSelect, apduRequests, true));
+        SeRequestSet seApplicationRequest = new SeRequestSet(
+                new SeRequest(new SeRequest.Selector(aidToSelect), apduRequests, true));
 
         PcscReader spiedReader = spy(this.reader);
 
@@ -227,8 +227,8 @@ public class SmartCardIOReaderTest {
 
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
-        SeRequestSet seApplicationRequest =
-                new SeRequestSet(new SeRequest(aidToSelect, apduRequests, false));
+        SeRequestSet seApplicationRequest = new SeRequestSet(
+                new SeRequest(new SeRequest.Selector(aidToSelect), apduRequests, false));
 
         PcscReader spiedReader = spy(this.reader);
 
