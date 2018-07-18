@@ -38,14 +38,13 @@ public class SeRequestTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetAidToSelectTooShort() {
-        SeRequestSet request =
-                new SeRequestSet(new SeRequest(new SeRequest.AidSelector(aidTooShort),
-                        new ArrayList<ApduRequest>(), true));
+        new SeRequestSet(new SeRequest(new SeRequest.AidSelector(aidTooShort),
+                new ArrayList<ApduRequest>(), true));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetAidToSelectTooLong() {
-        SeRequestSet request = new SeRequestSet(new SeRequest(new SeRequest.AidSelector(aidTooLong),
+        new SeRequestSet(new SeRequest(new SeRequest.AidSelector(aidTooLong),
                 new ArrayList<ApduRequest>(), true));
     }
 
