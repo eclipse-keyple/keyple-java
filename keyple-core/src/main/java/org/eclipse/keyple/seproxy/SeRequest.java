@@ -21,14 +21,19 @@ import org.eclipse.keyple.util.ByteBufferUtils;
  * @see SeResponse
  */
 public final class SeRequest {
-
     /**
      * The Selector inner class is dedicated to handle the selection of the SE either through a
-     * selection command with AID or through a matching test between the SE ATR and a regular
-     * expression.
+     * selection command with AID (AtrSelector) or through a matching test between the SE ATR and a
+     * regular expression (AtrSelector).
      *
      */
-    public static final class Selector {
+    public static abstract class Selector {
+    }
+
+    public static final class AidSelector extends SeRequest.Selector {
+
+        public static final int AID_MIN_LENGTH = 5;
+        public static final int AID_MAX_LENGTH = 16;
 
         /**
          * - AID’s bytes of the SE application to select. In case the SE application is currently
@@ -39,39 +44,49 @@ public final class SeRequest {
          * (as it is the case for CSM).
          */
         private ByteBuffer aidToSelect;
-        /**
-         * Regular expression dedicated to handle SE logical channel opening based on ATR pattern
-         */
-        private String atrRegex;
 
         /**
-         * AID based selection
+         * AID based selector
          * 
          * @param aidToSelect ByteBuffer
          */
-        public Selector(ByteBuffer aidToSelect) {
+        public AidSelector(ByteBuffer aidToSelect) {
+            if (aidToSelect.limit() < AID_MIN_LENGTH || aidToSelect.limit() > AID_MAX_LENGTH) {
+                throw new IllegalArgumentException(
+                        String.format("Bad AID length: %d", aidToSelect.limit()));
+            }
             this.aidToSelect = aidToSelect;
-            this.atrRegex = "";
-        }
-
-        /**
-         * ATR based selection
-         * 
-         * @param atrRegex String hex regular expression
-         */
-        public Selector(String atrRegex) {
-            this.aidToSelect = null;
-            this.atrRegex = atrRegex;
         }
 
         public ByteBuffer getAidToSelect() {
             return aidToSelect;
         }
 
+        public String toString() {
+            return String.format("SeRequest.AidSelector{aid=%s}",
+                    aidToSelect == null ? "null" : ByteBufferUtils.toHex(aidToSelect));
+        }
+    }
+
+    public static final class AtrSelector extends SeRequest.Selector {
+        /**
+         * Regular expression dedicated to handle SE logical channel opening based on ATR pattern
+         */
+        private String atrRegex;
+
+        /**
+         * ATR based selection
+         *
+         * @param atrRegex String hex regular expression
+         */
+        public AtrSelector(String atrRegex) {
+            this.atrRegex = atrRegex;
+        }
+
         /**
          * Tells if the provided ATR matches the registered regular expression<br/>
          * If the registered regular expression is empty, the ATR is always matching.
-         * 
+         *
          * @param atr
          * @return a boolean
          */
@@ -88,8 +103,7 @@ public final class SeRequest {
         }
 
         public String toString() {
-            return String.format("SeRequest.Selector{aid=%s, atrRegex=%s}",
-                    aidToSelect == null ? "null" : ByteBufferUtils.toHex(aidToSelect),
+            return String.format("SeRequest.AtrSelector{atrRegex=%s}",
                     atrRegex.length() != 0 ? atrRegex : "empty");
         }
     }
@@ -146,11 +160,7 @@ public final class SeRequest {
      */
     public SeRequest(Selector selector, List<ApduRequest> apduRequests, boolean keepChannelOpen,
             SeProtocol protocolFlag, Set<Short> successfulSelectionStatusCodes) {
-        if (selector != null) {
-            this.selector = selector;
-        } else {
-            this.selector = new Selector((ByteBuffer) null);
-        }
+        this.selector = selector;
         this.apduRequests = apduRequests;
         this.keepChannelOpen = keepChannelOpen;
         this.protocolFlag = protocolFlag;
@@ -248,7 +258,7 @@ public final class SeRequest {
 
     @Override
     public String toString() {
-        return String.format("SeRequest{requests=%s, selector=%s}", getApduRequests(),
-                getSelector());
+        return String.format("SeRequest{requests=%s, selector=%s, keepchannelopen=%s}",
+                getApduRequests(), getSelector(), this.keepChannelOpen);
     }
 }

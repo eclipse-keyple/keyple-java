@@ -50,7 +50,7 @@ public class MifareClassicCardAccessManager extends AbstractLogicManager {
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
         SeRequest seRequestElement =
-                new SeRequest(new SeRequest.Selector(ByteBufferUtils.fromHex(poAid)),
+                new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
                         poApduRequestList, false, ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC);
         Set<SeRequest> seRequestElements = new LinkedHashSet<SeRequest>();
         seRequestElements.add(seRequestElement);

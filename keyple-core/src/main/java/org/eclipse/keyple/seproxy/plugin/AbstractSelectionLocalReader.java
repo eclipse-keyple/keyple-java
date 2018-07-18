@@ -66,8 +66,8 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
      * @param successfulSelectionStatusCodes the list of successful status code for the select
      *        command
      * @return 2 ByteBuffers: ATR and FCI data
-     * @throws IOReaderException
-     * @throws SelectApplicationException
+     * @throws IOReaderException - if an IO exception occurred
+     * @throws SelectApplicationException - if the application selection is not successful
      */
     protected final ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Short> successfulSelectionStatusCodes)
@@ -87,41 +87,46 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
 
         // add ATR
         atrAndFci[0] = getATR();
-        ByteBuffer aid = selector.getAidToSelect();
-        if (aid != null) {
-            logger.info("Connecting to card", "action", "local_reader.openLogicalChannel", "aid",
-                    ByteBufferUtils.toHex(aid), "readerName", getName());
-            try {
-                // build a get response command
-                // the actual length expected by the SE in the get response command is handled in
-                // transmitApdu
-                ByteBuffer selectApplicationCommand = ByteBufferUtils
-                        .fromHex("00A40400" + String.format("%02X", (byte) aid.limit())
-                                + ByteBufferUtils.toHex(aid) + "00");
+        logger.info("Channel opening", "ATR", ByteBufferUtils.toHex(atrAndFci[0]));
 
-                // we use here processApduRequest to manage case 4 hack
-                // the successful status codes list for this command is provided
-                ApduResponse fciResponse =
-                        processApduRequest(new ApduRequest(selectApplicationCommand, true,
-                                successfulSelectionStatusCodes));
+        // selector may be null, in this case we consider the logical channel open
+        if (selector != null) {
+            if (selector instanceof SeRequest.AidSelector) {
+                ByteBuffer aid = ((SeRequest.AidSelector) selector).getAidToSelect();
+                if (aid != null) {
+                    logger.info("Connecting to card", "action", "local_reader.openLogicalChannel",
+                            "aid", ByteBufferUtils.toHex(aid), "readerName", getName());
 
-                // add FCI
-                atrAndFci[1] = fciResponse.getBytes();
+                    // build a get response command
+                    // the actual length expected by the SE in the get response command is handled
+                    // in
+                    // transmitApdu
+                    ByteBuffer selectApplicationCommand = ByteBufferUtils
+                            .fromHex("00A40400" + String.format("%02X", (byte) aid.limit())
+                                    + ByteBufferUtils.toHex(aid) + "00");
 
-                if (!fciResponse.isSuccessful()) {
-                    logger.info("Application selection failed", "action",
-                            "openLogicalChannelAndSelect", "selector", selector, "fci",
-                            ByteBufferUtils.toHex(fciResponse.getBytes()));
-                    throw new SelectApplicationException("Application selection failed");
+                    // we use here processApduRequest to manage case 4 hack
+                    // the successful status codes list for this command is provided
+                    ApduResponse fciResponse =
+                            processApduRequest(new ApduRequest(selectApplicationCommand, true,
+                                    successfulSelectionStatusCodes));
+
+                    // add FCI
+                    atrAndFci[1] = fciResponse.getBytes();
+
+                    if (!fciResponse.isSuccessful()) {
+                        logger.info("Application selection failed", "action",
+                                "openLogicalChannelAndSelect", "selector", selector, "fci",
+                                ByteBufferUtils.toHex(fciResponse.getBytes()));
+                        throw new SelectApplicationException("Application selection failed");
+                    }
                 }
-            } catch (ChannelStateReaderException e1) {
-                throw new ChannelStateReaderException(e1);
-            }
-        } else {
-            if (!selector.atrMatches(atrAndFci[0])) {
-                logger.info("ATR selection failed", "action", "openLogicalChannelAndSelect",
-                        "selector", selector, "atr", ByteBufferUtils.toHex(atrAndFci[0]));
-                throw new SelectApplicationException("ATR selection failed");
+            } else {
+                if (!((SeRequest.AtrSelector) selector).atrMatches(atrAndFci[0])) {
+                    logger.info("ATR selection failed", "action", "openLogicalChannelAndSelect",
+                            "selector", selector, "atr", ByteBufferUtils.toHex(atrAndFci[0]));
+                    throw new SelectApplicationException("ATR selection failed");
+                }
             }
         }
         return atrAndFci;

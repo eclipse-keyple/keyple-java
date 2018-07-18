@@ -218,7 +218,7 @@ public class PoSecureSession {
 
         // create a SeRequestSet (list of SeRequest)
         SeRequestSet poRequests =
-                new SeRequestSet(new SeRequest(new SeRequest.Selector(poCalypsoInstanceAid),
+                new SeRequestSet(new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
                         poApduRequestList, true));
 
         SeResponse poResponse = poReader.transmit(poRequests).getSingleResponse();
@@ -343,7 +343,7 @@ public class PoSecureSession {
 
         // create a SeRequestSet (list of SeRequest)
         SeRequestSet poRequests =
-                new SeRequestSet(new SeRequest(new SeRequest.Selector(poCalypsoInstanceAid),
+                new SeRequestSet(new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
                         poApduRequestList, true));
 
         SeResponse poResponse = poReader.transmit(poRequests).getSingleResponse();
@@ -473,7 +473,7 @@ public class PoSecureSession {
         // Transfert PO commands
         // create a SeRequestSet (list of SeRequests)
         SeRequestSet poRequest =
-                new SeRequestSet(new SeRequest(new SeRequest.Selector(poCalypsoInstanceAid),
+                new SeRequestSet(new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
                         poApduRequestList, closeSeChannel ? false : true));
 
         logger.info("Closing: Sending PO request", "action", "po_secure_session.close_po_req",
@@ -506,8 +506,7 @@ public class PoSecureSession {
 
         // ****SECOND**** transfer of CSM commands, keep CSM channel open
         // TODO find out why it fails when keepChannelOpen is true as wanted!
-        SeRequestSet csmRequest_2 =
-                new SeRequestSet(new SeRequest(null, csmApduRequestList, false));
+        SeRequestSet csmRequest_2 = new SeRequestSet(new SeRequest(null, csmApduRequestList, true));
 
         SeResponse csmResponse_2 = csmReader.transmit(csmRequest_2).getSingleResponse();
         List<ApduResponse> csmApduResponseList_2 = csmResponse_2.getApduResponses();
@@ -594,7 +593,7 @@ public class PoSecureSession {
         logger.info("Processing: Sending PO commands", "action",
                 "po_secure_session.process_po_request", "apduList", poApduRequestList);
         SeResponse poResponse = poReader.transmit(
-                new SeRequestSet(new SeRequest(new SeRequest.Selector(poCalypsoInstanceAid),
+                new SeRequestSet(new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
                         poApduRequestList, keepChannelOpen)))
                 .getSingleResponse();
 
@@ -738,7 +737,7 @@ public class PoSecureSession {
         // Transfert PO commands
         // create a SeRequestSet (list of SeRequests)
         SeRequestSet poRequest =
-                new SeRequestSet(new SeRequest(new SeRequest.Selector(poCalypsoInstanceAid),
+                new SeRequestSet(new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
                         poApduRequestList, closeSeChannel ? false : true));
 
         logger.info("Closing: Sending PO request", "action", "po_secure_session.close_po_req",
@@ -771,7 +770,7 @@ public class PoSecureSession {
         // ****SECOND**** transfer of CSM commands (keep channel open to avoid unwanted CSM reset)
         // TODO find out why it fails when keepChannelOpen is true as wanted!
         SeRequestSet csmRequest_2 =
-                new SeRequestSet(new SeRequest(null, csmApduRequestList_2, false));
+                new SeRequestSet(new SeRequest(null, csmApduRequestList_2, true));
 
         SeResponse csmResponse_2 = csmReader.transmit(csmRequest_2).getSingleResponse();
         List<ApduResponse> csmApduResponseList_2 = csmResponse_2.getApduResponses();

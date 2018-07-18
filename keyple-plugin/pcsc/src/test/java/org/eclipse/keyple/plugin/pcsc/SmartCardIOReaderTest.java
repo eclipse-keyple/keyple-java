@@ -120,7 +120,7 @@ public class SmartCardIOReaderTest {
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
         SeRequestSet seApplicationRequest = new SeRequestSet(
-                new SeRequest(new SeRequest.Selector(aidToSelect), apduRequests, true));
+                new SeRequest(new SeRequest.AidSelector(aidToSelect), apduRequests, true));
 
         SeResponseSet reponseActuelle = reader.transmit(seApplicationRequest);
 
@@ -155,7 +155,7 @@ public class SmartCardIOReaderTest {
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
         SeRequestSet seApplicationRequest = new SeRequestSet(
-                new SeRequest(new SeRequest.Selector(aidToSelect), apduRequests, true));
+                new SeRequest(new SeRequest.AidSelector(aidToSelect), apduRequests, true));
 
         PcscReader spiedReader = spy(this.reader);
         SeResponseSet reponseActuelle = spiedReader.transmit(seApplicationRequest);
@@ -194,7 +194,7 @@ public class SmartCardIOReaderTest {
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
         SeRequestSet seApplicationRequest = new SeRequestSet(
-                new SeRequest(new SeRequest.Selector(aidToSelect), apduRequests, true));
+                new SeRequest(new SeRequest.AidSelector(aidToSelect), apduRequests, true));
 
         PcscReader spiedReader = spy(this.reader);
 
@@ -228,7 +228,7 @@ public class SmartCardIOReaderTest {
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
         SeRequestSet seApplicationRequest = new SeRequestSet(
-                new SeRequest(new SeRequest.Selector(aidToSelect), apduRequests, false));
+                new SeRequest(new SeRequest.AidSelector(aidToSelect), apduRequests, false));
 
         PcscReader spiedReader = spy(this.reader);
 

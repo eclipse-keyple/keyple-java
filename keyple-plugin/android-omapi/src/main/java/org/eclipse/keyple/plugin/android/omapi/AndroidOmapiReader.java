@@ -86,7 +86,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
             Set<Short> successfulSelectionStatusCodes)
             throws IOReaderException, SelectApplicationException {
         ByteBuffer[] atrAndFci = new ByteBuffer[2];
-        ByteBuffer aid = selector.getAidToSelect();
+        ByteBuffer aid = ((SeRequest.AidSelector) selector).getAidToSelect();
         try {
 
             if (openChannel != null && !openChannel.isClosed() && openApplication != null

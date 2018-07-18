@@ -21,15 +21,16 @@ import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
 // TODO remove after refactoring this class to reduce the number of method
-@SuppressWarnings("PMD.TooManyMethods")
 /**
  * Manage the loop processing for SeRequest transmission in a set and for SeResponse reception in a
  * set
  */
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.CyclomaticComplexity"})
 public abstract class AbstractLocalReader extends AbstractObservableReader {
 
     private static final ILogger logger = SLoggerFactory.getLogger(AbstractLocalReader.class);
 
+    private boolean logicalChannelIsOpen = false;
     private ByteBuffer aidCurrentlySelected;
     private ApduResponse fciDataSelected; // if fciDataSelected is NULL, it means that no
                                           // application is selected
@@ -236,7 +237,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
 
                         logger.info("Closing of the physical SE channel.", ACTION_STR,
-                                "local_reader.transmit_actual");
+                                "local_reader.transmit_actual", "reader", this.getName());
                     }
                 } else {
                     stopProcess = true;
@@ -258,13 +259,20 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return true if the logical channel is open
      */
     protected final boolean isLogicalChannelOpen() {
-        return fciDataSelected != null || atrData != null;
+        return logicalChannelIsOpen;
     }
 
     protected final void closeLogicalChannel() {
+        logger.info("Close logical channel", "reader", this.getName());
+        logicalChannelIsOpen = false;
         fciDataSelected = null;
         atrData = null;
         aidCurrentlySelected = null;
+    }
+
+    private void setLogicalChannelOpen() {
+        logger.info("Logical channel is open", "reader", this.getName());
+        logicalChannelIsOpen = true;
     }
 
     /**
@@ -276,37 +284,64 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return the SeResponse to the requestS
      * @throws ChannelStateReaderException
      */
+    @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
+            "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity"})
     private SeResponse processSeRequest(SeRequest seRequest) throws IOReaderException {
         boolean previouslyOpen = true;
 
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
-        if (fciDataSelected == null // if no SE application is explicitely (through an AID) or
-                                    // implicitely (without AID) selected
-                || aidCurrentlySelected != seRequest.getSelector().getAidToSelect()) {
-            // or if selected AID is different than requested AID (does the comparaison works if
-            // both AID are null ?)
-            previouslyOpen = false;
-            ByteBuffer atrAndFciDataBytes[];
-
-            try {
-                atrAndFciDataBytes = openLogicalChannelAndSelect(seRequest.getSelector(),
-                        seRequest.getSuccessfulSelectionStatusCodes());
-                logger.debug("Logicial channel opening", "status", "success");
-            } catch (SelectApplicationException e) {
-                logger.debug("Logicial channel opening", "status", "failure");
-                // return a null SeReponse when the opening of the logical channel failed
-                return null;
+        // unless the selector is null, we try to open a logical channel
+        if (seRequest.getSelector() != null) {
+            // check if AID changed if the channel is already open
+            if (isLogicalChannelOpen() && seRequest.getSelector() instanceof SeRequest.AidSelector
+                    && aidCurrentlySelected != ((SeRequest.AidSelector) seRequest.getSelector())
+                            .getAidToSelect()) {
+                // the AID changed, close the logical channel
+                closeLogicalChannel();
             }
 
-            if (atrAndFciDataBytes[0] != null) { // the SE Answer to reset
-                atrData = new ApduResponse(atrAndFciDataBytes[0], null);
-            }
+            if (!isLogicalChannelOpen()) {
 
-            if (atrAndFciDataBytes[1] != null) { // the logical channel opening is successful
-                aidCurrentlySelected = seRequest.getSelector().getAidToSelect();
-                fciDataSelected = new ApduResponse(atrAndFciDataBytes[1],
-                        seRequest.getSuccessfulSelectionStatusCodes());
+                previouslyOpen = false;
+                ByteBuffer atrAndFciDataBytes[];
+
+                try {
+                    atrAndFciDataBytes = openLogicalChannelAndSelect(seRequest.getSelector(),
+                            seRequest.getSuccessfulSelectionStatusCodes());
+                    logger.debug("Logicial channel opening", "status", "success");
+                } catch (SelectApplicationException e) {
+                    logger.debug("Logicial channel opening", "status", "failure");
+                    closeLogicalChannel();
+                    // return a null SeReponse when the opening of the logical channel failed
+                    return null;
+                }
+
+                if (atrAndFciDataBytes[0] != null) { // the SE Answer to reset
+                    atrData = new ApduResponse(atrAndFciDataBytes[0], null);
+                    if (seRequest.getSelector() instanceof SeRequest.AtrSelector) {
+                        // channel is considered if the selection mode was ATR based
+                        setLogicalChannelOpen();
+                    }
+                }
+
+                if (atrAndFciDataBytes[1] != null) { // the logical channel opening is successful
+                    aidCurrentlySelected =
+                            ((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect();
+                    fciDataSelected = new ApduResponse(atrAndFciDataBytes[1],
+                            seRequest.getSuccessfulSelectionStatusCodes());
+                    if (fciDataSelected.isSuccessful()) {
+                        // the channel opening is successful
+                        setLogicalChannelOpen();
+                    } else {
+                        closeLogicalChannel();
+                    }
+                }
+            }
+        } else {
+            // selector is null, we expect that the logical channel was previously opened
+            if (!isLogicalChannelOpen()) {
+                throw new IllegalStateException(this.getName() + ": No logical channel opened!");
             }
         }
 

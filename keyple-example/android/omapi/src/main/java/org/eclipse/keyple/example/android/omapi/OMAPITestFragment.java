@@ -149,7 +149,7 @@ public class OMAPITestFragment extends Fragment {
 
 
             SeRequest seRequest =
-                    new SeRequest(new SeRequest.Selector(ByteBufferUtils.fromHex(poAid)),
+                    new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
                             poApduRequestList, false, ContactsProtocols.PROTOCOL_ISO7816_3);
 
 
