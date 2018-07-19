@@ -85,4 +85,17 @@ public final class ApduResponse extends AbstractApduBuffer {
     public String toString() {
         return "Resp{" + super.toString() + "}";
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof ApduResponse)) {
+            return false;
+        }
+
+        ApduResponse resp = (ApduResponse) o;
+        return resp.getBytes().equals(this.buffer) && resp.isSuccessful() == this.successful;
+    }
 }

@@ -12,6 +12,7 @@ import static org.junit.Assert.*;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
+import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +38,7 @@ public class ApduRequestTest {
         assertEquals(getACommand(), request.getBytes());
         assertEquals(getAName(), request.getName());
         assertEquals(getASuccessFulStatusCode(), request.getSuccessfulStatusCodes());
-        assertEquals("Req{ca}", request.toString());
+        assertEquals("FEDCBA989005", request.toString());
     }
 
 
@@ -65,10 +66,7 @@ public class ApduRequestTest {
     };
 
     static ByteBuffer getACommand() {
-        ByteBuffer command = ByteBuffer.allocate(2);
-        command.putChar('c');
-        command.putChar('a');
-        return command;
+        return ByteBufferUtils.fromHex("FEDCBA98 9005h");
     }
 
     static Set<Short> getASuccessFulStatusCode() {

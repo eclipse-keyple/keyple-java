@@ -99,4 +99,21 @@ public final class SeResponse {
     public List<ApduResponse> getApduResponses() {
         return apduResponses;
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof SeResponse)) {
+            return false;
+        }
+
+        SeResponse seResponse = (SeResponse) o;
+        return seResponse.getAtr().equals(atr)
+                && seResponse.getFci().equals(fci)
+                && seResponse.getApduResponses().equals(apduResponses)
+                && seResponse.wasChannelPreviouslyOpen() == channelPreviouslyOpen;
+
+    }
 }
