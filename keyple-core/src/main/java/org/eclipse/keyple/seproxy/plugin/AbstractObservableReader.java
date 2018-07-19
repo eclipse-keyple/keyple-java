@@ -56,7 +56,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      */
     public final SeResponseSet transmit(SeRequestSet requestSet) throws IOReaderException {
         // TODO do a better log of SeRequestSet data
-        logger.info("SeRequestSet", "data", requestSet.toString());
+        logger.info("SeRequestSet", "reader", this.getName(), "data", requestSet.toString());
 
         long before = System.nanoTime();
         SeResponseSet responseSet;
@@ -73,11 +73,12 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
 
         // Switching to the 10th of milliseconds and dividing by 10 to get the ms
         double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-        logger.info("LocalReader: Data exchange", "action", "local_reader.transmit", "requestSet",
-                requestSet, "responseSet", responseSet, "elapsedMs", elapsedMs);
+        logger.info("LocalReader: Data exchange", "action", "local_reader.transmit", "reader",
+                this.getName(), "requestSet", requestSet, "responseSet", responseSet, "elapsedMs",
+                elapsedMs);
 
         // TODO do a better log of SeReponseSet data
-        logger.info("SeResponseSet", "data", responseSet.toString());
+        logger.info("SeResponseSet", "reader", this.getName(), "data", responseSet.toString());
 
         return responseSet;
     }

@@ -524,8 +524,9 @@ public class AndroidNfcReaderTest {
 
         poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
-        SeRequest seRequest = new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList,
-                false, ContactlessProtocols.PROTOCOL_ISO14443_4);
+        SeRequest seRequest =
+                new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
+                        poApduRequestList, false, ContactlessProtocols.PROTOCOL_ISO14443_4);
 
         return new SeRequestSet(seRequest);
 

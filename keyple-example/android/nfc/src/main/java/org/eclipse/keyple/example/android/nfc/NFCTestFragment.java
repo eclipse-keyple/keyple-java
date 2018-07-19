@@ -227,8 +227,9 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                     poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
 
-            SeRequest seRequest = new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList,
-                    false, ContactlessProtocols.PROTOCOL_ISO14443_4);
+            SeRequest seRequest =
+                    new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
+                            poApduRequestList, false, ContactlessProtocols.PROTOCOL_ISO14443_4);
 
 
             SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));

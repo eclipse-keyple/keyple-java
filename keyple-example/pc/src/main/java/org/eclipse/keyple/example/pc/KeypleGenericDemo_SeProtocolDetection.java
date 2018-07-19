@@ -105,7 +105,8 @@ public class KeypleGenericDemo_SeProtocolDetection implements ObservableReader.R
                         poApduRequestList.addAll(HoplinkSampleCommands.getApduList());
                         // add a SeRequest with the AID from HoplinkSampleCommands and the requests
                         // list
-                        poRequests.add(new SeRequest(HoplinkSampleCommands.getAid(),
+                        poRequests.add(new SeRequest(
+                                new SeRequest.AidSelector(HoplinkSampleCommands.getAid()),
                                 poApduRequestList, false, protocol));
                         break;
                     case PROTOCOL_ISO14443_3A:

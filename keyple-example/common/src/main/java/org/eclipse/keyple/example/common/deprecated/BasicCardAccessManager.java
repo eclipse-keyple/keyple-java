@@ -50,7 +50,8 @@ public class BasicCardAccessManager extends AbstractLogicManager {
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
         SeRequest seRequestElement =
-                new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false);
+                new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
+                        poApduRequestList, false);
         Set<SeRequest> seRequestElements = new LinkedHashSet<SeRequest>();
         seRequestElements.add(seRequestElement);
         SeRequestSet poRequest = new SeRequestSet(seRequestElements);

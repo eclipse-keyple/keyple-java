@@ -50,11 +50,11 @@ public class MultiNFCCardAccessManager extends AbstractLogicManager {
                 poReadRecordCmd_T2Usage.getApduRequest(),
                 poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-        SeRequest isodep = new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false,
-                ContactlessProtocols.PROTOCOL_ISO14443_4);
+        SeRequest isodep = new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
+                poApduRequestList, false, ContactlessProtocols.PROTOCOL_ISO14443_4);
 
-        SeRequest miFare = new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList, false,
-                ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC);
+        SeRequest miFare = new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
+                poApduRequestList, false, ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC);
 
         Set<SeRequest> seRequestElements = new LinkedHashSet<SeRequest>();
         seRequestElements.add(miFare);
