@@ -12,7 +12,6 @@ import java.util.Map;
 
 public class HoplinkStubSE implements StubSecureElement {
 
-    public static ByteBuffer aid = ByteBufferUtils.fromHex("10001");
     boolean isPhysicalChannelOpen =false;
     Map<String, String> hexCommands = new HashMap<String, String>();
 
