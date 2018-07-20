@@ -50,4 +50,12 @@ public class SeResponseSetTest {
         Assert.assertArrayEquals(seResponses.toArray(), set.getResponses().toArray());
     }
 
+
+    @Test
+    public void toStringTest() throws Exception{
+        SeResponse emptySeR = new SeResponse(true, new ApduResponse(null, null), null, null);
+        SeResponseSet set = new SeResponseSet(emptySeR);
+        Assert.assertNotNull(set.toString());
+    }
+
 }

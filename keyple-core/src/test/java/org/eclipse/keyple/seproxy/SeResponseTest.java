@@ -56,6 +56,19 @@ public class SeResponseTest {
         Assert.assertTrue(getASeResponse().equals(getASeResponse()));
     }
 
+    @Test()
+    public void testThisEquals() throws Exception {
+        SeResponse resp = getASeResponse();
+        Assert.assertTrue(resp.equals(resp));
+    }
+
+    @Test()
+    public void testNotEquals() throws Exception {
+        SeResponse resp = getASeResponse();
+        Object any = new Object();
+        Assert.assertFalse(resp.equals(any));
+    }
+
 
     /*
      * HELPERS
