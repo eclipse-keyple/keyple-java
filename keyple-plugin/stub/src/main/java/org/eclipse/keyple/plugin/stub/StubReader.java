@@ -11,17 +11,22 @@ package org.eclipse.keyple.plugin.stub;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
+import org.eclipse.keyple.seproxy.plugin.AbstractLocalReader;
+import org.eclipse.keyple.seproxy.plugin.AbstractSelectionLocalReader;
 import org.eclipse.keyple.seproxy.plugin.AbstractThreadedLocalReader;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public class StubReader extends AbstractThreadedLocalReader {
+public class StubReader extends AbstractSelectionLocalReader {
 
     private static final ILogger logger = SLoggerFactory.getLogger(StubReader.class);
 
@@ -54,6 +59,7 @@ public class StubReader extends AbstractThreadedLocalReader {
     protected void openPhysicalChannel() throws IOReaderException, ChannelStateReaderException {
         se.openPhysicalChannel();
     }
+
 
     @Override
     public void closePhysicalChannel() throws IOReaderException {
@@ -90,16 +96,6 @@ public class StubReader extends AbstractThreadedLocalReader {
     }
 
 
-
-    @Override
-    public boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable {
-        return timeout ==0;
-    }
-
-    @Override
-    public boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable {
-        return timeout ==0;
-    }
 
     public void insertSe(StubSecureElement _se){
         se = _se;

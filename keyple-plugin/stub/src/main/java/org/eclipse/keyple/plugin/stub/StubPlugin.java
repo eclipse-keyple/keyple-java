@@ -55,6 +55,7 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
         SortedSet<AbstractObservableReader> nativeReaders =
                 new ConcurrentSkipListSet<AbstractObservableReader>();
         //add native readers
+        nativeReaders.add(new StubReader());
         return nativeReaders;
     }
 
