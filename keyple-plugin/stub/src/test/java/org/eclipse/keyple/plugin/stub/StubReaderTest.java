@@ -71,7 +71,7 @@ public class StubReaderTest {
     public void testTimeout() {
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         SeRequestSet seRequest = new SeRequestSet(new SeRequest(null, apduRequests, false));
-        stubReader.test_SetWillTimeout(true);
+        //stubReader.test_SetWillTimeout(true);
 
         try {
             stubReader.transmit(seRequest);
@@ -87,7 +87,7 @@ public class StubReaderTest {
     public void testTransmitWithoutSE() {
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         SeRequestSet seRequest = new SeRequestSet(new SeRequest(null, apduRequests, false));
-        stubReader.test_RemoveSE();
+        //stubReader.test_RemoveSE();
 
         try {
             stubReader.transmit(seRequest);

@@ -23,11 +23,9 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
 
     private static final StubPlugin uniqueInstance = new StubPlugin();
 
-    private final Map<String, AbstractObservableReader> readers =
-            new HashMap<String, AbstractObservableReader>();
-
     private static final ILogger logger = SLoggerFactory.getLogger(StubPlugin.class);
 
+    private final Map<String, String> parameters = new HashMap<String, String>();
 
     private StubPlugin() {
         super("StubPlugin");
@@ -44,32 +42,34 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
 
     @Override
     public Map<String, String> getParameters() {
-        return null;
+        return parameters;
     }
 
     @Override
-    public void setParameter(String key, String value) throws IOException {
-
+    public void setParameter(String key, String value){
+        parameters.put(key,value);
     }
 
     @Override
     protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
-        // logger may not be initialized when getNativeReaders is called from
-        // AbstractObservablePlugin logger.info("Create Stub plugin native reader");
         SortedSet<AbstractObservableReader> nativeReaders =
                 new ConcurrentSkipListSet<AbstractObservableReader>();
-        nativeReaders.add(new StubReader());
+        //add native readers
         return nativeReaders;
     }
 
     @Override
     protected AbstractObservableReader getNativeReader(String name) throws IOReaderException {
-        // TODO check what to do here
-        return null;
+        for (AbstractObservableReader reader : readers){
+            if(reader.getName().equals(name)){
+                return reader;
+            }
+        }
+        throw  new IOReaderException("Reader with name " + name+ " was not found");
     }
 
     @Override
     protected SortedSet<String> getNativeReadersNames() throws IOReaderException {
-        return null;
+        return nativeReadersNames;
     }
 }
