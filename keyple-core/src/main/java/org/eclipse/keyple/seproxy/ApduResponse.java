@@ -34,18 +34,23 @@ public final class ApduResponse extends AbstractApduBuffer {
      * @param successfulStatusCodes optional list of successful status codes other than 0x9000
      */
     public ApduResponse(ByteBuffer buffer, Set<Short> successfulStatusCodes) {
+
         super(buffer);
-        // TODO shouldn't we check the case where length is < 2 and throw an exception?
-        int statusCode = buffer.getShort(buffer.limit() - 2);
-        // java is signed only
-        if (statusCode < 0) {
-            statusCode += -2 * Short.MIN_VALUE;
-        }
-        if (successfulStatusCodes != null) {
-            this.successful =
-                    statusCode == 0x9000 || successfulStatusCodes.contains((short) statusCode);
-        } else {
-            this.successful = statusCode == 0x9000;
+        if(buffer==null){
+            this.successful = false;
+        }else{
+            // TODO shouldn't we check the case where length is < 2 and throw an exception?
+            int statusCode = buffer.getShort(buffer.limit() - 2);
+            // java is signed only
+            if (statusCode < 0) {
+                statusCode += -2 * Short.MIN_VALUE;
+            }
+            if (successfulStatusCodes != null) {
+                this.successful =
+                        statusCode == 0x9000 || successfulStatusCodes.contains((short) statusCode);
+            } else {
+                this.successful = statusCode == 0x9000;
+            }
         }
     }
 

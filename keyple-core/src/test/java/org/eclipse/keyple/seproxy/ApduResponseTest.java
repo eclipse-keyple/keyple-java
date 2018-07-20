@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.eclipse.keyple.util.ByteBufferUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,6 +76,25 @@ public class ApduResponseTest {
     @Test
     public void isEqualsTest() {
         assertTrue(getAFCI().equals(getAFCI()));
+    }
+
+    @Test
+    public void isThisEquals() {
+        ApduResponse resp = getAFCI();
+        assertTrue(resp.equals(resp));
+    }
+
+    @Test
+    public void isNotEquals() {
+        ApduResponse resp = getAFCI();
+        Object obj = new Object();
+        assertFalse(resp.equals(obj));
+    }
+
+    @Test
+    public void testToStringNull(){
+        ApduResponse resp = new ApduResponse(null, null);
+        Assert.assertNotNull(resp.toString());
     }
 
     /*
