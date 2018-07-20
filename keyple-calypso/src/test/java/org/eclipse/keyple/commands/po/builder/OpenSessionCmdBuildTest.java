@@ -13,7 +13,6 @@ import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.commands.AbstractApduCommandBuilder;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
@@ -29,8 +28,8 @@ public class OpenSessionCmdBuildTest {
     ApduRequest apduRequest;
 
 
-    @Test(expected = InconsistentCommandException.class)
-    public void openSessionCmdBuild_rev_2_4_exception() throws InconsistentCommandException {
+    @Test(expected = IllegalArgumentException.class)
+    public void openSessionCmdBuild_rev_2_4_exception() throws IllegalArgumentException {
         byte keyIndex = (byte) 0x00;
         byte recordNumberToRead = (byte) 0x01;
         byte sfiToSelect = (byte) 0x08;
@@ -45,7 +44,7 @@ public class OpenSessionCmdBuildTest {
     }
 
     @Test
-    public void openSessionCmdBuild_rev_2_4() throws InconsistentCommandException {
+    public void openSessionCmdBuild_rev_2_4() throws IllegalArgumentException {
         byte keyIndex = (byte) 0x03;
         byte recordNumberToRead = (byte) 0x01;
         byte sfiToSelect = (byte) 0x08;
@@ -65,7 +64,7 @@ public class OpenSessionCmdBuildTest {
     }
 
     @Test
-    public void openSessionCmdBuild_rev_3_1() throws InconsistentCommandException {
+    public void openSessionCmdBuild_rev_3_1() throws IllegalArgumentException {
         byte keyIndex = (byte) 0x03;
         byte recordNumberToRead = (byte) 0x01;
         byte sfiToSelect = (byte) 0x08;
@@ -85,7 +84,7 @@ public class OpenSessionCmdBuildTest {
     }
 
     @Test
-    public void openSessionCmdBuild_rev_3_2() throws InconsistentCommandException {
+    public void openSessionCmdBuild_rev_3_2() throws IllegalArgumentException {
         byte keyIndex = (byte) 0x03;
         byte recordNumberToRead = (byte) 0x01;
         byte sfiToSelect = (byte) 0x08;

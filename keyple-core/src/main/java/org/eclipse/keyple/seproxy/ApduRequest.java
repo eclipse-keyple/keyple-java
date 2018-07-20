@@ -100,4 +100,9 @@ public final class ApduRequest extends AbstractApduBuffer {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return this.getName() + ": " + super.toString();
+    }
 }

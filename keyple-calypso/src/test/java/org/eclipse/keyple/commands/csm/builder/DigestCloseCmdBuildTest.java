@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.commands.csm.CsmRevision;
 import org.eclipse.keyple.calypso.commands.csm.builder.DigestCloseCmdBuild;
 import org.eclipse.keyple.commands.AbstractApduCommandBuilder;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,7 +19,7 @@ import org.junit.Test;
 public class DigestCloseCmdBuildTest {
 
     @Test
-    public void digestCloseCmdBuild() throws InconsistentCommandException {
+    public void digestCloseCmdBuild() throws IllegalArgumentException {
 
         ByteBuffer request =
                 ByteBuffer.wrap(new byte[] {(byte) 0x94, (byte) 0x8E, 0x00, 0x00, (byte) 0x04});

@@ -13,14 +13,13 @@ import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.CloseSessionCmdBuild;
 import org.eclipse.keyple.commands.AbstractApduCommandBuilder;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class CloseSessionCmdBuidTest {
     @Test
-    public void closeSessionCmdBuild() throws InconsistentCommandException {
+    public void closeSessionCmdBuild() throws IllegalArgumentException {
         ByteBuffer request2_4 = ByteBuffer.wrap(new byte[] {(byte) 0x94, (byte) 0x8E, 0x00, 0x00,
                 (byte) 0x04, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
         ByteBuffer request3_1 = ByteBuffer.wrap(new byte[] {(byte) 0x00, (byte) 0x8E, (byte) 0x80,

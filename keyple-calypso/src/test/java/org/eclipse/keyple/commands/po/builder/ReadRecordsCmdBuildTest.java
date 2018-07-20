@@ -12,7 +12,6 @@ package org.eclipse.keyple.commands.po.builder;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.commands.AbstractApduCommandBuilder;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
@@ -31,7 +30,7 @@ public class ReadRecordsCmdBuildTest {
     ApduRequest apduRequest;
 
     @Test
-    public void readRecords_rev2_4() throws InconsistentCommandException {
+    public void readRecords_rev2_4() throws IllegalArgumentException {
 
         byte cla = (byte) 0x94;
         byte cmd = (byte) 0xB2;
@@ -51,7 +50,7 @@ public class ReadRecordsCmdBuildTest {
     }
 
     @Test
-    public void readRecords_rev3_1() throws InconsistentCommandException {
+    public void readRecords_rev3_1() throws IllegalArgumentException {
 
         byte cla = (byte) 0x00;
         byte cmd = (byte) 0xB2;
@@ -72,7 +71,7 @@ public class ReadRecordsCmdBuildTest {
     }
 
     @Test
-    public void readRecords_rev3_2() throws InconsistentCommandException {
+    public void readRecords_rev3_2() throws IllegalArgumentException {
         byte cla = (byte) 0x00;
         byte cmd = (byte) 0xB2;
         byte firstRecordNumber = record_number;

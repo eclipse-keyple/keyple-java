@@ -14,7 +14,6 @@ import org.eclipse.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.utils.RequestUtils;
 import org.eclipse.keyple.commands.CommandsTable;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
@@ -35,10 +34,11 @@ public class CloseSessionCmdBuild extends AbstractPoCommandBuilder {
      * @param revision of the PO
      * @param ratificationAsked the ratification asked
      * @param terminalSessionSignature the sam half session signature
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the signature is null or has a wrong length
+     * @throws java.lang.IllegalArgumentException - if the command is inconsistent
      */
     public CloseSessionCmdBuild(PoRevision revision, boolean ratificationAsked,
-            ByteBuffer terminalSessionSignature) throws InconsistentCommandException {
+            ByteBuffer terminalSessionSignature) throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -47,15 +47,14 @@ public class CloseSessionCmdBuild extends AbstractPoCommandBuilder {
         // bytes.
         if (terminalSessionSignature != null && terminalSessionSignature.limit() != 4
                 && terminalSessionSignature.limit() != 8) {
-            throw new InconsistentCommandException("Invalid terminal sessionSignature: "
+            throw new IllegalArgumentException("Invalid terminal sessionSignature: "
                     + ByteBufferUtils.toHex(terminalSessionSignature));
         }
 
         byte cla = PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00;
 
         byte p1 = ratificationAsked ? (byte) 0x80 : (byte) 0x00;
-        // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, (byte) 0x00,
-        // terminalSessionSignature);
+
         request = RequestUtils.constructAPDURequest(cla, command, p1, (byte) 0x00,
                 terminalSessionSignature);
     }
@@ -64,9 +63,9 @@ public class CloseSessionCmdBuild extends AbstractPoCommandBuilder {
      * Instantiates a new close session cmd build.
      *
      * @param request the request
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
-    public CloseSessionCmdBuild(ApduRequest request) throws InconsistentCommandException {
+    public CloseSessionCmdBuild(ApduRequest request) throws IllegalArgumentException {
         super(command, request);
         RequestUtils.controlRequestConsistency(command, request);
     }

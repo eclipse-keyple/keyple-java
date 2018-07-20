@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcFragment;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings;
@@ -168,7 +167,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
                             runTest();
 
-                        } catch (InconsistentCommandException e) {
+                        } catch (IllegalArgumentException e) {
                             e.printStackTrace();
                         }
                         break;
@@ -228,8 +227,9 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                     poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
 
-            SeRequest seRequest = new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList,
-                    false, ContactlessProtocols.PROTOCOL_ISO14443_4);
+            SeRequest seRequest =
+                    new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
+                            poApduRequestList, false, ContactlessProtocols.PROTOCOL_ISO14443_4);
 
 
             SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));

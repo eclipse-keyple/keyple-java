@@ -13,7 +13,6 @@ import org.eclipse.keyple.calypso.commands.csm.AbstractCsmCommandBuilder;
 import org.eclipse.keyple.calypso.commands.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.commands.csm.CsmRevision;
 import org.eclipse.keyple.calypso.commands.utils.RequestUtils;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 // TODO: Auto-generated Javadoc
@@ -33,21 +32,21 @@ public class SelectDiversifierCmdBuild extends AbstractCsmCommandBuilder {
      *
      * @param revision the CSM(SAM) revision
      * @param diversifier the application serial number
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the diversifier is null or has a wrong length
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public SelectDiversifierCmdBuild(CsmRevision revision, ByteBuffer diversifier)
-            throws InconsistentCommandException {
+            throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
         }
         if (diversifier == null || (diversifier.limit() != 4 && diversifier.limit() != 8)) {
-            throw new InconsistentCommandException();
+            throw new IllegalArgumentException("Bad diversifier value!");
         }
         byte cla = CsmRevision.S1D.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x80;
         byte p1 = 0x00;
         byte p2 = 0x00;
-        // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, diversifier);
 
         request = RequestUtils.constructAPDURequest(cla, command, p1, p2, diversifier);
 
@@ -57,9 +56,9 @@ public class SelectDiversifierCmdBuild extends AbstractCsmCommandBuilder {
      * Instantiates a new select diversifier cmd build.
      *
      * @param request the request
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
-    public SelectDiversifierCmdBuild(ApduRequest request) throws InconsistentCommandException {
+    public SelectDiversifierCmdBuild(ApduRequest request) throws IllegalArgumentException {
         super(command, request);
         RequestUtils.controlRequestConsistency(command, request);
     }

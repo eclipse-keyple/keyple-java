@@ -59,7 +59,8 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
         int i;
         System.out.println("===== " + message);
         System.out.println("* Request:");
-        System.out.println("AID: " + ByteBufferUtils.toHex(seRequest.getAidToSelect()));
+        System.out.println("AID: " + ByteBufferUtils
+                .toHex(((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect()));
         List<ApduRequest> apduRequests = seRequest.getApduRequests();
         i = 0;
         if (apduRequests != null && apduRequests.size() > 0) {
@@ -177,7 +178,8 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
         // Step 4
         System.out.println(
                 "========= PO Hoplink 3-step session ======= Closing ============================");
-        poTransaction.processClosing(null, null, HoplinkSampleCommands.poRatificationCommand, true);
+        poTransaction.processClosing(null, null, HoplinkSampleCommands.poRatificationCommand,
+                false);
 
         if (poTransaction.isSuccessful()) {
             System.out.println(
@@ -202,8 +204,9 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
         // redo the Hoplink PO selection after logical channel closing (may be not needed with some
         // PO
         // for which the application is selected by default)
-        SeRequestSet selectionRequest = new SeRequestSet(
-                new SeRequest(ByteBufferUtils.fromHex(HoplinkCommandsSettings.AID), null, true));
+        SeRequestSet selectionRequest = new SeRequestSet(new SeRequest(
+                new SeRequest.AidSelector(ByteBufferUtils.fromHex(HoplinkCommandsSettings.AID)),
+                null, true));
         fciData = poReader.transmit(selectionRequest).getSingleResponse().getFci();
 
         // execute a two-step Calypso session: processIdentification, processOpeningClosing
@@ -219,18 +222,32 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
             String poFakeAid = "AABBCCDDEE"; //
             String poNavigoAid = "A0000004040125090101"; // Navigo AID
             String poHoplinkAid = HoplinkCommandsSettings.AID; // commands before session, keep true
+            String csmC1ATRregex = HoplinkCommandsSettings.CSM_C1_ATR; // csm identifier
+
+            // check the availability of the CSM, open its physical and logical channels and keep it
+            // open
+            SeRequest csmCheckRequest =
+                    new SeRequest(new SeRequest.AtrSelector(csmC1ATRregex), null, true);
+            SeResponse csmCheckResponse =
+                    csmReader.transmit(new SeRequestSet(csmCheckRequest)).getSingleResponse();
+
+            if (csmCheckResponse == null) {
+                System.out.println("Unable to open a logical channel for CSM!");
+                throw new IllegalStateException("CSM channel opening failure");
+            }
 
             // prepare the PO selection SeRequestSet
-
             // Create a SeRequest list
             Set<SeRequest> selectionRequests = new LinkedHashSet<SeRequest>();
 
             // fake application seRequest preparation, addition to the list
-            SeRequest seRequest = new SeRequest(ByteBufferUtils.fromHex(poFakeAid), null, false);
+            SeRequest seRequest = new SeRequest(
+                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(poFakeAid)), null, false);
             selectionRequests.add(seRequest);
 
             // Navigo application seRequest preparation, addition to the list
-            seRequest = new SeRequest(ByteBufferUtils.fromHex(poNavigoAid), null, false);
+            seRequest = new SeRequest(
+                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(poNavigoAid)), null, false);
             selectionRequests.add(seRequest);
 
             // Hoplink application seRequest preparation, addition to the list
@@ -238,9 +255,13 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
             List<ApduRequest> requestToExecuteBeforeSession = new ArrayList<ApduRequest>();
             requestToExecuteBeforeSession
                     .add(HoplinkSampleCommands.poReadRecordCmd_T2Env.getApduRequest());
-            seRequest = new SeRequest(ByteBufferUtils.fromHex(poHoplinkAid),
-                    requestToExecuteBeforeSession, false,
-                    HoplinkCommandsSettings.selectApplicationSuccessfulStatusCodes);
+
+            // AID based selection
+            seRequest =
+                    new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poHoplinkAid)),
+                            requestToExecuteBeforeSession, false,
+                            HoplinkCommandsSettings.selectApplicationSuccessfulStatusCodes);
+
             selectionRequests.add(seRequest);
 
             List<SeResponse> seResponses =

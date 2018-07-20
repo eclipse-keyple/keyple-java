@@ -13,7 +13,6 @@ import org.eclipse.keyple.calypso.commands.csm.AbstractCsmCommandBuilder;
 import org.eclipse.keyple.calypso.commands.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.commands.csm.CsmRevision;
 import org.eclipse.keyple.calypso.commands.utils.RequestUtils;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
@@ -36,21 +35,23 @@ public class DigestInitCmdBuild extends AbstractCsmCommandBuilder {
      * @param workKeyKif from the AbstractOpenSessionCmdBuild response
      * @param workKeyKVC from the AbstractOpenSessionCmdBuild response
      * @param digestData all data out from the AbstractOpenSessionCmdBuild response
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the work key record number
+     * @throws java.lang.IllegalArgumentException - if the digest data is null
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public DigestInitCmdBuild(CsmRevision revision, boolean verificationMode, boolean rev3_2Mode,
             byte workKeyRecordNumber, byte workKeyKif, byte workKeyKVC, ByteBuffer digestData)
-            throws InconsistentCommandException {
+            throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
         }
 
         if (workKeyRecordNumber == 0x00 && (workKeyKif == 0x00 || workKeyKVC == 0x00)) {
-            throw new InconsistentCommandException();
+            throw new IllegalArgumentException("Bad key record number, kif or kvc!");
         }
         if (digestData == null) {
-            throw new InconsistentCommandException();
+            throw new IllegalArgumentException("Digest data is null!");
         }
         byte cla = CsmRevision.S1D.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x80;
         byte p1 = 0x00;
@@ -87,9 +88,9 @@ public class DigestInitCmdBuild extends AbstractCsmCommandBuilder {
      * Instantiates a new digest init cmd build.
      *
      * @param request the request
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
-    public DigestInitCmdBuild(ApduRequest request) throws InconsistentCommandException {
+    public DigestInitCmdBuild(ApduRequest request) throws IllegalArgumentException {
         super(command, request);
         RequestUtils.controlRequestConsistency(command, request);
     }

@@ -83,8 +83,6 @@ public class PcscReader extends AbstractThreadedLocalReader {
 
     @Override
     protected final void closePhysicalChannel() throws IOReaderException {
-        logger.info("Closing of the physical SE channel.", "action",
-                "pcsc_reader.closePhysicalChannel");
         try {
             if (card != null) {
                 channel = null;
@@ -148,7 +146,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
         try {
             apduResponseData = channel.transmit(new CommandAPDU(apduIn));
         } catch (CardException e) {
-            throw new ChannelStateReaderException(e);
+            throw new ChannelStateReaderException(this.getName() + ":" + e.getMessage());
         }
         return ByteBuffer.wrap(apduResponseData.getBytes());
     }

@@ -14,6 +14,7 @@ import java.util.Set;
 
 public interface HoplinkCommandsSettings {
     String AID = "A000000291A000000191";
+    String CSM_C1_ATR = "3B3F9600805A4880C1205017AEC0F5E2829000";
     Set<Short> selectApplicationSuccessfulStatusCodes =
             new HashSet<Short>(Arrays.asList((short) 0x6283));
 }

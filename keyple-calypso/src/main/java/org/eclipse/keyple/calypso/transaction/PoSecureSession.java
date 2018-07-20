@@ -218,7 +218,8 @@ public class PoSecureSession {
 
         // create a SeRequestSet (list of SeRequest)
         SeRequestSet poRequests =
-                new SeRequestSet(new SeRequest(poCalypsoInstanceAid, poApduRequestList, true));
+                new SeRequestSet(new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
+                        poApduRequestList, true));
 
         SeResponse poResponse = poReader.transmit(poRequests).getSingleResponse();
         List<ApduResponse> poApduResponseList = poResponse.getApduResponses();
@@ -342,7 +343,8 @@ public class PoSecureSession {
 
         // create a SeRequestSet (list of SeRequest)
         SeRequestSet poRequests =
-                new SeRequestSet(new SeRequest(poCalypsoInstanceAid, poApduRequestList, true));
+                new SeRequestSet(new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
+                        poApduRequestList, true));
 
         SeResponse poResponse = poReader.transmit(poRequests).getSingleResponse();
         List<ApduResponse> poApduResponseList = poResponse.getApduResponses();
@@ -470,8 +472,9 @@ public class PoSecureSession {
 
         // Transfert PO commands
         // create a SeRequestSet (list of SeRequests)
-        SeRequestSet poRequest = new SeRequestSet(new SeRequest(poCalypsoInstanceAid,
-                poApduRequestList, closeSeChannel ? false : true));
+        SeRequestSet poRequest =
+                new SeRequestSet(new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
+                        poApduRequestList, closeSeChannel ? false : true));
 
         logger.info("Closing: Sending PO request", "action", "po_secure_session.close_po_req",
                 "apduList", poRequest.getRequests().iterator().next().getApduRequests());
@@ -503,8 +506,7 @@ public class PoSecureSession {
 
         // ****SECOND**** transfer of CSM commands, keep CSM channel open
         // TODO find out why it fails when keepChannelOpen is true as wanted!
-        SeRequestSet csmRequest_2 =
-                new SeRequestSet(new SeRequest(null, csmApduRequestList, false));
+        SeRequestSet csmRequest_2 = new SeRequestSet(new SeRequest(null, csmApduRequestList, true));
 
         SeResponse csmResponse_2 = csmReader.transmit(csmRequest_2).getSingleResponse();
         List<ApduResponse> csmApduResponseList_2 = csmResponse_2.getApduResponses();
@@ -518,7 +520,7 @@ public class PoSecureSession {
 
         // TODO => to check:
         // if (!digestCloseRespPars.isSuccessful()) {
-        // throw new InconsistentCommandException(digestCloseRespPars.getStatusInformation());
+        // throw new IllegalArgumentException(digestCloseRespPars.getStatusInformation());
         // }
 
         currentState = SessionState.SESSION_CLOSED;
@@ -590,9 +592,9 @@ public class PoSecureSession {
         // Transfert PO commands
         logger.info("Processing: Sending PO commands", "action",
                 "po_secure_session.process_po_request", "apduList", poApduRequestList);
-        SeResponse poResponse = poReader
-                .transmit(new SeRequestSet(
-                        new SeRequest(poCalypsoInstanceAid, poApduRequestList, keepChannelOpen)))
+        SeResponse poResponse = poReader.transmit(
+                new SeRequestSet(new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
+                        poApduRequestList, keepChannelOpen)))
                 .getSingleResponse();
 
         List<ApduResponse> poApduResponseList = poResponse.getApduResponses();
@@ -734,8 +736,9 @@ public class PoSecureSession {
 
         // Transfert PO commands
         // create a SeRequestSet (list of SeRequests)
-        SeRequestSet poRequest = new SeRequestSet(new SeRequest(poCalypsoInstanceAid,
-                poApduRequestList, closeSeChannel ? false : true));
+        SeRequestSet poRequest =
+                new SeRequestSet(new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
+                        poApduRequestList, closeSeChannel ? false : true));
 
         logger.info("Closing: Sending PO request", "action", "po_secure_session.close_po_req",
                 "apduList", poRequest.getRequests().iterator().next().getApduRequests());
@@ -767,7 +770,7 @@ public class PoSecureSession {
         // ****SECOND**** transfer of CSM commands (keep channel open to avoid unwanted CSM reset)
         // TODO find out why it fails when keepChannelOpen is true as wanted!
         SeRequestSet csmRequest_2 =
-                new SeRequestSet(new SeRequest(null, csmApduRequestList_2, false));
+                new SeRequestSet(new SeRequest(null, csmApduRequestList_2, true));
 
         SeResponse csmResponse_2 = csmReader.transmit(csmRequest_2).getSingleResponse();
         List<ApduResponse> csmApduResponseList_2 = csmResponse_2.getApduResponses();
@@ -781,7 +784,7 @@ public class PoSecureSession {
 
         // TODO => to check:
         // if (!digestCloseRespPars.isSuccessful()) {
-        // throw new InconsistentCommandException(digestCloseRespPars.getStatusInformation());
+        // throw new IllegalArgumentException(digestCloseRespPars.getStatusInformation());
         // }
 
         currentState = SessionState.SESSION_CLOSED;

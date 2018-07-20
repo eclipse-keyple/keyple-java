@@ -15,7 +15,6 @@ import org.eclipse.keyple.calypso.commands.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.utils.RequestUtils;
 import org.eclipse.keyple.commands.CommandsTable;
-import org.eclipse.keyple.commands.InconsistentCommandException;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 // TODO: Auto-generated Javadoc
@@ -36,10 +35,10 @@ public class AppendRecordCmdBuild extends AbstractPoCommandBuilder implements Po
      *
      * @param commandeReference the commande reference
      * @param request the request
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the command is inconsistent
      */
     AppendRecordCmdBuild(CommandsTable commandeReference, ApduRequest request)
-            throws InconsistentCommandException {
+            throws IllegalArgumentException {
         super(commandeReference, request);
     }
 
@@ -49,7 +48,7 @@ public class AppendRecordCmdBuild extends AbstractPoCommandBuilder implements Po
      * @param revision the revision of the PO
      * @param sfi the sfi to select
      * @param newRecordData the new record data to write
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the command is inconsistent
      */
     public AppendRecordCmdBuild(PoRevision revision, byte sfi, ByteBuffer newRecordData) {
         super(command, null);
@@ -68,9 +67,9 @@ public class AppendRecordCmdBuild extends AbstractPoCommandBuilder implements Po
      * Instantiates a new append record cmd build.
      *
      * @param request the request
-     * @throws InconsistentCommandException the inconsistent command exception
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
-    public AppendRecordCmdBuild(ApduRequest request) throws InconsistentCommandException {
+    public AppendRecordCmdBuild(ApduRequest request) throws IllegalArgumentException {
         super(CalypsoPoCommands.APPEND_RECORD, request);
         RequestUtils.controlRequestConsistency(command, request);
     }
