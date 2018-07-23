@@ -11,7 +11,12 @@ package org.eclipse.keyple.plugin.stub;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.eclipse.keyple.seproxy.ApduRequest;
+import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeProtocol;
+import org.eclipse.keyple.seproxy.SeRequestSet;
+import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
@@ -55,7 +60,6 @@ public class StubReader extends AbstractSelectionLocalReader {
         se.openPhysicalChannel();
     }
 
-
     @Override
     public void closePhysicalChannel() throws IOReaderException {
         se.closePhysicalChannel();
@@ -88,6 +92,24 @@ public class StubReader extends AbstractSelectionLocalReader {
     @Override
     public Map<String, String> getParameters() {
         return parameters;
+    }
+
+
+    /*
+    PROXYING INTERNAL METHOD FOR TESTING PURPOSES
+     */
+    protected final ApduResponse processApduRequestProxy(ApduRequest apduRequest)
+            throws ChannelStateReaderException {
+        return this.processApduRequest(apduRequest);
+    }
+
+    protected final SeResponseSet processSeRequestSetProxy(SeRequestSet requestSet)
+            throws IOReaderException {
+        return this.processSeRequestSet(requestSet);
+    }
+
+    protected final boolean isLogicalChannelOpenProxy(){
+        return this.isPhysicalChannelOpen();
     }
 
 

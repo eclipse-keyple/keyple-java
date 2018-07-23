@@ -56,7 +56,7 @@ public class ApduRequestTest {
      * HELPERS
      */
 
-    static ApduRequest getApduSample() {
+    public static ApduRequest getApduSample() {
         String name = getAName();
         Set<Short> successfulStatusCodes = getASuccessFulStatusCode();
         Boolean case4 = true;

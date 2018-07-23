@@ -11,13 +11,18 @@ package org.eclipse.keyple.plugin.stub;
 
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.*;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.seproxy.ApduRequest;
+import org.eclipse.keyple.seproxy.ApduRequestTest;
+import org.eclipse.keyple.seproxy.ApduResponse;
+import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
+import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
@@ -28,17 +33,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+
 @RunWith(MockitoJUnitRunner.class)
 public class StubReaderTest {
 
     StubReader reader;
-    StubSecureElement se;
+
 
     @Before
     public void SetUp() throws IOReaderException {
         // works if stubreader could be instanciated just once
         reader = new StubReader();
-        se = new HoplinkStubSE();
+
     }
 
 
@@ -49,23 +55,25 @@ public class StubReaderTest {
 
     @Test
     public void testInsert() throws NoStackTraceThrowable {
-        insertSe();
+        reader.insertSe(getHoplinkSE());
         Assert.assertTrue(reader.isSePresent());
     }
 
     @Test(expected = IOReaderException.class)
-    public void testTransmitNull() throws Exception {
-        insertSe();
+    public void transmit_Hoplink_null() throws Exception {
+        reader.insertSe(getHoplinkSE());
         reader.transmit((SeRequestSet) null).getSingleResponse().getApduResponses().size();
     }
 
     @Test
-    public void transmitSuccessfull() throws IOException {
-        // init
+    public void transmit_Hoplink_Sucessfull() throws IOException {
+        // init Request
         SeRequestSet requests = getRequestIsoDepSetSample();
 
+        //init SE
+        reader.insertSe(getHoplinkSE());
+
         // test
-        insertSe();
         SeResponseSet seResponse = reader.transmit(requests);
 
         // assert
@@ -74,8 +82,14 @@ public class StubReaderTest {
 
 
     @Test(expected = IOReaderException.class)
-    public void testTransmitSEnotPressent() throws IOReaderException {
+    public void transmit_null_Selection() throws IOReaderException {
+        //init SE
+        //no SE
+
+        //init request
         SeRequestSet seRequest = getRequestIsoDepSetSample();
+
+        //test
         Assert.assertTrue(
                 reader.transmit(seRequest).getSingleResponse().getApduResponses().size() == 0);
     }
@@ -106,6 +120,7 @@ public class StubReaderTest {
     }
 
     // Set correct paramaters
+    @Test
     public void testSetParameters() throws Exception {
         Map<String, String> p1 = new HashMap<String, String>();
         p1.put(StubReader.ALLOWED_PARAMETER_1, "a");
@@ -115,6 +130,46 @@ public class StubReaderTest {
         Map<String, String> p2 = reader.getParameters();
         assert (p1.equals(p2));
 
+
+    }
+
+    /*
+    INTERNAL METHODS
+     */
+
+    @Test
+    public void openLogicalChannelAndSelectTest()throws Exception{
+
+    }
+
+    @Test(expected = ChannelStateReaderException.class)
+    public void processApduRequestTest()throws Exception{
+        //init request
+        ApduRequest apdu = ApduRequestTest.getApduSample();
+
+        //init SE
+        reader.insertSe(getSENoconnection());
+
+        //test
+        ApduResponse response = reader.processApduRequestProxy(apdu);
+
+        //assert
+        Assert.assertNull(response);
+
+    }
+
+    @Test
+    public void case4HackGetResponseTest() throws Exception{
+
+    }
+
+    @Test
+    public void processSeRequestSetTest() throws Exception{
+
+    }
+
+    @Test
+    public void closeLogicalChannel() throws Exception{
 
     }
 
@@ -143,7 +198,45 @@ public class StubReaderTest {
 
     }
 
-    private void insertSe() {
-        reader.insertSe(se);
+    private StubSecureElement getHoplinkSE(){
+        return new HoplinkStubSE();
     }
+
+    private StubSecureElement getSENoconnection(){
+        return new StubSecureElement() {
+            @Override
+            public ByteBuffer getATR() {
+                return null;
+            }
+
+            @Override
+            public boolean isPhysicalChannelOpen() {
+                return false;
+            }
+
+            @Override
+            public void openPhysicalChannel() throws IOReaderException, ChannelStateReaderException {
+                throw new IOReaderException("Impossible to estasblish connection");
+            }
+
+            @Override
+            public void closePhysicalChannel() throws IOReaderException {
+                throw new IOReaderException("Channel is not open");
+            }
+
+            @Override
+            public ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
+                throw new ChannelStateReaderException("Error while transmitting apdu");
+            }
+
+            @Override
+            public SeProtocol getSeProcotol() {
+                return null;
+            }
+        };
+
+    }
+
+
+
 }
