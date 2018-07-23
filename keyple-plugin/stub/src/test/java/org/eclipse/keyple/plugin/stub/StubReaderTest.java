@@ -70,7 +70,7 @@ public class StubReaderTest {
         // init Request
         SeRequestSet requests = getRequestIsoDepSetSample();
 
-        //init SE
+        // init SE
         reader.insertSe(getHoplinkSE());
 
         // test
@@ -83,13 +83,13 @@ public class StubReaderTest {
 
     @Test(expected = IOReaderException.class)
     public void transmit_null_Selection() throws IOReaderException {
-        //init SE
-        //no SE
+        // init SE
+        // no SE
 
-        //init request
+        // init request
         SeRequestSet seRequest = getRequestIsoDepSetSample();
 
-        //test
+        // test
         Assert.assertTrue(
                 reader.transmit(seRequest).getSingleResponse().getApduResponses().size() == 0);
     }
@@ -134,42 +134,42 @@ public class StubReaderTest {
     }
 
     /*
-    INTERNAL METHODS
+     * INTERNAL METHODS
      */
 
     @Test
-    public void openLogicalChannelAndSelectTest()throws Exception{
+    public void openLogicalChannelAndSelectTest() throws Exception {
 
     }
 
     @Test(expected = ChannelStateReaderException.class)
-    public void processApduRequestTest()throws Exception{
-        //init request
+    public void processApduRequestTest() throws Exception {
+        // init request
         ApduRequest apdu = ApduRequestTest.getApduSample();
 
-        //init SE
+        // init SE
         reader.insertSe(getSENoconnection());
 
-        //test
+        // test
         ApduResponse response = reader.processApduRequestProxy(apdu);
 
-        //assert
+        // assert
         Assert.assertNull(response);
 
     }
 
     @Test
-    public void case4HackGetResponseTest() throws Exception{
+    public void case4HackGetResponseTest() throws Exception {
 
     }
 
     @Test
-    public void processSeRequestSetTest() throws Exception{
+    public void processSeRequestSetTest() throws Exception {
 
     }
 
     @Test
-    public void closeLogicalChannel() throws Exception{
+    public void closeLogicalChannel() throws Exception {
 
     }
 
@@ -198,11 +198,11 @@ public class StubReaderTest {
 
     }
 
-    private StubSecureElement getHoplinkSE(){
+    private StubSecureElement getHoplinkSE() {
         return new HoplinkStubSE();
     }
 
-    private StubSecureElement getSENoconnection(){
+    private StubSecureElement getSENoconnection() {
         return new StubSecureElement() {
             @Override
             public ByteBuffer getATR() {
@@ -215,7 +215,8 @@ public class StubReaderTest {
             }
 
             @Override
-            public void openPhysicalChannel() throws IOReaderException, ChannelStateReaderException {
+            public void openPhysicalChannel()
+                    throws IOReaderException, ChannelStateReaderException {
                 throw new IOReaderException("Impossible to estasblish connection");
             }
 

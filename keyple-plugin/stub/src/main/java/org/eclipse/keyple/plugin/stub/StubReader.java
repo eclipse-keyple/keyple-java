@@ -11,7 +11,6 @@ package org.eclipse.keyple.plugin.stub;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeProtocol;
@@ -96,7 +95,7 @@ public class StubReader extends AbstractSelectionLocalReader {
 
 
     /*
-    PROXYING INTERNAL METHOD FOR TESTING PURPOSES
+     * PROXYING INTERNAL METHOD FOR TESTING PURPOSES
      */
     protected final ApduResponse processApduRequestProxy(ApduRequest apduRequest)
             throws ChannelStateReaderException {
@@ -108,7 +107,7 @@ public class StubReader extends AbstractSelectionLocalReader {
         return this.processSeRequestSet(requestSet);
     }
 
-    protected final boolean isLogicalChannelOpenProxy(){
+    protected final boolean isLogicalChannelOpenProxy() {
         return this.isPhysicalChannelOpen();
     }
 
