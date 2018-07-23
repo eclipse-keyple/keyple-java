@@ -138,9 +138,10 @@ public class StubReaderTest {
 
         poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
-        SeRequest seRequest = new SeRequest(ByteBufferUtils.fromHex(poAid), poApduRequestList,
-                false, ContactlessProtocols.PROTOCOL_ISO14443_4);
+        SeRequest.Selector selector = new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
 
+        SeRequest seRequest = new SeRequest(selector, poApduRequestList,
+                false, ContactlessProtocols.PROTOCOL_ISO14443_4);
 
         return new SeRequestSet(seRequest);
 
