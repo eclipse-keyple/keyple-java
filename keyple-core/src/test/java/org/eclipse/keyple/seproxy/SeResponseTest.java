@@ -69,6 +69,19 @@ public class SeResponseTest {
         Assert.assertFalse(resp.equals(any));
     }
 
+    @Test()
+    public void hashcode() throws Exception {
+        SeResponse resp = getASeResponse();
+        SeResponse resp2 = getASeResponse();
+        Assert.assertTrue(resp.hashCode() == resp2.hashCode());
+    }
+
+    @Test()
+    public void hashcodeNull() throws Exception {
+        SeResponse resp = new SeResponse(true, null, ApduResponseTest.getAFCI(), null);
+        Assert.assertNotNull(resp.hashCode());
+    }
+
 
     /*
      * HELPERS

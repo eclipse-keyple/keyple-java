@@ -95,7 +95,7 @@ public final class ApduResponse extends AbstractApduBuffer {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this){
+        if (o == this) {
             return true;
         }
         if (!(o instanceof ApduResponse)) {
@@ -110,7 +110,7 @@ public final class ApduResponse extends AbstractApduBuffer {
     public int hashCode() {
         int hash = 17;
         hash = 19 * hash + Objects.hashCode(this.successful);
-        hash = 31 * hash + Objects.hashCode(this.buffer.hashCode());
+        hash = 31 * hash + Objects.hashCode(this.buffer);
         return hash;
     }
 }

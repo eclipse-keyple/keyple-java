@@ -92,6 +92,19 @@ public class ApduResponseTest {
     }
 
     @Test
+    public void hashcodeTest() {
+        ApduResponse resp = getAFCI();
+        ApduResponse resp2 = getAFCI();
+        assertTrue(resp.hashCode() == resp2.hashCode());
+    }
+
+    @Test
+    public void hashcodeNull() {
+        ApduResponse resp = new ApduResponse(null, null);
+        Assert.assertNotNull(resp.hashCode());
+    }
+
+    @Test
     public void testToStringNull() {
         ApduResponse resp = new ApduResponse(null, null);
         Assert.assertNotNull(resp.toString());

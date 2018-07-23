@@ -10,7 +10,6 @@ package org.eclipse.keyple.seproxy;
 
 import java.util.List;
 import java.util.Objects;
-
 import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 
 /**
@@ -105,7 +104,7 @@ public final class SeResponse {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this){
+        if (o == this) {
             return true;
         }
         if (!(o instanceof SeResponse)) {
