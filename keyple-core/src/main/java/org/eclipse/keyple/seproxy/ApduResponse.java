@@ -36,9 +36,9 @@ public final class ApduResponse extends AbstractApduBuffer {
     public ApduResponse(ByteBuffer buffer, Set<Short> successfulStatusCodes) {
 
         super(buffer);
-        if(buffer==null){
+        if (buffer == null) {
             this.successful = false;
-        }else{
+        } else {
             // TODO shouldn't we check the case where length is < 2 and throw an exception?
             int statusCode = buffer.getShort(buffer.limit() - 2);
             // java is signed only

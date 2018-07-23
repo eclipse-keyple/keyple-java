@@ -11,18 +11,13 @@ package org.eclipse.keyple.plugin.stub;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
-import org.eclipse.keyple.seproxy.plugin.AbstractLocalReader;
 import org.eclipse.keyple.seproxy.plugin.AbstractSelectionLocalReader;
-import org.eclipse.keyple.seproxy.plugin.AbstractThreadedLocalReader;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
@@ -97,14 +92,14 @@ public class StubReader extends AbstractSelectionLocalReader {
 
 
 
-    public void insertSe(StubSecureElement _se){
+    public void insertSe(StubSecureElement _se) {
         se = _se;
-        notifyObservers(new ReaderEvent(pluginName,readerName, ReaderEvent.EventType.SE_INSERTED));
+        notifyObservers(new ReaderEvent(pluginName, readerName, ReaderEvent.EventType.SE_INSERTED));
     }
 
-    public void removeSe(StubSecureElement se){
+    public void removeSe(StubSecureElement se) {
         se = null;
-        notifyObservers(new ReaderEvent(pluginName,readerName, ReaderEvent.EventType.SE_REMOVAL));
+        notifyObservers(new ReaderEvent(pluginName, readerName, ReaderEvent.EventType.SE_REMOVAL));
     }
 
 }

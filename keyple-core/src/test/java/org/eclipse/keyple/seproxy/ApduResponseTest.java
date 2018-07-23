@@ -92,7 +92,7 @@ public class ApduResponseTest {
     }
 
     @Test
-    public void testToStringNull(){
+    public void testToStringNull() {
         ApduResponse resp = new ApduResponse(null, null);
         Assert.assertNotNull(resp.toString());
     }

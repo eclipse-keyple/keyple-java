@@ -52,7 +52,7 @@ public class SeResponseSetTest {
 
 
     @Test
-    public void toStringTest() throws Exception{
+    public void toStringTest() throws Exception {
         SeResponse emptySeR = new SeResponse(true, new ApduResponse(null, null), null, null);
         SeResponseSet set = new SeResponseSet(emptySeR);
         Assert.assertNotNull(set.toString());

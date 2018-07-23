@@ -30,13 +30,13 @@ public class ApduRequestTest {
 
     @Test
     public void testSimpleAPDURequest() {
-        ApduRequest request = new ApduRequest(getACommand(),true);
+        ApduRequest request = new ApduRequest(getACommand(), true);
         assertNotNull(request);
         assertEquals(null, request.getName());
         assertTrue(request.isCase4());
         assertEquals(getACommand(), request.getBytes());
         assertEquals(null, request.getSuccessfulStatusCodes());
-        assertEquals("null"+": FEDCBA989005", request.toString());
+        assertEquals("null" + ": FEDCBA989005", request.toString());
     }
 
     @Test
@@ -47,10 +47,8 @@ public class ApduRequestTest {
         assertEquals(getACommand(), request.getBytes());
         assertEquals(getAName(), request.getName());
         assertEquals(getASuccessFulStatusCode(), request.getSuccessfulStatusCodes());
-        assertEquals(getAName()+": FEDCBA989005", request.toString());
+        assertEquals(getAName() + ": FEDCBA989005", request.toString());
     }
-
-
 
 
 

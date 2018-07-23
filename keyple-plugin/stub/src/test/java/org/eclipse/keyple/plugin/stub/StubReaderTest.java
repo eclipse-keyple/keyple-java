@@ -9,12 +9,9 @@
 package org.eclipse.keyple.plugin.stub;
 
 
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.*;
-
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.seproxy.ApduRequest;
@@ -24,13 +21,11 @@ import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -47,10 +42,10 @@ public class StubReaderTest {
     }
 
 
-    @Test
-    public void testGetName() {
-        Assert.assertNotNull(reader.getName());
-    }
+    /*
+     * TRANSMIT
+     */
+
 
     @Test
     public void testInsert() throws NoStackTraceThrowable {
@@ -62,15 +57,12 @@ public class StubReaderTest {
     public void testTransmitNull() throws Exception {
         insertSe();
         reader.transmit((SeRequestSet) null).getSingleResponse().getApduResponses().size();
-
     }
 
     @Test
     public void transmitSuccessfull() throws IOException {
-
-        // input
+        // init
         SeRequestSet requests = getRequestIsoDepSetSample();
-
 
         // test
         insertSe();
@@ -78,39 +70,43 @@ public class StubReaderTest {
 
         // assert
         Assert.assertTrue(seResponse.getSingleResponse().getFci().isSuccessful());
-
     }
 
+
     @Test(expected = IOReaderException.class)
-    // if SE is not present, transmit fails
     public void testTransmitSEnotPressent() throws IOReaderException {
-
         SeRequestSet seRequest = getRequestIsoDepSetSample();
-        Assert.assertTrue(reader.transmit(seRequest).getSingleResponse().getApduResponses().size() == 0);
+        Assert.assertTrue(
+                reader.transmit(seRequest).getSingleResponse().getApduResponses().size() == 0);
+    }
 
+
+    /*
+     * NAME and PARAMETERS
+     */
+
+    @Test
+    public void testGetName() {
+        Assert.assertNotNull(reader.getName());
     }
 
     // Set wrong parameter
     @Test(expected = IOReaderException.class)
     public void testSetWrongParameter() throws Exception {
-
         reader.setParameter("WRONG_PARAMETER", "a");
-
     }
 
-    // Set A wrong parameter
+    // Set wrong parameters
     @Test(expected = IOReaderException.class)
-    public void testSetWrongParamaters() throws Exception{
+    public void testSetWrongParameters() throws Exception {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("WRONG_PARAMETER", "d");
         parameters.put(StubReader.ALLOWED_PARAMETER_1, "a");
-
         reader.setParameters(parameters);
-
     }
 
-    // Set Paramater
-    public void testSetParameters() throws Exception{
+    // Set correct paramaters
+    public void testSetParameters() throws Exception {
         Map<String, String> p1 = new HashMap<String, String>();
         p1.put(StubReader.ALLOWED_PARAMETER_1, "a");
         p1.put(StubReader.ALLOWED_PARAMETER_2, "a");
@@ -124,7 +120,7 @@ public class StubReaderTest {
 
 
     /*
-    HELPERS
+     * HELPERS
      */
 
 
@@ -140,14 +136,14 @@ public class StubReaderTest {
 
         SeRequest.Selector selector = new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
 
-        SeRequest seRequest = new SeRequest(selector, poApduRequestList,
-                false, ContactlessProtocols.PROTOCOL_ISO14443_4);
+        SeRequest seRequest = new SeRequest(selector, poApduRequestList, false,
+                ContactlessProtocols.PROTOCOL_ISO14443_4);
 
         return new SeRequestSet(seRequest);
 
     }
 
-    private void insertSe(){
+    private void insertSe() {
         reader.insertSe(se);
     }
 }

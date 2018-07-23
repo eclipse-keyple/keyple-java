@@ -110,8 +110,7 @@ public final class SeResponse {
         }
 
         SeResponse seResponse = (SeResponse) o;
-        return seResponse.getAtr().equals(atr)
-                && seResponse.getFci().equals(fci)
+        return seResponse.getAtr().equals(atr) && seResponse.getFci().equals(fci)
                 && seResponse.getApduResponses().equals(apduResponses)
                 && seResponse.wasChannelPreviouslyOpen() == channelPreviouslyOpen;
 

@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.plugin.stub;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
@@ -46,27 +45,27 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
     }
 
     @Override
-    public void setParameter(String key, String value){
-        parameters.put(key,value);
+    public void setParameter(String key, String value) {
+        parameters.put(key, value);
     }
 
     @Override
     protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
         SortedSet<AbstractObservableReader> nativeReaders =
                 new ConcurrentSkipListSet<AbstractObservableReader>();
-        //add native readers
+        // add native readers
         nativeReaders.add(new StubReader());
         return nativeReaders;
     }
 
     @Override
     protected AbstractObservableReader getNativeReader(String name) throws IOReaderException {
-        for (AbstractObservableReader reader : readers){
-            if(reader.getName().equals(name)){
+        for (AbstractObservableReader reader : readers) {
+            if (reader.getName().equals(name)) {
                 return reader;
             }
         }
-        throw  new IOReaderException("Reader with name " + name+ " was not found");
+        throw new IOReaderException("Reader with name " + name + " was not found");
     }
 
     @Override

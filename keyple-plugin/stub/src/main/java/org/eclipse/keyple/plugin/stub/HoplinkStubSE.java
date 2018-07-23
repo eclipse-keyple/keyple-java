@@ -1,21 +1,28 @@
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
+
 package org.eclipse.keyple.plugin.stub;
 
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
-
 public class HoplinkStubSE implements StubSecureElement {
 
-    boolean isPhysicalChannelOpen =false;
+    boolean isPhysicalChannelOpen = false;
     Map<String, String> hexCommands = new HashMap<String, String>();
 
-    public HoplinkStubSE(){
+    public HoplinkStubSE() {
         initHexCommands();
     }
 
@@ -44,11 +51,11 @@ public class HoplinkStubSE implements StubSecureElement {
     public ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
 
         String hexApdu = ByteBufferUtils.toHex(apduIn);
-        if(hexCommands.containsKey(hexApdu)){
+        if (hexCommands.containsKey(hexApdu)) {
             return ByteBufferUtils.fromHex(hexCommands.get(hexApdu));
         }
 
-        //empty buffer
+        // empty buffer
         return ByteBuffer.allocate(0);
     }
 
@@ -58,19 +65,21 @@ public class HoplinkStubSE implements StubSecureElement {
     }
 
 
-    //helpers
-    private void initHexCommands(){
-        hexCommands.put("00A404000AA000000291A00000019100","6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
-        hexCommands.put("00B201A420","00000000000000000000000000000000000000000000000000000000000000009000");
+    // helpers
+    private void initHexCommands() {
+        hexCommands.put("00A404000AA000000291A00000019100",
+                "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
+        hexCommands.put("00B201A420",
+                "00000000000000000000000000000000000000000000000000000000000000009000");
     }
 
-    public void addHexCommand(String command, String response){
-        assert command !=null && response != null : "command and response should not be null";
+    public void addHexCommand(String command, String response) {
+        assert command != null && response != null : "command and response should not be null";
         hexCommands.put(command, response);
     }
 
-    public void removeHexCommand(String command){
-        assert command !=null : "command should not be null";
+    public void removeHexCommand(String command) {
+        assert command != null : "command should not be null";
         hexCommands.remove(command);
     }
 }

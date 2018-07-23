@@ -50,7 +50,8 @@ public class SeRequestTest {
         seProtocol = getASeProtocol();
         selectionStatusCode = ApduRequestTest.getASuccessFulStatusCode();
         selector = getAidSelector();
-        seRequest = new SeRequest(getAidSelector(), apdus, keepChannelOpen, seProtocol, selectionStatusCode);
+        seRequest = new SeRequest(getAidSelector(), apdus, keepChannelOpen, seProtocol,
+                selectionStatusCode);
     }
 
     @Test
@@ -137,7 +138,8 @@ public class SeRequestTest {
 
     @Test
     public void constructor3() {
-        seRequest = new SeRequest(getAidSelector(), apdus, keepChannelOpen, seProtocol, selectionStatusCode);
+        seRequest = new SeRequest(getAidSelector(), apdus, keepChannelOpen, seProtocol,
+                selectionStatusCode);
         Assert.assertEquals(getAidSelector().toString(), seRequest.getSelector().toString());
         Assert.assertEquals(keepChannelOpen, seRequest.isKeepChannelOpen());
         Assert.assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
@@ -158,7 +160,8 @@ public class SeRequestTest {
         SeProtocol seProtocol = getASeProtocol();
         Set<Short> selectionStatusCode = ApduRequestTest.getASuccessFulStatusCode();
 
-        return new SeRequest(getAidSelector(), apdus, keepChannelOpen, seProtocol, selectionStatusCode);
+        return new SeRequest(getAidSelector(), apdus, keepChannelOpen, seProtocol,
+                selectionStatusCode);
 
     }
 
