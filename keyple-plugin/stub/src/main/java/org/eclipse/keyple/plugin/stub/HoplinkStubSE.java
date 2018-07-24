@@ -21,6 +21,8 @@ public class HoplinkStubSE implements StubSecureElement {
 
     boolean isPhysicalChannelOpen = false;
     Map<String, String> hexCommands = new HashMap<String, String>();
+    static SeProtocol seProtocol = ContactlessProtocols.PROTOCOL_ISO14443_4;
+
 
     public HoplinkStubSE() {
         initHexCommands();
@@ -61,7 +63,7 @@ public class HoplinkStubSE implements StubSecureElement {
 
     @Override
     public SeProtocol getSeProcotol() {
-        return ContactlessProtocols.PROTOCOL_ISO14443_3B;
+        return seProtocol;
     }
 
 

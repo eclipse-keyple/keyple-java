@@ -77,11 +77,11 @@ public class StubReaderTest {
         SeResponseSet seResponse = reader.transmit(requests);
 
         // assert
-        Assert.assertTrue(seResponse.getSingleResponse().getFci().isSuccessful());
+        Assert.assertTrue(seResponse.getSingleResponse().getApduResponses().get(0).isSuccessful());
     }
 
 
-    @Test(expected = IOReaderException.class)
+    @Test
     public void transmit_null_Selection() throws IOReaderException {
         // init SE
         // no SE
