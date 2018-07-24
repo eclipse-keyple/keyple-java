@@ -16,7 +16,6 @@ import java.util.*;
 import org.eclipse.keyple.calypso.commands.po.PoRevision;
 import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.seproxy.ApduRequest;
-import org.eclipse.keyple.seproxy.ApduRequestTest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.SeRequest;
@@ -33,7 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-
+@SuppressWarnings("PMD.SignatureDeclareThrowsException")
 @RunWith(MockitoJUnitRunner.class)
 public class StubReaderTest {
 
@@ -58,6 +57,7 @@ public class StubReaderTest {
         reader.insertSe(getHoplinkSE());
         Assert.assertTrue(reader.isSePresent());
     }
+
 
     @Test(expected = IOReaderException.class)
     public void transmit_Hoplink_null() throws Exception {
@@ -90,8 +90,10 @@ public class StubReaderTest {
         SeRequestSet seRequest = getRequestIsoDepSetSample();
 
         // test
-        Assert.assertTrue(
-                reader.transmit(seRequest).getSingleResponse().getApduResponses().size() == 0);
+        SeResponseSet resp = reader.transmit(seRequest);
+
+        Assert.assertNotNull(resp);
+
     }
 
 
@@ -145,7 +147,7 @@ public class StubReaderTest {
     @Test(expected = ChannelStateReaderException.class)
     public void processApduRequestTest() throws Exception {
         // init request
-        ApduRequest apdu = ApduRequestTest.getApduSample();
+        ApduRequest apdu = getApduSample();
 
         // init SE
         reader.insertSe(getSENoconnection());
@@ -236,6 +238,10 @@ public class StubReaderTest {
             }
         };
 
+    }
+
+    static ApduRequest getApduSample() {
+        return new ApduRequest(ByteBufferUtils.fromHex("FEDCBA98 9005h"), false);
     }
 
 

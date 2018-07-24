@@ -8,11 +8,13 @@
 
 package org.eclipse.keyple.seproxy;
 
-import static org.junit.Assert.*;
 import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AbstractApduBufferTest {
 
     @Test

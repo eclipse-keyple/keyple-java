@@ -11,10 +11,12 @@ package org.eclipse.keyple.seproxy;
 import static org.junit.Assert.*;
 import java.util.HashSet;
 import java.util.Set;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SeRequestSetTest {
 
     // object to test
@@ -40,7 +42,7 @@ public class SeRequestSetTest {
 
     @Test
     public void getRequests() {
-        Assert.assertArrayEquals(sortedRequests.toArray(), seRequestSet.getRequests().toArray());
+        assertArrayEquals(sortedRequests.toArray(), seRequestSet.getRequests().toArray());
     }
 
     @Test
@@ -48,7 +50,7 @@ public class SeRequestSetTest {
         seRequestSet = new SeRequestSet(firstRequest);
 
         // with only one element it works
-        Assert.assertEquals(firstRequest, seRequestSet.getSingleRequest());
+        assertEquals(firstRequest, seRequestSet.getSingleRequest());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -62,7 +64,7 @@ public class SeRequestSetTest {
     @Test
     public void toStringNull() {
         seRequestSet = new SeRequestSet(new HashSet<SeRequest>());
-        Assert.assertNotNull(seRequestSet.toString());
+        assertNotNull(seRequestSet.toString());
     }
 
     /*

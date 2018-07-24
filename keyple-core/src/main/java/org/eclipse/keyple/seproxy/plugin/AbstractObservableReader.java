@@ -55,7 +55,9 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * @throws IOReaderException
      */
     public final SeResponseSet transmit(SeRequestSet requestSet) throws IOReaderException {
-        assert requestSet != null : "Se Request Set must not be null";
+        if (requestSet == null) {
+            throw new IOReaderException("seRequestSet must not be null");
+        }
 
         // TODO do a better log of SeRequestSet data
         logger.info("SeRequestSet", "reader", this.getName(), "data", requestSet.toString());

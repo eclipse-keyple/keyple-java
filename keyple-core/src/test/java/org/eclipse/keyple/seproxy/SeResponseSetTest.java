@@ -11,11 +11,11 @@ package org.eclipse.keyple.seproxy;
 import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+@SuppressWarnings("PMD.SignatureDeclareThrowsException")
 @RunWith(MockitoJUnitRunner.class)
 public class SeResponseSetTest {
 
@@ -23,9 +23,9 @@ public class SeResponseSetTest {
     @Test
     public void getSingleResponse() throws Exception {
         SeResponseSet set = new SeResponseSet(SeResponseTest.getASeResponse());
-        // Assert.assertArrayEquals(SeResponseTest.getASeResponse().getApduResponses().toArray(),
+        // assertArrayEquals(SeResponseTest.getASeResponse().getApduResponses().toArray(),
         // set.getSingleResponse().getApduResponses().toArray());
-        Assert.assertEquals(SeResponseTest.getASeResponse(), set.getSingleResponse());
+        assertEquals(SeResponseTest.getASeResponse(), set.getSingleResponse());
 
 
     }
@@ -47,7 +47,7 @@ public class SeResponseSetTest {
         seResponses.add(SeResponseTest.getASeResponse());
         seResponses.add(SeResponseTest.getASeResponse());
         SeResponseSet set = new SeResponseSet(seResponses);
-        Assert.assertArrayEquals(seResponses.toArray(), set.getResponses().toArray());
+        assertArrayEquals(seResponses.toArray(), set.getResponses().toArray());
     }
 
 
@@ -55,7 +55,7 @@ public class SeResponseSetTest {
     public void toStringTest() throws Exception {
         SeResponse emptySeR = new SeResponse(true, new ApduResponse(null, null), null, null);
         SeResponseSet set = new SeResponseSet(emptySeR);
-        Assert.assertNotNull(set.toString());
+        assertNotNull(set.toString());
     }
 
 }

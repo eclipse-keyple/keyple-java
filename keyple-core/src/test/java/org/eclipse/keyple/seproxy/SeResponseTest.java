@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+@SuppressWarnings("PMD.SignatureDeclareThrowsException")
 @RunWith(MockitoJUnitRunner.class)
 public class SeResponseTest {
 

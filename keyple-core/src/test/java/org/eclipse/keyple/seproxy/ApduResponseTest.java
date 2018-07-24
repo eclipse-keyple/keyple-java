@@ -14,20 +14,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.eclipse.keyple.util.ByteBufferUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 @RunWith(MockitoJUnitRunner.class)
 public class ApduResponseTest {
 
 
-    @Before
-    public void setUp() throws Exception {
 
-    }
+    @Before
+    public void setUp() {}
 
 
 
@@ -54,7 +53,7 @@ public class ApduResponseTest {
 
     @Test
     public void constructorFailResponse() {
-        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9004h"), null);;
+        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9004h"), null);
         assertNotNull(response);
         assertEquals("FEDCBA989004", ByteBufferUtils.toHex(response.getBytes()));
         assertEquals(ByteBufferUtils.fromHex("FEDCBA98"), response.getDataOut());
@@ -65,7 +64,7 @@ public class ApduResponseTest {
     @Test
     public void constructorFailResponseWithCustomCode() {
         ApduResponse response =
-                new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9004h"), getA9005CustomCode());;
+                new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9004h"), getA9005CustomCode());
         assertNotNull(response);
         assertEquals("FEDCBA989004", ByteBufferUtils.toHex(response.getBytes()));
         assertEquals(ByteBufferUtils.fromHex("FEDCBA98"), response.getDataOut());
@@ -101,13 +100,13 @@ public class ApduResponseTest {
     @Test
     public void hashcodeNull() {
         ApduResponse resp = new ApduResponse(null, null);
-        Assert.assertNotNull(resp.hashCode());
+        assertNotNull(resp.hashCode());
     }
 
     @Test
     public void testToStringNull() {
         ApduResponse resp = new ApduResponse(null, null);
-        Assert.assertNotNull(resp.toString());
+        assertNotNull(resp.toString());
     }
 
     /*

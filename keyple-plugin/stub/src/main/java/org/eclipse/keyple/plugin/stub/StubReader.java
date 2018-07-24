@@ -56,12 +56,16 @@ public class StubReader extends AbstractSelectionLocalReader {
 
     @Override
     protected void openPhysicalChannel() throws IOReaderException, ChannelStateReaderException {
-        se.openPhysicalChannel();
+        if (se != null) {
+            se.openPhysicalChannel();
+        }
     }
 
     @Override
     public void closePhysicalChannel() throws IOReaderException {
-        se.closePhysicalChannel();
+        if (se != null) {
+            se.closePhysicalChannel();
+        }
     }
 
     @Override
@@ -71,7 +75,7 @@ public class StubReader extends AbstractSelectionLocalReader {
 
     @Override
     public boolean protocolFlagMatches(SeProtocol protocolFlag) throws InvalidMessageException {
-        return protocolFlag.equals(se.getSeProcotol());
+        return se != null && protocolFlag.equals(se.getSeProcotol());
     }
 
     @Override

@@ -18,10 +18,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+@SuppressWarnings("PMD.SignatureDeclareThrowsException")
 @RunWith(MockitoJUnitRunner.class)
 public class ApduRequestTest {
-
-
 
     @Before
     public void setUp() throws Exception {
@@ -57,14 +56,13 @@ public class ApduRequestTest {
      */
 
     public static ApduRequest getApduSample() {
-        String name = getAName();
         Set<Short> successfulStatusCodes = getASuccessFulStatusCode();
         Boolean case4 = true;
         ByteBuffer command = getACommand();
         ApduRequest request = new ApduRequest(command, case4, successfulStatusCodes);
         request.setName(getAName());
         return request;
-    };
+    }
 
     static ByteBuffer getACommand() {
         return ByteBufferUtils.fromHex("FEDCBA98 9005h");
@@ -72,7 +70,7 @@ public class ApduRequestTest {
 
     static Set<Short> getASuccessFulStatusCode() {
         Set<Short> successfulStatusCodes = new HashSet<Short>();
-        successfulStatusCodes.add(new Short("1"));
+        successfulStatusCodes.add(Short.valueOf("9000"));
         return successfulStatusCodes;
     }
 

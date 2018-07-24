@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+@SuppressWarnings("PMD.SignatureDeclareThrowsException")
 @RunWith(MockitoJUnitRunner.class)
 public class SeProxyServiceTest {
 
@@ -29,8 +30,6 @@ public class SeProxyServiceTest {
 
 
     static String PLUGIN_NAME = "plugin1";
-    static String PLUGIN_NAME_2 = "plugin2";
-    static String PLUGIN_NAME_3 = "plugin3";
 
     @Before
     public void setupBeforeEach() {
