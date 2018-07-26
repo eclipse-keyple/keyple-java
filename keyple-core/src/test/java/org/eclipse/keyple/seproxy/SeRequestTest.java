@@ -9,58 +9,173 @@
 package org.eclipse.keyple.seproxy;
 
 import static org.junit.Assert.*;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@SuppressWarnings("PMD.SignatureDeclareThrowsException")
+@RunWith(MockitoJUnitRunner.class)
 public class SeRequestTest {
 
-    private static final ByteBuffer aid = ByteBufferUtils.fromHex("1122334455667788");
-    private static final ByteBuffer aidTooShort = ByteBufferUtils.fromHex("11223344");
-    private static final ByteBuffer aidTooLong =
-            ByteBufferUtils.fromHex("11223344556677889900AABBCCDDEEFF0011");
+    // object to test
+    SeRequest seRequest;
+
+    public List<ApduRequest> getApdus() {
+        return apdus;
+    }
+
+    // attributes
+    List<ApduRequest> apdus;
+    Boolean keepChannelOpen;
+    SeProtocol seProtocol;
+    Set<Short> selectionStatusCode;
+    SeRequest.Selector selector;
+
+
+
+    @Before
+    public void setUp() {
+
+        apdus = getAapduLists();
+        keepChannelOpen = true;
+        seProtocol = getASeProtocol();
+        selectionStatusCode = ApduRequestTest.getASuccessFulStatusCode();
+        selector = getAidSelector();
+        seRequest = new SeRequest(getAidSelector(), apdus, keepChannelOpen, seProtocol,
+                selectionStatusCode);
+    }
 
     @Test
     public void testSERequest() {
-        SeRequestSet request = new SeRequestSet(
-                new SeRequest(new SeRequest.AidSelector(aid), new ArrayList<ApduRequest>(), true));
-        assertNotNull(request);
+        assertNotNull(seRequest);
+    }
+
+
+    @Test
+    public void getSelector() {
+        // test
+        assertEquals(getAidSelector().toString(), seRequest.getSelector().toString());
+
     }
 
     @Test
-    public void testGetAidToSelect() {
-        SeRequestSet request = new SeRequestSet(
-                new SeRequest(new SeRequest.AidSelector(aid), new ArrayList<ApduRequest>(), true));
-        assertEquals(aid, ((SeRequest.AidSelector) request.getSingleRequest().getSelector())
-                .getAidToSelect());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetAidToSelectTooShort() {
-        new SeRequestSet(new SeRequest(new SeRequest.AidSelector(aidTooShort),
-                new ArrayList<ApduRequest>(), true));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetAidToSelectTooLong() {
-        new SeRequestSet(new SeRequest(new SeRequest.AidSelector(aidTooLong),
-                new ArrayList<ApduRequest>(), true));
+    public void getApduRequests() {
+        // test
+        seRequest = new SeRequest(getAidSelector(), apdus, false);
+        assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
     }
 
     @Test
-    public void testGetApduRequests() {
-        SeRequestSet request = new SeRequestSet(
-                new SeRequest(new SeRequest.AidSelector(aid), new ArrayList<ApduRequest>(), true));
-        assertArrayEquals(new ArrayList<ApduRequest>().toArray(),
-                request.getSingleRequest().getApduRequests().toArray());
+    public void isKeepChannelOpen() {
+        assertTrue(seRequest.isKeepChannelOpen());
     }
 
     @Test
-    public void testAskKeepChannelOpen() {
-        SeRequestSet request = new SeRequestSet(
-                new SeRequest(new SeRequest.AidSelector(aid), new ArrayList<ApduRequest>(), true));
-        assertTrue(request.getSingleRequest().isKeepChannelOpen());
+    public void getProtocolFlag() {
+        seRequest = new SeRequest(getAidSelector(), new ArrayList<ApduRequest>(), true, seProtocol);
+        assertEquals(seProtocol, seRequest.getProtocolFlag());
+    }
+
+    @Test
+    public void getSuccessfulSelectionStatusCodes() {
+        seRequest = new SeRequest(getAidSelector(), new ArrayList<ApduRequest>(), true,
+                ContactlessProtocols.PROTOCOL_B_PRIME, selectionStatusCode);
+        assertArrayEquals(selectionStatusCode.toArray(),
+                seRequest.getSuccessfulSelectionStatusCodes().toArray());
+    }
+
+    @Test
+    public void toStringNull() {
+        seRequest = new SeRequest(null, null, true, null, null);
+        assertNotNull(seRequest.toString());
+    }
+
+    /*
+     * Constructors
+     */
+    @Test
+    public void constructor1() {
+        seRequest = new SeRequest(getAidSelector(), apdus, keepChannelOpen);
+        assertEquals(getAidSelector().toString(), seRequest.getSelector().toString());
+        assertEquals(keepChannelOpen, seRequest.isKeepChannelOpen());
+        assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
+        //
+        assertNull(seRequest.getProtocolFlag());
+        assertNull(seRequest.getSuccessfulSelectionStatusCodes());
+    }
+
+    @Test
+    public void constructor2() {
+        seRequest = new SeRequest(getAidSelector(), apdus, keepChannelOpen, seProtocol);
+        assertEquals(getAidSelector().toString(), seRequest.getSelector().toString());
+        assertEquals(keepChannelOpen, seRequest.isKeepChannelOpen());
+        assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
+        assertEquals(seProtocol, seRequest.getProtocolFlag());
+        //
+        assertNull(seRequest.getSuccessfulSelectionStatusCodes());
+    }
+
+    @Test
+    public void constructor2b() {
+        seRequest = new SeRequest(getAidSelector(), apdus, keepChannelOpen, selectionStatusCode);
+        assertEquals(getAidSelector().toString(), seRequest.getSelector().toString());
+        assertEquals(keepChannelOpen, seRequest.isKeepChannelOpen());
+        assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
+        assertNull(seRequest.getProtocolFlag());
+        //
+        assertArrayEquals(selectionStatusCode.toArray(),
+                seRequest.getSuccessfulSelectionStatusCodes().toArray());
+    }
+
+    @Test
+    public void constructor3() {
+        seRequest = new SeRequest(getAidSelector(), apdus, keepChannelOpen, seProtocol,
+                selectionStatusCode);
+        assertEquals(getAidSelector().toString(), seRequest.getSelector().toString());
+        assertEquals(keepChannelOpen, seRequest.isKeepChannelOpen());
+        assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
+        assertEquals(seProtocol, seRequest.getProtocolFlag());
+        assertArrayEquals(selectionStatusCode.toArray(),
+                seRequest.getSuccessfulSelectionStatusCodes().toArray());
+    }
+
+
+    /*
+     * HELPERS FOR OTHERS TESTS SUITE
+     */
+
+    static SeRequest getSeRequestSample() {
+
+        List<ApduRequest> apdus = getAapduLists();
+        Boolean keepChannelOpen = true;
+        SeProtocol seProtocol = getASeProtocol();
+        Set<Short> selectionStatusCode = ApduRequestTest.getASuccessFulStatusCode();
+
+        return new SeRequest(getAidSelector(), apdus, keepChannelOpen, seProtocol,
+                selectionStatusCode);
+
+    }
+
+    static List<ApduRequest> getAapduLists() {
+        List<ApduRequest> apdus;
+        apdus = new ArrayList<ApduRequest>();
+        apdus.add(ApduRequestTest.getApduSample());
+        apdus.add(ApduRequestTest.getApduSample());
+        return apdus;
+    }
+
+    static SeProtocol getASeProtocol() {
+        return ContactlessProtocols.PROTOCOL_B_PRIME;
+    }
+
+    static SeRequest.Selector getAidSelector() {
+        return new SeRequest.AidSelector(ByteBufferUtils.fromHex("A000000291A000000191"));
     }
 
 }

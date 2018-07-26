@@ -9,32 +9,73 @@
 package org.eclipse.keyple.seproxy;
 
 import static org.junit.Assert.*;
+import java.nio.ByteBuffer;
+import java.util.HashSet;
+import java.util.Set;
 import org.eclipse.keyple.util.ByteBufferUtils;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@SuppressWarnings("PMD.SignatureDeclareThrowsException")
+@RunWith(MockitoJUnitRunner.class)
 public class ApduRequestTest {
+
+    @Before
+    public void setUp() throws Exception {
+
+    }
+
+    @Test
+    public void testSimpleAPDURequest() {
+        ApduRequest request = new ApduRequest(getACommand(), true);
+        assertNotNull(request);
+        assertEquals(null, request.getName());
+        assertTrue(request.isCase4());
+        assertEquals(getACommand(), request.getBytes());
+        assertEquals(null, request.getSuccessfulStatusCodes());
+        assertEquals("null" + ": FEDCBA989005", request.toString());
+    }
 
     @Test
     public void testAPDURequest() {
-        ApduRequest request = new ApduRequest(ByteBufferUtils.fromHex("0102"), true);
+        ApduRequest request = getApduSample();
         assertNotNull(request);
-    }
-
-    // @Test
-    // public void testGetbytes() {
-    // ApduRequest request = new ApduRequest(new byte[] {(byte) 0x01, (byte) 0x02}, true);
-    // assertArrayEquals(new byte[] {(byte) 0x01, (byte) 0x02}, request.getBytes());
-    // }
-
-    @Test
-    public void testIsCase4() {
-        ApduRequest request = new ApduRequest(ByteBufferUtils.fromHex("0102"), true);
         assertTrue(request.isCase4());
+        assertEquals(getACommand(), request.getBytes());
+        assertEquals(getAName(), request.getName());
+        assertEquals(getASuccessFulStatusCode(), request.getSuccessfulStatusCodes());
+        assertEquals(getAName() + ": FEDCBA989005", request.toString());
     }
 
-    // @Test
-    // public void testToString() {
-    // ApduRequest request = new ApduRequest(ByteBufferUtils.fromHex("0102"), true);
-    // assertEquals("Req{0102}", request.toString());
-    // }
+
+
+    /*
+     * HELPERS
+     */
+
+    public static ApduRequest getApduSample() {
+        Set<Short> successfulStatusCodes = getASuccessFulStatusCode();
+        Boolean case4 = true;
+        ByteBuffer command = getACommand();
+        ApduRequest request = new ApduRequest(command, case4, successfulStatusCodes);
+        request.setName(getAName());
+        return request;
+    }
+
+    static ByteBuffer getACommand() {
+        return ByteBufferUtils.fromHex("FEDCBA98 9005h");
+    }
+
+    static Set<Short> getASuccessFulStatusCode() {
+        Set<Short> successfulStatusCodes = new HashSet<Short>();
+        successfulStatusCodes.add(Short.valueOf("9000"));
+        return successfulStatusCodes;
+    }
+
+    static String getAName() {
+        return "TEST";
+    }
+
 }

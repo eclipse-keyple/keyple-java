@@ -9,6 +9,7 @@
 package org.eclipse.keyple.seproxy;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -34,18 +35,23 @@ public final class ApduResponse extends AbstractApduBuffer {
      * @param successfulStatusCodes optional list of successful status codes other than 0x9000
      */
     public ApduResponse(ByteBuffer buffer, Set<Short> successfulStatusCodes) {
+
         super(buffer);
-        // TODO shouldn't we check the case where length is < 2 and throw an exception?
-        int statusCode = buffer.getShort(buffer.limit() - 2);
-        // java is signed only
-        if (statusCode < 0) {
-            statusCode += -2 * Short.MIN_VALUE;
-        }
-        if (successfulStatusCodes != null) {
-            this.successful =
-                    statusCode == 0x9000 || successfulStatusCodes.contains((short) statusCode);
+        if (buffer == null) {
+            this.successful = false;
         } else {
-            this.successful = statusCode == 0x9000;
+            // TODO shouldn't we check the case where length is < 2 and throw an exception?
+            int statusCode = buffer.getShort(buffer.limit() - 2);
+            // java is signed only
+            if (statusCode < 0) {
+                statusCode += -2 * Short.MIN_VALUE;
+            }
+            if (successfulStatusCodes != null) {
+                this.successful =
+                        statusCode == 0x9000 || successfulStatusCodes.contains((short) statusCode);
+            } else {
+                this.successful = statusCode == 0x9000;
+            }
         }
     }
 
@@ -84,5 +90,27 @@ public final class ApduResponse extends AbstractApduBuffer {
     @Override
     public String toString() {
         return "Resp{" + super.toString() + "}";
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ApduResponse)) {
+            return false;
+        }
+
+        ApduResponse resp = (ApduResponse) o;
+        return resp.getBytes().equals(this.buffer) && resp.isSuccessful() == this.successful;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 17;
+        hash = 19 * hash + Objects.hashCode(this.successful);
+        hash = 31 * hash + Objects.hashCode(this.buffer);
+        return hash;
     }
 }

@@ -9,56 +9,134 @@
 package org.eclipse.keyple.seproxy;
 
 import static org.junit.Assert.*;
-import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.eclipse.keyple.util.ByteBufferUtils;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
-
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
+@RunWith(MockitoJUnitRunner.class)
 public class ApduResponseTest {
 
+
+
+    @Before
+    public void setUp() {}
+
+
+
     @Test
-    public void testAPDUResponse() {
-        ApduResponse response = new ApduResponse(
-                ByteBuffer.wrap(new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04}),
-                null);
+    public void constructorSuccessFullResponse() {
+        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), null);
         assertNotNull(response);
-    }
-
-    // @Test
-    // public void testGetbytes() {
-    // ApduResponse response = new ApduResponse(new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03,
-    // (byte) 0x04}, true);
-    // assertArrayEquals(new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04},
-    // response.getBytes());
-    // }
-
-    @Test
-    public void testIsSuccessful() {
-        ApduResponse response = new ApduResponse(
-                ByteBuffer.wrap(new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x90, (byte) 0x00}),
-                null);
+        assertEquals(0x9000, response.getStatusCode());
+        assertEquals("FEDCBA989000", ByteBufferUtils.toHex(response.getBytes()));
+        assertEquals(ByteBufferUtils.fromHex("FEDCBA98"), response.getDataOut());
         assertTrue(response.isSuccessful());
     }
 
     @Test
-    public void testGetStatusCode() {
-        ApduResponse response = new ApduResponse(
-                ByteBuffer.wrap(new byte[] {(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04}),
+    public void constructorSuccessFullResponseWithCustomCode() {
+        ApduResponse response =
+                new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9005h"), getA9005CustomCode());
+        assertNotNull(response);
+        assertEquals(0x9005, response.getStatusCode());
+        assertEquals("FEDCBA989005", ByteBufferUtils.toHex(response.getBytes()));
+        assertEquals(ByteBufferUtils.fromHex("FEDCBA98"), response.getDataOut());
+        assertTrue(response.isSuccessful());
+    }
+
+    @Test
+    public void constructorFailResponse() {
+        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9004h"), null);
+        assertNotNull(response);
+        assertEquals("FEDCBA989004", ByteBufferUtils.toHex(response.getBytes()));
+        assertEquals(ByteBufferUtils.fromHex("FEDCBA98"), response.getDataOut());
+        assertEquals(0x9004, response.getStatusCode());
+        assertFalse(response.isSuccessful());
+    }
+
+    @Test
+    public void constructorFailResponseWithCustomCode() {
+        ApduResponse response =
+                new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9004h"), getA9005CustomCode());
+        assertNotNull(response);
+        assertEquals("FEDCBA989004", ByteBufferUtils.toHex(response.getBytes()));
+        assertEquals(ByteBufferUtils.fromHex("FEDCBA98"), response.getDataOut());
+        assertEquals(0x9004, response.getStatusCode());
+        assertFalse(response.isSuccessful());
+    }
+
+    @Test
+    public void isEqualsTest() {
+        assertTrue(getAFCI().equals(getAFCI()));
+    }
+
+    @Test
+    public void isThisEquals() {
+        ApduResponse resp = getAFCI();
+        assertTrue(resp.equals(resp));
+    }
+
+    @Test
+    public void isNotEquals() {
+        ApduResponse resp = getAFCI();
+        Object obj = new Object();
+        assertFalse(resp.equals(obj));
+    }
+
+    @Test
+    public void hashcodeTest() {
+        ApduResponse resp = getAFCI();
+        ApduResponse resp2 = getAFCI();
+        assertTrue(resp.hashCode() == resp2.hashCode());
+    }
+
+    @Test
+    public void hashcodeNull() {
+        ApduResponse resp = new ApduResponse(null, null);
+        assertNotNull(resp.hashCode());
+    }
+
+    @Test
+    public void testToStringNull() {
+        ApduResponse resp = new ApduResponse(null, null);
+        assertNotNull(resp.toString());
+    }
+
+    /*
+     * HELPERS
+     */
+
+
+    static Set<Short> getA9005CustomCode() {
+        Set<Short> successfulStatusCodes = new HashSet<Short>();
+        successfulStatusCodes.add((short) 0x9005);
+        return successfulStatusCodes;
+    }
+
+    static ApduResponse getAAtr() {
+        return new ApduResponse(ByteBufferUtils.fromHex("3B8F8001804F0CA000000306030001000000006A"),
                 null);
-        assertEquals(0x03 * 256 + 0x04, response.getStatusCode());
-        // assertArrayEquals(new byte[] {(byte) 0x03, (byte) 0x04}, response.getStatusCodeOld());
     }
 
-    @Test
-    public void niceFormat() {
-        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), null);
-        assertEquals("FEDCBA989000", ByteBufferUtils.toHex(response.getBytes()));
+    static ApduResponse getAFCI() {
+        return new ApduResponse(ByteBufferUtils.fromHex("9000"), null);
     }
 
-    @Test
-    public void statusCode() {
-        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), null);
-        assertEquals(0x9000, response.getStatusCode());
+    static ApduResponse getSuccessfullResponse() {
+        return new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), null);
+    }
+
+    static List<ApduResponse> getAListOfAPDUs() {
+        List<ApduResponse> apdus = new ArrayList<ApduResponse>();
+        apdus.add(getSuccessfullResponse());
+        return apdus;
     }
 
 }

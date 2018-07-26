@@ -9,6 +9,7 @@
 package org.eclipse.keyple.seproxy;
 
 import java.util.List;
+import java.util.Objects;
 import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 
 /**
@@ -98,5 +99,32 @@ public final class SeResponse {
      */
     public List<ApduResponse> getApduResponses() {
         return apduResponses;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof SeResponse)) {
+            return false;
+        }
+
+        SeResponse seResponse = (SeResponse) o;
+        return seResponse.getAtr().equals(atr) && seResponse.getFci().equals(fci)
+                && seResponse.getApduResponses().equals(apduResponses)
+                && seResponse.wasChannelPreviouslyOpen() == channelPreviouslyOpen;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 17;
+        hash = 31 * hash + Objects.hashCode(this.atr);
+        hash = 7 * hash + Objects.hashCode(this.fci);
+        hash = 29 * hash + Objects.hashCode(this.apduResponses);
+        hash = 13 * hash + Objects.hashCode(this.channelPreviouslyOpen);
+        return hash;
     }
 }

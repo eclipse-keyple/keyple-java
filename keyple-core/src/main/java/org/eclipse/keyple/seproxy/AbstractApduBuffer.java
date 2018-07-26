@@ -52,6 +52,7 @@ class AbstractApduBuffer {
      * @return A byte buffer coming from the inner {@link #buffer}
      */
     public ByteBuffer slice(int position, int length) {
+        assert buffer != null : "(null) buffer can not be sliced";
         ByteBuffer duplicate = buffer.duplicate();
         duplicate.position(position);
         duplicate.limit(position + length);
