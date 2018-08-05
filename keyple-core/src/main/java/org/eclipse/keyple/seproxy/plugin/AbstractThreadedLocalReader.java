@@ -48,21 +48,6 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
     }
 
     /**
-     * Adds an observer to the reader event.
-     * 
-     * @param observer Observer to notify
-     */
-    @Override
-    public final void addObserver(Observer observer) {
-        super.addObserver(observer);
-    }
-
-    @Override
-    public final void removeObserver(Observer observer) {
-        super.removeObserver(observer);
-    }
-
-    /**
      * Waits for a card. Returns true if a card is detected before the end of the provided timeout.
      * Returns false if no card detected within the delay.
      *
