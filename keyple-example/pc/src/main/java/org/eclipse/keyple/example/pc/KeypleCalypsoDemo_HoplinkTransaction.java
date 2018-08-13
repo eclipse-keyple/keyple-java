@@ -321,10 +321,10 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
         pluginsSet.add(PcscPlugin.getInstance());
         seProxyService.setPlugins(pluginsSet);
 
-        ProxyReader poReader =
-                getReader(seProxyService, KeypleGenericDemo_ReadersSettings.PO_READER_NAME_REGEX);
-        ProxyReader csmReader =
-                getReader(seProxyService, KeypleGenericDemo_ReadersSettings.CSM_READER_NAME_REGEX);
+        ProxyReader poReader = getReader(seProxyService,
+                KeypleCalypsoDemo_PcscReadersSettings.PO_READER_NAME_REGEX);
+        ProxyReader csmReader = getReader(seProxyService,
+                KeypleCalypsoDemo_PcscReadersSettings.CSM_READER_NAME_REGEX);
 
 
         if (poReader == csmReader || poReader == null || csmReader == null) {
