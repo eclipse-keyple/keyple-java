@@ -9,9 +9,9 @@
 package org.eclipse.keyple.example.common.deprecated;
 
 import java.util.*;
-import org.eclipse.keyple.calypso.commands.po.PoRevision;
-import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
+import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;

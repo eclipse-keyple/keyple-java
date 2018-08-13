@@ -11,23 +11,23 @@ package org.eclipse.keyple.calypso.transaction;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.calypso.commands.CsmSendableInSession;
-import org.eclipse.keyple.calypso.commands.PoSendableInSession;
-import org.eclipse.keyple.calypso.commands.SendableInSession;
-import org.eclipse.keyple.calypso.commands.csm.CsmRevision;
-import org.eclipse.keyple.calypso.commands.csm.builder.*;
-import org.eclipse.keyple.calypso.commands.csm.parser.CsmGetChallengeRespPars;
-import org.eclipse.keyple.calypso.commands.csm.parser.DigestAuthenticateRespPars;
-import org.eclipse.keyple.calypso.commands.csm.parser.DigestCloseRespPars;
-import org.eclipse.keyple.calypso.commands.po.AbstractPoCommandBuilder;
-import org.eclipse.keyple.calypso.commands.po.PoRevision;
-import org.eclipse.keyple.calypso.commands.po.builder.AbstractOpenSessionCmdBuild;
-import org.eclipse.keyple.calypso.commands.po.builder.CloseSessionCmdBuild;
-import org.eclipse.keyple.calypso.commands.po.parser.AbstractOpenSessionRespPars;
-import org.eclipse.keyple.calypso.commands.po.parser.CloseSessionRespPars;
-import org.eclipse.keyple.calypso.commands.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.calypso.commands.utils.ApduUtils;
-import org.eclipse.keyple.commands.AbstractApduCommandBuilder;
+import org.eclipse.keyple.calypso.command.CsmSendableInSession;
+import org.eclipse.keyple.calypso.command.PoSendableInSession;
+import org.eclipse.keyple.calypso.command.SendableInSession;
+import org.eclipse.keyple.calypso.command.csm.CsmRevision;
+import org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild;
+import org.eclipse.keyple.calypso.command.csm.parser.CsmGetChallengeRespPars;
+import org.eclipse.keyple.calypso.command.csm.parser.DigestAuthenticateRespPars;
+import org.eclipse.keyple.calypso.command.csm.parser.DigestCloseRespPars;
+import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.builder.AbstractOpenSessionCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.CloseSessionCmdBuild;
+import org.eclipse.keyple.calypso.command.po.parser.AbstractOpenSessionRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.CloseSessionRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
+import org.eclipse.keyple.calypso.command.util.ApduUtils;
+import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
@@ -144,12 +144,14 @@ public class PoSecureSession {
 
         // Define CSM Select Diversifier command
         AbstractApduCommandBuilder selectDiversifier =
-                new SelectDiversifierCmdBuild(this.csmRevision, poCalypsoInstanceSerial);
+                new org.eclipse.keyple.calypso.command.csm.builder.SelectDiversifierCmdBuild(
+                        this.csmRevision, poCalypsoInstanceSerial);
         csmApduRequestList.add(selectDiversifier.getApduRequest());
 
         // Define CSM Get Challenge command
         AbstractApduCommandBuilder csmGetChallenge =
-                new CsmGetChallengeCmdBuild(this.csmRevision, (byte) 0x04);
+                new org.eclipse.keyple.calypso.command.csm.builder.CsmGetChallengeCmdBuild(
+                        this.csmRevision, (byte) 0x04);
         csmApduRequestList.add(csmGetChallenge.getApduRequest());
 
         logger.info("Identification: CSM Request", "action", "po_secure_session.ident_csm_request",
@@ -260,9 +262,10 @@ public class PoSecureSession {
                 kif = (byte) 0x30;
             }
         }
-        AbstractApduCommandBuilder digestInit = new DigestInitCmdBuild(csmRevision, false,
-                poRevision.equals(PoRevision.REV3_2), defaultKeyIndex, kif,
-                poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
+        AbstractApduCommandBuilder digestInit =
+                new org.eclipse.keyple.calypso.command.csm.builder.DigestInitCmdBuild(csmRevision,
+                        false, poRevision.equals(PoRevision.REV3_2), defaultKeyIndex, kif,
+                        poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
         logger.info("Opening: CSM Request", "action", "po_secure_session.open_csm_digest_init",
                 "apdu", ByteBufferUtils.toHex(digestInit.getApduRequest().getBytes()));
 
@@ -278,14 +281,18 @@ public class PoSecureSession {
                  * Session for the first command send in session Build "Digest Update" command for
                  * each PO APDU Request
                  */
-                csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
-                        poApduRequestList.get(i).getBytes())).getApduRequest());
+                csmApduRequestList.add(
+                        (new org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild(
+                                csmRevision, false, poApduRequestList.get(i).getBytes()))
+                                        .getApduRequest());
                 /*
                  * Build "Digest Update" command for each PO APDU Response //TODO => this is the
                  * right command, to fix ApduResponse.getBytes
                  */
-                csmApduRequestList.add(((new DigestUpdateCmdBuild(csmRevision, false,
-                        poApduResponseList.get(i).getBytes())).getApduRequest())); // HACK
+                csmApduRequestList.add(
+                        ((new org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild(
+                                csmRevision, false, poApduResponseList.get(i).getBytes()))
+                                        .getApduRequest())); // HACK
             }
         }
 
@@ -385,9 +392,10 @@ public class PoSecureSession {
                 kif = (byte) 0x30;
             }
         }
-        AbstractApduCommandBuilder digestInit = new DigestInitCmdBuild(csmRevision, false,
-                poRevision.equals(PoRevision.REV3_2), defaultKeyIndex, kif,
-                poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
+        AbstractApduCommandBuilder digestInit =
+                new org.eclipse.keyple.calypso.command.csm.builder.DigestInitCmdBuild(csmRevision,
+                        false, poRevision.equals(PoRevision.REV3_2), defaultKeyIndex, kif,
+                        poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
         logger.info("Opening: CSM Request", "action", "po_secure_session.open_csm_digest_init",
                 "apdu", ByteBufferUtils.toHex(digestInit.getApduRequest().getBytes()));
 
@@ -403,8 +411,10 @@ public class PoSecureSession {
                  * Session for the first command send in session Build "Digest Update" command for
                  * each PO APDU Request
                  */
-                csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
-                        poApduRequestList.get(i).getBytes())).getApduRequest());
+                csmApduRequestList.add(
+                        (new org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild(
+                                csmRevision, false, poApduRequestList.get(i).getBytes()))
+                                        .getApduRequest());
                 /*
                  * Build "Digest Update" command for each PO APDU Response //TODO => this is the
                  * right command, to fix ApduResponse.getBytes
@@ -427,8 +437,9 @@ public class PoSecureSession {
         /* Second ================================================================= */
 
         // Build "Digest Close" command
-        DigestCloseCmdBuild digestClose = new DigestCloseCmdBuild(csmRevision,
-                poRevision.equals(PoRevision.REV3_2) ? (byte) 0x08 : (byte) 0x04);
+        org.eclipse.keyple.calypso.command.csm.builder.DigestCloseCmdBuild digestClose =
+                new org.eclipse.keyple.calypso.command.csm.builder.DigestCloseCmdBuild(csmRevision,
+                        poRevision.equals(PoRevision.REV3_2) ? (byte) 0x08 : (byte) 0x04);
 
         csmApduRequestList.clear();
         csmApduRequestList.add(digestClose.getApduRequest());
@@ -500,7 +511,8 @@ public class PoSecureSession {
 
         // Build CSM Digest Authenticate command
         AbstractApduCommandBuilder digestAuth =
-                new DigestAuthenticateCmdBuild(this.csmRevision, sessionCardSignature);
+                new org.eclipse.keyple.calypso.command.csm.builder.DigestAuthenticateCmdBuild(
+                        this.csmRevision, sessionCardSignature);
         csmApduRequestList.clear();
         csmApduRequestList.add(digestAuth.getApduRequest());
 
@@ -608,12 +620,16 @@ public class PoSecureSession {
          */
         for (int i = 0; i < poApduRequestList.size(); i++) {
             // Build "Digest Update" command for each PO APDU Request
-            csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
-                    poApduRequestList.get(i).getBytes())).getApduRequest());
+            csmApduRequestList
+                    .add((new org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild(
+                            csmRevision, false, poApduRequestList.get(i).getBytes()))
+                                    .getApduRequest());
 
             // Build "Digest Update" command for each PO APDU Response
-            csmApduRequestList.add(((new DigestUpdateCmdBuild(csmRevision, false,
-                    poApduResponseList.get(i).getBytes())).getApduRequest())); // HACK
+            csmApduRequestList
+                    .add(((new org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild(
+                            csmRevision, false, poApduResponseList.get(i).getBytes()))
+                                    .getApduRequest())); // HACK
         }
 
         // Transfert CSM commands
@@ -678,14 +694,18 @@ public class PoSecureSession {
                     // >= 3) && (poApduRequestLength + poApduRequestLength <= 250)
 
                     // Build "Digest Update" command for each PO APDU Request
-                    csmApduRequestList_1.add((new DigestUpdateCmdBuild(csmRevision, false,
-                            poApduRequestList.get(i).getBytes())).getApduRequest());
+                    csmApduRequestList_1.add(
+                            (new org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild(
+                                    csmRevision, false, poApduRequestList.get(i).getBytes()))
+                                            .getApduRequest());
                     // Build "Digest Update" command for each "ANTICIPATED" PO APDU Response
                     // csmApduRequestList_1.add((new DigestUpdateCmdBuild(csmRevision, false,
                     // poApduResponseList_1.get(i).getBytes())).getApduRequest());
-                    csmApduRequestList_1.add((new DigestUpdateCmdBuild(csmRevision, false,
-                            poAnticipatedResponseInsideSession.get(i).getBytes()))
-                                    .getApduRequest());
+                    csmApduRequestList_1.add(
+                            (new org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild(
+                                    csmRevision, false,
+                                    poAnticipatedResponseInsideSession.get(i).getBytes()))
+                                            .getApduRequest());
                 }
             } else {
                 // TODO => error processing
@@ -693,8 +713,9 @@ public class PoSecureSession {
         }
 
         // Build "Digest Close" command
-        DigestCloseCmdBuild digestClose = new DigestCloseCmdBuild(csmRevision,
-                poRevision.equals(PoRevision.REV3_2) ? (byte) 0x08 : (byte) 0x04);
+        org.eclipse.keyple.calypso.command.csm.builder.DigestCloseCmdBuild digestClose =
+                new org.eclipse.keyple.calypso.command.csm.builder.DigestCloseCmdBuild(csmRevision,
+                        poRevision.equals(PoRevision.REV3_2) ? (byte) 0x08 : (byte) 0x04);
 
         csmApduRequestList_1.add(digestClose.getApduRequest());
 
@@ -764,7 +785,8 @@ public class PoSecureSession {
 
         // Build CSM Digest Authenticate command
         AbstractApduCommandBuilder digestAuth =
-                new DigestAuthenticateCmdBuild(this.csmRevision, sessionCardSignature);
+                new org.eclipse.keyple.calypso.command.csm.builder.DigestAuthenticateCmdBuild(
+                        this.csmRevision, sessionCardSignature);
         csmApduRequestList_2.add(digestAuth.getApduRequest());
 
         // ****SECOND**** transfer of CSM commands (keep channel open to avoid unwanted CSM reset)

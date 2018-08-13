@@ -11,9 +11,9 @@ package org.eclipse.keyple.example.common;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
-import org.eclipse.keyple.calypso.commands.po.PoRevision;
-import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.calypso.commands.po.builder.UpdateRecordCmdBuild;
+import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
