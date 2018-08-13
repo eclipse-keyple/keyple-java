@@ -8,20 +8,20 @@
 
 package org.eclipse.keyple.transaction;
 
-import static org.eclipse.keyple.commands.utils.TestsUtilsResponseTabByteGenerator.*;
+import static org.eclipse.keyple.command.util.TestsUtilsResponseTabByteGenerator.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.eclipse.keyple.calypso.commands.PoSendableInSession;
-import org.eclipse.keyple.calypso.commands.po.PoRevision;
-import org.eclipse.keyple.calypso.commands.po.builder.AbstractOpenSessionCmdBuild;
-import org.eclipse.keyple.calypso.commands.po.builder.OpenSession24CmdBuild;
-import org.eclipse.keyple.calypso.commands.po.builder.PoGetChallengeCmdBuild;
-import org.eclipse.keyple.calypso.commands.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.calypso.commands.po.parser.GetDataFciRespPars;
+import org.eclipse.keyple.calypso.command.PoSendableInSession;
+import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.builder.AbstractOpenSessionCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.OpenSession24CmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.PoGetChallengeCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
+import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.*;
