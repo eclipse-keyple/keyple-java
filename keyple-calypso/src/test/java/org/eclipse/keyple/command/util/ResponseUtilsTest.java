@@ -6,13 +6,13 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.commands.utils;
+package org.eclipse.keyple.command.util;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.commands.po.parser.AbstractOpenSessionRespPars;
-import org.eclipse.keyple.calypso.commands.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.calypso.commands.po.parser.OpenSession24RespPars;
-import org.eclipse.keyple.calypso.commands.po.parser.OpenSession32RespPars;
+import org.eclipse.keyple.calypso.command.po.parser.AbstractOpenSessionRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.OpenSession24RespPars;
+import org.eclipse.keyple.calypso.command.po.parser.OpenSession32RespPars;
 import org.junit.Assert;
 import org.junit.Test;
 

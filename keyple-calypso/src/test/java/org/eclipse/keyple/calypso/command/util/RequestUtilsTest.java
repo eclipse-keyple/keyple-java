@@ -6,10 +6,10 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.calypso.commands.utils;
+package org.eclipse.keyple.calypso.command.util;
 
 import static org.junit.Assert.*;
-import org.eclipse.keyple.calypso.commands.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Test;
