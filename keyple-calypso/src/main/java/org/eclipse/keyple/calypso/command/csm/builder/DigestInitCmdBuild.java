@@ -9,16 +9,15 @@
 package org.eclipse.keyple.calypso.command.csm.builder;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.csm.AbstractCsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
+import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 import org.eclipse.keyple.calypso.command.util.RequestUtils;
-import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
  * Builder for the CSM Digest Init APDU command.
  */
-public class DigestInitCmdBuild extends AbstractCsmCommandBuilder {
+public class DigestInitCmdBuild extends CsmCommandBuilder {
 
     /**
      * The command.
@@ -83,16 +82,5 @@ public class DigestInitCmdBuild extends AbstractCsmCommandBuilder {
         request = RequestUtils.constructAPDURequest(cla, CalypsoSmCommands.DIGEST_INIT, p1, p2,
                 dataIn);
 
-    }
-
-    /**
-     * Instantiates a new digest init cmd build.
-     *
-     * @param request the request
-     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
-     */
-    public DigestInitCmdBuild(ApduRequest request) throws IllegalArgumentException {
-        super(command, request);
-        RequestUtils.controlRequestConsistency(command, request);
     }
 }

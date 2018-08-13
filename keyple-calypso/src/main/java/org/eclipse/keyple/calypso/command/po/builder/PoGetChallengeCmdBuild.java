@@ -10,12 +10,10 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.PoSendableInSession;
-import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.util.RequestUtils;
-import org.eclipse.keyple.command.CommandsTable;
-import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
  * The Class PoGetChallengeCmdBuild. This class provides the dedicated constructor to build the PO
@@ -24,10 +22,9 @@ import org.eclipse.keyple.seproxy.ApduRequest;
  * @author Ixxi
  *
  */
-public class PoGetChallengeCmdBuild extends AbstractPoCommandBuilder
-        implements PoSendableInSession {
+public class PoGetChallengeCmdBuild extends PoCommandBuilder implements PoSendableInSession {
 
-    private static CommandsTable command = CalypsoPoCommands.GET_CHALLENGE;
+    private static CalypsoPoCommands command = CalypsoPoCommands.GET_CHALLENGE;
 
     /**
      * Instantiates a new PoGetChallengeCmdBuild.
@@ -50,16 +47,4 @@ public class PoGetChallengeCmdBuild extends AbstractPoCommandBuilder
         this.request = RequestUtils.constructAPDURequest(cla, command, p1, p2, dataIn, optionalLe);
 
     }
-
-    /**
-     * Instantiates a new Get Challenge cmd build from an ApduRequest.
-     *
-     * @param request the request
-     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
-     */
-    public PoGetChallengeCmdBuild(ApduRequest request) throws IllegalArgumentException {
-        super(command, request);
-        RequestUtils.controlRequestConsistency(command, request);
-    }
-
 }

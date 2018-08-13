@@ -10,12 +10,10 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.PoSendableInSession;
-import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.util.RequestUtils;
-import org.eclipse.keyple.command.CommandsTable;
-import org.eclipse.keyple.seproxy.ApduRequest;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -23,10 +21,10 @@ import org.eclipse.keyple.seproxy.ApduRequest;
  * Record APDU command.
  *
  */
-public class UpdateRecordCmdBuild extends AbstractPoCommandBuilder implements PoSendableInSession {
+public class UpdateRecordCmdBuild extends PoCommandBuilder implements PoSendableInSession {
 
     /** The command. */
-    private static CommandsTable command = CalypsoPoCommands.UPDATE_RECORD;
+    private static CalypsoPoCommands command = CalypsoPoCommands.UPDATE_RECORD;
 
     /**
      * Instantiates a new UpdateRecordCmdBuild.
@@ -53,16 +51,4 @@ public class UpdateRecordCmdBuild extends AbstractPoCommandBuilder implements Po
 
         this.request = RequestUtils.constructAPDURequest(cla, command, p1, p2, newRecordData);
     }
-
-    /**
-     * Instantiates a new update record cmd build.
-     *
-     * @param request the request
-     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
-     */
-    public UpdateRecordCmdBuild(ApduRequest request) throws IllegalArgumentException {
-        super(command, request);
-        RequestUtils.controlRequestConsistency(command, request);
-    }
-
 }

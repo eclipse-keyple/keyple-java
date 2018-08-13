@@ -19,7 +19,7 @@ import org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild;
 import org.eclipse.keyple.calypso.command.csm.parser.CsmGetChallengeRespPars;
 import org.eclipse.keyple.calypso.command.csm.parser.DigestAuthenticateRespPars;
 import org.eclipse.keyple.calypso.command.csm.parser.DigestCloseRespPars;
-import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.CloseSessionCmdBuild;
@@ -81,7 +81,7 @@ public class PoSecureSession {
     private ByteBuffer poCalypsoInstanceSerial;
 
     /** The PO Calypso Revision. */
-    public PoRevision poRevision = PoRevision.REV3_1;// AbstractPoCommandBuilder.defaultRevision; //
+    public PoRevision poRevision = PoRevision.REV3_1;// PoCommandBuilder.defaultRevision; //
     // TODO =>
     // add a getter
 
@@ -324,9 +324,8 @@ public class PoSecureSession {
      * @throws IOReaderException the IO reader exception
      */
     public SeResponse processOpeningClosing(AbstractOpenSessionCmdBuild openCommand,
-            List<PoSendableInSession> poCommandsInsideSession,
-            AbstractPoCommandBuilder ratificationCommand, boolean closeSeChannel)
-            throws IOReaderException {
+            List<PoSendableInSession> poCommandsInsideSession, PoCommandBuilder ratificationCommand,
+            boolean closeSeChannel) throws IOReaderException {
 
         /* First ================================================================= */
 
@@ -668,8 +667,7 @@ public class PoSecureSession {
     // ratification étant un nouveau processOpeningClosing)
     public SeResponse processClosing(List<PoSendableInSession> poCommandsInsideSession,
             List<ApduResponse> poAnticipatedResponseInsideSession,
-            AbstractPoCommandBuilder ratificationCommand, boolean closeSeChannel)
-            throws IOReaderException {
+            PoCommandBuilder ratificationCommand, boolean closeSeChannel) throws IOReaderException {
 
         // Get PO ApduRequest List from PoSendableInSession List - for the first PO exchange
         List<ApduRequest> poApduRequestList = this.getApduRequestsToSendInSession(

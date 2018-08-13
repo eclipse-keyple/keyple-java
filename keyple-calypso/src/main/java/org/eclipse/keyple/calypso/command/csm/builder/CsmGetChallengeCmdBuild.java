@@ -8,16 +8,15 @@
 
 package org.eclipse.keyple.calypso.command.csm.builder;
 
-import org.eclipse.keyple.calypso.command.csm.AbstractCsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
+import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 import org.eclipse.keyple.calypso.command.util.RequestUtils;
-import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
  * Builder for the CSM Get Challenge APDU command.
  */
-public class CsmGetChallengeCmdBuild extends AbstractCsmCommandBuilder {
+public class CsmGetChallengeCmdBuild extends CsmCommandBuilder {
 
     /** The command reference. */
     private static org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands command =
@@ -48,16 +47,4 @@ public class CsmGetChallengeCmdBuild extends AbstractCsmCommandBuilder {
         request = RequestUtils.constructAPDURequest(cla, command, p1, p2, null,
                 expectedResponseLength);
     }
-
-    /**
-     * Instantiates a new csm get challenge cmd build.
-     *
-     * @param request the request
-     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
-     */
-    public CsmGetChallengeCmdBuild(ApduRequest request) throws IllegalArgumentException {
-        super(command, request);
-        RequestUtils.controlRequestConsistency(command, request);
-    }
-
 }

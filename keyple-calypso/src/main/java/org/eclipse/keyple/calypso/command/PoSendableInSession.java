@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command;
 
-import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 
-public interface PoSendableInSession extends SendableInSession<AbstractPoCommandBuilder> {
+public interface PoSendableInSession extends SendableInSession<PoCommandBuilder> {
 }

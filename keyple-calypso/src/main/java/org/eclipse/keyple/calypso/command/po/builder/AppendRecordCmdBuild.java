@@ -10,11 +10,10 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.PoSendableInSession;
-import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.util.RequestUtils;
-import org.eclipse.keyple.command.CommandsTable;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 // TODO: Auto-generated Javadoc
@@ -25,10 +24,10 @@ import org.eclipse.keyple.seproxy.ApduRequest;
  * @author Ixxi
  *
  */
-public class AppendRecordCmdBuild extends AbstractPoCommandBuilder implements PoSendableInSession {
+public class AppendRecordCmdBuild extends PoCommandBuilder implements PoSendableInSession {
 
     /** The command. */
-    private static CommandsTable command = CalypsoPoCommands.APPEND_RECORD;
+    private static CalypsoPoCommands command = CalypsoPoCommands.APPEND_RECORD;
 
     /**
      * Instantiates a new append record cmd build.
@@ -37,7 +36,7 @@ public class AppendRecordCmdBuild extends AbstractPoCommandBuilder implements Po
      * @param request the request
      * @throws java.lang.IllegalArgumentException - if the command is inconsistent
      */
-    AppendRecordCmdBuild(CommandsTable commandeReference, ApduRequest request)
+    AppendRecordCmdBuild(CalypsoPoCommands commandeReference, ApduRequest request)
             throws IllegalArgumentException {
         super(commandeReference, request);
     }
@@ -61,17 +60,4 @@ public class AppendRecordCmdBuild extends AbstractPoCommandBuilder implements Po
 
         this.request = RequestUtils.constructAPDURequest(cla, command, p1, p2, newRecordData);
     }
-
-
-    /**
-     * Instantiates a new append record cmd build.
-     *
-     * @param request the request
-     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
-     */
-    public AppendRecordCmdBuild(ApduRequest request) throws IllegalArgumentException {
-        super(CalypsoPoCommands.APPEND_RECORD, request);
-        RequestUtils.controlRequestConsistency(command, request);
-    }
-
 }

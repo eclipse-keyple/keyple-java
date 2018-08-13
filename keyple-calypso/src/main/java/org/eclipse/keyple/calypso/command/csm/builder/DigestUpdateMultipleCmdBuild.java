@@ -9,8 +9,8 @@
 package org.eclipse.keyple.calypso.command.csm.builder;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.csm.AbstractCsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
+import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 import org.eclipse.keyple.calypso.command.util.RequestUtils;
 
@@ -22,7 +22,7 @@ import org.eclipse.keyple.calypso.command.util.RequestUtils;
  * @author Ixxi
  *
  */
-public class DigestUpdateMultipleCmdBuild extends AbstractCsmCommandBuilder {
+public class DigestUpdateMultipleCmdBuild extends CsmCommandBuilder {
 
     /** The command. */
     private static org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands command =

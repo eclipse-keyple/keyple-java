@@ -9,20 +9,18 @@
 package org.eclipse.keyple.calypso.command.csm.builder;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.csm.AbstractCsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
+import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 import org.eclipse.keyple.calypso.command.util.RequestUtils;
-import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
  * Builder for the Digest Authenticate APDU command.
  */
-public class DigestAuthenticateCmdBuild extends AbstractCsmCommandBuilder {
+public class DigestAuthenticateCmdBuild extends CsmCommandBuilder {
 
     /** The command. */
-    private static org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands command =
-            CalypsoSmCommands.DIGEST_AUTHENTICATE;
+    private static CalypsoSmCommands command = CalypsoSmCommands.DIGEST_AUTHENTICATE;
 
     /**
      * Instantiates a new DigestAuthenticateCmdBuild .
@@ -31,8 +29,8 @@ public class DigestAuthenticateCmdBuild extends AbstractCsmCommandBuilder {
      * @param signature the signature
      * @throws java.lang.IllegalArgumentException - if the signature is null or has a wrong length.
      */
-    public DigestAuthenticateCmdBuild(org.eclipse.keyple.calypso.command.csm.CsmRevision revision,
-            ByteBuffer signature) throws IllegalArgumentException {
+    public DigestAuthenticateCmdBuild(CsmRevision revision, ByteBuffer signature)
+            throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -50,16 +48,4 @@ public class DigestAuthenticateCmdBuild extends AbstractCsmCommandBuilder {
 
         request = RequestUtils.constructAPDURequest(cla, command, p1, p2, signature);
     }
-
-    /**
-     * Instantiates a new digest authenticate cmd build.
-     *
-     * @param request the request
-     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
-     */
-    public DigestAuthenticateCmdBuild(ApduRequest request) throws IllegalArgumentException {
-        super(command, request);
-        RequestUtils.controlRequestConsistency(command, request);
-    }
-
 }

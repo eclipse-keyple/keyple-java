@@ -9,18 +9,17 @@
 package org.eclipse.keyple.calypso.command.csm.builder;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.csm.AbstractCsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
+import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 import org.eclipse.keyple.calypso.command.util.RequestUtils;
-import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
  * Builder for the CSM Digest Update APDU command. This command have to be sent twice for each
  * command executed during a session. First time for the command sent and second time for the answer
  * received
  */
-public class DigestUpdateCmdBuild extends AbstractCsmCommandBuilder {
+public class DigestUpdateCmdBuild extends CsmCommandBuilder {
 
     /** The command reference. */
 
@@ -57,16 +56,4 @@ public class DigestUpdateCmdBuild extends AbstractCsmCommandBuilder {
         request = RequestUtils.constructAPDURequest(cla, command, p1, p2,
                 digestData != null ? digestData.asReadOnlyBuffer() : null);
     }
-
-    /**
-     * Instantiates a new digest update cmd build.
-     *
-     * @param request the request
-     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
-     */
-    public DigestUpdateCmdBuild(ApduRequest request) throws IllegalArgumentException {
-        super(command, request);
-        RequestUtils.controlRequestConsistency(command, request);
-    }
-
 }

@@ -19,23 +19,6 @@ public class RequestUtils {
 
     private RequestUtils() {}
 
-    /**
-     * Checks the consistency of the request
-     * 
-     * @param command
-     * @param request
-     * @throws java.lang.IllegalArgumentException - if the instruction byte is not the expected one
-     */
-    public static void controlRequestConsistency(CommandsTable command, ApduRequest request)
-            throws IllegalArgumentException {
-        // Simplifying the strange logic, but I'm not sure this helps much
-        if (request != null && request.getBytes() != null
-                && request.getBytes().get(1) != command.getInstructionByte()) {
-            throw new IllegalArgumentException(
-                    "Inconsistent request: instruction bytes don't match!");
-        }
-    }
-
     public static ApduRequest constructAPDURequest(byte cla, CommandsTable ins, byte p1, byte p2,
             ByteBuffer dataIn) {
         return constructAPDURequest(cla, ins, p1, p2, dataIn, null);

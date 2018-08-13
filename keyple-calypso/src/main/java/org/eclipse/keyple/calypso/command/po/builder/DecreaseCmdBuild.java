@@ -10,22 +10,20 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.PoSendableInSession;
-import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.util.RequestUtils;
-import org.eclipse.keyple.command.CommandsTable;
-import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
  * The Class DecreaseCmdBuild. This class provides the dedicated constructor to build the Decrease
  * APDU command.
  *
  */
-public class DecreaseCmdBuild extends AbstractPoCommandBuilder implements PoSendableInSession {
+public class DecreaseCmdBuild extends PoCommandBuilder implements PoSendableInSession {
 
     /** The command. */
-    private static CommandsTable command = CalypsoPoCommands.DECREASE;
+    private static CalypsoPoCommands command = CalypsoPoCommands.DECREASE;
 
     /**
      * Instantiates a new decrease cmd build from command parameters.
@@ -65,16 +63,5 @@ public class DecreaseCmdBuild extends AbstractPoCommandBuilder implements PoSend
 
         this.request =
                 RequestUtils.constructAPDURequest(cla, command, p1, p2, decValueBuffer, (byte) 3);
-    }
-
-    /**
-     * Instantiates a new decrease cmd build from an ApduRequest.
-     *
-     * @param request the request
-     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
-     */
-    public DecreaseCmdBuild(ApduRequest request) throws IllegalArgumentException {
-        super(command, request);
-        RequestUtils.controlRequestConsistency(command, request);
     }
 }
