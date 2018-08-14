@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.example.pc;
+package org.eclipse.keyple.example.pc.calypso;
 
 import java.io.IOException;
 import java.util.*;
@@ -15,8 +15,7 @@ import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.builder.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
-import org.eclipse.keyple.example.common.HoplinkCommandsSettings;
-import org.eclipse.keyple.example.common.HoplinkSampleCommands;
+import org.eclipse.keyple.example.common.HoplinkInfoAndSampleCommands;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -28,12 +27,34 @@ import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
- * List of treatments 2 readers (match interface) fake aid navigo aid hoplink -> 3 sessions
+ * This Calypso demonstration code consists in:
+ * <ol>
+ * <li>Setting up a two-reader configuration (@link main) and adding an observer method (@link
+ * update)</li>
+ * <li>Starting a card operation when a PO presence is notified (@link operatePoTransactions)</li>
+ * <li>Opening a logical channel with the CSM (C1 CSM is expected) (see @link CSM_C1_ATR_REGEX)</li>
+ * <li>Attempting to open a logical channel with the PO with 3 options:
+ * <ul>
+ * <li>Selection with a fake AID</li>
+ * <li>Selection with a Navigo AID</li>
+ * <li>Selection with a Hoplink AID</li>
+ * </ul>
+ * </li>
+ * <li>Display SeRequest/SeResponse data (@link printSelectAppResponseStatus)</li>
+ * <li>If the Hoplink selection succeeded, do 3 Hoplink transactions (@link
+ * operateMultipleHoplinkTransactions).</li>
+ * </ol>
+ * <p>
+ * The Hoplink transactions demonstrated here illustrate the 2 and 3-step modes and also show the
+ * logical channel management.
+ * <p>
+ * Read the doc of each methods for further details.
+ * </ol>
  */
-public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.ReaderObserver {
+public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver {
     private ProxyReader poReader, csmReader;
 
-    public KeypleCalypsoDemo_HoplinkTransaction() {
+    public Demo_HoplinkTransaction() {
         super();
     }
 
@@ -54,6 +75,13 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
         }
     }
 
+    /**
+     * Display SeRequest and SeResponse details in the console
+     * 
+     * @param message
+     * @param seRequest
+     * @param seResponse
+     */
     private void printSelectAppResponseStatus(String message, SeRequest seRequest,
             SeResponse seResponse) {
         int i;
@@ -107,24 +135,40 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
         System.out.println("");
     }
 
+    /**
+     * Do an 2-step Hoplink transaction:
+     * <ul>
+     * <li>Process identification</li>
+     * <li>Process Opening and Closing</li>
+     * </ul>
+     * <p>
+     * File with SFI 1A is read at session opening.
+     * <p>
+     * T2 Environment and T2 Usage are read in session.
+     * 
+     * @param poTransaction
+     * @param fciData
+     * @param closeSeChannel
+     * @throws IOReaderException
+     */
     private void doHoplinkTwoStepAuthentication(PoSecureSession poTransaction, ApduResponse fciData,
             boolean closeSeChannel) throws IOReaderException {
         List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
-        filesToReadInSession.add(HoplinkSampleCommands.poReadRecordCmd_T2Env);
-        filesToReadInSession.add(HoplinkSampleCommands.poReadRecordCmd_T2Usage);
+        filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Env);
+        filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Usage);
 
         // Step 1
         System.out.println(
-                "\n\n========= PO Hoplink 2-step session ======= Identification =====================");
+                "\n\n========= PO Hoplink 2-step transaction ======= Identification =====================");
         poTransaction.processIdentification(fciData);
 
         // Step 2A
         System.out.println(
-                "========= PO Hoplink 2-step session ======= Opening + Closing ====================");
-        // Read first record of SFI 08h - for 15h bytes
+                "========= PO Hoplink 2-step transaction ======= Opening + Closing ====================");
+
         byte debitKeyIndex = 0x03;
-        // Open Session for the debit key #1 - with read of the first record of the cyclic EF of
-        // SFI 0Ah
+        // Open Session for the debit key #3 - with reading of the first record of the cyclic EF of
+        // SFI 1Ah
         AbstractOpenSessionCmdBuild poOpenSession =
                 AbstractOpenSessionCmdBuild.create(poTransaction.getRevision(), debitKeyIndex,
                         poTransaction.sessionTerminalChallenge, (byte) 0x1A, (byte) 0x01);
@@ -134,21 +178,37 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
 
         if (poTransaction.isSuccessful()) {
             System.out.println(
-                    "========= PO Hoplink 2-step session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    "========= PO Hoplink 2-step transaction ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         } else {
             System.out.println(
-                    "========= PO Hoplink 2-step session ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    "========= PO Hoplink 2-step transaction ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
     }
 
+    /**
+     * Do an 3-step Hoplink transaction:
+     * <ul>
+     * <li>Process identification</li>
+     * <li>Process Opening and Closing</li>
+     * </ul>
+     * <p>
+     * File with SFI 1A is read at session opening.
+     * <p>
+     * T2 Environment and T2 Usage are read in session.
+     * 
+     * @param poTransaction
+     * @param fciData
+     * @param closeSeChannel
+     * @throws IOReaderException
+     */
     private void doHoplinkThreeStepReadWriteTransaction(PoSecureSession poTransaction,
             ApduResponse fciData, boolean closeSeChannel) throws IOReaderException {
 
 
         List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
-        filesToReadInSession.add(HoplinkSampleCommands.poReadRecordCmd_T2Env);
-        filesToReadInSession.add(HoplinkSampleCommands.poReadRecordCmd_T2Usage);
-        // filesToReadInSession.add(HoplinkSampleCommands.poUpdateRecordCmd_T2UsageFill);
+        filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Env);
+        filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Usage);
+        // filesToReadInSession.add(HoplinkInfoAndSampleCommands.poUpdateRecordCmd_T2UsageFill);
 
         // Step 1
         System.out.println(
@@ -158,9 +218,8 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
         // Step 2
         System.out.println(
                 "========= PO Hoplink 3-step session ======= Opening ============================");
-        // Read first record of SFI 08h - for 15h bytes
         byte debitKeyIndex = 0x03;
-        // Open Session for the debit key #1 - with read of the first record of the cyclic EF of
+        // Open Session for the debit key #3 - with reading of the first record of the cyclic EF of
         // SFI 0Ah
         AbstractOpenSessionCmdBuild poOpenSession =
                 AbstractOpenSessionCmdBuild.create(poTransaction.getRevision(), debitKeyIndex,
@@ -169,16 +228,13 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
 
         // Step 3
         System.out.println(
-                "========= PO Hoplink 3-step session ======= Continuation =======================");
+                "========= PO Hoplink 3-step session ======= Proceed =======================");
         poTransaction.processProceeding(filesToReadInSession);
-
-        // DONE: Find something better
-        // poReadRecordCmd_T2EnvR1.getApduRequest().getBytes().position(0);
 
         // Step 4
         System.out.println(
                 "========= PO Hoplink 3-step session ======= Closing ============================");
-        poTransaction.processClosing(null, null, HoplinkSampleCommands.poRatificationCommand,
+        poTransaction.processClosing(null, null, HoplinkInfoAndSampleCommands.poRatificationCommand,
                 false);
 
         if (poTransaction.isSuccessful()) {
@@ -190,8 +246,22 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
         }
     }
 
-    private void operateSeveralHoplinkSessions(PoSecureSession poTransaction, ApduResponse fciData)
-            throws IOReaderException {
+    /**
+     * Chain 3 Hoplink transactions: 2-step, 3-step, 2-step (see @link
+     * doHoplinkTwoStepAuthentication and @link doHoplinkThreeStepReadWriteTransaction)
+     * <p>
+     * To illustrate the the logical channel management, it is kept open after the 1st transaction.
+     * <p>
+     * Closed after the end of the 2nd transaction and reopened before the 3rd transaction.
+     * <p>
+     * Finally the logical channel is closed at the end of the 3rd transaction.
+     * 
+     * @param poTransaction
+     * @param fciData
+     * @throws IOReaderException
+     */
+    private void operateMultipleHoplinkTransactions(PoSecureSession poTransaction,
+            ApduResponse fciData) throws IOReaderException {
         // execute a two-step Calypso session: processIdentification, processOpeningClosing
         // keep the logical channel opened
         doHoplinkTwoStepAuthentication(poTransaction, fciData, false);
@@ -204,9 +274,11 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
         // redo the Hoplink PO selection after logical channel closing (may be not needed with some
         // PO
         // for which the application is selected by default)
-        SeRequestSet selectionRequest = new SeRequestSet(new SeRequest(
-                new SeRequest.AidSelector(ByteBufferUtils.fromHex(HoplinkCommandsSettings.AID)),
-                null, true));
+        SeRequestSet selectionRequest =
+                new SeRequestSet(new SeRequest(
+                        new SeRequest.AidSelector(
+                                ByteBufferUtils.fromHex(HoplinkInfoAndSampleCommands.AID)),
+                        null, true));
         fciData = poReader.transmit(selectionRequest).getSingleResponse().getFci();
 
         // execute a two-step Calypso session: processIdentification, processOpeningClosing
@@ -221,8 +293,9 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
             // operate PO multiselection
             String poFakeAid = "AABBCCDDEE"; //
             String poNavigoAid = "A0000004040125090101"; // Navigo AID
-            String poHoplinkAid = HoplinkCommandsSettings.AID; // commands before session, keep true
-            String csmC1ATRregex = HoplinkCommandsSettings.CSM_C1_ATR; // csm identifier
+            String poHoplinkAid = HoplinkInfoAndSampleCommands.AID; // commands before session, keep
+                                                                    // true
+            String csmC1ATRregex = HoplinkInfoAndSampleCommands.CSM_C1_ATR_REGEX; // csm identifier
 
             // check the availability of the CSM, open its physical and logical channels and keep it
             // open
@@ -254,13 +327,13 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
             // read commands before session
             List<ApduRequest> requestToExecuteBeforeSession = new ArrayList<ApduRequest>();
             requestToExecuteBeforeSession
-                    .add(HoplinkSampleCommands.poReadRecordCmd_T2Env.getApduRequest());
+                    .add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Env.getApduRequest());
 
             // AID based selection
             seRequest =
                     new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poHoplinkAid)),
                             requestToExecuteBeforeSession, false,
-                            HoplinkCommandsSettings.selectApplicationSuccessfulStatusCodes);
+                            HoplinkInfoAndSampleCommands.selectApplicationSuccessfulStatusCodes);
 
             selectionRequests.add(seRequest);
 
@@ -278,9 +351,10 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
             printSelectAppResponseStatus("Case #3: Hoplink AID", seReqIterator.next(),
                     seRespIterator.next());
 
+            // test if the Hoplink selection succeeded
             if (seResponses.get(2) != null) {
                 ApduResponse fciData = seResponses.get(2).getFci();
-                operateSeveralHoplinkSessions(poTransaction, fciData);
+                operateMultipleHoplinkTransactions(poTransaction, fciData);
             } else {
                 System.out.println(
                         "No Hoplink transaction. SeResponse to Hoplink selection was null.");
@@ -312,6 +386,11 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
         return null;
     }
 
+    /**
+     * This object is used to freeze the main thread while card operations are handle through the
+     * observers callbacks. A call to the notify() method would end the program (not demonstrated
+     * here).
+     */
     private static final Object waitForEnd = new Object();
 
     public static void main(String[] args)
@@ -321,10 +400,9 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
         pluginsSet.add(PcscPlugin.getInstance());
         seProxyService.setPlugins(pluginsSet);
 
-        ProxyReader poReader = getReader(seProxyService,
-                KeypleCalypsoDemo_PcscReadersSettings.PO_READER_NAME_REGEX);
-        ProxyReader csmReader = getReader(seProxyService,
-                KeypleCalypsoDemo_PcscReadersSettings.CSM_READER_NAME_REGEX);
+        ProxyReader poReader = getReader(seProxyService, PcscReadersSettings.PO_READER_NAME_REGEX);
+        ProxyReader csmReader =
+                getReader(seProxyService, PcscReadersSettings.CSM_READER_NAME_REGEX);
 
 
         if (poReader == csmReader || poReader == null || csmReader == null) {
@@ -342,7 +420,7 @@ public class KeypleCalypsoDemo_HoplinkTransaction implements ObservableReader.Re
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
 
         // Setting up ourself as an observer
-        KeypleCalypsoDemo_HoplinkTransaction observer = new KeypleCalypsoDemo_HoplinkTransaction();
+        Demo_HoplinkTransaction observer = new Demo_HoplinkTransaction();
         observer.poReader = poReader;
         observer.csmReader = csmReader;
 
