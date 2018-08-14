@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.example.pc;
+package org.eclipse.keyple.example.pc.generic;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -19,12 +19,12 @@ import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 
 
-public class KeypleGenericDemo_ObservableReaderNotification {
+public class Demo_ObservableReaderNotification {
 
     private SpecificReaderObserver readerObserver;
     private SpecificPluginObserver pluginObserver;
 
-    private KeypleGenericDemo_ObservableReaderNotification() {
+    private Demo_ObservableReaderNotification() {
         readerObserver = new SpecificReaderObserver();
         pluginObserver = new SpecificPluginObserver(readerObserver);
     }
@@ -178,8 +178,7 @@ public class KeypleGenericDemo_ObservableReaderNotification {
     private final static Object waitBeforeEnd = new Object();
 
     public static void main(String[] args) throws Exception {
-        KeypleGenericDemo_ObservableReaderNotification testObserver =
-                new KeypleGenericDemo_ObservableReaderNotification();
+        Demo_ObservableReaderNotification testObserver = new Demo_ObservableReaderNotification();
 
         // Set PCSC plugin
         SeProxyService seProxyService = SeProxyService.getInstance();
