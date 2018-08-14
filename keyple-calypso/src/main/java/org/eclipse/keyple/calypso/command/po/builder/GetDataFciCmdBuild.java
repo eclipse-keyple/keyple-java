@@ -9,12 +9,9 @@
 package org.eclipse.keyple.calypso.command.po.builder;
 
 import org.eclipse.keyple.calypso.command.PoSendableInSession;
-import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
-import org.eclipse.keyple.command.CommandsTable;
-import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
  * This class implements PoSendableInSession, it provides the dedicated constructor to build the Get
@@ -23,9 +20,9 @@ import org.eclipse.keyple.seproxy.ApduRequest;
  *
  * @author Ixxi
  */
-public class GetDataFciCmdBuild extends AbstractPoCommandBuilder implements PoSendableInSession {
+public class GetDataFciCmdBuild extends PoCommandBuilder implements PoSendableInSession {
 
-    private static CommandsTable command = CalypsoPoCommands.GET_DATA_FCI;
+    private static CalypsoPoCommands command = CalypsoPoCommands.GET_DATA_FCI;
 
     /**
      * Instantiates a new GetDataFciCmdBuild.
@@ -37,19 +34,6 @@ public class GetDataFciCmdBuild extends AbstractPoCommandBuilder implements PoSe
         byte cla = PoRevision.REV2_4.equals(revision) ? (byte) 0x94 : (byte) 0x00;
         // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, (byte) 0x00, (byte)
         // 0x6F, null, (byte) 0x00);
-        request = RequestUtils.constructAPDURequest(cla, command, (byte) 0x00, (byte) 0x6F, null,
-                (byte) 0x00);
+        request = setApduRequest(cla, command, (byte) 0x00, (byte) 0x6F, null, (byte) 0x00);
     }
-
-    /**
-     * Instantiates a new get data fci cmd build.
-     * 
-     * @param request
-     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
-     */
-    public GetDataFciCmdBuild(ApduRequest request) throws IllegalArgumentException {
-        super(command, request);
-        RequestUtils.controlRequestConsistency(command, request);
-    }
-
 }

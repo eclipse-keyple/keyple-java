@@ -27,24 +27,6 @@ class AbstractApduBuffer {
     }
 
     /**
-     * Abstract constructor
-     * 
-     * @param data Array to wrap. Cannot be null.
-     */
-    AbstractApduBuffer(byte[] data) {
-        // null data is not allowed anymore
-        this(ByteBuffer.wrap(data));
-    }
-
-    AbstractApduBuffer() {
-        this(ByteBuffer.allocate(261));
-    }
-
-    AbstractApduBuffer(byte[] data, int offset, int length) {
-        this(ByteBuffer.wrap(data, offset, length).slice());
-    }
-
-    /**
      * Get a slice from the buffer
      *
      * @param position Position of the new slice in the buffer

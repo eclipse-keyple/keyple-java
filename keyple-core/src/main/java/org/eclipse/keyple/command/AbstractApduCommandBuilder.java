@@ -11,9 +11,8 @@ package org.eclipse.keyple.command;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
- * APDU command builder. It has to be extended by all PO and CSM command builder classes, it
- * provides the generic getters to retrieve: the name of the command, the built APDURequest, the
- * corresponding AbstractApduResponseParser class.
+ * Generic APDU command builder. It provides the generic getters to retrieve: the name of the
+ * command, the built APDURequest, the corresponding AbstractApduResponseParser class.
  */
 
 public abstract class AbstractApduCommandBuilder {

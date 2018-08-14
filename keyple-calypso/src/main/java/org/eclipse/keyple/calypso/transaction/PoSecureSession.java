@@ -19,14 +19,13 @@ import org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild;
 import org.eclipse.keyple.calypso.command.csm.parser.CsmGetChallengeRespPars;
 import org.eclipse.keyple.calypso.command.csm.parser.DigestAuthenticateRespPars;
 import org.eclipse.keyple.calypso.command.csm.parser.DigestCloseRespPars;
-import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.CloseSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.CloseSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.calypso.command.util.ApduUtils;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
@@ -81,7 +80,7 @@ public class PoSecureSession {
     private ByteBuffer poCalypsoInstanceSerial;
 
     /** The PO Calypso Revision. */
-    public PoRevision poRevision = PoRevision.REV3_1;// AbstractPoCommandBuilder.defaultRevision; //
+    public PoRevision poRevision = PoRevision.REV3_1;// PoCommandBuilder.defaultRevision; //
     // TODO =>
     // add a getter
 
@@ -324,9 +323,8 @@ public class PoSecureSession {
      * @throws IOReaderException the IO reader exception
      */
     public SeResponse processOpeningClosing(AbstractOpenSessionCmdBuild openCommand,
-            List<PoSendableInSession> poCommandsInsideSession,
-            AbstractPoCommandBuilder ratificationCommand, boolean closeSeChannel)
-            throws IOReaderException {
+            List<PoSendableInSession> poCommandsInsideSession, PoCommandBuilder ratificationCommand,
+            boolean closeSeChannel) throws IOReaderException {
 
         /* First ================================================================= */
 
@@ -668,8 +666,7 @@ public class PoSecureSession {
     // ratification étant un nouveau processOpeningClosing)
     public SeResponse processClosing(List<PoSendableInSession> poCommandsInsideSession,
             List<ApduResponse> poAnticipatedResponseInsideSession,
-            AbstractPoCommandBuilder ratificationCommand, boolean closeSeChannel)
-            throws IOReaderException {
+            PoCommandBuilder ratificationCommand, boolean closeSeChannel) throws IOReaderException {
 
         // Get PO ApduRequest List from PoSendableInSession List - for the first PO exchange
         List<ApduRequest> poApduRequestList = this.getApduRequestsToSendInSession(
@@ -838,7 +835,8 @@ public class PoSecureSession {
             rev = PoRevision.REV2_4;
         } else if (Byte.valueOf(applicationTypeByte).compareTo((byte) 0x7f) <= 0
                 && Byte.valueOf(applicationTypeByte).compareTo((byte) 0x20) >= 0) {
-            if (ApduUtils.isBitSet(applicationTypeByte, 3)) {
+            // test bit 3 of applicationTypeByte to determine revision
+            if ((applicationTypeByte & (1 << 3)) != 0) {
                 rev = PoRevision.REV3_2;
             } else {
                 rev = PoRevision.REV3_1;

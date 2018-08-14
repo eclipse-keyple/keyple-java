@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command;
 
-import org.eclipse.keyple.calypso.command.csm.AbstractCsmCommandBuilder;
+import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 
-public interface CsmSendableInSession extends SendableInSession<AbstractCsmCommandBuilder> {
+public interface CsmSendableInSession extends SendableInSession<CsmCommandBuilder> {
 }

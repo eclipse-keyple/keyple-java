@@ -11,7 +11,6 @@ package org.eclipse.keyple.calypso.command.po.builder;
 import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
 
 public class OpenSession24CmdBuild extends AbstractOpenSessionCmdBuild {
     /**
@@ -35,7 +34,8 @@ public class OpenSession24CmdBuild extends AbstractOpenSessionCmdBuild {
         byte p1 = (byte) (0x80 + (recordNumberToRead * 8) + keyIndex);
         byte p2 = (byte) (sfiToSelect * 8);
 
-        this.request = RequestUtils.constructAPDURequest((byte) 0x94,
-                CalypsoPoCommands.getOpenSessionForRev(defaultRevision), p1, p2, samChallenge);
+        this.request =
+                setApduRequest((byte) 0x94, CalypsoPoCommands.getOpenSessionForRev(defaultRevision),
+                        p1, p2, samChallenge, null);
     }
 }

@@ -9,11 +9,9 @@
 package org.eclipse.keyple.calypso.command.csm.builder;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.csm.AbstractCsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
+import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
-import org.eclipse.keyple.seproxy.ApduRequest;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -22,7 +20,7 @@ import org.eclipse.keyple.seproxy.ApduRequest;
  * @author Ixxi
  *
  */
-public class SelectDiversifierCmdBuild extends AbstractCsmCommandBuilder {
+public class SelectDiversifierCmdBuild extends CsmCommandBuilder {
 
     /** The command. */
     private static org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands command =
@@ -49,19 +47,7 @@ public class SelectDiversifierCmdBuild extends AbstractCsmCommandBuilder {
         byte p1 = 0x00;
         byte p2 = 0x00;
 
-        request = RequestUtils.constructAPDURequest(cla, command, p1, p2, diversifier);
+        request = setApduRequest(cla, command, p1, p2, diversifier, null);
 
     }
-
-    /**
-     * Instantiates a new select diversifier cmd build.
-     *
-     * @param request the request
-     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
-     */
-    public SelectDiversifierCmdBuild(ApduRequest request) throws IllegalArgumentException {
-        super(command, request);
-        RequestUtils.controlRequestConsistency(command, request);
-    }
-
 }

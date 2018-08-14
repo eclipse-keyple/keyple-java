@@ -8,17 +8,14 @@
 
 package org.eclipse.keyple.calypso.command.csm.builder;
 
-import org.eclipse.keyple.calypso.command.csm.AbstractCsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
+import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
-import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
  * Builder for the CSM Digest Close APDU command.
  */
-public class DigestCloseCmdBuild extends AbstractCsmCommandBuilder {
+public class DigestCloseCmdBuild extends CsmCommandBuilder {
 
     /** The command. */
     private static org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands command =
@@ -48,19 +45,6 @@ public class DigestCloseCmdBuild extends AbstractCsmCommandBuilder {
 
         // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, null,
         // expectedResponseLength);
-        request = RequestUtils.constructAPDURequest(cla, command, p1, p2, null,
-                expectedResponseLength);
+        request = setApduRequest(cla, command, p1, p2, null, expectedResponseLength);
     }
-
-    /**
-     * Instantiates a new digest close cmd build.
-     *
-     * @param request the request
-     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
-     */
-    public DigestCloseCmdBuild(ApduRequest request) throws IllegalArgumentException {
-        super(CalypsoPoCommands.APPEND_RECORD, request);
-        RequestUtils.controlRequestConsistency(command, request);
-    }
-
 }

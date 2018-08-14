@@ -9,12 +9,9 @@
 package org.eclipse.keyple.calypso.command.po.builder;
 
 import org.eclipse.keyple.calypso.command.PoSendableInSession;
-import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
-import org.eclipse.keyple.command.CommandsTable;
-import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
  * The Class ReadRecordsCmdBuild. This class provides the dedicated constructor to build the Read
@@ -23,10 +20,10 @@ import org.eclipse.keyple.seproxy.ApduRequest;
  * @author Ixxi
  *
  */
-public class ReadRecordsCmdBuild extends AbstractPoCommandBuilder implements PoSendableInSession {
+public class ReadRecordsCmdBuild extends PoCommandBuilder implements PoSendableInSession {
 
     /** The command. */
-    private static CommandsTable command = CalypsoPoCommands.READ_RECORDS;
+    private static CalypsoPoCommands command = CalypsoPoCommands.READ_RECORDS;
 
     /**
      * Instantiates a new read records cmd build.
@@ -58,19 +55,6 @@ public class ReadRecordsCmdBuild extends AbstractPoCommandBuilder implements PoS
             p2 = (byte) (p2 - (byte) 0x01);
         }
 
-        this.request =
-                RequestUtils.constructAPDURequest(cla, command, p1, p2, null, expectedLength);
+        this.request = setApduRequest(cla, command, p1, p2, null, expectedLength);
     }
-
-    /**
-     * Instantiates a new read records cmd build.
-     *
-     * @param request the request
-     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
-     */
-    public ReadRecordsCmdBuild(ApduRequest request) throws IllegalArgumentException {
-        super(command, request);
-        RequestUtils.controlRequestConsistency(command, request);
-    }
-
 }

@@ -8,18 +8,19 @@
 
 package org.eclipse.keyple.calypso.command.po;
 
-import org.eclipse.keyple.command.AbstractApduCommandBuilder;
-import org.eclipse.keyple.command.CommandsTable;
+import org.eclipse.keyple.command.AbstractIso7816CommandBuilder;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
- * Portable Object command builder
+ * Superclass for all PO command builders.
+ * <p>
+ * Used directly, this class can serve as low level command builder.
  */
-public abstract class AbstractPoCommandBuilder extends AbstractApduCommandBuilder {
+public class PoCommandBuilder extends AbstractIso7816CommandBuilder {
 
     protected PoRevision defaultRevision = PoRevision.REV3_1;
 
-    public AbstractPoCommandBuilder(CommandsTable reference, ApduRequest request) {
+    public PoCommandBuilder(CalypsoPoCommands reference, ApduRequest request) {
         super(reference, request);
     }
 }

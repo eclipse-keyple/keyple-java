@@ -8,21 +8,19 @@
 
 package org.eclipse.keyple.calypso.command.csm;
 
-import org.eclipse.keyple.command.AbstractApduCommandBuilder;
-import org.eclipse.keyple.command.CommandsTable;
+import org.eclipse.keyple.command.AbstractIso7816CommandBuilder;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
- *
- * This abstract class extends AbstractApduCommandBuilder, it has to be extended by all CSM command
- * builder classes, it manages the current default revision for PO commands
- *
+ * Superclass for all CSM command builders.
+ * <p>
+ * Used directly, this class can serve as low level command builder.
  */
-public abstract class AbstractCsmCommandBuilder extends AbstractApduCommandBuilder {
+public class CsmCommandBuilder extends AbstractIso7816CommandBuilder {
 
     protected org.eclipse.keyple.calypso.command.csm.CsmRevision defaultRevision = CsmRevision.S1D;// 94
 
-    public AbstractCsmCommandBuilder(CommandsTable reference, ApduRequest request) {
+    public CsmCommandBuilder(CalypsoSmCommands reference, ApduRequest request) {
         super(reference, request);
     }
 }

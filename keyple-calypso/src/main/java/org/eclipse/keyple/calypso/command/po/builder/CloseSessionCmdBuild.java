@@ -9,12 +9,9 @@
 package org.eclipse.keyple.calypso.command.po.builder;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
-import org.eclipse.keyple.command.CommandsTable;
-import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 // TODO: Auto-generated Javadoc
@@ -23,10 +20,10 @@ import org.eclipse.keyple.util.ByteBufferUtils;
  *
  * @author Ixxi
  */
-public class CloseSessionCmdBuild extends AbstractPoCommandBuilder {
+public class CloseSessionCmdBuild extends PoCommandBuilder {
 
     /** The command. */
-    private final static CommandsTable command = CalypsoPoCommands.CLOSE_SESSION;
+    private final static CalypsoPoCommands command = CalypsoPoCommands.CLOSE_SESSION;
 
     /**
      * Instantiates a new CloseSessionCmdBuild depending of the revision of the PO.
@@ -55,18 +52,6 @@ public class CloseSessionCmdBuild extends AbstractPoCommandBuilder {
 
         byte p1 = ratificationAsked ? (byte) 0x80 : (byte) 0x00;
 
-        request = RequestUtils.constructAPDURequest(cla, command, p1, (byte) 0x00,
-                terminalSessionSignature);
-    }
-
-    /**
-     * Instantiates a new close session cmd build.
-     *
-     * @param request the request
-     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
-     */
-    public CloseSessionCmdBuild(ApduRequest request) throws IllegalArgumentException {
-        super(command, request);
-        RequestUtils.controlRequestConsistency(command, request);
+        request = setApduRequest(cla, command, p1, (byte) 0x00, terminalSessionSignature, null);
     }
 }

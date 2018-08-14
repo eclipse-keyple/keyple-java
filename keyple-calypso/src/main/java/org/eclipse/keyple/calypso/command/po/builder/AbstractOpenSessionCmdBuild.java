@@ -10,8 +10,8 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
+import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 
 /**
@@ -19,7 +19,7 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
  * Open Secure Session APDU command.
  *
  */
-public abstract class AbstractOpenSessionCmdBuild extends AbstractPoCommandBuilder {
+public abstract class AbstractOpenSessionCmdBuild extends PoCommandBuilder {
 
     /**
      * Instantiates a new AbstractOpenSessionCmdBuild.
