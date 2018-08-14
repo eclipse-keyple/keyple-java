@@ -18,7 +18,7 @@ import org.eclipse.keyple.seproxy.ApduRequest;
  * provides, through the AbstractApduCommandBuilder superclass,the generic getters to retrieve: the
  * name of the command, the built APDURequest, the corresponding AbstractApduResponseParser class.
  */
-public abstract class AbstractIso7816ApduCommandBuilder extends AbstractApduCommandBuilder {
+public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandBuilder {
 
     /**
      * Abstract constructor to build an APDU request with a command reference and a byte array.
@@ -26,7 +26,7 @@ public abstract class AbstractIso7816ApduCommandBuilder extends AbstractApduComm
      * @param commandReference command reference
      * @param request request
      */
-    public AbstractIso7816ApduCommandBuilder(CommandsTable commandReference, ApduRequest request) {
+    public AbstractIso7816CommandBuilder(CommandsTable commandReference, ApduRequest request) {
         super(commandReference, request);
     }
 

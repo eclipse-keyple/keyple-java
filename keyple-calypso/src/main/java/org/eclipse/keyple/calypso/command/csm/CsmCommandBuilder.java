@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.csm;
 
-import org.eclipse.keyple.command.AbstractIso7816ApduCommandBuilder;
+import org.eclipse.keyple.command.AbstractIso7816CommandBuilder;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
@@ -16,7 +16,7 @@ import org.eclipse.keyple.seproxy.ApduRequest;
  * <p>
  * Used directly, this class can serve as low level command builder.
  */
-public class CsmCommandBuilder extends AbstractIso7816ApduCommandBuilder {
+public class CsmCommandBuilder extends AbstractIso7816CommandBuilder {
 
     protected org.eclipse.keyple.calypso.command.csm.CsmRevision defaultRevision = CsmRevision.S1D;// 94
 
