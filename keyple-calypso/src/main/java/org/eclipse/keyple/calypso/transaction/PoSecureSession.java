@@ -26,7 +26,6 @@ import org.eclipse.keyple.calypso.command.po.builder.CloseSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.CloseSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.calypso.command.util.ApduUtils;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
@@ -836,7 +835,8 @@ public class PoSecureSession {
             rev = PoRevision.REV2_4;
         } else if (Byte.valueOf(applicationTypeByte).compareTo((byte) 0x7f) <= 0
                 && Byte.valueOf(applicationTypeByte).compareTo((byte) 0x20) >= 0) {
-            if (ApduUtils.isBitSet(applicationTypeByte, 3)) {
+            // test bit 3 of applicationTypeByte to determine revision
+            if ((applicationTypeByte & (1 << 3)) != 0) {
                 rev = PoRevision.REV3_2;
             } else {
                 rev = PoRevision.REV3_1;

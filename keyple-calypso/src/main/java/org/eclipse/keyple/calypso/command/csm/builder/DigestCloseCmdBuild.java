@@ -11,7 +11,6 @@ package org.eclipse.keyple.calypso.command.csm.builder;
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
 
 /**
  * Builder for the CSM Digest Close APDU command.
@@ -46,7 +45,6 @@ public class DigestCloseCmdBuild extends CsmCommandBuilder {
 
         // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, null,
         // expectedResponseLength);
-        request = RequestUtils.constructAPDURequest(cla, command, p1, p2, null,
-                expectedResponseLength);
+        request = setApduRequest(cla, command, p1, p2, null, expectedResponseLength);
     }
 }

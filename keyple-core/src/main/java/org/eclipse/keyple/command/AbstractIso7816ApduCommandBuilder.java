@@ -6,33 +6,48 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.calypso.command.util;
+package org.eclipse.keyple.command;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.command.CommandsTable;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
+@SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
+        "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity"})
 /**
- * Eases the creation of {@link ApduRequest} requests.
+ * Iso7816 APDU command builder. It has to be extended by all PO and CSM command builder classes, it
+ * provides, through the AbstractApduCommandBuilder superclass,the generic getters to retrieve: the
+ * name of the command, the built APDURequest, the corresponding AbstractApduResponseParser class.
  */
-public class RequestUtils {
+public abstract class AbstractIso7816ApduCommandBuilder extends AbstractApduCommandBuilder {
 
-    private RequestUtils() {}
-
-    public static ApduRequest constructAPDURequest(byte cla, CommandsTable ins, byte p1, byte p2,
-            ByteBuffer dataIn) {
-        return constructAPDURequest(cla, ins, p1, p2, dataIn, null);
+    /**
+     * Abstract constructor to build an APDU request with a command reference and a byte array.
+     *
+     * @param commandReference command reference
+     * @param request request
+     */
+    public AbstractIso7816ApduCommandBuilder(CommandsTable commandReference, ApduRequest request) {
+        super(commandReference, request);
     }
 
-    /*
-     * public static ApduRequest constructAPDURequest(byte cla, CommandsTable ins, byte p1, byte p2,
-     * ByteBuffer dataIn, byte le) { return constructAPDURequest(cla, ins.getInstructionByte(), p1,
-     * p2, dataIn, le); }
+    /**
+     * Helper method to create an ApduRequest from separated elements.
+     * <p>
+     * Case 4 is determined from provided arguments: if outgoing data is present and ingoing data is
+     * expected (le > 0), we are in case 4.
+     * <p>
+     * le must be set to null when no outgoing data is expected.
+     * 
+     * @param cla
+     * @param command
+     * @param p1
+     * @param p2
+     * @param dataIn
+     * @param le
+     * @return an ApduRequest
      */
-
-    public static ApduRequest constructAPDURequest(byte cla, CommandsTable command, byte p1,
-            byte p2, ByteBuffer dataIn, Byte le) {
-
+    protected ApduRequest setApduRequest(byte cla, CommandsTable command, byte p1, byte p2,
+            ByteBuffer dataIn, Byte le) {
         if (dataIn == null) {
             // TODO: Drop this
             dataIn = ByteBuffer.allocate(0);

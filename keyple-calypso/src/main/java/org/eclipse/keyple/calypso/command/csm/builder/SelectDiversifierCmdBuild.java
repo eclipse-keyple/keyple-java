@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -48,7 +47,7 @@ public class SelectDiversifierCmdBuild extends CsmCommandBuilder {
         byte p1 = 0x00;
         byte p2 = 0x00;
 
-        request = RequestUtils.constructAPDURequest(cla, command, p1, p2, diversifier);
+        request = setApduRequest(cla, command, p1, p2, diversifier, null);
 
     }
 }

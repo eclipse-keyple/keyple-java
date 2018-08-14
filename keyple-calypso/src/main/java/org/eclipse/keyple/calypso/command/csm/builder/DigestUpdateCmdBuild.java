@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
 
 /**
  * Builder for the CSM Digest Update APDU command. This command have to be sent twice for each
@@ -53,7 +52,7 @@ public class DigestUpdateCmdBuild extends CsmCommandBuilder {
         }
 
         // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, digestData);
-        request = RequestUtils.constructAPDURequest(cla, command, p1, p2,
-                digestData != null ? digestData.asReadOnlyBuffer() : null);
+        request = setApduRequest(cla, command, p1, p2,
+                digestData != null ? digestData.asReadOnlyBuffer() : null, null);
     }
 }

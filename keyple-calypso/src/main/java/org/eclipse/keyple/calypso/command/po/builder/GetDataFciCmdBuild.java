@@ -12,7 +12,6 @@ import org.eclipse.keyple.calypso.command.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
 
 /**
  * This class implements PoSendableInSession, it provides the dedicated constructor to build the Get
@@ -35,7 +34,6 @@ public class GetDataFciCmdBuild extends PoCommandBuilder implements PoSendableIn
         byte cla = PoRevision.REV2_4.equals(revision) ? (byte) 0x94 : (byte) 0x00;
         // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, (byte) 0x00, (byte)
         // 0x6F, null, (byte) 0x00);
-        request = RequestUtils.constructAPDURequest(cla, command, (byte) 0x00, (byte) 0x6F, null,
-                (byte) 0x00);
+        request = setApduRequest(cla, command, (byte) 0x00, (byte) 0x6F, null, (byte) 0x00);
     }
 }

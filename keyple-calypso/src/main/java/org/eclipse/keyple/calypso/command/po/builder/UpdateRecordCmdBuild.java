@@ -13,7 +13,6 @@ import org.eclipse.keyple.calypso.command.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -49,6 +48,6 @@ public class UpdateRecordCmdBuild extends PoCommandBuilder implements PoSendable
         byte p1 = recordNumber;
         byte p2 = (sfi == 0) ? (byte) 0x04 : (byte) ((byte) (sfi * 8) + 4);
 
-        this.request = RequestUtils.constructAPDURequest(cla, command, p1, p2, newRecordData);
+        this.request = setApduRequest(cla, command, p1, p2, newRecordData, null);
     }
 }

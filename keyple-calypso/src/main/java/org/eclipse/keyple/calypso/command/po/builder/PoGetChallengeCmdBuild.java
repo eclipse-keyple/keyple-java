@@ -13,7 +13,6 @@ import org.eclipse.keyple.calypso.command.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
 
 /**
  * The Class PoGetChallengeCmdBuild. This class provides the dedicated constructor to build the PO
@@ -44,7 +43,6 @@ public class PoGetChallengeCmdBuild extends PoCommandBuilder implements PoSendab
         ByteBuffer dataIn = null;
         byte optionalLe = (byte) 0x08;
 
-        this.request = RequestUtils.constructAPDURequest(cla, command, p1, p2, dataIn, optionalLe);
-
+        this.request = setApduRequest(cla, command, p1, p2, dataIn, optionalLe);
     }
 }

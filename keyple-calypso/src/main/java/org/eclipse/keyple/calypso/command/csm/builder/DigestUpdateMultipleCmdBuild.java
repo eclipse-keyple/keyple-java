@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -45,6 +44,6 @@ public class DigestUpdateMultipleCmdBuild extends CsmCommandBuilder {
         byte p1 = (byte) 0x80;
         byte p2 = (byte) 0x00;
 
-        request = RequestUtils.constructAPDURequest(cla, command, p1, p2, digestData);
+        request = setApduRequest(cla, command, p1, p2, digestData, null);
     }
 }

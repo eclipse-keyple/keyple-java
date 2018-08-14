@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
 
 /**
  * Builder for the Digest Authenticate APDU command.
@@ -46,6 +45,6 @@ public class DigestAuthenticateCmdBuild extends CsmCommandBuilder {
         byte p1 = 0x00;
         byte p2 = (byte) 0x00;
 
-        request = RequestUtils.constructAPDURequest(cla, command, p1, p2, signature);
+        request = setApduRequest(cla, command, p1, p2, signature, null);
     }
 }

@@ -10,7 +10,6 @@ package org.eclipse.keyple.calypso.command.po.parser;
 
 import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.util.ApduUtils;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
@@ -33,8 +32,10 @@ public class OpenSession32RespPars extends AbstractOpenSessionRespPars {
     public static SecureSession createSecureSession(ByteBuffer apduResponse) {
 
         byte flag = apduResponse.get(8);
-        boolean previousSessionRatified = ApduUtils.isBitSet(flag, 0x00);
-        boolean manageSecureSessionAuthorized = ApduUtils.isBitSet(flag, 1);
+        // ratification: if the bit 0 of flag is set then the previous session has been ratified
+        boolean previousSessionRatified = (flag & (1 << 0)) != 0;
+        // secure session: if the bit 1 of flag is set then the secure session is authorized
+        boolean manageSecureSessionAuthorized = (flag & (1 << 1)) != 0;
 
         byte kif = apduResponse.get(9);
         byte kvc = apduResponse.get(10);

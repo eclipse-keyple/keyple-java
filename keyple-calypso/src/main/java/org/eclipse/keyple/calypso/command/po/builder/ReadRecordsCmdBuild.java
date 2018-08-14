@@ -12,7 +12,6 @@ import org.eclipse.keyple.calypso.command.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
 
 /**
  * The Class ReadRecordsCmdBuild. This class provides the dedicated constructor to build the Read
@@ -56,7 +55,6 @@ public class ReadRecordsCmdBuild extends PoCommandBuilder implements PoSendableI
             p2 = (byte) (p2 - (byte) 0x01);
         }
 
-        this.request =
-                RequestUtils.constructAPDURequest(cla, command, p1, p2, null, expectedLength);
+        this.request = setApduRequest(cla, command, p1, p2, null, expectedLength);
     }
 }

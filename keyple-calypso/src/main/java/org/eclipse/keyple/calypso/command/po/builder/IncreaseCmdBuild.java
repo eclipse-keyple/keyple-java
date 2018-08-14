@@ -13,7 +13,6 @@ import org.eclipse.keyple.calypso.command.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
 
 /**
  * The Class IncreaseCmdBuild. This class provides the dedicated constructor to build the Increase
@@ -59,7 +58,6 @@ public class IncreaseCmdBuild extends PoCommandBuilder implements PoSendableInSe
         byte p1 = counterNumber;
         byte p2 = (byte) (sfi * 8);
 
-        this.request =
-                RequestUtils.constructAPDURequest(cla, command, p1, p2, incValueBuffer, (byte) 3);
+        this.request = setApduRequest(cla, command, p1, p2, incValueBuffer, (byte) 3);
     }
 }

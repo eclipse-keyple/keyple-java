@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 // TODO: Auto-generated Javadoc
@@ -53,7 +52,6 @@ public class CloseSessionCmdBuild extends PoCommandBuilder {
 
         byte p1 = ratificationAsked ? (byte) 0x80 : (byte) 0x00;
 
-        request = RequestUtils.constructAPDURequest(cla, command, p1, (byte) 0x00,
-                terminalSessionSignature);
+        request = setApduRequest(cla, command, p1, (byte) 0x00, terminalSessionSignature, null);
     }
 }

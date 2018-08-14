@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
-import org.eclipse.keyple.calypso.command.util.RequestUtils;
 
 /**
  * Builder for the CSM Digest Init APDU command.
@@ -79,8 +78,7 @@ public class DigestInitCmdBuild extends CsmCommandBuilder {
         }
         // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, CalypsoCommands.CSM_DIGEST_INIT,
         // p1, p2, dataIn);
-        request = RequestUtils.constructAPDURequest(cla, CalypsoSmCommands.DIGEST_INIT, p1, p2,
-                dataIn);
+        request = setApduRequest(cla, CalypsoSmCommands.DIGEST_INIT, p1, p2, dataIn, null);
 
     }
 }
