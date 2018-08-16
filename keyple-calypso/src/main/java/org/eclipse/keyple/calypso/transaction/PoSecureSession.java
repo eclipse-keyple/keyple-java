@@ -62,13 +62,11 @@ public class PoSecureSession {
      */
     public enum SessionState {
         /** Initial state of a PO transaction. The PO must have been previously selected. */
-        PO_SELECTED,
+        SESSION_NOT_INITIALIZED,
         /** The secure session is initialized. */
         SESSION_INITIALIZED,
         /** The secure session is active. */
-        SESSION_OPEN,
-        /** The transaction is finished. */
-        SESSION_CLOSED,
+        SESSION_OPEN
     }
 
     /** the type of the notified event. */
@@ -113,7 +111,7 @@ public class PoSecureSession {
 
         this.defaultKeyIndex = defaultKeyIndex; // TODO => to fix
 
-        currentState = SessionState.PO_SELECTED;
+        currentState = SessionState.SESSION_NOT_INITIALIZED;
     }
 
     /**
@@ -127,11 +125,9 @@ public class PoSecureSession {
      */
     public void processIdentification(ApduResponse poFciData) throws IOReaderException {
 
-        if (currentState != SessionState.PO_SELECTED
-                && currentState != SessionState.SESSION_CLOSED) {
+        if (currentState != SessionState.SESSION_NOT_INITIALIZED) {
             throw new IllegalStateException("Bad session state. Current: " + currentState.toString()
-                    + ", expected: " + SessionState.PO_SELECTED.toString() + " or "
-                    + SessionState.SESSION_CLOSED.toString());
+                    + ", expected: " + SessionState.SESSION_NOT_INITIALIZED.toString());
         }
 
         // Init CSM ApduRequest List
@@ -539,7 +535,7 @@ public class PoSecureSession {
         // throw new IllegalArgumentException(digestCloseRespPars.getStatusInformation());
         // }
 
-        currentState = SessionState.SESSION_CLOSED;
+        currentState = SessionState.SESSION_NOT_INITIALIZED;
         return poResponse;
     }
 
@@ -812,7 +808,7 @@ public class PoSecureSession {
         // throw new IllegalArgumentException(digestCloseRespPars.getStatusInformation());
         // }
 
-        currentState = SessionState.SESSION_CLOSED;
+        currentState = SessionState.SESSION_NOT_INITIALIZED;
         return poResponse;
     }
 
