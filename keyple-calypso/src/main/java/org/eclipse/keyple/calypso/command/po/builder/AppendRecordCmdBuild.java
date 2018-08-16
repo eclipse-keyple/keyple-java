@@ -13,7 +13,6 @@ import org.eclipse.keyple.calypso.command.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.seproxy.ApduRequest;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -27,18 +26,6 @@ public class AppendRecordCmdBuild extends PoCommandBuilder implements PoSendable
 
     /** The command. */
     private static CalypsoPoCommands command = CalypsoPoCommands.APPEND_RECORD;
-
-    /**
-     * Instantiates a new append record cmd build.
-     *
-     * @param commandeReference the commande reference
-     * @param request the request
-     * @throws java.lang.IllegalArgumentException - if the command is inconsistent
-     */
-    AppendRecordCmdBuild(CalypsoPoCommands commandeReference, ApduRequest request)
-            throws IllegalArgumentException {
-        super(commandeReference, request);
-    }
 
     /**
      * Instantiates a new UpdateRecordCmdBuild.
