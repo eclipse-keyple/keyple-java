@@ -15,7 +15,7 @@ import org.eclipse.keyple.calypso.command.CsmSendableInSession;
 import org.eclipse.keyple.calypso.command.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.SendableInSession;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
-import org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild;
+import org.eclipse.keyple.calypso.command.csm.builder.*;
 import org.eclipse.keyple.calypso.command.csm.parser.CsmGetChallengeRespPars;
 import org.eclipse.keyple.calypso.command.csm.parser.DigestAuthenticateRespPars;
 import org.eclipse.keyple.calypso.command.csm.parser.DigestCloseRespPars;
@@ -61,11 +61,11 @@ public class PoSecureSession {
      * The PO Transaction State defined with the elements: ‘IOError’, ‘SEInserted’ and ‘SERemoval’.
      */
     public enum SessionState {
-        /** Initial state of a PO transaction. */
-        PO_NOT_IDENTIFIED,
-        /** Calypso application selected. */
-        PO_IDENTIFIED,
-        /** A secure session is active. */
+        /** Initial state of a PO transaction. The PO must have been previously selected. */
+        PO_SELECTED,
+        /** The secure session is initialized. */
+        SESSION_INITIALIZED,
+        /** The secure session is active. */
         SESSION_OPEN,
         /** The transaction is finished. */
         SESSION_CLOSED,
@@ -113,7 +113,7 @@ public class PoSecureSession {
 
         this.defaultKeyIndex = defaultKeyIndex; // TODO => to fix
 
-        currentState = SessionState.PO_NOT_IDENTIFIED;
+        currentState = SessionState.PO_SELECTED;
     }
 
     /**
@@ -126,6 +126,14 @@ public class PoSecureSession {
      * @throws IOReaderException the IO reader exception
      */
     public void processIdentification(ApduResponse poFciData) throws IOReaderException {
+
+        if (currentState != SessionState.PO_SELECTED
+                && currentState != SessionState.SESSION_CLOSED) {
+            throw new IllegalStateException("Bad session state. Current: " + currentState.toString()
+                    + ", expected: " + SessionState.PO_SELECTED.toString() + " or "
+                    + SessionState.SESSION_CLOSED.toString());
+        }
+
         // Init CSM ApduRequest List
         List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
         // PO & CSM channels to be kept "Open"
@@ -143,14 +151,12 @@ public class PoSecureSession {
 
         // Define CSM Select Diversifier command
         AbstractApduCommandBuilder selectDiversifier =
-                new org.eclipse.keyple.calypso.command.csm.builder.SelectDiversifierCmdBuild(
-                        this.csmRevision, poCalypsoInstanceSerial);
+                new SelectDiversifierCmdBuild(this.csmRevision, poCalypsoInstanceSerial);
         csmApduRequestList.add(selectDiversifier.getApduRequest());
 
         // Define CSM Get Challenge command
         AbstractApduCommandBuilder csmGetChallenge =
-                new org.eclipse.keyple.calypso.command.csm.builder.CsmGetChallengeCmdBuild(
-                        this.csmRevision, (byte) 0x04);
+                new CsmGetChallengeCmdBuild(this.csmRevision, (byte) 0x04);
         csmApduRequestList.add(csmGetChallenge.getApduRequest());
 
         logger.info("Identification: CSM Request", "action", "po_secure_session.ident_csm_request",
@@ -180,7 +186,7 @@ public class PoSecureSession {
                     InvalidMessageException.Type.CSM, csmApduRequestList, csmApduResponseList);
         }
 
-        currentState = SessionState.PO_IDENTIFIED;
+        currentState = SessionState.SESSION_INITIALIZED;
     }
 
     /**
@@ -198,6 +204,11 @@ public class PoSecureSession {
      */
     public SeResponse processOpening(AbstractOpenSessionCmdBuild openCommand,
             List<PoSendableInSession> poCommandsInsideSession) throws IOReaderException {
+
+        if (currentState != SessionState.SESSION_INITIALIZED) {
+            throw new IllegalStateException("Bad session state. Current: " + currentState.toString()
+                    + ", expected: " + SessionState.SESSION_INITIALIZED.toString());
+        }
 
         // Init PO ApduRequest List
         List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
@@ -261,10 +272,9 @@ public class PoSecureSession {
                 kif = (byte) 0x30;
             }
         }
-        AbstractApduCommandBuilder digestInit =
-                new org.eclipse.keyple.calypso.command.csm.builder.DigestInitCmdBuild(csmRevision,
-                        false, poRevision.equals(PoRevision.REV3_2), defaultKeyIndex, kif,
-                        poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
+        AbstractApduCommandBuilder digestInit = new DigestInitCmdBuild(csmRevision, false,
+                poRevision.equals(PoRevision.REV3_2), defaultKeyIndex, kif,
+                poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
         logger.info("Opening: CSM Request", "action", "po_secure_session.open_csm_digest_init",
                 "apdu", ByteBufferUtils.toHex(digestInit.getApduRequest().getBytes()));
 
@@ -280,18 +290,14 @@ public class PoSecureSession {
                  * Session for the first command send in session Build "Digest Update" command for
                  * each PO APDU Request
                  */
-                csmApduRequestList.add(
-                        (new org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild(
-                                csmRevision, false, poApduRequestList.get(i).getBytes()))
-                                        .getApduRequest());
+                csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
+                        poApduRequestList.get(i).getBytes())).getApduRequest());
                 /*
                  * Build "Digest Update" command for each PO APDU Response //TODO => this is the
                  * right command, to fix ApduResponse.getBytes
                  */
-                csmApduRequestList.add(
-                        ((new org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild(
-                                csmRevision, false, poApduResponseList.get(i).getBytes()))
-                                        .getApduRequest())); // HACK
+                csmApduRequestList.add(((new DigestUpdateCmdBuild(csmRevision, false,
+                        poApduResponseList.get(i).getBytes())).getApduRequest())); // HACK
             }
         }
 
@@ -325,6 +331,11 @@ public class PoSecureSession {
     public SeResponse processOpeningClosing(AbstractOpenSessionCmdBuild openCommand,
             List<PoSendableInSession> poCommandsInsideSession, PoCommandBuilder ratificationCommand,
             boolean closeSeChannel) throws IOReaderException {
+
+        if (currentState != SessionState.SESSION_INITIALIZED) {
+            throw new IllegalStateException("Bad session state. Current: " + currentState.toString()
+                    + ", expected: " + SessionState.SESSION_INITIALIZED.toString());
+        }
 
         /* First ================================================================= */
 
@@ -390,10 +401,9 @@ public class PoSecureSession {
                 kif = (byte) 0x30;
             }
         }
-        AbstractApduCommandBuilder digestInit =
-                new org.eclipse.keyple.calypso.command.csm.builder.DigestInitCmdBuild(csmRevision,
-                        false, poRevision.equals(PoRevision.REV3_2), defaultKeyIndex, kif,
-                        poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
+        AbstractApduCommandBuilder digestInit = new DigestInitCmdBuild(csmRevision, false,
+                poRevision.equals(PoRevision.REV3_2), defaultKeyIndex, kif,
+                poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
         logger.info("Opening: CSM Request", "action", "po_secure_session.open_csm_digest_init",
                 "apdu", ByteBufferUtils.toHex(digestInit.getApduRequest().getBytes()));
 
@@ -409,10 +419,8 @@ public class PoSecureSession {
                  * Session for the first command send in session Build "Digest Update" command for
                  * each PO APDU Request
                  */
-                csmApduRequestList.add(
-                        (new org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild(
-                                csmRevision, false, poApduRequestList.get(i).getBytes()))
-                                        .getApduRequest());
+                csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
+                        poApduRequestList.get(i).getBytes())).getApduRequest());
                 /*
                  * Build "Digest Update" command for each PO APDU Response //TODO => this is the
                  * right command, to fix ApduResponse.getBytes
@@ -435,9 +443,8 @@ public class PoSecureSession {
         /* Second ================================================================= */
 
         // Build "Digest Close" command
-        org.eclipse.keyple.calypso.command.csm.builder.DigestCloseCmdBuild digestClose =
-                new org.eclipse.keyple.calypso.command.csm.builder.DigestCloseCmdBuild(csmRevision,
-                        poRevision.equals(PoRevision.REV3_2) ? (byte) 0x08 : (byte) 0x04);
+        DigestCloseCmdBuild digestClose = new DigestCloseCmdBuild(csmRevision,
+                poRevision.equals(PoRevision.REV3_2) ? (byte) 0x08 : (byte) 0x04);
 
         csmApduRequestList.clear();
         csmApduRequestList.add(digestClose.getApduRequest());
@@ -509,8 +516,7 @@ public class PoSecureSession {
 
         // Build CSM Digest Authenticate command
         AbstractApduCommandBuilder digestAuth =
-                new org.eclipse.keyple.calypso.command.csm.builder.DigestAuthenticateCmdBuild(
-                        this.csmRevision, sessionCardSignature);
+                new DigestAuthenticateCmdBuild(this.csmRevision, sessionCardSignature);
         csmApduRequestList.clear();
         csmApduRequestList.add(digestAuth.getApduRequest());
 
@@ -591,6 +597,11 @@ public class PoSecureSession {
     public SeResponse processProceeding(List<PoSendableInSession> poCommandsInsideSession)
             throws IOReaderException {
 
+        if (currentState != SessionState.SESSION_OPEN) {
+            throw new IllegalStateException("Bad session state. Current: " + currentState.toString()
+                    + ", expected: " + SessionState.SESSION_OPEN.toString());
+        }
+
         // Get PO ApduRequest List from PoSendableInSession List
         List<ApduRequest> poApduRequestList = this.getApduRequestsToSendInSession(
                 (List<SendableInSession>) (List<?>) poCommandsInsideSession);
@@ -618,16 +629,12 @@ public class PoSecureSession {
          */
         for (int i = 0; i < poApduRequestList.size(); i++) {
             // Build "Digest Update" command for each PO APDU Request
-            csmApduRequestList
-                    .add((new org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild(
-                            csmRevision, false, poApduRequestList.get(i).getBytes()))
-                                    .getApduRequest());
+            csmApduRequestList.add((new DigestUpdateCmdBuild(csmRevision, false,
+                    poApduRequestList.get(i).getBytes())).getApduRequest());
 
             // Build "Digest Update" command for each PO APDU Response
-            csmApduRequestList
-                    .add(((new org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild(
-                            csmRevision, false, poApduResponseList.get(i).getBytes()))
-                                    .getApduRequest())); // HACK
+            csmApduRequestList.add(((new DigestUpdateCmdBuild(csmRevision, false,
+                    poApduResponseList.get(i).getBytes())).getApduRequest())); // HACK
         }
 
         // Transfert CSM commands
@@ -668,6 +675,11 @@ public class PoSecureSession {
             List<ApduResponse> poAnticipatedResponseInsideSession,
             PoCommandBuilder ratificationCommand, boolean closeSeChannel) throws IOReaderException {
 
+        if (currentState != SessionState.SESSION_OPEN) {
+            throw new IllegalStateException("Bad session state. Current: " + currentState.toString()
+                    + ", expected: " + SessionState.SESSION_OPEN.toString());
+        }
+
         // Get PO ApduRequest List from PoSendableInSession List - for the first PO exchange
         List<ApduRequest> poApduRequestList = this.getApduRequestsToSendInSession(
                 (List<SendableInSession>) (List<?>) poCommandsInsideSession);
@@ -691,18 +703,14 @@ public class PoSecureSession {
                     // >= 3) && (poApduRequestLength + poApduRequestLength <= 250)
 
                     // Build "Digest Update" command for each PO APDU Request
-                    csmApduRequestList_1.add(
-                            (new org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild(
-                                    csmRevision, false, poApduRequestList.get(i).getBytes()))
-                                            .getApduRequest());
+                    csmApduRequestList_1.add((new DigestUpdateCmdBuild(csmRevision, false,
+                            poApduRequestList.get(i).getBytes())).getApduRequest());
                     // Build "Digest Update" command for each "ANTICIPATED" PO APDU Response
                     // csmApduRequestList_1.add((new DigestUpdateCmdBuild(csmRevision, false,
                     // poApduResponseList_1.get(i).getBytes())).getApduRequest());
-                    csmApduRequestList_1.add(
-                            (new org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild(
-                                    csmRevision, false,
-                                    poAnticipatedResponseInsideSession.get(i).getBytes()))
-                                            .getApduRequest());
+                    csmApduRequestList_1.add((new DigestUpdateCmdBuild(csmRevision, false,
+                            poAnticipatedResponseInsideSession.get(i).getBytes()))
+                                    .getApduRequest());
                 }
             } else {
                 // TODO => error processing
@@ -710,9 +718,8 @@ public class PoSecureSession {
         }
 
         // Build "Digest Close" command
-        org.eclipse.keyple.calypso.command.csm.builder.DigestCloseCmdBuild digestClose =
-                new org.eclipse.keyple.calypso.command.csm.builder.DigestCloseCmdBuild(csmRevision,
-                        poRevision.equals(PoRevision.REV3_2) ? (byte) 0x08 : (byte) 0x04);
+        DigestCloseCmdBuild digestClose = new DigestCloseCmdBuild(csmRevision,
+                poRevision.equals(PoRevision.REV3_2) ? (byte) 0x08 : (byte) 0x04);
 
         csmApduRequestList_1.add(digestClose.getApduRequest());
 
@@ -782,8 +789,7 @@ public class PoSecureSession {
 
         // Build CSM Digest Authenticate command
         AbstractApduCommandBuilder digestAuth =
-                new org.eclipse.keyple.calypso.command.csm.builder.DigestAuthenticateCmdBuild(
-                        this.csmRevision, sessionCardSignature);
+                new DigestAuthenticateCmdBuild(this.csmRevision, sessionCardSignature);
         csmApduRequestList_2.add(digestAuth.getApduRequest());
 
         // ****SECOND**** transfer of CSM commands (keep channel open to avoid unwanted CSM reset)
@@ -820,6 +826,12 @@ public class PoSecureSession {
      */
     public SeResponse processCsmCommands(List<CsmSendableInSession> csmSendableInSessions)
             throws IOReaderException {
+
+        if (currentState != SessionState.SESSION_OPEN) {
+            throw new IllegalStateException("Bad session state. Current: " + currentState.toString()
+                    + ", expected: " + SessionState.SESSION_OPEN.toString());
+        }
+
         // Init CSM ApduRequest List - for the first CSM exchange
         List<ApduRequest> csmApduRequestList = this.getApduRequestsToSendInSession(
                 (List<SendableInSession>) (List<?>) csmSendableInSessions);
