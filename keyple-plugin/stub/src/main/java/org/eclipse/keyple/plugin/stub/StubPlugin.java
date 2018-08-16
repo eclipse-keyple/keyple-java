@@ -14,11 +14,11 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
-import org.eclipse.keyple.seproxy.plugin.AbstractThreadedObservablePlugin;
+import org.eclipse.keyple.seproxy.plugin.AbstractStaticPlugin;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
-public final class StubPlugin extends AbstractThreadedObservablePlugin {
+public final class StubPlugin extends AbstractStaticPlugin {
 
     private static final StubPlugin uniqueInstance = new StubPlugin();
 
@@ -28,6 +28,7 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
 
     private StubPlugin() {
         super("StubPlugin");
+
     }
 
     /**
@@ -51,10 +52,12 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
 
     @Override
     protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
+        // init Stub Readers
         SortedSet<AbstractObservableReader> nativeReaders =
                 new ConcurrentSkipListSet<AbstractObservableReader>();
         // add native readers
         nativeReaders.add(new StubReader());
+
         return nativeReaders;
     }
 
@@ -68,8 +71,4 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
         throw new IOReaderException("Reader with name " + name + " was not found");
     }
 
-    @Override
-    protected SortedSet<String> getNativeReadersNames() throws IOReaderException {
-        return nativeReadersNames;
-    }
 }
