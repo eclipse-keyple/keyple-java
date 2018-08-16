@@ -17,7 +17,7 @@ import org.eclipse.keyple.util.NameableConfigurable;
 /**
  * Card readers plugin interface.
  */
-public interface ReadersPlugin extends NameableConfigurable, Comparable<ReadersPlugin> {
+public interface ReaderPlugin extends NameableConfigurable, Comparable<ReaderPlugin> {
 
     // TODO - possibility to force implementatiosn to be singleton?
 

@@ -11,10 +11,10 @@ package org.eclipse.keyple.util;
 import java.io.IOException;
 import java.util.Map;
 import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.ReadersPlugin;
+import org.eclipse.keyple.seproxy.ReaderPlugin;
 
 /**
- * Allow {@link ProxyReader}s and {@link ReadersPlugin}s to be named and receive configuration
+ * Allow {@link ProxyReader}s and {@link ReaderPlugin}s to be named and receive configuration
  * parameters.
  */
 public interface NameableConfigurable {

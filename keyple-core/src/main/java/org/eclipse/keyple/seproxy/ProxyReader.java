@@ -27,7 +27,7 @@ import org.eclipse.keyple.util.NameableConfigurable;
  * <li>and ApduRequest are transmited one by one</li>
  * </ul>
  * </ul>
- * Interface each {@link ReadersPlugin} should implement
+ * Interface each {@link ReaderPlugin} should implement
  */
 public interface ProxyReader extends NameableConfigurable, Comparable<ProxyReader> {
 

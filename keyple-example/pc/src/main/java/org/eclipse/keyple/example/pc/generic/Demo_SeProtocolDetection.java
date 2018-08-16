@@ -182,7 +182,7 @@ public class Demo_SeProtocolDetection implements ObservableReader.ReaderObserver
     private static ProxyReader getReaderByName(SeProxyService seProxyService, String pattern)
             throws IOReaderException {
         Pattern p = Pattern.compile(pattern);
-        for (ReadersPlugin plugin : seProxyService.getPlugins()) {
+        for (ReaderPlugin plugin : seProxyService.getPlugins()) {
             for (ProxyReader reader : plugin.getReaders()) {
                 if (p.matcher(reader.getName()).matches()) {
                     return reader;
@@ -206,7 +206,7 @@ public class Demo_SeProtocolDetection implements ObservableReader.ReaderObserver
         SeProxyService seProxyService = SeProxyService.getInstance();
 
         // add the PcscPlugin to the SeProxyService
-        SortedSet<ReadersPlugin> pluginsSet = new ConcurrentSkipListSet<ReadersPlugin>();
+        SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
         pluginsSet.add(PcscPlugin.getInstance().setLogging(false));
         seProxyService.setPlugins(pluginsSet);
 

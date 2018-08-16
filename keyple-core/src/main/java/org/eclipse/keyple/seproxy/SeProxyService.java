@@ -27,7 +27,7 @@ public final class SeProxyService {
     private Integer version = 1;
 
     /** the list of readers’ plugins interfaced with the SE Proxy Service */
-    private SortedSet<ReadersPlugin> plugins = new ConcurrentSkipListSet<ReadersPlugin>();
+    private SortedSet<ReaderPlugin> plugins = new ConcurrentSkipListSet<ReaderPlugin>();
 
     /**
      * Instantiates a new SeProxyService.
@@ -48,7 +48,7 @@ public final class SeProxyService {
      *
      * @param plugins the new plugins
      */
-    public void setPlugins(SortedSet<ReadersPlugin> plugins) {
+    public void setPlugins(SortedSet<ReaderPlugin> plugins) {
         this.plugins = plugins;
     }
 
@@ -57,7 +57,7 @@ public final class SeProxyService {
      *
      * @return the plugins the list of interfaced reader’s plugins.
      */
-    public SortedSet<ReadersPlugin> getPlugins() {
+    public SortedSet<ReaderPlugin> getPlugins() {
         return plugins;
     }
 
@@ -66,8 +66,8 @@ public final class SeProxyService {
      *
      * @return the plugin.
      */
-    public ReadersPlugin getPlugin(String name) throws UnexpectedPluginException {
-        for (ReadersPlugin plugin : plugins) {
+    public ReaderPlugin getPlugin(String name) throws UnexpectedPluginException {
+        for (ReaderPlugin plugin : plugins) {
             if (plugin.getName().equals(name)) {
                 return plugin;
             }

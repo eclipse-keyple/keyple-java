@@ -24,7 +24,7 @@ import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.ReadersPlugin;
+import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.SeRequestSet;
@@ -81,7 +81,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
         // 1 - First initialize SEProxy with Android Plugin
         Log.d(TAG, "Initialize SEProxy with Android Plugin");
         SeProxyService seProxyService = SeProxyService.getInstance();
-        SortedSet<ReadersPlugin> plugins = new ConcurrentSkipListSet<ReadersPlugin>();
+        SortedSet<ReaderPlugin> plugins = new ConcurrentSkipListSet<ReaderPlugin>();
         plugins.add(AndroidNfcPlugin.getInstance());
         seProxyService.setPlugins(plugins);
 

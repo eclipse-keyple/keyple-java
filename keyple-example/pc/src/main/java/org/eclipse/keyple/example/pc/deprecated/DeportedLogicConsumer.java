@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.example.common.deprecated.BasicCardAccessManager;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.ReadersPlugin;
+import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 
@@ -24,10 +24,10 @@ public class DeportedLogicConsumer {
     public static void main(String[] args) throws Exception, NoStackTraceThrowable {
         SeProxyService seProxyService = SeProxyService.getInstance();
         System.out.println("SeProxyServ v" + seProxyService.getVersion());
-        SortedSet<ReadersPlugin> plugins = new ConcurrentSkipListSet<ReadersPlugin>();
+        SortedSet<ReaderPlugin> plugins = new ConcurrentSkipListSet<ReaderPlugin>();
         plugins.add(PcscPlugin.getInstance().setLogging(true));
         seProxyService.setPlugins(plugins);
-        for (ReadersPlugin rp : seProxyService.getPlugins()) {
+        for (ReaderPlugin rp : seProxyService.getPlugins()) {
             System.out.println("Reader plugin: " + rp.getName());
             for (ProxyReader pr : rp.getReaders()) {
                 System.out
