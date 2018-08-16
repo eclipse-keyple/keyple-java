@@ -17,12 +17,16 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
+/**
+ * This class is an example of a Stub Implementation of SecureElement.
+ * It works with the protocol PROTOCOL_ISO14443_4 and simualtes a Calypsi PO with an Hoplink application
+ */
 public class HoplinkStubSE implements StubSecureElement {
 
     boolean isPhysicalChannelOpen = false;
     Map<String, String> hexCommands = new HashMap<String, String>();
-    static SeProtocol seProtocol = ContactlessProtocols.PROTOCOL_ISO14443_4;
-
+    final static SeProtocol seProtocol = ContactlessProtocols.PROTOCOL_ISO14443_4;
+    final String ATR_HEX = "3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B";
 
     public HoplinkStubSE() {
         initHexCommands();
@@ -31,7 +35,7 @@ public class HoplinkStubSE implements StubSecureElement {
 
     @Override
     public ByteBuffer getATR() {
-        return ByteBufferUtils.fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
+        return ByteBufferUtils.fromHex(ATR_HEX);
     }
 
     @Override
@@ -66,8 +70,7 @@ public class HoplinkStubSE implements StubSecureElement {
         return seProtocol;
     }
 
-
-    // helpers
+    // Init commands_map with some example commands
     private void initHexCommands() {
         hexCommands.put("00A404000AA000000291A00000019100",
                 "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
@@ -75,11 +78,20 @@ public class HoplinkStubSE implements StubSecureElement {
                 "00000000000000000000000000000000000000000000000000000000000000009000");
     }
 
+    /**
+     * Add more simulated commands to the Stub SE
+     * @param command : hexadecimal command to react to
+     * @param response : hexadecimal response to be sent in reaction to command
+     */
     public void addHexCommand(String command, String response) {
         assert command != null && response != null : "command and response should not be null";
         hexCommands.put(command, response);
     }
 
+    /**
+     * Remove simulated commands from the Stub SE
+     * @param command : hexadecimal command to be removed
+     */
     public void removeHexCommand(String command) {
         assert command != null : "command should not be null";
         hexCommands.remove(command);

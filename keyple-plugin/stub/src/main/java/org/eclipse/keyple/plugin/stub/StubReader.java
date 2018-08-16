@@ -36,8 +36,8 @@ public class StubReader extends AbstractSelectionLocalReader {
     public static final String ALLOWED_PARAMETER_1 = "parameter1";
     public static final String ALLOWED_PARAMETER_2 = "parameter2";
 
-    static final String pluginName = "stubPlugin";
-    static final String readerName = "stubReader";
+    static final String pluginName = "StubPlugin";
+    static final String readerName = "StubReader";
 
     public StubReader() {
         super(pluginName, readerName);
@@ -74,12 +74,12 @@ public class StubReader extends AbstractSelectionLocalReader {
     }
 
     @Override
-    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws InvalidMessageException {
+    public boolean protocolFlagMatches(SeProtocol protocolFlag){
         return se != null && protocolFlag.equals(se.getSeProcotol());
     }
 
     @Override
-    public boolean isSePresent() throws NoStackTraceThrowable {
+    public boolean isSePresent() {
         return se != null;
     }
 
@@ -99,30 +99,33 @@ public class StubReader extends AbstractSelectionLocalReader {
 
 
     /*
-     * PROXYING INTERNAL METHOD FOR TESTING PURPOSES
+     * HELPERS TO TEST INTERNAL METHOD
      */
-    protected final ApduResponse processApduRequestProxy(ApduRequest apduRequest)
+    final ApduResponse processApduRequestTestProxy(ApduRequest apduRequest)
             throws ChannelStateReaderException {
         return this.processApduRequest(apduRequest);
     }
 
-    protected final SeResponseSet processSeRequestSetProxy(SeRequestSet requestSet)
+    final SeResponseSet processSeRequestSetTestProxy(SeRequestSet requestSet)
             throws IOReaderException {
         return this.processSeRequestSet(requestSet);
     }
 
-    protected final boolean isLogicalChannelOpenProxy() {
+    final boolean isLogicalChannelOpenTestProxy() {
         return this.isPhysicalChannelOpen();
     }
 
 
 
+    /*
+    STATE CONTROLLERS FOR INSERTING AND REMOVING SECURE ELEMENT
+     */
     public void insertSe(StubSecureElement _se) {
         se = _se;
         notifyObservers(new ReaderEvent(pluginName, readerName, ReaderEvent.EventType.SE_INSERTED));
     }
 
-    public void removeSe(StubSecureElement se) {
+    public void removeSe() {
         se = null;
         notifyObservers(new ReaderEvent(pluginName, readerName, ReaderEvent.EventType.SE_REMOVAL));
     }
