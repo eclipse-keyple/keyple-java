@@ -17,6 +17,7 @@ public interface StubSecureElement {
 
     /**
      * Getter for ATR
+     * 
      * @return Secured Element ATR
      */
     ByteBuffer getATR();
@@ -28,6 +29,7 @@ public interface StubSecureElement {
 
     /**
      * Open physicann channel to the SE
+     * 
      * @throws IOReaderException
      * @throws ChannelStateReaderException
      */
@@ -35,12 +37,14 @@ public interface StubSecureElement {
 
     /**
      * Close physical channel from the SE
+     * 
      * @throws IOReaderException
      */
     void closePhysicalChannel() throws IOReaderException;
 
     /**
      * Return APDU Response to APDU Request
+     * 
      * @param apduIn : commands to be processed
      * @return APDU response
      * @throws ChannelStateReaderException

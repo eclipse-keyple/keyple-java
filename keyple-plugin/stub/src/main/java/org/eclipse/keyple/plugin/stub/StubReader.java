@@ -19,8 +19,6 @@ import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
-import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.plugin.AbstractSelectionLocalReader;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
@@ -74,7 +72,7 @@ public class StubReader extends AbstractSelectionLocalReader {
     }
 
     @Override
-    public boolean protocolFlagMatches(SeProtocol protocolFlag){
+    public boolean protocolFlagMatches(SeProtocol protocolFlag) {
         return se != null && protocolFlag.equals(se.getSeProcotol());
     }
 
@@ -99,7 +97,7 @@ public class StubReader extends AbstractSelectionLocalReader {
 
 
     /*
-     * HELPERS TO TEST INTERNAL METHOD
+     * HELPERS TO TEST INTERNAL METHOD TODO : is this necessary?
      */
     final ApduResponse processApduRequestTestProxy(ApduRequest apduRequest)
             throws ChannelStateReaderException {
@@ -118,7 +116,7 @@ public class StubReader extends AbstractSelectionLocalReader {
 
 
     /*
-    STATE CONTROLLERS FOR INSERTING AND REMOVING SECURE ELEMENT
+     * STATE CONTROLLERS FOR INSERTING AND REMOVING SECURE ELEMENT
      */
     public void insertSe(StubSecureElement _se) {
         se = _se;

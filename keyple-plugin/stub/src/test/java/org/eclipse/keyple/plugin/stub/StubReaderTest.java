@@ -41,6 +41,7 @@ public class StubReaderTest {
     StubReader reader;
 
 
+    // init before each test
     @Before
     public void SetUp() throws IOReaderException {
         // works if stubreader could be instanciated just once
@@ -57,21 +58,21 @@ public class StubReaderTest {
     @Test
     public void testInsert() throws NoStackTraceThrowable {
 
-        //add observer
+        // add observer
         reader.addObserver(new Observable.Observer<ReaderEvent>() {
             @Override
             public void update(ReaderEvent event) {
                 Assert.assertEquals(event.getReaderName(), reader.getName());
                 Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
-                Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED,event.getEventType());
+                Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
             }
         });
 
-        //test
+        // test
         reader.insertSe(hoplinkSE());
 
-        //assert
+        // assert
         Assert.assertTrue(reader.isSePresent());
 
 
@@ -82,6 +83,8 @@ public class StubReaderTest {
     public void transmit_Hoplink_null() throws Exception {
         reader.insertSe(hoplinkSE());
         reader.transmit((SeRequestSet) null).getSingleResponse().getApduResponses().size();
+
+        // throws exception
     }
 
     @Test
@@ -158,11 +161,6 @@ public class StubReaderTest {
      * INTERNAL METHODS
      */
 
-    @Test
-    public void openLogicalChannelAndSelectTest() throws Exception {
-
-    }
-
     @Test(expected = ChannelStateReaderException.class)
     public void processApduRequestTest() throws Exception {
         // init request
@@ -179,20 +177,6 @@ public class StubReaderTest {
 
     }
 
-    @Test
-    public void case4HackGetResponseTest() throws Exception {
-
-    }
-
-    @Test
-    public void processSeRequestSetTest() throws Exception {
-
-    }
-
-    @Test
-    public void closeLogicalChannel() throws Exception {
-
-    }
 
 
     /*

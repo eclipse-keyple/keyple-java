@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.plugin.AbstractStaticPlugin;
-import org.eclipse.keyple.seproxy.plugin.AbstractThreadedObservablePlugin;
 import com.github.structlog4j.ILogger;
 import com.github.structlog4j.SLoggerFactory;
 
@@ -53,7 +52,7 @@ public final class StubPlugin extends AbstractStaticPlugin {
 
     @Override
     protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
-        //init Stub Readers
+        // init Stub Readers
         SortedSet<AbstractObservableReader> nativeReaders =
                 new ConcurrentSkipListSet<AbstractObservableReader>();
         // add native readers

@@ -18,8 +18,8 @@ import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
- * This class is an example of a Stub Implementation of SecureElement.
- * It works with the protocol PROTOCOL_ISO14443_4 and simualtes a Calypsi PO with an Hoplink application
+ * This class is an example of a Stub Implementation of SecureElement. It works with the protocol
+ * PROTOCOL_ISO14443_4 and simualtes a Calypsi PO with an Hoplink application
  */
 public class HoplinkStubSE implements StubSecureElement {
 
@@ -80,6 +80,7 @@ public class HoplinkStubSE implements StubSecureElement {
 
     /**
      * Add more simulated commands to the Stub SE
+     * 
      * @param command : hexadecimal command to react to
      * @param response : hexadecimal response to be sent in reaction to command
      */
@@ -90,6 +91,7 @@ public class HoplinkStubSE implements StubSecureElement {
 
     /**
      * Remove simulated commands from the Stub SE
+     * 
      * @param command : hexadecimal command to be removed
      */
     public void removeHexCommand(String command) {
