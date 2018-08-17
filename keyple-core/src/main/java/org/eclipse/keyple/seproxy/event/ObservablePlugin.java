@@ -8,10 +8,10 @@
 
 package org.eclipse.keyple.seproxy.event;
 
-import org.eclipse.keyple.seproxy.ReadersPlugin;
+import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.util.Observable;
 
-public interface ObservablePlugin extends ReadersPlugin {
+public interface ObservablePlugin extends ReaderPlugin {
     interface PluginObserver extends Observable.Observer<PluginEvent> {
         void update(PluginEvent event);
     }

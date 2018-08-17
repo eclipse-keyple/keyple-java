@@ -29,8 +29,8 @@ import android.util.Log;
  *
  * Then set the Activity as an observer of the plugin as any Keyple plugin :
  *
- * SeProxyService seProxyService = SeProxyService.getInstance(); List<ReadersPlugin> plugins = new
- * ArrayList<ReadersPlugin>(); plugins.add(AndroidNfcPlugin.getInstance());
+ * SeProxyService seProxyService = SeProxyService.getInstance(); List<ReaderPlugin> plugins = new
+ * ArrayList<ReaderPlugin>(); plugins.add(AndroidNfcPlugin.getInstance());
  * seProxyService.setPlugins(plugins);
  *
  * ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);

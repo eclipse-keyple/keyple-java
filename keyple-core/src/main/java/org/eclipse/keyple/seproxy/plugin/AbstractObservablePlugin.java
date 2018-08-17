@@ -10,7 +10,7 @@ package org.eclipse.keyple.seproxy.plugin;
 
 import java.util.SortedSet;
 import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.ReadersPlugin;
+import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
@@ -19,7 +19,7 @@ import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
  * Observable plugin. These plugin can report when a reader is added or removed.
  */
 abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginEvent>
-        implements ReadersPlugin {
+        implements ReaderPlugin {
 
     /**
      * The list of readers
@@ -28,7 +28,7 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginE
 
 
     /**
-     * Instanciates a new readersplugin. Retrieve the current readers list.<br/>
+     * Instanciates a new ReaderPlugin. Retrieve the current readers list.<br/>
      * Gets the list for the native method the first time (null)<br/>
      * 
      * @param name name of the plugin
@@ -75,13 +75,13 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginE
             throws IOReaderException;
 
     /**
-     * Compare the name of the current ReadersPlugin to the name of the ReadersPlugin provided in
+     * Compare the name of the current ReaderPlugin to the name of the ReaderPlugin provided in
      * argument
      * 
      * @param plugin
      * @return true if the names match (The method is needed for the SortedSet lists)
      */
-    public final int compareTo(ReadersPlugin plugin) {
+    public final int compareTo(ReaderPlugin plugin) {
         return this.getName().compareTo(plugin.getName());
     }
 

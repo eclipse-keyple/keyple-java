@@ -376,7 +376,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
     private static ProxyReader getReader(SeProxyService seProxyService, String pattern)
             throws IOReaderException {
         Pattern p = Pattern.compile(pattern);
-        for (ReadersPlugin plugin : seProxyService.getPlugins()) {
+        for (ReaderPlugin plugin : seProxyService.getPlugins()) {
             for (ProxyReader reader : plugin.getReaders()) {
                 if (p.matcher(reader.getName()).matches()) {
                     return reader;
@@ -396,7 +396,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
     public static void main(String[] args)
             throws IOException, IOReaderException, InterruptedException {
         SeProxyService seProxyService = SeProxyService.getInstance();
-        SortedSet<ReadersPlugin> pluginsSet = new ConcurrentSkipListSet<ReadersPlugin>();
+        SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
         pluginsSet.add(PcscPlugin.getInstance());
         seProxyService.setPlugins(pluginsSet);
 

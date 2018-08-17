@@ -32,7 +32,7 @@ public class Demo_ObservableReaderNotification {
     private static void listReaders() throws IOReaderException {
 
         int pluginIndex = 0;
-        for (ReadersPlugin plugin : SeProxyService.getInstance().getPlugins()) {
+        for (ReaderPlugin plugin : SeProxyService.getInstance().getPlugins()) {
             pluginIndex++;
             int readerIndex = 0;
             for (ProxyReader reader : plugin.getReaders()) {
@@ -52,7 +52,7 @@ public class Demo_ObservableReaderNotification {
         // we add an observer to each plugin (only one in this example)
         // the readers observers will be added upon plugin notification
         // (see SpecificPluginObserver.update)
-        for (ReadersPlugin plugin : SeProxyService.getInstance().getPlugins()) {
+        for (ReaderPlugin plugin : SeProxyService.getInstance().getPlugins()) {
 
             if (plugin instanceof ObservablePlugin) {
                 System.out.println("Add observer on the plugin :  " + plugin.getName());
@@ -182,7 +182,7 @@ public class Demo_ObservableReaderNotification {
 
         // Set PCSC plugin
         SeProxyService seProxyService = SeProxyService.getInstance();
-        SortedSet<ReadersPlugin> pluginsSet = new ConcurrentSkipListSet<ReadersPlugin>();
+        SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
         pluginsSet.add(PcscPlugin.getInstance().setLogging(false));
         seProxyService.setPlugins(pluginsSet);
 

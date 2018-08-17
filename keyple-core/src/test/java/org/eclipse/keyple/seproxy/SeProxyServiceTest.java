@@ -26,7 +26,7 @@ public class SeProxyServiceTest {
     SeProxyService proxyService;
 
     @Mock
-    ReadersPlugin plugin1;
+    ReaderPlugin plugin1;
 
 
     static String PLUGIN_NAME = "plugin1";
@@ -56,7 +56,7 @@ public class SeProxyServiceTest {
     @Test
     public void testGetSetPlugins() {
         // init
-        ConcurrentSkipListSet<ReadersPlugin> plugins = getPluginList();
+        ConcurrentSkipListSet<ReaderPlugin> plugins = getPluginList();
 
         // test
         proxyService.setPlugins(plugins);
@@ -67,7 +67,7 @@ public class SeProxyServiceTest {
     public void testGetPlugin() throws Exception {
         // init
 
-        ConcurrentSkipListSet<ReadersPlugin> plugins = getPluginList();
+        ConcurrentSkipListSet<ReaderPlugin> plugins = getPluginList();
 
         proxyService.setPlugins(plugins);
 
@@ -79,7 +79,7 @@ public class SeProxyServiceTest {
     public void testGetPluginFail() throws Exception {
 
         // init
-        ConcurrentSkipListSet<ReadersPlugin> plugins = getPluginList();
+        ConcurrentSkipListSet<ReaderPlugin> plugins = getPluginList();
         proxyService.setPlugins(plugins);
 
         // test
@@ -93,19 +93,19 @@ public class SeProxyServiceTest {
      * HELPERS
      */
 
-    private ConcurrentSkipListSet<ReadersPlugin> getPluginList() {
+    private ConcurrentSkipListSet<ReaderPlugin> getPluginList() {
 
-        // ReadersPlugin plugin2 = Mockito.mock(ReadersPlugin.class);
+        // ReaderPlugin plugin2 = Mockito.mock(ReaderPlugin.class);
         // when(plugin2.getName()).thenReturn(PLUGIN_NAME_2);
 
         when(plugin1.getName()).thenReturn(PLUGIN_NAME);
-        ConcurrentSkipListSet<ReadersPlugin> plugins = new ConcurrentSkipListSet<ReadersPlugin>();
+        ConcurrentSkipListSet<ReaderPlugin> plugins = new ConcurrentSkipListSet<ReaderPlugin>();
 
 
         plugins.add(plugin1);
         // plugins.add(plugin2);
 
-        assertEquals(1, plugins.size()); // impossible to add 2 ReadersPlugin mocks
+        assertEquals(1, plugins.size()); // impossible to add 2 ReaderPlugin mocks
 
         return plugins;
     }
