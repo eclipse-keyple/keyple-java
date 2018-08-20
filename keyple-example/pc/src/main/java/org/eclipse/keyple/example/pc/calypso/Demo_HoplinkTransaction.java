@@ -29,11 +29,12 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 /**
  * This Calypso demonstration code consists in:
  * <ol>
- * <li>Setting up a two-reader configuration ({@link main}) and adding an observer method (@link
- * update)</li>
- * <li>Starting a card operation when a PO presence is notified ({@link operatePoTransactions})</li>
+ * <li>Setting up a two-reader configuration ({@link #main}) and adding an observer method
+ * ({@link #update})</li>
+ * <li>Starting a card operation when a PO presence is notified
+ * ({@link #operatePoTransactions})</li>
  * <li>Opening a logical channel with the CSM (C1 CSM is expected) see
- * ({@link CSM_C1_ATR_REGEX})</li>
+ * ({@link HoplinkInfoAndSampleCommands#CSM_C1_ATR_REGEX})</li>
  * <li>Attempting to open a logical channel with the PO with 3 options:
  * <ul>
  * <li>Selection with a fake AID</li>
@@ -41,9 +42,9 @@ import org.eclipse.keyple.util.ByteBufferUtils;
  * <li>Selection with a Hoplink AID</li>
  * </ul>
  * </li>
- * <li>Display SeRequest/SeResponse data ({@link printSelectAppResponseStatus})</li>
+ * <li>Display SeRequest/SeResponse data ({@link #printSelectAppResponseStatus})</li>
  * <li>If the Hoplink selection succeeded, do 3 Hoplink transactions
- * ({@link operateMultipleHoplinkTransactions}).</li>
+ * ({@link #operateMultipleHoplinkTransactions}).</li>
  * </ol>
  * <p>
  * The Hoplink transactions demonstrated here illustrate the 2 and 3-step modes and also show the
