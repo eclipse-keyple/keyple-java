@@ -31,7 +31,8 @@ public class DigestUpdateCmdBuild extends CsmCommandBuilder {
      * @param revision of the CSM(SAM)
      * @param encryptedSession the encrypted session
      * @param digestData all bytes from command sent by the PO or response from the command
-     * @throws java.lang.IllegalArgumentException - if the digest data is null or has a length > 255
+     * @throws java.lang.IllegalArgumentException - if the digest data is null or has a length &gt;
+     *         255
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public DigestUpdateCmdBuild(org.eclipse.keyple.calypso.command.csm.CsmRevision revision,

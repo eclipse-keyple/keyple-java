@@ -64,7 +64,9 @@ public final class SeProxyService {
     /**
      * Gets the plugin whose name is provided as an argument.
      *
+     * @param name the plugin name
      * @return the plugin.
+     * @throws UnexpectedPluginException if the wanted plugin is not found
      */
     public ReaderPlugin getPlugin(String name) throws UnexpectedPluginException {
         for (ReaderPlugin plugin : plugins) {

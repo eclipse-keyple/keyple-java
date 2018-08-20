@@ -41,7 +41,6 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      * setter to fix the wait timeout in ms.
      *
      * @param timeout Timeout to use
-     * @return Current instance
      */
     protected final void setThreadWaitTimeout(long timeout) {
         this.threadWaitTimeout = timeout;
@@ -51,8 +50,10 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      * Waits for a card. Returns true if a card is detected before the end of the provided timeout.
      * Returns false if no card detected within the delay.
      *
-     * @param timeout
+     * @param timeout the delay in millisecond we wait for a card insertion
      * @return presence status
+     * @throws NoStackTraceThrowable a exception without stack trace in order to be catched and
+     *         processed silently
      */
     protected abstract boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable;
 
@@ -61,8 +62,10 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      * provided timeout. Returns false if the is still present within the delay. Closes the physical
      * channel when the card has disappeared.
      *
-     * @param timeout
+     * @param timeout the delay in millisecond we wait for a card to be withdrawn
      * @return presence status
+     * @throws NoStackTraceThrowable a exception without stack trace in order to be catched and
+     *         processed silently
      */
     protected abstract boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable;
 
@@ -168,7 +171,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
     /**
      * Called when the class is unloaded. Attempt to do a clean exit.
      * 
-     * @throws Throwable
+     * @throws Throwable a generic exception
      */
     @Override
     protected void finalize() throws Throwable {

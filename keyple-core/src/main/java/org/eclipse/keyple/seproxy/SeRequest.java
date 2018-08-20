@@ -84,11 +84,12 @@ public final class SeRequest {
         }
 
         /**
-         * Tells if the provided ATR matches the registered regular expression<br/>
+         * Tells if the provided ATR matches the registered regular expression
+         *
          * If the registered regular expression is empty, the ATR is always matching.
          *
-         * @param atr
-         * @return a boolean
+         * @param atr a buffer containing the ATR to be checked
+         * @return a boolean true the ATR matches the current regex
          */
         public boolean atrMatches(ByteBuffer atr) {
             boolean m;
@@ -171,10 +172,10 @@ public final class SeRequest {
      * Alternate constructor with no list of successful selection status codes set and a protocol
      * flag
      * 
-     * @param selector
-     * @param apduRequests
-     * @param keepChannelOpen
-     * @param protocolFlag
+     * @param selector the AID or ATR selector
+     * @param apduRequests a list of ApudRequest
+     * @param keepChannelOpen a flag to tell if the channel has to be closed at the end
+     * @param protocolFlag the expected protocol flag
      */
     public SeRequest(Selector selector, List<ApduRequest> apduRequests, boolean keepChannelOpen,
             SeProtocol protocolFlag) {
@@ -185,9 +186,9 @@ public final class SeRequest {
      * Alternate constructor with a list of successful selection status codes set and no protocol
      * flag
      *
-     * @param selector
-     * @param apduRequests
-     * @param keepChannelOpen
+     * @param selector the AID or ATR selector
+     * @param apduRequests a list of ApudRequest
+     * @param keepChannelOpen a flag to tell if the channel has to be closed at the end
      * @param successfulSelectionStatusCodes a list of successful status codes for the select
      *        application command
      *
@@ -200,9 +201,9 @@ public final class SeRequest {
     /**
      * Alternate constructor with no protocol flag set
      * 
-     * @param selector
-     * @param apduRequests
-     * @param keepChannelOpen
+     * @param selector the AID or ATR selector
+     * @param apduRequests a list of ApudRequest
+     * @param keepChannelOpen a flag to tell if the channel has to be closed at the end
      */
     public SeRequest(Selector selector, List<ApduRequest> apduRequests, boolean keepChannelOpen) {
         this(selector, apduRequests, keepChannelOpen, null, null);

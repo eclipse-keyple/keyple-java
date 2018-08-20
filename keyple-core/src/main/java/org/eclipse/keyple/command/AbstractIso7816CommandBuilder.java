@@ -34,16 +34,16 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
      * Helper method to create an ApduRequest from separated elements.
      * <p>
      * Case 4 is determined from provided arguments: if outgoing data is present and ingoing data is
-     * expected (le > 0), we are in case 4.
+     * expected (le &gt; 0), we are in case 4.
      * <p>
      * le must be set to null when no outgoing data is expected.
      * 
-     * @param cla
-     * @param command
-     * @param p1
-     * @param p2
-     * @param dataIn
-     * @param le
+     * @param cla class
+     * @param command instruction
+     * @param p1 p1
+     * @param p2 p2
+     * @param dataIn data byte array
+     * @param le data out length
      * @return an ApduRequest
      */
     protected ApduRequest setApduRequest(byte cla, CommandsTable command, byte p1, byte p2,

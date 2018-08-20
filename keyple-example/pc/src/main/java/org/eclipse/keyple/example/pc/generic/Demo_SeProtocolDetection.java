@@ -54,7 +54,7 @@ public class Demo_SeProtocolDetection implements ObservableReader.ReaderObserver
     /**
      * This method is called whenever a reader event occurs.
      * 
-     * @param event
+     * @param event the current event
      */
     @Override
     public void update(ReaderEvent event) {
@@ -195,10 +195,10 @@ public class Demo_SeProtocolDetection implements ObservableReader.ReaderObserver
     /**
      * Application entry
      * 
-     * @param args
-     * @throws IOException
-     * @throws IOReaderException
-     * @throws InterruptedException
+     * @param args the program arguments
+     * @throws IOException if a IO error occurs
+     * @throws IOReaderException if a reader error occurs
+     * @throws InterruptedException if thread error occurs
      */
     public static void main(String[] args)
             throws IOException, IOReaderException, InterruptedException {

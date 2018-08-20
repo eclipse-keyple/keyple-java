@@ -30,15 +30,15 @@ public interface StubSecureElement {
     /**
      * Open physicann channel to the SE
      * 
-     * @throws IOReaderException
-     * @throws ChannelStateReaderException
+     * @throws IOReaderException if a reader error occurs
+     * @throws ChannelStateReaderException if the opening fails
      */
     void openPhysicalChannel() throws IOReaderException, ChannelStateReaderException;
 
     /**
      * Close physical channel from the SE
      * 
-     * @throws IOReaderException
+     * @throws IOReaderException if a reader error occurs
      */
     void closePhysicalChannel() throws IOReaderException;
 
@@ -47,7 +47,7 @@ public interface StubSecureElement {
      * 
      * @param apduIn : commands to be processed
      * @return APDU response
-     * @throws ChannelStateReaderException
+     * @throws ChannelStateReaderException if the transmission fails
      */
     ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException;
 

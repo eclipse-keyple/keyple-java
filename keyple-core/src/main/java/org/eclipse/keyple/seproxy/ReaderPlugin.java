@@ -41,6 +41,7 @@ public interface ReaderPlugin extends NameableConfigurable, Comparable<ReaderPlu
      * 
      * @param name of the reader
      * @return the ProxyReader object.
+     * @throws UnexpectedReaderException if the wanted reader is not found
      */
     ProxyReader getReader(String name) throws UnexpectedReaderException;
 }

@@ -92,11 +92,12 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
     }
 
     /**
-     * Gets the list of all native readers<br/>
-     * New reader objects are created.<br/>
+     * Gets the list of all native readers
+     *
+     * New reader objects are created.
      * 
      * @return the list of new readers.
-     * @throws IOReaderException
+     * @throws IOReaderException if a reader error occurs
      */
     @Override
     protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
@@ -118,14 +119,17 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
     }
 
     /**
-     * Gets the reader whose name is provided as an argument.<br/>
-     * Returns the current reader if it is already listed.<br/>
-     * Creates and returns a new reader if not.<br/>
+     * Gets the reader whose name is provided as an argument.
+     *
+     * Returns the current reader if it is already listed.
+     *
+     * Creates and returns a new reader if not.
+     *
      * Throws an exception if the wanted reader is not found.
      * 
      * @param name name of the reader
      * @return the reader object
-     * @throws IOReaderException
+     * @throws IOReaderException if a reader error occurs
      */
     @Override
     protected AbstractObservableReader getNativeReader(String name) throws IOReaderException {

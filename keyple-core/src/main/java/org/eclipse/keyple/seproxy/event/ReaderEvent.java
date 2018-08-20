@@ -62,9 +62,9 @@ public final class ReaderEvent {
     /**
      * ReaderEvent constructor
      * 
-     * @param pluginName
-     * @param readerName
-     * @param eventType
+     * @param pluginName the name of the current plugin
+     * @param readerName the name of the current reader
+     * @param eventType the type of event
      */
     public ReaderEvent(String pluginName, String readerName, EventType eventType) {
         this.pluginName = pluginName;
