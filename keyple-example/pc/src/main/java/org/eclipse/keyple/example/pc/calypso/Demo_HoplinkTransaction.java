@@ -379,7 +379,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      * @throws IOReaderException Any error with the card communication (defined as public for
      *         purposes of javadoc)
      */
-    public ProxyReader getReader(SeProxyService seProxyService, String pattern)
+    public static ProxyReader getReader(SeProxyService seProxyService, String pattern)
             throws IOReaderException {
         Pattern p = Pattern.compile(pattern);
         for (ReaderPlugin plugin : seProxyService.getPlugins()) {
@@ -407,7 +407,8 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      * @throws IOReaderException reader exception
      * @throws InterruptedException thread exception
      */
-    public void main(String[] args) throws IOException, IOReaderException, InterruptedException {
+    public static void main(String[] args)
+            throws IOException, IOReaderException, InterruptedException {
         SeProxyService seProxyService = SeProxyService.getInstance();
         SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
         pluginsSet.add(PcscPlugin.getInstance());
