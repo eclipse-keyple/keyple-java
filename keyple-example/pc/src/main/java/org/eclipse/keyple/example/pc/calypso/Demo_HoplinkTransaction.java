@@ -292,8 +292,6 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      * Do the PO selection and possibly go on with Hoplink transactions.
      */
     public void operatePoTransactions() {
-        PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, (byte) 0x00);
-
         try {
             // operate PO multiselection
             String poFakeAid = "AABBCCDDEE"; //
@@ -356,6 +354,8 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
             printSelectAppResponseStatus("Case #3: Hoplink AID", seReqIterator.next(),
                     seRespIterator.next());
 
+            PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, (byte) 0x00);
+
             // test if the Hoplink selection succeeded
             if (seResponses.get(2) != null) {
                 ApduResponse fciData = seResponses.get(2).getFci();
@@ -417,8 +417,10 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
         // Setting up ourself as an observer
         Demo_HoplinkTransaction observer = new Demo_HoplinkTransaction();
 
-        ProxyReader poReader = observer.getReader(seProxyService, PcscReadersSettings.PO_READER_NAME_REGEX);
-        ProxyReader csmReader = observer.getReader(seProxyService, PcscReadersSettings.CSM_READER_NAME_REGEX);
+        ProxyReader poReader =
+                observer.getReader(seProxyService, PcscReadersSettings.PO_READER_NAME_REGEX);
+        ProxyReader csmReader =
+                observer.getReader(seProxyService, PcscReadersSettings.CSM_READER_NAME_REGEX);
 
 
         if (poReader == csmReader || poReader == null || csmReader == null) {
