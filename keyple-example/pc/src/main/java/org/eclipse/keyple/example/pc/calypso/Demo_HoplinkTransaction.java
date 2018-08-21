@@ -379,7 +379,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      * @throws IOReaderException Any error with the card communication (defined as public for
      *         purposes of javadoc)
      */
-    public static ProxyReader getReader(SeProxyService seProxyService, String pattern)
+    public ProxyReader getReader(SeProxyService seProxyService, String pattern)
             throws IOReaderException {
         Pattern p = Pattern.compile(pattern);
         for (ReaderPlugin plugin : seProxyService.getPlugins()) {
@@ -414,9 +414,11 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
         pluginsSet.add(PcscPlugin.getInstance());
         seProxyService.setPlugins(pluginsSet);
 
-        ProxyReader poReader = getReader(seProxyService, PcscReadersSettings.PO_READER_NAME_REGEX);
-        ProxyReader csmReader =
-                getReader(seProxyService, PcscReadersSettings.CSM_READER_NAME_REGEX);
+        // Setting up ourself as an observer
+        Demo_HoplinkTransaction observer = new Demo_HoplinkTransaction();
+
+        ProxyReader poReader = observer.getReader(seProxyService, PcscReadersSettings.PO_READER_NAME_REGEX);
+        ProxyReader csmReader = observer.getReader(seProxyService, PcscReadersSettings.CSM_READER_NAME_REGEX);
 
 
         if (poReader == csmReader || poReader == null || csmReader == null) {
@@ -433,8 +435,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
         poReader.addSeProtocolSetting(
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
 
-        // Setting up ourself as an observer
-        Demo_HoplinkTransaction observer = new Demo_HoplinkTransaction();
+
         observer.poReader = poReader;
         observer.csmReader = csmReader;
 
