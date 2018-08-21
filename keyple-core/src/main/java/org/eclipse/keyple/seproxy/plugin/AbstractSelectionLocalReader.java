@@ -53,8 +53,8 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
     /**
      * Attempts to open the physical channel
      *
-     * @throws IOReaderException
-     * @throws ChannelStateReaderException
+     * @throws IOReaderException if a reader error occurs
+     * @throws ChannelStateReaderException if the channel opening fails
      */
     protected abstract void openPhysicalChannel()
             throws IOReaderException, ChannelStateReaderException;

@@ -32,7 +32,7 @@ public class UpdateRecordCmdBuild extends PoCommandBuilder implements PoSendable
      * @param sfi the sfi to select
      * @param recordNumber the record number to update
      * @param newRecordData the new record data to write
-     * @throws java.lang.IllegalArgumentException - if record number is < 1
+     * @throws java.lang.IllegalArgumentException - if record number is &lt; 1
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public UpdateRecordCmdBuild(PoRevision revision, byte sfi, byte recordNumber,

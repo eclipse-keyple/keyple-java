@@ -60,7 +60,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * with their default values as defined in setParameter. See
      * {@link #setParameter(String, String)} for more details
      *
-     * @param terminal
+     * @param pluginName the name of the plugin
+     * @param terminal the PC/SC terminal
      */
     protected PcscReader(String pluginName, CardTerminal terminal) {
         super(pluginName, terminal.getName());
@@ -138,7 +139,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
      *
      * @param apduIn APDU in buffer
      * @return apduOut buffer
-     * @throws ChannelStateReaderException Exception faced
+     * @throws ChannelStateReaderException if the transmission failed
      */
     @Override
     protected final ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
@@ -156,9 +157,9 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * not defined (null), we consider here that it matches. An exception is returned when the
      * provided protocolFlag is not found in the current protocolMap.
      *
-     * @param protocolFlag
-     * @return
-     * @throws InvalidMessageException
+     * @param protocolFlag the protocol flag
+     * @return true if the current SE matches the protocol flag
+     * @throws InvalidMessageException if the protocol mask is not found
      */
     @Override
     protected final boolean protocolFlagMatches(SeProtocol protocolFlag) throws IOReaderException {
@@ -373,7 +374,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
     /**
      * Opens a physical channel
      * 
-     * @throws IOReaderException
+     * @throws IOReaderException if a reader error occurs
      */
     @Override
     protected final void openPhysicalChannel()

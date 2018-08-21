@@ -45,7 +45,7 @@ public final class SeResponseSet {
     /**
      * Create an {@link SeResponseSet} from a single {@link SeResponse}
      *
-     * @param response single (@link SeRequest)
+     * @param response single {@link SeRequest}
      */
     public SeResponseSet(SeResponse response) {
         List<SeResponse> seResponses = new ArrayList<SeResponse>();

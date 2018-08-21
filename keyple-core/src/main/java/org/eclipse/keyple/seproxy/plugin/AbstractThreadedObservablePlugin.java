@@ -25,7 +25,8 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
 
     /**
-     * Thread wait timeout in ms<br/>
+     * Thread wait timeout in ms
+     *
      * This timeout value will determined the latency to detect changes
      */
     private long threadWaitTimeout = SETTING_THREAD_TIMEOUT_DEFAULT;
@@ -45,10 +46,15 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      * Returns the list of names of all connected readers
      * 
      * @return readers names list
-     * @throws IOReaderException
+     * @throws IOReaderException if a reader error occurs
      */
     abstract protected SortedSet<String> getNativeReadersNames() throws IOReaderException;
 
+    /**
+     * Constructor
+     * 
+     * @param name name of the plugin
+     */
     public AbstractThreadedObservablePlugin(String name) {
         super(name);
         /// create and launch the monitoring thread
@@ -133,7 +139,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
     /**
      * Called when the class is unloaded. Attempt to do a clean exit.
      * 
-     * @throws Throwable
+     * @throws Throwable a generic exception
      */
     @Override
     protected void finalize() throws Throwable {

@@ -37,6 +37,7 @@ public interface NameableConfigurable {
      *
      * @param key the parameter key
      * @param value the parameter value
+     * @throws IOException if an I/O error occurs
      */
     void setParameter(String key, String value) throws IOException;
 
@@ -45,6 +46,7 @@ public interface NameableConfigurable {
      * protocols polling sequence, baud rate, … etc.).
      *
      * @param parameters Parameters to setup
+     * @throws IOException if an I/O error occurs
      */
     void setParameters(Map<String, String> parameters) throws IOException;
 }

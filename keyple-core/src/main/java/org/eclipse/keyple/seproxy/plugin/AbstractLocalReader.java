@@ -13,7 +13,6 @@ import java.util.*;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
 import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -54,7 +53,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @param successfulSelectionStatusCodes the list of successful status code for the select
      *        command
      * @return an array of 2 ByteBuffers: ByteBuffer[0] the SE ATR, ByteBuffer[1] the SE FCI
-     * @throws IOReaderException, SelectApplicationException
+     * @throws IOReaderException if a reader error occurs
+     * @throws SelectApplicationException if the application selection fails
      */
     protected abstract ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Short> successfulSelectionStatusCodes)
@@ -63,7 +63,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /**
      * Closes the current physical channel.
      *
-     * @throws IOReaderException
+     * @throws IOReaderException if a reader error occurs
      */
     protected abstract void closePhysicalChannel() throws IOReaderException;
 
@@ -74,7 +74,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      *
      * @param apduIn byte buffer containing the ingoing data
      * @return apduResponse byte buffer containing the outgoing data.
-     * @throws ChannelStateReaderException
+     * @throws ChannelStateReaderException if the transmission fails
      */
     protected abstract ByteBuffer transmitApdu(ByteBuffer apduIn)
             throws ChannelStateReaderException;
@@ -82,9 +82,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /**
      * Test if the current protocol matches the flag
      *
-     * @param protocolFlag
+     * @param protocolFlag the protocol flag
      * @return true if the current protocol matches the provided protocol flag
-     * @throws InvalidMessageException
+     * @throws IOReaderException if a reader error occurs
      */
     protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag)
             throws IOReaderException;
@@ -185,9 +185,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * responses match this order. When a requestSet is not matching the current PO, the responseSet
      * responses pushed in the responseSet object is set to null.
      *
-     * @param requestSet
-     * @return responseSet
-     * @throws IOReaderException
+     * @param requestSet the request set
+     * @return SeResponseSet the response set
+     * @throws IOReaderException if a reader error occurs
      */
     protected final SeResponseSet processSeRequestSet(SeRequestSet requestSet)
             throws IOReaderException {

@@ -29,10 +29,12 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 /**
  * This Calypso demonstration code consists in:
  * <ol>
- * <li>Setting up a two-reader configuration (@link main) and adding an observer method (@link
- * update)</li>
- * <li>Starting a card operation when a PO presence is notified (@link operatePoTransactions)</li>
- * <li>Opening a logical channel with the CSM (C1 CSM is expected) (see @link CSM_C1_ATR_REGEX)</li>
+ * <li>Setting up a two-reader configuration ({@link #main main}) and adding an observer method
+ * ({@link #update update})</li>
+ * <li>Starting a card operation when a PO presence is notified ({@link #operatePoTransactions
+ * operatePoTransactions})</li>
+ * <li>Opening a logical channel with the CSM (C1 CSM is expected) see
+ * ({@link HoplinkInfoAndSampleCommands#CSM_C1_ATR_REGEX CSM_C1_ATR_REGEX})</li>
  * <li>Attempting to open a logical channel with the PO with 3 options:
  * <ul>
  * <li>Selection with a fake AID</li>
@@ -40,16 +42,16 @@ import org.eclipse.keyple.util.ByteBufferUtils;
  * <li>Selection with a Hoplink AID</li>
  * </ul>
  * </li>
- * <li>Display SeRequest/SeResponse data (@link printSelectAppResponseStatus)</li>
- * <li>If the Hoplink selection succeeded, do 3 Hoplink transactions (@link
- * operateMultipleHoplinkTransactions).</li>
+ * <li>Display SeRequest/SeResponse data ({@link #printSelectAppResponseStatus
+ * printSelectAppResponseStatus})</li>
+ * <li>If the Hoplink selection succeeded, do 3 Hoplink transactions
+ * ({@link #operateMultipleHoplinkTransactions operateMultipleHoplinkTransactions}).</li>
  * </ol>
  * <p>
  * The Hoplink transactions demonstrated here illustrate the 2 and 3-step modes and also show the
  * logical channel management.
  * <p>
  * Read the doc of each methods for further details.
- * </ol>
  */
 public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver {
     private ProxyReader poReader, csmReader;
@@ -78,11 +80,11 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
     /**
      * Display SeRequest and SeResponse details in the console
      * 
-     * @param message
-     * @param seRequest
-     * @param seResponse
+     * @param message user message
+     * @param seRequest current SeRequest
+     * @param seResponse current SeResponse (defined as public for purposes of javadoc)
      */
-    private void printSelectAppResponseStatus(String message, SeRequest seRequest,
+    public void printSelectAppResponseStatus(String message, SeRequest seRequest,
             SeResponse seResponse) {
         int i;
         System.out.println("===== " + message);
@@ -146,12 +148,12 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      * <p>
      * T2 Environment and T2 Usage are read in session.
      * 
-     * @param poTransaction
-     * @param fciData
-     * @param closeSeChannel
-     * @throws IOReaderException
+     * @param poTransaction PoSecureSession object
+     * @param fciData FCI data from the selection step
+     * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
+     * @throws IOReaderException reader exception (defined as public for purposes of javadoc)
      */
-    private void doHoplinkTwoStepAuthentication(PoSecureSession poTransaction, ApduResponse fciData,
+    public void doHoplinkTwoStepAuthentication(PoSecureSession poTransaction, ApduResponse fciData,
             boolean closeSeChannel) throws IOReaderException {
         List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
         filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Env);
@@ -195,13 +197,13 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      * File with SFI 1A is read at session opening.
      * <p>
      * T2 Environment and T2 Usage are read in session.
-     * 
-     * @param poTransaction
-     * @param fciData
-     * @param closeSeChannel
-     * @throws IOReaderException
+     *
+     * @param poTransaction PoSecureSession object
+     * @param fciData FCI data from the selection step
+     * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
+     * @throws IOReaderException reader exception (defined as public for purposes of javadoc)
      */
-    private void doHoplinkThreeStepReadWriteTransaction(PoSecureSession poTransaction,
+    public void doHoplinkThreeStepReadWriteTransaction(PoSecureSession poTransaction,
             ApduResponse fciData, boolean closeSeChannel) throws IOReaderException {
 
 
@@ -255,12 +257,12 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      * Closed after the end of the 2nd transaction and reopened before the 3rd transaction.
      * <p>
      * Finally the logical channel is closed at the end of the 3rd transaction.
-     * 
-     * @param poTransaction
-     * @param fciData
-     * @throws IOReaderException
+     *
+     * @param poTransaction PoSecureSession object
+     * @param fciData FCI data from the selection step
+     * @throws IOReaderException reader exception (defined as public for purposes of javadoc)
      */
-    private void operateMultipleHoplinkTransactions(PoSecureSession poTransaction,
+    public void operateMultipleHoplinkTransactions(PoSecureSession poTransaction,
             ApduResponse fciData) throws IOReaderException {
         // execute a two-step Calypso session: processIdentification, processOpeningClosing
         // keep the logical channel opened
@@ -286,6 +288,9 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
         doHoplinkTwoStepAuthentication(poTransaction, fciData, true);
     }
 
+    /**
+     * Do the PO selection and possibly go on with Hoplink transactions.
+     */
     public void operatePoTransactions() {
         PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, (byte) 0x00);
 
@@ -369,11 +374,12 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      * Get the terminal which names match the expected pattern
      *
      * @param seProxyService SE Proxy service
-     * @param pattern Pattern
+     * @param pattern regex pattern to select a reader
      * @return ProxyReader
-     * @throws IOReaderException Any error with the card communication
+     * @throws IOReaderException Any error with the card communication (defined as public for
+     *         purposes of javadoc)
      */
-    private static ProxyReader getReader(SeProxyService seProxyService, String pattern)
+    public ProxyReader getReader(SeProxyService seProxyService, String pattern)
             throws IOReaderException {
         Pattern p = Pattern.compile(pattern);
         for (ReaderPlugin plugin : seProxyService.getPlugins()) {
@@ -393,8 +399,15 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      */
     private static final Object waitForEnd = new Object();
 
-    public static void main(String[] args)
-            throws IOException, IOReaderException, InterruptedException {
+    /**
+     * main program entry
+     * 
+     * @param args the program arguments
+     * @throws IOException setParameter exception
+     * @throws IOReaderException reader exception
+     * @throws InterruptedException thread exception
+     */
+    public void main(String[] args) throws IOException, IOReaderException, InterruptedException {
         SeProxyService seProxyService = SeProxyService.getInstance();
         SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
         pluginsSet.add(PcscPlugin.getInstance());

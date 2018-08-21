@@ -21,7 +21,6 @@ import com.github.structlog4j.SLoggerFactory;
  * Intermediate observable class to handle the logging of AbstractObservableReader and
  * AbstractObservablePlugin
  * 
- * @param <T>
  */
 abstract class AbstractLoggedObservable<T> extends Observable<T> implements NameableConfigurable {
     private static final ILogger logger = SLoggerFactory.getLogger(AbstractLoggedObservable.class);
@@ -34,8 +33,7 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
     private final String name;
 
     /**
-     * Item constructor<br/>
-     * Force the definition of a name through the use of super method.
+     * Item constructor Force the definition of a name through the use of super method.
      *
      * @param name
      */

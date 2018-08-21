@@ -321,6 +321,8 @@ public class PoSecureSession {
      *
      * @param openCommand the open command
      * @param poCommandsInsideSession the po commands inside session
+     * @param ratificationCommand the command to send for the ratification process
+     * @param closeSeChannel a flag to be set true to close the channel after processing
      * @return the SE response
      * @throws IOReaderException the IO reader exception
      */
@@ -818,7 +820,7 @@ public class PoSecureSession {
      * 
      * @param csmSendableInSessions a list of commands to sent to the CSM
      * @return SeResponse csm responses
-     * @throws IOReaderException
+     * @throws IOReaderException if a reader error occurs
      */
     public SeResponse processCsmCommands(List<CsmSendableInSession> csmSendableInSessions)
             throws IOReaderException {

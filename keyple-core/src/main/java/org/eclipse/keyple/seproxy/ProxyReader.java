@@ -22,10 +22,8 @@ import org.eclipse.keyple.util.NameableConfigurable;
  * <li>According to SeRequest protocolFlag and to the current status of the reader (RF protocol
  * involved / current ATR) the processing of a specific SeRequest could be skipped.</li>
  * <li>When processing a SeRequest</li>
- * <ul>
  * <li>if necessary a new logical channel is open (for a specific AID if defined)</li>
  * <li>and ApduRequest are transmited one by one</li>
- * </ul>
  * </ul>
  * Interface each {@link ReaderPlugin} should implement
  */
@@ -42,7 +40,8 @@ public interface ProxyReader extends NameableConfigurable, Comparable<ProxyReade
      * Checks if is SE present.
      *
      * @return true if a Secure Element is present in the reader
-     * @throws IOReaderException Exception of type IO Reader
+     * @throws NoStackTraceThrowable a exception without stack trace in order to be catched and
+     *         processed silently
      */
     boolean isSePresent() throws NoStackTraceThrowable;
 

@@ -28,10 +28,11 @@ public class IncreaseCmdBuild extends PoCommandBuilder implements PoSendableInSe
      * Instantiates a new increase cmd build from command parameters.
      *
      * @param revision the revision of the PO
-     * @param counterNumber >= 01h: Counters file, number of the counter. 00h: Simulated Counter
+     * @param counterNumber &gt;= 01h: Counters file, number of the counter. 00h: Simulated Counter
      *        file.
      * @param sfi SFI of the file to select or 00h for current EF
-     * @param incValue Value to add to the counter (defined as a positive int <= 16777215 [FFFFFFh])
+     * @param incValue Value to add to the counter (defined as a positive int &lt;= 16777215
+     *        [FFFFFFh])
      * @throws java.lang.IllegalArgumentException - if the decrement value is out of range
      * @throws java.lang.IllegalArgumentException - if the command is inconsistent
      */

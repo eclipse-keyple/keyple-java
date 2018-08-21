@@ -34,7 +34,7 @@ public class ReadRecordsCmdBuild extends PoCommandBuilder implements PoSendableI
      *        several records)
      * @param readJustOneRecord the read just one record
      * @param expectedLength the expected lenght of the record(s)
-     * @throws java.lang.IllegalArgumentException - if record number < 1
+     * @throws java.lang.IllegalArgumentException - if record number &lt; 1
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public ReadRecordsCmdBuild(PoRevision revision, byte sfi, byte firstRecordNumber,

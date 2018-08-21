@@ -9,8 +9,7 @@
 package org.eclipse.keyple.seproxy.exception;
 
 /**
- * Exception that do not print stack trace<br/>
- * Useful when the exceptions are expected and managed.
+ * Exception that do not print stack trace Useful when the exceptions are expected and managed.
  */
 public class NoStackTraceThrowable extends Throwable {
     @Override

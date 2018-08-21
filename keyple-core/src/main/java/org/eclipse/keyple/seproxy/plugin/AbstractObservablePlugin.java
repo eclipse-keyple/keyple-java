@@ -28,8 +28,9 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginE
 
 
     /**
-     * Instanciates a new ReaderPlugin. Retrieve the current readers list.<br/>
-     * Gets the list for the native method the first time (null)<br/>
+     * Instanciates a new ReaderPlugin. Retrieve the current readers list.
+     *
+     * Gets the list for the native method the first time (null)
      * 
      * @param name name of the plugin
      */
@@ -45,11 +46,12 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginE
     }
 
     /**
-     * Returns the current readers list.<br/>
+     * Returns the current readers list.
+     *
      * The list is initialized in the constructor and may be updated in background in the case of a
      * threaded plugin {@link AbstractThreadedObservablePlugin}
      * 
-     * @return
+     * @return the current reader list
      */
     public final SortedSet<AbstractObservableReader> getReaders() {
         return readers;
@@ -59,7 +61,7 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginE
      * Gets a list of native readers from the native methods
      * 
      * @return the list of AbstractObservableReader objects.
-     * @throws IOReaderException
+     * @throws IOReaderException if a reader error occurs
      */
     protected abstract SortedSet<AbstractObservableReader> getNativeReaders()
             throws IOReaderException;
@@ -67,9 +69,9 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginE
     /**
      * Gets the specific reader whose is provided as an argument.
      * 
-     * @param name
+     * @param name the of the reader
      * @return the AbstractObservableReader object (null if not found)
-     * @throws IOReaderException
+     * @throws IOReaderException if a reader error occurs
      */
     protected abstract AbstractObservableReader getNativeReader(String name)
             throws IOReaderException;
@@ -78,7 +80,7 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginE
      * Compare the name of the current ReaderPlugin to the name of the ReaderPlugin provided in
      * argument
      * 
-     * @param plugin
+     * @param plugin a {@link ReaderPlugin} object
      * @return true if the names match (The method is needed for the SortedSet lists)
      */
     public final int compareTo(ReaderPlugin plugin) {
@@ -90,7 +92,7 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginE
      * 
      * @param name of the reader
      * @return the reader
-     * @throws UnexpectedReaderException
+     * @throws UnexpectedReaderException if the wanted reader is not found
      */
     public final ProxyReader getReader(String name) throws UnexpectedReaderException {
         for (ProxyReader reader : readers) {

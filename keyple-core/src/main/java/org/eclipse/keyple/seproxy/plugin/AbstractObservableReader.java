@@ -36,7 +36,8 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             throws IOReaderException;
 
     /**
-     * Reader constructor<br/>
+     * Reader constructor
+     *
      * Force the definition of a name through the use of super method.
      *
      * @param pluginName the name of the plugin that instantiated the reader
@@ -50,9 +51,9 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     /**
      * Implementation must call logSeRequestSet before transmit and logSeResponseSet after transmit
      *
-     * @param requestSet
-     * @return responseSet
-     * @throws IOReaderException
+     * @param requestSet the request set
+     * @return responseSet the response set
+     * @throws IOReaderException if a reader error occurs
      */
     public final SeResponseSet transmit(SeRequestSet requestSet) throws IOReaderException {
         if (requestSet == null) {
@@ -98,7 +99,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * Compare the name of the current ProxyReader to the name of the ProxyReader provided in
      * argument
      * 
-     * @param proxyReader
+     * @param proxyReader a ProxyReader object
      * @return true if the names match (The method is needed for the SortedSet lists)
      */
     public final int compareTo(ProxyReader proxyReader) {

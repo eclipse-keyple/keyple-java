@@ -25,9 +25,11 @@ public final class ApduResponse extends AbstractApduBuffer {
     private final boolean successful;
 
     /**
-     * Create a new ApduResponse from the provided ByteBuffer<br/>
+     * Create a new ApduResponse from the provided ByteBuffer
+     *
      * The internal successful status is determined by the current status code and the optional
-     * successful status codes list.<br/>
+     * successful status codes list.
+     *
      * The list of additional successful status codes is used to set the successful flag if not
      * equal to 0x9000
      * 

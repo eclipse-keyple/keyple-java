@@ -51,6 +51,7 @@ public final class SeResponse {
      * @param atr the SE atr (may be null)
      * @param fci the fci data
      * @param apduResponses the apdu responses
+     * @throws InconsistentParameterValueException if both atr and fci are null
      */
     public SeResponse(boolean channelPreviouslyOpen, ApduResponse atr, ApduResponse fci,
             List<ApduResponse> apduResponses) throws InconsistentParameterValueException {

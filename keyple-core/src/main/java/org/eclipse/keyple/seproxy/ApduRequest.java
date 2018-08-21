@@ -55,8 +55,8 @@ public final class ApduRequest extends AbstractApduBuffer {
     /**
      * Alternate constructor without status codes list
      * 
-     * @param buffer
-     * @param case4
+     * @param buffer data buffer
+     * @param case4 case 4 flag (true if case 4)
      */
     public ApduRequest(ByteBuffer buffer, boolean case4) {
         this(buffer, case4, null);

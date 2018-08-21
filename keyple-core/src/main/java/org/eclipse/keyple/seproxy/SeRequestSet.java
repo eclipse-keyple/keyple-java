@@ -45,7 +45,7 @@ public final class SeRequestSet {
     /**
      * Create an {@link SeRequestSet} from a single {@link SeRequest}.
      *
-     * @param request single (@link SeRequest)
+     * @param request single {@link SeRequest}
      */
     public SeRequestSet(SeRequest request) {
         Set<SeRequest> seRequests = new LinkedHashSet<SeRequest>();
