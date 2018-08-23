@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
+
+import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.plugin.AbstractStaticPlugin;
@@ -52,11 +54,9 @@ public final class StubPlugin extends AbstractStaticPlugin {
 
     @Override
     protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
-        // init Stub Readers
+        // init Stub Readers list
         SortedSet<AbstractObservableReader> nativeReaders =
                 new ConcurrentSkipListSet<AbstractObservableReader>();
-        // add native readers
-        nativeReaders.add(new StubReader());
 
         return nativeReaders;
     }
@@ -71,4 +71,24 @@ public final class StubPlugin extends AbstractStaticPlugin {
         throw new IOReaderException("Reader with name " + name + " was not found");
     }
 
+
+    /**
+     * Plug a Stub Reader
+     * @param name : name of the reader
+     */
+    public StubReader plugReader(String name){
+        assert !readers.contains(name) : "Reader with name "+name+"is already plugged";
+
+        StubReader stubReader = new StubReader(name);
+        readers.add((AbstractObservableReader) stubReader);
+        return stubReader;
+    }
+
+    /**
+     * Unplug a Stub Reader
+     * @param name
+     */
+    public void unplugReader(String name){
+        readers.remove(name);
+    }
 }
