@@ -206,9 +206,11 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * CardTerminal.html#connect(java.lang.String) le comportement par défaut pour 'Protocol' doit
      * être 'Tx'
      *
-     * paramètre 'Mode' : le comportement par défaut pour 'Protocol' doit être 'Exclusive', dans ce
-     * cas une exclusivité d'accès est gérée via javax.smartcardio.Card.beginExclusive() et
-     * endExclusive() cf.
+     * paramètre 'Mode' : le comportement par défaut pour 'Protocol' doit être 'Shared' et sur
+     * configuration 'Exclusive', dans ce cas une exclusivité d'accès est gérée via
+     * javax.smartcardio.Card.beginExclusive() et endExclusive() Ceci est notamment lié au fait que
+     * sur certaines plateformes (l'exclusivité n'est obtenue que pendant un temps limité [5
+     * secondes sur Windows 8+]). cf.
      * https://docs.oracle.com/javase/6/docs/jre/api/security/smartcardio/spec/javax/smartcardio/
      * Card.html#beginExclusive() sinon le 'Mode' doit être considéré comme 'Shared' à vérifier avec
      * Jean-Pierre Fortune, le mode 'Direct' ne devrait pas être supporté pour un
@@ -273,9 +275,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 throw new InconsistentParameterValueException("Bad protocol", name, value);
             }
         } else if (name.equals(SETTING_KEY_MODE)) {
-            if (value == null || value.equals(SETTING_MODE_EXCLUSIVE)) {
-                cardExclusiveMode = true;
-            } else if (value.equals(SETTING_MODE_SHARED)) {
+            if (value == null || value.equals(SETTING_MODE_SHARED)) {
                 if (cardExclusiveMode && card != null) {
                     try {
                         card.endExclusive();
@@ -284,6 +284,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
                     }
                 }
                 cardExclusiveMode = false;
+            } else if (value.equals(SETTING_MODE_EXCLUSIVE)) {
+                cardExclusiveMode = true;
             } else {
                 throw new InconsistentParameterValueException(name, value);
             }
@@ -373,6 +375,11 @@ public class PcscReader extends AbstractThreadedLocalReader {
 
     /**
      * Opens a physical channel
+     *
+     * The card access may be set to 'Exclusive' through the reader's settings.
+     *
+     * In this case be aware that on some platforms (ex. Windows 8+), the exclusivity is granted for
+     * a limited time (ex. 5 seconds). After this delay, the card is automatically resetted.
      * 
      * @throws IOReaderException if a reader error occurs
      */
