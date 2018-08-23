@@ -15,6 +15,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     // compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
 
+    compile group: 'structlog4j', name:'structlog4j-api', version: '1.0.0'
+
 
     compile project(':keyple-example-common')
     compile project(':keyple-calypso')
