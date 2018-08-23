@@ -97,9 +97,7 @@ public class ReadRecordsRespPars extends AbstractApduResponseParser {
         while (apdu.hasRemaining()) {
             byte recordNb = apdu.get();
             byte len = apdu.get();
-            ByteBuffer dup = apdu.duplicate();
-            dup.position(0).limit(len);
-            records.add(new Record(recordNb, dup.slice()));
+            records.add(new Record(recordNb, ByteBufferUtils.subLen(apdu, 0, len)));
         }
 
         return records;
