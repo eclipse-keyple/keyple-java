@@ -209,8 +209,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * paramètre 'Mode' : le comportement par défaut pour 'Protocol' doit être 'Shared' et sur
      * configuration 'Exclusive', dans ce cas une exclusivité d'accès est gérée via
      * javax.smartcardio.Card.beginExclusive() et endExclusive() Ceci est notamment lié au fait que
-     * sur certaines plateformes (l'exclusivité n'est obtenue que pendant un temps limité [5
-     * secondes sur Windows 8+]). cf.
+     * sur certaines plateformes l'exclusivité n'est obtenue que pendant un temps limité (5
+     * secondes sur Windows 8+). cf.
      * https://docs.oracle.com/javase/6/docs/jre/api/security/smartcardio/spec/javax/smartcardio/
      * Card.html#beginExclusive() sinon le 'Mode' doit être considéré comme 'Shared' à vérifier avec
      * Jean-Pierre Fortune, le mode 'Direct' ne devrait pas être supporté pour un
