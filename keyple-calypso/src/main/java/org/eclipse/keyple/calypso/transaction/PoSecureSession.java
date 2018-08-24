@@ -11,16 +11,16 @@ package org.eclipse.keyple.calypso.transaction;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.calypso.command.CsmSendableInSession;
-import org.eclipse.keyple.calypso.command.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.SendableInSession;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
+import org.eclipse.keyple.calypso.command.csm.CsmSendableInSession;
 import org.eclipse.keyple.calypso.command.csm.builder.*;
 import org.eclipse.keyple.calypso.command.csm.parser.CsmGetChallengeRespPars;
 import org.eclipse.keyple.calypso.command.csm.parser.DigestAuthenticateRespPars;
 import org.eclipse.keyple.calypso.command.csm.parser.DigestCloseRespPars;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.builder.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.CloseSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.AbstractOpenSessionRespPars;
@@ -53,9 +53,9 @@ public class PoSecureSession {
     private static final ILogger logger = SLoggerFactory.getLogger(PoSecureSession.class);
 
     /** The reader for PO. */
-    private ProxyReader poReader;
+    private final ProxyReader poReader;
     /** The reader for session CSM. */
-    private ProxyReader csmReader;
+    private final ProxyReader csmReader;
 
     /**
      * The PO Transaction State defined with the elements: ‘IOError’, ‘SEInserted’ and ‘SERemoval’.
@@ -83,10 +83,10 @@ public class PoSecureSession {
     // add a getter
 
     /** The CSM default revision. */
-    private CsmRevision csmRevision = CsmRevision.S1D;
+    private final CsmRevision csmRevision = CsmRevision.S1D;
 
     /** The default key index for a PO session. */
-    private byte defaultKeyIndex;
+    private final byte defaultKeyIndex;
 
     public ByteBuffer sessionTerminalChallenge;
     private ByteBuffer sessionCardChallenge;

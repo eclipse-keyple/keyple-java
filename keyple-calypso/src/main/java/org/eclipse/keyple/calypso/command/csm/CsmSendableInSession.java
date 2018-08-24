@@ -6,17 +6,9 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.calypso.command;
+package org.eclipse.keyple.calypso.command.csm;
 
-/**
- * This enumeration registers the types of the commands .
- *
- * @author Ixxi
- */
-public enum CommandType {
+import org.eclipse.keyple.calypso.command.SendableInSession;
 
-    /** The po. */
-    PO,
-    /** The csm. */
-    CSM
+public interface CsmSendableInSession extends SendableInSession<CsmCommandBuilder> {
 }

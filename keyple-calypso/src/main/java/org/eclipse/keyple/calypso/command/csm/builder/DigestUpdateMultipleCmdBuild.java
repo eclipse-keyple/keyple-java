@@ -24,8 +24,7 @@ import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 public class DigestUpdateMultipleCmdBuild extends CsmCommandBuilder {
 
     /** The command. */
-    private static org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands command =
-            CalypsoSmCommands.DIGEST_UPDATE_MULTIPLE;
+    private static final CalypsoSmCommands command = CalypsoSmCommands.DIGEST_UPDATE_MULTIPLE;
 
     /**
      * Instantiates a new DigestUpdateMultipleCmdBuild.

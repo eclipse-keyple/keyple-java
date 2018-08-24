@@ -19,7 +19,7 @@ import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 public class DigestAuthenticateCmdBuild extends CsmCommandBuilder {
 
     /** The command. */
-    private static CalypsoSmCommands command = CalypsoSmCommands.DIGEST_AUTHENTICATE;
+    private static final CalypsoSmCommands command = CalypsoSmCommands.DIGEST_AUTHENTICATE;
 
     /**
      * Instantiates a new DigestAuthenticateCmdBuild .

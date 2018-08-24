@@ -70,16 +70,16 @@ public enum CalypsoPoCommands implements CommandsTable {
     DECREASE("Decrease", (byte) 0x30, DecreaseCmdBuild.class, DecreaseRespPars.class);
 
     /** The name. */
-    private String name;
+    private final String name;
 
     /** The instruction byte. */
-    private byte instructionbyte;
+    private final byte instructionbyte;
 
     /** The command builder class. */
-    private Class<? extends AbstractApduCommandBuilder> commandBuilderClass;
+    private final Class<? extends AbstractApduCommandBuilder> commandBuilderClass;
 
     /** The response parser class. */
-    private Class<? extends AbstractApduResponseParser> responseParserClass;
+    private final Class<? extends AbstractApduResponseParser> responseParserClass;
 
     /**
      * The generic constructor of CalypsoCommands.

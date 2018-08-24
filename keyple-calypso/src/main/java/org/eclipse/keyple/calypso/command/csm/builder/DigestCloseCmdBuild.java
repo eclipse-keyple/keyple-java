@@ -18,8 +18,7 @@ import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 public class DigestCloseCmdBuild extends CsmCommandBuilder {
 
     /** The command. */
-    private static org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands command =
-            CalypsoSmCommands.DIGEST_CLOSE;
+    private static final CalypsoSmCommands command = CalypsoSmCommands.DIGEST_CLOSE;
 
     /**
      * Instantiates a new DigestCloseCmdBuild .
