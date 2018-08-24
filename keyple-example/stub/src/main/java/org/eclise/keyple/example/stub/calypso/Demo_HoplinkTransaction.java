@@ -16,8 +16,10 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.logging.LogManager;
 import java.util.regex.Pattern;
 
 public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver  {
@@ -26,9 +28,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
 
     private ProxyReader poReader, csmReader;
 
-        public Demo_HoplinkTransaction() {
-            super();
-        }
+        public Demo_HoplinkTransaction() {}
 
         @Override
         public void update(ReaderEvent event) {
@@ -379,6 +379,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
          */
         public static void main(String[] args)
                 throws IOException, IOReaderException, InterruptedException {
+
             SeProxyService seProxyService = SeProxyService.getInstance();
             SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
             pluginsSet.add(StubPlugin.getInstance());
