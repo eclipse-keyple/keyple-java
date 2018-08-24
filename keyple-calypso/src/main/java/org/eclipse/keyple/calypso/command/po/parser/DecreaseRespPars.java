@@ -68,8 +68,8 @@ public class DecreaseRespPars extends AbstractApduResponseParser {
             return (newValueBuffer.get(0) << 16) + (newValueBuffer.get(1) << 8)
                     + newValueBuffer.get(2);
         } else {
-            throw new IllegalStateException(String
-                    .format("No counter value available in response to the Decrease command."));
+            throw new IllegalStateException(
+                    "No counter value available in response to the Decrease command.");
         }
     }
 

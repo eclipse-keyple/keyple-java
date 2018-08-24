@@ -21,8 +21,7 @@ public class DigestInitCmdBuild extends CsmCommandBuilder {
     /**
      * The command.
      */
-    private static org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands command =
-            org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands.DIGEST_INIT;
+    private static final CalypsoSmCommands command = CalypsoSmCommands.DIGEST_INIT;
 
     /**
      * Instantiates a new DigestInitCmdBuild.

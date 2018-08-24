@@ -23,8 +23,7 @@ import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 public class SelectDiversifierCmdBuild extends CsmCommandBuilder {
 
     /** The command. */
-    private static org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands command =
-            CalypsoSmCommands.SELECT_DIVERSIFIER;
+    private static final CalypsoSmCommands command = CalypsoSmCommands.SELECT_DIVERSIFIER;
 
     /**
      * Instantiates a new SelectDiversifierCmdBuild.
