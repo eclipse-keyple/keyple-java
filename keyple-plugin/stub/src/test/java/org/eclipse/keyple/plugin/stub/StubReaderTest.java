@@ -39,8 +39,8 @@ public class StubReaderTest {
     // init before each test
     @Before
     public void SetUp() throws IOReaderException {
-        // works if stubreader could be instanciated just once
-        reader = StubPlugin.getInstance().plugReader("StubReader");
+
+        reader = StubPlugin.getInstance().plugStubReader("StubReader");
 
     }
 

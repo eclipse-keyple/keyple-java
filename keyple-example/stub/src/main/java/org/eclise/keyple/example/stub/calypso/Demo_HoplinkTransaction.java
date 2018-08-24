@@ -16,10 +16,8 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.logging.LogManager;
 import java.util.regex.Pattern;
 
 public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver  {
@@ -388,8 +386,8 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
             // Setting up ourself as an observer
             Demo_HoplinkTransaction observer = new Demo_HoplinkTransaction();
 
-            StubReader poReader = StubPlugin.getInstance().plugReader("poReader");
-            StubReader csmReader = StubPlugin.getInstance().plugReader("csmReader");
+            StubReader poReader = StubPlugin.getInstance().plugStubReader("poReader");
+            StubReader csmReader = StubPlugin.getInstance().plugStubReader("csmReader");
 
 
             logger.info("PO Reader  : " + poReader.getName());

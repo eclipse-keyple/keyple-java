@@ -11,11 +11,14 @@ package org.eclipse.keyple.plugin.stub;
 
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StubPluginTest {
 
     StubPlugin stubPlugin;
@@ -26,12 +29,26 @@ public class StubPluginTest {
     }
 
     @Test
-    public void testGetReaders() throws IOReaderException {
+    public void testA_PlugReaders() throws IOReaderException {
+        stubPlugin.plugStubReader("test");
+        assert (stubPlugin.getReaders().size() == 1);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testB_PlugSameReaderTwice() throws IOReaderException {
+        stubPlugin.plugStubReader("test");
+        stubPlugin.plugStubReader("test");
         assert (stubPlugin.getReaders().size() == 1);
     }
 
     @Test
-    public void testGetName() throws IOReaderException {
+    public void testC_UnPlugReaders() throws IOReaderException {
+        stubPlugin.unplugReader("test");
+        assert (stubPlugin.getReaders().size() == 0);
+    }
+
+    @Test
+    public void testD_GetName() throws IOReaderException {
         assert (stubPlugin.getName() != null);
     }
 }

@@ -128,4 +128,6 @@ public class StubReader extends AbstractSelectionLocalReader {
         notifyObservers(new ReaderEvent(pluginName, readerName, ReaderEvent.EventType.SE_REMOVAL));
     }
 
+
+
 }

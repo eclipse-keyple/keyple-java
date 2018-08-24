@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import com.sun.istack.internal.NotNull;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
@@ -62,13 +63,13 @@ public final class StubPlugin extends AbstractStaticPlugin {
     }
 
     @Override
-    protected AbstractObservableReader getNativeReader(String name) throws IOReaderException {
+    protected AbstractObservableReader getNativeReader(String name){
         for (AbstractObservableReader reader : readers) {
             if (reader.getName().equals(name)) {
                 return reader;
             }
         }
-        throw new IOReaderException("Reader with name " + name + " was not found");
+        return null;
     }
 
 
@@ -76,19 +77,28 @@ public final class StubPlugin extends AbstractStaticPlugin {
      * Plug a Stub Reader
      * @param name : name of the reader
      */
-    public StubReader plugReader(String name){
-        assert !readers.contains(name) : "Reader with name "+name+"is already plugged";
+    public StubReader plugStubReader(String name){
 
-        StubReader stubReader = new StubReader(name);
-        readers.add((AbstractObservableReader) stubReader);
-        return stubReader;
+        if(getNativeReader(name) == null){
+            logger.info("Plugging a new reader with name "+ name);
+            StubReader stubReader = new StubReader(name);
+            readers.add((AbstractObservableReader) stubReader);
+            return stubReader;
+
+        }else{
+            logger.warn("Reader with name "+name+" was already plugged");
+            return (StubReader) getNativeReader(name);
+        }
+
     }
 
     /**
      * Unplug a Stub Reader
      * @param name
      */
-    public void unplugReader(String name){
-        readers.remove(name);
+    public void unplugReader(String  name) throws IOReaderException{
+        ProxyReader reader = getNativeReader(name);
+        readers.remove(reader);
+        logger.info("Unplugged reader with name "+ reader.getName());
     }
 }
