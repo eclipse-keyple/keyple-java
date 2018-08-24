@@ -1,11 +1,11 @@
 package org.eclise.keyple.example.stub.calypso;
 
+import com.github.structlog4j.ILogger;
+import com.github.structlog4j.SLoggerFactory;
 import org.eclipse.keyple.calypso.command.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.builder.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.example.common.HoplinkInfoAndSampleCommands;
-import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
-import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
@@ -13,7 +13,6 @@ import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 import java.io.IOException;
@@ -23,7 +22,9 @@ import java.util.regex.Pattern;
 
 public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver  {
 
-        private ProxyReader poReader, csmReader;
+    private static final ILogger logger = SLoggerFactory.getLogger(Demo_HoplinkTransaction.class);
+
+    private ProxyReader poReader, csmReader;
 
         public Demo_HoplinkTransaction() {
             super();
@@ -33,16 +34,16 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
         public void update(ReaderEvent event) {
             switch (event.getEventType()) {
                 case SE_INSERTED:
-                    System.out.println("SE INSERTED");
-                    System.out.println("\nStart processing of a Calypso PO");
+                    logger.info("SE INSERTED");
+                    logger.info("\nStart processing of a Calypso PO");
                     operatePoTransactions();
                     break;
                 case SE_REMOVAL:
-                    System.out.println("SE REMOVED");
-                    System.out.println("\nWait for Calypso PO");
+                    logger.info("SE REMOVED");
+                    logger.info("\nWait for Calypso PO");
                     break;
                 default:
-                    System.out.println("IO Error");
+                    logger.error("IO Error");
             }
         }
 
@@ -56,46 +57,46 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
         public void printSelectAppResponseStatus(String message, SeRequest seRequest,
                                                  SeResponse seResponse) {
             int i;
-            System.out.println("===== " + message);
-            System.out.println("* Request:");
-            System.out.println("AID: " + ByteBufferUtils
+            logger.info("===== " + message);
+            logger.info("* Request:");
+            logger.info("AID: " + ByteBufferUtils
                     .toHex(((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect()));
             List<ApduRequest> apduRequests = seRequest.getApduRequests();
             i = 0;
             if (apduRequests != null && apduRequests.size() > 0) {
                 for (ApduRequest apduRequest : apduRequests) {
-                    System.out.println(
+                    logger.info(
                             "COMMAND#" + i + ": " + ByteBufferUtils.toHex(apduRequest.getBytes()));
                     i++;
                 }
             } else {
-                System.out.println("No APDU request");
+                logger.info("No APDU request");
             }
-            System.out.println("keepChannelOpen flag: " + seRequest.isKeepChannelOpen());
-            System.out.println("protocol flag: " + seRequest.getProtocolFlag());
+            logger.info("keepChannelOpen flag: " + seRequest.isKeepChannelOpen());
+            logger.info("protocol flag: " + seRequest.getProtocolFlag());
 
-            System.out.println("* Response:");
+            logger.info("* Response:");
             if (seResponse == null) {
-                System.out.println("SeResponse is null");
+                logger.info("SeResponse is null");
             } else {
                 ApduResponse atr, fci;
                 atr = seResponse.getAtr();
                 fci = seResponse.getFci();
                 List<ApduResponse> apduResponses = seResponse.getApduResponses();
                 if (atr != null) {
-                    System.out.println("ATR: " + ByteBufferUtils.toHex(atr.getDataOut()));
+                    logger.info("ATR: " + ByteBufferUtils.toHex(atr.getDataOut()));
                 } else {
-                    System.out.println("ATR: null");
+                    logger.info("ATR: null");
                 }
                 if (fci != null) {
-                    System.out.println("FCI: " + ByteBufferUtils.toHex(fci.getDataOut()));
+                    logger.info("FCI: " + ByteBufferUtils.toHex(fci.getDataOut()));
                 } else {
-                    System.out.println("FCI: null");
+                    logger.info("FCI: null");
                 }
                 if (apduResponses.size() > 0) {
                     i = 0;
                     for (ApduResponse apduResponse : apduResponses) {
-                        System.out.println("RESPONSE#" + i + ": "
+                        logger.info("RESPONSE#" + i + ": "
                                 + ByteBufferUtils.toHex(apduResponse.getDataOut()) + ", SW1SW2: "
                                 + Integer.toHexString(apduResponse.getStatusCode() & 0xFFFF));
                         i++;
@@ -103,7 +104,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
                 }
             }
             // new line
-            System.out.println("");
+            logger.info("");
         }
 
         /**
@@ -129,12 +130,12 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
             filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Usage);
 
             // Step 1
-            System.out.println(
+            logger.info(
                     "\n\n========= PO Hoplink 2-step transaction ======= Identification =====================");
             poTransaction.processIdentification(fciData);
 
             // Step 2A
-            System.out.println(
+            logger.info(
                     "========= PO Hoplink 2-step transaction ======= Opening + Closing ====================");
 
             byte debitKeyIndex = 0x03;
@@ -148,10 +149,10 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
                     closeSeChannel);
 
             if (poTransaction.isSuccessful()) {
-                System.out.println(
+                logger.info(
                         "========= PO Hoplink 2-step transaction ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             } else {
-                System.out.println(
+                logger.warn(
                         "========= PO Hoplink 2-step transaction ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
         }
@@ -182,12 +183,12 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
             // filesToReadInSession.add(HoplinkInfoAndSampleCommands.poUpdateRecordCmd_T2UsageFill);
 
             // Step 1
-            System.out.println(
+            logger.info(
                     "\n\n========= PO Hoplink 3-step session ======= Identification =====================");
             poTransaction.processIdentification(fciData);
 
             // Step 2
-            System.out.println(
+            logger.info(
                     "========= PO Hoplink 3-step session ======= Opening ============================");
             byte debitKeyIndex = 0x03;
             // Open Session for the debit key #3 - with reading of the first record of the cyclic EF of
@@ -198,21 +199,21 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
             poTransaction.processOpening(poOpenSession, filesToReadInSession);
 
             // Step 3
-            System.out.println(
+            logger.info(
                     "========= PO Hoplink 3-step session ======= Proceed =======================");
             poTransaction.processProceeding(filesToReadInSession);
 
             // Step 4
-            System.out.println(
+            logger.info(
                     "========= PO Hoplink 3-step session ======= Closing ============================");
             poTransaction.processClosing(null, null, HoplinkInfoAndSampleCommands.poRatificationCommand,
                     false);
 
             if (poTransaction.isSuccessful()) {
-                System.out.println(
+                logger.info(
                         "========= PO Hoplink 3-step session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             } else {
-                System.out.println(
+                logger.warn(
                         "========= PO Hoplink 3-step session ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
         }
@@ -277,7 +278,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
                         csmReader.transmit(new SeRequestSet(csmCheckRequest)).getSingleResponse();
 
                 if (csmCheckResponse == null) {
-                    System.out.println("Unable to open a logical channel for CSM!");
+                    logger.info("Unable to open a logical channel for CSM!");
                     throw new IllegalStateException("CSM channel opening failure");
                 }
 
@@ -330,7 +331,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
                     ApduResponse fciData = seResponses.get(2).getFci();
                     operateMultipleHoplinkTransactions(poTransaction, fciData);
                 } else {
-                    System.out.println(
+                    logger.info(
                             "No Hoplink transaction. SeResponse to Hoplink selection was null.");
                 }
             } catch (Exception e) {
@@ -390,14 +391,8 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
             StubReader csmReader = StubPlugin.getInstance().plugReader("csmReader");
 
 
-            System.out.println("PO Reader  : " + poReader.getName());
-            System.out.println("CSM Reader : " + csmReader.getName());
-
-            //poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
-            //csmReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
-
-            // provide the reader with the map
-            poReader.addSeProtocolSetting( new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+            logger.info("PO Reader  : " + poReader.getName());
+            logger.info("CSM Reader : " + csmReader.getName());
 
 
             observer.poReader = poReader;
@@ -413,15 +408,6 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
             csmReader.insertSe(csmSE);
             poReader.insertSe(hoplinkSE);
             poReader.removeSe();
-
-            //poReader.insertSe(hoplinkSE);
-            //poReader.removeSe();
-
-            /*
-            synchronized (waitForEnd) {
-                waitForEnd.wait();
-            }
-            */
 
 
         }
