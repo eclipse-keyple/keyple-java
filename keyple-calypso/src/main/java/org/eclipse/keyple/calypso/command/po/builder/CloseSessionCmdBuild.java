@@ -51,7 +51,12 @@ public class CloseSessionCmdBuild extends PoCommandBuilder {
         byte cla = PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00;
 
         byte p1 = ratificationAsked ? (byte) 0x80 : (byte) 0x00;
+        /*
+         * case 4: this command contains incoming and outgoing data. We define le = 0, the actual
+         * length will be processed by the lower layers.
+         */
+        byte le = 0;
 
-        request = setApduRequest(cla, command, p1, (byte) 0x00, terminalSessionSignature, null);
+        request = setApduRequest(cla, command, p1, (byte) 0x00, terminalSessionSignature, le);
     }
 }
