@@ -114,12 +114,12 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
             fci = seResponse.getFci();
             List<ApduResponse> apduResponses = seResponse.getApduResponses();
             if (atr != null) {
-                System.out.println("ATR: " + ByteBufferUtils.toHex(atr.getDataOut()));
+                System.out.println("ATR: " + ByteBufferUtils.toHex(atr.getBytes()));
             } else {
                 System.out.println("ATR: null");
             }
             if (fci != null) {
-                System.out.println("FCI: " + ByteBufferUtils.toHex(fci.getDataOut()));
+                System.out.println("FCI: " + ByteBufferUtils.toHex(fci.getBytes()));
             } else {
                 System.out.println("FCI: null");
             }
@@ -367,6 +367,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -430,7 +431,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
         System.out.println("PO Reader  : " + poReader.getName());
         System.out.println("CSM Reader : " + csmReader.getName());
 
-        poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
+        poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
         csmReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
         // provide the reader with the map
