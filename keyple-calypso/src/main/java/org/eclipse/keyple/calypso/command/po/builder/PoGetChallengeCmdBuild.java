@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.calypso.command.po.builder;
 
-import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
@@ -40,9 +39,8 @@ public class PoGetChallengeCmdBuild extends PoCommandBuilder implements PoSendab
 
         byte p1 = (byte) 0x01;
         byte p2 = (byte) 0x10;
-        ByteBuffer dataIn = null;
-        byte optionalLe = (byte) 0x08;
+        byte le = (byte) 0x08;
 
-        this.request = setApduRequest(cla, command, p1, p2, dataIn, optionalLe);
+        this.request = setApduRequest(cla, command, p1, p2, null, le);
     }
 }
