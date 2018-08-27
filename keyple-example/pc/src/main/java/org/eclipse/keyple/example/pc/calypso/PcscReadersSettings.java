@@ -10,6 +10,6 @@ package org.eclipse.keyple.example.pc.calypso;
 
 public interface PcscReadersSettings {
     // This is where you should add patterns of readers you want to use for tests
-    String PO_READER_NAME_REGEX = ".*(ASK|ACS|Identive).*";
-    String CSM_READER_NAME_REGEX = ".*(Cherry TC|SCM Microsystems|HID).*";
+    String PO_READER_NAME_REGEX = ".*(ASK|ACS).*";
+    String CSM_READER_NAME_REGEX = ".*(Cherry TC|Identive|SCM Microsystems|HID).*";
 }
