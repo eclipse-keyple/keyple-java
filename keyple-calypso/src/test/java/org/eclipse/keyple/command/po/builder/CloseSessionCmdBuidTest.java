@@ -21,9 +21,9 @@ public class CloseSessionCmdBuidTest {
     @Test
     public void closeSessionCmdBuild() throws IllegalArgumentException {
         ByteBuffer request2_4 = ByteBuffer.wrap(new byte[] {(byte) 0x94, (byte) 0x8E, 0x00, 0x00,
-                (byte) 0x04, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
+                (byte) 0x04, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, 0x00});
         ByteBuffer request3_1 = ByteBuffer.wrap(new byte[] {(byte) 0x00, (byte) 0x8E, (byte) 0x80,
-                0x00, (byte) 0x04, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
+                0x00, (byte) 0x04, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, 0x00});
         ByteBuffer terminalSessionSignature =
                 ByteBuffer.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
         AbstractApduCommandBuilder apduCommandBuilder =
