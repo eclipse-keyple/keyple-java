@@ -27,7 +27,7 @@ public class GetDataFciCmdBuild extends PoCommandBuilder implements PoSendableIn
     /**
      * Instantiates a new GetDataFciCmdBuild.
      *
-     * @param revision the PO revison
+     * @param revision the PO revision
      */
     public GetDataFciCmdBuild(PoRevision revision) {
         super(command, null);
