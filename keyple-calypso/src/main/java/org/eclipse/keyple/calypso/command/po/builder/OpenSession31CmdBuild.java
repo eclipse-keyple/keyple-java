@@ -28,9 +28,13 @@ public class OpenSession31CmdBuild extends AbstractOpenSessionCmdBuild {
 
         byte p1 = (byte) ((recordNumberToRead * 8) + keyIndex);
         byte p2 = (byte) ((sfiToSelect * 8) + 1);
+        /*
+         * case 4: this command contains incoming and outgoing data. We define le = 0, the actual
+         * length will be processed by the lower layers.
+         */
+        byte le = 0;
 
-        this.request =
-                setApduRequest((byte) 0x00, CalypsoPoCommands.getOpenSessionForRev(defaultRevision),
-                        p1, p2, samChallenge, null);
+        this.request = setApduRequest((byte) 0x00,
+                CalypsoPoCommands.getOpenSessionForRev(defaultRevision), p1, p2, samChallenge, le);
     }
 }
