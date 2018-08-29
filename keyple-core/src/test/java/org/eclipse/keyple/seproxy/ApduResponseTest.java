@@ -93,9 +93,10 @@ public class ApduResponseTest {
     @Test
     public void isNotEqualsNull() {
         ApduResponse resp = getAFCI();
-        ApduResponse respNull = new ApduResponse(null,null);
+        ApduResponse respNull = new ApduResponse(null, null);
         assertFalse(resp.equals(respNull));
     }
+
     @Test
     public void hashcodeTest() {
         ApduResponse resp = getAFCI();

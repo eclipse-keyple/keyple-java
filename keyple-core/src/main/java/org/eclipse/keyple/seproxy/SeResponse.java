@@ -113,8 +113,9 @@ public final class SeResponse {
 
         SeResponse seResponse = (SeResponse) o;
         return (seResponse.getAtr() == null ? atr == null : seResponse.getAtr().equals(atr))
-                && (seResponse.getFci() ==null ? fci == null : seResponse.getFci().equals(fci))
-                && (seResponse.getApduResponses() ==null ? apduResponses == null : seResponse.getApduResponses().equals(apduResponses))
+                && (seResponse.getFci() == null ? fci == null : seResponse.getFci().equals(fci))
+                && (seResponse.getApduResponses() == null ? apduResponses == null
+                        : seResponse.getApduResponses().equals(apduResponses))
                 && (seResponse.wasChannelPreviouslyOpen() == channelPreviouslyOpen);
 
     }
@@ -124,7 +125,7 @@ public final class SeResponse {
         int hash = 17;
         hash = 31 * hash + (atr == null ? 0 : atr.hashCode());
         hash = 7 * hash + (fci == null ? 0 : fci.hashCode());
-        hash = 29 * hash + (apduResponses ==null ? 0: this.apduResponses.hashCode());
+        hash = 29 * hash + (apduResponses == null ? 0 : this.apduResponses.hashCode());
         hash = 13 * hash + (this.channelPreviouslyOpen ? 0x55555555 : 0x2AAAAAAA);
         return hash;
     }

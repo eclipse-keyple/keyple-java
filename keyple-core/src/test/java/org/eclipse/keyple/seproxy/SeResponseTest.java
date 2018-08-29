@@ -73,9 +73,10 @@ public class SeResponseTest {
     @Test()
     public void testNotEqualsNull() throws Exception {
         SeResponse resp = getASeResponse();
-        SeResponse respNull = new SeResponse(true,null, ApduResponseTest.getAFCI(), null);
-        SeResponse respNull2 = new SeResponse(true,ApduResponseTest.getAAtr(), null, null);
-        SeResponse respNull3 = new SeResponse(true,ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), null);
+        SeResponse respNull = new SeResponse(true, null, ApduResponseTest.getAFCI(), null);
+        SeResponse respNull2 = new SeResponse(true, ApduResponseTest.getAAtr(), null, null);
+        SeResponse respNull3 =
+                new SeResponse(true, ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), null);
         Assert.assertFalse(resp.equals(respNull));
         Assert.assertFalse(resp.equals(respNull2));
         Assert.assertFalse(resp.equals(respNull3));
