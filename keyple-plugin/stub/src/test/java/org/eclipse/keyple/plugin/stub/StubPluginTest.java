@@ -29,23 +29,23 @@ public class StubPluginTest {
     }
 
     @Test
-    public void testA_PlugReaders() throws IOReaderException {
+    public void testA_PlugUnplugReaders() throws IOReaderException {
         stubPlugin.plugStubReader("test");
         assert (stubPlugin.getReaders().size() == 1);
+        stubPlugin.unplugReader("test");
+        assert (stubPlugin.getReaders().size() == 0);
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testB_PlugSameReaderTwice() throws IOReaderException {
         stubPlugin.plugStubReader("test");
         stubPlugin.plugStubReader("test");
         assert (stubPlugin.getReaders().size() == 1);
-    }
-
-    @Test
-    public void testC_UnPlugReaders() throws IOReaderException {
         stubPlugin.unplugReader("test");
         assert (stubPlugin.getReaders().size() == 0);
     }
+
+
 
     @Test
     public void testD_GetName() throws IOReaderException {

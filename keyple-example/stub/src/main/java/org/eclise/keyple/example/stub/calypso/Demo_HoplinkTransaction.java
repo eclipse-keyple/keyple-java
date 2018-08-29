@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
-
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.builder.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
@@ -129,7 +128,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      * @throws IOReaderException reader exception (defined as public for purposes of javadoc)
      */
     public void doHoplinkTwoStepAuthentication(PoSecureSession poTransaction, ApduResponse fciData,
-                                               boolean closeSeChannel) throws IOReaderException {
+            boolean closeSeChannel) throws IOReaderException {
         List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
         filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Env);
         filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Usage);
