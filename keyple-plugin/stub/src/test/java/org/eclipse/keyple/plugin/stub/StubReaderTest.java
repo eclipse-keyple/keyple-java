@@ -175,27 +175,7 @@ public class StubReaderTest {
 
 
     }
-
-    /*
-     * INTERNAL METHODS
-     */
-
-    @Test(expected = ChannelStateReaderException.class)
-    public void processApduRequestTest() throws Exception {
-        // init request
-        ApduRequest apdu = getApduSample();
-
-        // init SE
-        reader.insertSe(getSENoconnection());
-
-        // test
-        ApduResponse response = reader.processApduRequestTestProxy(apdu);
-
-        // assert
-        Assert.assertNull(response);
-
-    }
-
+    
 
 
     /*
