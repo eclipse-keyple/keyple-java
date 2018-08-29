@@ -52,5 +52,5 @@ public class StubPluginTest {
         assert (stubPlugin.getName() != null);
     }
 
-    //TODO add tests for events
+    // TODO add tests for events
 }

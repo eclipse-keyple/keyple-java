@@ -12,7 +12,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.calypso.command.PoSendableInSession;
+
+import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.builder.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.example.common.HoplinkInfoAndSampleCommands;
@@ -128,18 +129,18 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      * @throws IOReaderException reader exception (defined as public for purposes of javadoc)
      */
     public void doHoplinkTwoStepAuthentication(PoSecureSession poTransaction, ApduResponse fciData,
-            boolean closeSeChannel) throws IOReaderException {
+                                               boolean closeSeChannel) throws IOReaderException {
         List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
         filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Env);
         filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Usage);
 
         // Step 1
-        logger.info(
+        System.out.println(
                 "\n\n========= PO Hoplink 2-step transaction ======= Identification =====================");
         poTransaction.processIdentification(fciData);
 
         // Step 2A
-        logger.info(
+        System.out.println(
                 "========= PO Hoplink 2-step transaction ======= Opening + Closing ====================");
 
         byte debitKeyIndex = 0x03;
@@ -153,10 +154,10 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
                 closeSeChannel);
 
         if (poTransaction.isSuccessful()) {
-            logger.info(
+            System.out.println(
                     "========= PO Hoplink 2-step transaction ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         } else {
-            logger.warn(
+            System.out.println(
                     "========= PO Hoplink 2-step transaction ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
     }

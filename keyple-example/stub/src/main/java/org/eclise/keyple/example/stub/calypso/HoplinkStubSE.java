@@ -54,7 +54,8 @@ public class HoplinkStubSE extends StubSecureElement {
                                                                                                                                           // Secure
                                                                                                                                           // Session
                                                                                                                                           // V3.1
-        addHexCommand("008E000004 88776655 00", "44332211 9000");// Close Secure Session
+        addHexCommand("008E0000048877665500", "44332211 9000");// Close Secure Session
+        addHexCommand("008E8000048877665500", "44332211 9000");// Close Secure Session
         addHexCommand("008E00000488776655", "44332211 9000");// Close Secure Session
         addHexCommand("008E80000488776655", "44332211 9000");// Close Secure Session
 

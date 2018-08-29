@@ -83,7 +83,8 @@ public final class StubPlugin extends AbstractStaticPlugin {
             logger.info("Plugging a new reader with name " + name);
             StubReader stubReader = new StubReader(name);
             readers.add((AbstractObservableReader) stubReader);
-            notifyObservers(new PluginEvent(getName(), name, PluginEvent.EventType.READER_CONNECTED));
+            notifyObservers(
+                    new PluginEvent(getName(), name, PluginEvent.EventType.READER_CONNECTED));
             return stubReader;
 
         } else {
@@ -103,9 +104,10 @@ public final class StubPlugin extends AbstractStaticPlugin {
         if (reader == null) {
             logger.warn("No reader found with name " + name);
 
-        }else{
+        } else {
             readers.remove(reader);
-            notifyObservers(new PluginEvent(getName(), name, PluginEvent.EventType.READER_DISCONNECTED));
+            notifyObservers(
+                    new PluginEvent(getName(), name, PluginEvent.EventType.READER_DISCONNECTED));
             logger.info("Unplugged reader with name " + reader.getName());
         }
 
