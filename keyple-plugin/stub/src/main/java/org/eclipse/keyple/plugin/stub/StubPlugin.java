@@ -100,8 +100,14 @@ public final class StubPlugin extends AbstractStaticPlugin {
      */
     public void unplugReader(String name) throws IOReaderException {
         ProxyReader reader = getNativeReader(name);
-        readers.remove(reader);
-        notifyObservers(new PluginEvent(getName(), name, PluginEvent.EventType.READER_DISCONNECTED));
-        logger.info("Unplugged reader with name " + reader.getName());
+        if (reader == null) {
+            logger.warn("No reader found with name " + name);
+
+        }else{
+            readers.remove(reader);
+            notifyObservers(new PluginEvent(getName(), name, PluginEvent.EventType.READER_DISCONNECTED));
+            logger.info("Unplugged reader with name " + reader.getName());
+        }
+
     }
 }

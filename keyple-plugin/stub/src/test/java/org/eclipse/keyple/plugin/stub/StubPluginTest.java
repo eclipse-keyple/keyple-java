@@ -51,4 +51,6 @@ public class StubPluginTest {
     public void testD_GetName() throws IOReaderException {
         assert (stubPlugin.getName() != null);
     }
+
+    //TODO add tests for events
 }
