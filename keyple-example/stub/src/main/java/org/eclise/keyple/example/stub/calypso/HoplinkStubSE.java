@@ -9,13 +9,8 @@
 package org.eclise.keyple.example.stub.calypso;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.eclipse.keyple.seproxy.SeProtocol;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
@@ -27,18 +22,41 @@ public class HoplinkStubSE extends StubSecureElement {
 
 
     public HoplinkStubSE() {
-        addHexCommand("00A4040005AABBCCDDEE00", "6A82");//Select fake Application
-        addHexCommand("00A404000AA000000404012509010100", "6F24840AA0000004040125090101A516BF0C13C708 1122334455667788 53070A3C2312141001 9000");//Select Navigo Application
-        addHexCommand("00A404000AA000000291A00000019100", "6F25840BA000000291A00000019102A516BF0C13C708 1122334455667788 53070A3C230C141001 9000");// Select Hoplink Application
-        addHexCommand("00A404000BA000000291A0000001910200", "6F25840BA000000291A00000019102A516BF0C13C708 1122334455667788 53070A3C230C141001 9000");// Select Hoplink Application
-        addHexCommand("00B201A420", "0000000000000000000000000000000000000000000000000000000000000000 9000");//// Read Record
-        addHexCommand("00B201D430", "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 9000");// Read Record
-        addHexCommand("00B201A401", "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 9000");// Read Record
-        addHexCommand("008A0BD104 11223344 00", "55667788 00300E30000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 9000");// Open Secure Session V3.1
-        addHexCommand("008A0BD104 11223344", "55667788 00300E30000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 9000");// Open Secure Session V3.1
-        addHexCommand("008E000004 88776655 00", "44332211 9000");//Close Secure Session
-        addHexCommand("008E00000488776655", "44332211 9000");//Close Secure Session
-        addHexCommand("008E80000488776655", "44332211 9000");//Close Secure Session
+        addHexCommand("00A4040005AABBCCDDEE00", "6A82");// Select fake Application
+        addHexCommand("00A404000AA000000404012509010100",
+                "6F24840AA0000004040125090101A516BF0C13C708 1122334455667788 53070A3C2312141001 9000");// Select
+                                                                                                       // Navigo
+                                                                                                       // Application
+        addHexCommand("00A404000AA000000291A00000019100",
+                "6F25840BA000000291A00000019102A516BF0C13C708 1122334455667788 53070A3C230C141001 9000");// Select
+                                                                                                         // Hoplink
+                                                                                                         // Application
+        addHexCommand("00A404000BA000000291A0000001910200",
+                "6F25840BA000000291A00000019102A516BF0C13C708 1122334455667788 53070A3C230C141001 9000");// Select
+                                                                                                         // Hoplink
+                                                                                                         // Application
+        addHexCommand("00B201A420",
+                "0000000000000000000000000000000000000000000000000000000000000000 9000");//// Read
+                                                                                         //// Record
+        addHexCommand("00B201D430",
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 9000");// Read
+                                                                                                                         // Record
+        addHexCommand("00B201A401",
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 9000");// Read
+                                                                                                                         // Record
+        addHexCommand("008A0BD104 11223344 00",
+                "55667788 00300E30000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 9000");// Open
+                                                                                                                                          // Secure
+                                                                                                                                          // Session
+                                                                                                                                          // V3.1
+        addHexCommand("008A0BD104 11223344",
+                "55667788 00300E30000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 9000");// Open
+                                                                                                                                          // Secure
+                                                                                                                                          // Session
+                                                                                                                                          // V3.1
+        addHexCommand("008E000004 88776655 00", "44332211 9000");// Close Secure Session
+        addHexCommand("008E00000488776655", "44332211 9000");// Close Secure Session
+        addHexCommand("008E80000488776655", "44332211 9000");// Close Secure Session
 
     }
 

@@ -12,8 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-
-import com.sun.istack.internal.NotNull;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
@@ -63,7 +61,7 @@ public final class StubPlugin extends AbstractStaticPlugin {
     }
 
     @Override
-    protected AbstractObservableReader getNativeReader(String name){
+    protected AbstractObservableReader getNativeReader(String name) {
         for (AbstractObservableReader reader : readers) {
             if (reader.getName().equals(name)) {
                 return reader;
@@ -75,18 +73,19 @@ public final class StubPlugin extends AbstractStaticPlugin {
 
     /**
      * Plug a Stub Reader
+     * 
      * @param name : name of the reader
      */
-    public StubReader plugStubReader(String name){
+    public StubReader plugStubReader(String name) {
 
-        if(getNativeReader(name) == null){
-            logger.info("Plugging a new reader with name "+ name);
+        if (getNativeReader(name) == null) {
+            logger.info("Plugging a new reader with name " + name);
             StubReader stubReader = new StubReader(name);
             readers.add((AbstractObservableReader) stubReader);
             return stubReader;
 
-        }else{
-            logger.warn("Reader with name "+name+" was already plugged");
+        } else {
+            logger.warn("Reader with name " + name + " was already plugged");
             return (StubReader) getNativeReader(name);
         }
 
@@ -94,11 +93,12 @@ public final class StubPlugin extends AbstractStaticPlugin {
 
     /**
      * Unplug a Stub Reader
+     * 
      * @param name
      */
-    public void unplugReader(String  name) throws IOReaderException{
+    public void unplugReader(String name) throws IOReaderException {
         ProxyReader reader = getNativeReader(name);
         readers.remove(reader);
-        logger.info("Unplugged reader with name "+ reader.getName());
+        logger.info("Unplugged reader with name " + reader.getName());
     }
 }

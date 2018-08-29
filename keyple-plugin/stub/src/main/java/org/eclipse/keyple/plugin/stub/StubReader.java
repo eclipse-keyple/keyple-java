@@ -73,7 +73,7 @@ public class StubReader extends AbstractSelectionLocalReader {
 
     @Override
     public boolean protocolFlagMatches(SeProtocol protocolFlag) {
-        return protocolFlag ==null || se != null  && protocolFlag.equals(se.getSeProcotol());
+        return protocolFlag == null || se != null && protocolFlag.equals(se.getSeProcotol());
     }
 
     @Override

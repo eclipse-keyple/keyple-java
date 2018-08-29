@@ -75,17 +75,16 @@ public class StubReaderTest {
         reader.addObserver(new Observable.Observer<ReaderEvent>() {
             @Override
             public void update(ReaderEvent event) {
-                SeRequest atrRequest =
-                        new SeRequest(new SeRequest.AtrSelector("3B.*"), null, true);
+                SeRequest atrRequest = new SeRequest(new SeRequest.AtrSelector("3B.*"), null, true);
 
 
-                try{
-                SeResponse atrResponse =
-                        reader.transmit(new SeRequestSet(atrRequest)).getSingleResponse();
+                try {
+                    SeResponse atrResponse =
+                            reader.transmit(new SeRequestSet(atrRequest)).getSingleResponse();
 
-                Assert.assertNotNull(atrResponse);
+                    Assert.assertNotNull(atrResponse);
 
-                }catch (IOReaderException e){
+                } catch (IOReaderException e) {
                     Assert.fail();
                 }
 
@@ -241,7 +240,8 @@ public class StubReaderTest {
 
             @Override
             public ByteBuffer getATR() {
-                return ByteBufferUtils.fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
+                return ByteBufferUtils
+                        .fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
             }
 
             @Override
@@ -266,7 +266,7 @@ public class StubReaderTest {
                 return false;
             }
 
-            //override methods to fail open connection
+            // override methods to fail open connection
             @Override
             public void openPhysicalChannel()
                     throws IOReaderException, ChannelStateReaderException {

@@ -11,7 +11,6 @@ package org.eclipse.keyple.plugin.stub;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
@@ -58,8 +57,8 @@ public abstract class StubSecureElement {
      */
     public void addHexCommand(String command, String response) {
         assert command != null && response != null : "command and response should not be null";
-        //add commands without space
-        hexCommands.put(command.replace(" ",""), response.replace(" ",""));
+        // add commands without space
+        hexCommands.put(command.replace(" ", ""), response.replace(" ", ""));
     }
 
     /**
@@ -81,14 +80,14 @@ public abstract class StubSecureElement {
      */
     public ByteBuffer processApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
 
-        if(apduIn == null){
+        if (apduIn == null) {
             return null;
         }
 
-        //convert apduIn to hexa
+        // convert apduIn to hexa
         String hexApdu = ByteBufferUtils.toHex(apduIn);
 
-        //return matching hexa response if found
+        // return matching hexa response if found
         if (hexCommands.containsKey(hexApdu)) {
             return ByteBufferUtils.fromHex(hexCommands.get(hexApdu));
         }
