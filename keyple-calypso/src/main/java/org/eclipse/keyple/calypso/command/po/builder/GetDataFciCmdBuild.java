@@ -8,10 +8,10 @@
 
 package org.eclipse.keyple.calypso.command.po.builder;
 
-import org.eclipse.keyple.calypso.command.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 
 /**
  * This class implements PoSendableInSession, it provides the dedicated constructor to build the Get
@@ -22,12 +22,12 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
  */
 public class GetDataFciCmdBuild extends PoCommandBuilder implements PoSendableInSession {
 
-    private static CalypsoPoCommands command = CalypsoPoCommands.GET_DATA_FCI;
+    private static final CalypsoPoCommands command = CalypsoPoCommands.GET_DATA_FCI;
 
     /**
      * Instantiates a new GetDataFciCmdBuild.
      *
-     * @param revision the PO revison
+     * @param revision the PO revision
      */
     public GetDataFciCmdBuild(PoRevision revision) {
         super(command, null);

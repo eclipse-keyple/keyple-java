@@ -126,19 +126,19 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
     public static class FCI {
 
         /** The DF Name. */
-        private ByteBuffer dfName;
+        private final ByteBuffer dfName;
 
         /** The fci proprietary template. */
-        private ByteBuffer fciProprietaryTemplate;
+        private final ByteBuffer fciProprietaryTemplate;
 
         /** The fci issuer discretionary data. */
-        private ByteBuffer fciIssuerDiscretionaryData;
+        private final ByteBuffer fciIssuerDiscretionaryData;
 
         /** The application SN. */
-        private ByteBuffer applicationSN;
+        private final ByteBuffer applicationSN;
 
         /** The startup information. */
-        private StartupInformation startupInformation;
+        private final StartupInformation startupInformation;
 
         /**
          * Instantiates a new FCI.
@@ -214,25 +214,25 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
     public static class StartupInformation {
 
         /** The buffer size. */
-        byte bufferSize;
+        final byte bufferSize;
 
         /** The platform. */
-        byte platform;
+        final byte platform;
 
         /** The application type. */
-        byte applicationType;
+        final byte applicationType;
 
         /** The application subtype. */
-        byte applicationSubtype;
+        final byte applicationSubtype;
 
         /** The software issuer. */
-        byte softwareIssuer;
+        final byte softwareIssuer;
 
         /** The software version. */
-        byte softwareVersion;
+        final byte softwareVersion;
 
         /** The software revision. */
-        byte softwareRevision;
+        final byte softwareRevision;
 
         /**
          * Instantiates a new StartupInformation.

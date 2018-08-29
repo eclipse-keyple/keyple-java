@@ -54,8 +54,9 @@ public class OpenSessionCmdBuildTest {
         byte cmd = (byte) 0x8A;
         ByteBuffer dataIn = samChallenge;
         // revision 2.4
+        byte le = 0; /* case 4 */
         byte[] request2_4 =
-                {cla, cmd, p1, p2, (byte) dataIn.limit(), (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E};
+                {cla, cmd, p1, p2, (byte) dataIn.limit(), (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, le};
 
         apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV2_4, keyIndex, dataIn,
                 sfiToSelect, recordNumberToRead);
@@ -73,10 +74,11 @@ public class OpenSessionCmdBuildTest {
         byte p2 = (byte) ((sfiToSelect * 8) + 1);
         byte cmd = (byte) 0x8A;
         ByteBuffer dataIn = samChallenge;
+        byte le = 0; /* case 4 */
 
         // revision 3.1
         byte[] request3_1 =
-                {cla, cmd, p1, p2, (byte) dataIn.limit(), (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E};
+                {cla, cmd, p1, p2, (byte) dataIn.limit(), (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, le};
         apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV3_1, keyIndex, dataIn,
                 sfiToSelect, recordNumberToRead);
         apduRequest = apduCommandBuilder.getApduRequest();
@@ -94,10 +96,11 @@ public class OpenSessionCmdBuildTest {
         byte cmd = (byte) 0x8A;
         byte[] dataIn = new byte[samChallenge.limit() + 1];
         System.arraycopy(ByteBufferUtils.toBytes(samChallenge), 0, dataIn, 1, samChallenge.limit());
+        byte le = 0; /* case 4 */
         // revision 3.2
         ByteBuffer request3_2 =
                 ByteBuffer.wrap(new byte[] {cla, cmd, p1, p2, (byte) (samChallenge.limit() + 1),
-                        (byte) 0x00, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
+                        (byte) 0x00, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, le});
         apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV3_2, keyIndex,
                 samChallenge, sfiToSelect, recordNumberToRead);
         apduRequest = apduCommandBuilder.getApduRequest();

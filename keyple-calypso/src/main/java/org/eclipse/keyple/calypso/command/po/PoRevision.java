@@ -27,5 +27,5 @@ public enum PoRevision {
     /**
      * Calypso Revision 3.2 (CLA 0x00)
      */
-    REV3_2;
+    REV3_2
 }

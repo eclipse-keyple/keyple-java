@@ -18,8 +18,7 @@ import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 public class CsmGetChallengeCmdBuild extends CsmCommandBuilder {
 
     /** The command reference. */
-    private static org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands command =
-            CalypsoSmCommands.GET_CHALLENGE;
+    private static final CalypsoSmCommands command = CalypsoSmCommands.GET_CHALLENGE;
 
     /**
      * Instantiates a new CsmGetChallengeCmdBuild.

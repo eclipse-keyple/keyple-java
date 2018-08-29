@@ -9,10 +9,10 @@
 package org.eclipse.keyple.calypso.command.po.builder;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -25,7 +25,7 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 public class AppendRecordCmdBuild extends PoCommandBuilder implements PoSendableInSession {
 
     /** The command. */
-    private static CalypsoPoCommands command = CalypsoPoCommands.APPEND_RECORD;
+    private static final CalypsoPoCommands command = CalypsoPoCommands.APPEND_RECORD;
 
     /**
      * Instantiates a new UpdateRecordCmdBuild.

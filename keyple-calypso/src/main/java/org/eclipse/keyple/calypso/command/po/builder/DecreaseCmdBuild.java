@@ -9,10 +9,10 @@
 package org.eclipse.keyple.calypso.command.po.builder;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 
 /**
  * The Class DecreaseCmdBuild. This class provides the dedicated constructor to build the Decrease
@@ -22,7 +22,7 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 public class DecreaseCmdBuild extends PoCommandBuilder implements PoSendableInSession {
 
     /** The command. */
-    private static CalypsoPoCommands command = CalypsoPoCommands.DECREASE;
+    private static final CalypsoPoCommands command = CalypsoPoCommands.DECREASE;
 
     /**
      * Instantiates a new decrease cmd build from command parameters.

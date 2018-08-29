@@ -22,8 +22,7 @@ public class DigestUpdateCmdBuild extends CsmCommandBuilder {
 
     /** The command reference. */
 
-    private static org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands command =
-            CalypsoSmCommands.DIGEST_UPDATE;
+    private static final CalypsoSmCommands command = CalypsoSmCommands.DIGEST_UPDATE;
 
     /**
      * Instantiates a new DigestUpdateCmdBuild.

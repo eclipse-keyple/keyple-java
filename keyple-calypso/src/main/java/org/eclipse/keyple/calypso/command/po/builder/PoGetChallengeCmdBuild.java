@@ -8,11 +8,10 @@
 
 package org.eclipse.keyple.calypso.command.po.builder;
 
-import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 
 /**
  * The Class PoGetChallengeCmdBuild. This class provides the dedicated constructor to build the PO
@@ -23,7 +22,7 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
  */
 public class PoGetChallengeCmdBuild extends PoCommandBuilder implements PoSendableInSession {
 
-    private static CalypsoPoCommands command = CalypsoPoCommands.GET_CHALLENGE;
+    private static final CalypsoPoCommands command = CalypsoPoCommands.GET_CHALLENGE;
 
     /**
      * Instantiates a new PoGetChallengeCmdBuild.
@@ -40,9 +39,8 @@ public class PoGetChallengeCmdBuild extends PoCommandBuilder implements PoSendab
 
         byte p1 = (byte) 0x01;
         byte p2 = (byte) 0x10;
-        ByteBuffer dataIn = null;
-        byte optionalLe = (byte) 0x08;
+        byte le = (byte) 0x08;
 
-        this.request = setApduRequest(cla, command, p1, p2, dataIn, optionalLe);
+        this.request = setApduRequest(cla, command, p1, p2, null, le);
     }
 }

@@ -8,10 +8,10 @@
 
 package org.eclipse.keyple.calypso.command.po.builder;
 
-import org.eclipse.keyple.calypso.command.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 
 /**
  * The Class ReadRecordsCmdBuild. This class provides the dedicated constructor to build the Read
@@ -23,7 +23,7 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 public class ReadRecordsCmdBuild extends PoCommandBuilder implements PoSendableInSession {
 
     /** The command. */
-    private static CalypsoPoCommands command = CalypsoPoCommands.READ_RECORDS;
+    private static final CalypsoPoCommands command = CalypsoPoCommands.READ_RECORDS;
 
     /**
      * Instantiates a new read records cmd build.
@@ -33,7 +33,7 @@ public class ReadRecordsCmdBuild extends PoCommandBuilder implements PoSendableI
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
      * @param readJustOneRecord the read just one record
-     * @param expectedLength the expected lenght of the record(s)
+     * @param expectedLength the expected length of the record(s)
      * @throws java.lang.IllegalArgumentException - if record number &lt; 1
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */

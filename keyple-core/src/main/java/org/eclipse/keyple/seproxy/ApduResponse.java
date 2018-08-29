@@ -11,6 +11,7 @@ package org.eclipse.keyple.seproxy;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.Set;
+import org.eclipse.keyple.util.ByteBufferUtils;
 
 
 /**
@@ -83,10 +84,7 @@ public final class ApduResponse extends AbstractApduBuffer {
      * @return slice of the buffer before the status code
      */
     public ByteBuffer getDataOut() {
-        ByteBuffer b = buffer.duplicate();
-        b.position(0);
-        b.limit(b.limit() - 2);
-        return b.slice();
+        return ByteBufferUtils.subLen(buffer, 0, buffer.limit() - 2);
     }
 
     @Override

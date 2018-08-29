@@ -99,6 +99,9 @@ public class ByteBufferUtils {
      * @return String representation
      */
     public static String toHexCutLen(ByteBuffer buffer, int... cutLength) {
+        if (buffer == null) {
+            throw new IllegalArgumentException("(null) buffer can not be cut");
+        }
         List<ByteBuffer> buffers = new ArrayList<ByteBuffer>(cutLength.length + 1);
         int lastIndex = 0;
         for (int length : cutLength) {
@@ -118,6 +121,9 @@ public class ByteBufferUtils {
      * @return Newly created byte array
      */
     public static byte[] toBytes(ByteBuffer buffer) {
+        if (buffer == null) {
+            throw new IllegalArgumentException("(null) buffer can not be converted to byte array");
+        }
         byte[] data = new byte[buffer.limit()];
         int p = buffer.position();
         buffer.get(data);
@@ -126,18 +132,22 @@ public class ByteBufferUtils {
     }
 
     public static ByteBuffer subIndex(ByteBuffer buf, int start, int end) {
+        if (buf == null) {
+            throw new IllegalArgumentException("(null) buffer can not be sliced");
+        }
         buf = buf.duplicate();
         buf.position(start).limit(end);
         return buf.slice();
     }
 
     public static ByteBuffer subLen(ByteBuffer buf, int offset, int length) {
-        buf = buf.duplicate();
-        buf.position(offset).limit(offset + length);
-        return buf.slice();
+        return subIndex(buf, offset, offset + length);
     }
 
     public static ByteBuffer concat(ByteBuffer buf1, ByteBuffer buf2) {
+        if (buf1 == null || buf2 == null) {
+            throw new IllegalArgumentException("(null) buffer can not be concatenated");
+        }
         ByteBuffer result = ByteBuffer.allocate(buf1.remaining() + buf2.remaining());
         result.put(buf1.asReadOnlyBuffer());
         result.put(buf2.asReadOnlyBuffer());
