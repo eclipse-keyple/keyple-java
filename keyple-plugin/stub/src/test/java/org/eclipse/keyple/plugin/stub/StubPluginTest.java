@@ -25,23 +25,25 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class StubPluginTest {
 
     StubPlugin stubPlugin;
-    Integer test_event; //0 if READER_CONNECTED, 1 if READER_DISCONNECTED
+    Integer test_event; // 0 if READER_CONNECTED, 1 if READER_DISCONNECTED
 
     @Before
     public void setUp() throws IOReaderException {
-        stubPlugin = StubPlugin.getInstance(); //singleton
+        stubPlugin = StubPlugin.getInstance(); // singleton
 
         stubPlugin.clearObservers();
-        //add one observer for all tests
+        // add one observer for all tests
         stubPlugin.addObserver(new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
-                switch (test_event){
-                    case 0 :
-                        Assert.assertEquals(PluginEvent.EventType.READER_CONNECTED, event.getEventType());
+                switch (test_event) {
+                    case 0:
+                        Assert.assertEquals(PluginEvent.EventType.READER_CONNECTED,
+                                event.getEventType());
                         break;
-                    case 1 :
-                        Assert.assertEquals(PluginEvent.EventType.READER_DISCONNECTED, event.getEventType());
+                    case 1:
+                        Assert.assertEquals(PluginEvent.EventType.READER_DISCONNECTED,
+                                event.getEventType());
                         break;
 
                 }
