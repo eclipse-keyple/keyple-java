@@ -22,12 +22,13 @@ import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
 import org.eclipse.keyple.seproxy.plugin.AbstractSelectionLocalReader;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import android.app.Activity;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
-import android.util.Log;
 
 
 /**
@@ -41,8 +42,10 @@ import android.util.Log;
 public class AndroidNfcReader extends AbstractSelectionLocalReader
         implements NfcAdapter.ReaderCallback {
 
-    static final String TAG = "AndroidNfcReader";
-    static final String PLUGIN_NAME = "AndroidNFCPlugin";
+    private static final Logger LOG = LoggerFactory.getLogger(AndroidNfcReader.class);
+
+    static final String READER_NAME = "AndroidNfcReader";
+    static final String PLUGIN_NAME = "AndroidNfcPlugin";
 
 
     public static final String FLAG_READER_SKIP_NDEF_CHECK = "FLAG_READER_SKIP_NDEF_CHECK";
@@ -65,8 +68,8 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
      * Private constructor
      */
     AndroidNfcReader() {
-        super(PLUGIN_NAME, TAG);
-        Log.i(TAG, "Init singleton NFC Reader");
+        super(PLUGIN_NAME, READER_NAME);
+        LOG.info("Init singleton NFC Reader");
     }
 
     /**
@@ -105,8 +108,8 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
      */
     @Override
     public void setParameter(String key, String value) throws IOException {
-        Log.i(TAG, "AndroidNfcReader supports the following parameters");
-        Log.i(TAG,
+        LOG.info("AndroidNfcReader supports the following parameters");
+        LOG.info(READER_NAME,
                 "FLAG_READER_SKIP_NDEF_CHECK:\"int\", FLAG_READER_NO_PLATFORM_SOUNDS:\"int\", FLAG_READER_PRESENCE_CHECK_DELAY:\"int\"");
 
         Boolean correctParameter = (key.equals(AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK)
@@ -118,11 +121,11 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
 
 
         if (correctParameter) {
-            Log.w(TAG, "Adding parameter : " + key + " - " + value);
+            LOG.warn("Adding parameter : " + key + " - " + value);
             parameters.put(key, value);
         } else {
 
-            Log.w(TAG, "Unrecognized parameter : " + key);
+            LOG.warn("Unrecognized parameter : " + key);
             throw new IOException("Unrecognized  parameter");
         }
 
@@ -137,15 +140,16 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
      */
     @Override
     public void onTagDiscovered(Tag tag) {
-        Log.i(TAG, "Received Tag Discovered event");
+        LOG.info("Received Tag Discovered event");
         try {
             tagProxy = TagProxy.getTagProxy(tag);
-            notifyObservers(new ReaderEvent(PLUGIN_NAME, TAG, ReaderEvent.EventType.SE_INSERTED));
+            notifyObservers(
+                    new ReaderEvent(PLUGIN_NAME, READER_NAME, ReaderEvent.EventType.SE_INSERTED));
 
         } catch (IOReaderException e) {
             // print and do nothing
             e.printStackTrace();
-            Log.e(TAG, e.getLocalizedMessage());
+            LOG.error(e.getLocalizedMessage());
         }
 
     }
@@ -158,7 +162,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
     @Override
     protected ByteBuffer getATR() {
         byte[] atr = tagProxy.getATR();
-        Log.d(TAG, "ATR : " + Arrays.toString(atr));
+        LOG.debug("ATR : " + Arrays.toString(atr));
         return atr != null && atr.length > 0 ? ByteBuffer.wrap(atr) : null;
     }
 
@@ -174,15 +178,15 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
         if (!isSePresent()) {
             try {
                 tagProxy.connect();
-                Log.i(TAG, "Tag connected successfully : " + printTagId());
+                LOG.info("Tag connected successfully : " + printTagId());
 
             } catch (IOException e) {
-                Log.e(TAG, "Error while connecting to Tag ");
+                LOG.error("Error while connecting to Tag ");
                 e.printStackTrace();
                 throw new ChannelStateReaderException(e);
             }
         } else {
-            Log.i(TAG, "Tag is already connected to : " + printTagId());
+            LOG.info("Tag is already connected to : " + printTagId());
         }
     }
 
@@ -191,12 +195,12 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
         try {
             if (tagProxy != null) {
                 tagProxy.close();
-                notifyObservers(
-                        new ReaderEvent(PLUGIN_NAME, TAG, ReaderEvent.EventType.SE_REMOVAL));
-                Log.i(TAG, "Disconnected tag : " + printTagId());
+                notifyObservers(new ReaderEvent(PLUGIN_NAME, READER_NAME,
+                        ReaderEvent.EventType.SE_REMOVAL));
+                LOG.info("Disconnected tag : " + printTagId());
             }
         } catch (IOException e) {
-            Log.e(TAG, "Disconnecting error");
+            LOG.error("Disconnecting error");
             throw new ChannelStateReaderException(e);
         }
         tagProxy = null;
@@ -206,8 +210,8 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
     @Override
     protected ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
         // Initialization
-        Log.d(TAG, "Data Length to be sent to tag : " + apduIn.limit());
-        Log.d(TAG, "Data in : " + ByteBufferUtils.toHex(apduIn));
+        LOG.debug("Data Length to be sent to tag : " + apduIn.limit());
+        LOG.debug("Data in : " + ByteBufferUtils.toHex(apduIn));
         byte[] data = ByteBufferUtils.toBytes(apduIn);
         byte[] dataOut;
         try {
@@ -216,7 +220,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
             e.printStackTrace();
             throw new ChannelStateReaderException(e);
         }
-        Log.d(TAG, "Data out : " + Arrays.toString(dataOut));
+        LOG.debug("Data out : " + Arrays.toString(dataOut));
         return ByteBuffer.wrap(dataOut);
     }
 
@@ -304,7 +308,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
         Bundle options = getOptions();
 
 
-        Log.i(TAG, "Enabling Read Write Mode with flags : " + flags + " and options : "
+        LOG.info("Enabling Read Write Mode with flags : " + flags + " and options : "
                 + options.toString());
 
         // Reader mode for NFC reader allows to listen to NFC events without the Intent mechanism.

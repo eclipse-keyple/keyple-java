@@ -125,6 +125,10 @@ dependencies {
     implementation 'com.android.support:support-v4:26.1.0'
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+
+
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })

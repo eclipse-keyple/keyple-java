@@ -40,7 +40,9 @@ public class StubReaderTest {
     @Before
     public void SetUp() throws IOReaderException {
 
-        reader = StubPlugin.getInstance().plugStubReader("StubReader");
+        StubPlugin plugin = StubPlugin.getInstance();
+        plugin.clearObservers();
+        reader = plugin.plugStubReader("StubReader");
 
     }
 
@@ -176,25 +178,6 @@ public class StubReaderTest {
 
     }
 
-    /*
-     * INTERNAL METHODS
-     */
-
-    @Test(expected = ChannelStateReaderException.class)
-    public void processApduRequestTest() throws Exception {
-        // init request
-        ApduRequest apdu = getApduSample();
-
-        // init SE
-        reader.insertSe(getSENoconnection());
-
-        // test
-        ApduResponse response = reader.processApduRequestTestProxy(apdu);
-
-        // assert
-        Assert.assertNull(response);
-
-    }
 
 
 

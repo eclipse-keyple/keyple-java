@@ -12,12 +12,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.nfc.tech.MifareClassic;
 import android.nfc.tech.MifareUltralight;
 import android.nfc.tech.TagTechnology;
-import android.util.Log;
 
 /**
  * Proxy Tag for {@link IsoDep}, {@link MifareClassic}, {@link MifareUltralight} Invoke
@@ -25,7 +26,8 @@ import android.util.Log;
  */
 class TagProxy implements TagTechnology {
 
-    static private final String TAG = TagProxy.class.getSimpleName();
+    private static final Logger LOG = LoggerFactory.getLogger(TagProxy.class);
+
 
     private final TagTechnology tagTechnology;
     private final String tech;
@@ -65,25 +67,25 @@ class TagProxy implements TagTechnology {
      */
     static TagProxy getTagProxy(Tag tag) throws IOReaderException {
 
-        Log.i(TAG, "Matching Tag Type : " + tag.toString());
+        LOG.info("Matching Tag Type : " + tag.toString());
 
         if (Arrays.asList(tag.getTechList())
                 .contains(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC)) {
-            Log.d(TAG, "Tag embedded into MifareClassic");
+            LOG.debug("Tag embedded into MifareClassic");
             return new TagProxy(MifareClassic.get(tag),
                     AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC);
         }
 
         if (Arrays.asList(tag.getTechList())
                 .contains(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL)) {
-            Log.d(TAG, "Tag embedded into MifareUltralight");
+            LOG.debug("Tag embedded into MifareUltralight");
             return new TagProxy(MifareUltralight.get(tag),
                     AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL);
         }
 
         if (Arrays.asList(tag.getTechList())
                 .contains(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_ISODEP)) {
-            Log.d(TAG, "Tag embedded into IsoDep");
+            LOG.debug("Tag embedded into IsoDep");
             return new TagProxy(IsoDep.get(tag),
                     AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_ISODEP);
         }

@@ -14,8 +14,8 @@ import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -28,7 +28,7 @@ import com.github.structlog4j.SLoggerFactory;
 public abstract class AbstractObservableReader extends AbstractLoggedObservable<ReaderEvent>
         implements ProxyReader {
 
-    private static final ILogger logger = SLoggerFactory.getLogger(AbstractObservableReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractObservableReader.class);
 
     private final String pluginName;
 
@@ -61,7 +61,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         }
 
         // TODO do a better log of SeRequestSet data
-        logger.debug("SeRequestSet", "reader", this.getName(), "data", requestSet.toString());
+        logger.debug("SeRequestSet {} {}, {} {}", "reader", this.getName(), "data", requestSet.toString());
 
         long before = System.nanoTime();
         SeResponseSet responseSet;
@@ -71,19 +71,19 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         } catch (IOReaderException ex) {
             // Switching to the 10th of milliseconds and dividing by 10 to get the ms
             double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-            logger.warn("LocalReader: Data exchange", "action", "local_reader.transmit_failure",
+            logger.warn("LocalReader: Data exchange {} {}, {} {}, {} {}", "action", "local_reader.transmit_failure",
                     "requestSet", requestSet, "elapsedMs", elapsedMs);
             throw ex;
         }
 
         // Switching to the 10th of milliseconds and dividing by 10 to get the ms
         double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-        logger.debug("LocalReader: Data exchange", "action", "local_reader.transmit", "reader",
+        logger.debug("LocalReader: Data exchange {} {}, {} {}, {} {}, {} {}, {} {}", "action", "local_reader.transmit", "reader",
                 this.getName(), "requestSet", requestSet, "responseSet", responseSet, "elapsedMs",
                 elapsedMs);
 
         // TODO do a better log of SeReponseSet data
-        logger.debug("SeResponseSet", "reader", this.getName(), "data", responseSet.toString());
+        logger.debug("SeResponseSet {} {}, {} {}", "reader", this.getName(), "data", responseSet.toString());
 
         return responseSet;
     }

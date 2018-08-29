@@ -24,12 +24,12 @@ import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver {
 
-    private static final ILogger logger = SLoggerFactory.getLogger(Demo_HoplinkTransaction.class);
+    private static final Logger logger = LoggerFactory.getLogger(Demo_HoplinkTransaction.class);
 
     private ProxyReader poReader, csmReader;
 
@@ -134,12 +134,12 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
         filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Usage);
 
         // Step 1
-        System.out.println(
+        logger.info(
                 "\n\n========= PO Hoplink 2-step transaction ======= Identification =====================");
         poTransaction.processIdentification(fciData);
 
         // Step 2A
-        System.out.println(
+        logger.info(
                 "========= PO Hoplink 2-step transaction ======= Opening + Closing ====================");
 
         byte debitKeyIndex = 0x03;
@@ -153,10 +153,10 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
                 closeSeChannel);
 
         if (poTransaction.isSuccessful()) {
-            System.out.println(
+            logger.info(
                     "========= PO Hoplink 2-step transaction ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         } else {
-            System.out.println(
+            logger.info(
                     "========= PO Hoplink 2-step transaction ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
     }
