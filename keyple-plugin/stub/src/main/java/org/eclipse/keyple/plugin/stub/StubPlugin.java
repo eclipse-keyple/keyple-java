@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.plugin.AbstractStaticPlugin;
@@ -82,6 +83,7 @@ public final class StubPlugin extends AbstractStaticPlugin {
             logger.info("Plugging a new reader with name " + name);
             StubReader stubReader = new StubReader(name);
             readers.add((AbstractObservableReader) stubReader);
+            notifyObservers(new PluginEvent(getName(), name, PluginEvent.EventType.READER_CONNECTED));
             return stubReader;
 
         } else {
@@ -99,6 +101,7 @@ public final class StubPlugin extends AbstractStaticPlugin {
     public void unplugReader(String name) throws IOReaderException {
         ProxyReader reader = getNativeReader(name);
         readers.remove(reader);
+        notifyObservers(new PluginEvent(getName(), name, PluginEvent.EventType.READER_DISCONNECTED));
         logger.info("Unplugged reader with name " + reader.getName());
     }
 }
