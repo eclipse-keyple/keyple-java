@@ -258,7 +258,7 @@ public final class SeRequest {
 
     @Override
     public String toString() {
-        return String.format("SeRequest{requests=%s, selector=%s, keepchannelopen=%s}",
+        return String.format("SeRequest:{REQUESTS = %s, SELECTOR = %s, KEEPCHANNELOPEN = %s}",
                 getApduRequests(), getSelector(), this.keepChannelOpen);
     }
 }

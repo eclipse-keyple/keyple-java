@@ -211,7 +211,12 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
             if (!stopProcess) {
                 if (requestMatchesProtocol[requestIndex]) {
-                    responses.add(processSeRequest(request));
+                    logger.debug("[{}] processSeRequestSet => transmit {}", this.getName(),
+                            request);
+                    SeResponse response = processSeRequest(request);
+                    responses.add(response);
+                    logger.debug("[{}] processSeRequestSet => receive {}", this.getName(),
+                            response);
                 } else {
                     // in case the protocolFlag of a SeRequest doesn't match the reader status, a
                     // null SeResponse is added to the SeResponseSet.
@@ -223,24 +228,26 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                         // reset temporary properties
                         closeLogicalChannel();
 
-                        // For the processing of the last SeRequest with a protocolFlag matching
-                        // the SE reader status, if the logical channel doesn't require to be kept
-                        // open,
-                        // then the physical channel is closed.
+                        /*
+                         * For the processing of the last SeRequest with a protocolFlag matching the
+                         * SE reader status, if the logical channel doesn't require to be kept open,
+                         * then the physical channel is closed.
+                         */
                         closePhysicalChannel();
 
 
-                        logger.trace("[{}] processSeRequestSet => Closing of the physical channel.",
+                        logger.debug("[{}] processSeRequestSet => Closing of the physical channel.",
                                 this.getName());
                     }
                 } else {
                     stopProcess = true;
-                    // When keepChannelOpen is true, we stop after the first matching request
-                    // we exit the for loop here
-                    // For the processing of a SeRequest with a protocolFlag which matches the
-                    // current SE reader status, in case it's requested to keep the logical channel
-                    // open, then the other remaining SeRequest are skipped, and null
-                    // SeRequest are returned for them.
+                    /*
+                     * When keepChannelOpen is true, we stop after the first matching request we
+                     * exit the for loop here For the processing of a SeRequest with a protocolFlag
+                     * which matches the current SE reader status, in case it's requested to keep
+                     * the logical channel open, then the other remaining SeRequest are skipped, and
+                     * null SeRequest are returned for them.
+                     */
                 }
             }
         }
