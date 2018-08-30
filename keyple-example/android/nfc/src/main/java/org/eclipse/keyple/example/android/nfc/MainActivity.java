@@ -10,6 +10,8 @@ package org.eclipse.keyple.example.android.nfc;
 
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,7 +21,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
@@ -30,8 +31,8 @@ import android.view.WindowManager;
  */
 public class MainActivity extends AppCompatActivity {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MainActivity.class);
 
-    private static final String TAG = MainActivity.class.getSimpleName();
     private static final String TAG_NFC_TEST_VIEW = "tagnfctestfragment";
 
 
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         /*
          * Define UI elements
          */
-        Log.d(TAG, "onCreate");
+        LOG.debug("onCreate");
         setContentView(org.eclipse.keyple.example.android.nfc.R.layout.activity_main);
 
         setupNavDrawer();
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void activateNFCTestView() {
         // init NFC Test Fragment
-        Log.d(TAG, "Insert NFC Test View Fragment");
+        LOG.debug("Insert NFC Test View Fragment");
         NFCTestFragment nfcTestFragment = NFCTestFragment.newInstance();
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // Add code here to update the UI based on the item selected
                         // For example, swap UI fragments here
-                        Log.d(TAG, "Item selected from drawer: " + menuItem.getTitle());
+                        LOG.debug("Item selected from drawer: " + menuItem.getTitle());
 
                         switch (menuItem.getItemId()) {
                             case org.eclipse.keyple.example.android.nfc.R.id.nav_nfc:

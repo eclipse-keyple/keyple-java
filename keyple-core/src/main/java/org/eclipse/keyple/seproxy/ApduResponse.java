@@ -9,7 +9,6 @@
 package org.eclipse.keyple.seproxy;
 
 import java.nio.ByteBuffer;
-import java.util.Objects;
 import java.util.Set;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
@@ -103,14 +102,15 @@ public final class ApduResponse extends AbstractApduBuffer {
         }
 
         ApduResponse resp = (ApduResponse) o;
-        return resp.getBytes().equals(this.buffer) && resp.isSuccessful() == this.successful;
+        return (resp.getBytes() == null ? this.buffer == null : resp.getBytes().equals(this.buffer))
+                && resp.isSuccessful() == this.successful;
     }
 
     @Override
     public int hashCode() {
         int hash = 17;
-        hash = 19 * hash + Objects.hashCode(this.successful);
-        hash = 31 * hash + Objects.hashCode(this.buffer);
+        hash = 19 * hash + (this.successful ? 0 : 1);
+        hash = 31 * hash + (buffer == null ? 0 : buffer.hashCode());
         return hash;
     }
 }

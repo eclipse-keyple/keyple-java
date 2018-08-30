@@ -22,12 +22,12 @@ import org.eclipse.keyple.plugin.pcsc.log.CardTerminalsLogger;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.plugin.AbstractThreadedObservablePlugin;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class PcscPlugin extends AbstractThreadedObservablePlugin {
 
-    private static final ILogger logger = SLoggerFactory.getLogger(PcscPlugin.class);
+    private static final Logger logger = LoggerFactory.getLogger(PcscPlugin.class);
 
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
 
@@ -111,7 +111,7 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
                 nativeReaders.add(new PcscReader(this.getName(), term));
             }
         } catch (CardException e) {
-            logger.error("Terminal list is not accessible", "action", "pcsc_plugin.no_terminals",
+            logger.error("Terminal list is not accessible, {} {}, {} {}", "action", "pcsc_plugin.no_terminals",
                     "exception", e);
             throw new IOReaderException("Could not access terminals list", e);
         }
@@ -151,7 +151,7 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
                 }
             }
         } catch (CardException e) {
-            logger.error("Terminal list is not accessible", "action", "pcsc_plugin.no_terminals",
+            logger.error("Terminal list is not accessible, {} {}, {} {}", "action", "pcsc_plugin.no_terminals",
                     "exception", e);
             throw new IOReaderException("Could not access terminals list", e);
         }

@@ -8,12 +8,13 @@
 
 package org.eclipse.keyple.plugin.pcsc.log;
 
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * @deprecated
  */
 class Logging {
-    static final ILogger LOG = SLoggerFactory.getLogger(Logging.class);
+    static final Logger LOG = LoggerFactory.getLogger(Logging.class);
 }

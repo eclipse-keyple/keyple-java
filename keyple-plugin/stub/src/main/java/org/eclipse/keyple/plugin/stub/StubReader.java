@@ -20,12 +20,13 @@ import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractSelectionLocalReader;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class StubReader extends AbstractSelectionLocalReader {
 
-    private static final ILogger logger = SLoggerFactory.getLogger(StubReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(StubReader.class);
 
     private StubSecureElement se;
 
@@ -35,12 +36,12 @@ public class StubReader extends AbstractSelectionLocalReader {
     public static final String ALLOWED_PARAMETER_2 = "parameter2";
 
     static final String pluginName = "StubPlugin";
-    static final String readerName = "StubReader";
+    String readerName = "StubReader";
 
-    public StubReader() {
-        super(pluginName, readerName);
+    public StubReader(String name) {
+        super(pluginName, name);
+        readerName = name;
     }
-
 
     @Override
     protected ByteBuffer getATR() {
@@ -49,7 +50,7 @@ public class StubReader extends AbstractSelectionLocalReader {
 
     @Override
     protected boolean isPhysicalChannelOpen() {
-        return se.isPhysicalChannelOpen();
+        return se != null && se.isPhysicalChannelOpen();
     }
 
     @Override
@@ -68,12 +69,12 @@ public class StubReader extends AbstractSelectionLocalReader {
 
     @Override
     public ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
-        return se.transmitApdu(apduIn);
+        return se.processApdu(apduIn);
     }
 
     @Override
     public boolean protocolFlagMatches(SeProtocol protocolFlag) {
-        return se != null && protocolFlag.equals(se.getSeProcotol());
+        return protocolFlag == null || se != null && protocolFlag.equals(se.getSeProcotol());
     }
 
     @Override
@@ -127,5 +128,7 @@ public class StubReader extends AbstractSelectionLocalReader {
         se = null;
         notifyObservers(new ReaderEvent(pluginName, readerName, ReaderEvent.EventType.SE_REMOVAL));
     }
+
+
 
 }

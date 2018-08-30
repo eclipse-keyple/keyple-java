@@ -12,17 +12,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
+import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.plugin.AbstractStaticPlugin;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class StubPlugin extends AbstractStaticPlugin {
 
     private static final StubPlugin uniqueInstance = new StubPlugin();
 
-    private static final ILogger logger = SLoggerFactory.getLogger(StubPlugin.class);
+    private static final Logger logger = LoggerFactory.getLogger(StubPlugin.class);
 
     private final Map<String, String> parameters = new HashMap<String, String>();
 
@@ -52,23 +54,62 @@ public final class StubPlugin extends AbstractStaticPlugin {
 
     @Override
     protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
-        // init Stub Readers
+        // init Stub Readers list
         SortedSet<AbstractObservableReader> nativeReaders =
                 new ConcurrentSkipListSet<AbstractObservableReader>();
-        // add native readers
-        nativeReaders.add(new StubReader());
 
         return nativeReaders;
     }
 
     @Override
-    protected AbstractObservableReader getNativeReader(String name) throws IOReaderException {
+    protected AbstractObservableReader getNativeReader(String name) {
         for (AbstractObservableReader reader : readers) {
             if (reader.getName().equals(name)) {
                 return reader;
             }
         }
-        throw new IOReaderException("Reader with name " + name + " was not found");
+        return null;
     }
 
+
+    /**
+     * Plug a Stub Reader
+     * 
+     * @param name : name of the reader
+     */
+    public StubReader plugStubReader(String name) {
+
+        if (getNativeReader(name) == null) {
+            logger.info("Plugging a new reader with name " + name);
+            StubReader stubReader = new StubReader(name);
+            readers.add((AbstractObservableReader) stubReader);
+            notifyObservers(
+                    new PluginEvent(getName(), name, PluginEvent.EventType.READER_CONNECTED));
+            return stubReader;
+
+        } else {
+            logger.warn("Reader with name " + name + " was already plugged");
+            return (StubReader) getNativeReader(name);
+        }
+
+    }
+
+    /**
+     * Unplug a Stub Reader
+     * 
+     * @param name
+     */
+    public void unplugReader(String name) throws IOReaderException {
+        ProxyReader reader = getNativeReader(name);
+        if (reader == null) {
+            logger.warn("No reader found with name " + name);
+
+        } else {
+            readers.remove(reader);
+            notifyObservers(
+                    new PluginEvent(getName(), name, PluginEvent.EventType.READER_DISCONNECTED));
+            logger.info("Unplugged reader with name " + reader.getName());
+        }
+
+    }
 }

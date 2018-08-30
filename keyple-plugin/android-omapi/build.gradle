@@ -130,6 +130,8 @@ dependencies {
     //compile with OMAPI jar but do not include it
     compileOnly files('libs/org.simalliance.openmobileapi.jar')
 
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+
     /** Test **/
     testImplementation files('libs/org.simalliance.openmobileapi.jar')
 

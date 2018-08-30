@@ -15,12 +15,7 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.seproxy.ApduRequest;
-import org.eclipse.keyple.seproxy.ApduResponse;
-import org.eclipse.keyple.seproxy.SeProtocol;
-import org.eclipse.keyple.seproxy.SeRequest;
-import org.eclipse.keyple.seproxy.SeRequestSet;
-import org.eclipse.keyple.seproxy.SeResponseSet;
+import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
@@ -44,8 +39,9 @@ public class StubReaderTest {
     // init before each test
     @Before
     public void SetUp() throws IOReaderException {
-        // works if stubreader could be instanciated just once
-        reader = new StubReader();
+        // clear observers from others tests as StubPlugin is a singleton
+        StubPlugin.getInstance().clearObservers();
+        reader = StubPlugin.getInstance().plugStubReader("StubReader");
 
     }
 
@@ -57,7 +53,6 @@ public class StubReaderTest {
 
     @Test
     public void testInsert() throws NoStackTraceThrowable {
-
         // add observer
         reader.addObserver(new Observable.Observer<ReaderEvent>() {
             @Override
@@ -68,21 +63,46 @@ public class StubReaderTest {
 
             }
         });
-
         // test
         reader.insertSe(hoplinkSE());
 
         // assert
         Assert.assertTrue(reader.isSePresent());
+    }
+
+    @Test
+    public void testATR() throws IOReaderException {
+        // add observer
+        reader.addObserver(new Observable.Observer<ReaderEvent>() {
+            @Override
+            public void update(ReaderEvent event) {
+                SeRequest atrRequest = new SeRequest(new SeRequest.AtrSelector("3B.*"), null, true);
 
 
+                try {
+                    SeResponse atrResponse =
+                            reader.transmit(new SeRequestSet(atrRequest)).getSingleResponse();
+
+                    Assert.assertNotNull(atrResponse);
+
+                } catch (IOReaderException e) {
+                    Assert.fail();
+                }
+
+            }
+        });
+        // test
+        reader.insertSe(hoplinkSE());
+
+        // assert
+        Assert.assertTrue(reader.isSePresent());
     }
 
 
     @Test(expected = IOReaderException.class)
     public void transmit_Hoplink_null() throws Exception {
         reader.insertSe(hoplinkSE());
-        reader.transmit((SeRequestSet) null).getSingleResponse().getApduResponses().size();
+        reader.transmit((SeRequestSet) null);
 
         // throws exception
     }
@@ -157,26 +177,6 @@ public class StubReaderTest {
 
     }
 
-    /*
-     * INTERNAL METHODS
-     */
-
-    @Test(expected = ChannelStateReaderException.class)
-    public void processApduRequestTest() throws Exception {
-        // init request
-        ApduRequest apdu = getApduSample();
-
-        // init SE
-        reader.insertSe(getSENoconnection());
-
-        // test
-        ApduResponse response = reader.processApduRequestTestProxy(apdu);
-
-        // assert
-        Assert.assertNull(response);
-
-    }
-
 
 
     /*
@@ -204,7 +204,35 @@ public class StubReaderTest {
     }
 
     private StubSecureElement hoplinkSE() {
-        return new HoplinkStubSE();
+
+
+        return new StubSecureElement() {
+
+            @Override
+            public ByteBuffer processApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
+
+                addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
+                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
+                addHexCommand("00 B2 01 A4 20",
+                        "00000000000000000000000000000000000000000000000000000000000000009000");
+
+                return super.processApdu(apduIn);
+            }
+
+            @Override
+            public ByteBuffer getATR() {
+                return ByteBufferUtils
+                        .fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
+            }
+
+            @Override
+            public SeProtocol getSeProcotol() {
+                return ContactlessProtocols.PROTOCOL_ISO14443_4;
+            }
+        };
+
+
+
     }
 
     private StubSecureElement getSENoconnection() {
@@ -219,6 +247,7 @@ public class StubReaderTest {
                 return false;
             }
 
+            // override methods to fail open connection
             @Override
             public void openPhysicalChannel()
                     throws IOReaderException, ChannelStateReaderException {
@@ -231,7 +260,7 @@ public class StubReaderTest {
             }
 
             @Override
-            public ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
+            public ByteBuffer processApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
                 throw new ChannelStateReaderException("Error while transmitting apdu");
             }
 
@@ -242,6 +271,7 @@ public class StubReaderTest {
         };
 
     }
+
 
     static ApduRequest getApduSample() {
         return new ApduRequest(ByteBufferUtils.fromHex("FEDCBA98 9005h"), false);

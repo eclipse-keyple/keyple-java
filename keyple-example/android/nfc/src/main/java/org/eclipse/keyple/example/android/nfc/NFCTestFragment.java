@@ -36,11 +36,12 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,7 @@ import android.widget.TextView;
  */
 public class NFCTestFragment extends Fragment implements ObservableReader.ReaderObserver {
 
+    private static final Logger LOG = LoggerFactory.getLogger(NFCTestFragment.class);
 
     private static final String TAG = NFCTestFragment.class.getSimpleName();
     private static final String TAG_NFC_ANDROID_FRAGMENT =
@@ -79,14 +81,14 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
         super.onCreate(savedInstanceState);
 
         // 1 - First initialize SEProxy with Android Plugin
-        Log.d(TAG, "Initialize SEProxy with Android Plugin");
+        LOG.debug("Initialize SEProxy with Android Plugin");
         SeProxyService seProxyService = SeProxyService.getInstance();
         SortedSet<ReaderPlugin> plugins = new ConcurrentSkipListSet<ReaderPlugin>();
         plugins.add(AndroidNfcPlugin.getInstance());
         seProxyService.setPlugins(plugins);
 
         // 2 - add NFC Fragment to activity in order to communicate with Android Plugin
-        Log.d(TAG, "Add Keyple NFC Fragment to activity in order to "
+        LOG.debug("Add Keyple NFC Fragment to activity in order to "
                 + "communicate with Android Plugin");
         getFragmentManager().beginTransaction()
                 .add(AndroidNfcFragment.newInstance(), TAG_NFC_ANDROID_FRAGMENT).commit();
@@ -94,7 +96,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
         try {
             // define task as an observer for ReaderEvents
-            Log.d(TAG, "Define this view as an observer for ReaderEvents");
+            LOG.debug("Define this view as an observer for ReaderEvents");
             ProxyReader reader = seProxyService.getPlugins().first().getReaders().first();
             ((AndroidNfcReader) reader).addObserver(this);
 
@@ -153,11 +155,11 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
      * @param event
      */
     @Override
-    public void update(ReaderEvent event) {
+    public void update(final ReaderEvent event) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "New ReaderEvent received : " + event.toString());
+                LOG.debug("New ReaderEvent received : " + event.toString());
 
                 switch (event.getEventType()) {
                     case SE_INSERTED:
@@ -201,7 +203,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
      * Run Hoplink Simple read command
      */
     private void runHoplinkSimpleRead() {
-        Log.d(TAG, "Running HopLink Simple Read Tests");
+        LOG.debug("Running HopLink Simple Read Tests");
         ProxyReader reader = null;
         try {
             reader = SeProxyService.getInstance().getPlugins().first().getReaders().first();
@@ -232,7 +234,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                             poApduRequestList, false, ContactlessProtocols.PROTOCOL_ISO14443_4);
 
 
-            SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
+            final SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
 
             getActivity().runOnUiThread(new Runnable() {
                 @Override
@@ -268,7 +270,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
         super.onDestroy();
 
         try {
-            Log.d(TAG, "Remove task as an observer for ReaderEvents");
+            LOG.debug("Remove task as an observer for ReaderEvents");
             SeProxyService seProxyService = SeProxyService.getInstance();
             ProxyReader reader = seProxyService.getPlugins().first().getReaders().first();
             ((ObservableReader) reader).removeObserver(this);

@@ -20,8 +20,8 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Local reader class implementing the logical channel opening based on the selection of the SE
@@ -29,8 +29,8 @@ import com.github.structlog4j.SLoggerFactory;
  */
 public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
         implements ObservableReader {
-    private static final ILogger logger =
-            SLoggerFactory.getLogger(AbstractSelectionLocalReader.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(AbstractSelectionLocalReader.class);
 
     protected AbstractSelectionLocalReader(String pluginName, String readerName) {
         super(pluginName, readerName);
@@ -87,14 +87,14 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
 
         // add ATR
         atrAndFci[0] = getATR();
-        logger.info("Channel opening", "ATR", ByteBufferUtils.toHex(atrAndFci[0]));
+        logger.debug("Channel opening", "ATR", ByteBufferUtils.toHex(atrAndFci[0]));
 
         // selector may be null, in this case we consider the logical channel open
         if (selector != null) {
             if (selector instanceof SeRequest.AidSelector) {
                 ByteBuffer aid = ((SeRequest.AidSelector) selector).getAidToSelect();
                 if (aid != null) {
-                    logger.info("Connecting to card", "action", "local_reader.openLogicalChannel",
+                    logger.debug("Connecting to card, {} {}, {} {}, {} {}", "action", "local_reader.openLogicalChannel",
                             "aid", ByteBufferUtils.toHex(aid), "readerName", getName());
 
                     // build a get response command
@@ -115,7 +115,7 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
                     atrAndFci[1] = fciResponse.getBytes();
 
                     if (!fciResponse.isSuccessful()) {
-                        logger.info("Application selection failed", "action",
+                        logger.warn("Application selection failed, {} {}, {} {}, {} {}", "action",
                                 "openLogicalChannelAndSelect", "selector", selector, "fci",
                                 ByteBufferUtils.toHex(fciResponse.getBytes()));
                         throw new SelectApplicationException("Application selection failed");
@@ -123,7 +123,7 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
                 }
             } else {
                 if (!((SeRequest.AtrSelector) selector).atrMatches(atrAndFci[0])) {
-                    logger.info("ATR selection failed", "action", "openLogicalChannelAndSelect",
+                    logger.warn("ATR selection failed, {} {}, {} {}, {} {}", "action", "openLogicalChannelAndSelect",
                             "selector", selector, "atr", ByteBufferUtils.toHex(atrAndFci[0]));
                     throw new SelectApplicationException("ATR selection failed");
                 }
