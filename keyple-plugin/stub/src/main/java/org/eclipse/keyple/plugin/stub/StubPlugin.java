@@ -17,14 +17,14 @@ import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.plugin.AbstractStaticPlugin;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class StubPlugin extends AbstractStaticPlugin {
 
     private static final StubPlugin uniqueInstance = new StubPlugin();
 
-    private static final ILogger logger = SLoggerFactory.getLogger(StubPlugin.class);
+    private static final Logger logger = LoggerFactory.getLogger(StubPlugin.class);
 
     private final Map<String, String> parameters = new HashMap<String, String>();
 

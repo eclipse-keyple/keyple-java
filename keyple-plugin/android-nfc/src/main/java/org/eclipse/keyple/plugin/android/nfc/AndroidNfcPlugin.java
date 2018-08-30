@@ -15,7 +15,9 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.plugin.AbstractStaticPlugin;
-import android.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 
 /**
@@ -42,7 +44,7 @@ import android.util.Log;
 
 public class AndroidNfcPlugin extends AbstractStaticPlugin {
 
-    private static final String TAG = AndroidNfcPlugin.class.getSimpleName();
+    private static final Logger LOG = LoggerFactory.getLogger(AndroidNfcPlugin.class);
 
     private final static AndroidNfcPlugin uniqueInstance = new AndroidNfcPlugin();
 
@@ -63,13 +65,13 @@ public class AndroidNfcPlugin extends AbstractStaticPlugin {
 
     @Override
     public Map<String, String> getParameters() {
-        Log.w(TAG, "Android NFC Plugin does not support parameters, see AndroidNfcReader instead");
+        LOG.warn("Android NFC Plugin does not support parameters, see AndroidNfcReader instead");
         return parameters;
     }
 
     @Override
     public void setParameter(String key, String value) throws IOException {
-        Log.w(TAG, "Android NFC Plugin does not support parameters, see AndroidNfcReader instead");
+        LOG.warn("Android NFC Plugin does not support parameters, see AndroidNfcReader instead");
         parameters.put(key, value);
     }
 

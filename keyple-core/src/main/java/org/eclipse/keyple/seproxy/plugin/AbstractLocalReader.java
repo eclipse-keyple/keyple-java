@@ -16,8 +16,9 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 // TODO remove after refactoring this class to reduce the number of method
 /**
@@ -27,7 +28,7 @@ import com.github.structlog4j.SLoggerFactory;
 @SuppressWarnings({"PMD.TooManyMethods", "PMD.CyclomaticComplexity"})
 public abstract class AbstractLocalReader extends AbstractObservableReader {
 
-    private static final ILogger logger = SLoggerFactory.getLogger(AbstractLocalReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractLocalReader.class);
 
     private boolean logicalChannelIsOpen = false;
     private ByteBuffer aidCurrentlySelected;
@@ -101,7 +102,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         ApduResponse apduResponse;
         long before = 0;
         if (logging) {
-            logger.debug("processApduRequest: request", ADPU_NAME_STR, apduRequest.getName(),
+            logger.debug("processApduRequest: request {} {}, {} {}", ADPU_NAME_STR, apduRequest.getName(),
                     "command.data", ByteBufferUtils.toHex(apduRequest.getBytes()));
             before = logging ? System.nanoTime() : 0;
         }
@@ -123,7 +124,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
         if (logging) {
             double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-            logger.debug("processApduRequest: response", ADPU_NAME_STR, apduRequest.getName(),
+            logger.debug("processApduRequest: response {} {}, {} {}, {} {}", ADPU_NAME_STR, apduRequest.getName(),
                     "response.data", ByteBufferUtils.toHex(apduResponse.getDataOut()), "elapsedMs",
                     elapsedMs);
         }
@@ -147,7 +148,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         // transmitApdu
         ByteBuffer getResponseHackRequestBytes = ByteBufferUtils.fromHex("00C0000000");
         if (logging) {
-            logger.debug("case4HackGetResponse: request", ADPU_NAME_STR, "Get Response",
+            logger.debug("case4HackGetResponse: request {} {}, {} {}", ADPU_NAME_STR, "Get Response",
                     "command.data", ByteBufferUtils.toHex(getResponseHackRequestBytes));
             before = logging ? System.nanoTime() : 0;
         }
@@ -156,7 +157,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
         if (logging) {
             double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-            logger.debug("processApduRequest: response", ADPU_NAME_STR, "Get Response",
+            logger.debug("processApduRequest: response  {} {}, {} {}, {} {}", ADPU_NAME_STR, "Get Response",
                     "response.data", ByteBufferUtils.toHex(getResponseHackResponseBytes),
                     "elapsedMs", elapsedMs);
         }
@@ -236,7 +237,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                         closePhysicalChannel();
 
 
-                        logger.debug("Closing of the physical SE channel.", ACTION_STR,
+                        logger.debug("Closing of the physical SE channel. {} {}, {} {}", ACTION_STR,
                                 "local_reader.transmit_actual", "reader", this.getName());
                     }
                 } else {
@@ -263,7 +264,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     }
 
     protected final void closeLogicalChannel() {
-        logger.debug("Close logical channel", "reader", this.getName());
+        logger.debug("Close logical channel {} {}", "reader", this.getName());
         logicalChannelIsOpen = false;
         fciDataSelected = null;
         atrData = null;
@@ -271,7 +272,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     }
 
     private void setLogicalChannelOpen() {
-        logger.debug("Logical channel is open", "reader", this.getName());
+        logger.debug("Logical channel is open {} {}", "reader", this.getName());
         logicalChannelIsOpen = true;
     }
 
@@ -309,9 +310,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 try {
                     atrAndFciDataBytes = openLogicalChannelAndSelect(seRequest.getSelector(),
                             seRequest.getSuccessfulSelectionStatusCodes());
-                    logger.debug("Logicial channel opening", "status", "success");
+                    logger.debug("Logicial channel opening {} {}", "status", "success");
                 } catch (SelectApplicationException e) {
-                    logger.debug("Logicial channel opening", "status", "failure");
+                    logger.debug("Logicial channel opening {} {}", "status", "failure");
                     closeLogicalChannel();
                     // return a null SeReponse when the opening of the logical channel failed
                     return null;

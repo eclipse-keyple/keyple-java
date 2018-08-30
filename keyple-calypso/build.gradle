@@ -6,8 +6,10 @@ apply plugin: 'java'
 sourceCompatibility = 1.6
 
 dependencies {
-    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
-    compile group: 'structlog4j', name:'structlog4j-api', version: '1.0.0'
+    //compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+    //compile group: 'structlog4j', name:'structlog4j-api', version: '1.0.0'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+
 
     // compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.1'
 

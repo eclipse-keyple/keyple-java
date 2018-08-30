@@ -95,7 +95,7 @@ public class AndroidNfcPluginTest {
 
     @Test
     public void getNativeReader() throws IOException {
-        assertThat(plugin.getNativeReader(AndroidNfcReader.TAG),
+        assertThat(plugin.getNativeReader(AndroidNfcReader.READER_NAME),
                 instanceOf(AndroidNfcReader.class));
     }
 

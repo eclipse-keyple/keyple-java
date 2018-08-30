@@ -14,8 +14,8 @@ import java.util.Map;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.util.NameableConfigurable;
 import org.eclipse.keyple.util.Observable;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Intermediate observable class to handle the logging of AbstractObservableReader and
@@ -23,7 +23,7 @@ import com.github.structlog4j.SLoggerFactory;
  * 
  */
 abstract class AbstractLoggedObservable<T> extends Observable<T> implements NameableConfigurable {
-    private static final ILogger logger = SLoggerFactory.getLogger(AbstractLoggedObservable.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractLoggedObservable.class);
     private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
 
 
@@ -72,11 +72,11 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
     public void removeObserver(final AbstractLoggedObservable.Observer<T> observer) {
 
         if (this instanceof AbstractObservableReader) {
-            logger.info("AbstractObservableReader: Deleting an observer", ACTION_STR,
+            logger.info("AbstractObservableReader: Deleting an observer, {} {}, {} {}", ACTION_STR,
                     "observable_reader.remove_observer", "readerName",
                     ((AbstractObservableReader) this).getName());
         } else if (this instanceof AbstractObservablePlugin) {
-            logger.info("AbstractObservablePlugin: Deleting an observer", ACTION_STR,
+            logger.info("AbstractObservablePlugin: Deleting an observer, {} {}, {} {}", ACTION_STR,
                     "observable_plugin.remove_observer", "pluginName",
                     ((AbstractObservablePlugin) this).getName());
         }
@@ -97,11 +97,11 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
     public final void notifyObservers(final T event) {
 
         if (this instanceof AbstractObservableReader) {
-            logger.info("AbstractObservableReader: Notifying of an event", ACTION_STR,
+            logger.info("AbstractObservableReader: Notifying of an event, {} {},{} {},{} {}", ACTION_STR,
                     "observable_reader.notify_observers", "event", event, "readerName",
                     ((AbstractObservableReader) this).getName());
         } else if (this instanceof AbstractObservablePlugin) {
-            logger.info("AbstractObservablePlugin: Notifying of an event", ACTION_STR,
+            logger.info("AbstractObservablePlugin: Notifying of an event, {} {},{} {},{} {}", ACTION_STR,
                     "observable_plugin.notify_observers", "event", event, "pluginName",
                     ((AbstractObservablePlugin) this).getName());
         }
