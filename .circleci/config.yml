@@ -25,7 +25,7 @@ jobs:
           #(disabled) fallback to using the latest cache if no exact match is found
           #- v1-dependencies-
 
-      - run: gradle test --stacktrace --debug # jmh - Disabling JMH as it's very unreliable under CircleCI
+      - run: gradle test --stacktrace --debug # run tests with stacktrace
       - run: gradle build javadoc fatjar # jmh - Disabling JMH as it's very unreliable under CircleCI
       - run: .circleci/save_artifacts.sh Android build takes care of it
       #- run: .circleci/push_gh_pages.sh Android build takes care of it
@@ -65,6 +65,8 @@ jobs:
         - restore_cache:
             keys:
             - v1-dependencies-{{ checksum "./keyple-example/android/nfc/build.gradle" }}
+
+        - run: gradle test --stacktrace --debug # run tests with stacktrace
 
         #assemble keyple core and calypso
         - run:

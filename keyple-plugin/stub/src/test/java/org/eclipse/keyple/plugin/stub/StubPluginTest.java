@@ -39,9 +39,14 @@ public class StubPluginTest {
         stubPlugin.clearObservers();
 
         //unplug all readers
-        for(AbstractObservableReader reader :  stubPlugin.getNativeReaders()){
+        for(AbstractObservableReader reader :  stubPlugin.getReaders()){
             stubPlugin.unplugReader(reader.getName());
         }
+        logger.info("Stubplugin readers size {}" , stubPlugin.getReaders().size());
+        Assert.assertEquals(stubPlugin.getNativeReaders().size(), 0);
+        logger.info("Stubplugin observers size {}" , stubPlugin.countObservers());
+        Assert.assertEquals(stubPlugin.countObservers(), 0);
+
     }
 
     @Test
