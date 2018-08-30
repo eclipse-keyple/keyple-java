@@ -431,7 +431,9 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
         System.out.println("PO Reader  : " + poReader.getName());
         System.out.println("CSM Reader : " + csmReader.getName());
 
-        poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
+        poReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
+        poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
+        csmReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
         csmReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
         // provide the reader with the map

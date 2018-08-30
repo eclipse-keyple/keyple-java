@@ -86,9 +86,18 @@ public class PcscReader extends AbstractThreadedLocalReader {
     protected final void closePhysicalChannel() throws IOReaderException {
         try {
             if (card != null) {
+                if (logging) {
+                    logger.trace("[{}] closePhysicalChannel => closing the channel.",
+                            this.getName());
+                }
                 channel = null;
                 card.disconnect(cardReset);
                 card = null;
+            } else {
+                if (logging) {
+                    logger.trace("[{}] closePhysicalChannel => card object is null.",
+                            this.getName());
+                }
             }
         } catch (CardException e) {
             throw new IOReaderException(e);
@@ -100,7 +109,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
         try {
             return terminal.isCardPresent();
         } catch (CardException e) {
-            logger.error("Exception occured in isSePresent", "cause", e);
+            logger.trace("[{}] Exception occured in isSePresent. Message: {}", this.getName(),
+                    e.getMessage());
             throw new NoStackTraceThrowable();
         }
     }
@@ -110,7 +120,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
         try {
             return terminal.waitForCardPresent(timeout);
         } catch (CardException e) {
-            logger.error("Exception occured in waitForCardPresent", "cause", e);
+            logger.trace("[{}] Exception occured in waitForCardPresent. Message: {}",
+                    this.getName(), e.getMessage());
             throw new NoStackTraceThrowable();
         }
     }
@@ -126,10 +137,12 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 return false;
             }
         } catch (IOReaderException e) {
-            logger.error("IOReaderException occured in waitForCardAbsent", "cause", e);
+            logger.trace("[{}] Exception occured in waitForCardAbsent. Message: {}", this.getName(),
+                    e.getMessage());
             throw new NoStackTraceThrowable();
         } catch (CardException e) {
-            logger.error("CardException occured in waitForCardAbsent", "cause", e);
+            logger.trace("[{}] Exception occured in waitForCardAbsent. Message: {}", this.getName(),
+                    e.getMessage());
             throw new NoStackTraceThrowable();
         }
     }
@@ -177,12 +190,16 @@ public class PcscReader extends AbstractThreadedLocalReader {
             Pattern p = Pattern.compile(selectionMask);
             String atr = ByteBufferUtils.toHex(ByteBuffer.wrap(card.getATR().getBytes()));
             if (!p.matcher(atr).matches()) {
-                logger.info("Protocol selection: unmatching SE: {}, {} {}", protocolFlag, "action",
-                        "pcsc_reader.transmit_actual");
+                if (logging) {
+                    logger.trace("[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}",
+                            this.getName(), protocolFlag);
+                }
                 result = false;
             } else {
-                logger.info("Protocol selection: matching SE: {}, {} {}", protocolFlag, "action",
-                        "pcsc_reader.transmit_actual");
+                if (logging) {
+                    logger.trace("[{}] protocolFlagMatches => matching SE. PROTOCOLFLAG = {}",
+                            this.getName(), protocolFlag);
+                }
                 result = true;
             }
         } else {
@@ -191,37 +208,6 @@ public class PcscReader extends AbstractThreadedLocalReader {
         }
         return result;
     }
-
-    /*
-     * TODO Paramètres PC/SC dont le support est à intégré paramètre 'Protocol' pouvant prendre les
-     * valeurs String 'T0', 'T1', 'Tx' paramètre 'Mode' pouvant prendre les valeurs String 'Shared',
-     * 'Exclusive', 'Direct' paramètre 'Disconnect' pouvant prendre les valeurs String 'Leave',
-     * 'Reset', 'Unpower', 'Eject' Il s'agit des valeurs de paramètre définies par le standard
-     * 'PC/SC'.
-     *
-     * Si on traduit ses paramètres pour l'API SmartCard IO cela donne: pour 'Protocol' :
-     * javax.smartcardio.CardTerminal.connect(String protocol) paramétré avec "T=0" si 'T0', "T=1"
-     * si 'T1', "*" si 'Tx' => voir définition
-     * https://docs.oracle.com/javase/6/docs/jre/api/security/smartcardio/spec/javax/smartcardio/
-     * CardTerminal.html#connect(java.lang.String) le comportement par défaut pour 'Protocol' doit
-     * être 'Tx'
-     *
-     * paramètre 'Mode' : le comportement par défaut pour 'Protocol' doit être 'Shared' et sur
-     * configuration elle peut être 'Exclusive', dans ce cas une exclusivité d'accès est gérée via
-     * javax.smartcardio.Card.beginExclusive() et endExclusive() Ceci est notamment lié au fait que
-     * sur certaines plateformes l'exclusivité n'est obtenue que pendant un temps limité (5 secondes
-     * sur Windows 8+). cf.
-     * https://docs.oracle.com/javase/6/docs/jre/api/security/smartcardio/spec/javax/smartcardio/
-     * Card.html#beginExclusive() sinon le 'Mode' doit être considéré comme 'Shared' à vérifier avec
-     * Jean-Pierre Fortune, le mode 'Direct' ne devrait pas être supporté pour un
-     * ProxyReader.transmit(), (l'envoi de commandes directes de paramétrage du lecteur PC/SC
-     * devrait se faire avec un setParameter spécial)
-     *
-     * Pour 'Disconnect', un paramétrage 'Reset', fera que la commande
-     * javax.smartcardio.Carddisconnect(boolean reset) sera paramétrée à 'true' si 'Reset', à
-     * 'false' si 'Unpower' Les valeurs 'Leave' et 'Eject' ne serait pas gérée.
-     *
-     */
 
     /**
      * Set a parameter.
@@ -259,8 +245,10 @@ public class PcscReader extends AbstractThreadedLocalReader {
      */
     @Override
     public void setParameter(String name, String value) throws IOReaderException {
-        logger.info("PCSC: Set a parameter", "action", "pcsc_reader.set_parameter", "name", name,
-                "value", value);
+        if (logging) {
+            logger.trace("[{}] setParameter => PCSC: Set a parameter. NAME = {}, VALUE = {}",
+                    this.getName(), name, value);
+        }
         if (name == null) {
             throw new IllegalArgumentException("Parameter shouldn't be null");
         }
@@ -397,12 +385,15 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 this.card = this.terminal.connect(parameterCardProtocol);
                 if (cardExclusiveMode) {
                     card.beginExclusive();
-                    logger.info("Opening of a physical SE channel in exclusive mode. {},{}",
-                            "action", "pcsc_reader.openPhysicalChannel");
-
+                    if (logging) {
+                        logger.trace("[{}] Opening of a physical SE channel in exclusive mode.",
+                                this.getName());
+                    }
                 } else {
-                    logger.info("Opening of a physical SE channel in shared mode. {},{}", "action",
-                            "pcsc_reader.openPhysicalChannel");
+                    if (logging) {
+                        logger.trace("[{}] Opening of a physical SE channel in shared mode.",
+                                this.getName());
+                    }
                 }
             }
             this.channel = card.getBasicChannel();
