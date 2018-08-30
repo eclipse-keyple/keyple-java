@@ -16,6 +16,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.13.0'
     compile project(path: ':keyple-calypso')
+
+    testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+
 }
 
 test {

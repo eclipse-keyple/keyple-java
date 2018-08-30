@@ -12,6 +12,7 @@ package org.eclipse.keyple.plugin.stub;
 import org.eclipse.keyple.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -19,42 +20,42 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StubPluginTest {
 
     StubPlugin stubPlugin;
-    Integer test_event; // 0 if READER_CONNECTED, 1 if READER_DISCONNECTED
+    Logger logger = LoggerFactory.getLogger(StubPluginTest.class);
 
     @Before
     public void setUp() throws IOReaderException {
+        logger.info("Reset Stubplugin readers and stubplugin observers");
+
         stubPlugin = StubPlugin.getInstance(); // singleton
 
+        //delete all observers
         stubPlugin.clearObservers();
-        // add one observer for all tests
-        stubPlugin.addObserver(new ObservablePlugin.PluginObserver() {
-            @Override
-            public void update(PluginEvent event) {
-                switch (test_event) {
-                    case 0:
-                        Assert.assertEquals(PluginEvent.EventType.READER_CONNECTED,
-                                event.getEventType());
-                        break;
-                    case 1:
-                        Assert.assertEquals(PluginEvent.EventType.READER_DISCONNECTED,
-                                event.getEventType());
-                        break;
 
-                }
-            }
-        });
+        //unplug all readers
+        for(AbstractObservableReader reader :  stubPlugin.getNativeReaders()){
+            stubPlugin.unplugReader(reader.getName());
+        }
     }
 
     @Test
     public void testA_PlugReaders() throws IOReaderException {
 
-        test_event = 0;
+        // add READER_CONNECTED assert observer
+        stubPlugin.addObserver(new ObservablePlugin.PluginObserver() {
+            @Override
+            public void update(PluginEvent event) {
+                Assert.assertEquals(PluginEvent.EventType.READER_CONNECTED,
+                        event.getEventType());
+            }
+        });
+
         stubPlugin.plugStubReader("test");
         assert (stubPlugin.getReaders().size() == 1);
 
@@ -62,18 +63,29 @@ public class StubPluginTest {
 
     @Test
     public void testB_UnplugReaders() throws IOReaderException {
-        test_event = 1;
+        //add a reader
+        stubPlugin.plugStubReader("test");
+        assert (stubPlugin.getReaders().size() == 1);
+
+        // add READER_DISCONNECTED assert observer
+        stubPlugin.addObserver(new ObservablePlugin.PluginObserver() {
+            @Override
+            public void update(PluginEvent event) {
+                Assert.assertEquals(PluginEvent.EventType.READER_DISCONNECTED,
+                        event.getEventType());
+            }
+        });
+
+        //unplug reader
         stubPlugin.unplugReader("test");
         assert (stubPlugin.getReaders().size() == 0);
     }
 
     @Test
     public void testC_PlugSameReaderTwice() throws IOReaderException {
-        test_event = 0;
         stubPlugin.plugStubReader("test");
         stubPlugin.plugStubReader("test");
         assert (stubPlugin.getReaders().size() == 1);
-        test_event = 1;
         stubPlugin.unplugReader("test");
         assert (stubPlugin.getReaders().size() == 0);
     }
