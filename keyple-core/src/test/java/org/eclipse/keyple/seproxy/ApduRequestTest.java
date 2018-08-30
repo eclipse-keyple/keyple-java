@@ -35,7 +35,8 @@ public class ApduRequestTest {
         assertTrue(request.isCase4());
         assertEquals(getACommand(), request.getBytes());
         assertEquals(null, request.getSuccessfulStatusCodes());
-        assertEquals("null" + ": FEDCBA989005", request.toString());
+        assertEquals("ApduRequest: NAME = \"null\", RAWDATA = FEDCBA989005, case4",
+                request.toString());
     }
 
     @Test
@@ -46,7 +47,9 @@ public class ApduRequestTest {
         assertEquals(getACommand(), request.getBytes());
         assertEquals(getAName(), request.getName());
         assertEquals(getASuccessFulStatusCode(), request.getSuccessfulStatusCodes());
-        assertEquals(getAName() + ": FEDCBA989005", request.toString());
+        assertEquals("ApduRequest: NAME = \"" + getAName()
+                + "\", RAWDATA = FEDCBA989005, case4, additional successful status codes = 2328",
+                request.toString());
     }
 
 

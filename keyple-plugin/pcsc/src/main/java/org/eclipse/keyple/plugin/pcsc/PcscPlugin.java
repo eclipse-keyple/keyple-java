@@ -111,8 +111,8 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
                 nativeReaders.add(new PcscReader(this.getName(), term));
             }
         } catch (CardException e) {
-            logger.error("Terminal list is not accessible, {} {}, {} {}", "action", "pcsc_plugin.no_terminals",
-                    "exception", e);
+            logger.error("Terminal list is not accessible, {} {}, {} {}", "action",
+                    "pcsc_plugin.no_terminals", "exception", e);
             throw new IOReaderException("Could not access terminals list", e);
         }
         return nativeReaders;
@@ -151,8 +151,8 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
                 }
             }
         } catch (CardException e) {
-            logger.error("Terminal list is not accessible, {} {}, {} {}", "action", "pcsc_plugin.no_terminals",
-                    "exception", e);
+            logger.error("Terminal list is not accessible, {} {}, {} {}", "action",
+                    "pcsc_plugin.no_terminals", "exception", e);
             throw new IOReaderException("Could not access terminals list", e);
         }
         if (reader == null) {

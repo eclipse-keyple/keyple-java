@@ -10,9 +10,9 @@ package org.eclipse.keyple.seproxy.plugin;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.seproxy.event.*;
+import org.eclipse.keyple.seproxy.event.ObservablePlugin;
+import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.util.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,22 +25,21 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
 
     /**
-     * Thread wait timeout in ms
-     *
-     * This timeout value will determined the latency to detect changes
-     */
-    private long threadWaitTimeout = SETTING_THREAD_TIMEOUT_DEFAULT;
-
-    /**
      * Local thread to monitoring readers presence
      */
     private EventThread thread;
 
+    /**
+     * Thread wait timeout in ms
+     *
+     * This timeout value will determined the latency to detect changes
+     */
+    private final long threadWaitTimeout = SETTING_THREAD_TIMEOUT_DEFAULT;
 
     /**
      * List of names of the connected readers
      */
-    protected static SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
+    private static SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
 
     /**
      * Returns the list of names of all connected readers
@@ -106,8 +105,9 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                                 notifyObservers(new PluginEvent(this.pluginName, reader.getName(),
                                         PluginEvent.EventType.READER_DISCONNECTED));
                                 readers.remove(reader);
-                                logger.info("Remove unplugged reader from readers list",
-                                        this.pluginName, pluginName, "reader", reader.getName());
+                                logger.trace(
+                                        "[{}][{}] Plugin thread => Remove unplugged reader from readers list.",
+                                        this.pluginName, reader.getName());
                                 reader = null;
                             }
                         }
@@ -119,8 +119,9 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                                 readers.add(reader);
                                 notifyObservers(new PluginEvent(this.pluginName, reader.getName(),
                                         PluginEvent.EventType.READER_CONNECTED));
-                                logger.info("Add plugged reader to readers list", "reader",
-                                        reader.getName());
+                                logger.trace(
+                                        "[{}][{}] Plugin thread => Add plugged reader to readers list.",
+                                        this.pluginName, reader.getName());
                             }
                         }
                         // update the readers names list
@@ -130,8 +131,8 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                     Thread.sleep(threadWaitTimeout);
                 }
             } catch (Exception e) {
-                logger.error("An exception occurred while monitoring plugin: " + this.pluginName,
-                        "exception", e.getMessage(), "cause", e.getCause());
+                logger.error("[{}] An exception occurred while monitoring plugin: {}, cause {}",
+                        this.pluginName, e.getMessage(), e.getCause());
             }
         }
     }
@@ -145,15 +146,15 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
     protected void finalize() throws Throwable {
         thread.end();
         thread = null;
-        logger.info("Observable Plugin thread ended.", "name", this.getName());
+        logger.trace("[{}] Observable Plugin thread ended.", this.getName());
         super.finalize();
     }
 
     public final void addObserver(PluginObserver observer) {
-        super.addObserver((Observable.Observer<PluginEvent>) observer);
+        super.addObserver(observer);
     }
 
     public final void removeObserver(PluginObserver observer) {
-        super.removeObserver((Observable.Observer<PluginEvent>) observer);
+        super.removeObserver(observer);
     }
 }

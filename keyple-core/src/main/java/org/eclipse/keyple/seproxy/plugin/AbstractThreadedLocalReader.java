@@ -10,7 +10,6 @@ package org.eclipse.keyple.seproxy.plugin;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocalReader {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(AbstractThreadedLocalReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractThreadedLocalReader.class);
     private EventThread thread;
     private static final AtomicInteger threadCount = new AtomicInteger();
     /**
@@ -88,8 +86,6 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
          */
         private volatile boolean running = true;
 
-        private long threadWaitTimeout;
-
         /**
          * Constructor
          * 
@@ -121,20 +117,6 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                     ReaderEvent.EventType.SE_INSERTED));
         }
 
-        /**
-         * Event failed
-         *
-         * @param ex Exception
-         */
-        private void exceptionThrown(Exception ex) {
-            logger.error("Observable Reader: Error handling events, {} {}, {} {}, {} {}", "action",
-                    "observable_reader.event_error", "readerName", readerName, "exception", ex);
-            if (ex instanceof IOReaderException) {
-                notifyObservers(new ReaderEvent(this.pluginName, this.readerName,
-                        ReaderEvent.EventType.IO_ERROR));
-            }
-        }
-
         public void run() {
             try {
                 // First thing we'll do is to notify that a card was inserted if one is already
@@ -163,7 +145,8 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                     }
                 }
             } catch (NoStackTraceThrowable e) {
-                logger.error("Exception occured in monitoring thread. {}, {}", "reader", readerName);
+                logger.trace("[{}] Exception occurred in monitoring thread: {}", readerName,
+                        e.getMessage());
             }
         }
     }
@@ -177,7 +160,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
     protected void finalize() throws Throwable {
         thread.end();
         thread = null;
-        logger.info("Observable Reader thread ended.  {}, {}", "name", this.getName());
+        logger.trace("[{}] Observable Reader thread ended.", this.getName());
         super.finalize();
     }
 }

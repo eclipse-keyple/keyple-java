@@ -76,6 +76,6 @@ public final class SeRequestSet {
 
     @Override
     public String toString() {
-        return String.format("SeRequestSet{sortedRequests=%s}", getRequests());
+        return sortedRequests.size() + " SeRequest(s)";
     }
 }

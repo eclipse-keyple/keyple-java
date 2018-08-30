@@ -397,8 +397,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 this.card = this.terminal.connect(parameterCardProtocol);
                 if (cardExclusiveMode) {
                     card.beginExclusive();
-                    logger.info("Opening of a physical SE channel in exclusive mode. {},{}", "action",
-                            "pcsc_reader.openPhysicalChannel");
+                    logger.info("Opening of a physical SE channel in exclusive mode. {},{}",
+                            "action", "pcsc_reader.openPhysicalChannel");
 
                 } else {
                     logger.info("Opening of a physical SE channel in shared mode. {},{}", "action",

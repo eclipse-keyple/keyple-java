@@ -24,8 +24,6 @@ import org.slf4j.LoggerFactory;
  */
 abstract class AbstractLoggedObservable<T> extends Observable<T> implements NameableConfigurable {
     private static final Logger logger = LoggerFactory.getLogger(AbstractLoggedObservable.class);
-    private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
-
 
     /**
      * The item name (must be unique)
@@ -35,7 +33,7 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
     /**
      * Item constructor Force the definition of a name through the use of super method.
      *
-     * @param name
+     * @param name name of the observed object
      */
     AbstractLoggedObservable(String name) {
         this.name = name;
@@ -58,7 +56,8 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
 
     public void addObserver(final AbstractLoggedObservable.Observer<T> observer) {
 
-        logger.info("Adding an observer", "class", this.getClass(), "name", this.getName());
+        logger.trace("[{}][{}] addObserver => Adding an observer.", this.getClass(),
+                this.getName());
 
         super.addObserver(observer);
     }
@@ -72,13 +71,9 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
     public void removeObserver(final AbstractLoggedObservable.Observer<T> observer) {
 
         if (this instanceof AbstractObservableReader) {
-            logger.info("AbstractObservableReader: Deleting an observer, {} {}, {} {}", ACTION_STR,
-                    "observable_reader.remove_observer", "readerName",
-                    ((AbstractObservableReader) this).getName());
+            logger.trace("[{}] removeObserver => Deleting a reader observer", this.getName());
         } else if (this instanceof AbstractObservablePlugin) {
-            logger.info("AbstractObservablePlugin: Deleting an observer, {} {}, {} {}", ACTION_STR,
-                    "observable_plugin.remove_observer", "pluginName",
-                    ((AbstractObservablePlugin) this).getName());
+            logger.trace("[{}] removeObserver => Deleting a plugin observer", this.getName());
         }
 
         super.removeObserver(observer);
@@ -97,13 +92,11 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
     public final void notifyObservers(final T event) {
 
         if (this instanceof AbstractObservableReader) {
-            logger.info("AbstractObservableReader: Notifying of an event, {} {},{} {},{} {}", ACTION_STR,
-                    "observable_reader.notify_observers", "event", event, "readerName",
-                    ((AbstractObservableReader) this).getName());
+            logger.trace("[{}] AbstractObservableReader => Notifying a reader event: ",
+                    this.getName(), event);
         } else if (this instanceof AbstractObservablePlugin) {
-            logger.info("AbstractObservablePlugin: Notifying of an event, {} {},{} {},{} {}", ACTION_STR,
-                    "observable_plugin.notify_observers", "event", event, "pluginName",
-                    ((AbstractObservablePlugin) this).getName());
+            logger.trace("[{}] AbstractObservableReader => Notifying a plugin event: ",
+                    this.getName(), event);
         }
 
         setChanged();
