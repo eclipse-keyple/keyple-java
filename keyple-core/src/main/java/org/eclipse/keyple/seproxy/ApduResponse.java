@@ -109,7 +109,7 @@ public final class ApduResponse extends AbstractApduBuffer {
     @Override
     public int hashCode() {
         int hash = 17;
-        hash = 19 * hash + (this.successful ? 0x55555555 : 0x2AAAAAAA);
+        hash = 19 * hash + (this.successful ? 0 : 1);
         hash = 31 * hash + (buffer == null ? 0 : buffer.hashCode());
         return hash;
     }

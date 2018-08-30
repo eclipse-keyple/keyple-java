@@ -16,6 +16,7 @@ import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
  * 
  * @see SeRequest
  */
+@SuppressWarnings("PMD.NPathComplexity")
 public final class SeResponse {
 
 
@@ -116,7 +117,7 @@ public final class SeResponse {
                 && (seResponse.getFci() == null ? fci == null : seResponse.getFci().equals(fci))
                 && (seResponse.getApduResponses() == null ? apduResponses == null
                         : seResponse.getApduResponses().equals(apduResponses))
-                && (seResponse.wasChannelPreviouslyOpen() == channelPreviouslyOpen);
+                && seResponse.wasChannelPreviouslyOpen() == channelPreviouslyOpen;
 
     }
 
@@ -126,7 +127,7 @@ public final class SeResponse {
         hash = 31 * hash + (atr == null ? 0 : atr.hashCode());
         hash = 7 * hash + (fci == null ? 0 : fci.hashCode());
         hash = 29 * hash + (apduResponses == null ? 0 : this.apduResponses.hashCode());
-        hash = 13 * hash + (this.channelPreviouslyOpen ? 0x55555555 : 0x2AAAAAAA);
+        hash = 13 * hash + (this.channelPreviouslyOpen ? 1 : 0);
         return hash;
     }
 }
