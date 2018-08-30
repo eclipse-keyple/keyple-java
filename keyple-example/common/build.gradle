@@ -17,6 +17,8 @@ dependencies {
 
     compile project(':keyple-calypso')
 
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+
     // https://mvnrepository.com/artifact/commons-codec/commons-codec
     // compile group: 'commons-codec', name: 'commons-codec', version: '1.11'
 

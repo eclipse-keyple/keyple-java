@@ -20,12 +20,13 @@ import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractSelectionLocalReader;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class StubReader extends AbstractSelectionLocalReader {
 
-    private static final ILogger logger = SLoggerFactory.getLogger(StubReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(StubReader.class);
 
     private StubSecureElement se;
 

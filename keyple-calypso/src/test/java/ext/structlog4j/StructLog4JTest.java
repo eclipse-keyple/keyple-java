@@ -16,11 +16,11 @@ import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Test;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StructLog4JTest {
-    private static final ILogger logger = SLoggerFactory.getLogger(StructLog4JTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(StructLog4JTest.class);
 
     @Test
     public void basic() {

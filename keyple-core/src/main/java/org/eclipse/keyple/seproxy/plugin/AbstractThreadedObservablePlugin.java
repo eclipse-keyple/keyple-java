@@ -13,14 +13,14 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.seproxy.event.*;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.util.Observable;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractThreadedObservablePlugin extends AbstractObservablePlugin
         implements ObservablePlugin {
 
-    private static final ILogger logger =
-            SLoggerFactory.getLogger(AbstractThreadedObservablePlugin.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(AbstractThreadedObservablePlugin.class);
 
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
 

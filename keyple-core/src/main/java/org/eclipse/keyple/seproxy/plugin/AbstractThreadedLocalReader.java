@@ -12,8 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract definition of an threader local reader. Factorizes the observation mechanism through the
@@ -21,8 +21,8 @@ import com.github.structlog4j.SLoggerFactory;
  */
 public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocalReader {
 
-    private static final ILogger logger =
-            SLoggerFactory.getLogger(AbstractThreadedLocalReader.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(AbstractThreadedLocalReader.class);
     private EventThread thread;
     private static final AtomicInteger threadCount = new AtomicInteger();
     /**
@@ -127,7 +127,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
          * @param ex Exception
          */
         private void exceptionThrown(Exception ex) {
-            logger.error("Observable Reader: Error handling events", "action",
+            logger.error("Observable Reader: Error handling events, {} {}, {} {}, {} {}", "action",
                     "observable_reader.event_error", "readerName", readerName, "exception", ex);
             if (ex instanceof IOReaderException) {
                 notifyObservers(new ReaderEvent(this.pluginName, this.readerName,
@@ -163,7 +163,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                     }
                 }
             } catch (NoStackTraceThrowable e) {
-                logger.error("Exception occured in monitoring thread.", "reader", readerName);
+                logger.error("Exception occured in monitoring thread. {}, {}", "reader", readerName);
             }
         }
     }
@@ -177,7 +177,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
     protected void finalize() throws Throwable {
         thread.end();
         thread = null;
-        logger.info("Observable Reader thread ended.", "name", this.getName());
+        logger.info("Observable Reader thread ended.  {}, {}", "name", this.getName());
         super.finalize();
     }
 }

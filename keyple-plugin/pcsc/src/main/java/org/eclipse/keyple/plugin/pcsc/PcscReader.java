@@ -17,12 +17,12 @@ import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.exception.*;
 import org.eclipse.keyple.seproxy.plugin.AbstractThreadedLocalReader;
 import org.eclipse.keyple.util.ByteBufferUtils;
-import com.github.structlog4j.ILogger;
-import com.github.structlog4j.SLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PcscReader extends AbstractThreadedLocalReader {
 
-    private static final ILogger logger = SLoggerFactory.getLogger(PcscReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(PcscReader.class);
     public static final String SETTING_KEY_PROTOCOL = "protocol";
     public static final String SETTING_PROTOCOL_T0 = "T0";
     public static final String SETTING_PROTOCOL_T1 = "T1";
@@ -177,11 +177,11 @@ public class PcscReader extends AbstractThreadedLocalReader {
             Pattern p = Pattern.compile(selectionMask);
             String atr = ByteBufferUtils.toHex(ByteBuffer.wrap(card.getATR().getBytes()));
             if (!p.matcher(atr).matches()) {
-                logger.info("Protocol selection: unmatching SE: " + protocolFlag, "action",
+                logger.info("Protocol selection: unmatching SE: {}, {} {}", protocolFlag, "action",
                         "pcsc_reader.transmit_actual");
                 result = false;
             } else {
-                logger.info("Protocol selection: matching SE: " + protocolFlag, "action",
+                logger.info("Protocol selection: matching SE: {}, {} {}", protocolFlag, "action",
                         "pcsc_reader.transmit_actual");
                 result = true;
             }
@@ -397,11 +397,11 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 this.card = this.terminal.connect(parameterCardProtocol);
                 if (cardExclusiveMode) {
                     card.beginExclusive();
-                    logger.info("Opening of a physical SE channel in exclusive mode.", "action",
+                    logger.info("Opening of a physical SE channel in exclusive mode. {},{}", "action",
                             "pcsc_reader.openPhysicalChannel");
 
                 } else {
-                    logger.info("Opening of a physical SE channel in shared mode.", "action",
+                    logger.info("Opening of a physical SE channel in shared mode. {},{}", "action",
                             "pcsc_reader.openPhysicalChannel");
                 }
             }
