@@ -104,8 +104,7 @@ public final class SeRequest {
         }
 
         public String toString() {
-            return String.format("ATR regex:%s",
-                    atrRegex.length() != 0 ? atrRegex : "empty");
+            return String.format("ATR regex:%s", atrRegex.length() != 0 ? atrRegex : "empty");
         }
     }
 

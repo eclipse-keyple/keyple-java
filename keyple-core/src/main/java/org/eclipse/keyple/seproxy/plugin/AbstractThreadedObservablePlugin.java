@@ -8,14 +8,13 @@
 
 package org.eclipse.keyple.seproxy.plugin;
 
+import java.util.SortedSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.SortedSet;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 public abstract class AbstractThreadedObservablePlugin extends AbstractObservablePlugin
         implements ObservablePlugin {
@@ -106,7 +105,8 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                                 notifyObservers(new PluginEvent(this.pluginName, reader.getName(),
                                         PluginEvent.EventType.READER_DISCONNECTED));
                                 readers.remove(reader);
-                                logger.trace("[{}][{}] Plugin thread => Remove unplugged reader from readers list.",
+                                logger.trace(
+                                        "[{}][{}] Plugin thread => Remove unplugged reader from readers list.",
                                         this.pluginName, reader.getName());
                                 reader = null;
                             }
@@ -119,7 +119,8 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                                 readers.add(reader);
                                 notifyObservers(new PluginEvent(this.pluginName, reader.getName(),
                                         PluginEvent.EventType.READER_CONNECTED));
-                                logger.trace("[{}][{}] Plugin thread => Add plugged reader to readers list.",
+                                logger.trace(
+                                        "[{}][{}] Plugin thread => Add plugged reader to readers list.",
                                         this.pluginName, reader.getName());
                             }
                         }
@@ -130,8 +131,8 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                     Thread.sleep(threadWaitTimeout);
                 }
             } catch (Exception e) {
-                logger.error("[{}] An exception occurred while monitoring plugin: {}, cause {}", this.pluginName,
-                        e.getMessage(), e.getCause());
+                logger.error("[{}] An exception occurred while monitoring plugin: {}, cause {}",
+                        this.pluginName, e.getMessage(), e.getCause());
             }
         }
     }

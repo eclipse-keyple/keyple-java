@@ -64,8 +64,9 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         long before = 0;
 
 
-        if(logger.isDebugEnabled()) {
-            logger.trace("[{}] transmit => SeRequestSet: {}", this.getName(), requestSet.toString());
+        if (logger.isDebugEnabled()) {
+            logger.trace("[{}] transmit => SeRequestSet: {}", this.getName(),
+                    requestSet.toString());
             before = System.nanoTime();
         }
 
@@ -78,7 +79,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             throw ex;
         }
 
-        if(logger.isDebugEnabled()) {
+        if (logger.isDebugEnabled()) {
             // Switching to the 10th of milliseconds and dividing by 10 to get the ms
             double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
             logger.trace("[{}] transmit => SeResponse: {}, elapsed {} ms.", this.getName(),

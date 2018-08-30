@@ -104,11 +104,12 @@ public final class ApduRequest extends AbstractApduBuffer {
     @Override
     public String toString() {
         StringBuilder string;
-        string = new StringBuilder("ApduRequest: NAME = \"" + this.getName() + "\", RAWDATA = " + super.toString());
-        if(isCase4()) {
-           string.append(", case4");
+        string = new StringBuilder(
+                "ApduRequest: NAME = \"" + this.getName() + "\", RAWDATA = " + super.toString());
+        if (isCase4()) {
+            string.append(", case4");
         }
-        if(successfulStatusCodes != null) {
+        if (successfulStatusCodes != null) {
             string.append(", additional successful status codes = ");
             Iterator<Short> iterator = successfulStatusCodes.iterator();
             while (iterator.hasNext()) {

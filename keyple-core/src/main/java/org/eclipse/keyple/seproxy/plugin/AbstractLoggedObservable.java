@@ -56,7 +56,8 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
 
     public void addObserver(final AbstractLoggedObservable.Observer<T> observer) {
 
-        logger.trace("[{}][{}] addObserver => Adding an observer.", this.getClass(), this.getName());
+        logger.trace("[{}][{}] addObserver => Adding an observer.", this.getClass(),
+                this.getName());
 
         super.addObserver(observer);
     }
@@ -70,11 +71,9 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
     public void removeObserver(final AbstractLoggedObservable.Observer<T> observer) {
 
         if (this instanceof AbstractObservableReader) {
-            logger.trace("[{}] removeObserver => Deleting a reader observer",
-                    this.getName());
+            logger.trace("[{}] removeObserver => Deleting a reader observer", this.getName());
         } else if (this instanceof AbstractObservablePlugin) {
-            logger.trace("[{}] removeObserver => Deleting a plugin observer",
-                    this.getName());
+            logger.trace("[{}] removeObserver => Deleting a plugin observer", this.getName());
         }
 
         super.removeObserver(observer);

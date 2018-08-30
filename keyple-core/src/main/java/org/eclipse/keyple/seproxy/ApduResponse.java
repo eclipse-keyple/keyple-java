@@ -42,7 +42,7 @@ public final class ApduResponse extends AbstractApduBuffer {
         if (buffer == null) {
             this.successful = false;
         } else {
-            if(buffer.limit() < 2) {
+            if (buffer.limit() < 2) {
                 throw new IllegalArgumentException("Bad buffer (length < 2): " + buffer.limit());
             }
             int statusCode = buffer.getShort(buffer.limit() - 2);
@@ -90,7 +90,8 @@ public final class ApduResponse extends AbstractApduBuffer {
 
     @Override
     public String toString() {
-        return "ApduResponse: " + (isSuccessful() ? "SUCCESS" : "FAILURE") + ", RAWDATA = " + super.toString();
+        return "ApduResponse: " + (isSuccessful() ? "SUCCESS" : "FAILURE") + ", RAWDATA = "
+                + super.toString();
     }
 
     @Override

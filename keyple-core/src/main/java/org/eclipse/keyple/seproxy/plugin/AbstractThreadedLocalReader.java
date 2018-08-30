@@ -20,8 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocalReader {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(AbstractThreadedLocalReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractThreadedLocalReader.class);
     private EventThread thread;
     private static final AtomicInteger threadCount = new AtomicInteger();
     /**
@@ -146,7 +145,8 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                     }
                 }
             } catch (NoStackTraceThrowable e) {
-                logger.trace("[{}] Exception occurred in monitoring thread: {}", readerName, e.getMessage());
+                logger.trace("[{}] Exception occurred in monitoring thread: {}", readerName,
+                        e.getMessage());
             }
         }
     }

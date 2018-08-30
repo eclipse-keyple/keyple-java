@@ -140,8 +140,9 @@ public class PoSecureSession {
         poCalypsoInstanceAid = poFciRespPars.getDfName();
         poCalypsoInstanceSerial = poFciRespPars.getApplicationSerialNumber();
 
-        logger.info("Identification: PO Response, {} {}, {} {}, {} {}", "action", "po_secure_session.ident_po_response",
-                "dfName", ByteBufferUtils.toHex(poCalypsoInstanceAid), "serialNumber",
+        logger.info("Identification: PO Response, {} {}, {} {}, {} {}", "action",
+                "po_secure_session.ident_po_response", "dfName",
+                ByteBufferUtils.toHex(poCalypsoInstanceAid), "serialNumber",
                 ByteBufferUtils.toHex(poCalypsoInstanceSerial));
 
         // Define CSM Select Diversifier command
@@ -154,9 +155,10 @@ public class PoSecureSession {
                 new CsmGetChallengeCmdBuild(this.csmRevision, (byte) 0x04);
         csmApduRequestList.add(csmGetChallenge.getApduRequest());
 
-        logger.info("Identification: CSM Request, {} {}, {} {}, {} {}", "action", "po_secure_session.ident_csm_request",
-                "apduReq1", ByteBufferUtils.toHex(selectDiversifier.getApduRequest().getBytes()),
-                "apduReq2", ByteBufferUtils.toHex(csmGetChallenge.getApduRequest().getBytes()));
+        logger.info("Identification: CSM Request, {} {}, {} {}, {} {}", "action",
+                "po_secure_session.ident_csm_request", "apduReq1",
+                ByteBufferUtils.toHex(selectDiversifier.getApduRequest().getBytes()), "apduReq2",
+                ByteBufferUtils.toHex(csmGetChallenge.getApduRequest().getBytes()));
 
         // Transfert CSM commands
         // create a SeRequestSet (list of SeRequest)
@@ -173,7 +175,8 @@ public class PoSecureSession {
             CsmGetChallengeRespPars csmChallengePars =
                     new CsmGetChallengeRespPars(csmApduResponseList.get(1));
             sessionTerminalChallenge = csmChallengePars.getChallenge();
-            logger.info("Identification: Done, {} {}, {} {}, {} {}", "action", "po_secure_session.ident_done", "apdu",
+            logger.info("Identification: Done, {} {}, {} {}, {} {}", "action",
+                    "po_secure_session.ident_done", "apdu",
                     ByteBufferUtils.toHex(csmChallengePars.getApduResponse().getBytes()),
                     "sessionTerminalChallenge", ByteBufferUtils.toHex(sessionTerminalChallenge));
         } else {
@@ -251,8 +254,8 @@ public class PoSecureSession {
         // Build "Digest Init" command from PO Open Session
         byte kif = poOpenSessionPars.getSelectedKif();
 
-        logger.info("Opening: PO response, {} {}, {} {}, {} {}, {} {}", "action", "po_secure_session.open_po_response",
-                "apduResponse",
+        logger.info("Opening: PO response, {} {}, {} {}, {} {}, {} {}", "action",
+                "po_secure_session.open_po_response", "apduResponse",
                 ByteBufferUtils.toHex(poOpenSessionPars.getApduResponse().getBytes()),
                 "sessionCardChallenge", ByteBufferUtils.toHex(sessionCardChallenge), "poKif",
                 String.format("%02X", poOpenSessionPars.getSelectedKif()), "poKvc",
@@ -270,8 +273,9 @@ public class PoSecureSession {
         AbstractApduCommandBuilder digestInit = new DigestInitCmdBuild(csmRevision, false,
                 poRevision.equals(PoRevision.REV3_2), defaultKeyIndex, kif,
                 poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
-        logger.info("Opening: CSM Request, {} {}, {} {}", "action", "po_secure_session.open_csm_digest_init",
-                "apdu", ByteBufferUtils.toHex(digestInit.getApduRequest().getBytes()));
+        logger.info("Opening: CSM Request, {} {}, {} {}", "action",
+                "po_secure_session.open_csm_digest_init", "apdu",
+                ByteBufferUtils.toHex(digestInit.getApduRequest().getBytes()));
 
         csmApduRequestList.add(digestInit.getApduRequest());
 
@@ -297,8 +301,8 @@ public class PoSecureSession {
         }
 
         // Transfert CSM commands
-        logger.info("Opening: CSM Request, {} {}, {} {}", "action", "po_secure_session.open_csm_request",
-                "apduList", csmApduRequestList);
+        logger.info("Opening: CSM Request, {} {}, {} {}", "action",
+                "po_secure_session.open_csm_request", "apduList", csmApduRequestList);
 
         // create a SeRequestSet (list of SeRequests)
         SeRequestSet csmRequest = new SeRequestSet(new SeRequest(null, csmApduRequestList, true));
@@ -382,8 +386,8 @@ public class PoSecureSession {
         // Build "Digest Init" command from PO Open Session
         byte kif = poOpenSessionPars.getSelectedKif();
 
-        logger.info("Opening: PO response, {} {}, {} {}, {} {}, {} {}", "action", "po_secure_session.open_po_response",
-                "apduResponse",
+        logger.info("Opening: PO response, {} {}, {} {}, {} {}, {} {}", "action",
+                "po_secure_session.open_po_response", "apduResponse",
                 ByteBufferUtils.toHex(poOpenSessionPars.getApduResponse().getBytes()),
                 "sessionCardChallenge", ByteBufferUtils.toHex(sessionCardChallenge), "poKif",
                 String.format("%02X", poOpenSessionPars.getSelectedKif()), "poKvc",
@@ -401,8 +405,9 @@ public class PoSecureSession {
         AbstractApduCommandBuilder digestInit = new DigestInitCmdBuild(csmRevision, false,
                 poRevision.equals(PoRevision.REV3_2), defaultKeyIndex, kif,
                 poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
-        logger.info("Opening: CSM Request, {} {}, {} {}", "action", "po_secure_session.open_csm_digest_init",
-                "apdu", ByteBufferUtils.toHex(digestInit.getApduRequest().getBytes()));
+        logger.info("Opening: CSM Request, {} {}, {} {}", "action",
+                "po_secure_session.open_csm_digest_init", "apdu",
+                ByteBufferUtils.toHex(digestInit.getApduRequest().getBytes()));
 
         csmApduRequestList.add(digestInit.getApduRequest());
 
@@ -428,8 +433,8 @@ public class PoSecureSession {
         }
 
         // Transfert CSM commands
-        logger.info("Opening: CSM Request, {} {}, {} {}", "action", "po_secure_session.open_csm_request",
-                "apduList", csmApduRequestList);
+        logger.info("Opening: CSM Request, {} {}, {} {}", "action",
+                "po_secure_session.open_csm_request", "apduList", csmApduRequestList);
 
         // create a SeRequestSet (list of SeRequests)
         SeRequestSet csmRequest = new SeRequestSet(new SeRequest(null, csmApduRequestList, true));
@@ -447,8 +452,8 @@ public class PoSecureSession {
         csmApduRequestList.add(digestClose.getApduRequest());
 
         // ****FIRST**** transfert of CSM commands
-        logger.info("Closing: Sending CSM request, {} {}, {} {}", "action", "po_secure_session.close_csm_req",
-                "apduList", csmApduRequestList);
+        logger.info("Closing: Sending CSM request, {} {}, {} {}", "action",
+                "po_secure_session.close_csm_req", "apduList", csmApduRequestList);
 
         // create a SeRequestSet (list of SeRequests)
         csmRequest = new SeRequestSet(new SeRequest(null, csmApduRequestList, true));
@@ -489,8 +494,9 @@ public class PoSecureSession {
                 new SeRequestSet(new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
                         poApduRequestList, closeSeChannel ? false : true));
 
-        logger.info("Closing: Sending PO request, {} {}, {} {}", "action", "po_secure_session.close_po_req",
-                "apduList", poRequest.getRequests().iterator().next().getApduRequests());
+        logger.info("Closing: Sending PO request, {} {}, {} {}", "action",
+                "po_secure_session.close_po_req", "apduList",
+                poRequest.getRequests().iterator().next().getApduRequests());
 
         poResponse = poReader.transmit(poRequest).getSingleResponse();
         poApduResponseList = poResponse.getApduResponses();
@@ -721,8 +727,8 @@ public class PoSecureSession {
         csmApduRequestList_1.add(digestClose.getApduRequest());
 
         // ****FIRST**** transfert of CSM commands
-        logger.info("Closing: Sending CSM request, {} {}, {} {}", "action", "po_secure_session.close_csm_req",
-                "apduList", csmApduRequestList_1);
+        logger.info("Closing: Sending CSM request, {} {}, {} {}", "action",
+                "po_secure_session.close_csm_req", "apduList", csmApduRequestList_1);
 
         // create a SeRequestSet (list of SeRequests)
         SeRequestSet csmRequest = new SeRequestSet(new SeRequest(null, csmApduRequestList_1, true));
@@ -762,8 +768,9 @@ public class PoSecureSession {
                 new SeRequestSet(new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
                         poApduRequestList, closeSeChannel ? false : true));
 
-        logger.info("Closing: Sending PO request, {} {}, {} {}", "action", "po_secure_session.close_po_req",
-                "apduList", poRequest.getRequests().iterator().next().getApduRequests());
+        logger.info("Closing: Sending PO request, {} {}, {} {}", "action",
+                "po_secure_session.close_po_req", "apduList",
+                poRequest.getRequests().iterator().next().getApduRequests());
 
         SeResponse poResponse = poReader.transmit(poRequest).getSingleResponse();
         List<ApduResponse> poApduResponseList = poResponse.getApduResponses();

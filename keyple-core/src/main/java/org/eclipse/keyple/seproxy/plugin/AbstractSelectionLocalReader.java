@@ -8,6 +8,8 @@
 
 package org.eclipse.keyple.seproxy.plugin;
 
+import java.nio.ByteBuffer;
+import java.util.Set;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeRequest;
@@ -18,9 +20,6 @@ import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.ByteBuffer;
-import java.util.Set;
 
 /**
  * Local reader class implementing the logical channel opening based on the selection of the SE
@@ -86,14 +85,17 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
 
         // add ATR
         atrAndFci[0] = getATR();
-        logger.trace("[{}] openLogicalChannelAndSelect => ATR: {}", this.getName(), ByteBufferUtils.toHex(atrAndFci[0]));
+        logger.trace("[{}] openLogicalChannelAndSelect => ATR: {}", this.getName(),
+                ByteBufferUtils.toHex(atrAndFci[0]));
 
         // selector may be null, in this case we consider the logical channel open
         if (selector != null) {
             if (selector instanceof SeRequest.AidSelector) {
                 ByteBuffer aid = ((SeRequest.AidSelector) selector).getAidToSelect();
                 if (aid != null) {
-                    logger.trace("[{}] openLogicalChannelAndSelect => Select Application with AID = {}", this.getName(), ByteBufferUtils.toHex(aid));
+                    logger.trace(
+                            "[{}] openLogicalChannelAndSelect => Select Application with AID = {}",
+                            this.getName(), ByteBufferUtils.toHex(aid));
 
                     // build a get response command
                     // the actual length expected by the SE in the get response command is handled
@@ -107,19 +109,24 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
                     // the successful status codes list for this command is provided
                     ApduResponse fciResponse =
                             processApduRequest(new ApduRequest(selectApplicationCommand, true,
-                                    successfulSelectionStatusCodes).setName("Intrinsic Select Application"));
+                                    successfulSelectionStatusCodes)
+                                            .setName("Intrinsic Select Application"));
 
                     // add FCI
                     atrAndFci[1] = fciResponse.getBytes();
 
                     if (!fciResponse.isSuccessful()) {
-                        logger.trace("[{}] openLogicalChannelAndSelect => Application Selection failed. SELECTOR = {}", this.getName(), selector);
+                        logger.trace(
+                                "[{}] openLogicalChannelAndSelect => Application Selection failed. SELECTOR = {}",
+                                this.getName(), selector);
                         throw new SelectApplicationException("Application selection failed");
                     }
                 }
             } else {
                 if (!((SeRequest.AtrSelector) selector).atrMatches(atrAndFci[0])) {
-                    logger.trace("[{}] openLogicalChannelAndSelect => ATR Selection failed. SELECTOR = {}", this.getName(), selector);
+                    logger.trace(
+                            "[{}] openLogicalChannelAndSelect => ATR Selection failed. SELECTOR = {}",
+                            this.getName(), selector);
                     throw new SelectApplicationException("ATR selection failed");
                 }
             }

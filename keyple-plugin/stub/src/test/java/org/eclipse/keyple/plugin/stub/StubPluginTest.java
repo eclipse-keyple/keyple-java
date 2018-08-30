@@ -15,10 +15,8 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,16 +33,16 @@ public class StubPluginTest {
 
         stubPlugin = StubPlugin.getInstance(); // singleton
 
-        //delete all observers
+        // delete all observers
         stubPlugin.clearObservers();
 
-        //unplug all readers
-        for(AbstractObservableReader reader :  stubPlugin.getReaders()){
+        // unplug all readers
+        for (AbstractObservableReader reader : stubPlugin.getReaders()) {
             stubPlugin.unplugReader(reader.getName());
         }
-        logger.info("Stubplugin readers size {}" , stubPlugin.getReaders().size());
+        logger.info("Stubplugin readers size {}", stubPlugin.getReaders().size());
         Assert.assertEquals(stubPlugin.getNativeReaders().size(), 0);
-        logger.info("Stubplugin observers size {}" , stubPlugin.countObservers());
+        logger.info("Stubplugin observers size {}", stubPlugin.countObservers());
         Assert.assertEquals(stubPlugin.countObservers(), 0);
 
     }
@@ -56,8 +54,7 @@ public class StubPluginTest {
         stubPlugin.addObserver(new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
-                Assert.assertEquals(PluginEvent.EventType.READER_CONNECTED,
-                        event.getEventType());
+                Assert.assertEquals(PluginEvent.EventType.READER_CONNECTED, event.getEventType());
             }
         });
 
@@ -70,7 +67,7 @@ public class StubPluginTest {
 
     @Test
     public void testB_UnplugReaders() throws IOReaderException {
-        //add a reader
+        // add a reader
         stubPlugin.plugStubReader("test");
         assert (stubPlugin.getReaders().size() == 1);
 
@@ -83,7 +80,7 @@ public class StubPluginTest {
             }
         });
 
-        //unplug reader
+        // unplug reader
         stubPlugin.unplugReader("test");
         logger.debug("Stubplugin readers size {} ", stubPlugin.getReaders().size());
         assert (stubPlugin.getReaders().size() == 0);
