@@ -12,39 +12,6 @@ apply plugin: 'me.champeau.gradle.jmh'
 
 sourceCompatibility = 1.6
 
-jmh { // https://github.com/melix/jmh-gradle-plugin#configuration-options
-    fork = 1
-    iterations = 3
-    warmupIterations = 4
-    // jmhVersion = '1.20'
-}
-
-pmd {
-    ruleSets = [
-            "java-basic",
-            "java-braces",
-            "java-strings",
-            "java-imports",
-            "java-unnecessary",
-            "java-unusedcode",
-            "java-empty",
-            "java-codesize",
-            "java-clone",
-            "java-typeresolution",
-            "java-finalizers",
-            "java-migrating",
-            // "java-naming",        // 9 issues
-            // "java-strictexception",
-            // "java-logging-java",
-            // "java-controversial",  // 8 issues
-            // "java-sunsecure",      // 1 issue
-            // "java-junit",          // 1 issue
-            // "java-optimizations",  // 44 issues
-            // "java-coupling"       // 2 issues
-            // "java-design"         // 19 issues
-            // "java-comments"       // 87 issues --> Kind of conflicting with spotless
-    ]
-}
 
 dependencies {
 

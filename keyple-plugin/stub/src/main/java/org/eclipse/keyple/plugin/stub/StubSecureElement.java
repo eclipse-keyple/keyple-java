@@ -9,51 +9,91 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.util.ByteBufferUtils;
 
-public interface StubSecureElement {
+public abstract class StubSecureElement {
 
     /**
      * Getter for ATR
      * 
      * @return Secured Element ATR
      */
-    ByteBuffer getATR();
+    public abstract ByteBuffer getATR();
 
-    /**
-     * @return True if the channel is open to the SE
-     */
-    boolean isPhysicalChannelOpen();
 
-    /**
-     * Open physicann channel to the SE
-     * 
-     * @throws IOReaderException if a reader error occurs
-     * @throws ChannelStateReaderException if the opening fails
-     */
-    void openPhysicalChannel() throws IOReaderException, ChannelStateReaderException;
+    boolean isPhysicalChannelOpen = false;
 
-    /**
-     * Close physical channel from the SE
-     * 
-     * @throws IOReaderException if a reader error occurs
-     */
-    void closePhysicalChannel() throws IOReaderException;
+    public boolean isPhysicalChannelOpen() {
+        return isPhysicalChannelOpen;
+    }
 
-    /**
-     * Return APDU Response to APDU Request
-     * 
-     * @param apduIn : commands to be processed
-     * @return APDU response
-     * @throws ChannelStateReaderException if the transmission fails
-     */
-    ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException;
+    public void openPhysicalChannel() throws IOReaderException, ChannelStateReaderException {
+        isPhysicalChannelOpen = true;
+    }
+
+    public void closePhysicalChannel() throws IOReaderException {
+        isPhysicalChannelOpen = false;
+    }
+
 
     /**
      * @return SE protocol supported by the SE
      */
-    SeProtocol getSeProcotol();
+    public abstract SeProtocol getSeProcotol();
+
+
+    Map<String, String> hexCommands = new HashMap<String, String>();
+
+    /**
+     * Add more simulated commands to the Stub SE
+     *
+     * @param command : hexadecimal command to react to
+     * @param response : hexadecimal response to be sent in reaction to command
+     */
+    public void addHexCommand(String command, String response) {
+        assert command != null && response != null : "command and response should not be null";
+        // add commands without space
+        hexCommands.put(command.replace(" ", ""), response.replace(" ", ""));
+    }
+
+    /**
+     * Remove simulated commands from the Stub SE
+     *
+     * @param command : hexadecimal command to be removed
+     */
+    public void removeHexCommand(String command) {
+        assert command != null : "command should not be null";
+        hexCommands.remove(command.trim());
+    }
+
+    /**
+     * Return APDU Response to APDU Request
+     *
+     * @param apduIn : commands to be processed
+     * @return APDU response
+     * @throws ChannelStateReaderException if the transmission fails
+     */
+    public ByteBuffer processApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
+
+        if (apduIn == null) {
+            return null;
+        }
+
+        // convert apduIn to hexa
+        String hexApdu = ByteBufferUtils.toHex(apduIn);
+
+        // return matching hexa response if found
+        if (hexCommands.containsKey(hexApdu)) {
+            return ByteBufferUtils.fromHex(hexCommands.get(hexApdu));
+        }
+
+        // return empty buffer if not found
+        return ByteBuffer.allocate(0);
+    }
 
 }

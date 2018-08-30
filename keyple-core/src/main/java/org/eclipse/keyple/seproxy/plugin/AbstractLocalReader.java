@@ -101,7 +101,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         ApduResponse apduResponse;
         long before = 0;
         if (logging) {
-            logger.info("processApduRequest: request", ADPU_NAME_STR, apduRequest.getName(),
+            logger.debug("processApduRequest: request", ADPU_NAME_STR, apduRequest.getName(),
                     "command.data", ByteBufferUtils.toHex(apduRequest.getBytes()));
             before = logging ? System.nanoTime() : 0;
         }
@@ -123,7 +123,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
         if (logging) {
             double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-            logger.info("processApduRequest: response", ADPU_NAME_STR, apduRequest.getName(),
+            logger.debug("processApduRequest: response", ADPU_NAME_STR, apduRequest.getName(),
                     "response.data", ByteBufferUtils.toHex(apduResponse.getDataOut()), "elapsedMs",
                     elapsedMs);
         }
@@ -147,7 +147,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         // transmitApdu
         ByteBuffer getResponseHackRequestBytes = ByteBufferUtils.fromHex("00C0000000");
         if (logging) {
-            logger.info("case4HackGetResponse: request", ADPU_NAME_STR, "Get Response",
+            logger.debug("case4HackGetResponse: request", ADPU_NAME_STR, "Get Response",
                     "command.data", ByteBufferUtils.toHex(getResponseHackRequestBytes));
             before = logging ? System.nanoTime() : 0;
         }
@@ -156,7 +156,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
         if (logging) {
             double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-            logger.info("processApduRequest: response", ADPU_NAME_STR, "Get Response",
+            logger.debug("processApduRequest: response", ADPU_NAME_STR, "Get Response",
                     "response.data", ByteBufferUtils.toHex(getResponseHackResponseBytes),
                     "elapsedMs", elapsedMs);
         }
@@ -236,7 +236,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                         closePhysicalChannel();
 
 
-                        logger.info("Closing of the physical SE channel.", ACTION_STR,
+                        logger.debug("Closing of the physical SE channel.", ACTION_STR,
                                 "local_reader.transmit_actual", "reader", this.getName());
                     }
                 } else {
@@ -263,7 +263,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     }
 
     protected final void closeLogicalChannel() {
-        logger.info("Close logical channel", "reader", this.getName());
+        logger.debug("Close logical channel", "reader", this.getName());
         logicalChannelIsOpen = false;
         fciDataSelected = null;
         atrData = null;
@@ -271,7 +271,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     }
 
     private void setLogicalChannelOpen() {
-        logger.info("Logical channel is open", "reader", this.getName());
+        logger.debug("Logical channel is open", "reader", this.getName());
         logicalChannelIsOpen = true;
     }
 

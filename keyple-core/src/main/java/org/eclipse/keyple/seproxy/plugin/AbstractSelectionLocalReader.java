@@ -87,14 +87,14 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
 
         // add ATR
         atrAndFci[0] = getATR();
-        logger.info("Channel opening", "ATR", ByteBufferUtils.toHex(atrAndFci[0]));
+        logger.debug("Channel opening", "ATR", ByteBufferUtils.toHex(atrAndFci[0]));
 
         // selector may be null, in this case we consider the logical channel open
         if (selector != null) {
             if (selector instanceof SeRequest.AidSelector) {
                 ByteBuffer aid = ((SeRequest.AidSelector) selector).getAidToSelect();
                 if (aid != null) {
-                    logger.info("Connecting to card", "action", "local_reader.openLogicalChannel",
+                    logger.debug("Connecting to card", "action", "local_reader.openLogicalChannel",
                             "aid", ByteBufferUtils.toHex(aid), "readerName", getName());
 
                     // build a get response command
@@ -115,7 +115,7 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
                     atrAndFci[1] = fciResponse.getBytes();
 
                     if (!fciResponse.isSuccessful()) {
-                        logger.info("Application selection failed", "action",
+                        logger.warn("Application selection failed", "action",
                                 "openLogicalChannelAndSelect", "selector", selector, "fci",
                                 ByteBufferUtils.toHex(fciResponse.getBytes()));
                         throw new SelectApplicationException("Application selection failed");
@@ -123,7 +123,7 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
                 }
             } else {
                 if (!((SeRequest.AtrSelector) selector).atrMatches(atrAndFci[0])) {
-                    logger.info("ATR selection failed", "action", "openLogicalChannelAndSelect",
+                    logger.warn("ATR selection failed", "action", "openLogicalChannelAndSelect",
                             "selector", selector, "atr", ByteBufferUtils.toHex(atrAndFci[0]));
                     throw new SelectApplicationException("ATR selection failed");
                 }
