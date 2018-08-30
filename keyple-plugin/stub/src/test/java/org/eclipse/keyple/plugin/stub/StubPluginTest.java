@@ -57,6 +57,8 @@ public class StubPluginTest {
         });
 
         stubPlugin.plugStubReader("test");
+        logger.debug("Stubplugin readers size {} ", stubPlugin.getReaders().size());
+
         assert (stubPlugin.getReaders().size() == 1);
 
     }
@@ -78,6 +80,7 @@ public class StubPluginTest {
 
         //unplug reader
         stubPlugin.unplugReader("test");
+        logger.debug("Stubplugin readers size {} ", stubPlugin.getReaders().size());
         assert (stubPlugin.getReaders().size() == 0);
     }
 
@@ -85,8 +88,10 @@ public class StubPluginTest {
     public void testC_PlugSameReaderTwice() throws IOReaderException {
         stubPlugin.plugStubReader("test");
         stubPlugin.plugStubReader("test");
+        logger.debug("Stubplugin readers size {} ", stubPlugin.getReaders().size());
         assert (stubPlugin.getReaders().size() == 1);
         stubPlugin.unplugReader("test");
+        logger.debug("Stubplugin readers size {} ", stubPlugin.getReaders().size());
         assert (stubPlugin.getReaders().size() == 0);
     }
 
