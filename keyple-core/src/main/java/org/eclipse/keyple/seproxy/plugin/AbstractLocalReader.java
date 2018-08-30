@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-// TODO remove after refactoring this class to reduce the number of method
 /**
  * Manage the loop processing for SeRequest transmission in a set and for SeResponse reception in a
  * set
@@ -35,11 +34,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     private ApduResponse fciDataSelected; // if fciDataSelected is NULL, it means that no
                                           // application is selected
     private ApduResponse atrData;
-    private boolean logging = true; // TODO make this changeable
-
-    // TODO change the way to do the logging
-    private static final String ACTION_STR = "action"; // PMD rule AvoidDuplicateLiterals
-    private static final String ADPU_NAME_STR = "apdu.name";
 
     public AbstractLocalReader(String pluginName, String readerName) {
         super(pluginName, readerName);
@@ -101,15 +95,15 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             throws ChannelStateReaderException {
         ApduResponse apduResponse;
         long before = 0;
-        if (logging) {
-            logger.debug("processApduRequest: request {} {}, {} {}", ADPU_NAME_STR, apduRequest.getName(),
-                    "command.data", ByteBufferUtils.toHex(apduRequest.getBytes()));
-            before = logging ? System.nanoTime() : 0;
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] processApduRequest => {}.", this.getName(), apduRequest);
+            before = System.nanoTime();
         }
-        // TODO understand why this code and this comment???
-        // Sending data
-        // We shouldn't have to re-use the buffer that was used to be sent but we have
-        // some code that does it.
+        /*
+        Fix buffer position before sending data
+        We shouldn't have to re-use the buffer that was used to be sent but we have
+        some code that does it.
+        */
         ByteBuffer buffer = apduRequest.getBytes();
         final int posBeforeRead = buffer.position();
         apduResponse =
@@ -122,11 +116,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             apduResponse = case4HackGetResponse(apduResponse.getStatusCode());
         }
 
-        if (logging) {
+        if (logger.isTraceEnabled()) {
             double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-            logger.debug("processApduRequest: response {} {}, {} {}, {} {}", ADPU_NAME_STR, apduRequest.getName(),
-                    "response.data", ByteBufferUtils.toHex(apduResponse.getDataOut()), "elapsedMs",
-                    elapsedMs);
+            logger.trace("[{}] processApduRequest => {}, elapsed {} ms.", this.getName(), apduResponse, elapsedMs);
         }
         return apduResponse;
     }
@@ -138,32 +130,31 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * 
      * @param originalStatusCode the status code of the command that didn't returned data
      * @return ApduResponse the response to the get response command
-     * @throws ChannelStateReaderException
+     * @throws ChannelStateReaderException if the transmission fails.
      */
     private ApduResponse case4HackGetResponse(int originalStatusCode)
             throws ChannelStateReaderException {
         long before = 0;
-        // build a get response command
-        // the actual length expected by the SE in the get response command is handled in
-        // transmitApdu
+        /*
+        build a get response command
+        the actual length expected by the SE in the get response command is handled in
+        transmitApdu
+        */
         ByteBuffer getResponseHackRequestBytes = ByteBufferUtils.fromHex("00C0000000");
-        if (logging) {
-            logger.debug("case4HackGetResponse: request {} {}, {} {}", ADPU_NAME_STR, "Get Response",
-                    "command.data", ByteBufferUtils.toHex(getResponseHackRequestBytes));
-            before = logging ? System.nanoTime() : 0;
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] case4HackGetResponse => ApduRequest: NAME = \"Intrinsic Get Response\", RAWDATA = {}", this.getName(), ByteBufferUtils.toHex(getResponseHackRequestBytes));
+            before = System.nanoTime();
         }
 
         ByteBuffer getResponseHackResponseBytes = transmitApdu(getResponseHackRequestBytes);
 
-        if (logging) {
-            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-            logger.debug("processApduRequest: response  {} {}, {} {}, {} {}", ADPU_NAME_STR, "Get Response",
-                    "response.data", ByteBufferUtils.toHex(getResponseHackResponseBytes),
-                    "elapsedMs", elapsedMs);
-        }
-
-        // we expect here a 0x9000 status code
+        /* we expect here a 0x9000 status code */
         ApduResponse getResponseHackResponse = new ApduResponse(getResponseHackResponseBytes, null);
+
+        if (logger.isTraceEnabled()) {
+            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            logger.trace("[{}] case4HackGetResponse => Intrinsic {}, elapsed {} ms.", this.getName(), getResponseHackResponseBytes, elapsedMs);
+        }
 
         if (getResponseHackResponse.isSuccessful()) {
             // replace the two last status word bytes by the original status word
@@ -217,7 +208,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         for (SeRequest request : requestSet.getRequests()) {
 
             if (!stopProcess) {
-                if (requestMatchesProtocol[requestIndex] == true) {
+                if (requestMatchesProtocol[requestIndex]) {
                     responses.add(processSeRequest(request));
                 } else {
                     // in case the protocolFlag of a SeRequest doesn't match the reader status, a
@@ -237,8 +228,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                         closePhysicalChannel();
 
 
-                        logger.debug("Closing of the physical SE channel. {} {}, {} {}", ACTION_STR,
-                                "local_reader.transmit_actual", "reader", this.getName());
+                        logger.trace("[{}] processSeRequestSet => Closing of the physical channel.", this.getName());
                     }
                 } else {
                     stopProcess = true;
@@ -264,7 +254,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     }
 
     protected final void closeLogicalChannel() {
-        logger.debug("Close logical channel {} {}", "reader", this.getName());
+        logger.trace("[{}] closeLogicalChannel => Closing of the logical channel.", this.getName());
         logicalChannelIsOpen = false;
         fciDataSelected = null;
         atrData = null;
@@ -272,7 +262,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     }
 
     private void setLogicalChannelOpen() {
-        logger.debug("Logical channel is open {} {}", "reader", this.getName());
         logicalChannelIsOpen = true;
     }
 
@@ -281,9 +270,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * application is handled. The methods allows decrease the cyclomatic complexity of
      * TransmitActual
      *
-     * @param seRequest
-     * @return the SeResponse to the requestS
-     * @throws ChannelStateReaderException
+     * @param seRequest the SeRequest
+     * @return the SeResponse to the SeRequest
+     * @throws ChannelStateReaderException if a transmission fails
      */
     @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
             "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity"})
@@ -310,9 +299,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 try {
                     atrAndFciDataBytes = openLogicalChannelAndSelect(seRequest.getSelector(),
                             seRequest.getSuccessfulSelectionStatusCodes());
-                    logger.debug("Logicial channel opening {} {}", "status", "success");
+                    logger.trace("[{}] processSeRequest => Logical channel opening success.", this.getName());
                 } catch (SelectApplicationException e) {
-                    logger.debug("Logicial channel opening {} {}", "status", "failure");
+                    logger.trace("[{}] processSeRequest => Logical channel opening failure", this.getName());
                     closeLogicalChannel();
                     // return a null SeReponse when the opening of the logical channel failed
                     return null;
@@ -342,7 +331,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         } else {
             // selector is null, we expect that the logical channel was previously opened
             if (!isLogicalChannelOpen()) {
-                throw new IllegalStateException(this.getName() + ": No logical channel opened!");
+                throw new IllegalStateException("[" + this.getName() + "] processSeRequest => No logical channel opened!");
             }
         }
 

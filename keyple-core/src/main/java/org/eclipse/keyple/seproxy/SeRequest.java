@@ -63,7 +63,7 @@ public final class SeRequest {
         }
 
         public String toString() {
-            return String.format("SeRequest.AidSelector{aid=%s}",
+            return String.format("AID:%s",
                     aidToSelect == null ? "null" : ByteBufferUtils.toHex(aidToSelect));
         }
     }
@@ -104,7 +104,7 @@ public final class SeRequest {
         }
 
         public String toString() {
-            return String.format("SeRequest.AtrSelector{atrRegex=%s}",
+            return String.format("ATR regex:%s",
                     atrRegex.length() != 0 ? atrRegex : "empty");
         }
     }

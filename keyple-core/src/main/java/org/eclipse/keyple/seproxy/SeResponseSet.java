@@ -67,6 +67,6 @@ public final class SeResponseSet {
 
     @Override
     public String toString() {
-        return "SeReponse{seResponses=" + seResponses + "}";
+        return seResponses.size() + " SeReponse(s)";
     }
 }

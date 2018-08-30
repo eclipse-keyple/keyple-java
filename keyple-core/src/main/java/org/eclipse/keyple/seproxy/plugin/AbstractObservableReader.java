@@ -60,30 +60,30 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             throw new IOReaderException("seRequestSet must not be null");
         }
 
-        // TODO do a better log of SeRequestSet data
-        logger.debug("SeRequestSet {} {}, {} {}", "reader", this.getName(), "data", requestSet.toString());
-
-        long before = System.nanoTime();
         SeResponseSet responseSet;
+        long before = 0;
+
+
+        if(logger.isDebugEnabled()) {
+            logger.trace("[{}] transmit => SeRequestSet: {}", this.getName(), requestSet.toString());
+            before = System.nanoTime();
+        }
 
         try {
             responseSet = processSeRequestSet(requestSet);
         } catch (IOReaderException ex) {
             // Switching to the 10th of milliseconds and dividing by 10 to get the ms
             double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-            logger.warn("LocalReader: Data exchange {} {}, {} {}, {} {}", "action", "local_reader.transmit_failure",
-                    "requestSet", requestSet, "elapsedMs", elapsedMs);
+            logger.trace("[{}] transmit => failure. elapsed {}", elapsedMs);
             throw ex;
         }
 
-        // Switching to the 10th of milliseconds and dividing by 10 to get the ms
-        double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
-        logger.debug("LocalReader: Data exchange {} {}, {} {}, {} {}, {} {}, {} {}", "action", "local_reader.transmit", "reader",
-                this.getName(), "requestSet", requestSet, "responseSet", responseSet, "elapsedMs",
-                elapsedMs);
-
-        // TODO do a better log of SeReponseSet data
-        logger.debug("SeResponseSet {} {}, {} {}", "reader", this.getName(), "data", responseSet.toString());
+        if(logger.isDebugEnabled()) {
+            // Switching to the 10th of milliseconds and dividing by 10 to get the ms
+            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            logger.trace("[{}] transmit => SeResponse: {}, elapsed {} ms.", this.getName(),
+                    responseSet.toString(), elapsedMs);
+        }
 
         return responseSet;
     }

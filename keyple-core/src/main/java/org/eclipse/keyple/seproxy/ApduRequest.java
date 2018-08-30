@@ -9,7 +9,7 @@
 package org.eclipse.keyple.seproxy;
 
 import java.nio.ByteBuffer;
-import java.util.LinkedHashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 
@@ -24,13 +24,13 @@ public final class ApduRequest extends AbstractApduBuffer {
      * ‘S1Dx’ SAMs that presents a behaviour not compliant with ISO 7816-3 in contacts mode (not
      * returning the 61XYh status).
      */
-    private boolean case4;
+    private final boolean case4;
 
     /**
      * List of status codes that should be considered successful although they are different from
      * 9000
      */
-    private Set<Short> successfulStatusCodes = new LinkedHashSet<Short>();
+    private final Set<Short> successfulStatusCodes;
 
     /**
      * Name of the request being sent
@@ -103,6 +103,21 @@ public final class ApduRequest extends AbstractApduBuffer {
 
     @Override
     public String toString() {
-        return this.getName() + ": " + super.toString();
+        StringBuilder string;
+        string = new StringBuilder("ApduRequest: NAME = \"" + this.getName() + "\", RAWDATA = " + super.toString());
+        if(isCase4()) {
+           string.append(", case4");
+        }
+        if(successfulStatusCodes != null) {
+            string.append(", additional successful status codes = ");
+            Iterator<Short> iterator = successfulStatusCodes.iterator();
+            while (iterator.hasNext()) {
+                string.append(String.format("%04X", iterator.next()));
+                if (iterator.hasNext()) {
+                    string.append(", ");
+                }
+            }
+        }
+        return string.toString();
     }
 }

@@ -19,7 +19,7 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 public final class ApduResponse extends AbstractApduBuffer {
 
     /***
-     * the success result of the processed APDU commandto allow chaining responses in a group of
+     * the success result of the processed APDU command to allow chaining responses in a group of
      * APDUs
      */
     private final boolean successful;
@@ -42,7 +42,9 @@ public final class ApduResponse extends AbstractApduBuffer {
         if (buffer == null) {
             this.successful = false;
         } else {
-            // TODO shouldn't we check the case where length is < 2 and throw an exception?
+            if(buffer.limit() < 2) {
+                throw new IllegalArgumentException("Bad buffer (length < 2): " + buffer.limit());
+            }
             int statusCode = buffer.getShort(buffer.limit() - 2);
             // java is signed only
             if (statusCode < 0) {
@@ -88,9 +90,8 @@ public final class ApduResponse extends AbstractApduBuffer {
 
     @Override
     public String toString() {
-        return "Resp{" + super.toString() + "}";
+        return "ApduResponse: " + (isSuccessful() ? "SUCCESS" : "FAILURE") + ", RAWDATA = " + super.toString();
     }
-
 
     @Override
     public boolean equals(Object o) {
