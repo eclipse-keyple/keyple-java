@@ -7,23 +7,6 @@ apply plugin: 'java'
 
 sourceCompatibility = 1.6
 
-/*
-Deactivate jmh plugin due to conflict with android environnement,
-Error:Unable to find module with Gradle path ':keyple-core' (needed by modules: 'keyple-example-androidnfc', 'keyple-plugin-android'.)
-
-apply plugin: 'me.champeau.gradle.jmh'
-
-plugins {
-    id "me.champeau.gradle.jmh" version "0.4.3"
-}
-jmh { // https://github.com/melix/jmh-gradle-plugin#configuration-options
-    fork = 1
-    iterations = 3
-    warmupIterations = 4
-    // jmhVersion = '1.20'
-}
-*/
-
 pmd {
     ruleSets = [
             "java-basic",
