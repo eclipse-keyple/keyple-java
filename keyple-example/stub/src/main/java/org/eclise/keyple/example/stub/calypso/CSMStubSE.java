@@ -24,44 +24,44 @@ public class CSMStubSE extends StubSecureElement {
 
     public CSMStubSE() {
         addHexCommand("8014 0000 08 1122334455667788", "9000");// Select Diversifier
-        addHexCommand("94140000081122334455667788", "9000");// Select Diversifier
-        addHexCommand("8084000004", "11223344 9000");// Get Challenge
-        addHexCommand("9484000004", "11223344 9000");// Get Challenge
+        addHexCommand("9414 0000 08 1122334455667788", "9000");// Select Diversifier
+        addHexCommand("8084 0000 04", "11223344 9000");// Get Challenge
+        addHexCommand("9484 0000 04", "11223344 9000");// Get Challenge
         addHexCommand(
-                "808A00FF3A300E 55667788 00300E30000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                "808A 00FF 3A 300E 55667788 00300E30000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                 "9000");// Digest Init
         addHexCommand(
-                "948A00FF3A300E5566778800300E30000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                "948A 00FF 3A 300E 55667788 00300E30000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
                 "9000");// Digest Init
 
-        addHexCommand("8082000004 11223344", "9000");// Digest Authenticate
-        addHexCommand("9482000004 11223344", "9000");// Digest Authenticate
+        addHexCommand("8082 0000 04 11223344", "9000");// Digest Authenticate
+        addHexCommand("9482 0000 04 11223344", "9000");// Digest Authenticate
 
-        addHexCommand("948200000444332211", "9000");// Digest Authenticate ?
+        addHexCommand("9482 0000 04 44332211", "9000");// Digest Authenticate ?
 
 
-        addHexCommand("808E000004", "88776655 9000");// Digest CLose
-        addHexCommand("948E000004", "88776655 9000");// Digest CLose
-
-        addHexCommand(
-                "808C0000320000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000009000",
-                "9000");// Digest update
-        addHexCommand(
-                "948C0000320000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000009000",
-                "9000");// Digest update
-
-        addHexCommand("808C00000500B201D430", "9000");// Digest update
-        addHexCommand("948C00000500B201D430", "9000");// Digest update
+        addHexCommand("808E 0000 04", "88776655 9000");// Digest CLose
+        addHexCommand("948E 0000 04", "88776655 9000");// Digest CLose
 
         addHexCommand(
-                "808C00002200000000000000000000000000000000000000000000000000000000000000009000",
+                "808C 0000 32 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000009000",
                 "9000");// Digest update
         addHexCommand(
-                "948C00002200000000000000000000000000000000000000000000000000000000000000009000",
+                "948C 0000 32 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000009000",
                 "9000");// Digest update
 
-        addHexCommand("808C00000500B201A420", "9000");// Digest update
-        addHexCommand("948C00000500B201A420", "9000");// Digest update
+        addHexCommand("808C 0000 05 00B201D430", "9000");// Digest update
+        addHexCommand("948C 0000 05 00B201D430", "9000");// Digest update
+
+        addHexCommand(
+                "808C 0000 22 00000000000000000000000000000000000000000000000000000000000000009000",
+                "9000");// Digest update
+        addHexCommand(
+                "948C 0000 22 00000000000000000000000000000000000000000000000000000000000000009000",
+                "9000");// Digest update
+
+        addHexCommand("808C 0000 05 00B201A420", "9000");// Digest update
+        addHexCommand("948C 0000 05 00B201A420", "9000");// Digest update
     }
 
     @Override
