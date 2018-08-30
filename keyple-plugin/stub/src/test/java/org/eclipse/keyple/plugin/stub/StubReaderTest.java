@@ -39,10 +39,9 @@ public class StubReaderTest {
     // init before each test
     @Before
     public void SetUp() throws IOReaderException {
-
-        StubPlugin plugin = StubPlugin.getInstance();
-        plugin.clearObservers();
-        reader = plugin.plugStubReader("StubReader");
+        // clear observers from others tests as StubPlugin is a singleton
+        StubPlugin.getInstance().clearObservers();
+        reader = StubPlugin.getInstance().plugStubReader("StubReader");
 
     }
 
@@ -177,7 +176,6 @@ public class StubReaderTest {
 
 
     }
-
 
 
 

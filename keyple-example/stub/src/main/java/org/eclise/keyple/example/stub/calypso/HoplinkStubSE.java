@@ -22,42 +22,42 @@ public class HoplinkStubSE extends StubSecureElement {
 
 
     public HoplinkStubSE() {
-        addHexCommand("00A4040005AABBCCDDEE00", "6A82");// Select fake Application
-        addHexCommand("00A404000AA000000404012509010100",
-                "6F24840AA0000004040125090101A516BF0C13C708 1122334455667788 53070A3C2312141001 9000");// Select
-                                                                                                       // Navigo
-                                                                                                       // Application
-        addHexCommand("00A404000AA000000291A00000019100",
+        addHexCommand("00A4 0400 05AABBCCDDEE00", "6A82");// Select fake Application
+        addHexCommand("00A4 0400 0AA000000404012509010100",
+                "6F24 840AA0000004040125090101A516BF0C13C708 1122334455667788 53070A3C2312141001 9000");// Select
+                                                                                                        // Navigo
+                                                                                                        // Application
+        addHexCommand("00A4 0400 0AA000000291A00000019100",
                 "6F25840BA000000291A00000019102A516BF0C13C708 1122334455667788 53070A3C230C141001 9000");// Select
                                                                                                          // Hoplink
                                                                                                          // Application
-        addHexCommand("00A404000BA000000291A0000001910200",
+        addHexCommand("00A4 0400 0BA000000291A0000001910200",
                 "6F25840BA000000291A00000019102A516BF0C13C708 1122334455667788 53070A3C230C141001 9000");// Select
                                                                                                          // Hoplink
                                                                                                          // Application
-        addHexCommand("00B201A420",
+        addHexCommand("00B2 01A4 20",
                 "0000000000000000000000000000000000000000000000000000000000000000 9000");//// Read
                                                                                          //// Record
-        addHexCommand("00B201D430",
+        addHexCommand("00B2 01D4 30",
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 9000");// Read
                                                                                                                          // Record
-        addHexCommand("00B201A401",
+        addHexCommand("00B2 01A4 01",
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 9000");// Read
                                                                                                                          // Record
-        addHexCommand("008A0BD104 11223344 00",
+        addHexCommand("008A 0BD104 11223344 00",
                 "55667788 00300E30000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 9000");// Open
                                                                                                                                           // Secure
                                                                                                                                           // Session
                                                                                                                                           // V3.1
-        addHexCommand("008A0BD104 11223344",
+        addHexCommand("008A 0BD104 11223344",
                 "55667788 00300E30000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 9000");// Open
                                                                                                                                           // Secure
                                                                                                                                           // Session
                                                                                                                                           // V3.1
-        addHexCommand("008E0000048877665500", "44332211 9000");// Close Secure Session
-        addHexCommand("008E8000048877665500", "44332211 9000");// Close Secure Session
-        addHexCommand("008E00000488776655", "44332211 9000");// Close Secure Session
-        addHexCommand("008E80000488776655", "44332211 9000");// Close Secure Session
+        addHexCommand("008E 0000 04 88776655 00", "44332211 9000");// Close Secure Session
+        addHexCommand("008E 8000 04 88776655 00", "44332211 9000");// Close Secure Session
+        addHexCommand("008E 0000 04 88776655", "44332211 9000");// Close Secure Session
+        addHexCommand("008E 8000 04 88776655", "44332211 9000");// Close Secure Session
 
     }
 

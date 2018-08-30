@@ -25,6 +25,7 @@ jobs:
           #(disabled) fallback to using the latest cache if no exact match is found
           #- v1-dependencies-
 
+      - run: gradle test --stacktrace --debug # jmh - Disabling JMH as it's very unreliable under CircleCI
       - run: gradle build javadoc fatjar # jmh - Disabling JMH as it's very unreliable under CircleCI
       - run: .circleci/save_artifacts.sh Android build takes care of it
       #- run: .circleci/push_gh_pages.sh Android build takes care of it
