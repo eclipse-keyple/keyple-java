@@ -42,7 +42,7 @@ public class StubPluginTest {
         for(AbstractObservableReader reader :  stubPlugin.getReaders()){
             stubPlugin.unplugReader(reader.getName());
         }
-        logger.info("Stubplugin readers size {}" , stubPlugin.getNativeReaders().size());
+        logger.info("Stubplugin readers size {}" , stubPlugin.getReaders().size());
         Assert.assertEquals(stubPlugin.getNativeReaders().size(), 0);
         logger.info("Stubplugin observers size {}" , stubPlugin.countObservers());
         Assert.assertEquals(stubPlugin.countObservers(), 0);
