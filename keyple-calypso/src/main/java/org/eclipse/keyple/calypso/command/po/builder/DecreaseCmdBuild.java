@@ -60,6 +60,7 @@ public class DecreaseCmdBuild extends PoCommandBuilder implements PoSendableInSe
         byte p1 = counterNumber;
         byte p2 = (byte) (sfi * 8);
 
-        this.request = setApduRequest(cla, command, p1, p2, decValueBuffer, (byte) 3);
+        /* this is a case4 command, we set Le = 0 */
+        this.request = setApduRequest(cla, command, p1, p2, decValueBuffer, (byte) 0);
     }
 }
