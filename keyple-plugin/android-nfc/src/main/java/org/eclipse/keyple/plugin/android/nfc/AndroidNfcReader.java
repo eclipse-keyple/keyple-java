@@ -108,9 +108,6 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
      */
     @Override
     public void setParameter(String key, String value) throws IOException {
-        LOG.info("AndroidNfcReader supports the following parameters");
-        LOG.info(READER_NAME,
-                "FLAG_READER_SKIP_NDEF_CHECK:\"int\", FLAG_READER_NO_PLATFORM_SOUNDS:\"int\", FLAG_READER_PRESENCE_CHECK_DELAY:\"int\"");
 
         Boolean correctParameter = (key.equals(AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK)
                 && value.equals("1") || value.equals("0"))
@@ -124,8 +121,9 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
             LOG.warn("Adding parameter : " + key + " - " + value);
             parameters.put(key, value);
         } else {
-
             LOG.warn("Unrecognized parameter : " + key);
+            LOG.warn("AndroidNfcReader supports the following parameters");
+            LOG.warn("FLAG_READER_SKIP_NDEF_CHECK:\"int\", FLAG_READER_NO_PLATFORM_SOUNDS:\"int\", FLAG_READER_PRESENCE_CHECK_DELAY:\"int\"");
             throw new IOException("Unrecognized  parameter");
         }
 
@@ -243,9 +241,10 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
         this.onTagDiscovered(tag);
     }
 
-    String printTagId() {
+    public String printTagId() {
+
         return tagProxy != null && tagProxy.getTag() != null
-                ? Arrays.toString(tagProxy.getTag().getId()) + tagProxy.getTag().toString()
+                ? tagProxy.getTag().toString() + " - " + Arrays.toString(tagProxy.getTag().getId())
                 : "null";
     }
 

@@ -159,14 +159,13 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                LOG.debug("New ReaderEvent received : " + event.toString());
 
                 switch (event.getEventType()) {
                     case SE_INSERTED:
-                        mText.append("\n ---- \n");
-                        mText.append("Tag opened to tag");
                         try {
-
+                            mText.append("\n ----\n ");
+                            mText.append("PO inserted in Reader : " +event.getReaderName());
+                            LOG.debug("New ReaderEvent received : " + event.toString());
                             runTest();
 
                         } catch (IllegalArgumentException e) {
@@ -175,8 +174,8 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                         break;
 
                     case SE_REMOVAL:
-                        mText.append("\n ---- \n");
-                        mText.append("Connection closed to tag");
+                        //mText.append("\n ---- \n");
+                        //mText.append("Connection closed to tag");
                         break;
 
                     case IO_ERROR:
@@ -204,60 +203,79 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
      */
     private void runHoplinkSimpleRead() {
         LOG.debug("Running HopLink Simple Read Tests");
-        ProxyReader reader = null;
-        try {
-            reader = SeProxyService.getInstance().getPlugins().first().getReaders().first();
-
-            String poAid = "A000000291A000000191";
-            String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
-                    + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
-
-            ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                    (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
-
-            ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                    (byte) 0x1A, (byte) 0x01, true, (byte) 0x30);
-
-            UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
-                    new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
-                            ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
-
-            List<ApduRequest> poApduRequestList;
-
-            poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest(),
-                    poReadRecordCmd_T2Usage.getApduRequest(),
-                    poUpdateRecordCmd_T2UsageFill.getApduRequest());
-
-
-            SeRequest seRequest =
-                    new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
-                            poApduRequestList, false, ContactlessProtocols.PROTOCOL_ISO14443_4);
-
-
-            final SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
-
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mText.append("\n ---- \n");
-                    for (SeResponse response : seResponseSet.getResponses()) {
-                        if (response != null) {
-                            for (ApduResponse apdu : response.getApduResponses()) {
-                                mText.append("Response : " + apdu.getStatusCode() + " - "
-                                        + ByteBufferUtils.toHex(apdu.getDataOut()));
-                                mText.append("\n");
-                            }
-                        } else {
-                            mText.append("Response : null");
-                            mText.append("\n");
-                        }
-                    }
-                }
-            });
+                    try {
+                        ProxyReader reader = null;
+                        reader = SeProxyService.getInstance().getPlugins().first().getReaders().first();
 
-        } catch (IOReaderException e) {
-            e.printStackTrace();
-        }
+                        String poAid = "A000000291A000000191";
+                        String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
+                                + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
+
+                        mText.append("\n");
+                        mText.append(((AndroidNfcReader) reader).printTagId());
+                        mText.append("\n ---- \n");
+
+                        mText.append("\n");
+                        mText.append("Selecting application : " + poAid);
+                        mText.append("\n");
+
+                        ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                                (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
+
+                        ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                                (byte) 0x1A, (byte) 0x01, true, (byte) 0x30);
+
+                        UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
+                                new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
+                                        ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
+
+                        List<ApduRequest> poApduRequestList;
+
+                        poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest(),
+                                poReadRecordCmd_T2Usage.getApduRequest(),
+                                poUpdateRecordCmd_T2UsageFill.getApduRequest());
+
+                        Boolean keepChannelOpen = false ;
+
+                        mText.append("\n");
+                        mText.append("Executing command Calypso : " + poReadRecordCmd_T2Env.getName());
+                        mText.append("\n");
+                        mText.append("Executing command Calypso : " + poReadRecordCmd_T2Usage.getName());
+                        mText.append("\n");
+                        mText.append("Executing command Calypso : " + poUpdateRecordCmd_T2UsageFill.getName());
+                        mText.append("\n");
+                        mText.append("Keep Channel Open : " + keepChannelOpen);
+                        mText.append("\n ----\n ");
+
+                        SeRequest seRequest =
+                                new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
+                                        poApduRequestList, keepChannelOpen, ContactlessProtocols.PROTOCOL_ISO14443_4);
+
+                        final SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
+
+                                for (SeResponse response : seResponseSet.getResponses()) {
+                                    if (response != null) {
+                                        for (ApduResponse apdu : response.getApduResponses()) {
+                                            mText.append("Response : " + apdu.getStatusCode() + " - "
+                                                    + ByteBufferUtils.toHex(apdu.getDataOut()));
+                                            mText.append("\n");
+                                        }
+                                    mText.append("\n\n\n\n\n");
+
+                                    } else {
+                                        mText.append("Response : null");
+                                        mText.append("\n\n\n\n\n");
+                                    }
+                                }
+                            } catch (IOReaderException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
     }
 
 
