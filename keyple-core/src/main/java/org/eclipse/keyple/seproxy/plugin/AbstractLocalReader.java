@@ -31,8 +31,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
     private boolean logicalChannelIsOpen = false;
     private ByteBuffer aidCurrentlySelected;
-    private ApduResponse fciDataSelected; // if fciDataSelected is NULL, it means that no
-                                          // application is selected
+    private ApduResponse fciDataSelected;
     private ApduResponse atrData;
 
     public AbstractLocalReader(String pluginName, String readerName) {
@@ -195,16 +194,20 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             requestIndex++;
         }
 
-        // we have now an array of booleans saying whether the corresponding request and the
-        // current SE match or not
+        /*
+         * we have now an array of booleans saying whether the corresponding request and the current
+         * SE match or not
+         */
 
         lastRequestIndex = requestIndex;
         requestIndex = 0;
 
-        // The current requestSet is possibly made of several APDU command lists
-        // If the requestMatchesProtocol is true we process the requestSet
-        // If the requestMatchesProtocol is false we skip to the next requestSet
-        // If keepChannelOpen is false, we close the physical channel for the last request.
+        /*
+         * The current requestSet is possibly made of several APDU command lists If the
+         * requestMatchesProtocol is true we process the requestSet If the requestMatchesProtocol is
+         * false we skip to the next requestSet If keepChannelOpen is false, we close the physical
+         * channel for the last request.
+         */
         List<SeResponse> responses = new ArrayList<SeResponse>();
         boolean stopProcess = false;
         for (SeRequest request : requestSet.getRequests()) {
@@ -218,8 +221,10 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     logger.debug("[{}] processSeRequestSet => receive {}", this.getName(),
                             response);
                 } else {
-                    // in case the protocolFlag of a SeRequest doesn't match the reader status, a
-                    // null SeResponse is added to the SeResponseSet.
+                    /*
+                     * in case the protocolFlag of a SeRequest doesn't match the reader status, a
+                     * null SeResponse is added to the SeResponseSet.
+                     */
                     responses.add(null);
                 }
                 requestIndex++;
@@ -298,6 +303,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     && aidCurrentlySelected != ((SeRequest.AidSelector) seRequest.getSelector())
                             .getAidToSelect()) {
                 // the AID changed, close the logical channel
+                logger.trace(
+                        "[{}] processSeRequest => The AID changed, close the logical channel. AID = {}, EXPECTEDAID = {}",
+                        aidCurrentlySelected, seRequest.getSelector());
                 closeLogicalChannel();
             }
 
