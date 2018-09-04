@@ -100,14 +100,11 @@ public class OMAPITestFragment extends Fragment {
                     SeProxyService.getInstance().getPlugins().first().getReaders();
 
             if (readers == null || readers.size() < 1) {
-                mText.append("\nNo readers found in Keyple Plugin");
+                mText.append("\nNo readers found in OMAPI Keyple Plugin");
                 mText.append("\nTry to reload..");
             } else {
-
-
                 for (ProxyReader aReader : readers) {
                     Log.d(TAG, "Launching tests for reader : " + aReader.getName());
-                    mText.append("\nLaunching tests for reader : " + aReader.getName());
                     runHoplinkSimpleRead(aReader);
                 }
 
@@ -125,39 +122,63 @@ public class OMAPITestFragment extends Fragment {
     private void runHoplinkSimpleRead(ProxyReader reader) {
         Log.d(TAG, "Running HopLink Simple Read Tests");
 
-        try {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
 
-            String poAid = "A000000291A000000191";
-            String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
-                    + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
+                mText.append("\nLaunching tests for reader : " + reader.getName());
 
-            ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                    (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
-
-            ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                    (byte) 0x1A, (byte) 0x01, true, (byte) 0x30);
-
-            UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
-                    new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
-                            ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
-
-            List<ApduRequest> poApduRequestList;
-
-            poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest(),
-                    poReadRecordCmd_T2Usage.getApduRequest(),
-                    poUpdateRecordCmd_T2UsageFill.getApduRequest());
+                try {
 
 
-            SeRequest seRequest =
-                    new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
-                            poApduRequestList, false, ContactsProtocols.PROTOCOL_ISO7816_3);
+
+                    String poAid = "A000000291A000000191";
+                    String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
+                            + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
+
+                    mText.append("\n");
+                    mText.append("Selecting application : " + poAid);
+                    mText.append("\n");
+
+                    ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                            (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
+
+                    ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                            (byte) 0x1A, (byte) 0x01, true, (byte) 0x30);
+
+                    UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
+                            new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
+                                    ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
+
+                    Boolean keepChannelOpen = false ;
+
+                    mText.append("\n");
+                    mText.append("Executing command Calypso : " + poReadRecordCmd_T2Env.getName());
+                    mText.append("\n");
+                    mText.append("Executing command Calypso : " + poReadRecordCmd_T2Usage.getName());
+                    mText.append("\n");
+                    mText.append("Executing command Calypso : " + poUpdateRecordCmd_T2UsageFill.getName());
+                    mText.append("\n");
+                    mText.append("Keep Channel Open : " + keepChannelOpen);
+                    mText.append("\n");
+                    mText.append("Using protocol : " +  ContactsProtocols.PROTOCOL_ISO7816_3.getName());
+                    mText.append("\n ----\n ");
+
+                    List<ApduRequest> poApduRequestList;
+
+                    poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest(),
+                            poReadRecordCmd_T2Usage.getApduRequest(),
+                            poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
 
-            SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
+                    SeRequest seRequest =
+                            new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
+                                    poApduRequestList, false, ContactsProtocols.PROTOCOL_ISO7816_3);
 
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
+
+                    SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
+
+
                     mText.append("\n ---- \n");
                     for (SeResponse response : seResponseSet.getResponses()) {
                         if (response != null) {
@@ -166,25 +187,22 @@ public class OMAPITestFragment extends Fragment {
                                         + ByteBufferUtils.toHex(apdu.getDataOut()));
                                 mText.append("\n");
                             }
+                            mText.append("\n\n\n\n\n");
+
                         } else {
                             mText.append("Response : null");
-                            mText.append("\n");
+                            mText.append("\n\n\n\n\n");
                         }
                     }
-                }
-            });
+                } catch (final IOReaderException e) {
 
-        } catch (final IOReaderException e) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
                     e.printStackTrace();
                     mText.append("\n ---- \n");
                     mText.append("IOReader Exception : " + e.getMessage());
 
                 }
-            });
-        }
+            }
+        });
     }
 
 

@@ -248,6 +248,8 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                         mText.append("Executing command Calypso : " + poUpdateRecordCmd_T2UsageFill.getName());
                         mText.append("\n");
                         mText.append("Keep Channel Open : " + keepChannelOpen);
+                        mText.append("\n");
+                        mText.append("Using protocol : " +  ContactlessProtocols.PROTOCOL_ISO14443_4.getName());
                         mText.append("\n ----\n ");
 
                         SeRequest seRequest =
