@@ -243,10 +243,34 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
 
     public String printTagId() {
 
-        return tagProxy != null && tagProxy.getTag() != null
-                ? tagProxy.getTag().toString() + " - " + Arrays.toString(tagProxy.getTag().getId())
-                : "null";
+        if(tagProxy != null && tagProxy.getTag()!=null){
+            StringBuilder techList = new StringBuilder();
+
+            //build a user friendly TechList
+            String[] techs = tagProxy.getTag().getTechList();
+            for (int i = 0; i < techs.length;i++){
+                //append a userfriendly Tech
+                techList.append(techs[i].replace("android.nfc.tech.", ""));
+                //if not last tech, append separator
+                if (i + 1 < techs.length) techList.append(", ");
+            }
+
+
+
+
+            //build a hexa TechId
+            StringBuilder tagId = new StringBuilder();
+            for (byte b : tagProxy.getTag().getId()) {
+                tagId.append(String.format("%02X ", b));
+            }
+
+            return  tagId + " - " + techList;
+        }else{
+            return "no-tag";
+        }
     }
+
+
 
     /**
      * Build Reader Mode flags Integer from parameters

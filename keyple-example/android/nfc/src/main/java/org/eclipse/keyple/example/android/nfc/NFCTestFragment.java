@@ -22,7 +22,6 @@ import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader;
 import org.eclipse.keyple.seproxy.ApduRequest;
-import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
@@ -40,12 +39,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Spannable;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 
@@ -63,7 +64,6 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
     // UI
     private TextView mText;
-    private RadioGroup radioGroup;
 
 
     public static NFCTestFragment newInstance() {
@@ -112,6 +112,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
             /*
              * uncomment to active protocol listening for Mifare ultralight ((AndroidNfcReader)
+             *
              * reader).addSeProtocolSetting( AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_UL);
              * 
              * uncomment to active protocol listening for Mifare Classic ((AndroidNfcReader)
@@ -145,7 +146,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                 inflater.inflate(org.eclipse.keyple.example.android.nfc.R.layout.fragment_nfc_test,
                         container, false);
         mText = view.findViewById(org.eclipse.keyple.example.android.nfc.R.id.text);
-        radioGroup = view.findViewById(org.eclipse.keyple.example.android.nfc.R.id.radioGroup);
+        initTextView();
         return view;
     }
 
@@ -160,17 +161,13 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
             @Override
             public void run() {
 
+                LOG.info("New ReaderEvent received : " + event.toString());
+
                 switch (event.getEventType()) {
                     case SE_INSERTED:
-                        try {
-                            mText.append("\n ----\n ");
-                            mText.append("PO inserted in Reader : " +event.getReaderName());
-                            LOG.debug("New ReaderEvent received : " + event.toString());
-                            runTest();
 
-                        } catch (IllegalArgumentException e) {
-                            e.printStackTrace();
-                        }
+                            //execute simple tests
+                            runHoplinkSimpleRead();
                         break;
 
                     case SE_REMOVAL:
@@ -188,15 +185,6 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
         });
     }
 
-    /**
-     * Runs the selected commands test
-     */
-    private void runTest() {
-        if (radioGroup
-                .getCheckedRadioButtonId() == org.eclipse.keyple.example.android.nfc.R.id.hoplinkSimpleRead) {
-            runHoplinkSimpleRead();
-        }
-    }
 
     /**
      * Run Hoplink Simple read command
@@ -206,21 +194,28 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
+                    initTextView();
+
                     try {
                         ProxyReader reader = null;
                         reader = SeProxyService.getInstance().getPlugins().first().getReaders().first();
 
-                        String poAid = "A000000291A000000191";
-                        String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
-                                + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
-
-                        mText.append("\n");
+                         /*
+                            print tag info in View
+                         */
+                        mText.append("\n ---- \n");
                         mText.append(((AndroidNfcReader) reader).printTagId());
                         mText.append("\n ---- \n");
 
-                        mText.append("\n");
-                        mText.append("Selecting application : " + poAid);
-                        mText.append("\n");
+                         /*
+                           Build and execute Calypso commands
+                         */
+
+                        String poAid = "A000000291A000000191"; //HOPLINK APPLICATION
+                        String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
+                                + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
+
 
                         ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
                                 (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
@@ -240,43 +235,55 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
                         Boolean keepChannelOpen = false ;
 
-                        mText.append("\n");
-                        mText.append("Executing command Calypso : " + poReadRecordCmd_T2Env.getName());
-                        mText.append("\n");
-                        mText.append("Executing command Calypso : " + poReadRecordCmd_T2Usage.getName());
-                        mText.append("\n");
-                        mText.append("Executing command Calypso : " + poUpdateRecordCmd_T2UsageFill.getName());
-                        mText.append("\n");
-                        mText.append("Keep Channel Open : " + keepChannelOpen);
-                        mText.append("\n");
-                        mText.append("Using protocol : " +  ContactlessProtocols.PROTOCOL_ISO14443_4.getName());
-                        mText.append("\n ----\n ");
-
                         SeRequest seRequest =
                                 new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
                                         poApduRequestList, keepChannelOpen, ContactlessProtocols.PROTOCOL_ISO14443_4);
 
+                        //transmit seRequestSet to Reader
                         final SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
 
-                                for (SeResponse response : seResponseSet.getResponses()) {
-                                    if (response != null) {
-                                        for (ApduResponse apdu : response.getApduResponses()) {
-                                            mText.append("Response : " + apdu.getStatusCode() + " - "
-                                                    + ByteBufferUtils.toHex(apdu.getDataOut()));
-                                            mText.append("\n");
-                                        }
-                                    mText.append("\n\n\n\n\n");
+                        /*
+                            print responses in View
+                         */
 
-                                    } else {
-                                        mText.append("Response : null");
-                                        mText.append("\n\n\n\n\n");
-                                    }
+                        for (SeResponse response : seResponseSet.getResponses()) {
+                            if (response != null) {
+
+                                //mText.append("AID selected : " + poAid);
+
+                                //print AID selection results
+                                mText.append("AID " + poAid+" : ");
+                                if(response.getFci().isSuccessful()){
+                                    appendColoredText(mText,"SUCCESS" , Color.GREEN);
+                                }else {
+                                    appendColoredText(mText,"FAILED" , Color.RED);
                                 }
-                            } catch (IOReaderException e) {
-                                e.printStackTrace();
+                                mText.append("\n ---- \n");
+
+                                //print Response status
+                                for (int i=0 ; i<response.getApduResponses().size() ; i++) {
+                                    //print command name
+                                    mText.append(poApduRequestList.get(i).getName()+" REV3_1"+" : ");
+                                    //print response status
+                                    if(response.getApduResponses().get(i).isSuccessful()){
+                                        appendColoredText(mText,"SUCCESS", Color.GREEN);
+                                    }else{
+                                        appendColoredText(mText,"FAILED", Color.RED);
+                                    }
+                                    mText.append("\n ---- \n");
+                                }
+                            mText.append("\n\n\n\n\n");
+
+                            } else {
+                                appendColoredText(mText,"NO RESPONSE", Color.RED);
+                                mText.append("\n\n\n\n\n");
                             }
                         }
-                    });
+                    } catch (IOReaderException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
 
     }
 
@@ -305,6 +312,23 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
+    }
+
+
+    private void initTextView(){
+        mText.setText("");//reset
+        appendColoredText(mText, "Waiting for a smartcard...", Color.BLUE);
+        mText.append("\n ---- \n");
+
+    }
+
+    private static void appendColoredText(TextView tv, String text, int color) {
+        int start = tv.getText().length();
+        tv.append(text);
+        int end = tv.getText().length();
+
+        Spannable spannableText = (Spannable) tv.getText();
+        spannableText.setSpan(new ForegroundColorSpan(color), start, end, 0);
     }
 
 
