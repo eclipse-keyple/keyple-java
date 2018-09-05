@@ -26,7 +26,5 @@ project(':keyple-example-pc').projectDir = file('./keyple-example/pc')
 project(':keyple-example-common').projectDir = file('./keyple-example/common')
 project(':keyple-example-stub').projectDir = file('./keyple-example/stub')
 
-project(':keyple-example-remote-client').projectDir = file('./keyple-example/remote-server')
-project(':keyple-example-remote-server').projectDir = file('./keyple-example/remote-client')
-
-
+project(':keyple-example-remote-server').projectDir = file('./keyple-example/remote-server')
+project(':keyple-example-remote-client').projectDir = file('./keyple-example/remote-client')

@@ -17,6 +17,7 @@ dependencies {
 
     compile project(':keyple-example-common')
     compile project(':keyple-calypso')
+    compile project(':keyple-core')
     compile project(':keyple-plugin-stub')
 
     compile "org.java-websocket:Java-WebSocket:1.3.9"
@@ -28,4 +29,3 @@ dependencies {
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.13.0'
 }
-

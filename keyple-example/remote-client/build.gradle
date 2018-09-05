@@ -18,10 +18,10 @@ dependencies {
 
     compile project(':keyple-example-common')
     compile project(':keyple-calypso')
+    compile project(':keyple-core')
     compile project(':keyple-plugin-stub')
-    compile project(':keyple-example-remote-server')
     compile project(':keyple-example-stub')
-
+    compile project(':keyple-example-remote-server')
 
 
     //add slf4j simple logger implementation

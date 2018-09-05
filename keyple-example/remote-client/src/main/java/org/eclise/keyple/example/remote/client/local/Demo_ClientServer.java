@@ -6,16 +6,23 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.server.transport;
+package org.eclise.keyple.example.remote.client.local;
 
-import java.net.UnknownHostException;
-
-public interface TransportFactory {
+public class Demo_ClientServer {
 
 
-    //API level connection (network layer + connection to server API)
-    public ClientConnection getConnection(ClientListener clientListener)
-            throws UnknownHostException;
+    public static void main(String[] args) throws Exception {
 
-    public ServerListener initServerListener();
+
+        InitTicketingApp server = new InitTicketingApp();
+        server.boot();
+
+        InitClient client = new InitClient();
+        client.boot();
+        client.demo();
+
+        server.status();
+
+
+    }
 }

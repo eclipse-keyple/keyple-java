@@ -8,14 +8,12 @@
 
 package org.eclise.keyple.example.remote.server.transport;
 
-import java.net.UnknownHostException;
 
-public interface TransportFactory {
+import org.eclipse.keyple.seproxy.ProxyReader;
 
 
-    //API level connection (network layer + connection to server API)
-    public ClientConnection getConnection(ClientListener clientListener)
-            throws UnknownHostException;
+public interface ServerConnection extends ProxyReader {
 
-    public ServerListener initServerListener();
+
+
 }
