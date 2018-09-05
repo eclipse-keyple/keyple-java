@@ -8,36 +8,35 @@
 
 package org.eclise.keyple.example.remote.server;
 
-import com.sun.tools.doclint.Entity;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
-import org.eclise.keyple.example.remote.server.transport.LocalTransport;
-import org.eclise.keyple.example.remote.server.transport.Transport;
+import org.eclise.keyple.example.remote.server.transport.ServerListener;
 import org.eclise.keyple.example.remote.server.transport.TransportFactory;
+import org.eclise.keyple.example.remote.server.transport.local.LocalTransportFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class Demo_RemoteSEServer {
+public class InitServer {
 
-    private static final Logger logger = LoggerFactory.getLogger(Demo_RemoteSEServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(InitServer.class);
 
     public void boot(){
 
-        logger.info("Boot Demo_RemoteSEServer");
+        logger.info("Boot InitServer");
 
-        //configure Transport (ie Local, Websocket)
-        LocalTransport localTransport = (LocalTransport) TransportFactory.getTransport(null);
+        //configure ServerTransport (ie Local, Websocket)
+        TransportFactory transportFactory = LocalTransportFactory.getInstance();
+        ServerListener serverListener = transportFactory.initServerListener();
 
 
-        //register SeRemotePlugin with a Transport
+        //register SeRemotePlugin with a ServerTransport
         SeProxyService service = SeProxyService.getInstance();
-        RemoteSePlugin remoteSePlugin = new RemoteSePlugin(localTransport);
+        RemoteSePlugin remoteSePlugin = new RemoteSePlugin(transportFactory.getClientTransport());
         SortedSet<ReaderPlugin> plugins = new TreeSet<ReaderPlugin>();
         plugins.add(remoteSePlugin);
         service.setPlugins(plugins);

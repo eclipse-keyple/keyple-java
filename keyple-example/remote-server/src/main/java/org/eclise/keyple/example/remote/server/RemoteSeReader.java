@@ -6,46 +6,45 @@ import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
+import org.eclise.keyple.example.remote.server.transport.ClientTransport;
+import org.eclise.keyple.example.remote.server.transport.ServerTransport;
 
 import java.io.IOException;
 import java.util.Map;
 
 
-public class RemoteSeReader implements ProxyReader, RemoteReaderListener {
+public class RemoteSeReader implements ProxyReader{
 
+    ServerTransport transport;
 
-    ProxyReader _remoteReader;
-
-    public RemoteSeReader(ProxyReader remoteReader){
-        _remoteReader = remoteReader;
-
-
+    public RemoteSeReader(ServerTransport _transport){
+        transport = _transport;
     }
 
 
     @Override
     public String getName() {
-        return null;
+        return String.valueOf(transport.hashCode());
     }
 
     @Override
     public boolean isSePresent() throws NoStackTraceThrowable {
-        return false;
+        return transport.isSePresent();
     }
 
     @Override
     public SeResponseSet transmit(SeRequestSet seApplicationRequest) throws IOReaderException {
-        return null;
+        return transport.transmit(seApplicationRequest);
     }
 
     @Override
     public void addSeProtocolSetting(SeProtocolSetting seProtocolSetting) {
-
+        transport.addSeProtocolSetting(seProtocolSetting);
     }
 
     @Override
     public int compareTo(ProxyReader o) {
-        return 0;
+        return this.getName().equals(String.valueOf(((RemoteSeReader)o).hashCode()))? 1 : 0);
     }
 
     @Override
@@ -54,17 +53,8 @@ public class RemoteSeReader implements ProxyReader, RemoteReaderListener {
     }
 
     @Override
-    public void setParameter(String key, String value) throws IOException {
-
-    }
+    public void setParameter(String key, String value) throws IOException { }
 
     @Override
-    public void setParameters(Map<String, String> parameters) throws IOException {
-
-    }
-
-    @Override
-    public void onRemoteReaderEvent() {
-
-    }
+    public void setParameters(Map<String, String> parameters) throws IOException {}
 }

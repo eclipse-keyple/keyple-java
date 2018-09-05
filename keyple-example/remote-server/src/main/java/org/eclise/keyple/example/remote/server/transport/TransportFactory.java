@@ -1,16 +1,11 @@
 package org.eclise.keyple.example.remote.server.transport;
 
-import java.util.Properties;
+import java.net.UnknownHostException;
 
-public class TransportFactory {
+public interface TransportFactory {
 
-    static Transport transport = new LocalTransport();
 
-    static public Transport getTransport(Properties configuration){
-        if(configuration == null){
-            return transport;
-        }
-        return null;
-    }
+    public ClientTransport getClientTransport(ClientListener clientListener) throws UnknownHostException;
 
+    public ServerListener initServerListener();
 }

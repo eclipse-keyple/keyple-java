@@ -2,10 +2,9 @@ package org.eclise.keyple.example.remote.server;
 
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
-import org.eclise.keyple.example.remote.server.transport.Transport;
-import org.eclise.keyple.example.remote.server.transport.TransportListener;
+import org.eclise.keyple.example.remote.server.transport.ServerTransport;
+import org.eclise.keyple.example.remote.server.transport.ServerListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,15 +13,14 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class RemoteSePlugin implements ReaderPlugin, TransportListener {
+public class RemoteSePlugin implements ReaderPlugin {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteSePlugin.class);
 
     SortedSet<ProxyReader> remoteReaders = new TreeSet<ProxyReader>();
 
-    public RemoteSePlugin(Transport transport){
-        logger.info("RemoteSePlugin {}", transport);
-        transport.start(this);
+    public RemoteSePlugin(){
+        logger.info("RemoteSePlugin");
     }
 
     @Override
@@ -39,6 +37,17 @@ public class RemoteSePlugin implements ReaderPlugin, TransportListener {
     public ProxyReader getReader(String name) throws UnexpectedReaderException {
         return null;
     }
+
+
+    public void connectRemoteReader(ServerTransport transport){
+
+        if(remoteReaders.contains(transport.hashCode())){
+            logger.warn("Remote Reader is already connected {}", transport.hashCode());
+        }else{
+            remoteReaders.add(new RemoteSeReader(transport));
+        }
+    }
+
 
 
     @Override
@@ -61,14 +70,6 @@ public class RemoteSePlugin implements ReaderPlugin, TransportListener {
 
     }
 
-    @Override
-    public void onReaderConnected(ProxyReader remoteReader) {
-        //remote physical reader connected
-        logger.info("onReaderConnected {}", remoteReader);
-
-        //create a virtual reader with a Listener to duplex physical reader
-        remoteReaders.add(new RemoteSeReader(remoteReader));
-    }
 
 
 }
