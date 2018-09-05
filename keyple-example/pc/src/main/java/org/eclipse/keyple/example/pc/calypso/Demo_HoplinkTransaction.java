@@ -13,7 +13,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
-import org.eclipse.keyple.calypso.command.po.builder.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.example.common.HoplinkInfoAndSampleCommands;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
@@ -138,60 +137,11 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
     }
 
     /**
-     * Do an 2-step Hoplink transaction:
+     * Do an Hoplink transaction:
      * <ul>
-     * <li>Process identification</li>
-     * <li>Process Opening and Closing</li>
-     * </ul>
-     * <p>
-     * File with SFI 1A is read at session opening.
-     * <p>
-     * T2 Environment and T2 Usage are read in session.
-     * 
-     * @param poTransaction PoSecureSession object
-     * @param fciData FCI data from the selection step
-     * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
-     * @throws IOReaderException reader exception (defined as public for purposes of javadoc)
-     */
-    public void doHoplinkTwoStepAuthentication(PoSecureSession poTransaction, ApduResponse fciData,
-            boolean closeSeChannel) throws IOReaderException {
-        List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
-        filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Env);
-        filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Usage);
-
-        // Step 1
-        System.out.println(
-                "\n\n========= PO Hoplink 2-step transaction ======= Identification =====================");
-        poTransaction.processIdentification(fciData);
-
-        // Step 2A
-        System.out.println(
-                "========= PO Hoplink 2-step transaction ======= Opening + Closing ====================");
-
-        byte debitKeyIndex = 0x03;
-        // Open Session for the debit key #3 - with reading of the first record of the cyclic EF of
-        // SFI 1Ah
-        AbstractOpenSessionCmdBuild poOpenSession =
-                AbstractOpenSessionCmdBuild.create(poTransaction.getRevision(), debitKeyIndex,
-                        poTransaction.sessionTerminalChallenge, (byte) 0x1A, (byte) 0x01);
-
-        poTransaction.processOpeningClosing(poOpenSession, filesToReadInSession, null,
-                closeSeChannel);
-
-        if (poTransaction.isSuccessful()) {
-            System.out.println(
-                    "========= PO Hoplink 2-step transaction ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        } else {
-            System.out.println(
-                    "========= PO Hoplink 2-step transaction ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        }
-    }
-
-    /**
-     * Do an 3-step Hoplink transaction:
-     * <ul>
-     * <li>Process identification</li>
-     * <li>Process Opening and Closing</li>
+     * <li>Process opening</li>
+     * <li>Process PO commands</li>
+     * <li>Process closing</li>
      * </ul>
      * <p>
      * File with SFI 1A is read at session opening.
@@ -203,8 +153,8 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
      * @throws IOReaderException reader exception (defined as public for purposes of javadoc)
      */
-    public void doHoplinkThreeStepReadWriteTransaction(PoSecureSession poTransaction,
-            ApduResponse fciData, boolean closeSeChannel) throws IOReaderException {
+    public void doHoplinkReadWriteTransaction(PoSecureSession poTransaction, ApduResponse fciData,
+            boolean closeSeChannel) throws IOReaderException {
 
 
         List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
@@ -212,45 +162,36 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
         filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Usage);
         // filesToReadInSession.add(HoplinkInfoAndSampleCommands.poUpdateRecordCmd_T2UsageFill);
 
-        // Step 1
         System.out.println(
-                "\n\n========= PO Hoplink 3-step session ======= Identification =====================");
-        poTransaction.processIdentification(fciData);
+                "========= PO Hoplink session ======= Opening ============================");
+        byte debitKeyIndex = PoSecureSession.KEY_INDEX_VALIDATION_DEBIT;
 
-        // Step 2
-        System.out.println(
-                "========= PO Hoplink 3-step session ======= Opening ============================");
-        byte debitKeyIndex = 0x03;
-        // Open Session for the debit key #3 - with reading of the first record of the cyclic EF of
+        // Open Session for the debit key - with reading of the first record of the cyclic EF of
         // SFI 0Ah
-        AbstractOpenSessionCmdBuild poOpenSession =
-                AbstractOpenSessionCmdBuild.create(poTransaction.getRevision(), debitKeyIndex,
-                        poTransaction.sessionTerminalChallenge, (byte) 0x1A, (byte) 0x01);
-        poTransaction.processOpening(poOpenSession, filesToReadInSession);
+        poTransaction.processOpening(fciData, debitKeyIndex, (byte) 0x1A, (byte) 0x01,
+                filesToReadInSession);
 
-        // Step 3
         System.out.println(
-                "========= PO Hoplink 3-step session ======= Proceed =======================");
-        poTransaction.processProceeding(filesToReadInSession);
+                "========= PO Hoplink session ======= Processing of PO commands =======================");
+        poTransaction.processPoCommands(filesToReadInSession);
 
-        // Step 4
         System.out.println(
-                "========= PO Hoplink 3-step session ======= Closing ============================");
+                "========= PO Hoplink session ======= Closing ============================");
         poTransaction.processClosing(null, null, HoplinkInfoAndSampleCommands.poRatificationCommand,
                 false);
 
         if (poTransaction.isSuccessful()) {
             System.out.println(
-                    "========= PO Hoplink 3-step session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    "========= PO Hoplink session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         } else {
             System.out.println(
-                    "========= PO Hoplink 3-step session ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    "========= PO Hoplink session ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
     }
 
     /**
      * Chain 3 Hoplink transactions: 2-step, 3-step, 2-step (see @link
-     * doHoplinkTwoStepAuthentication and @link doHoplinkThreeStepReadWriteTransaction)
+     * doHoplinkTwoStepAuthentication and @link doHoplinkReadWriteTransaction)
      * <p>
      * To illustrate the the logical channel management, it is kept open after the 1st transaction.
      * <p>
@@ -264,14 +205,9 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      */
     public void operateMultipleHoplinkTransactions(PoSecureSession poTransaction,
             ApduResponse fciData) throws IOReaderException {
-        // execute a two-step Calypso session: processIdentification, processOpeningClosing
-        // keep the logical channel opened
-        doHoplinkTwoStepAuthentication(poTransaction, fciData, false);
-
-        // execute a three-step Calypso session: processIdentification, processOpening,
-        // processClosing
-        // close the logical channel opened
-        doHoplinkThreeStepReadWriteTransaction(poTransaction, fciData, true);
+        // execute a Calypso session: processOpening, processPoCommands, processClosing
+        // close the logical channel
+        doHoplinkReadWriteTransaction(poTransaction, fciData, true);
 
         // redo the Hoplink PO selection after logical channel closing (may be not needed with some
         // PO
@@ -283,9 +219,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
                         null, true));
         fciData = poReader.transmit(selectionRequest).getSingleResponse().getFci();
 
-        // execute a two-step Calypso session: processIdentification, processOpeningClosing
-        // close the logical channel opened
-        doHoplinkTwoStepAuthentication(poTransaction, fciData, true);
+        doHoplinkReadWriteTransaction(poTransaction, fciData, true);
     }
 
     /**
@@ -366,7 +300,6 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
             }
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
             e.printStackTrace();
         }
     }

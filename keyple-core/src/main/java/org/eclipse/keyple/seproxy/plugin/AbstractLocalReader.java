@@ -305,7 +305,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 // the AID changed, close the logical channel
                 logger.trace(
                         "[{}] processSeRequest => The AID changed, close the logical channel. AID = {}, EXPECTEDAID = {}",
-                        aidCurrentlySelected, seRequest.getSelector());
+                        this.getName(), ByteBufferUtils.toHex(aidCurrentlySelected),
+                        seRequest.getSelector());
                 closeLogicalChannel();
             }
 
@@ -323,7 +324,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     logger.trace("[{}] processSeRequest => Logical channel opening failure",
                             this.getName());
                     closeLogicalChannel();
-                    // return a null SeReponse when the opening of the logical channel failed
+                    // return a null SeResponse when the opening of the logical channel failed
                     return null;
                 }
 
