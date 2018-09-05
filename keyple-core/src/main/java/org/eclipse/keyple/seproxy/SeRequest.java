@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.seproxy;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -20,7 +21,10 @@ import org.eclipse.keyple.util.ByteBufferUtils;
  * 
  * @see SeResponse
  */
-public final class SeRequest {
+public final class SeRequest implements Serializable {
+
+    static final long serialVersionUID = 6018469841127325812L;
+
     /**
      * The Selector inner class is dedicated to handle the selection of the SE either through a
      * selection command with AID (AtrSelector) or through a matching test between the SE ATR and a

@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.seproxy;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Set;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -16,7 +17,9 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 /**
  * Single APDU response wrapper
  */
-public final class ApduResponse {
+public final class ApduResponse implements Serializable {
+
+    static final long serialVersionUID = 6418469841122636812L;
 
     /***
      * the success result of the processed APDU command to allow chaining responses in a group of

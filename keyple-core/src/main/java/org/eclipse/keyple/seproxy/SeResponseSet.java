@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.seproxy;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,11 @@ import java.util.List;
  * 
  * @see SeRequestSet
  */
-public final class SeResponseSet {
+public final class SeResponseSet implements Serializable {
+
+    static final long serialVersionUID = 125369841119873812L;
+
+
     /**
      * List of seResponses that were received following the transmission of the {@link SeRequest}.
      */

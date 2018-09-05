@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.seproxy;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.Set;
@@ -17,7 +18,10 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 /**
  * Single APDU request wrapper
  */
-public final class ApduRequest {
+public final class ApduRequest implements Serializable {
+
+    static final long serialVersionUID = 877369841119873812L;
+
 
     /**
      * Buffer of the APDU Request
