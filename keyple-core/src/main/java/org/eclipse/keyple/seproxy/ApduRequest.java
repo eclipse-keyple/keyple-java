@@ -11,12 +11,18 @@ package org.eclipse.keyple.seproxy;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.Set;
+import org.eclipse.keyple.util.ByteBufferUtils;
 
 
 /**
  * Single APDU request wrapper
  */
-public final class ApduRequest extends AbstractApduBuffer {
+public final class ApduRequest {
+
+    /**
+     * Buffer of the APDU Request
+     */
+    private ByteBuffer bytes;
 
     /**
      * a ‘case 4’ flag in order to explicitly specify, if it’s expected that the APDU command
@@ -37,6 +43,8 @@ public final class ApduRequest extends AbstractApduBuffer {
      */
     private String name;
 
+
+
     /**
      * the constructor called by a ticketing application in order to build the APDU command requests
      * to push to the ProxyReader.
@@ -47,7 +55,7 @@ public final class ApduRequest extends AbstractApduBuffer {
      *        different from 9000
      */
     public ApduRequest(ByteBuffer buffer, boolean case4, Set<Short> successfulStatusCodes) {
-        super(buffer);
+        this.bytes = buffer;
         this.case4 = case4;
         this.successfulStatusCodes = successfulStatusCodes;
     }
@@ -101,11 +109,20 @@ public final class ApduRequest extends AbstractApduBuffer {
         return name;
     }
 
+    /**
+     * Get the buffer of this APDU
+     *
+     * @return Name of the APDU request
+     */
+    public ByteBuffer getBytes() {
+        return this.bytes;
+    }
+
     @Override
     public String toString() {
         StringBuilder string;
-        string = new StringBuilder(
-                "ApduRequest: NAME = \"" + this.getName() + "\", RAWDATA = " + super.toString());
+        string = new StringBuilder("ApduRequest: NAME = \"" + this.getName() + "\", RAWDATA = "
+                + ByteBufferUtils.toHex(bytes));
         if (isCase4()) {
             string.append(", case4");
         }
