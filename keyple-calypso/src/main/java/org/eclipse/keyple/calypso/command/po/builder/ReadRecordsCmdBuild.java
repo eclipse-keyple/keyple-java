@@ -57,4 +57,21 @@ public class ReadRecordsCmdBuild extends PoCommandBuilder implements PoSendableI
 
         this.request = setApduRequest(cla, command, p1, p2, null, expectedLength);
     }
+
+    /**
+     * Instantiates a new read records cmd build without specifying the expected length. This
+     * constructor is allowed only in contactless mode.
+     *
+     * @param revision the revision of the PO
+     * @param sfi the sfi top select
+     * @param firstRecordNumber the record number to read (or first record to read in case of
+     *        several records)
+     * @param readJustOneRecord the read just one record
+     * @throws java.lang.IllegalArgumentException - if record number &lt; 1
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
+     */
+    public ReadRecordsCmdBuild(PoRevision revision, byte sfi, byte firstRecordNumber,
+            boolean readJustOneRecord) throws IllegalArgumentException {
+        this(revision, sfi, firstRecordNumber, readJustOneRecord, (byte) 0x00);
+    }
 }

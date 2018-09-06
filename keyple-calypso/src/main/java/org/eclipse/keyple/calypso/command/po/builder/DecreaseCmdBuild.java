@@ -9,17 +9,15 @@
 package org.eclipse.keyple.calypso.command.po.builder;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
-import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
-import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
+import org.eclipse.keyple.calypso.command.po.*;
 
 /**
  * The Class DecreaseCmdBuild. This class provides the dedicated constructor to build the Decrease
  * APDU command.
  *
  */
-public class DecreaseCmdBuild extends PoCommandBuilder implements PoSendableInSession {
+public class DecreaseCmdBuild extends PoCommandBuilder
+        implements PoSendableInSession, PoModificationCommand {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.DECREASE;
