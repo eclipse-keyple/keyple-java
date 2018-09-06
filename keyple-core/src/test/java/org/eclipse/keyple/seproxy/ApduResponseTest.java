@@ -121,26 +121,26 @@ public class ApduResponseTest {
      */
 
 
-    static Set<Short> getA9005CustomCode() {
+    public static Set<Short> getA9005CustomCode() {
         Set<Short> successfulStatusCodes = new HashSet<Short>();
         successfulStatusCodes.add((short) 0x9005);
         return successfulStatusCodes;
     }
 
-    static ApduResponse getAAtr() {
+    public static ApduResponse getAAtr() {
         return new ApduResponse(ByteBufferUtils.fromHex("3B8F8001804F0CA000000306030001000000006A"),
                 null);
     }
 
-    static ApduResponse getAFCI() {
+    public static ApduResponse getAFCI() {
         return new ApduResponse(ByteBufferUtils.fromHex("9000"), null);
     }
 
-    static ApduResponse getSuccessfullResponse() {
+    public static ApduResponse getSuccessfullResponse() {
         return new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), null);
     }
 
-    static List<ApduResponse> getAListOfAPDUs() {
+    public static List<ApduResponse> getAListOfAPDUs() {
         List<ApduResponse> apdus = new ArrayList<ApduResponse>();
         apdus.add(getSuccessfullResponse());
         return apdus;

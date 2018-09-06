@@ -13,7 +13,7 @@ import java.net.UnknownHostException;
 public interface TransportFactory {
 
 
-    //API level connection (network layer + connection to server API)
+    // API level connection (network layer + connection to server API)
     public ClientConnection getConnection(ClientListener clientListener)
             throws UnknownHostException;
 

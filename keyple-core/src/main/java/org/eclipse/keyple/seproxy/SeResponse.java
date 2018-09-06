@@ -106,7 +106,9 @@ public final class SeResponse {
     @Override
     public String toString() {
         return String.format("SeResponse:{RESPONSES = %s, ATR = %s, FCI =%s, CHANNELWASOPEN = %s}",
-                getApduResponses(),getAtr()!=null ?  ByteBufferUtils.toHex(getAtr().getBytes()): "", getFci()!=null?ByteBufferUtils.toHex(getFci().getBytes()) :"" ,
+                getApduResponses(),
+                getAtr() != null ? ByteBufferUtils.toHex(getAtr().getBytes()) : "",
+                getFci() != null ? ByteBufferUtils.toHex(getFci().getBytes()) : "",
                 wasChannelPreviouslyOpen());
     }
 

@@ -11,8 +11,8 @@ package org.eclise.keyple.example.remote.client.local;
 import java.net.UnknownHostException;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclise.keyple.example.remote.server.transport.ClientListener;
 import org.eclise.keyple.example.remote.server.transport.ClientConnection;
+import org.eclise.keyple.example.remote.server.transport.ClientListener;
 import org.eclise.keyple.example.remote.server.transport.TransportFactory;
 import org.eclise.keyple.example.remote.server.transport.local.LocalClientListener;
 import org.eclise.keyple.example.remote.server.transport.local.LocalServer;
@@ -41,15 +41,15 @@ public class InitClient {
         // configure ServerConnection (ie Local, Websocket) with a configuration Bundle
 
         try {
-            //get local server
+            // get local server
             TransportFactory localServer = LocalServer.getInstance();
-            //create a client listener for duplex connection
+            // create a client listener for duplex connection
             ClientListener clientListener = new LocalClientListener(localReader);
 
-            //connect to server
+            // connect to server
             ClientConnection clientConnection = localServer.getConnection(clientListener);
 
-            //connect reader
+            // connect reader
             clientConnection.connectReader(localReader);
 
             localReader.addObserver(clientConnection);

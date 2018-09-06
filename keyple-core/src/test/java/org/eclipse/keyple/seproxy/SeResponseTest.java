@@ -100,7 +100,7 @@ public class SeResponseTest {
      * HELPERS
      */
 
-    static SeResponse getASeResponse() throws InconsistentParameterValueException {
+    public static SeResponse getASeResponse() throws InconsistentParameterValueException {
         return new SeResponse(true, ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(),
                 ApduResponseTest.getAListOfAPDUs());
     }

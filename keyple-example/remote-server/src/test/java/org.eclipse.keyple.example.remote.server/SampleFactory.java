@@ -1,6 +1,15 @@
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
+
 package org.eclipse.keyple.example.remote.server;
 
 
+import java.util.*;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.seproxy.*;
@@ -8,8 +17,6 @@ import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
-
-import java.util.*;
 
 public class SampleFactory {
 
@@ -33,7 +40,7 @@ public class SampleFactory {
 
     }
 
-    public static SeRequestSet getCompleteRequestSet(){
+    public static SeRequestSet getCompleteRequestSet() {
         String poAid = "A000000291A000000191";
 
         ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
@@ -63,7 +70,7 @@ public class SampleFactory {
 
     }
 
-    public static SeResponseSet getCompeleteResponseSet(){
+    public static SeResponseSet getCompeleteResponseSet() {
         try {
             List<SeResponse> seResponses = new ArrayList<SeResponse>();
             seResponses.add(SeResponseTest.getASeResponse());

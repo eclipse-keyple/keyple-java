@@ -46,34 +46,35 @@ public class RemoteSePlugin extends Observable implements ObservablePlugin {
 
     @Override
     public ProxyReader getReader(String name) throws UnexpectedReaderException {
-        for(RemoteSeReader remoteSeReader :  remoteReaders){
-            if(remoteSeReader.getName().equals(name)){
+        for (RemoteSeReader remoteSeReader : remoteReaders) {
+            if (remoteSeReader.getName().equals(name)) {
                 return remoteSeReader;
             }
         }
-        throw new UnexpectedReaderException("reader with name not found : "+ name);
+        throw new UnexpectedReaderException("reader with name not found : " + name);
     }
 
     public ProxyReader getReaderByRemoteName(String remoteName) throws UnexpectedReaderException {
-        for(RemoteSeReader remoteSeReader :  remoteReaders){
-            if(remoteSeReader.getRemoteName().equals(remoteName)){
+        for (RemoteSeReader remoteSeReader : remoteReaders) {
+            if (remoteSeReader.getRemoteName().equals(remoteName)) {
                 return remoteSeReader;
             }
         }
-        throw new UnexpectedReaderException("reader with name not found : "+ remoteName);
+        throw new UnexpectedReaderException("reader with name not found : " + remoteName);
     }
 
 
     public void onRemoteReaderConnect(String name, ServerConnection transport) {
         logger.debug("onRemoteReaderConnect {}", name);
 
-        //check if reader is not already connected (by name)
-        if(!isReaderConnected(name)){
+        // check if reader is not already connected (by name)
+        if (!isReaderConnected(name)) {
             logger.info("Connecting a new RemoteSeReader with name {}", name);
             RemoteSeReader remoteSeReader = new RemoteSeReader(transport, name);
             remoteReaders.add(remoteSeReader);
-            notifyObservers(new PluginEvent(getName(), remoteSeReader.getName(), PluginEvent.EventType.READER_CONNECTED));
-        }else {
+            notifyObservers(new PluginEvent(getName(), remoteSeReader.getName(),
+                    PluginEvent.EventType.READER_CONNECTED));
+        } else {
             logger.warn("RemoteSeReader with name {} is already connected", name);
         }
     }
@@ -82,7 +83,8 @@ public class RemoteSePlugin extends Observable implements ObservablePlugin {
         logger.debug("onReaderEvent {}", event);
         logger.debug("Dispatch ReaderEvent to the appropriate Reader");
         try {
-            RemoteSeReader remoteSeReader = (RemoteSeReader) getReaderByRemoteName(event.getReaderName());
+            RemoteSeReader remoteSeReader =
+                    (RemoteSeReader) getReaderByRemoteName(event.getReaderName());
             remoteSeReader.onRemoteReaderEvent(event);
 
         } catch (UnexpectedReaderException e) {
@@ -165,9 +167,9 @@ public class RemoteSePlugin extends Observable implements ObservablePlugin {
     }
 
 
-    private Boolean isReaderConnected(String name){
-        for(RemoteSeReader remoteSeReader :  remoteReaders){
-            if(remoteSeReader.getRemoteName().equals(name)){
+    private Boolean isReaderConnected(String name) {
+        for (RemoteSeReader remoteSeReader : remoteReaders) {
+            if (remoteSeReader.getRemoteName().equals(name)) {
                 return true;
             }
         }

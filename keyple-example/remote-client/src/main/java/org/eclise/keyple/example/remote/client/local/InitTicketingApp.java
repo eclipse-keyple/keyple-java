@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.seproxy.*;
@@ -32,7 +31,7 @@ import org.eclise.keyple.example.remote.server.transport.local.LocalServerListen
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InitTicketingApp implements org.eclipse.keyple.util.Observable.Observer{
+public class InitTicketingApp implements org.eclipse.keyple.util.Observable.Observer {
 
     private static final Logger logger = LoggerFactory.getLogger(InitTicketingApp.class);
 
@@ -81,11 +80,11 @@ public class InitTicketingApp implements org.eclipse.keyple.util.Observable.Obse
         logger.debug("UPDATE {}", o);
 
 
-        if(o instanceof ReaderEvent){
+        if (o instanceof ReaderEvent) {
             ReaderEvent event = (ReaderEvent) o;
             switch (event.getEventType()) {
                 case SE_INSERTED:
-                    logger.info("SE_INSERTED {} {}",event.getPluginName(),event.getReaderName());
+                    logger.info("SE_INSERTED {} {}", event.getPluginName(), event.getReaderName());
 
                     runTest(event);
 
@@ -93,21 +92,23 @@ public class InitTicketingApp implements org.eclipse.keyple.util.Observable.Obse
 
                     break;
                 case SE_REMOVAL:
-                    logger.info("SE_REMOVAL {} {}",event.getPluginName(),event.getReaderName());
+                    logger.info("SE_REMOVAL {} {}", event.getPluginName(), event.getReaderName());
                     break;
                 case IO_ERROR:
-                    logger.info("IO_ERROR {} {}",event.getPluginName(),event.getReaderName());
+                    logger.info("IO_ERROR {} {}", event.getPluginName(), event.getReaderName());
                     break;
 
             }
-        }else if(o instanceof PluginEvent){
+        } else if (o instanceof PluginEvent) {
             PluginEvent event = (PluginEvent) o;
             switch (event.getEventType()) {
                 case READER_CONNECTED:
-                    logger.info("READER_CONNECTED {} {}",event.getPluginName(),event.getReaderName());
+                    logger.info("READER_CONNECTED {} {}", event.getPluginName(),
+                            event.getReaderName());
                     logger.info("Observe SeRemoteReader for Events");
                     try {
-                        ((RemoteSeReader) SeProxyService.getInstance().getPlugins().first().getReaders().first()).addObserver(this);
+                        ((RemoteSeReader) SeProxyService.getInstance().getPlugins().first()
+                                .getReaders().first()).addObserver(this);
 
                     } catch (IOReaderException e) {
                         e.printStackTrace();
@@ -115,7 +116,8 @@ public class InitTicketingApp implements org.eclipse.keyple.util.Observable.Obse
 
                     break;
                 case READER_DISCONNECTED:
-                    logger.info("READER_DISCONNECTED {} {}",event.getPluginName(),event.getReaderName());
+                    logger.info("READER_DISCONNECTED {} {}", event.getPluginName(),
+                            event.getReaderName());
                     break;
             }
         }
@@ -123,10 +125,11 @@ public class InitTicketingApp implements org.eclipse.keyple.util.Observable.Obse
 
 
 
-    private void runTest(ReaderEvent event){
+    private void runTest(ReaderEvent event) {
         ProxyReader reader = null;
         try {
-            reader = ((RemoteSePlugin) SeProxyService.getInstance().getPlugins().first()).getReaderByRemoteName(event.getReaderName());
+            reader = ((RemoteSePlugin) SeProxyService.getInstance().getPlugins().first())
+                    .getReaderByRemoteName(event.getReaderName());
             String poAid = "A000000291A000000191";
 
             ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
@@ -142,8 +145,7 @@ public class InitTicketingApp implements org.eclipse.keyple.util.Observable.Obse
                     ContactlessProtocols.PROTOCOL_ISO14443_4);
 
             // transmit seRequestSet to Reader
-            final SeResponseSet seResponseSet =
-                    reader.transmit(new SeRequestSet(seRequest));
+            final SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
 
 
             List<ApduRequest> poApduRequestList2;
@@ -154,8 +156,7 @@ public class InitTicketingApp implements org.eclipse.keyple.util.Observable.Obse
                     ContactlessProtocols.PROTOCOL_ISO14443_4);
 
             // transmit seRequestSet to Reader
-            final SeResponseSet seResponseSet2 =
-                    reader.transmit(new SeRequestSet(seRequest2));
+            final SeResponseSet seResponseSet2 = reader.transmit(new SeRequestSet(seRequest2));
 
 
         } catch (UnexpectedReaderException e) {
