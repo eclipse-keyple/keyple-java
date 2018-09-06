@@ -84,6 +84,16 @@ public final class SeRequest {
         }
 
         /**
+         * Getter for the regular expression of the selector
+         *
+         * @return Regular expression
+         */
+        public String getAtrRegex() {
+            return atrRegex;
+        }
+
+
+        /**
          * Tells if the provided ATR matches the registered regular expression
          *
          * If the registered regular expression is empty, the ATR is always matching.
