@@ -9,17 +9,15 @@
 package org.eclipse.keyple.calypso.command.po.builder;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
-import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
-import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
+import org.eclipse.keyple.calypso.command.po.*;
 
 /**
  * The Class IncreaseCmdBuild. This class provides the dedicated constructor to build the Increase
  * APDU command.
  *
  */
-public class IncreaseCmdBuild extends PoCommandBuilder implements PoSendableInSession {
+public class IncreaseCmdBuild extends PoCommandBuilder
+        implements PoSendableInSession, PoModificationCommand {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.INCREASE;
