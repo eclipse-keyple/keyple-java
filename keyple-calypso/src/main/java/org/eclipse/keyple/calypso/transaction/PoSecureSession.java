@@ -685,13 +685,14 @@ public class PoSecureSession {
 
     /**
      * Determine the PO revision from the application type byte:
+     *
      * <ul>
-     * <li>if %1------- =&gt; CLAP =&gt; REV3.1</li>
-     * <li>if %00101--- =&gt; REV3.2</li>
-     * <li>if %00100--- =&gt; REV3.1</li>
+     * <li>if <code>%1-------</code> =&gt; CLAP =&gt; REV3.1</li>
+     * <li>if <code>%00101---</code> =&gt; REV3.2</li>
+     * <li>if <code>%00100---</code> =&gt; REV3.1</li>
      * <li>otherwise =&gt; REV2.4</li>
      * </ul>
-     * 
+     *
      * @param applicationTypeByte the application type byte from FCI
      * @return the PO revision
      */
