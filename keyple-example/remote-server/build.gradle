@@ -21,6 +21,7 @@ dependencies {
     compile project(':keyple-plugin-stub')
 
     compile "org.java-websocket:Java-WebSocket:1.3.9"
+    implementation 'com.google.code.gson:gson:2.8.5'
 
     //add slf4j simple logger implementation
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
