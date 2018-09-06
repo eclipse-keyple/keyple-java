@@ -24,7 +24,7 @@ import org.junit.Test;
 public class CloseSessionRespParsTest {
 
     @Test
-    public void closeSessionRespPars() throws InconsistentParameterValueException { // by ixxi
+    public void closeSessionRespPars() throws InconsistentParameterValueException {
         byte[] response = {0x4D, (byte) 0xBD, (byte) 0xC9, 0x60, (byte) 0x90, 0x00};
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(ByteBuffer.wrap(response), null);
@@ -39,7 +39,7 @@ public class CloseSessionRespParsTest {
     }
 
     @Test
-    public void TestToPOHalfSessionSignature() { // by ixxi from ResponseUtilsTest
+    public void TestToPOHalfSessionSignature() {
 
         ByteBuffer apduResponse = ByteBuffer
                 .wrap(new byte[] {(byte) 0x4D, (byte) 0xBD, (byte) 0xC9, 0x60, (byte) 0x90, 0x00});
