@@ -53,12 +53,15 @@ public class PoSecureSession {
     public static final byte KEY_INDEX_LOAD = (byte) 0x02;
     /** The key index for debit and validation operations (validation key needed) */
     public static final byte KEY_INDEX_VALIDATION_DEBIT = (byte) 0x03;
+    /** The default KIF value for personalization */
+    public final static byte DEFAULT_KIF_PERSO = (byte) 0x21;
+    /** The default KIF value for loading */
+    public final static byte DEFAULT_KIF_LOAD = (byte) 0x27;
+    /** The default KIF value for debiting */
+    public final static byte DEFAULT_KIF_DEBIT = (byte) 0x30;
 
     /* private constants */
     private final static byte KIF_UNDEFINED = (byte) 0xFF;
-    private final static byte KIF_ISSUER = (byte) 0x21;
-    private final static byte KIF_LOAD = (byte) 0x27;
-    private final static byte KIF_DEBIT = (byte) 0x30;
 
     private final static byte CHALLENGE_LENGTH_REV_INF_32 = (byte) 0x04;
     private final static byte CHALLENGE_LENGTH_REV32 = (byte) 0x08;
@@ -72,7 +75,7 @@ public class PoSecureSession {
     /** The reader for session CSM. */
     private final ProxyReader csmReader;
     /** The CSM default revision. */
-    private final CsmRevision csmRevision = CsmRevision.S1D;
+    private final CsmRevision csmRevision = CsmRevision.C1;
     /** The default key index for a PO session. */
     private final byte defaultKeyIndex;
     /** the type of the notified event. */
@@ -92,15 +95,14 @@ public class PoSecureSession {
      * </ul>
      *
      * @param poReader the PO reader
-     * @param csmSessionReader the SAM reader
+     * @param csmReader the SAM reader
      * @param defaultKeyIndex default KIF index
      */
     // TODO: Ro replace the "defaultKeyIndex" byte parameter by a "csmSetting" Map<String> (or
     // ByteArray, or List<Byte>) parameter
-    public PoSecureSession(ProxyReader poReader, ProxyReader csmSessionReader,
-            byte defaultKeyIndex) {
+    public PoSecureSession(ProxyReader poReader, ProxyReader csmReader, byte defaultKeyIndex) {
         this.poReader = poReader;
-        this.csmReader = csmSessionReader;
+        this.csmReader = csmReader;
 
         this.defaultKeyIndex = defaultKeyIndex; // TODO => to fix
 
@@ -196,7 +198,10 @@ public class PoSecureSession {
         SeRequestSet csmSeRequestSet = new SeRequestSet(csmSeRequest);
         SeResponse csmSeResponse = csmReader.transmit(csmSeRequestSet).getSingleResponse();
 
-        // TODO What if csmSeResponse is null?
+        if (csmSeResponse == null) {
+            throw new InvalidMessageException("Null response received",
+                    InvalidMessageException.Type.CSM, csmSeRequest.getApduRequests(), null);
+        }
 
         logger.debug("PoSecureSession => processOpening, identification: CSMSERESPONSE = {}",
                 csmSeResponse);
@@ -251,7 +256,10 @@ public class PoSecureSession {
         logger.debug("PoSecureSession => processOpening, opening:  POSERESPONSE = {}",
                 poSeResponse);
 
-        // TODO What if poSeResponse is null?
+        if (poSeResponse == null) {
+            throw new InvalidMessageException("Null response received",
+                    InvalidMessageException.Type.PO, poSeRequest.getApduRequests(), null);
+        }
 
         /* Retrieve and check the ApduResponses */
         List<ApduResponse> poApduResponseList = poSeResponse.getApduResponses();
@@ -283,23 +291,23 @@ public class PoSecureSession {
                     String.format("%02X", poOpenSessionPars.getSelectedKif()),
                     String.format("%02X", poOpenSessionPars.getSelectedKvc()));
         }
-        // TODO check what to do if kif = KIF_UNDEFINED and defaultKeyIndex other than perso, load,
-        // or validation
+
         if (kif == KIF_UNDEFINED) {
             if (defaultKeyIndex == KEY_INDEX_PERSONALIZATION) {
-                kif = KIF_ISSUER;
+                kif = DEFAULT_KIF_PERSO;
             } else if (defaultKeyIndex == KEY_INDEX_LOAD) {
-                kif = KIF_LOAD;
+                kif = DEFAULT_KIF_LOAD;
             } else if (defaultKeyIndex == KEY_INDEX_VALIDATION_DEBIT) {
-                kif = KIF_DEBIT;
+                kif = DEFAULT_KIF_DEBIT;
             }
         }
 
         /*
-         * Initialize the digester. It will store all digest operations (Digest Init, Digest Update)
-         * until the session closing. AT this moment, all CSM Apdu will be processed at once.
+         * Initialize the DigestProcessor. It will store all digest operations (Digest Init, Digest
+         * Update) until the session closing. AT this moment, all CSM Apdu will be processed at
+         * once.
          */
-        DigesterCsm.initialize(csmReader, poRevision, csmRevision, false, false,
+        DigestProcessor.initialize(poRevision, csmRevision, false, false,
                 poRevision.equals(PoRevision.REV3_2), defaultKeyIndex, kif,
                 poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
 
@@ -312,11 +320,10 @@ public class PoSecureSession {
 
             for (int i = 1; i < poApduRequestList.size(); i++) { // The loop starts after the Open
                 /*
-                 * Add requests and responses to the digester
+                 * Add requests and responses to the DigestProcessor
                  */
-                DigesterCsm.appendRequest(poApduRequestList.get(i));
-
-                DigesterCsm.appendResponse(poApduResponseList.get(i));
+                DigestProcessor.pushPoExchangeData(poApduRequestList.get(i),
+                        poApduResponseList.get(i));
             }
         }
 
@@ -359,11 +366,6 @@ public class PoSecureSession {
     public SeResponse processPoCommands(List<PoSendableInSession> poCommands)
             throws IOReaderException {
 
-        if (currentState != SessionState.SESSION_OPEN) {
-            throw new IllegalStateException("Bad session state. Current: " + currentState.toString()
-                    + ", expected: " + SessionState.SESSION_OPEN.toString());
-        }
-
         // Get PO ApduRequest List from PoSendableInSession List
         List<ApduRequest> poApduRequestList =
                 this.getApduRequestsToSendInSession((List<SendableInSession>) (List<?>) poCommands);
@@ -382,7 +384,10 @@ public class PoSecureSession {
 
         logger.debug("PoSecureSession => processPoCommands:PORESPONSE = {}", poSeResponse);
 
-        // TODO What if poSeResponse is null?
+        if (poSeResponse == null) {
+            throw new InvalidMessageException("Null response received",
+                    InvalidMessageException.Type.PO, poSeRequest.getApduRequests(), null);
+        }
 
         /* Retrieve and check the ApduResponses */
         List<ApduResponse> poApduResponseList = poSeResponse.getApduResponses();
@@ -401,17 +406,18 @@ public class PoSecureSession {
         }
 
         /*
-         * Add all commands data to the digest computation.
+         * Add all commands data to the digest computation if this method is called within a Secure
+         * Session.
          */
-        for (int i = 0; i < poApduRequestList.size(); i++) { // The loop starts after the Open
-            /*
-             * Add requests and responses to the digester
-             */
-            DigesterCsm.appendRequest(poApduRequestList.get(i));
-
-            DigesterCsm.appendResponse(poApduResponseList.get(i));
+        if (currentState == SessionState.SESSION_OPEN) {
+            for (int i = 0; i < poApduRequestList.size(); i++) { // The loop starts after the Open
+                /*
+                 * Add requests and responses to the DigestProcessor
+                 */
+                DigestProcessor.pushPoExchangeData(poApduRequestList.get(i),
+                        poApduResponseList.get(i));
+            }
         }
-
         return poSeResponse;
     }
 
@@ -431,11 +437,6 @@ public class PoSecureSession {
      */
     public SeResponse processCsmCommands(List<CsmSendableInSession> csmCommands)
             throws IOReaderException {
-
-        if (currentState != SessionState.SESSION_OPEN) {
-            throw new IllegalStateException("Bad session state. Current: " + currentState.toString()
-                    + ", expected: " + SessionState.SESSION_OPEN.toString());
-        }
 
         /* Init CSM ApduRequest List - for the first CSM exchange */
         List<ApduRequest> csmApduRequestList = this
@@ -517,11 +518,10 @@ public class PoSecureSession {
                  */
                 for (int i = 0; i < poApduRequestList.size(); i++) {
                     /*
-                     * Add requests and responses to the digester
+                     * Add requests and responses to the DigestProcessor
                      */
-                    DigesterCsm.appendRequest(poApduRequestList.get(i));
-
-                    DigesterCsm.appendResponse(poAnticipatedResponses.get(i));
+                    DigestProcessor.pushPoExchangeData(poApduRequestList.get(i),
+                            poAnticipatedResponses.get(i));
                 }
             } else {
                 throw new InvalidMessageException("Inconsistent requests and anticipated responses",
@@ -529,12 +529,54 @@ public class PoSecureSession {
             }
         }
 
+        /* All CSM digest operations will now run at once. */
+        /* Get the CSM Digest request from the cache manager */
+        SeRequest csmSeRequest = DigestProcessor.getCsmDigestRequest();
+
+        logger.debug("PoSecureSession => processClosing: CSMREQUEST = {}", csmSeRequest);
+
+        /* create a SeRequestSet */
+        SeRequestSet csmRequestSet = new SeRequestSet(csmSeRequest);
+
+        SeResponse csmSeResponse = csmReader.transmit(csmRequestSet).getSingleResponse();
+
+        logger.debug("PoSecureSession => processClosing: CSMRESPONSE = {}", csmSeResponse);
+
+        List<ApduResponse> csmApduResponseList = csmSeResponse.getApduResponses();
+
+        for (int i = 0; i < csmApduResponseList.size(); i++) {
+            if (!csmApduResponseList.get(i).isSuccessful()) {
+
+                logger.debug(
+                        "PoSecureSession => processClosing: command failure REQUEST = {}, RESPONSE = {}",
+                        csmSeRequest.getApduRequests().get(i), csmApduResponseList.get(i));
+                throw new IllegalStateException(
+                        "ProcessClosing command failure during digest computation process.");
+            }
+        }
+
+        /* Get Terminal Signature from the latest response */
+        ByteBuffer sessionTerminalSignature = null;
+        // TODO Add length check according to Calypso REV (4 / 8)
+        if (!csmApduResponseList.isEmpty()) {
+            DigestCloseRespPars respPars = new DigestCloseRespPars(
+                    csmApduResponseList.get(csmApduResponseList.size() - 1));
+
+            sessionTerminalSignature = respPars.getSignature();
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("PoSecureSession => processClosing: SIGNATURE = {}",
+                    ByteBufferUtils.toHex(sessionTerminalSignature));
+        }
+
+
         /* the ratification will be asked only if no ratification command is provided */
         boolean ratificationAsked = (ratificationCommand == null);
 
         /* Build the PO Close Session command. The last one for this session */
-        CloseSessionCmdBuild closeCommand = new CloseSessionCmdBuild(poRevision, ratificationAsked,
-                DigesterCsm.getTerminalSignature());
+        CloseSessionCmdBuild closeCommand =
+                new CloseSessionCmdBuild(poRevision, ratificationAsked, sessionTerminalSignature);
 
         poApduRequestList.add(closeCommand.getApduRequest());
 
@@ -567,32 +609,75 @@ public class PoSecureSession {
                     InvalidMessageException.Type.PO, poApduRequestList, poApduResponseList);
         }
 
-        transactionResult = DigesterCsm.checkPoSignature(poCloseSessionPars.getSignatureLo());
+        /* Check the PO signature part with the CSM */
+        /* Build and send CSM Digest Authenticate command */
+
+        AbstractApduCommandBuilder digestAuth =
+                new DigestAuthenticateCmdBuild(csmRevision, poCloseSessionPars.getSignatureLo());
+
+        List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
+        csmApduRequestList.add(digestAuth.getApduRequest());
+
+        csmSeRequest = new SeRequest(null, csmApduRequestList, true);
+
+        logger.debug("PoSecureSession.DigestProcessor => checkPoSignature: CSMREQUEST = {}",
+                csmSeRequest);
+
+        csmRequestSet = new SeRequestSet(csmSeRequest);
+
+        csmSeResponse = csmReader.transmit(csmRequestSet).getSingleResponse();
+
+        logger.debug("PoSecureSession.DigestProcessor => checkPoSignature: CSMRESPONSE = {}",
+                csmSeResponse);
+
+        /* Get transaction result parsing the response */
+        csmApduResponseList = csmSeResponse.getApduResponses();
+
+        transactionResult = false;
+        if ((csmApduResponseList != null) && !csmApduResponseList.isEmpty()) {
+            DigestAuthenticateRespPars respPars =
+                    new DigestAuthenticateRespPars(csmApduResponseList.get(0));
+            transactionResult = respPars.isSuccessful();
+            if (transactionResult) {
+                logger.debug(
+                        "PoSecureSession.DigestProcessor => checkPoSignature: mutual authentication successful.");
+            } else {
+                logger.debug(
+                        "PoSecureSession.DigestProcessor => checkPoSignature: mutual authentication failure.");
+            }
+        } else {
+            logger.debug(
+                    "DigestProcessor => checkPoSignature: no response to Digest Authenticate.");
+            throw new IllegalStateException("No response to Digest Authenticate.");
+        }
 
         currentState = SessionState.SESSION_CLOSED;
         return poSeResponse;
     }
 
     /**
-     * Determine the PO revision from the application type byte
-     *
-     * TODO Review this method for, among other things, managing CLAP. Also it could be private.
+     * Determine the PO revision from the application type byte:
+     * <ul>
+     * <li>if %1------- => CLAP => REV3.1</li>
+     * <li>if %00101--- => REV3.2</li>
+     * <li>if %00100--- => REV3.1</li>
+     * <li>otherwise => REV2.4</li>
+     * </ul>
      * 
      * @param applicationTypeByte the application type byte from FCI
      * @return the PO revision
      */
     public static PoRevision computePoRevision(byte applicationTypeByte) {
-        PoRevision rev = PoRevision.REV3_1;
-        if (applicationTypeByte <= (byte) 0x1F) {
+        PoRevision rev;
+        if ((applicationTypeByte & (1 << 7)) != 0) {
+            /* CLAP */
+            rev = PoRevision.REV3_1;
+        } else if ((applicationTypeByte >> 3) == (byte) (0x05)) {
+            rev = PoRevision.REV3_2;
+        } else if ((applicationTypeByte >> 3) == (byte) (0x04)) {
+            rev = PoRevision.REV3_1;
+        } else {
             rev = PoRevision.REV2_4;
-        } else if (Byte.valueOf(applicationTypeByte).compareTo((byte) 0x7f) <= 0
-                && Byte.valueOf(applicationTypeByte).compareTo((byte) 0x20) >= 0) {
-            // test bit 3 of applicationTypeByte to determine revision
-            if ((applicationTypeByte & (1 << 3)) != 0) {
-                rev = PoRevision.REV3_2;
-            } else {
-                rev = PoRevision.REV3_1;
-            }
         }
         return rev;
     }
@@ -617,7 +702,13 @@ public class PoSecureSession {
      * @return the {@link PoSecureSession}.transactionResult
      */
     public boolean isSuccessful() {
-        // TODO checks if transaction state is "closed"
+
+        if (currentState != SessionState.SESSION_CLOSED) {
+            throw new IllegalStateException(
+                    "Session is not closed, state:" + currentState.toString() + ", expected: "
+                            + SessionState.SESSION_OPEN.toString());
+        }
+
         return transactionResult;
     }
 
@@ -636,26 +727,32 @@ public class PoSecureSession {
      *
      * - initialize: Digest Init command
      *
-     * - appendRequest and appendResponse: check consistency and all needed Digest Update commands
+     * - pushPoExchangeData and appendResponse: check consistency and all needed Digest Update
+     * commands
      *
      * - getTerminalSignature: Digest Close, returns the terminal part of the signature
      *
      * - checkPoSignature: Digest Authenticate, verify the PO part of the signature
      */
-    // TODO optimization with the use of Digest Update Multiple whenever possible.
-    private static class DigesterCsm {
-        private static final List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
-        private static ProxyReader reader;
-        private static int commandCounter;
+    private static class DigestProcessor {
+        /*
+         * The digest data cache stores all PO data to be send to CSM during a Secure Session. The
+         * 1st buffer is the data buffer to be provided with Digest Init. The following buffers are
+         * PO command/response pairs
+         */
+        private static final List<ByteBuffer> poDigestDataCache = new ArrayList<ByteBuffer>();
         private static CsmRevision csmRevision;
         private static PoRevision poRevision;
         private static boolean encryption;
-        private static boolean apduReqExpected;
+        private static boolean verification;
+        private static boolean revMode;
+        private static byte keyRecordNumber;
+        private static byte keyKIF;
+        private static byte keyKVC;
 
         /**
          * Initializes the digest computation process
          *
-         * @param csmReader the CSM reader
          * @param poRev the PO revision
          * @param csmRev the CSM revision
          * @param sessionEncryption true if the session is encrypted
@@ -666,60 +763,49 @@ public class PoSecureSession {
          * @param workKeyKVC the PO KVC
          * @param digestData a first bunch of data to digest.
          */
-        static void initialize(ProxyReader csmReader, PoRevision poRev, CsmRevision csmRev,
-                boolean sessionEncryption, boolean verificationMode, boolean rev3_2Mode,
-                byte workKeyRecordNumber, byte workKeyKif, byte workKeyKVC, ByteBuffer digestData) {
+        static void initialize(PoRevision poRev, CsmRevision csmRev, boolean sessionEncryption,
+                boolean verificationMode, boolean rev3_2Mode, byte workKeyRecordNumber,
+                byte workKeyKif, byte workKeyKVC, ByteBuffer digestData) {
             /* Store work context */
-            reader = csmReader;
             poRevision = poRev;
             csmRevision = csmRev;
             encryption = sessionEncryption;
+            verification = verificationMode;
+            revMode = rev3_2Mode;
+            keyRecordNumber = workKeyRecordNumber;
+            keyKIF = workKeyKif;
+            keyKVC = workKeyKVC;
             if (logger.isDebugEnabled()) {
                 logger.debug(
-                        "PoSecureSession.Digester => initialize: POREVISION = {}, CSMREVISION = {}, SESSIONENCRYPTION = {}",
+                        "PoSecureSession.DigestProcessor => initialize: POREVISION = {}, CSMREVISION = {}, SESSIONENCRYPTION = {}",
                         poRev, csmRev, sessionEncryption, verificationMode);
                 logger.debug(
-                        "PoSecureSession.Digester => initialize: VERIFICATIONMODE = {}, REV32MODE = {} KEYRECNUMBER = {}",
+                        "PoSecureSession.DigestProcessor => initialize: VERIFICATIONMODE = {}, REV32MODE = {} KEYRECNUMBER = {}",
                         verificationMode, rev3_2Mode, workKeyRecordNumber);
                 logger.debug(
-                        "PoSecureSession.Digester => initialize: KIF = {}, KVC {}, DIGESTDATA = {}",
+                        "PoSecureSession.DigestProcessor => initialize: KIF = {}, KVC {}, DIGESTDATA = {}",
                         workKeyKif, workKeyKVC, ByteBufferUtils.toHex(digestData));
             }
 
-            /* Reset ApduRequest list */
-            csmApduRequestList.clear();
+            /* Clear data cache */
+            poDigestDataCache.clear();
 
             /*
-             * Build and append Digest Init command as first ApduRequest of the digest computation
-             * process
+             * Build Digest Init command as first ApduRequest of the digest computation process
              */
-            AbstractApduCommandBuilder digestInit =
-                    new DigestInitCmdBuild(csmRevision, verificationMode, rev3_2Mode,
-                            workKeyRecordNumber, workKeyKif, workKeyKVC, digestData);
-
-            csmApduRequestList.add(digestInit.getApduRequest());
-
-            /* Keep a command counter to check consistency */
-            commandCounter = 1;
-            apduReqExpected = true;
+            poDigestDataCache.add(digestData);
         }
 
         /**
-         * Appends a request to the PO computation process.
+         * Appends a full PO exchange (request and response) to the digest data cache.
          *
          * @param request PO request
+         * @param response PO response
          */
-        static void appendRequest(ApduRequest request) {
-            /* state check */
-            if (!apduReqExpected) {
-                logger.debug(
-                        "PoSecureSession.Digester => appendRequest: a response was expected. REQUEST = {}",
-                        request);
-                throw new IllegalStateException("Digester: an ApduResponse was expected.");
-            }
-            apduReqExpected = false;
+        static void pushPoExchangeData(ApduRequest request, ApduResponse response) {
 
-            logger.debug("PoSecureSession.Digester => appendRequest: REQUEST = ", request);
+            logger.debug("PoSecureSession.DigestProcessor => pushPoExchangeData: REQUEST = ",
+                    request);
 
             /*
              * Add an ApduRequest to the digest computation: if the request is of case4 type, Le
@@ -727,158 +813,69 @@ public class PoSecureSession {
              * byte of the command buffer.
              */
             if (request.isCase4()) {
-                csmApduRequestList
-                        .add((new DigestUpdateCmdBuild(csmRevision, encryption, ByteBufferUtils
-                                .subLen(request.getBytes(), 0, request.getBytes().limit() - 2))
-                                        .getApduRequest()));
+                poDigestDataCache.add(ByteBufferUtils.subLen(request.getBytes(), 0,
+                        request.getBytes().limit() - 1));
             } else {
-                csmApduRequestList
-                        .add((new DigestUpdateCmdBuild(csmRevision, encryption, request.getBytes()))
-                                .getApduRequest());
+                poDigestDataCache.add(request.getBytes());
             }
-            commandCounter++;
-        }
 
-        /**
-         * Appends a response to the digest computation process.
-         *
-         * @param response PO response
-         */
-        static void appendResponse(ApduResponse response) {
-            /* state check */
-            if (apduReqExpected) {
-                logger.debug(
-                        "PoSecureSession.Digester => appendResponse: a request was expected. RESPONSE = {}",
-                        response);
-                throw new IllegalStateException("Digester: an ApduRequest was expected.");
-            }
-            apduReqExpected = true;
-
-            logger.debug("PoSecureSession.Digester => appendResponse: RESPONSE = ", response);
+            logger.debug("PoSecureSession.DigestProcessor => pushPoExchangeData: RESPONSE = ",
+                    response);
 
             /* Add an ApduResponse to the digest computation */
-            csmApduRequestList
-                    .add((new DigestUpdateCmdBuild(csmRevision, encryption, response.getBytes()))
-                            .getApduRequest());
-            commandCounter++;
+            poDigestDataCache.add(response.getBytes());
         }
 
         /**
-         * Executes all the recorded CSM requests used for the digest computation process. Retrieves
-         * the terminal part of the session signature.
-         *
-         * @return ByteBuffer the terminal part of the signature
-         * @throws IOReaderException if an error occurs at reader level
+         * Get a unique CSM request for the whole digest computation process.
+         * 
+         * @return SeRequest all the ApduRequest to send to the CSM in order to get the terminal
+         *         signature
          */
-        static ByteBuffer getTerminalSignature() throws IOReaderException {
-            ByteBuffer sessionTerminalSignature = null;
+        // TODO optimization with the use of Digest Update Multiple whenever possible.
+        static SeRequest getCsmDigestRequest() {
+            List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
+
+            if (poDigestDataCache.size() == 0) {
+                logger.debug(
+                        "PoSecureSession.DigestProcessor => getCsmDigestRequest: no data in cache.");
+                throw new IllegalStateException("Digest data cache is empty.");
+            }
+            if (poDigestDataCache.size() % 2 == 0) {
+                /* the number of buffers should be 2*n + 1 */
+                logger.debug(
+                        "PoSecureSession.DigestProcessor => getCsmDigestRequest: wrong number of buffer in cache NBR = {}.",
+                        poDigestDataCache.size());
+                throw new IllegalStateException("Digest data cache is inconsistent.");
+            }
+
+            /*
+             * Build and append Digest Init command as first ApduRequest of the digest computation
+             * process
+             */
+            csmApduRequestList.add(new DigestInitCmdBuild(csmRevision, verification, revMode,
+                    keyRecordNumber, keyKIF, keyKVC, poDigestDataCache.get(0)).getApduRequest());
+
+            /*
+             * Build and append Digest Update commands
+             *
+             * The first command is at index 1.
+             */
+            for (int i = 1; i < poDigestDataCache.size(); i++) {
+                csmApduRequestList.add(
+                        new DigestUpdateCmdBuild(csmRevision, encryption, poDigestDataCache.get(i))
+                                .getApduRequest());
+            }
+
+            /*
+             * Build and append Digest Close command
+             */
             csmApduRequestList.add((new DigestCloseCmdBuild(csmRevision,
                     poRevision.equals(PoRevision.REV3_2) ? SIGNATURE_LENGTH_REV32
                             : SIGNATURE_LENGTH_REV_INF_32).getApduRequest()));
 
-            commandCounter++;
 
-            SeRequest csmSeRequest = new SeRequest(null, csmApduRequestList, true);
-
-            logger.debug("PoSecureSession.Digester => getTerminalSignature: CSMREQUEST = {}",
-                    csmSeRequest);
-
-            /* create a SeRequestSet (list of all previously added SeRequests) */
-
-            SeRequestSet csmRequestSet = new SeRequestSet(csmSeRequest);
-
-            SeResponse csmSeResponse = reader.transmit(csmRequestSet).getSingleResponse();
-
-            logger.debug("PoSecureSession.Digester => getTerminalSignature: CSMRESPONSE = {}",
-                    csmSeResponse);
-
-            List<ApduResponse> csmApduResponseList = csmSeResponse.getApduResponses();
-
-            if (csmApduResponseList.size() != commandCounter) {
-                logger.debug(
-                        "PoSecureSession.Digester => getTerminalSignature: request/response inconsistency NBREQUEST = {}, NBRESPONSE = {}",
-                        commandCounter, csmApduResponseList.size());
-                throw new IllegalStateException(
-                        "Digester: the number of responses doesn't match the number of requests.");
-            }
-
-            for (int i = 0; i < csmApduResponseList.size(); i++) {
-                if (!csmApduResponseList.get(i).isSuccessful()) {
-                    logger.debug(
-                            "PoSecureSession.Digester => getTerminalSignature: command failure REQUEST = {}, RESPONSE = {}",
-                            csmApduRequestList.get(i), csmApduResponseList.get(i));
-                    throw new IllegalStateException(
-                            "Digester: command failure during digest computing process.");
-                }
-            }
-
-            /* Get Terminal Signature from the latest response */
-            // TODO Add length check according to Calypso REV (4 / 8)
-            if (!csmApduResponseList.isEmpty()) {
-                DigestCloseRespPars respPars = new DigestCloseRespPars(
-                        csmApduResponseList.get(csmApduResponseList.size() - 1));
-
-                sessionTerminalSignature = respPars.getSignature();
-            }
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("PoSecureSession.Digester => getTerminalSignature: SIGNATURE = {}",
-                        ByteBufferUtils.toHex(sessionTerminalSignature));
-            }
-
-            return sessionTerminalSignature;
-        }
-
-        /**
-         * Executes a Digest Authenticate command to check the provided PO signature part.
-         *
-         * @param poSignature the PO part of the signature
-         * @return true if the PO signature is valid, otherwise false
-         * @throws IOReaderException if an error occurs at reader level
-         */
-        static boolean checkPoSignature(ByteBuffer poSignature) throws IOReaderException {
-
-            /* Reset ApduRequest list */
-            csmApduRequestList.clear();
-
-            /* Build and send CSM Digest Authenticate command */
-            AbstractApduCommandBuilder digestAuth =
-                    new DigestAuthenticateCmdBuild(csmRevision, poSignature);
-
-            csmApduRequestList.add(digestAuth.getApduRequest());
-
-            SeRequest csmSeRequest = new SeRequest(null, csmApduRequestList, true);
-
-            logger.debug("PoSecureSession.Digester => checkPoSignature: CSMREQUEST = {}",
-                    csmSeRequest);
-
-            SeRequestSet csmRequestSet = new SeRequestSet(csmSeRequest);
-
-            SeResponse csmSeResponse = reader.transmit(csmRequestSet).getSingleResponse();
-
-            logger.debug("PoSecureSession.Digester => checkPoSignature: CSMRESPONSE = {}",
-                    csmSeResponse);
-
-            /* Get transaction result parsing the response */
-            List<ApduResponse> csmApduResponseList = csmSeResponse.getApduResponses();
-
-            boolean result;
-            if ((csmApduResponseList != null) && !csmApduResponseList.isEmpty()) {
-                DigestAuthenticateRespPars respPars =
-                        new DigestAuthenticateRespPars(csmApduResponseList.get(0));
-                result = respPars.isSuccessful();
-                if (result) {
-                    logger.debug(
-                            "PoSecureSession.Digester => checkPoSignature: mutual authentication successful.");
-                } else {
-                    logger.debug(
-                            "PoSecureSession.Digester => checkPoSignature: mutual authentication failure.");
-                }
-            } else {
-                logger.debug("Digester => checkPoSignature: no response to Digest Authenticate.");
-                throw new IllegalStateException("No response to Digest Authenticate.");
-            }
-            return result;
+            return new SeRequest(null, csmApduRequestList, true);
         }
     }
 }

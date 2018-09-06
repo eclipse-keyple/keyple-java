@@ -32,8 +32,9 @@ public class PoVersionTest {
         Assert.assertEquals(PoSecureSession.computePoRevision((byte) 0x06), PoRevision.REV2_4);
         Assert.assertEquals(PoSecureSession.computePoRevision((byte) 0x1F), PoRevision.REV2_4);
         Assert.assertEquals(PoSecureSession.computePoRevision((byte) 0x20), PoRevision.REV3_1);
-        Assert.assertEquals(PoSecureSession.computePoRevision((byte) 0x7F), PoRevision.REV3_2);
-
+        Assert.assertEquals(PoSecureSession.computePoRevision((byte) 0x27), PoRevision.REV3_1);
+        Assert.assertEquals(PoSecureSession.computePoRevision((byte) 0x28), PoRevision.REV3_2);
+        Assert.assertEquals(PoSecureSession.computePoRevision((byte) 0x2F), PoRevision.REV3_2);
     }
 
 }
