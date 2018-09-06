@@ -16,7 +16,6 @@ import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
  * The Class SeProxyService. This singleton is the entry point of the SE Proxy Service, its instance
  * has to be called by a ticketing application in order to establish a link with a SE’s application.
  *
- * @author Ixxi
  */
 public final class SeProxyService {
 

@@ -14,6 +14,7 @@ import static org.junit.Assert.assertNull;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoModificationCommand;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
@@ -111,9 +112,10 @@ public class PoSecureSessionTest {
                 new SeResponse(true, null, apduResponseFciErr, apduResponseFciListErr));
     }
 
-    private void setBeforeTest(byte key) throws IOReaderException {
+    private void setBeforeTest(EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting)
+            throws IOReaderException {
 
-        poPlainSecrureSession = new PoSecureSession(poReader, csmSessionReader, key);
+        poPlainSecrureSession = new PoSecureSession(poReader, csmSessionReader, csmSetting);
         Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseOpenSession);
         Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequestSet.class)))
@@ -125,12 +127,24 @@ public class PoSecureSessionTest {
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
             InvalidApduReaderException, ReaderTimeoutException, IllegalArgumentException {
 
-        byte key = (byte) 0x03;
-        this.setBeforeTest(key);
+        EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
+                new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
+
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_PERSO,
+                PoSecureSession.DEFAULT_KIF_PERSO);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_LOAD,
+                PoSecureSession.DEFAULT_KIF_LOAD);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_DEBIT,
+                PoSecureSession.DEFAULT_KIF_DEBIT);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER,
+                PoSecureSession.DEFAULT_KEY_RECORD_NUMER);
+        this.setBeforeTest(csmSetting);
+        PoSecureSession.SessionAccessLevel accessLevel =
+                PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT;
         byte sfi = (byte) 0x08;
         byte recordNumber = (byte) 0x01;
 
-        SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
+        SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(accessLevel, sfi, recordNumber,
                 responseOpenSession.getSingleResponse().getApduResponses(), null);
 
         assertEquals(2, seResponse2.getApduResponses().size());
@@ -153,12 +167,24 @@ public class PoSecureSessionTest {
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
             InvalidApduReaderException, ReaderTimeoutException, IllegalArgumentException {
 
-        byte key = (byte) 0x01;
-        this.setBeforeTest(key);
+        EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
+                new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
+
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_PERSO,
+                PoSecureSession.DEFAULT_KIF_PERSO);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_LOAD,
+                PoSecureSession.DEFAULT_KIF_LOAD);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_DEBIT,
+                PoSecureSession.DEFAULT_KIF_DEBIT);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER,
+                PoSecureSession.DEFAULT_KEY_RECORD_NUMER);
+        this.setBeforeTest(csmSetting);
+        PoSecureSession.SessionAccessLevel accessLevel =
+                PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT;
         byte sfi = (byte) 0x08;
         byte recordNumber = (byte) 0x01;
 
-        SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
+        SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(accessLevel, sfi, recordNumber,
                 responseOpenSession.getSingleResponse().getApduResponses(), null);
 
         assertEquals(2, seResponse2.getApduResponses().size());
@@ -181,12 +207,24 @@ public class PoSecureSessionTest {
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
             InvalidApduReaderException, ReaderTimeoutException, IllegalArgumentException {
 
-        byte key = (byte) 0x02;
-        this.setBeforeTest(key);
+        EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
+                new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
+
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_PERSO,
+                PoSecureSession.DEFAULT_KIF_PERSO);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_LOAD,
+                PoSecureSession.DEFAULT_KIF_LOAD);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_DEBIT,
+                PoSecureSession.DEFAULT_KIF_DEBIT);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER,
+                PoSecureSession.DEFAULT_KEY_RECORD_NUMER);
+        this.setBeforeTest(csmSetting);
+        PoSecureSession.SessionAccessLevel accessLevel =
+                PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT;
         byte sfi = (byte) 0x08;
         byte recordNumber = (byte) 0x01;
 
-        SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
+        SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(accessLevel, sfi, recordNumber,
                 responseOpenSession.getSingleResponse().getApduResponses(), null);
 
         assertEquals(2, seResponse2.getApduResponses().size());
@@ -210,8 +248,20 @@ public class PoSecureSessionTest {
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
             InvalidApduReaderException, ReaderTimeoutException, IllegalArgumentException {
 
-        byte key = (byte) 0x03;
-        this.setBeforeTest(key);
+        EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
+                new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
+
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_PERSO,
+                PoSecureSession.DEFAULT_KIF_PERSO);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_LOAD,
+                PoSecureSession.DEFAULT_KIF_LOAD);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_DEBIT,
+                PoSecureSession.DEFAULT_KIF_DEBIT);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER,
+                PoSecureSession.DEFAULT_KEY_RECORD_NUMER);
+        this.setBeforeTest(csmSetting);
+        PoSecureSession.SessionAccessLevel accessLevel =
+                PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT;
         byte sfi = (byte) 0x08;
         byte recordNumber = (byte) 0x01;
 
@@ -220,7 +270,7 @@ public class PoSecureSessionTest {
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, (byte) 0x08,
                 recordNumber, false, (byte) 0x00);
 
-        SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
+        SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(accessLevel, sfi, recordNumber,
                 responseOpenSession.getSingleResponse().getApduResponses(),
                 poCommandsInsideSession);
 
@@ -243,8 +293,20 @@ public class PoSecureSessionTest {
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
             InvalidApduReaderException, ReaderTimeoutException, IllegalArgumentException {
 
-        byte key = (byte) 0x03;
-        this.setBeforeTest(key);
+        EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
+                new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
+
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_PERSO,
+                PoSecureSession.DEFAULT_KIF_PERSO);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_LOAD,
+                PoSecureSession.DEFAULT_KIF_LOAD);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_DEBIT,
+                PoSecureSession.DEFAULT_KIF_DEBIT);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER,
+                PoSecureSession.DEFAULT_KEY_RECORD_NUMER);
+        this.setBeforeTest(csmSetting);
+        PoSecureSession.SessionAccessLevel accessLevel =
+                PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT;
         Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseOpenSessionError);
         byte sfi = (byte) 0x08;
@@ -255,7 +317,7 @@ public class PoSecureSessionTest {
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, (byte) 0x08,
                 recordNumber, false, (byte) 0x00);
 
-        SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(key, sfi, recordNumber,
+        SeResponse seResponse2 = this.processOpeningTestKif0xFFKey(accessLevel, sfi, recordNumber,
                 responseOpenSession.getSingleResponse().getApduResponses(),
                 poCommandsInsideSession);
 
@@ -267,7 +329,20 @@ public class PoSecureSessionTest {
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
             InvalidApduReaderException, ReaderTimeoutException, IllegalArgumentException {
 
-        this.setBeforeTest(this.defaultKeyIndex);
+        EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
+                new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
+
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_PERSO,
+                PoSecureSession.DEFAULT_KIF_PERSO);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_LOAD,
+                PoSecureSession.DEFAULT_KIF_LOAD);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_DEBIT,
+                PoSecureSession.DEFAULT_KIF_DEBIT);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER,
+                PoSecureSession.DEFAULT_KEY_RECORD_NUMER);
+        this.setBeforeTest(csmSetting);
+        PoSecureSession.SessionAccessLevel accessLevel =
+                PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT;
         Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequestSet.class)))
                 .thenReturn(responseOpenSessionError);
         byte recordNumber = (byte) 0x01;
@@ -286,7 +361,18 @@ public class PoSecureSessionTest {
             throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
             InvalidApduReaderException, ReaderTimeoutException, IllegalArgumentException {
 
-        this.setBeforeTest(this.defaultKeyIndex);
+        EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
+                new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
+
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_PERSO,
+                PoSecureSession.DEFAULT_KIF_PERSO);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_LOAD,
+                PoSecureSession.DEFAULT_KIF_LOAD);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_DEBIT,
+                PoSecureSession.DEFAULT_KIF_DEBIT);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER,
+                PoSecureSession.DEFAULT_KEY_RECORD_NUMER);
+        this.setBeforeTest(csmSetting);
         byte recordNumber = (byte) 0x01;
 
         PoSendableInSession[] poCommandsInsideSession = new PoSendableInSession[1];
@@ -311,7 +397,18 @@ public class PoSecureSessionTest {
     @Test(expected = InvalidApduReaderException.class)
     public void processClosingTestNoCmdInsideInvalidApduReaderException() throws Exception {
 
-        this.setBeforeTest(this.defaultKeyIndex);
+        EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
+                new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
+
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_PERSO,
+                PoSecureSession.DEFAULT_KIF_PERSO);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_LOAD,
+                PoSecureSession.DEFAULT_KIF_LOAD);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_DEBIT,
+                PoSecureSession.DEFAULT_KIF_DEBIT);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER,
+                PoSecureSession.DEFAULT_KEY_RECORD_NUMER);
+        this.setBeforeTest(csmSetting);
         PoModificationCommand[] poCommandsInsideSession = null;
 
         Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
@@ -329,7 +426,18 @@ public class PoSecureSessionTest {
     @Test
     public void processClosingTestNoCmdInside() throws Exception {
 
-        this.setBeforeTest(this.defaultKeyIndex);
+        EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
+                new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
+
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_PERSO,
+                PoSecureSession.DEFAULT_KIF_PERSO);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_LOAD,
+                PoSecureSession.DEFAULT_KIF_LOAD);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_DEBIT,
+                PoSecureSession.DEFAULT_KIF_DEBIT);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER,
+                PoSecureSession.DEFAULT_KEY_RECORD_NUMER);
+        this.setBeforeTest(csmSetting);
         // PoSendableInSession[] poCommandsInsideSession = null;
 
         Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
@@ -354,7 +462,18 @@ public class PoSecureSessionTest {
     @Test
     public void processClosingTestWithCmdInside() throws Exception {
 
-        this.setBeforeTest(this.defaultKeyIndex);
+        EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
+                new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
+
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_PERSO,
+                PoSecureSession.DEFAULT_KIF_PERSO);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_LOAD,
+                PoSecureSession.DEFAULT_KIF_LOAD);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_DEBIT,
+                PoSecureSession.DEFAULT_KIF_DEBIT);
+        csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER,
+                PoSecureSession.DEFAULT_KEY_RECORD_NUMER);
+        this.setBeforeTest(csmSetting);
         byte counterNumber = (byte) 0x01;
         int decValue = 1;
         PoModificationCommand[] poModificationCommands = new PoModificationCommand[1];
@@ -428,10 +547,11 @@ public class PoSecureSessionTest {
         Assert.assertEquals(retourExpected, retour);
     }
 
-    private SeResponse processOpeningTestKif0xFFKey(byte keyIndex, byte sfi, byte recordNumber,
-            List<ApduResponse> apduExpected, PoSendableInSession[] poCommandsInsideSession)
+    private SeResponse processOpeningTestKif0xFFKey(PoSecureSession.SessionAccessLevel accessLevel,
+            byte sfi, byte recordNumber, List<ApduResponse> apduExpected,
+            PoSendableInSession[] poCommandsInsideSession)
             throws IOReaderException, IllegalArgumentException {
-        return poPlainSecrureSession.processOpening(null, keyIndex, sfi, recordNumber,
+        return poPlainSecrureSession.processOpening(null, accessLevel, sfi, recordNumber,
                 poCommandsInsideSession != null ? Arrays.asList(poCommandsInsideSession) : null);
 
     }

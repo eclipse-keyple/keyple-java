@@ -18,8 +18,6 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 /**
  * This class provides status code properties and the getters to access to the structured fields of
  * data from response of a Get Data response.
- *
- * @author Ixxi
  */
 public class GetDataFciRespPars extends AbstractApduResponseParser {
 

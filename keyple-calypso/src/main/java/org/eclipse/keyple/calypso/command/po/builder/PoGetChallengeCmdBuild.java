@@ -16,9 +16,6 @@ import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 /**
  * The Class PoGetChallengeCmdBuild. This class provides the dedicated constructor to build the PO
  * Get Challenge.
- *
- * @author Ixxi
- *
  */
 public class PoGetChallengeCmdBuild extends PoCommandBuilder implements PoSendableInSession {
 

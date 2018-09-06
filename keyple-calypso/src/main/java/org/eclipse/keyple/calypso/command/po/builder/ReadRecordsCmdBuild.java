@@ -16,9 +16,6 @@ import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 /**
  * The Class ReadRecordsCmdBuild. This class provides the dedicated constructor to build the Read
  * Records APDU command.
- *
- * @author Ixxi
- *
  */
 public class ReadRecordsCmdBuild extends PoCommandBuilder implements PoSendableInSession {
 

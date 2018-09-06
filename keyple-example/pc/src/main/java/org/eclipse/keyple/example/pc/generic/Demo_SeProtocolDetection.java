@@ -120,16 +120,16 @@ public class Demo_SeProtocolDetection implements ObservableReader.ReaderObserver
                         // intentionally ignored for demo purpose
                         break;
                     default:
-                        poRequests.add(new SeRequest(null, pcscContactlessReaderGetDataList, false,
-                                protocol));
+                        poRequests.add(new SeRequest(new SeRequest.AtrSelector(".*"),
+                                pcscContactlessReaderGetDataList, false, protocol));
                         break;
                 }
             }
 
             // process application specific protocols
             for (CustomProtocols protocol : CustomProtocols.values()) {
-                poRequests.add(
-                        new SeRequest(null, pcscContactlessReaderGetDataList, false, protocol));
+                poRequests.add(new SeRequest(new SeRequest.AtrSelector(".*"),
+                        pcscContactlessReaderGetDataList, false, protocol));
             }
 
             // create a SeRequestSet from the SeRequest list
@@ -218,6 +218,7 @@ public class Demo_SeProtocolDetection implements ObservableReader.ReaderObserver
         }
 
         System.out.println("PO Reader  : " + poReader.getName());
+        poReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
 
         // create an observer class to handle the SE operations
         Demo_SeProtocolDetection observer = new Demo_SeProtocolDetection();

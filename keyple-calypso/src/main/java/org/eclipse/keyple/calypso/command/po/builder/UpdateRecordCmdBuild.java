@@ -9,10 +9,7 @@
 package org.eclipse.keyple.calypso.command.po.builder;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
-import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
-import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
+import org.eclipse.keyple.calypso.command.po.*;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -20,7 +17,8 @@ import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
  * Record APDU command.
  *
  */
-public class UpdateRecordCmdBuild extends PoCommandBuilder implements PoSendableInSession {
+public class UpdateRecordCmdBuild extends PoCommandBuilder
+        implements PoSendableInSession, PoModificationCommand {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.UPDATE_RECORD;

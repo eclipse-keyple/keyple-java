@@ -10,6 +10,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.SendableInSession;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
@@ -59,6 +60,8 @@ public class PoSecureSession {
     public final static byte DEFAULT_KIF_LOAD = (byte) 0x27;
     /** The default KIF value for debiting */
     public final static byte DEFAULT_KIF_DEBIT = (byte) 0x30;
+    /** The default key record number */
+    public final static byte DEFAULT_KEY_RECORD_NUMER = (byte) 0x00;
 
     /* private constants */
     private final static byte KIF_UNDEFINED = (byte) 0xFF;
@@ -76,35 +79,55 @@ public class PoSecureSession {
     private final ProxyReader csmReader;
     /** The CSM default revision. */
     private final CsmRevision csmRevision = CsmRevision.C1;
-    /** The default key index for a PO session. */
-    private final byte defaultKeyIndex;
+    /** The CSM settings map. */
+    private final EnumMap<CsmSettings, Byte> csmSetting =
+            new EnumMap<CsmSettings, Byte>(CsmSettings.class);
     /** the type of the notified event. */
     private SessionState currentState;
     /** Selected AID of the Calypso PO. */
     private ByteBuffer poCalypsoInstanceAid;
     /** The PO Calypso Revision. */
-    private PoRevision poRevision = PoRevision.REV3_1;// TODO PoCommandBuilder.defaultRevision; //
+    private PoRevision poRevision = PoRevision.REV3_1;
     private boolean transactionResult;
 
     /**
      * Instantiates a new po plain secure session.
      * <ul>
      * <li>Logical channels with PO &amp; CSM could already be established or not.</li>
-     * <li>defaultKeyIndex optionnaly indicates the default CSM key for a PO Secure Session (this
-     * parameter may evolve to allow wider CSM settings).</li>
+     * <li>A list of CSM parameters is provided as en EnumMap.</li>
      * </ul>
      *
      * @param poReader the PO reader
      * @param csmReader the SAM reader
-     * @param defaultKeyIndex default KIF index
+     * @param csmSetting a list of CSM related parameters. In the case this parameter is null,
+     *        default parameters are applied. The available setting keys are defined in
+     *        {@link CsmSettings}
      */
-    // TODO: Ro replace the "defaultKeyIndex" byte parameter by a "csmSetting" Map<String> (or
-    // ByteArray, or List<Byte>) parameter
-    public PoSecureSession(ProxyReader poReader, ProxyReader csmReader, byte defaultKeyIndex) {
+    public PoSecureSession(ProxyReader poReader, ProxyReader csmReader,
+            EnumMap<CsmSettings, Byte> csmSetting) {
         this.poReader = poReader;
         this.csmReader = csmReader;
 
-        this.defaultKeyIndex = defaultKeyIndex; // TODO => to fix
+        /* Initialize csmSetting with provided settings */
+        if (csmSetting != null) {
+            this.csmSetting.putAll(csmSetting);
+        }
+
+        /* Just work mode: we make sure that all the necessary parameters exist at least. */
+        if (!this.csmSetting.containsKey(CsmSettings.CS_DEFAULT_KIF_PERSO)) {
+            this.csmSetting.put(CsmSettings.CS_DEFAULT_KIF_PERSO, DEFAULT_KIF_PERSO);
+        }
+        if (!this.csmSetting.containsKey(CsmSettings.CS_DEFAULT_KIF_LOAD)) {
+            this.csmSetting.put(CsmSettings.CS_DEFAULT_KIF_LOAD, DEFAULT_KIF_LOAD);
+        }
+        if (!this.csmSetting.containsKey(CsmSettings.CS_DEFAULT_KIF_DEBIT)) {
+            this.csmSetting.put(CsmSettings.CS_DEFAULT_KIF_DEBIT, DEFAULT_KIF_DEBIT);
+        }
+        if (!this.csmSetting.containsKey(CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER)) {
+            this.csmSetting.put(CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER, DEFAULT_KEY_RECORD_NUMER);
+        }
+
+        logger.debug("PoSecureSession => contructor: CSMSETTING = {}", this.csmSetting);
 
         currentState = SessionState.SESSION_CLOSED;
     }
@@ -141,7 +164,7 @@ public class PoSecureSession {
      * </ul>
      *
      * @param poFciData the po response to the application selection (FCI)
-     * @param keyIndex number of the key to use for the session (1, 2 or 3).
+     * @param accessLevel access level of the session (personalization, load or debit).
      * @param openingSfiToSelect SFI of the file to select (0 means no file to select)
      * @param openingRecordNumberToRead number of the record to read
      * @param poCommandsInsideSession the po commands inside session
@@ -149,9 +172,9 @@ public class PoSecureSession {
      *         Secure Session" command
      * @throws IOReaderException the IO reader exception
      */
-    public SeResponse processOpening(ApduResponse poFciData, byte keyIndex, byte openingSfiToSelect,
-            byte openingRecordNumberToRead, List<PoSendableInSession> poCommandsInsideSession)
-            throws IOReaderException {
+    public SeResponse processOpening(ApduResponse poFciData, SessionAccessLevel accessLevel,
+            byte openingSfiToSelect, byte openingRecordNumberToRead,
+            List<PoSendableInSession> poCommandsInsideSession) throws IOReaderException {
 
         /* CSM ApduRequest List to hold Select Diversifier and Get Challenge commands */
         List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
@@ -229,7 +252,7 @@ public class PoSecureSession {
 
         /* Build the PO Open Secure Session command */
         AbstractOpenSessionCmdBuild poOpenSession =
-                AbstractOpenSessionCmdBuild.create(getRevision(), keyIndex,
+                AbstractOpenSessionCmdBuild.create(getRevision(), (byte) (accessLevel.ordinal()),
                         sessionTerminalChallenge, openingSfiToSelect, openingRecordNumberToRead);
 
         /* Add the resulting ApduRequest to the PO ApduRequest list */
@@ -293,12 +316,16 @@ public class PoSecureSession {
         }
 
         if (kif == KIF_UNDEFINED) {
-            if (defaultKeyIndex == KEY_INDEX_PERSONALIZATION) {
-                kif = DEFAULT_KIF_PERSO;
-            } else if (defaultKeyIndex == KEY_INDEX_LOAD) {
-                kif = DEFAULT_KIF_LOAD;
-            } else if (defaultKeyIndex == KEY_INDEX_VALIDATION_DEBIT) {
-                kif = DEFAULT_KIF_DEBIT;
+            switch (accessLevel) {
+                case SESSION_LVL_PERSO:
+                    kif = csmSetting.get(CsmSettings.CS_DEFAULT_KIF_PERSO);
+                    break;
+                case SESSION_LVL_LOAD:
+                    kif = csmSetting.get(CsmSettings.CS_DEFAULT_KIF_LOAD);
+                    break;
+                case SESSION_LVL_DEBIT:
+                    kif = csmSetting.get(CsmSettings.CS_DEFAULT_KIF_DEBIT);
+                    break;
             }
         }
 
@@ -308,7 +335,8 @@ public class PoSecureSession {
          * once.
          */
         DigestProcessor.initialize(poRevision, csmRevision, false, false,
-                poRevision.equals(PoRevision.REV3_2), defaultKeyIndex, kif,
+                poRevision.equals(PoRevision.REV3_2),
+                csmSetting.get(CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER), kif,
                 poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
 
         /*
@@ -710,6 +738,32 @@ public class PoSecureSession {
         }
 
         return transactionResult;
+    }
+
+    /**
+     * List of CSM settings keys that can be provided when the secure session is created.
+     */
+    public enum CsmSettings {
+        /** KIF for personalization used when not provided by the PO */
+        CS_DEFAULT_KIF_PERSO,
+        /** KIF for load used when not provided by the PO */
+        CS_DEFAULT_KIF_LOAD,
+        /** KIF for debit used when not provided by the PO */
+        CS_DEFAULT_KIF_DEBIT,
+        /** Key record number to use when KIF/KVC is unavailable */
+        CS_DEFAULT_KEY_RECORD_NUMBER
+    }
+
+    /**
+     * The PO Transaction Access Level: personalization, loading or debiting.
+     */
+    public enum SessionAccessLevel {
+        /** Session Access Level used for personalization purposes. */
+        SESSION_LVL_PERSO,
+        /** Session Access Level used for reloading purposes. */
+        SESSION_LVL_LOAD,
+        /** Session Access Level used for validating and debiting purposes. */
+        SESSION_LVL_DEBIT
     }
 
     /**
