@@ -87,10 +87,12 @@ public final class SeRequest implements Serializable {
             this.atrRegex = atrRegex;
         }
 
-        /*
-            Return the hex regular expression
+        /**
+         * Getter for the regular expression of the selector
+         * 
+         * @return Regular expression
          */
-        public String getAtrRegex(){
+        public String getAtrRegex() {
             return atrRegex;
         }
 
