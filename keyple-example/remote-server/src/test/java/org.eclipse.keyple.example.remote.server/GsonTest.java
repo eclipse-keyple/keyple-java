@@ -2,6 +2,8 @@ package org.eclipse.keyple.example.remote.server;
 
 import com.google.gson.Gson;
 import org.eclipse.keyple.seproxy.SeRequestSet;
+import org.eclipse.keyple.seproxy.SeResponseSet;
+import org.eclipse.keyple.seproxy.SeResponseSetTest;
 import org.eclise.keyple.example.remote.server.transport.gson.JsonParser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,21 +13,25 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class GsonTest {
 
     @Test
-     public void testHoplinkSeRequest(){
-
+     public void testHoplinkSeRequestSet(){
         SeRequestSet seRequestSet = SampleFactory.getRequestIsoDepSetSample();
         testSerializeDeserializeObj(seRequestSet, SeRequestSet.class);
-
     }
 
     @Test
-     public void testCompleteSeRequest(){
+     public void testCompleteSeRequestSet(){
         SeRequestSet seRequestSet = SampleFactory.getCompleteRequestSet();
         testSerializeDeserializeObj(seRequestSet,SeRequestSet.class);
-
     }
 
-     public void testSerializeDeserializeObj(Object obj, Class objectClass ){
+    @Test
+    public void testSeResponseSet(){
+        SeResponseSet responseSet = SampleFactory.getCompeleteResponseSet();
+        Object deserialized = testSerializeDeserializeObj(responseSet,SeResponseSet.class);
+        assert responseSet.getResponses().get(0).equals(((SeResponseSet) deserialized).getResponses().get(0));
+    }
+
+     public Object testSerializeDeserializeObj(Object obj, Class objectClass ){
         Gson gson = JsonParser.getGson();
         String json = gson.toJson(obj);
         System.out.println(json);
@@ -34,6 +40,7 @@ public class GsonTest {
         String json2 = gson.toJson(deserializeObj);
         System.out.println(json2);
          assert json.equals(json2);
+        return deserializeObj;
     }
 
 }
