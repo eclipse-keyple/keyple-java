@@ -87,6 +87,13 @@ public final class SeRequest implements Serializable {
             this.atrRegex = atrRegex;
         }
 
+        /*
+            Return the hex regular expression
+         */
+        public String getAtrRegex(){
+            return atrRegex;
+        }
+
         /**
          * Tells if the provided ATR matches the registered regular expression
          *
