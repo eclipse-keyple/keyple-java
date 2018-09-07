@@ -23,11 +23,11 @@ import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoModificationCommand;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
-import org.eclipse.keyple.calypso.command.po.builder.AbstractOpenSessionCmdBuild;
-import org.eclipse.keyple.calypso.command.po.builder.CloseSessionCmdBuild;
-import org.eclipse.keyple.calypso.command.po.parser.AbstractOpenSessionRespPars;
-import org.eclipse.keyple.calypso.command.po.parser.CloseSessionRespPars;
+import org.eclipse.keyple.calypso.command.po.builder.session.AbstractOpenSessionCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.session.CloseSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.session.AbstractOpenSessionRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.session.CloseSessionRespPars;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
@@ -88,7 +88,10 @@ public class PoSecureSession {
     private ByteBuffer poCalypsoInstanceAid;
     /** The PO Calypso Revision. */
     private PoRevision poRevision = PoRevision.REV3_1;
+    /** The PO Secure Session final status according to mutual authentication result */
     private boolean transactionResult;
+    /** Timestamp to measure session duration between opening and final status checking */
+    private long before = 0;
 
     /**
      * Instantiates a new po plain secure session.
@@ -175,6 +178,10 @@ public class PoSecureSession {
     public SeResponse processOpening(ApduResponse poFciData, SessionAccessLevel accessLevel,
             byte openingSfiToSelect, byte openingRecordNumberToRead,
             List<PoSendableInSession> poCommandsInsideSession) throws IOReaderException {
+
+        if (logger.isInfoEnabled()) {
+            before = System.nanoTime();
+        }
 
         /* CSM ApduRequest List to hold Select Diversifier and Get Challenge commands */
         List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
@@ -452,10 +459,7 @@ public class PoSecureSession {
     /**
      * Process CSM commands.
      * <ul>
-     * <li>The CSM commands to operate are pushed in the current CSM commands cache.</li>
-     * <li>On the CSM reader, transmission of a SeRequest for the current selected AID, with
-     * keepChannelOpen set at true, and ApduRequests based on all the CSM commands of the cache. The
-     * cache emptied.</li>
+     * <li>On the CSM reader, transmission of a SeRequest with keepChannelOpen set at true.</li>
      * <li>Returns the corresponding CSM SeResponse.</li>
      * </ul>
      *
@@ -687,10 +691,11 @@ public class PoSecureSession {
      * Determine the PO revision from the application type byte:
      *
      * <ul>
-     * <li>if <code>%1-------</code> =&gt; CLAP =&gt; REV3.1</li>
-     * <li>if <code>%00101---</code> =&gt; REV3.2</li>
-     * <li>if <code>%00100---</code> =&gt; REV3.1</li>
-     * <li>otherwise =&gt; REV2.4</li>
+     * <li>if
+     * <code>%1-------</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;CLAP&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.1</li>
+     * <li>if <code>%00101---</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.2</li>
+     * <li>if <code>%00100---</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.1</li>
+     * <li>otherwise&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV2.4</li>
      * </ul>
      *
      * @param applicationTypeByte the application type byte from FCI
@@ -736,6 +741,12 @@ public class PoSecureSession {
             throw new IllegalStateException(
                     "Session is not closed, state:" + currentState.toString() + ", expected: "
                             + SessionState.SESSION_OPEN.toString());
+        }
+
+        if (logger.isInfoEnabled()) {
+            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            logger.info("isSuccessful => SUCCESSFUL = {}, TOTALDURATION = {} ms.",
+                    transactionResult, elapsedMs);
         }
 
         return transactionResult;
