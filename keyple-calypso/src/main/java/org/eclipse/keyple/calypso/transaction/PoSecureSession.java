@@ -251,9 +251,9 @@ public class PoSecureSession {
         List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
 
         /* Build the PO Open Secure Session command */
-        AbstractOpenSessionCmdBuild poOpenSession =
-                AbstractOpenSessionCmdBuild.create(getRevision(), (byte) (accessLevel.ordinal()),
-                        sessionTerminalChallenge, openingSfiToSelect, openingRecordNumberToRead);
+        AbstractOpenSessionCmdBuild poOpenSession = AbstractOpenSessionCmdBuild.create(
+                getRevision(), (byte) (accessLevel.ordinal() + 1), sessionTerminalChallenge,
+                openingSfiToSelect, openingRecordNumberToRead);
 
         /* Add the resulting ApduRequest to the PO ApduRequest list */
         poApduRequestList.add(poOpenSession.getApduRequest());
@@ -860,7 +860,7 @@ public class PoSecureSession {
          */
         static void pushPoExchangeData(ApduRequest request, ApduResponse response) {
 
-            logger.debug("PoSecureSession.DigestProcessor => pushPoExchangeData: REQUEST = ",
+            logger.debug("PoSecureSession.DigestProcessor => pushPoExchangeData: REQUEST = {}",
                     request);
 
             /*
@@ -875,7 +875,7 @@ public class PoSecureSession {
                 poDigestDataCache.add(request.getBytes());
             }
 
-            logger.debug("PoSecureSession.DigestProcessor => pushPoExchangeData: RESPONSE = ",
+            logger.debug("PoSecureSession.DigestProcessor => pushPoExchangeData: RESPONSE = {}",
                     response);
 
             /* Add an ApduResponse to the digest computation */
