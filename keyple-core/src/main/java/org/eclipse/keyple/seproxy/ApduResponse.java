@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.seproxy;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Set;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -16,13 +17,22 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 /**
  * Single APDU response wrapper
  */
-public final class ApduResponse extends AbstractApduBuffer {
+public final class ApduResponse implements Serializable {
+
+    static final long serialVersionUID = 6418469841122636812L;
 
     /***
      * the success result of the processed APDU command to allow chaining responses in a group of
      * APDUs
      */
     private final boolean successful;
+
+
+    /**
+     * apdu response data buffer (including sw1sw2)
+     */
+    private final ByteBuffer bytes;
+
 
     /**
      * Create a new ApduResponse from the provided ByteBuffer
@@ -38,7 +48,7 @@ public final class ApduResponse extends AbstractApduBuffer {
      */
     public ApduResponse(ByteBuffer buffer, Set<Short> successfulStatusCodes) {
 
-        super(buffer);
+        this.bytes = buffer;
         if (buffer == null) {
             this.successful = false;
         } else {
@@ -69,7 +79,7 @@ public final class ApduResponse extends AbstractApduBuffer {
     }
 
     public int getStatusCode() {
-        int s = buffer.getShort(buffer.limit() - 2);
+        int s = bytes.getShort(bytes.limit() - 2);
 
         // java is signed only
         if (s < 0) {
@@ -78,6 +88,9 @@ public final class ApduResponse extends AbstractApduBuffer {
         return s;
     }
 
+    public ByteBuffer getBytes() {
+        return this.bytes;
+    }
 
     /**
      * Get the data before the statusCode
@@ -85,13 +98,13 @@ public final class ApduResponse extends AbstractApduBuffer {
      * @return slice of the buffer before the status code
      */
     public ByteBuffer getDataOut() {
-        return ByteBufferUtils.subLen(buffer, 0, buffer.limit() - 2);
+        return ByteBufferUtils.subLen(bytes, 0, bytes.limit() - 2);
     }
 
     @Override
     public String toString() {
         return "ApduResponse: " + (isSuccessful() ? "SUCCESS" : "FAILURE") + ", RAWDATA = "
-                + super.toString();
+                + ByteBufferUtils.toHex(this.bytes);
     }
 
     @Override
@@ -104,7 +117,7 @@ public final class ApduResponse extends AbstractApduBuffer {
         }
 
         ApduResponse resp = (ApduResponse) o;
-        return (resp.getBytes() == null ? this.buffer == null : resp.getBytes().equals(this.buffer))
+        return (resp.getBytes() == null ? this.bytes == null : resp.getBytes().equals(this.bytes))
                 && resp.isSuccessful() == this.successful;
     }
 
@@ -112,7 +125,7 @@ public final class ApduResponse extends AbstractApduBuffer {
     public int hashCode() {
         int hash = 17;
         hash = 19 * hash + (this.successful ? 0 : 1);
-        hash = 31 * hash + (buffer == null ? 0 : buffer.hashCode());
+        hash = 31 * hash + (bytes == null ? 0 : bytes.hashCode());
         return hash;
     }
 }
