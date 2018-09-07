@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.seproxy;
 
+import java.io.Serializable;
 import java.util.List;
 import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -18,7 +19,9 @@ import org.eclipse.keyple.util.ByteBufferUtils;
  * @see SeRequest
  */
 @SuppressWarnings("PMD.NPathComplexity")
-public final class SeResponse {
+public final class SeResponse implements Serializable {
+
+    static final long serialVersionUID = 265369841119873812L;
 
 
     /**
