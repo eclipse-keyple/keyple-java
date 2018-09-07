@@ -9,10 +9,10 @@
 package org.eclipse.keyple.command.util;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.po.parser.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.calypso.command.po.parser.OpenSession24RespPars;
-import org.eclipse.keyple.calypso.command.po.parser.OpenSession32RespPars;
+import org.eclipse.keyple.calypso.command.po.parser.session.AbstractOpenSessionRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.session.OpenSession24RespPars;
+import org.eclipse.keyple.calypso.command.po.parser.session.OpenSession32RespPars;
 import org.junit.Assert;
 import org.junit.Test;
 

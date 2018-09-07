@@ -9,7 +9,7 @@
 package org.eclipse.keyple.command.po.builder;
 
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.builder.PoGetChallengeCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.session.PoGetChallengeCmdBuild;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.util.ByteBufferUtils;
