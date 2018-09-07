@@ -88,7 +88,10 @@ public class PoSecureSession {
     private ByteBuffer poCalypsoInstanceAid;
     /** The PO Calypso Revision. */
     private PoRevision poRevision = PoRevision.REV3_1;
+    /** The PO Secure Session final status according to mutual authentication result */
     private boolean transactionResult;
+    /** Timestamp to measure session duration between opening and final status checking */
+    private long before = 0;
 
     /**
      * Instantiates a new po plain secure session.
@@ -175,6 +178,10 @@ public class PoSecureSession {
     public SeResponse processOpening(ApduResponse poFciData, SessionAccessLevel accessLevel,
             byte openingSfiToSelect, byte openingRecordNumberToRead,
             List<PoSendableInSession> poCommandsInsideSession) throws IOReaderException {
+
+        if (logger.isInfoEnabled()) {
+            before = System.nanoTime();
+        }
 
         /* CSM ApduRequest List to hold Select Diversifier and Get Challenge commands */
         List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
@@ -734,6 +741,12 @@ public class PoSecureSession {
             throw new IllegalStateException(
                     "Session is not closed, state:" + currentState.toString() + ", expected: "
                             + SessionState.SESSION_OPEN.toString());
+        }
+
+        if (logger.isInfoEnabled()) {
+            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            logger.info("isSuccessful => SUCCESSFUL = {}, TOTALDURATION = {} ms.",
+                    transactionResult, elapsedMs);
         }
 
         return transactionResult;
