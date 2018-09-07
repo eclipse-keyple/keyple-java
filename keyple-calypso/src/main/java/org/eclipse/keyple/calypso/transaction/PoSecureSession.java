@@ -251,9 +251,9 @@ public class PoSecureSession {
         List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
 
         /* Build the PO Open Secure Session command */
-        AbstractOpenSessionCmdBuild poOpenSession =
-                AbstractOpenSessionCmdBuild.create(getRevision(), (byte) (accessLevel.ordinal()),
-                        sessionTerminalChallenge, openingSfiToSelect, openingRecordNumberToRead);
+        AbstractOpenSessionCmdBuild poOpenSession = AbstractOpenSessionCmdBuild.create(
+                getRevision(), (byte) (accessLevel.ordinal() + 1), sessionTerminalChallenge,
+                openingSfiToSelect, openingRecordNumberToRead);
 
         /* Add the resulting ApduRequest to the PO ApduRequest list */
         poApduRequestList.add(poOpenSession.getApduRequest());
@@ -685,13 +685,14 @@ public class PoSecureSession {
 
     /**
      * Determine the PO revision from the application type byte:
+     *
      * <ul>
-     * <li>if %1------- =&gt; CLAP =&gt; REV3.1</li>
-     * <li>if %00101--- =&gt; REV3.2</li>
-     * <li>if %00100--- =&gt; REV3.1</li>
+     * <li>if <code>%1-------</code> =&gt; CLAP =&gt; REV3.1</li>
+     * <li>if <code>%00101---</code> =&gt; REV3.2</li>
+     * <li>if <code>%00100---</code> =&gt; REV3.1</li>
      * <li>otherwise =&gt; REV2.4</li>
      * </ul>
-     * 
+     *
      * @param applicationTypeByte the application type byte from FCI
      * @return the PO revision
      */
@@ -838,7 +839,8 @@ public class PoSecureSession {
                         verificationMode, rev3_2Mode, workKeyRecordNumber);
                 logger.debug(
                         "PoSecureSession.DigestProcessor => initialize: KIF = {}, KVC {}, DIGESTDATA = {}",
-                        workKeyKif, workKeyKVC, ByteBufferUtils.toHex(digestData));
+                        String.format("%02X", workKeyKif), String.format("%02X", workKeyKVC),
+                        ByteBufferUtils.toHex(digestData));
             }
 
             /* Clear data cache */
@@ -858,7 +860,7 @@ public class PoSecureSession {
          */
         static void pushPoExchangeData(ApduRequest request, ApduResponse response) {
 
-            logger.debug("PoSecureSession.DigestProcessor => pushPoExchangeData: REQUEST = ",
+            logger.debug("PoSecureSession.DigestProcessor => pushPoExchangeData: REQUEST = {}",
                     request);
 
             /*
@@ -873,7 +875,7 @@ public class PoSecureSession {
                 poDigestDataCache.add(request.getBytes());
             }
 
-            logger.debug("PoSecureSession.DigestProcessor => pushPoExchangeData: RESPONSE = ",
+            logger.debug("PoSecureSession.DigestProcessor => pushPoExchangeData: RESPONSE = {}",
                     response);
 
             /* Add an ApduResponse to the digest computation */

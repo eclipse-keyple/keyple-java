@@ -8,6 +8,8 @@
 
 package org.eclipse.keyple.example.pc.calypso;
 
+import static org.eclipse.keyple.calypso.transaction.PoSecureSession.*;
+import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CsmSettings.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -291,16 +293,14 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
 
             EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                     new EnumMap<PoSecureSession.CsmSettings, Byte>(
-                            PoSecureSession.CsmSettings.class);
-
-            csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_PERSO,
-                    PoSecureSession.DEFAULT_KIF_PERSO);
-            csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_LOAD,
-                    PoSecureSession.DEFAULT_KIF_LOAD);
-            csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_DEBIT,
-                    PoSecureSession.DEFAULT_KIF_DEBIT);
-            csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER,
-                    PoSecureSession.DEFAULT_KEY_RECORD_NUMER);
+                            PoSecureSession.CsmSettings.class) {
+                        {
+                            put(CS_DEFAULT_KIF_PERSO, DEFAULT_KIF_PERSO);
+                            put(CS_DEFAULT_KIF_LOAD, DEFAULT_KIF_LOAD);
+                            put(CS_DEFAULT_KIF_DEBIT, DEFAULT_KIF_DEBIT);
+                            put(CS_DEFAULT_KEY_RECORD_NUMBER, DEFAULT_KEY_RECORD_NUMER);
+                        }
+                    };
 
             PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting);
 
