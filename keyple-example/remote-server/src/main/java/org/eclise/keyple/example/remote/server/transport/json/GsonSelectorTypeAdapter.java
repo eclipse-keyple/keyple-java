@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.server.transport.gson;
+package org.eclise.keyple.example.remote.server.transport.json;
 
 import java.lang.reflect.Type;
 import org.eclipse.keyple.seproxy.SeRequest;

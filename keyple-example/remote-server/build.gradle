@@ -20,7 +20,7 @@ dependencies {
     compile project(':keyple-core')
     compile project(':keyple-plugin-stub')
 
-    compile "org.java-websocket:Java-WebSocket:1.3.9"
+    //compile "org.java-websocket:Java-WebSocket:1.3.9"
     implementation 'com.google.code.gson:gson:2.8.5'
 
     //add slf4j simple logger implementation

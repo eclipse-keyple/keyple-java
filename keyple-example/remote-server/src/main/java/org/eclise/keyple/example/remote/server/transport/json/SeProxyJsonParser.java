@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.server.transport.gson;
+package org.eclise.keyple.example.remote.server.transport.json;
 
 
 
@@ -16,7 +16,7 @@ import org.eclipse.keyple.seproxy.SeRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class JsonParser {
+public class SeProxyJsonParser {
 
     static public Gson getGson() {
         final GsonBuilder gsonBuilder = new GsonBuilder();

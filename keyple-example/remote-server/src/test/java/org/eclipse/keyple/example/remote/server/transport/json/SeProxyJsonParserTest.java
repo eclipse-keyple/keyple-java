@@ -6,18 +6,18 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.example.remote.server;
+package org.eclipse.keyple.example.remote.server.transport.json;
 
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclise.keyple.example.remote.server.transport.gson.JsonParser;
+import org.eclise.keyple.example.remote.server.transport.json.SeProxyJsonParser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import com.google.gson.Gson;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GsonTest {
+public class SeProxyJsonParserTest {
 
     @Test
     public void testHoplinkSeRequestSet() {
@@ -40,7 +40,7 @@ public class GsonTest {
     }
 
     public Object testSerializeDeserializeObj(Object obj, Class objectClass) {
-        Gson gson = JsonParser.getGson();
+        Gson gson = SeProxyJsonParser.getGson();
         String json = gson.toJson(obj);
         System.out.println(json);
         Object deserializeObj = gson.fromJson(json, objectClass);
