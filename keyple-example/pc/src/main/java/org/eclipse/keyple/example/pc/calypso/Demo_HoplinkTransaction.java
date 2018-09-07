@@ -57,6 +57,8 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver {
     private ProxyReader poReader, csmReader;
 
+    static EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting;
+
     public Demo_HoplinkTransaction() {
         super();
     }
@@ -164,8 +166,8 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
         filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Usage);
         // filesToReadInSession.add(HoplinkInfoAndSampleCommands.poUpdateRecordCmd_T2UsageFill);
 
-        System.out.println(
-                "========= PO Hoplink session ======= Opening ============================");
+        // System.out.println(
+        // "========= PO Hoplink session ======= Opening ============================");
         PoSecureSession.SessionAccessLevel accessLevel =
                 PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT;
 
@@ -174,12 +176,13 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
         poTransaction.processOpening(fciData, accessLevel, (byte) 0x1A, (byte) 0x01,
                 filesToReadInSession);
 
-        System.out.println(
-                "========= PO Hoplink session ======= Processing of PO commands =======================");
+        // System.out.println(
+        // "========= PO Hoplink session ======= Processing of PO commands
+        // =======================");
         poTransaction.processPoCommands(filesToReadInSession);
 
-        System.out.println(
-                "========= PO Hoplink session ======= Closing ============================");
+        // System.out.println(
+        // "========= PO Hoplink session ======= Closing ============================");
         poTransaction.processClosing(null, null, HoplinkInfoAndSampleCommands.poRatificationCommand,
                 false);
 
@@ -193,8 +196,8 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
     }
 
     /**
-     * Chain 3 Hoplink transactions: 2-step, 3-step, 2-step (see @link
-     * doHoplinkTwoStepAuthentication and @link doHoplinkReadWriteTransaction)
+     * Chain 3 Hoplink transactions with different logical channel management cases. (see @link
+     * doHoplinkReadWriteTransaction)
      * <p>
      * To illustrate the the logical channel management, it is kept open after the 1st transaction.
      * <p>
@@ -208,9 +211,11 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      */
     public void operateMultipleHoplinkTransactions(PoSecureSession poTransaction,
             ApduResponse fciData) throws IOReaderException {
-        // execute a Calypso session: processOpening, processPoCommands, processClosing
+        // execute an Hoplink session: processOpening, processPoCommands, processClosing
         // close the logical channel
         doHoplinkReadWriteTransaction(poTransaction, fciData, true);
+
+        doHoplinkReadWriteTransaction(poTransaction, fciData, false);
 
         // redo the Hoplink PO selection after logical channel closing (may be not needed with some
         // PO
@@ -222,7 +227,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
                         null, true));
         fciData = poReader.transmit(selectionRequest).getSingleResponse().getFci();
 
-        doHoplinkReadWriteTransaction(poTransaction, fciData, true);
+        doHoplinkReadWriteTransaction(poTransaction, fciData, false);
     }
 
     /**
@@ -235,20 +240,6 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
             String poNavigoAid = "A0000004040125090101"; // Navigo AID
             String poHoplinkAid = HoplinkInfoAndSampleCommands.AID; // commands before session, keep
                                                                     // true
-            String csmC1ATRregex = HoplinkInfoAndSampleCommands.CSM_C1_ATR_REGEX; // csm identifier
-
-            // check the availability of the CSM, open its physical and logical channels and keep it
-            // open
-            SeRequest csmCheckRequest =
-                    new SeRequest(new SeRequest.AtrSelector(csmC1ATRregex), null, true);
-            SeResponse csmCheckResponse =
-                    csmReader.transmit(new SeRequestSet(csmCheckRequest)).getSingleResponse();
-
-            if (csmCheckResponse == null) {
-                System.out.println("Unable to open a logical channel for CSM!");
-                throw new IllegalStateException("CSM channel opening failure");
-            }
-
             // prepare the PO selection SeRequestSet
             // Create a SeRequest list
             Set<SeRequest> selectionRequests = new LinkedHashSet<SeRequest>();
@@ -290,17 +281,6 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
                     seRespIterator.next());
             printSelectAppResponseStatus("Case #3: Hoplink AID", seReqIterator.next(),
                     seRespIterator.next());
-
-            EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
-                    new EnumMap<PoSecureSession.CsmSettings, Byte>(
-                            PoSecureSession.CsmSettings.class) {
-                        {
-                            put(CS_DEFAULT_KIF_PERSO, DEFAULT_KIF_PERSO);
-                            put(CS_DEFAULT_KIF_LOAD, DEFAULT_KIF_LOAD);
-                            put(CS_DEFAULT_KIF_DEBIT, DEFAULT_KIF_DEBIT);
-                            put(CS_DEFAULT_KEY_RECORD_NUMBER, DEFAULT_KEY_RECORD_NUMER);
-                        }
-                    };
 
             PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting);
 
@@ -387,12 +367,39 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
         poReader.addSeProtocolSetting(
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
 
-
         observer.poReader = poReader;
         observer.csmReader = csmReader;
 
+        // prepare for PoSecureSession:
+        // check the availability of the CSM, open its physical and logical channels and keep it
+        String csmC1ATRregex = HoplinkInfoAndSampleCommands.CSM_C1_ATR_REGEX; // csm identifier
+
+        // open CSM logical channel
+        SeRequest csmCheckRequest =
+                new SeRequest(new SeRequest.AtrSelector(csmC1ATRregex), null, true);
+        SeResponse csmCheckResponse =
+                csmReader.transmit(new SeRequestSet(csmCheckRequest)).getSingleResponse();
+
+        if (csmCheckResponse == null) {
+            System.out.println("Unable to open a logical channel for CSM!");
+            throw new IllegalStateException("CSM channel opening failure");
+        }
+
+        // define the CSM parameters to provide when creating PoSecureSession
+        csmSetting =
+                new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class) {
+                    {
+                        put(CS_DEFAULT_KIF_PERSO, DEFAULT_KIF_PERSO);
+                        put(CS_DEFAULT_KIF_LOAD, DEFAULT_KIF_LOAD);
+                        put(CS_DEFAULT_KIF_DEBIT, DEFAULT_KIF_DEBIT);
+                        put(CS_DEFAULT_KEY_RECORD_NUMBER, DEFAULT_KEY_RECORD_NUMER);
+                    }
+                };
+
         // Set terminal as Observer of the first reader
         ((ObservableReader) poReader).addObserver(observer);
+
+        // Wait for ever
         synchronized (waitForEnd) {
             waitForEnd.wait();
         }
