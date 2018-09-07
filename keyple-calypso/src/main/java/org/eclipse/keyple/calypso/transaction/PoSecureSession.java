@@ -839,7 +839,8 @@ public class PoSecureSession {
                         verificationMode, rev3_2Mode, workKeyRecordNumber);
                 logger.debug(
                         "PoSecureSession.DigestProcessor => initialize: KIF = {}, KVC {}, DIGESTDATA = {}",
-                        workKeyKif, workKeyKVC, ByteBufferUtils.toHex(digestData));
+                        String.format("%02X", workKeyKif), String.format("%02X", workKeyKVC),
+                        ByteBufferUtils.toHex(digestData));
             }
 
             /* Clear data cache */
