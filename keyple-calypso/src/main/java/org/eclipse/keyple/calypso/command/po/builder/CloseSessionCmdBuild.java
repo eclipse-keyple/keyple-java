@@ -17,8 +17,6 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 // TODO: Auto-generated Javadoc
 /**
  * This class provides the dedicated constructor to build the Close Secure Session APDU command.
- *
- * @author Ixxi
  */
 public class CloseSessionCmdBuild extends PoCommandBuilder {
 

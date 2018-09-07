@@ -138,11 +138,12 @@ public class Demo_HoplinkTransactionStub implements ObservableReader.ReaderObser
 
         System.out.println(
                 "========= PO Hoplink session ======= Opening ============================");
-        byte debitKeyIndex = PoSecureSession.KEY_INDEX_VALIDATION_DEBIT;
+        PoSecureSession.SessionAccessLevel accessLevel =
+                PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT;
 
         // Open Session for the debit key - with reading of the first record of the cyclic EF of
         // SFI 0Ah
-        poTransaction.processOpening(fciData, debitKeyIndex, (byte) 0x1A, (byte) 0x01,
+        poTransaction.processOpening(fciData, accessLevel, (byte) 0x1A, (byte) 0x01,
                 filesToReadInSession);
 
         System.out.println(
@@ -262,7 +263,20 @@ public class Demo_HoplinkTransactionStub implements ObservableReader.ReaderObser
             printSelectAppResponseStatus("Case #3: Hoplink AID", seReqIterator.next(),
                     seRespIterator.next());
 
-            PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, (byte) 0x00);
+            EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
+                    new EnumMap<PoSecureSession.CsmSettings, Byte>(
+                            PoSecureSession.CsmSettings.class);
+
+            csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_PERSO,
+                    PoSecureSession.DEFAULT_KIF_PERSO);
+            csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_LOAD,
+                    PoSecureSession.DEFAULT_KIF_LOAD);
+            csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KIF_DEBIT,
+                    PoSecureSession.DEFAULT_KIF_DEBIT);
+            csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER,
+                    PoSecureSession.DEFAULT_KEY_RECORD_NUMER);
+
+            PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting);
 
             // test if the Hoplink selection succeeded
             if (seResponses.get(2) != null) {

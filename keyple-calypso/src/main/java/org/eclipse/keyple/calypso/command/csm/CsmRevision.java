@@ -11,7 +11,6 @@ package org.eclipse.keyple.calypso.command.csm;
 /**
  * This enumeration registers all revisions of CSM.
  *
- * @author Ixxi
  */
 public enum CsmRevision {
 

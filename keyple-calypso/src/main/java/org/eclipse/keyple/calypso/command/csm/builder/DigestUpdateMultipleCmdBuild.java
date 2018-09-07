@@ -18,8 +18,6 @@ import org.eclipse.keyple.calypso.command.csm.CsmRevision;
  * This class provides the dedicated constructor to build the CSM Digest Update Multiple APDU
  * command.
  *
- * @author Ixxi
- *
  */
 public class DigestUpdateMultipleCmdBuild extends CsmCommandBuilder {
 

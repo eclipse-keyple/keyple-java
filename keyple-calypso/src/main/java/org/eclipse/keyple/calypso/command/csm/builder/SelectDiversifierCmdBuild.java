@@ -17,8 +17,6 @@ import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 /**
  * This class provides the dedicated constructor to build the CSM Select Diversifier APDU command.
  *
- * @author Ixxi
- *
  */
 public class SelectDiversifierCmdBuild extends CsmCommandBuilder {
 
