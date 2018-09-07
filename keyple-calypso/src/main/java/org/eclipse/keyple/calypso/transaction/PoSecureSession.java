@@ -452,10 +452,7 @@ public class PoSecureSession {
     /**
      * Process CSM commands.
      * <ul>
-     * <li>The CSM commands to operate are pushed in the current CSM commands cache.</li>
-     * <li>On the CSM reader, transmission of a SeRequest for the current selected AID, with
-     * keepChannelOpen set at true, and ApduRequests based on all the CSM commands of the cache. The
-     * cache emptied.</li>
+     * <li>On the CSM reader, transmission of a SeRequest with keepChannelOpen set at true.</li>
      * <li>Returns the corresponding CSM SeResponse.</li>
      * </ul>
      *
@@ -687,10 +684,11 @@ public class PoSecureSession {
      * Determine the PO revision from the application type byte:
      *
      * <ul>
-     * <li>if <code>%1-------</code> =&gt; CLAP =&gt; REV3.1</li>
-     * <li>if <code>%00101---</code> =&gt; REV3.2</li>
-     * <li>if <code>%00100---</code> =&gt; REV3.1</li>
-     * <li>otherwise =&gt; REV2.4</li>
+     * <li>if
+     * <code>%1-------</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;CLAP&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.1</li>
+     * <li>if <code>%00101---</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.2</li>
+     * <li>if <code>%00100---</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.1</li>
+     * <li>otherwise&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV2.4</li>
      * </ul>
      *
      * @param applicationTypeByte the application type byte from FCI
