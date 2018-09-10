@@ -11,7 +11,7 @@ package org.eclipse.keyple.command.po.parser;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.parser.AbstractOpenSessionRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.session.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.command.util.TestsUtilsResponseTabByteGenerator;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;

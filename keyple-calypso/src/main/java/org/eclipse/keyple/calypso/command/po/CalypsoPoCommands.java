@@ -9,7 +9,9 @@
 package org.eclipse.keyple.calypso.command.po;
 
 import org.eclipse.keyple.calypso.command.po.builder.DecreaseCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.session.*;
 import org.eclipse.keyple.calypso.command.po.parser.DecreaseRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.session.*;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.command.CommandsTable;
@@ -22,24 +24,20 @@ public enum CalypsoPoCommands implements CommandsTable {
             org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars.class),
 
     /** The po open session. */
-    OPEN_SESSION_24("Open Secure Session V2.4", (byte) 0x8A,
-            org.eclipse.keyple.calypso.command.po.builder.OpenSession24CmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.OpenSession24RespPars.class),
+    OPEN_SESSION_24("Open Secure Session V2.4", (byte) 0x8A, OpenSession24CmdBuild.class,
+            OpenSession24RespPars.class),
 
     /** The po open session. */
-    OPEN_SESSION_31("Open Secure Session V3.1", (byte) 0x8A,
-            org.eclipse.keyple.calypso.command.po.builder.OpenSession31CmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.OpenSession31RespPars.class),
+    OPEN_SESSION_31("Open Secure Session V3.1", (byte) 0x8A, OpenSession31CmdBuild.class,
+            OpenSession31RespPars.class),
 
     /** The po open session. */
-    OPEN_SESSION_32("Open Secure Session V3.2", (byte) 0x8A,
-            org.eclipse.keyple.calypso.command.po.builder.OpenSession32CmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.OpenSession32RespPars.class),
+    OPEN_SESSION_32("Open Secure Session V3.2", (byte) 0x8A, OpenSession32CmdBuild.class,
+            OpenSession32RespPars.class),
 
     /** The po close session. */
-    CLOSE_SESSION("Close Secure Session", (byte) 0x8E,
-            org.eclipse.keyple.calypso.command.po.builder.CloseSessionCmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.CloseSessionRespPars.class),
+    CLOSE_SESSION("Close Secure Session", (byte) 0x8E, CloseSessionCmdBuild.class,
+            CloseSessionRespPars.class),
 
     /** The po read records. */
     READ_RECORDS("Read Records", (byte) 0xB2,
@@ -57,9 +55,8 @@ public enum CalypsoPoCommands implements CommandsTable {
             org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars.class),
 
     /** The po get challenge. */
-    GET_CHALLENGE("Get Challenge", (byte) 0x84,
-            org.eclipse.keyple.calypso.command.po.builder.PoGetChallengeCmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.PoGetChallengeRespPars.class),
+    GET_CHALLENGE("Get Challenge", (byte) 0x84, PoGetChallengeCmdBuild.class,
+            PoGetChallengeRespPars.class),
 
     /** The po increase counter. */
     INCREASE("Increase", (byte) 0x32,

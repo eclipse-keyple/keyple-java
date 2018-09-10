@@ -39,18 +39,21 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
     /**
      * Helper method to create an ApduRequest from separated elements.
      * <p>
-     * The case4 flag is determined from provided arguments. It is true if
+     * The ISO7816-4 case for data in a command-response pair is determined from the provided
+     * arguments:
      * <ul>
-     * <li>Le is not null and equal to 0</li>
-     * <li>dataIn is not nul</li>
+     * <li><code>dataIn &nbsp;= null, le &nbsp;= null</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;case 1: no
+     * command data, no response data expected.</li>
+     * <li><code>dataIn &nbsp;= null, le != null</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;case 2: no
+     * command data, expected response data.</li>
+     * <li><code>dataIn != null, le &nbsp;= null</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;case 3: command
+     * data, no response data expected.</li>
+     * <li><code>dataIn != null, le &nbsp;= 0&nbsp;&nbsp;&nbsp;</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;case
+     * 4: command data, expected response data.</li>
      * </ul>
      * <p>
-     * If dataIn is not null and Le != 0 an IllegalArgumentException is thrown
-     * <p>
-     * Le must be set to null when no outgoing data is expected.
-     * <p>
-     * dataIn must be set to null when no ingoing data
-     * 
+     * If dataIn is not null and Le &gt; 0 an IllegalArgumentException is thrown
+     *
      * @param cla class of instruction
      * @param command instruction code
      * @param p1 instruction parameter 1

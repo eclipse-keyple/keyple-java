@@ -10,6 +10,7 @@ package org.eclipse.keyple.calypso.command.po.parser;
 
 import static org.junit.Assert.assertEquals;
 import java.nio.ByteBuffer;
+import org.eclipse.keyple.calypso.command.po.parser.session.PoGetChallengeRespPars;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Test;
@@ -22,8 +23,7 @@ public class PoGetChallengeRespParsTest {
         final ApduResponse apdu =
                 new ApduResponse(ByteBufferUtils.fromHex("01 02 03 04 9000"), null);
 
-        PoGetChallengeRespPars resp =
-                new org.eclipse.keyple.calypso.command.po.parser.PoGetChallengeRespPars(apdu);
+        PoGetChallengeRespPars resp = new PoGetChallengeRespPars(apdu);
 
         // Here we compare that the data fetched is only the part that is before the execution
         // status

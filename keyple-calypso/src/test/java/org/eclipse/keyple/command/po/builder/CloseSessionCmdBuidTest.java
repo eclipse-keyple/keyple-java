@@ -11,7 +11,7 @@ package org.eclipse.keyple.command.po.builder;
 
 import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.builder.CloseSessionCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.session.CloseSessionCmdBuild;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.junit.Assert;

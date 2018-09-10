@@ -11,7 +11,7 @@ package org.eclipse.keyple.command.po.parser;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.calypso.command.po.parser.CloseSessionRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.session.CloseSessionRespPars;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
