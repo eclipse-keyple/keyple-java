@@ -123,7 +123,8 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
         } else {
             LOG.warn("Unrecognized parameter : " + key);
             LOG.warn("AndroidNfcReader supports the following parameters");
-            LOG.warn("FLAG_READER_SKIP_NDEF_CHECK:\"int\", FLAG_READER_NO_PLATFORM_SOUNDS:\"int\", FLAG_READER_PRESENCE_CHECK_DELAY:\"int\"");
+            LOG.warn(
+                    "FLAG_READER_SKIP_NDEF_CHECK:\"int\", FLAG_READER_NO_PLATFORM_SOUNDS:\"int\", FLAG_READER_PRESENCE_CHECK_DELAY:\"int\"");
             throw new IOException("Unrecognized  parameter");
         }
 
@@ -243,29 +244,29 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
 
     public String printTagId() {
 
-        if(tagProxy != null && tagProxy.getTag()!=null){
+        if (tagProxy != null && tagProxy.getTag() != null) {
             StringBuilder techList = new StringBuilder();
 
-            //build a user friendly TechList
+            // build a user friendly TechList
             String[] techs = tagProxy.getTag().getTechList();
-            for (int i = 0; i < techs.length;i++){
-                //append a userfriendly Tech
+            for (int i = 0; i < techs.length; i++) {
+                // append a userfriendly Tech
                 techList.append(techs[i].replace("android.nfc.tech.", ""));
-                //if not last tech, append separator
-                if (i + 1 < techs.length) techList.append(", ");
+                // if not last tech, append separator
+                if (i + 1 < techs.length)
+                    techList.append(", ");
             }
 
 
 
-
-            //build a hexa TechId
+            // build a hexa TechId
             StringBuilder tagId = new StringBuilder();
             for (byte b : tagProxy.getTag().getId()) {
                 tagId.append(String.format("%02X ", b));
             }
 
-            return  tagId + " - " + techList;
-        }else{
+            return tagId + " - " + techList;
+        } else {
             return "no-tag";
         }
     }

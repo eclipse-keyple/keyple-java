@@ -16,8 +16,8 @@ include 'keyple-plugin-stub'
 include 'keyple-example-common'
 include 'keyple-example-pc'
 include 'keyple-example-stub'
-include 'keyple-example-remote-server'
-include 'keyple-example-remote-client'
+include 'keyple-example-remote-se'
+include 'keyple-plugin-remote-se'
 
 project(':keyple-plugin-pcsc').projectDir = file('./keyple-plugin/pcsc')
 project(':keyple-plugin-stub').projectDir = file('./keyple-plugin/stub')
@@ -26,5 +26,5 @@ project(':keyple-example-pc').projectDir = file('./keyple-example/pc')
 project(':keyple-example-common').projectDir = file('./keyple-example/common')
 project(':keyple-example-stub').projectDir = file('./keyple-example/stub')
 
-project(':keyple-example-remote-server').projectDir = file('./keyple-example/remote-server')
-project(':keyple-example-remote-client').projectDir = file('./keyple-example/remote-client')
+project(':keyple-example-remote-se').projectDir = file('./keyple-example/remote-se')
+project(':keyple-plugin-remote-se').projectDir = file('./keyple-plugin/remote-se')

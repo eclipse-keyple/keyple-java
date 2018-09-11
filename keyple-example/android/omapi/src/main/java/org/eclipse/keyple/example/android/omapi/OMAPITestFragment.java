@@ -133,35 +133,39 @@ public class OMAPITestFragment extends Fragment {
 
 
                     String poAid = "A000000291A000000191";
-                    String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
-                            + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
+                    String t2UsageRecord1_dataFill =
+                            "0102030405060708090A0B0C0D0E0F10" + "1112131415161718191A1B1C1D1E1F20"
+                                    + "2122232425262728292A2B2C2D2E2F30";
 
                     mText.append("\n");
                     mText.append("Selecting application : " + poAid);
                     mText.append("\n");
 
-                    ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                            (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
+                    ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(
+                            PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
 
-                    ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                            (byte) 0x1A, (byte) 0x01, true, (byte) 0x30);
+                    ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(
+                            PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01, true, (byte) 0x30);
 
                     UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
                             new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
                                     ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
 
-                    Boolean keepChannelOpen = false ;
+                    Boolean keepChannelOpen = false;
 
                     mText.append("\n");
                     mText.append("Executing command Calypso : " + poReadRecordCmd_T2Env.getName());
                     mText.append("\n");
-                    mText.append("Executing command Calypso : " + poReadRecordCmd_T2Usage.getName());
+                    mText.append(
+                            "Executing command Calypso : " + poReadRecordCmd_T2Usage.getName());
                     mText.append("\n");
-                    mText.append("Executing command Calypso : " + poUpdateRecordCmd_T2UsageFill.getName());
+                    mText.append("Executing command Calypso : "
+                            + poUpdateRecordCmd_T2UsageFill.getName());
                     mText.append("\n");
                     mText.append("Keep Channel Open : " + keepChannelOpen);
                     mText.append("\n");
-                    mText.append("Using protocol : " +  ContactsProtocols.PROTOCOL_ISO7816_3.getName());
+                    mText.append(
+                            "Using protocol : " + ContactsProtocols.PROTOCOL_ISO7816_3.getName());
                     mText.append("\n ----\n ");
 
                     List<ApduRequest> poApduRequestList;

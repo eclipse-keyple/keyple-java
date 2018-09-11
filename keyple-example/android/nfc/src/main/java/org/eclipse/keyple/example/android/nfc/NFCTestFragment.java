@@ -166,13 +166,13 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                 switch (event.getEventType()) {
                     case SE_INSERTED:
 
-                            //execute simple tests
-                            runHoplinkSimpleRead();
+                        // execute simple tests
+                        runHoplinkSimpleRead();
                         break;
 
                     case SE_REMOVAL:
-                        //mText.append("\n ---- \n");
-                        //mText.append("Connection closed to tag");
+                        // mText.append("\n ---- \n");
+                        // mText.append("Connection closed to tag");
                         break;
 
                     case IO_ERROR:
@@ -191,99 +191,103 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
      */
     private void runHoplinkSimpleRead() {
         LOG.debug("Running HopLink Simple Read Tests");
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
 
-                    initTextView();
+                initTextView();
 
-                    try {
-                        ProxyReader reader = null;
-                        reader = SeProxyService.getInstance().getPlugins().first().getReaders().first();
+                try {
+                    ProxyReader reader = null;
+                    reader = SeProxyService.getInstance().getPlugins().first().getReaders().first();
 
-                         /*
-                            print tag info in View
-                         */
-                        mText.append("\n ---- \n");
-                        mText.append(((AndroidNfcReader) reader).printTagId());
-                        mText.append("\n ---- \n");
+                    /*
+                     * print tag info in View
+                     */
+                    mText.append("\n ---- \n");
+                    mText.append(((AndroidNfcReader) reader).printTagId());
+                    mText.append("\n ---- \n");
 
-                         /*
-                           Build and execute Calypso commands
-                         */
+                    /*
+                     * Build and execute Calypso commands
+                     */
 
-                        String poAid = "A000000291A000000191"; //HOPLINK APPLICATION
-                        String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"
-                                + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
+                    String poAid = "A000000291A000000191"; // HOPLINK APPLICATION
+                    String t2UsageRecord1_dataFill =
+                            "0102030405060708090A0B0C0D0E0F10" + "1112131415161718191A1B1C1D1E1F20"
+                                    + "2122232425262728292A2B2C2D2E2F30";
 
 
-                        ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                                (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
+                    ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(
+                            PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
 
-                        ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                                (byte) 0x1A, (byte) 0x01, true, (byte) 0x30);
+                    ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(
+                            PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01, true, (byte) 0x30);
 
-                        UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
-                                new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
-                                        ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
+                    UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
+                            new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
+                                    ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
 
-                        List<ApduRequest> poApduRequestList;
+                    List<ApduRequest> poApduRequestList;
 
-                        poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest(),
-                                poReadRecordCmd_T2Usage.getApduRequest(),
-                                poUpdateRecordCmd_T2UsageFill.getApduRequest());
+                    poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest(),
+                            poReadRecordCmd_T2Usage.getApduRequest(),
+                            poUpdateRecordCmd_T2UsageFill.getApduRequest());
 
-                        Boolean keepChannelOpen = false ;
+                    Boolean keepChannelOpen = false;
 
-                        SeRequest seRequest =
-                                new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
-                                        poApduRequestList, keepChannelOpen, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                    SeRequest seRequest =
+                            new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
+                                    poApduRequestList, keepChannelOpen,
+                                    ContactlessProtocols.PROTOCOL_ISO14443_4);
 
-                        //transmit seRequestSet to Reader
-                        final SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
+                    // transmit seRequestSet to Reader
+                    final SeResponseSet seResponseSet =
+                            reader.transmit(new SeRequestSet(seRequest));
 
-                        /*
-                            print responses in View
-                         */
+                    /*
+                     * print responses in View
+                     */
 
-                        for (SeResponse response : seResponseSet.getResponses()) {
-                            if (response != null) {
+                    for (SeResponse response : seResponseSet.getResponses()) {
+                        if (response != null) {
 
-                                //mText.append("AID selected : " + poAid);
+                            // mText.append("AID selected : " + poAid);
 
-                                //print AID selection results
-                                mText.append("AID " + poAid+" : ");
-                                if(response.getFci().isSuccessful()){
-                                    appendColoredText(mText,"SUCCESS" , Color.GREEN);
-                                }else {
-                                    appendColoredText(mText,"FAILED" , Color.RED);
+                            // print AID selection results
+                            mText.append("AID " + poAid + " : ");
+                            if (response.getFci().isSuccessful()) {
+                                appendColoredText(mText, "SUCCESS", Color.GREEN);
+                            } else {
+                                appendColoredText(mText, "FAILED", Color.RED);
+                            }
+                            mText.append("\n ---- \n");
+
+                            // print Response status
+                            for (int i = 0; i < response.getApduResponses().size(); i++) {
+                                // print command name
+                                mText.append(
+                                        poApduRequestList.get(i).getName() + " REV3_1" + " : ");
+                                // print response status
+                                if (response.getApduResponses().get(i).isSuccessful()) {
+                                    appendColoredText(mText, "SUCCESS", Color.GREEN);
+                                } else {
+                                    appendColoredText(mText, "FAILED", Color.RED);
                                 }
                                 mText.append("\n ---- \n");
-
-                                //print Response status
-                                for (int i=0 ; i<response.getApduResponses().size() ; i++) {
-                                    //print command name
-                                    mText.append(poApduRequestList.get(i).getName()+" REV3_1"+" : ");
-                                    //print response status
-                                    if(response.getApduResponses().get(i).isSuccessful()){
-                                        appendColoredText(mText,"SUCCESS", Color.GREEN);
-                                    }else{
-                                        appendColoredText(mText,"FAILED", Color.RED);
-                                    }
-                                    mText.append("\n ---- \n");
-                                }
+                            }
                             mText.append("\n\n\n\n\n");
 
-                            } else {
-                                appendColoredText(mText,"NO RESPONSE", Color.RED);
-                                mText.append("\n\n\n\n\n");
-                            }
+                        } else {
+                            appendColoredText(mText, "NO RESPONSE", Color.RED);
+                            mText.append("\n\n\n\n\n");
                         }
-                    } catch (IOReaderException e) {
-                        e.printStackTrace();
                     }
+                } catch (IOReaderException e) {
+                    e.printStackTrace();
                 }
-            });
+            }
+        });
 
     }
 
@@ -315,8 +319,8 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
     }
 
 
-    private void initTextView(){
-        mText.setText("");//reset
+    private void initTextView() {
+        mText.setText("");// reset
         appendColoredText(mText, "Waiting for a smartcard...", Color.BLUE);
         mText.append("\n ---- \n");
 

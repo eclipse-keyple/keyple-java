@@ -77,7 +77,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
      * Open a Channel to the application AID if not open yet. see {@link Reader#openSession()} see
      * {@link Session#openLogicalChannel(byte[])}
      * 
-     * @param  selector : AID of the application to select
+     * @param selector : AID of the application to select
      * @return Array : index[0] : ATR and index[1] :FCI
      * @throws IOReaderException
      */
