@@ -35,13 +35,14 @@ public class LocalServerListener implements SyncServerListener {
     public String onReaderConnect(String readerName) {
         logger.debug("onReaderConnect {}", readerName);
         logger.info("A Remote Reader is attempting a connection to the server");
-        return plugin.connectRemoteReader(readerName, SessionFactory.getInstance().getServerSession());
+        return plugin.connectRemoteReader(readerName,
+                SessionFactory.getInstance().getServerSession());
 
     }
 
     @Override
     public void onRemoteReaderEvent(ReaderEvent event) {
         logger.debug("onRemoteReaderEvent {}", event);
-        plugin.onReaderEvent(event, null);//no need for session in local
+        plugin.onReaderEvent(event, null);// no need for session in local
     }
 }

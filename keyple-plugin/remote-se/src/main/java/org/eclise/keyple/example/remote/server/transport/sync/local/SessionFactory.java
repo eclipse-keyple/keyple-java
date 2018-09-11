@@ -10,11 +10,11 @@ package org.eclise.keyple.example.remote.server.transport.sync.local;
 
 import java.net.UnknownHostException;
 import org.eclise.keyple.example.remote.server.transport.*;
-import org.eclise.keyple.example.remote.server.transport.sync.local.client.LocalClientConnection;
-import org.eclise.keyple.example.remote.server.transport.sync.local.server.LocalServerSession;
-import org.eclise.keyple.example.remote.server.transport.sync.local.server.LocalServerListener;
 import org.eclise.keyple.example.remote.server.transport.sync.SyncClientListener;
 import org.eclise.keyple.example.remote.server.transport.sync.SyncServerListener;
+import org.eclise.keyple.example.remote.server.transport.sync.local.client.LocalClientConnection;
+import org.eclise.keyple.example.remote.server.transport.sync.local.server.LocalServerListener;
+import org.eclise.keyple.example.remote.server.transport.sync.local.server.LocalServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +52,7 @@ public class SessionFactory {
     }
 
 
-    public RSEClient getConnection(SyncClientListener clientlistener)
-            throws UnknownHostException {
+    public RSEClient getConnection(SyncClientListener clientlistener) throws UnknownHostException {
         logger.debug("getConnection {}", clientlistener);
         if (syncServerListener == null) {
             logger.error("Server has not been initialized");

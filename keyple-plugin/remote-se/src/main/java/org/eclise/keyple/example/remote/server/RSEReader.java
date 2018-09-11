@@ -19,17 +19,17 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.Observable;
-import org.eclise.keyple.example.remote.server.transport.async.AsyncRSEReaderSession;
 import org.eclise.keyple.example.remote.server.transport.RSEReaderSession;
-import org.eclise.keyple.example.remote.server.transport.sync.SyncReaderSession;
+import org.eclise.keyple.example.remote.server.transport.async.AsyncRSEReaderSession;
 import org.eclise.keyple.example.remote.server.transport.async.webservice.server.SeResponseSetCallback;
+import org.eclise.keyple.example.remote.server.transport.sync.SyncReaderSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 public class RSEReader extends Observable implements ObservableReader {
 
-    RSEReaderSession session;//can be sync or async
+    RSEReaderSession session;// can be sync or async
     String remoteName;
     String name;
 
@@ -50,37 +50,42 @@ public class RSEReader extends Observable implements ObservableReader {
         return remoteName;
     }
 
-    public RSEReaderSession getSession(){return session; }
+    public RSEReaderSession getSession() {
+        return session;
+    }
 
     @Override
     public boolean isSePresent() throws NoStackTraceThrowable {
-        return ((SyncReaderSession)session).isSePresent();
+        return ((SyncReaderSession) session).isSePresent();
     }
 
     /**
      * Transmit synchronously (works only with Sync Session)
+     * 
      * @param seRequestSet : SeRequestSe to be transmitted
      * @return seResponseSet : SeResponSet
      * @throws IOReaderException
      */
     @Override
     public SeResponseSet transmit(SeRequestSet seRequestSet) throws IOReaderException {
-        return ((SyncReaderSession)session).transmit(seRequestSet);
+        return ((SyncReaderSession) session).transmit(seRequestSet);
     }
 
     /**
      * Transmit asynchronously (works only with ASync Session)
+     * 
      * @param seRequestSet : SeRequestSe to be transmitted
      * @param seResponseSetCallback : callback to get the seResponseSet
      * @throws IOReaderException
      */
-    public void asyncTransmit(SeRequestSet seRequestSet, SeResponseSetCallback seResponseSetCallback) throws IOReaderException {
-        ((AsyncRSEReaderSession)session).asyncTransmit(seRequestSet, seResponseSetCallback);
+    public void asyncTransmit(SeRequestSet seRequestSet,
+            SeResponseSetCallback seResponseSetCallback) throws IOReaderException {
+        ((AsyncRSEReaderSession) session).asyncTransmit(seRequestSet, seResponseSetCallback);
     }
 
     @Override
     public void addSeProtocolSetting(SeProtocolSetting seProtocolSetting) {
-        ((SyncReaderSession)session).addSeProtocolSetting(seProtocolSetting);
+        ((SyncReaderSession) session).addSeProtocolSetting(seProtocolSetting);
     }
 
     /**

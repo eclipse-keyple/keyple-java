@@ -10,9 +10,6 @@ package org.eclise.keyple.example.remote.server.transport.async.webservice.serve
 
 
 import java.io.*;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclise.keyple.example.remote.server.RSEPlugin;
@@ -22,12 +19,13 @@ import org.eclise.keyple.example.remote.server.transport.async.AsyncRSEReaderSes
 import org.eclise.keyple.example.remote.server.transport.async.webservice.common.HttpHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 /**
- * Endpoint "/plugin"
- * Manages plugin API : onReaderConnect, onReaderEvent
+ * Endpoint "/plugin" Manages plugin API : onReaderConnect, onReaderEvent
  */
 public class PluginEndpoint implements HttpHandler {
 
@@ -48,6 +46,7 @@ public class PluginEndpoint implements HttpHandler {
 
     /**
      * Handle HTTP API
+     * 
      * @param t
      * @throws IOException
      */
@@ -55,16 +54,16 @@ public class PluginEndpoint implements HttpHandler {
         logger.debug("Incoming Request {} ", t.getRequestMethod());
         String requestMethod = t.getRequestMethod();
 
-        if(requestMethod.equals("PUT")){
-            //connect a new reader
+        if (requestMethod.equals("PUT")) {
+            // connect a new reader
             onReaderConnect(t);
 
-        }else if(requestMethod.equals("POST")){
-            //receive a new event
+        } else if (requestMethod.equals("POST")) {
+            // receive a new event
             onReaderEvent(t);
 
-        }else {
-            //unrecognized method
+        } else {
+            // unrecognized method
         }
     }
 
@@ -72,22 +71,23 @@ public class PluginEndpoint implements HttpHandler {
 
     /**
      * Connect Remote Reader API
+     * 
      * @param t
      * @throws IOException
      */
     private void onReaderConnect(HttpExchange t) throws IOException {
-        //parse body
+        // parse body
         JsonObject body = HttpHelper.parseBody(t.getRequestBody());// .. parse the request body
 
         String readerName = body.get("localReaderName").getAsString();
 
-        //generate sessionId
+        // generate sessionId
         String sessionId = String.valueOf(System.currentTimeMillis());
 
-        //connect reader with readerName
-        plugin.connectRemoteReader(readerName,new WsRSEReaderSession(sessionId));
+        // connect reader with readerName
+        plugin.connectRemoteReader(readerName, new WsRSEReaderSession(sessionId));
 
-        //return response
+        // return response
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("sessionId", new JsonPrimitive(sessionId));
         String responseBody = jsonObject.toString();
@@ -104,39 +104,41 @@ public class PluginEndpoint implements HttpHandler {
 
     /**
      * Reader Event API
+     * 
      * @param t
      * @throws IOException
      */
     private void onReaderEvent(HttpExchange t) throws IOException {
-        //parse Body
+        // parse Body
         JsonObject body = HttpHelper.parseBody(t.getRequestBody());// .. parse the request body
 
         String pluginName = body.get("pluginName").getAsString();
         String readerName = body.get("readerName").getAsString();
-        ReaderEvent.EventType eventType = ReaderEvent.EventType.valueOf(body.get("eventType").getAsString());
+        ReaderEvent.EventType eventType =
+                ReaderEvent.EventType.valueOf(body.get("eventType").getAsString());
         String sessionId = body.get("sessionId").getAsString();
 
-        //propagate event
-        plugin.onReaderEvent(new ReaderEvent(pluginName,readerName,eventType), sessionId);
+        // propagate event
+        plugin.onReaderEvent(new ReaderEvent(pluginName, readerName, eventType), sessionId);
 
         String responseBody = null;
 
-        //reader get SeRequest to transmit from Reader Session
-        try{
+        // reader get SeRequest to transmit from Reader Session
+        try {
             RSEReader reader = (RSEReader) plugin.getReaderByRemoteName(readerName);
-            AsyncRSEReaderSession session = (AsyncRSEReaderSession)reader.getSession();
+            AsyncRSEReaderSession session = (AsyncRSEReaderSession) reader.getSession();
 
-            if(session.hasSeRequestSet()){
+            if (session.hasSeRequestSet()) {
                 responseBody = SeProxyJsonParser.getGson().toJson(session.getSeRequestSet());
-            }else{
+            } else {
                 responseBody = "{}";
             }
 
-        }catch (UnexpectedReaderException e){
+        } catch (UnexpectedReaderException e) {
             responseBody = "{}";
         }
 
-        //send SeRequest to clients
+        // send SeRequest to clients
         Integer responseCode = 200;
         t.getResponseHeaders().add("Content-Type", "application/json");
         t.sendResponseHeaders(responseCode, responseBody.length());
@@ -146,7 +148,6 @@ public class PluginEndpoint implements HttpHandler {
         logger.debug("Outcoming Response Code {} ", responseCode);
         logger.debug("Outcoming Response Body {} ", responseBody);
     }
-
 
 
 

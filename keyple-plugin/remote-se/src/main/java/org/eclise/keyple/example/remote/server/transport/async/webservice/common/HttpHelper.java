@@ -1,16 +1,23 @@
-package org.eclise.keyple.example.remote.server.transport.async.webservice.common;
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import org.eclise.keyple.example.remote.server.serializer.json.SeProxyJsonParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package org.eclise.keyple.example.remote.server.transport.async.webservice.common;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.util.Scanner;
+import org.eclise.keyple.example.remote.server.serializer.json.SeProxyJsonParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /**
  * Utility class
@@ -21,8 +28,10 @@ public class HttpHelper {
     private static final Logger logger = LoggerFactory.getLogger(HttpHelper.class);
     public static String PLUGIN_ENDPOINT = "/plugin";
     public static String READER_ENDPOINT = "/reader";
+
     /**
      * Parse HTTP Body TO JSON Object
+     * 
      * @param is
      * @return
      */
@@ -35,6 +44,7 @@ public class HttpHelper {
 
     /**
      * Parse HTTP Body TO JSON String
+     * 
      * @param is
      * @return
      */
@@ -64,8 +74,7 @@ public class HttpHelper {
         return jsonObject;
     }
 
-    public static JsonObject httpPOSTJson(HttpURLConnection conn, String json)
-            throws IOException {
+    public static JsonObject httpPOSTJson(HttpURLConnection conn, String json) throws IOException {
         logger.debug("Url {} HTTP POST  : {} ", conn.getURL(), json);
         // Encode data
         conn.setRequestMethod("POST");

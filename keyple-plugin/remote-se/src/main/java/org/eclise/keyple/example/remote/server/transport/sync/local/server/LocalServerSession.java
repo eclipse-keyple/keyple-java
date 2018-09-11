@@ -50,13 +50,13 @@ public class LocalServerSession implements SyncReaderSession {
     }
 
     @Override
-    public boolean isSePresent()  {
+    public boolean isSePresent() {
         logger.debug("isSePresent");
         return client.onIsSePresent();
     }
 
     @Override
-    public SeResponseSet transmit(SeRequestSet seApplicationRequest)  {
+    public SeResponseSet transmit(SeRequestSet seApplicationRequest) {
         logger.debug("transmit {}", seApplicationRequest);
         return client.onTransmit(seApplicationRequest);
     }

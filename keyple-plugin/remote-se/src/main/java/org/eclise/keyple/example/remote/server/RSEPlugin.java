@@ -87,11 +87,11 @@ public class RSEPlugin extends Observable implements ObservablePlugin {
 
     public void onReaderEvent(ReaderEvent event, String sessionId) {
         logger.debug("onReaderEvent {}", event);
-        logger.debug("Dispatch ReaderEvent to the appropriate Reader {} {}", event.getReaderName(), sessionId);
+        logger.debug("Dispatch ReaderEvent to the appropriate Reader {} {}", event.getReaderName(),
+                sessionId);
         try {
-            //todo dispatch only by name not by sessionId for the moment
-            RSEReader RSEReader =
-                    (RSEReader) getReaderByRemoteName(event.getReaderName());
+            // todo dispatch only by name not by sessionId for the moment
+            RSEReader RSEReader = (RSEReader) getReaderByRemoteName(event.getReaderName());
             RSEReader.onRemoteReaderEvent(event);
 
         } catch (UnexpectedReaderException e) {

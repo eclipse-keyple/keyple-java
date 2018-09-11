@@ -9,14 +9,13 @@
 package org.eclise.keyple.example.remote.client.webservice;
 
 
+import java.io.IOException;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclise.keyple.example.remote.server.transport.async.webservice.client.WsRSEClient;
 import org.eclise.keyple.example.stub.calypso.HoplinkStubSE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class WSClientReaderApp {
@@ -25,7 +24,7 @@ public class WSClientReaderApp {
 
     private static String ENDPOINT_URL = "http://localhost:8000/remote-se";
 
-    //physical reader
+    // physical reader
     StubReader localReader;
 
     void boot() {
@@ -40,14 +39,15 @@ public class WSClientReaderApp {
         // configure web service client
         WsRSEClient wsRSEClient = new WsRSEClient(ENDPOINT_URL);
 
-        logger.info("Register wsRSEClient as an observer of the local plugin thus events will be propagated");
+        logger.info(
+                "Register wsRSEClient as an observer of the local plugin thus events will be propagated");
         localReader.addObserver(wsRSEClient);
 
-        try{
-            //connect physical local reader to RSE plugin
+        try {
+            // connect physical local reader to RSE plugin
             String sessionId = wsRSEClient.connectReader(localReader);
             logger.info("Connect remotely the StubPlugin to server with sessionId {}", sessionId);
-        }catch (IOException e){
+        } catch (IOException e) {
             logger.error(e.getMessage());
             e.printStackTrace();
         }
@@ -62,15 +62,14 @@ public class WSClientReaderApp {
         // insert SE
         localReader.insertSe(new HoplinkStubSE());
 
-        //todo Remove SE
-        //logger.info("************************");
-        //logger.info("        remove SE       ");
-        //logger.info("************************");
+        // todo Remove SE
+        // logger.info("************************");
+        // logger.info(" remove SE ");
+        // logger.info("************************");
         //
-        //localReader.removeSe();
+        // localReader.removeSe();
 
     }
-
 
 
 

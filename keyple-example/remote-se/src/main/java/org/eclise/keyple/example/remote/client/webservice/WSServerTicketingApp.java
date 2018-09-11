@@ -27,9 +27,9 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclise.keyple.example.remote.server.RSEPlugin;
 import org.eclise.keyple.example.remote.server.RSEReader;
 import org.eclise.keyple.example.remote.server.transport.async.webservice.common.HttpHelper;
-import org.eclise.keyple.example.remote.server.transport.async.webservice.server.SeResponseSetCallback;
 import org.eclise.keyple.example.remote.server.transport.async.webservice.server.PluginEndpoint;
 import org.eclise.keyple.example.remote.server.transport.async.webservice.server.ReaderEndpoint;
+import org.eclise.keyple.example.remote.server.transport.async.webservice.server.SeResponseSetCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.sun.net.httpserver.HttpServer;
@@ -47,7 +47,7 @@ public class WSServerTicketingApp implements org.eclipse.keyple.util.Observable.
 
         WSServerTicketingApp server = new WSServerTicketingApp();
         server.boot();
-        //server.status();
+        // server.status();
 
     }
 
@@ -59,17 +59,17 @@ public class WSServerTicketingApp implements org.eclipse.keyple.util.Observable.
 
         logger.info("Init Web Service Server");
 
-        //Create Endpoints for plugin and reader API
+        // Create Endpoints for plugin and reader API
         PluginEndpoint pluginEndpoint = new PluginEndpoint();
         ReaderEndpoint readerEndpoint = new ReaderEndpoint();
 
-        //deploy endpoint
+        // deploy endpoint
         InetSocketAddress inet = new InetSocketAddress(Inet4Address.getByName(URL), port);
         HttpServer server = HttpServer.create(inet, MAX_CONNECTION);
-        server.createContext(END_POINT+ HttpHelper.PLUGIN_ENDPOINT, pluginEndpoint);
-        server.createContext(END_POINT+HttpHelper.READER_ENDPOINT, readerEndpoint);
+        server.createContext(END_POINT + HttpHelper.PLUGIN_ENDPOINT, pluginEndpoint);
+        server.createContext(END_POINT + HttpHelper.READER_ENDPOINT, readerEndpoint);
 
-        //start server
+        // start server
         server.setExecutor(null); // creates a default executor
         server.start();
         logger.info("Started Server on http://{}:{}{}", inet.getHostName(), inet.getPort(),
@@ -96,16 +96,15 @@ public class WSServerTicketingApp implements org.eclipse.keyple.util.Observable.
     }
 
     /*
-    public void status() throws UnexpectedPluginException, IOReaderException {
-        // should show remote readers after a while
-        SeProxyService service = SeProxyService.getInstance();
-        logger.info("Remote readers connected {}",
-                service.getPlugin("RemoteSePlugin").getReaders().size());
-    }
-    */
+     * public void status() throws UnexpectedPluginException, IOReaderException { // should show
+     * remote readers after a while SeProxyService service = SeProxyService.getInstance();
+     * logger.info("Remote readers connected {}",
+     * service.getPlugin("RemoteSePlugin").getReaders().size()); }
+     */
 
     /**
      * Receives Event from RSE Plugin
+     * 
      * @param o : can be a ReaderEvent or PluginEvent
      */
     @Override
@@ -113,7 +112,7 @@ public class WSServerTicketingApp implements org.eclipse.keyple.util.Observable.
 
         logger.debug("UPDATE {}", o);
 
-        //PluginEvent
+        // PluginEvent
         if (o instanceof PluginEvent) {
             PluginEvent event = (PluginEvent) o;
             switch (event.getEventType()) {
@@ -121,13 +120,15 @@ public class WSServerTicketingApp implements org.eclipse.keyple.util.Observable.
                     logger.info("READER_CONNECTED {} {}", event.getPluginName(),
                             event.getReaderName());
                     try {
-                        RSEPlugin rsePlugin = (RSEPlugin) SeProxyService.getInstance().getPlugins().first();
-                        RSEReader rseReader = (RSEReader) rsePlugin.getReaderByRemoteName(event.getReaderName());
+                        RSEPlugin rsePlugin =
+                                (RSEPlugin) SeProxyService.getInstance().getPlugins().first();
+                        RSEReader rseReader =
+                                (RSEReader) rsePlugin.getReaderByRemoteName(event.getReaderName());
 
                         logger.info("Add ServerTicketingApp as a Observer of RSE reader");
                         rseReader.addObserver(this);
 
-                    }  catch (UnexpectedReaderException e) {
+                    } catch (UnexpectedReaderException e) {
                         logger.error(e.getMessage());
                         e.printStackTrace();
                     }
@@ -139,8 +140,8 @@ public class WSServerTicketingApp implements org.eclipse.keyple.util.Observable.
                     break;
             }
         }
-        //ReaderEvent
-         else if (o instanceof ReaderEvent) {
+        // ReaderEvent
+        else if (o instanceof ReaderEvent) {
             ReaderEvent event = (ReaderEvent) o;
             switch (event.getEventType()) {
                 case SE_INSERTED:
@@ -163,54 +164,64 @@ public class WSServerTicketingApp implements org.eclipse.keyple.util.Observable.
     private void runCommandTest(ReaderEvent event) {
         try {
 
-            //get the reader by its name
-            final RSEReader reader = (RSEReader) ((RSEPlugin) SeProxyService.getInstance().getPlugins().first())
-                    .getReaderByRemoteName(event.getReaderName());
+            // get the reader by its name
+            final RSEReader reader =
+                    (RSEReader) ((RSEPlugin) SeProxyService.getInstance().getPlugins().first())
+                            .getReaderByRemoteName(event.getReaderName());
 
             String poAid = "A000000291A000000191";
 
-            //build 1st seRequestSet with keep channel open to true
-            final ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                    (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
+            // build 1st seRequestSet with keep channel open to true
+            final ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(
+                    PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
 
 
 
             List<ApduRequest> poApduRequestList;
             poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
-            final SeRequest.Selector selector = new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
+            final SeRequest.Selector selector =
+                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
             SeRequest seRequest = new SeRequest(selector, poApduRequestList, true,
                     ContactlessProtocols.PROTOCOL_ISO14443_4);
 
             // ASYNC transmit seRequestSet to Reader With Callback function
-            ((RSEReader)reader).asyncTransmit(new SeRequestSet(seRequest), new SeResponseSetCallback() {
-                @Override
-                public void getResponseSet(SeResponseSet seResponseSet) {
-                    logger.info("Received asynchronously a SeResponseSet with Webservice RemoteSE {}", seResponseSet);
+            ((RSEReader) reader).asyncTransmit(new SeRequestSet(seRequest),
+                    new SeResponseSetCallback() {
+                        @Override
+                        public void getResponseSet(SeResponseSet seResponseSet) {
+                            logger.info(
+                                    "Received asynchronously a SeResponseSet with Webservice RemoteSE {}",
+                                    seResponseSet);
 
-                    List<ApduRequest> poApduRequestList2;
+                            List<ApduRequest> poApduRequestList2;
 
-                    final ReadRecordsCmdBuild poReadRecordCmd_T2Usage =
-                            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01, true, (byte) 0x30);
-                    poApduRequestList2 = Arrays.asList(poReadRecordCmd_T2Usage.getApduRequest(),poReadRecordCmd_T2Usage.getApduRequest());
+                            final ReadRecordsCmdBuild poReadRecordCmd_T2Usage =
+                                    new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1A,
+                                            (byte) 0x01, true, (byte) 0x30);
+                            poApduRequestList2 =
+                                    Arrays.asList(poReadRecordCmd_T2Usage.getApduRequest(),
+                                            poReadRecordCmd_T2Usage.getApduRequest());
 
-                    SeRequest seRequest2 = new SeRequest(selector, poApduRequestList2, false,
-                            ContactlessProtocols.PROTOCOL_ISO14443_4);
+                            SeRequest seRequest2 = new SeRequest(selector, poApduRequestList2,
+                                    false, ContactlessProtocols.PROTOCOL_ISO14443_4);
 
-                    // ASYNC transmit seRequestSet to Reader
-                    try {
-                        ((RSEReader)reader).asyncTransmit(new SeRequestSet(seRequest2), new SeResponseSetCallback() {
-                            @Override
-                            public void getResponseSet(SeResponseSet seResponseSet) {
-                                logger.info("Received asynchronously a SeResponseSet with Webservice RemoteSE : {}", seResponseSet);
+                            // ASYNC transmit seRequestSet to Reader
+                            try {
+                                ((RSEReader) reader).asyncTransmit(new SeRequestSet(seRequest2),
+                                        new SeResponseSetCallback() {
+                                            @Override
+                                            public void getResponseSet(
+                                                    SeResponseSet seResponseSet) {
+                                                logger.info(
+                                                        "Received asynchronously a SeResponseSet with Webservice RemoteSE : {}",
+                                                        seResponseSet);
+                                            }
+                                        });
+                            } catch (IOReaderException e) {
+                                e.printStackTrace();
                             }
-                        });
-                    } catch (IOReaderException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-
+                        }
+                    });
 
 
 

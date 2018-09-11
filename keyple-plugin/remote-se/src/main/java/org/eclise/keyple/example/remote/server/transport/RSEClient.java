@@ -8,22 +8,22 @@
 
 package org.eclise.keyple.example.remote.server.transport;
 
+import java.io.IOException;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 
-import java.io.IOException;
-
 public interface RSEClient extends ObservableReader.ReaderObserver {
 
-     /**
-      * Connect Physical Local Reader to Remote SE
-      * Creates a Session to exchange data with this Reader
-      * @param localReader
-      * @return Session Id
-      */
-     String connectReader(ProxyReader localReader) throws IOException;
+    /**
+     * Connect Physical Local Reader to Remote SE Creates a Session to exchange data with this
+     * Reader
+     * 
+     * @param localReader
+     * @return Session Id
+     */
+    String connectReader(ProxyReader localReader) throws IOException;
 
-     //todo disconnectReader()
+    // todo disconnectReader()
 
 
 }

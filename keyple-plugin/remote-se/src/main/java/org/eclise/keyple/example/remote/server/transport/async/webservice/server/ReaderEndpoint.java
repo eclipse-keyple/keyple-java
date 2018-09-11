@@ -1,7 +1,15 @@
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
+
 package org.eclise.keyple.example.remote.server.transport.async.webservice.server;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
+import java.io.IOException;
+import java.io.OutputStream;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclise.keyple.example.remote.server.RSEPlugin;
 import org.eclise.keyple.example.remote.server.RSEReader;
@@ -10,14 +18,12 @@ import org.eclise.keyple.example.remote.server.transport.async.AsyncRSEReaderSes
 import org.eclise.keyple.example.remote.server.transport.async.webservice.common.HttpHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.OutputStream;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 
 
 /**
- * Endpoint "/reader"
- * Manages reader API : transmit
+ * Endpoint "/reader" Manages reader API : transmit
  */
 public class ReaderEndpoint implements HttpHandler {
 
@@ -41,38 +47,40 @@ public class ReaderEndpoint implements HttpHandler {
         logger.debug("Incoming Request {} ", t.getRequestMethod());
         String requestMethod = t.getRequestMethod();
 
-        if(requestMethod.equals("POST")){
-            //if body is seResponse
+        if (requestMethod.equals("POST")) {
+            // if body is seResponse
             processSeResponseSet(t);
-        }else {
-            //unrecognized method
+        } else {
+            // unrecognized method
         }
     }
 
     /**
      * Connect Remote Reader API
+     * 
      * @param t
      * @throws IOException
      */
     private void processSeResponseSet(HttpExchange t) throws IOException {
-        //parse body
+        // parse body
         String body = HttpHelper.parseBodyToString(t.getRequestBody());// .. parse the request body
         logger.debug("Incoming Response Body {} ", body);
-        SeResponseSet seResponseSet = SeProxyJsonParser.getGson().fromJson(body, SeResponseSet.class);
+        SeResponseSet seResponseSet =
+                SeProxyJsonParser.getGson().fromJson(body, SeResponseSet.class);
 
-        //todo should retrieve the matching session from reader
+        // todo should retrieve the matching session from reader
         RSEReader reader = (RSEReader) plugin.getReaders().first();
         AsyncRSEReaderSession session = (AsyncRSEReaderSession) reader.getSession();
 
-        //notify of the arrival of the SeResponseSet
+        // notify of the arrival of the SeResponseSet
         session.asyncSetSeResponseSet(seResponseSet);
 
         String responseBody = null;
 
-        //todo check is there is more seRequestSet to send
-        if(session.hasSeRequestSet()){
+        // todo check is there is more seRequestSet to send
+        if (session.hasSeRequestSet()) {
             responseBody = SeProxyJsonParser.getGson().toJson(session.getSeRequestSet());
-        }else{
+        } else {
             responseBody = "{}";
         }
 

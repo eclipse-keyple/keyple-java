@@ -11,12 +11,11 @@ package org.eclise.keyple.example.remote.server.serializer.json;
 
 
 import java.nio.ByteBuffer;
-
-import com.google.gson.JsonObject;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.SeRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 public class SeProxyJsonParser {
 
@@ -29,8 +28,8 @@ public class SeProxyJsonParser {
         return gsonBuilder.create();
     }
 
-    static public Boolean isSeRequestSet(JsonObject obj){
-        return obj.get("sortedRequests")!=null;
+    static public Boolean isSeRequestSet(JsonObject obj) {
+        return obj.get("sortedRequests") != null;
     }
 
 }

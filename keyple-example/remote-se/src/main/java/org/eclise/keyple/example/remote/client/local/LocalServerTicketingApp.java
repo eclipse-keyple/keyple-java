@@ -106,8 +106,8 @@ public class LocalServerTicketingApp implements org.eclipse.keyple.util.Observab
                             event.getReaderName());
                     logger.info("Observe SeRemoteReader for Events");
                     try {
-                        ((RSEReader) SeProxyService.getInstance().getPlugins().first()
-                                .getReaders().first()).addObserver(this);
+                        ((RSEReader) SeProxyService.getInstance().getPlugins().first().getReaders()
+                                .first()).addObserver(this);
 
                     } catch (IOReaderException e) {
                         e.printStackTrace();

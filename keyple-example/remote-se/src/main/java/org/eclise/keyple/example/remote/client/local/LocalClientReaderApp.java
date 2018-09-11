@@ -9,13 +9,12 @@
 package org.eclise.keyple.example.remote.client.local;
 
 import java.io.IOException;
-
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclise.keyple.example.remote.server.transport.RSEClient;
 import org.eclise.keyple.example.remote.server.transport.sync.SyncClientListener;
-import org.eclise.keyple.example.remote.server.transport.sync.local.client.LocalClientListener;
 import org.eclise.keyple.example.remote.server.transport.sync.local.SessionFactory;
+import org.eclise.keyple.example.remote.server.transport.sync.local.client.LocalClientListener;
 import org.eclise.keyple.example.stub.calypso.HoplinkStubSE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

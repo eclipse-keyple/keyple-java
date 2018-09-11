@@ -11,20 +11,19 @@ package org.eclise.keyple.example.remote.server.transport.async.webservice.clien
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclise.keyple.example.remote.server.transport.RSEClient;
 import org.eclise.keyple.example.remote.server.serializer.json.SeProxyJsonParser;
+import org.eclise.keyple.example.remote.server.transport.RSEClient;
 import org.eclise.keyple.example.remote.server.transport.async.webservice.common.HttpHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 public class WsRSEClient implements RSEClient {
 
@@ -41,28 +40,30 @@ public class WsRSEClient implements RSEClient {
 
     /**
      * Connect physical localReader to RSE Plugin
+     * 
      * @param localReader
      * @return sessionId
      */
     @Override
-    public String connectReader(ProxyReader localReader) throws IOException{
-        logger.info("Send connect Reader event {}",localReader.getName());
+    public String connectReader(ProxyReader localReader) throws IOException {
+        logger.info("Send connect Reader event {}", localReader.getName());
 
-        //construct json data
+        // construct json data
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("localReaderName", new JsonPrimitive(localReader.getName()));
         String data = jsonObject.toString();
 
-        //send data to /plugin endpoint
-        JsonObject response = HttpHelper.httpPUTJSON(getConnection(serverUrl + HttpHelper.PLUGIN_ENDPOINT), data);
-        logger.info("Receive Response {}",response);
+        // send data to /plugin endpoint
+        JsonObject response =
+                HttpHelper.httpPUTJSON(getConnection(serverUrl + HttpHelper.PLUGIN_ENDPOINT), data);
+        logger.info("Receive Response {}", response);
 
-        //parse response to get sessionId
+        // parse response to get sessionId
         Gson gson = SeProxyJsonParser.getGson();
         gson.fromJson(response, JsonObject.class);
         String sessionId = gson.fromJson(response, JsonObject.class).get("sessionId").getAsString();
 
-        //set localReader
+        // set localReader
         this.localReader = localReader;
         this.sessionId = sessionId;
 
@@ -71,16 +72,16 @@ public class WsRSEClient implements RSEClient {
     }
 
     /**
-     * From ObservableReader.ReaderObserver
-     * Send Event to RSE Plugin
+     * From ObservableReader.ReaderObserver Send Event to RSE Plugin
+     * 
      * @param event
      */
     @Override
     public void update(ReaderEvent event) {
-        logger.info("Send Reader Event {}",event.getEventType());
+        logger.info("Send Reader Event {}", event.getEventType());
 
         try {
-            //construct json data
+            // construct json data
             JsonObject jsonObject = new JsonObject();
 
             jsonObject.add("pluginName", new JsonPrimitive(event.getPluginName()));
@@ -90,10 +91,11 @@ public class WsRSEClient implements RSEClient {
 
             String data = jsonObject.toString();
 
-            //send data to /plugin endpoint
-            JsonObject response = HttpHelper.httpPOSTJson(getConnection(serverUrl + HttpHelper.PLUGIN_ENDPOINT), data);
+            // send data to /plugin endpoint
+            JsonObject response = HttpHelper
+                    .httpPOSTJson(getConnection(serverUrl + HttpHelper.PLUGIN_ENDPOINT), data);
 
-            //parse response
+            // parse response
             processResponse(response);
 
 
@@ -104,26 +106,30 @@ public class WsRSEClient implements RSEClient {
     }
 
     /**
-     * Process response from RSE Server
-     * Can contain SeRequestSet, then a SeResponseSet is sent to RSE Reader
+     * Process response from RSE Server Can contain SeRequestSet, then a SeResponseSet is sent to
+     * RSE Reader
+     * 
      * @param object
      * @throws IOReaderException
      */
     public void processResponse(JsonObject object) throws IOReaderException {
-        //if seResquestSet is present in the response, execute it and send back response to ticketing app
-        if(SeProxyJsonParser.isSeRequestSet(object)){
+        // if seResquestSet is present in the response, execute it and send back response to
+        // ticketing app
+        if (SeProxyJsonParser.isSeRequestSet(object)) {
             logger.debug("seRequestSet to process {}", object);
 
-            SeRequestSet seRequestSet = SeProxyJsonParser.getGson().fromJson(object, SeRequestSet.class);
+            SeRequestSet seRequestSet =
+                    SeProxyJsonParser.getGson().fromJson(object, SeRequestSet.class);
             SeResponseSet responseSet = localReader.transmit(seRequestSet);
 
             String data = SeProxyJsonParser.getGson().toJson(responseSet);
 
             try {
-                //send SeResponseSet to /reader endpoint
-                JsonObject responseBody = HttpHelper.httpPOSTJson(getConnection(serverUrl + HttpHelper.READER_ENDPOINT), data);
+                // send SeResponseSet to /reader endpoint
+                JsonObject responseBody = HttpHelper
+                        .httpPOSTJson(getConnection(serverUrl + HttpHelper.READER_ENDPOINT), data);
 
-                //Loop, if there is more SeRequestSet
+                // Loop, if there is more SeRequestSet
                 processResponse(responseBody);
 
             } catch (IOException e) {
@@ -131,7 +137,7 @@ public class WsRSEClient implements RSEClient {
                 e.printStackTrace();
             }
 
-        }else{
+        } else {
             logger.debug("No seRequestSet to process ");
         }
     }
@@ -140,7 +146,6 @@ public class WsRSEClient implements RSEClient {
         URL url = new URL(urlString);
         return (HttpURLConnection) url.openConnection();
     }
-
 
 
 
