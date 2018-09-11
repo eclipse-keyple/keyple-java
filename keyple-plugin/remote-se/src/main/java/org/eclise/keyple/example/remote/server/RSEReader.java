@@ -111,12 +111,12 @@ public class RSEReader extends Observable implements ObservableReader {
     @Override
     public int compareTo(ProxyReader o) {
         return o.getName().compareTo(this.getName());
-    }
+    }//todo
 
     @Override
     public Map<String, String> getParameters() {
         return null;
-    }
+    }//todo
 
 
 
@@ -171,12 +171,12 @@ public class RSEReader extends Observable implements ObservableReader {
      *         executed instantly
      */
     public final void setParameters(Map<String, String> parameters) throws IOException {
-        for (Map.Entry<String, String> en : parameters.entrySet()) {
-            setParameter(en.getKey(), en.getValue());
-        }
+        //todo
     }
 
     @Override
-    public void setParameter(String key, String value) throws IOException {}
+    public void setParameter(String key, String value) throws IOException {
+        //todo
+    }
 
 }

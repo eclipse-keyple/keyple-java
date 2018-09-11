@@ -90,7 +90,7 @@ public class RSEPlugin extends Observable implements ObservablePlugin {
         logger.debug("Dispatch ReaderEvent to the appropriate Reader {} {}", event.getReaderName(),
                 sessionId);
         try {
-            // todo dispatch only by name not by sessionId for the moment
+            // todo dispatch is managed by name, should take sessionId also
             RSEReader RSEReader = (RSEReader) getReaderByRemoteName(event.getReaderName());
             RSEReader.onRemoteReaderEvent(event);
 
@@ -101,20 +101,7 @@ public class RSEPlugin extends Observable implements ObservablePlugin {
     }
 
 
-    @Override
-    public int compareTo(ReaderPlugin o) {
-        return 0;
-    }
 
-    @Override
-    public Map<String, String> getParameters() {
-        return null;
-    }
-
-    @Override
-    public void setParameter(String key, String value) throws IOException {
-
-    }
 
     /**
      * Add an observer. This will allow to be notified about all readers or plugins events.
@@ -167,9 +154,7 @@ public class RSEPlugin extends Observable implements ObservablePlugin {
      *         executed instantly
      */
     public final void setParameters(Map<String, String> parameters) throws IOException {
-        for (Map.Entry<String, String> en : parameters.entrySet()) {
-            setParameter(en.getKey(), en.getValue());
-        }
+        //todo
     }
 
 
@@ -180,6 +165,24 @@ public class RSEPlugin extends Observable implements ObservablePlugin {
             }
         }
         return false;
+    }
+
+    //todo
+    @Override
+    public int compareTo(ReaderPlugin o) {
+        return 0;
+    }
+
+
+    @Override
+    public Map<String, String> getParameters() {
+        //todo
+        return null;
+    }
+
+    @Override
+    public void setParameter(String key, String value) throws IOException {
+        //todo
     }
 
 
