@@ -21,7 +21,7 @@ import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Demo_Hoplink_PcSc {
+public class Demo_Hoplink_Pcsc {
     private ProxyReader poReader, csmReader;
 
     /**
@@ -39,7 +39,7 @@ public class Demo_Hoplink_PcSc {
      * @throws InterruptedException thread exception
      */
     public static void main(String[] args) throws IOException, InterruptedException {
-        final Logger logger = LoggerFactory.getLogger(Demo_Hoplink_PcSc.class);
+        final Logger logger = LoggerFactory.getLogger(Demo_Hoplink_Pcsc.class);
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
