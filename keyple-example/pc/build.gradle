@@ -9,6 +9,7 @@ dependencies {
     compile project(':keyple-example-common')
     compile project(':keyple-calypso')
     compile project(':keyple-plugin-pcsc')
+    compile project(':keyple-plugin-stub')
 
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
 
