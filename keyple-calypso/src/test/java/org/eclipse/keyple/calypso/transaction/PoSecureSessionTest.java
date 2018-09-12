@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.transaction;
 
-import static org.eclipse.keyple.calypso.command.util.TestsUtilsResponseTabByteGenerator.*;
+import static org.eclipse.keyple.calypso.util.TestsUtilsResponseTabByteGenerator.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import java.nio.ByteBuffer;
@@ -23,7 +23,6 @@ import org.eclipse.keyple.calypso.command.po.builder.DecreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.session.PoGetChallengeCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.*;
 import org.junit.Assert;

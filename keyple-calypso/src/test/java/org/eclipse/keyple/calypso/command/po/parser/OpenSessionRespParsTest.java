@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.session.AbstractOpenSessionRespPars;
-import org.eclipse.keyple.calypso.command.util.TestsUtilsResponseTabByteGenerator;
+import org.eclipse.keyple.calypso.util.TestsUtilsResponseTabByteGenerator;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;

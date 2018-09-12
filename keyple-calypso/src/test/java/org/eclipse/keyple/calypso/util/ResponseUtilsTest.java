@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.calypso.command.util;
+package org.eclipse.keyple.calypso.util;
 
 import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
