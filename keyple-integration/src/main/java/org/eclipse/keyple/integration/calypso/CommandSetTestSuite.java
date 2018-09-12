@@ -117,51 +117,28 @@ public class CommandSetTestSuite {
 
         try {
 
-            List<SeResponse> seResponses = selectPO();
+            PoFileStructureInfo poData = selectPO();
 
             PoSecureSession poTransaction = new PoSecureSession(TestEngine.poReader, TestEngine.csmReader, null);
 
-            if (seResponses.get(0) != null) {
+            byte[] genericCounterData = new byte[] {0x00, 0x00, 0x0A, 0x00, 0x01, 0x00, 0x00, 0x0B, 0x00, 0x01, 0x00, 0x00, 0x0C,
+                    0x00, 0x00, 0x00, 0x00, (byte) 0xB0, 0x00, (byte) 0xC0, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x0D, 0x00, 0x00};
 
-                ApduResponse fciData = seResponses.get(0).getFci();
+            byte[] counterData = new byte[poData.getCountersFileData().getRecSize()];
 
-                byte[] counterData = new byte[] {0x00, 0x00, 0x0A, 0x00, 0x01, 0x00, 0x00, 0x0B, 0x00, 0x01, 0x00, 0x00, 0x0C,
-                        0x00, 0x00, 0x00, 0x00, (byte) 0xB0, 0x00, (byte) 0xC0, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x0D, 0x00, 0x00};
+            System.arraycopy(genericCounterData, 0, counterData, 0, counterData.length);
 
-                updateRecord(poTransaction, fciData, (byte) 0x19, (byte) 0x01, counterData);
+            updateRecord(poTransaction, poData.getFciData(), poData.getCountersFileData().getSfi(), (byte) 0x01, counterData);
 
-                byte[] updatedCounterData = readRecords(poTransaction, fciData, (byte) 0x19, (byte) 0x01, true);
+            byte[] updatedCounterData = readRecords(poTransaction, poData.getFciData(), poData.getCountersFileData().getSfi(), (byte) 0x01, true);
 
-                Assertions.assertArrayEquals(counterData, updatedCounterData);
+            Assertions.assertArrayEquals(counterData, updatedCounterData);
 
-            } else if (seResponses.get(1) != null) {
+            if(poData.getSimulatedCountersFileData().getRecNumb() > 0) {
 
-                ApduResponse fciData = seResponses.get(1).getFci();
+                for(int i = 0; i < poData.getSimulatedCountersFileData().getRecNumb(); i++) {
 
-                byte[] counterData = new byte[] {0x00, 0x00, 0x0A, 0x01, 0x00, 0x00};
-
-                updateRecord(poTransaction, fciData, (byte) 0x1B, (byte) 0x01, counterData);
-
-                byte[] updatedCounterData = readRecords(poTransaction, fciData, (byte) 0x1B, (byte) 0x01, true);
-
-                Assertions.assertArrayEquals(counterData, updatedCounterData);
-
-            } else if (seResponses.get(2) != null) {
-
-                ApduResponse fciData = seResponses.get(2).getFci();
-
-                byte[] counterData = new byte[] {0x00, 0x00, 0x0A, 0x00, 0x01, 0x00, 0x00, 0x0B, 0x00, 0x01, 0x00, 0x00, 0x0C,
-                        0x00, 0x00, 0x00, 0x00, (byte) 0xB0, 0x00, (byte) 0xC0, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x0D, 0x00, 0x00};
-
-                updateRecord(poTransaction, fciData, (byte) 0x19, (byte) 0x01, counterData);
-
-                byte[] updatedCounterData = readRecords(poTransaction, fciData, (byte) 0x19, (byte) 0x01, true);
-
-                Assertions.assertArrayEquals(counterData, updatedCounterData);
-
-                for(int i = 0; i < 9; i++) {
-
-                    byte[] updatedSingleCounterData = readRecords(poTransaction, fciData, (byte) (0x0A + i), (byte) 0x01, true);
+                    byte[] updatedSingleCounterData = readRecords(poTransaction, poData.getFciData(), (byte) (poData.getSimulatedCountersFileData().getSfi() + i), (byte) 0x01, true);
 
                     int updatedCounterValue = getCounterValueFromByteArray(updatedSingleCounterData, 1);
 
@@ -170,14 +147,11 @@ public class CommandSetTestSuite {
                     Assertions.assertEquals(expectedCounterValue, updatedCounterValue);
 
                 }
-
-            } else {
-                Assertions.fail("No recognizable PO detected.");
-                System.out.println("No recognizable PO detected.");
             }
 
         } catch (Exception e) {
 
+            Assertions.fail("Exception caught: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -188,180 +162,89 @@ public class CommandSetTestSuite {
 
         try {
 
-            List<SeResponse> seResponses = selectPO();
+            PoFileStructureInfo poData = selectPO();
 
             PoSecureSession poTransaction = new PoSecureSession(TestEngine.poReader, TestEngine.csmReader, null);
 
-            if (seResponses.get(0) != null) {
+            byte[] initialCounterData = readRecords(poTransaction, poData.getFciData(), poData.getCountersFileData().getSfi(), (byte) 0x01, true);
 
-                ApduResponse fciData = seResponses.get(0).getFci();
+            for(int i = 0; i < (poData.getCountersFileData().getRecSize() / 3); i++) {
 
-                byte[] initialCounterData = readRecords(poTransaction, fciData, (byte) 0x19, (byte) 0x01, true);
+                int counterValue = getCounterValueFromByteArray(initialCounterData, i+1);
 
-                for(int i = 0; i < 9; i++) {
+                if(counterValue > 0) {
 
-                    int counterValue = getCounterValueFromByteArray(initialCounterData, i+1);
+                    int valueToDecrement = counterValue / 2;
+                    decreaseCounter(poTransaction, poData.getFciData(), poData.getCountersFileData().getSfi(), (byte) (i+1), valueToDecrement);
 
-                    if(counterValue > 0) {
+                    byte[] updatedCounters = readRecords(poTransaction, poData.getFciData(), poData.getCountersFileData().getSfi(), (byte) 0x01, true);
+                    int finalValue = getCounterValueFromByteArray(updatedCounters, i+1);
 
-                        int valueToDecrement = counterValue / 2;
-                        decreaseCounter(poTransaction, fciData, (byte) 0x19, (byte) (i+1), valueToDecrement);
+                    Assertions.assertEquals(counterValue - valueToDecrement, finalValue);
 
-                        byte[] updatedCounters = readRecords(poTransaction, fciData, (byte) 0x19, (byte) 0x01, true);
-                        int finalValue = getCounterValueFromByteArray(updatedCounters, i+1);
+                    if(poData.getSimulatedCountersFileData().getRecNumb() > 0) {
 
-                        Assertions.assertEquals(counterValue - valueToDecrement, finalValue);
-                    }
-                }
-
-            } else if (seResponses.get(1) != null) {
-
-                ApduResponse fciData = seResponses.get(1).getFci();
-
-                byte[] initialCounterData = readRecords(poTransaction, fciData, (byte) 0x1B, (byte) 0x01, true);
-
-                for(int i = 0; i < 2; i++) {
-
-                    int counterValue = getCounterValueFromByteArray(initialCounterData, i+1);
-
-                    if(counterValue > 0) {
-
-                        int valueToDecrement = counterValue / 2;
-                        decreaseCounter(poTransaction, fciData, (byte) 0x1B, (byte) (i+1), valueToDecrement);
-
-                        byte[] updatedCounters = readRecords(poTransaction, fciData, (byte) 0x1B, (byte) 0x01, true);
-                        int finalValue = getCounterValueFromByteArray(updatedCounters, i+1);
+                        updatedCounters = readRecords(poTransaction, poData.getFciData(), (byte) (poData.getSimulatedCountersFileData().getSfi()+i), (byte) 0x01, true);
+                        finalValue = getCounterValueFromByteArray(updatedCounters, 1);
 
                         Assertions.assertEquals(counterValue - valueToDecrement, finalValue);
                     }
                 }
-
-            } else if (seResponses.get(2) != null) {
-
-                ApduResponse fciData = seResponses.get(2).getFci();
-
-                byte[] initialCounterData = readRecords(poTransaction, fciData, (byte) 0x19, (byte) 0x01, true);
-
-                for(int i = 0; i < 9; i++) {
-
-                    int counterValue = getCounterValueFromByteArray(initialCounterData, i+1);
-
-                    if(counterValue > 0) {
-
-                        int valueToDecrement = counterValue / 2;
-                        decreaseCounter(poTransaction, fciData, (byte) (0x0A + i), (byte) 0x01, valueToDecrement);
-
-                        byte[] updatedCounters = readRecords(poTransaction, fciData, (byte) 0x19, (byte) 0x01, true);
-                        int finalValue = getCounterValueFromByteArray(updatedCounters, i+1);
-
-                        Assertions.assertEquals(counterValue - valueToDecrement, finalValue);
-                    }
-                }
-
-            } else {
-                Assertions.fail("No recognizable PO detected.");
-                System.out.println("No recognizable PO detected.");
             }
-
 
         } catch (Exception e) {
 
+            Assertions.fail("Exception caught: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
 
     @Test
     public void testIncreaseCounter() {
 
         try {
 
-            List<SeResponse> seResponses = selectPO();
+            PoFileStructureInfo poData = selectPO();
 
             PoSecureSession poTransaction = new PoSecureSession(TestEngine.poReader, TestEngine.csmReader, null);
 
-            if (seResponses.get(0) != null) {
+            byte[] initialCounterData = readRecords(poTransaction, poData.getFciData(), poData.getCountersFileData().getSfi(), (byte) 0x01, true);
 
-                ApduResponse fciData = seResponses.get(0).getFci();
+            for(int i = 0; i < (poData.getCountersFileData().getRecSize() / 3); i++) {
 
-                byte[] initialCounterData = readRecords(poTransaction, fciData, (byte) 0x19, (byte) 0x01, true);
+                int counterValue = getCounterValueFromByteArray(initialCounterData, i+1);
+                int maxValue = 0xFFFFFF;
 
-                for(int i = 0; i < 9; i++) {
+                if(counterValue < maxValue) {
 
-                    int counterValue = getCounterValueFromByteArray(initialCounterData, i+1);
-                    int maxValue = 0xFFFFFF;
+                    int valueToIncrement = (maxValue - counterValue) / 2;
+                    increaseCounter(poTransaction, poData.getFciData(), poData.getCountersFileData().getSfi(), (byte) (i+1), valueToIncrement);
 
-                    if(counterValue > 0) {
+                    byte[] updatedCounters = readRecords(poTransaction, poData.getFciData(), poData.getCountersFileData().getSfi(), (byte) 0x01, true);
+                    int finalValue = getCounterValueFromByteArray(updatedCounters, i+1);
 
-                        int valueToIncrement = (maxValue - counterValue) / 2;
-                        increaseCounter(poTransaction, fciData, (byte) 0x19, (byte) (i+1), valueToIncrement);
+                    Assertions.assertEquals(counterValue + valueToIncrement, finalValue);
 
-                        byte[] updatedCounters = readRecords(poTransaction, fciData, (byte) 0x19, (byte) 0x01, true);
-                        int finalValue = getCounterValueFromByteArray(updatedCounters, i+1);
+                    if(poData.getSimulatedCountersFileData().getRecNumb() > 0) {
 
-                        Assertions.assertEquals(counterValue + valueToIncrement, finalValue);
-                    }
-                }
-
-            } else if (seResponses.get(1) != null) {
-
-                ApduResponse fciData = seResponses.get(1).getFci();
-
-                byte[] initialCounterData = readRecords(poTransaction, fciData, (byte) 0x1B, (byte) 0x01, true);
-
-                for(int i = 0; i < 2; i++) {
-
-                    int counterValue = getCounterValueFromByteArray(initialCounterData, i+1);
-                    int maxValue = 0xFFFFFF;
-
-                    if(counterValue > 0) {
-
-                        int valueToIncrement = (maxValue - counterValue) / 2;
-                        increaseCounter(poTransaction, fciData, (byte) 0x1B, (byte) (i+1), valueToIncrement);
-
-                        byte[] updatedCounters = readRecords(poTransaction, fciData, (byte) 0x1B, (byte) 0x01, true);
-                        int finalValue = getCounterValueFromByteArray(updatedCounters, i+1);
+                        updatedCounters = readRecords(poTransaction, poData.getFciData(), (byte) (poData.getSimulatedCountersFileData().getSfi()+i), (byte) 0x01, true);
+                        finalValue = getCounterValueFromByteArray(updatedCounters, 1);
 
                         Assertions.assertEquals(counterValue + valueToIncrement, finalValue);
                     }
                 }
-
-            } else if (seResponses.get(2) != null) {
-
-                ApduResponse fciData = seResponses.get(2).getFci();
-
-                byte[] initialCounterData = readRecords(poTransaction, fciData, (byte) 0x19, (byte) 0x01, true);
-
-                for(int i = 0; i < 9; i++) {
-
-                    int counterValue = getCounterValueFromByteArray(initialCounterData, i+1);
-                    int maxValue = 0xFFFFFF;
-
-                    if(counterValue > 0) {
-
-                        int valueToIncrement = (maxValue - counterValue) / 2;
-                        increaseCounter(poTransaction, fciData, (byte) (0x0A + i), (byte) (0x01), valueToIncrement);
-
-                        byte[] updatedCounters = readRecords(poTransaction, fciData, (byte) 0x19, (byte) 0x01, true);
-                        int finalValue = getCounterValueFromByteArray(updatedCounters, i+1);
-
-                        Assertions.assertEquals(counterValue + valueToIncrement, finalValue);
-                    }
-                }
-
-            } else {
-                Assertions.fail("No recognizable PO detected.");
-                System.out.println("No recognizable PO detected.");
             }
-
 
         } catch (Exception e) {
 
+            Assertions.fail("Exception caught: " + e.getMessage());
             e.printStackTrace();
         }
 
     }
 
-
+    /*
     @Test
     public void testReadRecords() {
 
@@ -430,4 +313,5 @@ public class CommandSetTestSuite {
         }
 
     }
+    */
 }
