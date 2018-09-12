@@ -21,6 +21,9 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+@SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
+        "PMD.StdCyclomaticComplexity"})
 /**
  * Local reader class implementing the logical channel opening based on the selection of the SE
  * application
@@ -73,8 +76,10 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
         ByteBuffer[] atrAndFci = new ByteBuffer[2];
 
         if (!isLogicalChannelOpen()) {
-            // init of the physical SE channel: if not yet established, opening of a new physical
-            // channel
+            /*
+             * init of the physical SE channel: if not yet established, opening of a new physical
+             * channel
+             */
             if (!isPhysicalChannelOpen()) {
                 openPhysicalChannel();
             }
@@ -83,36 +88,46 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
             }
         }
 
-        // add ATR
+        /* add ATR */
         atrAndFci[0] = getATR();
-        logger.trace("[{}] openLogicalChannelAndSelect => ATR: {}", this.getName(),
-                ByteBufferUtils.toHex(atrAndFci[0]));
-
-        // selector may be null, in this case we consider the logical channel open
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] openLogicalChannelAndSelect => ATR: {}", this.getName(),
+                    ByteBufferUtils.toHex(atrAndFci[0]));
+        }
+        /* selector may be null, in this case we consider the logical channel open */
         if (selector != null) {
             if (selector instanceof SeRequest.AidSelector) {
                 ByteBuffer aid = ((SeRequest.AidSelector) selector).getAidToSelect();
                 if (aid != null) {
-                    logger.trace(
-                            "[{}] openLogicalChannelAndSelect => Select Application with AID = {}",
-                            this.getName(), ByteBufferUtils.toHex(aid));
+                    if (logger.isTraceEnabled()) {
+                        logger.trace(
+                                "[{}] openLogicalChannelAndSelect => Select Application with AID = {}",
+                                this.getName(), ByteBufferUtils.toHex(aid));
+                    }
+                    /*
+                     * build a get response command the actual length expected by the SE in the get
+                     * response command is handled in transmitApdu
+                     */
+                    ByteBuffer selectApplicationCommand = ByteBuffer.allocate(6 + aid.limit());
+                    selectApplicationCommand.put((byte) 0x00); // CLA
+                    selectApplicationCommand.put((byte) 0xA4); // INS
+                    selectApplicationCommand.put((byte) 0x04); // P1
+                    selectApplicationCommand.put((byte) 0x00); // P2
+                    selectApplicationCommand.put((byte) (aid.limit())); // Lc
+                    selectApplicationCommand.put(aid); // data
+                    selectApplicationCommand.put((byte) 0x00); // Le
+                    selectApplicationCommand.position(0);
 
-                    // build a get response command
-                    // the actual length expected by the SE in the get response command is handled
-                    // in
-                    // transmitApdu
-                    ByteBuffer selectApplicationCommand = ByteBufferUtils
-                            .fromHex("00A40400" + String.format("%02X", (byte) aid.limit())
-                                    + ByteBufferUtils.toHex(aid) + "00");
-
-                    // we use here processApduRequest to manage case 4 hack
-                    // the successful status codes list for this command is provided
+                    /*
+                     * we use here processApduRequest to manage case 4 hack the successful status
+                     * codes list for this command is provided
+                     */
                     ApduResponse fciResponse =
                             processApduRequest(new ApduRequest(selectApplicationCommand, true,
                                     successfulSelectionStatusCodes)
                                             .setName("Intrinsic Select Application"));
 
-                    // add FCI
+                    /* add FCI */
                     atrAndFci[1] = fciResponse.getBytes();
 
                     if (!fciResponse.isSuccessful()) {

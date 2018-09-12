@@ -6,82 +6,134 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.example.pc.calypso;
+package org.eclipse.keyple.example.common;
 
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.*;
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CsmSettings.*;
-import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
-import org.eclipse.keyple.example.common.HoplinkInfoAndSampleCommands;
-import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
-import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
-import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.profiler.Profiler;
 
 /**
  * This Calypso demonstration code consists in:
+ *
  * <ol>
- * <li>Setting up a two-reader configuration ({@link #main main}) and adding an observer method
- * ({@link #update update})</li>
+ * <li>Setting up a two-reader configuration and adding an observer method ({@link #update update})
  * <li>Starting a card operation when a PO presence is notified ({@link #operatePoTransactions
- * operatePoTransactions})</li>
+ * operatePoTransactions})
  * <li>Opening a logical channel with the CSM (C1 CSM is expected) see
- * ({@link HoplinkInfoAndSampleCommands#CSM_C1_ATR_REGEX CSM_C1_ATR_REGEX})</li>
+ * ({@link org.eclipse.keyple.example.common.HoplinkInfoAndSampleCommands#CSM_C1_ATR_REGEX
+ * CSM_C1_ATR_REGEX})
  * <li>Attempting to open a logical channel with the PO with 3 options:
  * <ul>
- * <li>Selection with a fake AID</li>
- * <li>Selection with a Navigo AID</li>
- * <li>Selection with a Hoplink AID</li>
+ * <li>Selection with a fake AID
+ * <li>Selection with a Navigo AID
+ * <li>Selection with a Hoplink AID
  * </ul>
- * </li>
  * <li>Display SeRequest/SeResponse data ({@link #printSelectAppResponseStatus
- * printSelectAppResponseStatus})</li>
+ * printSelectAppResponseStatus})
  * <li>If the Hoplink selection succeeded, do 3 Hoplink transactions
- * ({@link #operateMultipleHoplinkTransactions operateMultipleHoplinkTransactions}).</li>
+ * ({@link #operateMultipleHoplinkTransactions operateMultipleHoplinkTransactions}).
  * </ol>
+ *
  * <p>
- * The Hoplink transactions demonstrated here illustrate the 2 and 3-step modes and also show the
- * logical channel management.
+ * The Hoplink transactions demonstrated here shows the Keyple API in use with Hoplink SE (PO and
+ * CSM).
+ *
  * <p>
  * Read the doc of each methods for further details.
  */
-public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver {
-    private ProxyReader poReader, csmReader;
+public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObserver {
+    private final static Logger logger =
+            LoggerFactory.getLogger(Demo_HoplinkTransactionEngine.class);
 
-    static EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting;
+    /* define the CSM parameters to provide when creating PoSecureSession */
+    final static EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
+            new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class) {
+                {
+                    put(CS_DEFAULT_KIF_PERSO, DEFAULT_KIF_PERSO);
+                    put(CS_DEFAULT_KIF_LOAD, DEFAULT_KIF_LOAD);
+                    put(CS_DEFAULT_KIF_DEBIT, DEFAULT_KIF_DEBIT);
+                    put(CS_DEFAULT_KEY_RECORD_NUMBER, DEFAULT_KEY_RECORD_NUMER);
+                }
+            };;
 
-    public Demo_HoplinkTransaction() {
+    ProxyReader poReader, csmReader;
+
+    Profiler profiler;
+
+    /* Constructor */
+    public Demo_HoplinkTransactionEngine() {
         super();
     }
 
+    /* Assign readers to the transaction engine */
+    public void setReaders(ProxyReader poReader, ProxyReader csmReader) {
+        this.poReader = poReader;
+        this.csmReader = csmReader;
+    }
+
+    /* Check CSM presence and consistency */
+    public boolean checkCsm() {
+        boolean csmOk;
+        /*
+         * check the availability of the CSM, open its physical and logical channels and keep it
+         * open
+         */
+        String csmC1ATRregex = HoplinkInfoAndSampleCommands.CSM_C1_ATR_REGEX; // csm identifier
+
+        /* open CSM logical channel */
+        SeRequest csmCheckRequest =
+                new SeRequest(new SeRequest.AtrSelector(csmC1ATRregex), null, true);
+        SeResponse csmCheckResponse = null;
+        try {
+            csmCheckResponse =
+                    csmReader.transmit(new SeRequestSet(csmCheckRequest)).getSingleResponse();
+            if (csmCheckResponse == null) {
+                logger.error("Unable to open a logical channel for CSM!");
+                csmOk = false;
+            } else {
+                csmOk = true;
+            }
+        } catch (IOReaderException e) {
+            logger.error("Reader exception: CAUSE = {}", e.getMessage());
+            csmOk = false;
+        }
+
+        return csmOk;
+    }
+
     @Override
+    /*
+     * This method is called when an reader event occurs according to the Observer pattern
+     */
     public void update(ReaderEvent event) {
         switch (event.getEventType()) {
             case SE_INSERTED:
-                System.out.println("SE INSERTED");
-                System.out.println("\nStart processing of a Calypso PO");
+                logger.info("SE INSERTED");
+                logger.info("Start processing of a Calypso PO");
                 operatePoTransactions();
                 break;
             case SE_REMOVAL:
-                System.out.println("SE REMOVED");
-                System.out.println("\nWait for Calypso PO");
+                logger.info("SE REMOVED");
+                logger.info("Wait for Calypso PO");
                 break;
             default:
-                System.out.println("IO Error");
+                logger.error("IO Error");
         }
     }
 
     /**
-     * Display SeRequest and SeResponse details in the console
+     * Output SeRequest and SeResponse details in the log flow
      * 
      * @param message user message
      * @param seRequest current SeRequest
@@ -90,54 +142,43 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
     public void printSelectAppResponseStatus(String message, SeRequest seRequest,
             SeResponse seResponse) {
         int i;
-        System.out.println("===== " + message);
-        System.out.println("* Request:");
-        System.out.println("AID: " + ByteBufferUtils
-                .toHex(((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect()));
+        logger.info("===== " + message);
+        logger.info("* Request: AID = {}, keepChannelOpenFlag = {}, protocolFlag = {}",
+                ByteBufferUtils
+                        .toHex(((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect()),
+                seRequest.isKeepChannelOpen(), seRequest.getProtocolFlag());
         List<ApduRequest> apduRequests = seRequest.getApduRequests();
         i = 0;
         if (apduRequests != null && apduRequests.size() > 0) {
             for (ApduRequest apduRequest : apduRequests) {
-                System.out.println(
-                        "COMMAND#" + i + ": " + ByteBufferUtils.toHex(apduRequest.getBytes()));
+                logger.info("COMMAND#" + i + ": " + ByteBufferUtils.toHex(apduRequest.getBytes()));
                 i++;
             }
         } else {
-            System.out.println("No APDU request");
+            logger.info("No APDU request");
         }
-        System.out.println("keepChannelOpen flag: " + seRequest.isKeepChannelOpen());
-        System.out.println("protocol flag: " + seRequest.getProtocolFlag());
 
-        System.out.println("* Response:");
+        logger.info("* Response:");
         if (seResponse == null) {
-            System.out.println("SeResponse is null");
+            logger.info("SeResponse is null");
         } else {
             ApduResponse atr, fci;
             atr = seResponse.getAtr();
             fci = seResponse.getFci();
             List<ApduResponse> apduResponses = seResponse.getApduResponses();
-            if (atr != null) {
-                System.out.println("ATR: " + ByteBufferUtils.toHex(atr.getBytes()));
-            } else {
-                System.out.println("ATR: null");
-            }
-            if (fci != null) {
-                System.out.println("FCI: " + ByteBufferUtils.toHex(fci.getBytes()));
-            } else {
-                System.out.println("FCI: null");
-            }
+            logger.info("Atr = {}, Fci = {}",
+                    atr == null ? "null" : ByteBufferUtils.toHex(atr.getBytes()),
+                    fci == null ? "null" : ByteBufferUtils.toHex(fci.getBytes()));
             if (apduResponses.size() > 0) {
                 i = 0;
                 for (ApduResponse apduResponse : apduResponses) {
-                    System.out.println("RESPONSE#" + i + ": "
+                    logger.info("RESPONSE#" + i + ": "
                             + ByteBufferUtils.toHex(apduResponse.getDataOut()) + ", SW1SW2: "
                             + Integer.toHexString(apduResponse.getStatusCode() & 0xFFFF));
                     i++;
                 }
             }
         }
-        // new line
-        System.out.println("");
     }
 
     /**
@@ -148,9 +189,11 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      * <li>Process closing</li>
      * </ul>
      * <p>
-     * File with SFI 1A is read at session opening.
+     * File with SFI 1A is read on session opening.
      * <p>
      * T2 Environment and T2 Usage are read in session.
+     * <p>
+     * The PO logical channel is kept open or closed according to the closeSeChannel flag
      *
      * @param poTransaction PoSecureSession object
      * @param fciData FCI data from the selection step
@@ -164,33 +207,44 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
         List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
         filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Env);
         filesToReadInSession.add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Usage);
-        // filesToReadInSession.add(HoplinkInfoAndSampleCommands.poUpdateRecordCmd_T2UsageFill);
 
-        // System.out.println(
-        // "========= PO Hoplink session ======= Opening ============================");
+        /*
+         * the modification command sent sent on closing is disabled for the moment due to CAAD
+         * configuration of the current Hoplink test PO
+         */
+        // List<PoModificationCommand> poModificationCommands = new
+        // ArrayList<PoModificationCommand>();
+        // poModificationCommands.add(HoplinkInfoAndSampleCommands.poUpdateRecordCmd_T2UsageFill);
+
+        List<ApduResponse> poAnticipatedResponses = new ArrayList<ApduResponse>();
+        poAnticipatedResponses.add(new ApduResponse(ByteBufferUtils.fromHex("9000"), null));
+
+        logger.info("========= PO Hoplink session ======= Opening ============================");
         PoSecureSession.SessionAccessLevel accessLevel =
                 PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT;
 
-        // Open Session for the debit key - with reading of the first record of the cyclic EF of
-        // SFI 0Ah
+        /*
+         * Open Session for the debit key - with reading of the first record of the cyclic EF of SFI
+         * 0Ah
+         */
         poTransaction.processOpening(fciData, accessLevel, (byte) 0x1A, (byte) 0x01,
                 filesToReadInSession);
 
-        // System.out.println(
-        // "========= PO Hoplink session ======= Processing of PO commands
-        // =======================");
+        logger.info(
+                "========= PO Hoplink session ======= Processing of PO commands =======================");
         poTransaction.processPoCommands(filesToReadInSession);
 
-        // System.out.println(
-        // "========= PO Hoplink session ======= Closing ============================");
+        logger.info("========= PO Hoplink session ======= Closing ============================");
         poTransaction.processClosing(null, null, HoplinkInfoAndSampleCommands.poRatificationCommand,
                 false);
+        // poTransaction.processClosing(poModificationCommands, poAnticipatedResponses,
+        // HoplinkInfoAndSampleCommands.poRatificationCommand, false);
 
         if (poTransaction.isSuccessful()) {
-            System.out.println(
+            logger.info(
                     "========= PO Hoplink session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         } else {
-            System.out.println(
+            logger.error(
                     "========= PO Hoplink session ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         }
     }
@@ -211,15 +265,23 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      */
     public void operateMultipleHoplinkTransactions(PoSecureSession poTransaction,
             ApduResponse fciData) throws IOReaderException {
-        // execute an Hoplink session: processOpening, processPoCommands, processClosing
-        // close the logical channel
+        /*
+         * execute an Hoplink session: processOpening, processPoCommands, processClosing close the
+         * logical channel
+         */
+        profiler.start("Hoplink1");
         doHoplinkReadWriteTransaction(poTransaction, fciData, true);
 
+
+        profiler.start("Hoplink2");
         doHoplinkReadWriteTransaction(poTransaction, fciData, false);
 
-        // redo the Hoplink PO selection after logical channel closing (may be not needed with some
-        // PO
-        // for which the application is selected by default)
+
+        /*
+         * redo the Hoplink PO selection after logical channel closing (may be not needed with some
+         * PO for which the application is selected by default)
+         */
+        profiler.start("Re-selection");
         SeRequestSet selectionRequest =
                 new SeRequestSet(new SeRequest(
                         new SeRequest.AidSelector(
@@ -227,6 +289,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
                         null, true));
         fciData = poReader.transmit(selectionRequest).getSingleResponse().getFci();
 
+        profiler.start("Hoplink3");
         doHoplinkReadWriteTransaction(poTransaction, fciData, false);
     }
 
@@ -235,32 +298,37 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      */
     public void operatePoTransactions() {
         try {
-            // operate PO multiselection
-            String poFakeAid = "AABBCCDDEE"; //
+            profiler = new Profiler("Entire transaction");
+
+            /* operate multiple PO selections */
+            String poFakeAid = "AABBCCDDEE"; // fake AID
             String poNavigoAid = "A0000004040125090101"; // Navigo AID
-            String poHoplinkAid = HoplinkInfoAndSampleCommands.AID; // commands before session, keep
-                                                                    // true
-            // prepare the PO selection SeRequestSet
-            // Create a SeRequest list
+            String poHoplinkAid = HoplinkInfoAndSampleCommands.AID; // Hoplink AID
+
+            /*
+             * true prepare the PO selection SeRequestSet Create a SeRequest list
+             */
             Set<SeRequest> selectionRequests = new LinkedHashSet<SeRequest>();
 
-            // fake application seRequest preparation, addition to the list
+            /* fake application seRequest preparation, addition to the list */
             SeRequest seRequest = new SeRequest(
                     new SeRequest.AidSelector(ByteBufferUtils.fromHex(poFakeAid)), null, false);
             selectionRequests.add(seRequest);
 
-            // Navigo application seRequest preparation, addition to the list
+            /* Navigo application seRequest preparation, addition to the list */
             seRequest = new SeRequest(
                     new SeRequest.AidSelector(ByteBufferUtils.fromHex(poNavigoAid)), null, false);
             selectionRequests.add(seRequest);
 
-            // Hoplink application seRequest preparation, addition to the list
-            // read commands before session
+            /*
+             * Hoplink application seRequest preparation, addition to the list read commands before
+             * session
+             */
             List<ApduRequest> requestToExecuteBeforeSession = new ArrayList<ApduRequest>();
             requestToExecuteBeforeSession
                     .add(HoplinkInfoAndSampleCommands.poReadRecordCmd_T2Env.getApduRequest());
 
-            // AID based selection
+            /* AID based selection */
             seRequest =
                     new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poHoplinkAid)),
                             requestToExecuteBeforeSession, false,
@@ -268,13 +336,16 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
 
             selectionRequests.add(seRequest);
 
+            /* Time measurement */
+            profiler.start("Initial selection");
+
             List<SeResponse> seResponses =
                     poReader.transmit(new SeRequestSet(selectionRequests)).getResponses();
 
             Iterator<SeRequest> seReqIterator = selectionRequests.iterator();
             Iterator<SeResponse> seRespIterator = seResponses.iterator();
 
-            // we expect 3 responses
+            /* we expect 3 responses */
             printSelectAppResponseStatus("Case #1: fake AID", seReqIterator.next(),
                     seRespIterator.next());
             printSelectAppResponseStatus("Case #2: Navigo AID", seReqIterator.next(),
@@ -284,16 +355,17 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
 
             PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting);
 
-            // test if the Hoplink selection succeeded
+            /* test if the Hoplink selection succeeded */
             if (seResponses.get(2) != null) {
                 ApduResponse fciData = seResponses.get(2).getFci();
                 operateMultipleHoplinkTransactions(poTransaction, fciData);
             } else {
-                System.out.println(
-                        "No Hoplink transaction. SeResponse to Hoplink selection was null.");
+                logger.info("No Hoplink transaction. SeResponse to Hoplink selection was null.");
             }
+
+            profiler.stop();
+            logger.warn(System.getProperty("line.separator") + "{}", profiler);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -305,7 +377,7 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
      * @param pattern regex pattern to select a reader
      * @return ProxyReader
      * @throws IOReaderException Any error with the card communication (defined as public for
-     *         purposes of javadoc)
+     *         Javadoc purposes)
      */
     public ProxyReader getReader(SeProxyService seProxyService, String pattern)
             throws IOReaderException {
@@ -318,90 +390,5 @@ public class Demo_HoplinkTransaction implements ObservableReader.ReaderObserver 
             }
         }
         return null;
-    }
-
-    /**
-     * This object is used to freeze the main thread while card operations are handle through the
-     * observers callbacks. A call to the notify() method would end the program (not demonstrated
-     * here).
-     */
-    private static final Object waitForEnd = new Object();
-
-    /**
-     * main program entry
-     * 
-     * @param args the program arguments
-     * @throws IOException setParameter exception
-     * @throws IOReaderException reader exception
-     * @throws InterruptedException thread exception
-     */
-    public static void main(String[] args)
-            throws IOException, IOReaderException, InterruptedException {
-        SeProxyService seProxyService = SeProxyService.getInstance();
-        SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
-        pluginsSet.add(PcscPlugin.getInstance());
-        seProxyService.setPlugins(pluginsSet);
-
-        // Setting up ourself as an observer
-        Demo_HoplinkTransaction observer = new Demo_HoplinkTransaction();
-
-        ProxyReader poReader =
-                observer.getReader(seProxyService, PcscReadersSettings.PO_READER_NAME_REGEX);
-        ProxyReader csmReader =
-                observer.getReader(seProxyService, PcscReadersSettings.CSM_READER_NAME_REGEX);
-
-
-        if (poReader == csmReader || poReader == null || csmReader == null) {
-            throw new IllegalStateException("Bad PO/CSM setup");
-        }
-
-        System.out.println("PO Reader  : " + poReader.getName());
-        System.out.println("CSM Reader : " + csmReader.getName());
-
-        poReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
-        poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
-        csmReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
-        csmReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
-
-        // provide the reader with the map
-        poReader.addSeProtocolSetting(
-                new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
-
-        observer.poReader = poReader;
-        observer.csmReader = csmReader;
-
-        // prepare for PoSecureSession:
-        // check the availability of the CSM, open its physical and logical channels and keep it
-        String csmC1ATRregex = HoplinkInfoAndSampleCommands.CSM_C1_ATR_REGEX; // csm identifier
-
-        // open CSM logical channel
-        SeRequest csmCheckRequest =
-                new SeRequest(new SeRequest.AtrSelector(csmC1ATRregex), null, true);
-        SeResponse csmCheckResponse =
-                csmReader.transmit(new SeRequestSet(csmCheckRequest)).getSingleResponse();
-
-        if (csmCheckResponse == null) {
-            System.out.println("Unable to open a logical channel for CSM!");
-            throw new IllegalStateException("CSM channel opening failure");
-        }
-
-        // define the CSM parameters to provide when creating PoSecureSession
-        csmSetting =
-                new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class) {
-                    {
-                        put(CS_DEFAULT_KIF_PERSO, DEFAULT_KIF_PERSO);
-                        put(CS_DEFAULT_KIF_LOAD, DEFAULT_KIF_LOAD);
-                        put(CS_DEFAULT_KIF_DEBIT, DEFAULT_KIF_DEBIT);
-                        put(CS_DEFAULT_KEY_RECORD_NUMBER, DEFAULT_KEY_RECORD_NUMER);
-                    }
-                };
-
-        // Set terminal as Observer of the first reader
-        ((ObservableReader) poReader).addObserver(observer);
-
-        // Wait for ever
-        synchronized (waitForEnd) {
-            waitForEnd.wait();
-        }
     }
 }
