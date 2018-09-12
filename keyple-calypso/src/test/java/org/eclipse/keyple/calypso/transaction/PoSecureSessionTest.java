@@ -123,8 +123,8 @@ public class PoSecureSessionTest {
 
     @Test
     public void processOpeningTestKif0xFFKey0x03noCmdInside()
-            throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, ReaderTimeoutException, IllegalArgumentException {
+            throws IOReaderException,
+            IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -163,8 +163,8 @@ public class PoSecureSessionTest {
 
     @Test
     public void processOpeningTestKif0xFFKey0x01noCmdInside()
-            throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, ReaderTimeoutException, IllegalArgumentException {
+            throws IOReaderException,
+            IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -203,8 +203,8 @@ public class PoSecureSessionTest {
 
     @Test
     public void processOpeningTestKif0xFFKey0x02noCmdInside()
-            throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, ReaderTimeoutException, IllegalArgumentException {
+            throws IOReaderException,
+            IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -244,8 +244,8 @@ public class PoSecureSessionTest {
 
     @Test
     public void processOpeningTestKif0xFFKey0x03WithCmdInside()
-            throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, ReaderTimeoutException, IllegalArgumentException {
+            throws IOReaderException,
+            IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -289,8 +289,8 @@ public class PoSecureSessionTest {
 
     @Test(expected = UnexpectedReaderException.class)
     public void processOpeningTestKif0xFFKey0x03WithCmdInsideUnexpectedReaderException()
-            throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, ReaderTimeoutException, IllegalArgumentException {
+            throws IOReaderException,
+            IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -325,8 +325,8 @@ public class PoSecureSessionTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void processProceedingTestInconsitenteCommandException()
-            throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, ReaderTimeoutException, IllegalArgumentException {
+            throws IOReaderException,
+            IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -357,8 +357,8 @@ public class PoSecureSessionTest {
 
     @Test
     public void processProceedingTest()
-            throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-            InvalidApduReaderException, ReaderTimeoutException, IllegalArgumentException {
+            throws IOReaderException,
+            IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
