@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.calypso.command.po.builder;
+package org.eclipse.keyple.calypso.command.po.builder.session;
 
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.session.PoGetChallengeCmdBuild;
@@ -16,7 +16,7 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class POGetChallengeCmdBuildTest {
+public class PoGetChallengeCmdBuildTest {
 
     @Test
     public void POGetChallenge_Rev2_4() {

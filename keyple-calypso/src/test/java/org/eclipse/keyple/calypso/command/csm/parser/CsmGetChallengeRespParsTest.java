@@ -21,7 +21,7 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class CSMGetChallengeRespParsTest {
+public class CsmGetChallengeRespParsTest {
 
     @Test
     public void getChallengeRespPars() throws InconsistentParameterValueException {

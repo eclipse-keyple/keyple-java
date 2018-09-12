@@ -16,7 +16,7 @@ import org.eclipse.keyple.seproxy.ApduRequest;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class CSMGetChallengeCmdBuildTest {
+public class CsmGetChallengeCmdBuildTest {
 
     @Test
     public void getChallengeCmdBuild() throws IllegalArgumentException {
