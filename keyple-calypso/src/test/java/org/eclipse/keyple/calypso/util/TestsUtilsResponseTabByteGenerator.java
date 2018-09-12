@@ -23,7 +23,7 @@ public class TestsUtilsResponseTabByteGenerator {
      * @param arrays The arrays to append
      * @return The complete array containing the appended data
      */
-    public static final byte[] append(final byte[]... arrays) {
+    public static byte[] append(final byte[]... arrays) {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         if (arrays != null) {
             for (final byte[] array : arrays) {

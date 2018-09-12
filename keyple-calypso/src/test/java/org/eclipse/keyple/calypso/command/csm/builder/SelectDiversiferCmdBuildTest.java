@@ -25,17 +25,7 @@ import org.mockito.Mockito;
 
 public class SelectDiversiferCmdBuildTest {
 
-    private ByteBuffer dataIn;
-
-    private ProxyReader fakeSpecificReader;
-
     private List<ApduRequest> ApduRequests = new ArrayList<ApduRequest>();
-
-    private SeRequestSet seRequestSet;
-
-    private List<ApduResponse> apduResponses;
-
-    private SeResponseSet seResponseExpected;
 
     private byte[] returnOK = {(byte) 0x90, 0x00};
 
@@ -56,7 +46,7 @@ public class SelectDiversiferCmdBuildTest {
         ApduRequest apdu = apduCommandBuilder.getApduRequest();
         ApduRequests.add(apdu);
 
-        seRequestSet = new SeRequestSet(new SeRequest(null, ApduRequests, true));
+        SeRequestSet seRequestSet = new SeRequestSet(new SeRequest(null, ApduRequests, true));
         list.add(new ApduResponse(ByteBuffer
                 .wrap(new byte[] {0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49,
                         0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13, (byte) 0xC7, 0x08,
@@ -73,14 +63,14 @@ public class SelectDiversiferCmdBuildTest {
         SeResponseSet seResponseSet = new SeResponseSet(new SeResponse(true, null, null, list));
 
         SeResponseSet responseFci = Mockito.mock(SeResponseSet.class);
-        fakeSpecificReader = Mockito.mock(ProxyReader.class);
+        ProxyReader fakeSpecificReader = Mockito.mock(ProxyReader.class);
 
         Mockito.when(responseFci.getSingleResponse().getApduResponses()).thenReturn(list);
         Mockito.when(fakeSpecificReader.transmit(seRequestSet)).thenReturn(seResponseSet);
 
         GetDataFciRespPars.FCI fci = GetDataFciRespPars
                 .toFCI(responseFci.getSingleResponse().getApduResponses().get(0).getBytes());
-        dataIn = fci.getApplicationSN();
+        ByteBuffer dataIn = fci.getApplicationSN();
 
         AbstractApduCommandBuilder apduCommandBuilder2 =
                 new SelectDiversifierCmdBuild(null, dataIn);
@@ -88,11 +78,10 @@ public class SelectDiversiferCmdBuildTest {
 
         ApduRequests2.add(ApduRequest);
 
-        apduResponses = new ArrayList<ApduResponse>();
+        List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseExpected);
 
-        seResponseExpected =
-                new SeResponseSet(new SeResponse(true, null, responseExpected, apduResponses));
+        SeResponseSet seResponseExpected = new SeResponseSet(new SeResponse(true, null, responseExpected, apduResponses));
         SeRequestSet seRequest2 = new SeRequestSet(new SeRequest(null, ApduRequests2, true));
 
         Mockito.when(fakeSpecificReader.transmit(seRequest2)).thenReturn(seResponseSet);
