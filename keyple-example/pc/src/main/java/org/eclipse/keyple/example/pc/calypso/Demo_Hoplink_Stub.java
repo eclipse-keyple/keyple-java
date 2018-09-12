@@ -12,8 +12,8 @@ import java.io.IOException;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.example.common.Demo_HoplinkTransactionEngine;
-import org.eclipse.keyple.example.pc.calypso.stub.se.CSMStubSE;
-import org.eclipse.keyple.example.pc.calypso.stub.se.HoplinkStubSE;
+import org.eclipse.keyple.example.pc.calypso.stub.se.CsmStubSe;
+import org.eclipse.keyple.example.pc.calypso.stub.se.HoplinkStubSe;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
@@ -80,8 +80,8 @@ public class Demo_Hoplink_Stub {
         transactionEngine.setReaders(poReader, csmReader);
 
         /* Create 'virtual' Hoplink and CSM SE */
-        StubSecureElement hoplinkSE = new HoplinkStubSE();
-        StubSecureElement csmSE = new CSMStubSE();
+        StubSecureElement hoplinkSE = new HoplinkStubSe();
+        StubSecureElement csmSE = new CsmStubSe();
 
         /* Insert the CSM into the CSM reader */
         csmReader.insertSe(csmSE);

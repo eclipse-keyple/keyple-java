@@ -18,12 +18,12 @@ import org.eclipse.keyple.util.ByteBufferUtils;
  * This class is an example of a Stub Implementation of SecureElement. It works with the protocol
  * PROTOCOL_ISO14443_4 and simulates a Calypso PO with an Hoplink application
  */
-public class HoplinkStubSE extends StubSecureElement {
+public class HoplinkStubSe extends StubSecureElement {
 
     final static SeProtocol seProtocol = ContactlessProtocols.PROTOCOL_ISO14443_4;
     final String ATR_HEX = "3B8E800180318066409089120802830190000B";
 
-    public HoplinkStubSE() {
+    public HoplinkStubSe() {
         /* Select fake Application */
         addHexCommand("00A4 0400 05AABBCCDDEE00", "6A82");
 

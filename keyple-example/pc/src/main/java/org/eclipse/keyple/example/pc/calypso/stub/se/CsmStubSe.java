@@ -17,12 +17,12 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 /**
  * This class is an example of a Stub CSM
  */
-public class CSMStubSE extends StubSecureElement {
+public class CsmStubSe extends StubSecureElement {
 
     final static SeProtocol seProtocol = ContactsProtocols.PROTOCOL_ISO7816_3;
     final String ATR_HEX = "3B3F9600805A0080C120000012345678829000";// serial number : 12345678
 
-    public CSMStubSE() {
+    public CsmStubSe() {
         /* Select Diversifier */
         addHexCommand("8014 0000 08 1122334455667788", "9000");
         addHexCommand("9414 0000 08 1122334455667788", "9000");
