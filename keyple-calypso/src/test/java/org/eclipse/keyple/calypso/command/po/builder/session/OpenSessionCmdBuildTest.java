@@ -10,8 +10,8 @@ package org.eclipse.keyple.calypso.command.po.builder.session;
 
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
