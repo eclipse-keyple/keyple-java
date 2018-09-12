@@ -41,8 +41,9 @@ import org.slf4j.profiler.Profiler;
  * </ul>
  * <li>Display SeRequest/SeResponse data ({@link #printSelectAppResponseStatus
  * printSelectAppResponseStatus})
- * <li>If the Hoplink selection succeeded, do 3 Hoplink transactions
- * ({@link #operateMultipleHoplinkTransactions operateMultipleHoplinkTransactions}).
+ * <li>If the Hoplink selection succeeded, do an Hoplink transaction
+ * ({@link #doHoplinkReadWriteTransaction(PoSecureSession, ApduResponse, boolean)}
+ * doHoplinkReadWriteTransaction}).
  * </ol>
  *
  * <p>
@@ -250,50 +251,6 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
     }
 
     /**
-     * Chain 3 Hoplink transactions with different logical channel management cases. (see @link
-     * doHoplinkReadWriteTransaction)
-     * <p>
-     * To illustrate the the logical channel management, it is kept open after the 1st transaction.
-     * <p>
-     * Closed after the end of the 2nd transaction and reopened before the 3rd transaction.
-     * <p>
-     * Finally the logical channel is closed at the end of the 3rd transaction.
-     *
-     * @param poTransaction PoSecureSession object
-     * @param fciData FCI data from the selection step
-     * @throws IOReaderException reader exception (defined as public for purposes of javadoc)
-     */
-    public void operateMultipleHoplinkTransactions(PoSecureSession poTransaction,
-            ApduResponse fciData) throws IOReaderException {
-        /*
-         * execute an Hoplink session: processOpening, processPoCommands, processClosing close the
-         * logical channel
-         */
-        profiler.start("Hoplink1");
-        doHoplinkReadWriteTransaction(poTransaction, fciData, true);
-
-
-        profiler.start("Hoplink2");
-        doHoplinkReadWriteTransaction(poTransaction, fciData, false);
-
-
-        /*
-         * redo the Hoplink PO selection after logical channel closing (may be not needed with some
-         * PO for which the application is selected by default)
-         */
-        profiler.start("Re-selection");
-        SeRequestSet selectionRequest =
-                new SeRequestSet(new SeRequest(
-                        new SeRequest.AidSelector(
-                                ByteBufferUtils.fromHex(HoplinkInfoAndSampleCommands.AID)),
-                        null, true));
-        fciData = poReader.transmit(selectionRequest).getSingleResponse().getFci();
-
-        profiler.start("Hoplink3");
-        doHoplinkReadWriteTransaction(poTransaction, fciData, false);
-    }
-
-    /**
      * Do the PO selection and possibly go on with Hoplink transactions.
      */
     public void operatePoTransactions() {
@@ -301,8 +258,8 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
             profiler = new Profiler("Entire transaction");
 
             /* operate multiple PO selections */
-            String poFakeAid = "AABBCCDDEE"; // fake AID
-            String poNavigoAid = "A0000004040125090101"; // Navigo AID
+            String poFakeAid1 = "AABBCCDDEE"; // fake AID 1
+            String poFakeAid2 = "EEDDCCBBAA"; // fake AID 2
             String poHoplinkAid = HoplinkInfoAndSampleCommands.AID; // Hoplink AID
 
             /*
@@ -312,12 +269,7 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
 
             /* fake application seRequest preparation, addition to the list */
             SeRequest seRequest = new SeRequest(
-                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(poFakeAid)), null, false);
-            selectionRequests.add(seRequest);
-
-            /* Navigo application seRequest preparation, addition to the list */
-            seRequest = new SeRequest(
-                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(poNavigoAid)), null, false);
+                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(poFakeAid1)), null, true);
             selectionRequests.add(seRequest);
 
             /*
@@ -331,10 +283,16 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
             /* AID based selection */
             seRequest =
                     new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poHoplinkAid)),
-                            requestToExecuteBeforeSession, false,
+                            requestToExecuteBeforeSession, true,
                             HoplinkInfoAndSampleCommands.selectApplicationSuccessfulStatusCodes);
 
             selectionRequests.add(seRequest);
+
+            /* fake application seRequest preparation, addition to the list */
+            seRequest = new SeRequest(
+                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(poFakeAid2)), null, true);
+            selectionRequests.add(seRequest);
+
 
             /* Time measurement */
             profiler.start("Initial selection");
@@ -343,22 +301,32 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
                     poReader.transmit(new SeRequestSet(selectionRequests)).getResponses();
 
             Iterator<SeRequest> seReqIterator = selectionRequests.iterator();
-            Iterator<SeResponse> seRespIterator = seResponses.iterator();
 
-            /* we expect 3 responses */
-            printSelectAppResponseStatus("Case #1: fake AID", seReqIterator.next(),
-                    seRespIterator.next());
-            printSelectAppResponseStatus("Case #2: Navigo AID", seReqIterator.next(),
-                    seRespIterator.next());
-            printSelectAppResponseStatus("Case #3: Hoplink AID", seReqIterator.next(),
-                    seRespIterator.next());
+            int responseIndex = 0;
+            /*
+             * we expect up to 3 responses, only one should be not null since the selection process
+             * stops at the first successful selection
+             */
+            for (Iterator<SeResponse> seRespIterator = seResponses.iterator(); seRespIterator
+                    .hasNext();) {
+                SeResponse seResponse = seRespIterator.next();
+                if (seResponse != null) {
+                    printSelectAppResponseStatus(String.format("Selection case #%d", responseIndex),
+                            seReqIterator.next(), seResponse);
+                }
+                responseIndex++;
+            }
 
             PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting);
-
-            /* test if the Hoplink selection succeeded */
-            if (seResponses.get(2) != null) {
-                ApduResponse fciData = seResponses.get(2).getFci();
-                operateMultipleHoplinkTransactions(poTransaction, fciData);
+            Thread.sleep(100);
+            /*
+             * If the Hoplink selection succeeded we should have 2 responses and the 2nd one not
+             * null
+             */
+            if (seResponses.size() == 2 && seResponses.get(1) != null) {
+                ApduResponse fciData = seResponses.get(1).getFci();
+                profiler.start("Hoplink1");
+                doHoplinkReadWriteTransaction(poTransaction, fciData, true);
             } else {
                 logger.info("No Hoplink transaction. SeResponse to Hoplink selection was null.");
             }
