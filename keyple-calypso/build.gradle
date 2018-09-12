@@ -25,6 +25,3 @@ task fatJar(type: Jar) {
     with jar
 }
 
-test {
-    exclude '**/PoSecureSessionTest.class'
-}
