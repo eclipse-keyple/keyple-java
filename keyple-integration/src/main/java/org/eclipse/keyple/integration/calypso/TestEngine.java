@@ -25,12 +25,9 @@ public class TestEngine {
     public static ReadRecordsCmdBuild poRatificationCommand =
             new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x01);
 
-    public static List<SeResponse> selectPO() throws IOReaderException {
+    public static PoFileStructureInfo selectPO() throws IOReaderException, IllegalArgumentException {
 
         // operate PO multiselection
-        String poAuditC0Aid = "315449432E4943414C54"; // AID of the Rev3 PO with Audit C0 profile
-        String clapAid = "315449432E494341D62010029101"; // AID of the CLAP product being tested
-        String cdLightAid = "315449432E494341"; // AID of the Rev2.4 PO emulating CDLight
         String CSM_ATR_REGEX = "3B3F9600805A[0-9a-fA-F]{2}80[0-9a-fA-F]{16}829000";
 
         // check the availability of the CSM, open its physical and logical channels and keep it open
@@ -46,18 +43,28 @@ public class TestEngine {
         Set<SeRequest> selectionRequests = new LinkedHashSet<SeRequest>();
 
         // Add Audit C0 AID to the list
-        SeRequest seRequest = new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAuditC0Aid)), null, false);
+        SeRequest seRequest = new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(PoFileStructureInfo.poAuditC0Aid)), null, false);
         selectionRequests.add(seRequest);
 
         // Add CLAP AID to the list
-        seRequest = new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(clapAid)), null, false);
+        seRequest = new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(PoFileStructureInfo.clapAid)), null, false);
         selectionRequests.add(seRequest);
 
         // Add cdLight AID to the list
-        seRequest = new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(cdLightAid)), null, false);
+        seRequest = new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(PoFileStructureInfo.cdLightAid)), null, false);
         selectionRequests.add(seRequest);
 
-        return poReader.transmit(new SeRequestSet(selectionRequests)).getResponses();
+        List<SeResponse> responses = poReader.transmit(new SeRequestSet(selectionRequests)).getResponses();
+
+        for(int i = 0; i < responses.size(); i++) {
+
+            if(responses.get(i) != null) {
+
+                return new PoFileStructureInfo(responses.get(i).getFci());
+            }
+        }
+
+        throw new IllegalArgumentException("No recognizable PO detected.");
     }
 
     private static ProxyReader getReader(SeProxyService seProxyService, String pattern) throws IOReaderException {
