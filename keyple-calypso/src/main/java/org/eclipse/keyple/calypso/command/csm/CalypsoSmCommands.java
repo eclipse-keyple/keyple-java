@@ -71,8 +71,8 @@ public enum CalypsoSmCommands implements CommandsTable {
      * @param responseParserClass the response parser class
      */
     CalypsoSmCommands(String name, byte instructionByte,
-                      Class<? extends AbstractApduCommandBuilder> commandBuilderClass,
-                      Class<? extends AbstractApduResponseParser> responseParserClass) {
+            Class<? extends AbstractApduCommandBuilder> commandBuilderClass,
+            Class<? extends AbstractApduResponseParser> responseParserClass) {
         this.name = name;
         this.instructionbyte = instructionByte;
         this.commandBuilderClass = commandBuilderClass;
