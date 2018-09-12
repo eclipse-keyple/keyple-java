@@ -8,10 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.po.parser.session;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.parser.session.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.util.TestsUtilsResponseTabByteGenerator;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
@@ -22,6 +19,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RunWith(MockitoJUnitRunner.class)
 public class OpenSessionRespParsTest {
 
@@ -30,54 +30,54 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void testgetResponse_rev2_4() throws InconsistentParameterValueException {
+    public void testGetResponse_rev2_4() throws InconsistentParameterValueException {
 
-        // code de la reponse attendu
+        //expected response
 
         ApduResponse responseMockFci =
-                TestsUtilsResponseTabByteGenerator.generateApduResponseValideRev2_4();
+                TestsUtilsResponseTabByteGenerator.generateApduResponseValidRev2_4();
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseMockFci);
 
-        SeResponseSet reponseMock =
+        SeResponseSet responseMock =
                 new SeResponseSet(new SeResponse(true, null, responseMockFci, apduResponses));
-        ApduResponse response = reponseMock.getSingleResponse().getApduResponses().get(0);
+        ApduResponse response = responseMock.getSingleResponse().getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV2_4));
     }
 
     @Test
-    public void testgetResponse_rev3_1() throws InconsistentParameterValueException {
+    public void testGetResponse_rev3_1() throws InconsistentParameterValueException {
 
-        // code de la reponse attendu
+        //expected response
 
         ApduResponse responseMockFci =
-                TestsUtilsResponseTabByteGenerator.generateApduResponseValideRev3_1();
+                TestsUtilsResponseTabByteGenerator.generateApduResponseValidRev3_1();
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseMockFci);
 
-        SeResponseSet reponseMock =
+        SeResponseSet responseMock =
                 new SeResponseSet(new SeResponse(true, null, responseMockFci, apduResponses));
-        ApduResponse response = reponseMock.getSingleResponse().getApduResponses().get(0);
+        ApduResponse response = responseMock.getSingleResponse().getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV3_1));
     }
 
     @Test
-    public void testgetResponse_rev3_2() throws InconsistentParameterValueException {
+    public void testGetResponse_rev3_2() throws InconsistentParameterValueException {
 
-        // code de la reponse attendu
+        //expected response
 
         ApduResponse responseMockOS =
-                TestsUtilsResponseTabByteGenerator.generateApduResponseValideRev3_2();
+                TestsUtilsResponseTabByteGenerator.generateApduResponseValidRev3_2();
         ApduResponse responseMockFci =
-                TestsUtilsResponseTabByteGenerator.generateApduResponseValideRev3_2();
+                TestsUtilsResponseTabByteGenerator.generateApduResponseValidRev3_2();
         List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
         apduResponses.add(responseMockOS);
 
-        SeResponseSet reponseMock =
+        SeResponseSet responseMock =
                 new SeResponseSet(new SeResponse(true, null, responseMockFci, apduResponses));
-        ApduResponse response = reponseMock.getSingleResponse().getApduResponses().get(0);
+        ApduResponse response = responseMock.getSingleResponse().getApduResponses().get(0);
 
         check(AbstractOpenSessionRespPars.create(response, PoRevision.REV3_2));
     }

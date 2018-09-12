@@ -8,10 +8,6 @@
 
 package org.eclipse.keyple.calypso.command.po.parser;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
@@ -20,7 +16,14 @@ import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
+@RunWith(MockitoJUnitRunner.class)
 public class ReadRecordsRespParsTest {
 
     @Test
@@ -28,11 +31,11 @@ public class ReadRecordsRespParsTest {
     public void readRecordRespPars_one_record() throws InconsistentParameterValueException {
         ByteBuffer response =
                 ByteBuffer.wrap(new byte[] {0x04, 0x02, 0x01, 0x01, (byte) 0x90, 0x00});
-        List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
+        List<ApduResponse> responses = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(response, null);
-        listeResponse.add(apduResponse);
+        responses.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
-                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), listeResponse));
+                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), responses));
 
         ReadRecordsRespPars readRecordsResponse =
                 new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
@@ -52,11 +55,11 @@ public class ReadRecordsRespParsTest {
     public void readRecordRespPars_records() throws InconsistentParameterValueException {
         ByteBuffer response = ByteBuffer.wrap(new byte[] {0x01, 0x01, 0x01, 0x01, 0x30, 0x01, 0x01,
                 0x30, 0x01, 0x01, 0x30, 0x01, 0x01, 0x30, (byte) 0x90, 0x00});
-        List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
+        List<ApduResponse> responses = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(response, null);
-        listeResponse.add(apduResponse);
+        responses.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
-                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), listeResponse));
+                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), responses));
 
         ReadRecordsRespPars apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
@@ -82,8 +85,8 @@ public class ReadRecordsRespParsTest {
     // TODO: Fix the parsing code so that the test makes sense
     public void sampleMultipleRecordsParsing() {
         ByteBuffer apdu = ByteBufferUtils.fromHex("1415 2425 3435 4445 9000h");
-        ReadRecordsRespPars recordsPasing = new ReadRecordsRespPars(new ApduResponse(apdu, null));
-        List<ReadRecordsRespPars.Record> records = recordsPasing.getRecords();
+        ReadRecordsRespPars recordsParsing = new ReadRecordsRespPars(new ApduResponse(apdu, null));
+        List<ReadRecordsRespPars.Record> records = recordsParsing.getRecords();
         Assert.assertEquals(1, records.size());
         {
             ReadRecordsRespPars.Record record = records.get(0);
@@ -96,31 +99,31 @@ public class ReadRecordsRespParsTest {
     public void readRecordRespPars_one_record_sfi() throws InconsistentParameterValueException {
         ByteBuffer response = ByteBuffer.wrap(new byte[] {0x01, 0x01, 0x01, 0x01, 0x30, 0x01, 0x01,
                 0x30, 0x01, 0x01, 0x30, 0x01, 0x01, 0x30, (byte) 0x90, 0x00});
-        List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
+        List<ApduResponse> responses = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(response, null);
-        listeResponse.add(apduResponse);
+        responses.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
-                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), listeResponse));
+                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), responses));
 
         AbstractApduResponseParser apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
-        ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBytes();
-        Assert.assertEquals(response, reponseActual);
+        ByteBuffer responseActual = apduResponseParser.getApduResponse().getBytes();
+        Assert.assertEquals(response, responseActual);
     }
 
     @Test
     public void readRecordRespPars_records_sfi() throws InconsistentParameterValueException {
         ByteBuffer response = ByteBuffer.wrap(new byte[] {0x01, 0x01, 0x01, 0x01, 0x30, 0x01, 0x01,
                 0x30, 0x01, 0x01, 0x30, 0x01, 0x01, 0x30, (byte) 0x90, 0x00});
-        List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
+        List<ApduResponse> responses = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(response, null);
-        listeResponse.add(apduResponse);
+        responses.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
-                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), listeResponse));
+                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), responses));
 
         AbstractApduResponseParser apduResponseParser =
                 new ReadRecordsRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
-        ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBytes();
-        Assert.assertEquals(response, reponseActual);
+        ByteBuffer responseActual = apduResponseParser.getApduResponse().getBytes();
+        Assert.assertEquals(response, responseActual);
     }
 }

@@ -8,14 +8,18 @@
 
 package org.eclipse.keyple.calypso.util;
 
-import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.session.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.session.OpenSession24RespPars;
 import org.eclipse.keyple.calypso.command.po.parser.session.OpenSession32RespPars;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.ByteBuffer;
+
+@RunWith(MockitoJUnitRunner.class)
 public class ResponseUtilsTest {
 
     // TODO: Clean these tests. I'm pretty sure they are useless as is.
@@ -284,8 +288,6 @@ public class ResponseUtilsTest {
 
         Assert.assertEquals(KVCRev2Expected, KVCRev2Tested);
 
-        ByteBuffer apduResponseCaseTwo = ByteBuffer
-                .wrap(new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53});
 
     }
 

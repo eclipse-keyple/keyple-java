@@ -8,9 +8,10 @@
 
 package org.eclipse.keyple.calypso.util;
 
+import org.eclipse.keyple.seproxy.ApduResponse;
+
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.seproxy.ApduResponse;
 
 /**
  * @author f.razakarivony
@@ -23,7 +24,7 @@ public class TestsUtilsResponseTabByteGenerator {
      * @param arrays The arrays to append
      * @return The complete array containing the appended data
      */
-    public static byte[] append(final byte[]... arrays) {
+    private static byte[] append(final byte[]... arrays) {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         if (arrays != null) {
             for (final byte[] array : arrays) {
@@ -40,54 +41,54 @@ public class TestsUtilsResponseTabByteGenerator {
                 0x01, 0x30};
     }
 
-    public static byte[] generateResponseOkTabByteRev2_4() {
+    private static byte[] generateResponseOkTabByteRev2_4() {
         return new byte[] {0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43,
                 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13, (byte) 0xC7, 0x08, 0x00, 0x00,
                 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB9, 0x53, 0x07, 0x0A, 0x3C, 0x11,
                 0x32, 0x14, 0x10, 0x01, (byte) 0x90, 0x00};
     }
 
-    public static byte[] generateDataOpenTabByte() {
+    private static byte[] generateDataOpenTabByte() {
         return new byte[] {0x7E, (byte) 0x8F, 0x05, 0x75, 0x01A, (byte) 0xFF, 0x01, 0x01, 0x00,
                 0x30};
     }
 
-    public static byte[] generateFciTabByte() {
+    private static byte[] generateFciTabByte() {
         return new byte[] {(byte) 0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49,
                 0x43, 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13, (byte) 0xC7, 0x08, 0x00,
                 0x00, 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB7, 0x53, 0x07, 0x0A, 0x3C,
                 0x11, 0x32, 0x14, 0x10, 0x01};
     }
 
-    public static byte[] generateTerminalSessionSignatureTabByte() {
+    private static byte[] generateTerminalSessionSignatureTabByte() {
         return new byte[] {0x7E, (byte) 0x8F, 0x05, 0x75, 0x01A, (byte) 0xFF, 0x01, 0x01};
     }
 
-    public static byte[] generateResponseOkTabByteRev3_1() {
+    private static byte[] generateResponseOkTabByteRev3_1() {
         return new byte[] {0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54, 0x1E, 0x2E, 0x49, 0x43,
                 0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13, (byte) 0xC7, 0x08, 0x00, 0x00,
                 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB9, 0x53, 0x07, 0x0A, 0x3C, 0x11,
                 0x32, 0x14, 0x10, 0x01, (byte) 0x90, 0x00};
     }
 
-    public static byte[] generateResponseOkTabByteRev3_2() {
+    private static byte[] generateResponseOkTabByteRev3_2() {
         return new byte[] {0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49, 0x1B,
                 0x1A, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13, (byte) 0xC7, 0x08, 0x00, 0x00,
                 0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB9, 0x53, 0x07, 0x0A, 0x3C, 0x11,
                 0x32, 0x14, 0x10, 0x01, (byte) 0x90, 0x00};
     }
 
-    public static ApduResponse generateApduResponseValideRev2_4() {
+    public static ApduResponse generateApduResponseValidRev2_4() {
         return new ApduResponse(ByteBuffer.wrap(append(generateResponseOkTabByteRev2_4(),
                 TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode())), null);
     }
 
-    public static ApduResponse generateApduResponseValideRev3_1() {
+    public static ApduResponse generateApduResponseValidRev3_1() {
         return new ApduResponse(ByteBuffer.wrap(append(generateResponseOkTabByteRev3_1(),
                 TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode())), null);
     }
 
-    public static ApduResponse generateApduResponseValideRev3_2() {
+    public static ApduResponse generateApduResponseValidRev3_2() {
         return new ApduResponse(ByteBuffer.wrap(append(generateResponseOkTabByteRev3_2(),
                 TestsUtilsStatusCodeGenerator.generateSuccessfulStatusCode())), null);
     }

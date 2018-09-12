@@ -9,18 +9,15 @@
 package org.eclipse.keyple.calypso.command.po;
 
 
-import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
-// @RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class PoVersionTest {
 
-    // @InjectMocks
-    // ResponseUtils responseUtils;
-
-    // @Mock
     @Test
     public void computePoRevision() {
 

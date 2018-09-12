@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.util;
 
-public class TestsUtilsStatusCodeGenerator {
+class TestsUtilsStatusCodeGenerator {
 
     public static byte[] generateSuccessfulStatusCode() {
         return new byte[] {(byte) 0x90, 0x00};

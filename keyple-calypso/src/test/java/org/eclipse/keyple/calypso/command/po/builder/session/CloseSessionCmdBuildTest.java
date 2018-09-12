@@ -9,15 +9,19 @@
 package org.eclipse.keyple.calypso.command.po.builder.session;
 
 
-import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.builder.session.CloseSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.AbstractApduCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
-public class CloseSessionCmdBuidTest {
+import java.nio.ByteBuffer;
+
+@RunWith(MockitoJUnitRunner.class)
+public class CloseSessionCmdBuildTest {
+
     @Test
     public void closeSessionCmdBuild() throws IllegalArgumentException {
         ByteBuffer request2_4 = ByteBuffer.wrap(new byte[] {(byte) 0x94, (byte) 0x8E, 0x00, 0x00,

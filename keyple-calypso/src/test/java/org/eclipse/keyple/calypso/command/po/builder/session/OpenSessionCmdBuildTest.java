@@ -9,23 +9,25 @@
 package org.eclipse.keyple.calypso.command.po.builder.session;
 
 
-import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.builder.session.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.AbstractApduCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.ByteBuffer;
 
+@RunWith(MockitoJUnitRunner.class)
 public class OpenSessionCmdBuildTest {
 
-    ByteBuffer samChallenge = ByteBuffer.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
+    private final ByteBuffer samChallenge = ByteBuffer.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
 
-    AbstractApduCommandBuilder apduCommandBuilder;
+    private AbstractApduCommandBuilder apduCommandBuilder;
 
-    ApduRequest apduRequest;
+    private ApduRequest apduRequest;
 
 
     @Test(expected = IllegalArgumentException.class)
@@ -33,13 +35,9 @@ public class OpenSessionCmdBuildTest {
         byte keyIndex = (byte) 0x00;
         byte recordNumberToRead = (byte) 0x01;
         byte sfiToSelect = (byte) 0x08;
-        byte cla = (byte) 0x94;
-        byte p1 = (byte) (0x80 + (recordNumberToRead * 8) + keyIndex);
-        byte p2 = (byte) (sfiToSelect * 8);
-        byte cmd = (byte) 0x8A;
-        ByteBuffer dataIn = samChallenge;
 
-        apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV2_4, keyIndex, dataIn,
+
+        apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV2_4, keyIndex, samChallenge,
                 sfiToSelect, recordNumberToRead);
     }
 

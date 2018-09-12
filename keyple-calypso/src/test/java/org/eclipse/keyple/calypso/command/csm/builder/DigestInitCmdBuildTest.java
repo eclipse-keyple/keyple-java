@@ -8,14 +8,15 @@
 
 package org.eclipse.keyple.calypso.command.csm.builder;
 
-import static org.junit.Assert.assertEquals;
-import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.csm.CsmRevision;
-import org.eclipse.keyple.calypso.command.csm.builder.DigestInitCmdBuild;
 import org.eclipse.keyple.calypso.command.AbstractApduCommandBuilder;
+import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.nio.ByteBuffer;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DigestInitCmdBuildTest {
@@ -25,8 +26,6 @@ public class DigestInitCmdBuildTest {
 
         ByteBuffer digestData =
                 ByteBuffer.wrap(new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07});
-        ByteBuffer request = ByteBuffer.wrap(new byte[] {(byte) 0x80, (byte) 0x8A, 0x00,
-                (byte) 0xFF, 0x09, 0x30, 0x7E, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07});
 
         boolean verificationMode = false;
         boolean rev3_2Mode = false;
@@ -44,8 +43,6 @@ public class DigestInitCmdBuildTest {
     public void digestInitCmd_inconsistent_digestNull() throws IllegalArgumentException {
 
         ByteBuffer digestData = null;
-        ByteBuffer request = ByteBuffer.wrap(new byte[] {(byte) 0x80, (byte) 0x8A, 0x00,
-                (byte) 0xFF, 0x09, 0x30, 0x7E, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07});
 
         boolean verificationMode = false;
         boolean rev3_2Mode = false;

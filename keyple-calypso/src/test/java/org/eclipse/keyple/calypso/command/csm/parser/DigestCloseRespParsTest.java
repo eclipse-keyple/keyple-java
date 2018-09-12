@@ -8,10 +8,6 @@
 
 package org.eclipse.keyple.calypso.command.csm.parser;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import org.eclipse.keyple.calypso.command.csm.parser.DigestCloseRespPars;
 import org.eclipse.keyple.calypso.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
@@ -20,26 +16,33 @@ import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
+@RunWith(MockitoJUnitRunner.class)
 public class DigestCloseRespParsTest {
 
     @Test
     public void digestCloseRespPars() throws InconsistentParameterValueException {
-        List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
+        List<ApduResponse> responses = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(
                 ByteBuffer
                         .wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, (byte) 0x90, 0x00}),
                 null);
-        listeResponse.add(apduResponse);
+        responses.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
-                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), listeResponse));
+                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), responses));
 
         AbstractApduResponseParser apduResponseParser =
                 new DigestCloseRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
-        ByteBuffer reponseActual = apduResponseParser.getApduResponse().getBytes();
+        ByteBuffer responseActual = apduResponseParser.getApduResponse().getBytes();
         Assert.assertEquals(
                 ByteBuffer
                         .wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, (byte) 0x90, 0x00}),
-                reponseActual);
+                responseActual);
     }
 }

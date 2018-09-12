@@ -8,14 +8,16 @@
 
 package org.eclipse.keyple.calypso.command.po.builder.session;
 
-import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.builder.session.PoGetChallengeCmdBuild;
 import org.eclipse.keyple.calypso.command.AbstractApduCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PoGetChallengeCmdBuildTest {
 
     @Test

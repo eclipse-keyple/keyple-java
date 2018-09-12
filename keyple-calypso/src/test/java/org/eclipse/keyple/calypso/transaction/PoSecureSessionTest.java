@@ -8,14 +8,6 @@
 
 package org.eclipse.keyple.calypso.transaction;
 
-import static org.eclipse.keyple.calypso.util.TestsUtilsResponseTabByteGenerator.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoModificationCommand;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
@@ -24,27 +16,42 @@ import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.session.PoGetChallengeCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.exception.*;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
+import org.eclipse.keyple.seproxy.exception.InvalidApduReaderException;
+import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.List;
+
+import static org.eclipse.keyple.calypso.util.TestsUtilsResponseTabByteGenerator.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 @RunWith(MockitoJUnitRunner.class)
 public class PoSecureSessionTest {
     @Mock
+    private
     ProxyReader poReader;
 
     @Mock
+    private
     ProxyReader csmSessionReader;
 
     byte defaultKeyIndex = (byte) 0x03;
 
-    PoSecureSession poPlainSecrureSession;
+    private PoSecureSession poPlainSecureSession;
 
 
     /**
@@ -55,18 +62,14 @@ public class PoSecureSessionTest {
     @Mock
     private GetDataFciRespPars poFciRespPars;
 
-    ByteBuffer samchallenge;
-
     private SeResponseSet responseTerminalSessionSignature;
     private SeResponseSet responseTerminalSessionSignatureError;
-    private SeResponseSet responseFci;
-    private SeResponseSet responseFciError;
     private SeResponseSet responseOpenSession;
     private SeResponseSet responseOpenSessionError;
 
     @Before
     public void setUp() throws InconsistentParameterValueException {
-        samchallenge = ByteBuffer.wrap(new byte[] {0x01, 0x02, 0x03, 0x04});
+        ByteBuffer samChallenge = ByteBuffer.wrap(new byte[]{0x01, 0x02, 0x03, 0x04});
 
         ApduResponse apduResponse = generateApduResponseOpenSessionCmd();
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
@@ -101,23 +104,22 @@ public class PoSecureSessionTest {
         ApduResponse apduResponseFci = generateApduResponseFciCmd();
         List<ApduResponse> apduResponseFciList = new ArrayList<ApduResponse>();
         apduResponseFciList.add(apduResponseFci);
-        responseFci =
-                new SeResponseSet(new SeResponse(true, null, apduResponseFci, apduResponseFciList));
+        SeResponseSet responseFci = new SeResponseSet(new SeResponse(true, null, apduResponseFci, apduResponseFciList));
 
         ApduResponse apduResponseFciErr = generateApduResponseFciCmdError();
         List<ApduResponse> apduResponseFciListErr = new ArrayList<ApduResponse>();
         apduResponseFciListErr.add(apduResponseFciErr);
-        responseFciError = new SeResponseSet(
+        SeResponseSet responseFciError = new SeResponseSet(
                 new SeResponse(true, null, apduResponseFciErr, apduResponseFciListErr));
     }
 
     private void setBeforeTest(EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting)
             throws IOReaderException {
 
-        poPlainSecrureSession = new PoSecureSession(poReader, csmSessionReader, csmSetting);
-        Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
+        poPlainSecureSession = new PoSecureSession(poReader, csmSessionReader, csmSetting);
+        Mockito.when(poReader.transmit(ArgumentMatchers.any(SeRequestSet.class)))
                 .thenReturn(responseOpenSession);
-        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequestSet.class)))
+        Mockito.when(csmSessionReader.transmit(ArgumentMatchers.any(SeRequestSet.class)))
                 .thenReturn(responseOpenSession);
     }
 
@@ -147,7 +149,6 @@ public class PoSecureSessionTest {
                 responseOpenSession.getSingleResponse().getApduResponses(), null);
 
         assertEquals(2, seResponse2.getApduResponses().size());
-        // Whitebox.getInternalState(seResponse2, "channelPreviouslyOpen").equals(true);
         assertNull(seResponse2.getFci());
         assertEquals(responseOpenSession.getSingleResponse().getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(0).getBytes());
@@ -187,7 +188,6 @@ public class PoSecureSessionTest {
                 responseOpenSession.getSingleResponse().getApduResponses(), null);
 
         assertEquals(2, seResponse2.getApduResponses().size());
-        // Whitebox.getInternalState(seResponse2, "channelPreviouslyOpen").equals(true);
         assertNull(seResponse2.getFci());
         assertEquals(responseOpenSession.getSingleResponse().getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(0).getBytes());
@@ -227,7 +227,6 @@ public class PoSecureSessionTest {
                 responseOpenSession.getSingleResponse().getApduResponses(), null);
 
         assertEquals(2, seResponse2.getApduResponses().size());
-        // Whitebox.getInternalState(seResponse2, "channelPreviouslyOpen").equals(true);
         assertNull(seResponse2.getFci());
         assertEquals(responseOpenSession.getSingleResponse().getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(0).getBytes());
@@ -274,7 +273,6 @@ public class PoSecureSessionTest {
                 poCommandsInsideSession);
 
         assertEquals(3, seResponse2.getApduResponses().size());
-        // Whitebox.getInternalState(seResponse2, "channelPreviouslyOpen").equals(true);
         assertNull(seResponse2.getFci());
         for (int i = 0; i < 3; i++) {
             assertEquals(
@@ -306,7 +304,7 @@ public class PoSecureSessionTest {
         this.setBeforeTest(csmSetting);
         PoSecureSession.SessionAccessLevel accessLevel =
                 PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT;
-        Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
+        Mockito.when(poReader.transmit(ArgumentMatchers.any(SeRequestSet.class)))
                 .thenReturn(responseOpenSessionError);
         byte sfi = (byte) 0x08;
         byte recordNumber = (byte) 0x01;
@@ -324,7 +322,7 @@ public class PoSecureSessionTest {
 
 
     @Test(expected = IllegalArgumentException.class)
-    public void processProceedingTestInconsitenteCommandException()
+    public void processProceedingTestInconsistantCommandException()
             throws IOReaderException,
             IllegalArgumentException {
 
@@ -342,7 +340,7 @@ public class PoSecureSessionTest {
         this.setBeforeTest(csmSetting);
         PoSecureSession.SessionAccessLevel accessLevel =
                 PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT;
-        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequestSet.class)))
+        Mockito.when(csmSessionReader.transmit(ArgumentMatchers.any(SeRequestSet.class)))
                 .thenReturn(responseOpenSessionError);
         byte recordNumber = (byte) 0x01;
 
@@ -351,7 +349,7 @@ public class PoSecureSessionTest {
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, (byte) 0x08,
                 recordNumber, false, (byte) 0x00);
 
-        SeResponse seResponse2 = this.poPlainSecrureSession
+        SeResponse seResponse2 = this.poPlainSecureSession
                 .processPoCommands(Arrays.asList(poCommandsInsideSession));
     }
 
@@ -379,11 +377,10 @@ public class PoSecureSessionTest {
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, (byte) 0x08,
                 recordNumber, false, (byte) 0x00);
 
-        SeResponse seResponse2 = this.poPlainSecrureSession
+        SeResponse seResponse2 = this.poPlainSecureSession
                 .processPoCommands(Arrays.asList(poCommandsInsideSession));
 
         assertEquals(1, seResponse2.getApduResponses().size());
-        // Whitebox.getInternalState(seResponse2, "channelPreviouslyOpen").equals(true);
         assertNull(seResponse2.getFci());
         assertEquals(responseOpenSession.getSingleResponse().getApduResponses().get(0).getBytes(),
                 seResponse2.getApduResponses().get(0).getBytes());
@@ -410,15 +407,15 @@ public class PoSecureSessionTest {
         this.setBeforeTest(csmSetting);
         PoModificationCommand[] poCommandsInsideSession = null;
 
-        Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
+        Mockito.when(poReader.transmit(ArgumentMatchers.any(SeRequestSet.class)))
                 .thenReturn(responseTerminalSessionSignatureError);
-        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequestSet.class)))
+        Mockito.when(csmSessionReader.transmit(ArgumentMatchers.any(SeRequestSet.class)))
                 .thenReturn(responseTerminalSessionSignature);
 
         PoGetChallengeCmdBuild ratificationCommand =
-                new PoGetChallengeCmdBuild(this.poPlainSecrureSession.getRevision());
+                new PoGetChallengeCmdBuild(this.poPlainSecureSession.getRevision());
 
-        SeResponse seResponse2 = poPlainSecrureSession.processClosing(
+        SeResponse seResponse2 = poPlainSecureSession.processClosing(
                 Arrays.asList(poCommandsInsideSession), null, ratificationCommand, true);
     }
 
@@ -437,20 +434,18 @@ public class PoSecureSessionTest {
         csmSetting.put(PoSecureSession.CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER,
                 PoSecureSession.DEFAULT_KEY_RECORD_NUMER);
         this.setBeforeTest(csmSetting);
-        // PoSendableInSession[] poCommandsInsideSession = null;
 
-        Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
+        Mockito.when(poReader.transmit(ArgumentMatchers.any(SeRequestSet.class)))
                 .thenReturn(responseTerminalSessionSignature);
-        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequestSet.class)))
+        Mockito.when(csmSessionReader.transmit(ArgumentMatchers.any(SeRequestSet.class)))
                 .thenReturn(responseTerminalSessionSignature);
 
         PoGetChallengeCmdBuild ratificationCommand =
-                new PoGetChallengeCmdBuild(this.poPlainSecrureSession.getRevision());
+                new PoGetChallengeCmdBuild(this.poPlainSecureSession.getRevision());
 
         SeResponse seResponse2 =
-                poPlainSecrureSession.processClosing(null, null, ratificationCommand, true);
-        // assertEquals(1, seResponse2.getApduResponses().size());
-        // Whitebox.getInternalState(seResponse2, "channelPreviouslyOpen").equals(true);
+                poPlainSecureSession.processClosing(null, null, ratificationCommand, true);
+
         assertNull(seResponse2.getFci());
         assertEquals(responseTerminalSessionSignature.getSingleResponse().getApduResponses().get(0)
                 .getBytes(), seResponse2.getApduResponses().get(0).getBytes());
@@ -477,20 +472,19 @@ public class PoSecureSessionTest {
         int decValue = 1;
         PoModificationCommand[] poModificationCommands = new PoModificationCommand[1];
 
-        Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
+        Mockito.when(poReader.transmit(ArgumentMatchers.any(SeRequestSet.class)))
                 .thenReturn(responseTerminalSessionSignature);
-        Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequestSet.class)))
+        Mockito.when(csmSessionReader.transmit(ArgumentMatchers.any(SeRequestSet.class)))
                 .thenReturn(responseTerminalSessionSignature);
 
         poModificationCommands[0] =
                 new DecreaseCmdBuild(PoRevision.REV2_4, (byte) 0x08, counterNumber, decValue);
         PoGetChallengeCmdBuild ratificationCommand =
-                new PoGetChallengeCmdBuild(this.poPlainSecrureSession.getRevision());
+                new PoGetChallengeCmdBuild(this.poPlainSecureSession.getRevision());
 
-        SeResponse seResponse2 = poPlainSecrureSession.processClosing(
+        SeResponse seResponse2 = poPlainSecureSession.processClosing(
                 Arrays.asList(poModificationCommands), null, ratificationCommand, true);
         assertEquals(2, seResponse2.getApduResponses().size());
-        // Whitebox.getInternalState(seResponse2, "channelPreviouslyOpen").equals(true);
         assertNull(seResponse2.getFci());
         assertEquals(responseTerminalSessionSignature.getSingleResponse().getApduResponses().get(0)
                 .getBytes(), seResponse2.getApduResponses().get(0).getBytes());
@@ -503,54 +497,30 @@ public class PoSecureSessionTest {
     }
 
 
-    // @Test
-    // public void processIdentificationTest()
-    // throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
-    // InvalidApduReaderException, ReaderTimeoutException, IllegalArgumentException {
-    //
-    // this.setBeforeTest(this.defaultKeyIndex);
-    //
-    // Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class))).thenReturn(responseFci);
-    // Mockito.when(csmSessionReader.transmit(Matchers.any(SeRequestSet.class)))
-    // .thenReturn(responseFci);
-    // byte recordNumber = (byte) 0x01;
-    //
-    // PoSendableInSession[] poCommandsInsideSession = new PoSendableInSession[1];
-    //
-    // poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, (byte) 0x08,
-    // recordNumber, false, (byte) 0x00);
-    //
-    // ApduResponse fciData = new ApduResponse(ByteBufferUtils.fromHex(
-    // "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA153070A3C230C1410019000"),
-    // null);
-    //
-    // // TODO ???
-    // }
-
     @Test
     public void computePoRevisionTest() {
 
         byte applicationTypeByte = (byte) 0x1F;
-        PoRevision retourExpected = PoRevision.REV2_4;
-        PoRevision retour = PoSecureSession.computePoRevision(applicationTypeByte);
-        Assert.assertEquals(retourExpected, retour);
+        PoRevision expectedResult = PoRevision.REV2_4;
+        PoRevision result = PoSecureSession.computePoRevision(applicationTypeByte);
+        Assert.assertEquals(expectedResult, result);
 
         applicationTypeByte = (byte) 0x21;
-        retourExpected = PoRevision.REV3_1;
-        retour = PoSecureSession.computePoRevision(applicationTypeByte);
-        Assert.assertEquals(retourExpected, retour);
+        expectedResult = PoRevision.REV3_1;
+        result = PoSecureSession.computePoRevision(applicationTypeByte);
+        Assert.assertEquals(expectedResult, result);
 
         applicationTypeByte = (byte) 0X28;
-        retourExpected = PoRevision.REV3_2;
-        retour = PoSecureSession.computePoRevision(applicationTypeByte);
-        Assert.assertEquals(retourExpected, retour);
+        expectedResult = PoRevision.REV3_2;
+        result = PoSecureSession.computePoRevision(applicationTypeByte);
+        Assert.assertEquals(expectedResult, result);
     }
 
     private SeResponse processOpeningTestKif0xFFKey(PoSecureSession.SessionAccessLevel accessLevel,
             byte sfi, byte recordNumber, List<ApduResponse> apduExpected,
             PoSendableInSession[] poCommandsInsideSession)
             throws IOReaderException, IllegalArgumentException {
-        return poPlainSecrureSession.processOpening(null, accessLevel, sfi, recordNumber,
+        return poPlainSecureSession.processOpening(null, accessLevel, sfi, recordNumber,
                 poCommandsInsideSession != null ? Arrays.asList(poCommandsInsideSession) : null);
 
     }

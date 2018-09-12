@@ -8,23 +8,26 @@
 
 package org.eclipse.keyple.calypso.command.po.builder;
 
-import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.AbstractApduCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.ByteBuffer;
+
+@RunWith(MockitoJUnitRunner.class)
 public class UpdateRecordCmdBuildTest {
 
-    byte record_number = 0x01;
+    private final byte record_number = 0x01;
 
-    ByteBuffer newRecordData = ByteBuffer.wrap(new byte[] {0x00, 0x01, 0x02, 0x03, 0x04});
+    private final ByteBuffer newRecordData = ByteBuffer.wrap(new byte[] {0x00, 0x01, 0x02, 0x03, 0x04});
 
-    AbstractApduCommandBuilder apduCommandBuilder;
+    private AbstractApduCommandBuilder apduCommandBuilder;
 
-    ApduRequest ApduRequest;
+    private ApduRequest ApduRequest;
 
     @Test
     public void updateRecordCmdBuild_rev2_4() throws IllegalArgumentException {
