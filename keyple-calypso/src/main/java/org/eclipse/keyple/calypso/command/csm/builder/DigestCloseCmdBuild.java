@@ -27,7 +27,7 @@ public class DigestCloseCmdBuild extends CsmCommandBuilder {
      * @param expectedResponseLength the expected response length
      * @throws java.lang.IllegalArgumentException - if the expected response length is wrong.
      */
-    public DigestCloseCmdBuild(CsmRevision revision,
+    public DigestCloseCmdBuild(org.eclipse.keyple.calypso.command.csm.CsmRevision revision,
             byte expectedResponseLength) throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {

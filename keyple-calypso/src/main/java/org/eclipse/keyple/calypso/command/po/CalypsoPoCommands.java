@@ -8,24 +8,20 @@
 
 package org.eclipse.keyple.calypso.command.po;
 
+import org.eclipse.keyple.calypso.command.po.builder.DecreaseCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.session.*;
+import org.eclipse.keyple.calypso.command.po.parser.DecreaseRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.session.*;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.command.CommandsTable;
-import org.eclipse.keyple.calypso.command.po.builder.DecreaseCmdBuild;
-import org.eclipse.keyple.calypso.command.po.builder.session.*;
-import org.eclipse.keyple.calypso.command.po.builder.session.*;
-import org.eclipse.keyple.calypso.command.po.parser.*;
-import org.eclipse.keyple.calypso.command.po.parser.session.*;
-import org.eclipse.keyple.calypso.command.po.builder.*;
-import org.eclipse.keyple.calypso.command.po.parser.DecreaseRespPars;
-import org.eclipse.keyple.calypso.command.po.parser.session.*;
 
 public enum CalypsoPoCommands implements CommandsTable {
 
     /** The po get data. */
     GET_DATA_FCI("Get Data'FCI'", (byte) 0xCA,
-            GetDataFciCmdBuild.class,
-            GetDataFciRespPars.class),
+            org.eclipse.keyple.calypso.command.po.builder.GetDataFciCmdBuild.class,
+            org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars.class),
 
     /** The po open session. */
     OPEN_SESSION_24("Open Secure Session V2.4", (byte) 0x8A, OpenSession24CmdBuild.class,
@@ -45,18 +41,18 @@ public enum CalypsoPoCommands implements CommandsTable {
 
     /** The po read records. */
     READ_RECORDS("Read Records", (byte) 0xB2,
-            ReadRecordsCmdBuild.class,
-            ReadRecordsRespPars.class),
+            org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild.class,
+            org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars.class),
 
     /** The po update record. */
     UPDATE_RECORD("Update Record", (byte) 0xDC,
-            UpdateRecordCmdBuild.class,
-            UpdateRecordRespPars.class),
+            org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild.class,
+            org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars.class),
 
     /** The po append record. */
     APPEND_RECORD("Append Record", (byte) 0xE2,
-            AppendRecordCmdBuild.class,
-            AppendRecordRespPars.class),
+            org.eclipse.keyple.calypso.command.po.builder.AppendRecordCmdBuild.class,
+            org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars.class),
 
     /** The po get challenge. */
     GET_CHALLENGE("Get Challenge", (byte) 0x84, PoGetChallengeCmdBuild.class,
@@ -64,8 +60,8 @@ public enum CalypsoPoCommands implements CommandsTable {
 
     /** The po increase counter. */
     INCREASE("Increase", (byte) 0x32,
-            IncreaseCmdBuild.class,
-            IncreaseRespPars.class),
+            org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild.class,
+            org.eclipse.keyple.calypso.command.po.parser.IncreaseRespPars.class),
 
     /** The po decrease counter. */
     DECREASE("Decrease", (byte) 0x30, DecreaseCmdBuild.class, DecreaseRespPars.class);

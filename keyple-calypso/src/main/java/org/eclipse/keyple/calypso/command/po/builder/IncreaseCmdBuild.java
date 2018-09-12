@@ -10,7 +10,6 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.po.*;
-import org.eclipse.keyple.calypso.command.po.*;
 
 /**
  * The Class IncreaseCmdBuild. This class provides the dedicated constructor to build the Increase

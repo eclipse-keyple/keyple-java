@@ -18,7 +18,7 @@ import org.eclipse.keyple.seproxy.ApduRequest;
  */
 public class CsmCommandBuilder extends AbstractIso7816CommandBuilder {
 
-    protected CsmRevision defaultRevision = CsmRevision.S1D;// 94
+    protected org.eclipse.keyple.calypso.command.csm.CsmRevision defaultRevision = CsmRevision.S1D;// 94
 
     public CsmCommandBuilder(CalypsoSmCommands reference, ApduRequest request) {
         super(reference, request);

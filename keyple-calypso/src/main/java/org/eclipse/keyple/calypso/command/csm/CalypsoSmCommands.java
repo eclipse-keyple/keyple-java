@@ -8,12 +8,11 @@
 
 package org.eclipse.keyple.calypso.command.csm;
 
+import org.eclipse.keyple.calypso.command.csm.builder.SelectDiversifierCmdBuild;
+import org.eclipse.keyple.calypso.command.csm.parser.SelectDiversifierRespPars;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.command.CommandsTable;
-import org.eclipse.keyple.calypso.command.csm.builder.*;
-import org.eclipse.keyple.calypso.command.csm.parser.SelectDiversifierRespPars;
-import org.eclipse.keyple.calypso.command.csm.parser.*;
 
 public enum CalypsoSmCommands implements CommandsTable {
 
@@ -23,33 +22,33 @@ public enum CalypsoSmCommands implements CommandsTable {
 
     /** The csm get challenge. */
     GET_CHALLENGE("Get Challenge", (byte) 0x84,
-            CsmGetChallengeCmdBuild.class,
-            CsmGetChallengeRespPars.class),
+            org.eclipse.keyple.calypso.command.csm.builder.CsmGetChallengeCmdBuild.class,
+            org.eclipse.keyple.calypso.command.csm.parser.CsmGetChallengeRespPars.class),
 
     /** The csm digest init. */
     DIGEST_INIT("Digest Init", (byte) 0x8A,
-            DigestInitCmdBuild.class,
-            DigestInitRespPars.class),
+            org.eclipse.keyple.calypso.command.csm.builder.DigestInitCmdBuild.class,
+            org.eclipse.keyple.calypso.command.csm.parser.DigestInitRespPars.class),
 
     /** The csm digest update. */
     DIGEST_UPDATE("Digest Update", (byte) 0x8C,
-            DigestUpdateCmdBuild.class,
-            DigestUpdateRespPars.class),
+            org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateCmdBuild.class,
+            org.eclipse.keyple.calypso.command.csm.parser.DigestUpdateRespPars.class),
 
     /** The csm digest update multiple. */
     DIGEST_UPDATE_MULTIPLE("Digest Update Multiple", (byte) 0x8C,
-            DigestUpdateMultipleCmdBuild.class,
-            DigestUpdateMultipleRespPars.class),
+            org.eclipse.keyple.calypso.command.csm.builder.DigestUpdateMultipleCmdBuild.class,
+            org.eclipse.keyple.calypso.command.csm.parser.DigestUpdateMultipleRespPars.class),
 
     /** The csm digest close. */
     DIGEST_CLOSE("Digest Close", (byte) 0x8E,
-            DigestCloseCmdBuild.class,
-            DigestCloseRespPars.class),
+            org.eclipse.keyple.calypso.command.csm.builder.DigestCloseCmdBuild.class,
+            org.eclipse.keyple.calypso.command.csm.parser.DigestCloseRespPars.class),
 
     /** The csm digest authenticate. */
     DIGEST_AUTHENTICATE("Digest Authenticate", (byte) 0x82,
-            DigestAuthenticateCmdBuild.class,
-            DigestAuthenticateRespPars.class);
+            org.eclipse.keyple.calypso.command.csm.builder.DigestAuthenticateCmdBuild.class,
+            org.eclipse.keyple.calypso.command.csm.parser.DigestAuthenticateRespPars.class);
 
     /** The name. */
     private final String name;
@@ -72,8 +71,8 @@ public enum CalypsoSmCommands implements CommandsTable {
      * @param responseParserClass the response parser class
      */
     CalypsoSmCommands(String name, byte instructionByte,
-            Class<? extends AbstractApduCommandBuilder> commandBuilderClass,
-            Class<? extends AbstractApduResponseParser> responseParserClass) {
+                      Class<? extends AbstractApduCommandBuilder> commandBuilderClass,
+                      Class<? extends AbstractApduResponseParser> responseParserClass) {
         this.name = name;
         this.instructionbyte = instructionByte;
         this.commandBuilderClass = commandBuilderClass;

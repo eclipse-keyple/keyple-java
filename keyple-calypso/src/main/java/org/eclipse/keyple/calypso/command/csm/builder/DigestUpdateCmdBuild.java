@@ -34,7 +34,7 @@ public class DigestUpdateCmdBuild extends CsmCommandBuilder {
      *         255
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
-    public DigestUpdateCmdBuild(CsmRevision revision,
+    public DigestUpdateCmdBuild(org.eclipse.keyple.calypso.command.csm.CsmRevision revision,
             boolean encryptedSession, ByteBuffer digestData) throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {

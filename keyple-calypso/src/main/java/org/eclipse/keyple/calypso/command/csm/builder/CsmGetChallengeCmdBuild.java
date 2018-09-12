@@ -27,7 +27,7 @@ public class CsmGetChallengeCmdBuild extends CsmCommandBuilder {
      * @param expectedResponseLength the expected response length
      * @throws java.lang.IllegalArgumentException - if the expected response length has wrong value.
      */
-    public CsmGetChallengeCmdBuild(CsmRevision revision,
+    public CsmGetChallengeCmdBuild(org.eclipse.keyple.calypso.command.csm.CsmRevision revision,
             byte expectedResponseLength) throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {

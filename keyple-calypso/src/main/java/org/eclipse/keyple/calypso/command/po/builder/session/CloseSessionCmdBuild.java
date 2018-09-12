@@ -33,7 +33,7 @@ public class CloseSessionCmdBuild extends PoCommandBuilder {
      * @throws java.lang.IllegalArgumentException - if the command is inconsistent
      */
     public CloseSessionCmdBuild(PoRevision revision, boolean ratificationAsked,
-                                ByteBuffer terminalSessionSignature) throws IllegalArgumentException {
+            ByteBuffer terminalSessionSignature) throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;

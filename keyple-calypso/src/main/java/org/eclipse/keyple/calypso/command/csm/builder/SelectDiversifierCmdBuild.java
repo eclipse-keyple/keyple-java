@@ -31,7 +31,7 @@ public class SelectDiversifierCmdBuild extends CsmCommandBuilder {
      * @throws java.lang.IllegalArgumentException - if the diversifier is null or has a wrong length
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
-    public SelectDiversifierCmdBuild(CsmRevision revision,
+    public SelectDiversifierCmdBuild(org.eclipse.keyple.calypso.command.csm.CsmRevision revision,
             ByteBuffer diversifier) throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {

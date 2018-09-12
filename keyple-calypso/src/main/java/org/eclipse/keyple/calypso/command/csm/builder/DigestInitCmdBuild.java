@@ -38,7 +38,7 @@ public class DigestInitCmdBuild extends CsmCommandBuilder {
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public DigestInitCmdBuild(CsmRevision revision, boolean verificationMode, boolean rev3_2Mode,
-                              byte workKeyRecordNumber, byte workKeyKif, byte workKeyKVC, ByteBuffer digestData)
+            byte workKeyRecordNumber, byte workKeyKif, byte workKeyKVC, ByteBuffer digestData)
             throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
