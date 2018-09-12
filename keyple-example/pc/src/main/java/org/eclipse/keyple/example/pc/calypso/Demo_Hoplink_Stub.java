@@ -41,7 +41,7 @@ public class Demo_Hoplink_Stub {
      * @throws IOException setParameter exception
      * @throws InterruptedException thread exception
      */
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         final Logger logger = LoggerFactory.getLogger(Demo_Hoplink_Stub.class);
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
@@ -84,6 +84,7 @@ public class Demo_Hoplink_Stub {
         StubSecureElement csmSE = new CsmStubSe();
 
         /* Insert the CSM into the CSM reader */
+        logger.info("Insert stub CSM SE.");
         csmReader.insertSe(csmSE);
 
         /* check if the expected CSM is available. */
@@ -94,15 +95,19 @@ public class Demo_Hoplink_Stub {
         /* Set the transactionEngine as Observer of the PO reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);
 
-        /*
-         * Insert the Hoplink PO. The transaction engine will do all the scheduled operations as a
-         * result of the insert notification.
-         */
+        /* Wait a little the time the thread starts. */
+        Thread.sleep(10);
+
+        logger.info("Insert stub PO SE.");
         poReader.insertSe(hoplinkSE);
 
-        /* Remove the Hoplink PO */
-        poReader.removeSe();
+        /* Wait a while the time that the transaction ends. */
+        Thread.sleep(500);
 
+        /* Withdraw SE */
+        logger.info("Remove stub CSM and PO SE.");
+        poReader.removeSe();
+        csmReader.removeSe();
         logger.info("END.");
     }
 }

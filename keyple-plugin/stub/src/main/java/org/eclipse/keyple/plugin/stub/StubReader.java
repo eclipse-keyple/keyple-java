@@ -16,19 +16,21 @@ import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.plugin.AbstractSelectionLocalReader;
+import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.seproxy.plugin.AbstractThreadedLocalReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class StubReader extends AbstractSelectionLocalReader {
+public class StubReader extends AbstractThreadedLocalReader {
 
     private static final Logger logger = LoggerFactory.getLogger(StubReader.class);
 
     private StubSecureElement se;
+
+    private boolean sePresent;
 
     private Map<String, String> parameters = new HashMap<String, String>();
 
@@ -41,6 +43,8 @@ public class StubReader extends AbstractSelectionLocalReader {
     public StubReader(String name) {
         super(pluginName, name);
         readerName = name;
+        sePresent = false;
+        threadWaitTimeout = 5000;
     }
 
     @Override
@@ -121,14 +125,55 @@ public class StubReader extends AbstractSelectionLocalReader {
      */
     public void insertSe(StubSecureElement _se) {
         se = _se;
-        notifyObservers(new ReaderEvent(pluginName, readerName, ReaderEvent.EventType.SE_INSERTED));
+        sePresent = true;
     }
 
     public void removeSe() {
         se = null;
-        notifyObservers(new ReaderEvent(pluginName, readerName, ReaderEvent.EventType.SE_REMOVAL));
+        sePresent = false;
     }
 
+    /**
+     * This method is called by the monitoring thread to check SE presence
+     * 
+     * @param timeout the delay in millisecond we wait for a card insertion
+     * @return true if the SE is present
+     * @throws NoStackTraceThrowable
+     */
+    @Override
+    protected boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable {
+        for (int i = 0; i < timeout / 10; i++) {
+            if (sePresent) {
+                break;
+            }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return sePresent;
+    }
 
-
+    /**
+     * This method is called by the monitoring thread to check SE absence
+     * 
+     * @param timeout the delay in millisecond we wait for a card withdrawing
+     * @return true if the SE is absent
+     * @throws NoStackTraceThrowable
+     */
+    @Override
+    protected boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable {
+        for (int i = 0; i < timeout / 10; i++) {
+            if (!sePresent) {
+                break;
+            }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return !sePresent;
+    }
 }

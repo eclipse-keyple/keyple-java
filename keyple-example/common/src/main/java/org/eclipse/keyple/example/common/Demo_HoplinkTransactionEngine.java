@@ -300,8 +300,6 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
         try {
             profiler = new Profiler("Entire transaction");
 
-            profiler.setLogger(logger);
-
             /* operate multiple PO selections */
             String poFakeAid = "AABBCCDDEE"; // fake AID
             String poNavigoAid = "A0000004040125090101"; // Navigo AID
@@ -366,7 +364,7 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
             }
 
             profiler.stop();
-            logger.info(System.getProperty("line.separator") + "{}", profiler);
+            logger.warn(System.getProperty("line.separator") + "{}", profiler);
         } catch (Exception e) {
             e.printStackTrace();
         }

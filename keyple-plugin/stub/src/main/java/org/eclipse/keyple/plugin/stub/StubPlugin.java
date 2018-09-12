@@ -16,11 +16,11 @@ import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
-import org.eclipse.keyple.seproxy.plugin.AbstractStaticPlugin;
+import org.eclipse.keyple.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class StubPlugin extends AbstractStaticPlugin {
+public final class StubPlugin extends AbstractThreadedObservablePlugin {
 
     private static final StubPlugin uniqueInstance = new StubPlugin();
 
@@ -30,7 +30,6 @@ public final class StubPlugin extends AbstractStaticPlugin {
 
     private StubPlugin() {
         super("StubPlugin");
-
     }
 
     /**
@@ -110,6 +109,19 @@ public final class StubPlugin extends AbstractStaticPlugin {
                     new PluginEvent(getName(), name, PluginEvent.EventType.READER_DISCONNECTED));
             logger.info("Unplugged reader with name " + reader.getName());
         }
+    }
 
+    /**
+     * Get a list of available reader names
+     * 
+     * @return String list
+     */
+    @Override
+    protected SortedSet<String> getNativeReadersNames() {
+        SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
+        for (AbstractObservableReader reader : readers) {
+            nativeReadersNames.add(reader.getName());
+        }
+        return nativeReadersNames;
     }
 }
