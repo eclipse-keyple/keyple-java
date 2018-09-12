@@ -12,9 +12,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.eclipse.keyple.command.po.PoRevision;
-import org.eclipse.keyple.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.command.po.builder.UpdateRecordCmdBuild;
+import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
