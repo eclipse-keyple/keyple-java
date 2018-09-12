@@ -8,6 +8,8 @@
 
 package org.eclipse.keyple.calypso.command.po.parser.session;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.util.TestsUtilsResponseTabByteGenerator;
 import org.eclipse.keyple.seproxy.ApduResponse;
@@ -19,9 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @RunWith(MockitoJUnitRunner.class)
 public class OpenSessionRespParsTest {
 
@@ -32,7 +31,7 @@ public class OpenSessionRespParsTest {
     @Test
     public void testGetResponse_rev2_4() throws InconsistentParameterValueException {
 
-        //expected response
+        // expected response
 
         ApduResponse responseMockFci =
                 TestsUtilsResponseTabByteGenerator.generateApduResponseValidRev2_4();
@@ -49,7 +48,7 @@ public class OpenSessionRespParsTest {
     @Test
     public void testGetResponse_rev3_1() throws InconsistentParameterValueException {
 
-        //expected response
+        // expected response
 
         ApduResponse responseMockFci =
                 TestsUtilsResponseTabByteGenerator.generateApduResponseValidRev3_1();
@@ -66,7 +65,7 @@ public class OpenSessionRespParsTest {
     @Test
     public void testGetResponse_rev3_2() throws InconsistentParameterValueException {
 
-        //expected response
+        // expected response
 
         ApduResponse responseMockOS =
                 TestsUtilsResponseTabByteGenerator.generateApduResponseValidRev3_2();

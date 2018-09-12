@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.csm.builder;
 
+import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -15,8 +16,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.nio.ByteBuffer;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DigestAuthenticateCmdBuildTest {

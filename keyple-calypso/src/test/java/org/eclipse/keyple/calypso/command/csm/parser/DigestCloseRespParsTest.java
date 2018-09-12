@@ -8,6 +8,9 @@
 
 package org.eclipse.keyple.calypso.command.csm.parser;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.keyple.calypso.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
@@ -18,10 +21,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DigestCloseRespParsTest {

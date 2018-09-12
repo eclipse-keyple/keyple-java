@@ -8,6 +8,14 @@
 
 package org.eclipse.keyple.calypso.transaction;
 
+import static org.eclipse.keyple.calypso.util.TestsUtilsResponseTabByteGenerator.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoModificationCommand;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
@@ -29,25 +37,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.List;
-
-import static org.eclipse.keyple.calypso.util.TestsUtilsResponseTabByteGenerator.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 @RunWith(MockitoJUnitRunner.class)
 public class PoSecureSessionTest {
     @Mock
-    private
-    ProxyReader poReader;
+    private ProxyReader poReader;
 
     @Mock
-    private
-    ProxyReader csmSessionReader;
+    private ProxyReader csmSessionReader;
 
     byte defaultKeyIndex = (byte) 0x03;
 
@@ -69,7 +65,7 @@ public class PoSecureSessionTest {
 
     @Before
     public void setUp() throws InconsistentParameterValueException {
-        ByteBuffer samChallenge = ByteBuffer.wrap(new byte[]{0x01, 0x02, 0x03, 0x04});
+        ByteBuffer samChallenge = ByteBuffer.wrap(new byte[] {0x01, 0x02, 0x03, 0x04});
 
         ApduResponse apduResponse = generateApduResponseOpenSessionCmd();
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
@@ -104,7 +100,8 @@ public class PoSecureSessionTest {
         ApduResponse apduResponseFci = generateApduResponseFciCmd();
         List<ApduResponse> apduResponseFciList = new ArrayList<ApduResponse>();
         apduResponseFciList.add(apduResponseFci);
-        SeResponseSet responseFci = new SeResponseSet(new SeResponse(true, null, apduResponseFci, apduResponseFciList));
+        SeResponseSet responseFci =
+                new SeResponseSet(new SeResponse(true, null, apduResponseFci, apduResponseFciList));
 
         ApduResponse apduResponseFciErr = generateApduResponseFciCmdError();
         List<ApduResponse> apduResponseFciListErr = new ArrayList<ApduResponse>();
@@ -125,8 +122,7 @@ public class PoSecureSessionTest {
 
     @Test
     public void processOpeningTestKif0xFFKey0x03noCmdInside()
-            throws IOReaderException,
-            IllegalArgumentException {
+            throws IOReaderException, IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -164,8 +160,7 @@ public class PoSecureSessionTest {
 
     @Test
     public void processOpeningTestKif0xFFKey0x01noCmdInside()
-            throws IOReaderException,
-            IllegalArgumentException {
+            throws IOReaderException, IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -203,8 +198,7 @@ public class PoSecureSessionTest {
 
     @Test
     public void processOpeningTestKif0xFFKey0x02noCmdInside()
-            throws IOReaderException,
-            IllegalArgumentException {
+            throws IOReaderException, IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -243,8 +237,7 @@ public class PoSecureSessionTest {
 
     @Test
     public void processOpeningTestKif0xFFKey0x03WithCmdInside()
-            throws IOReaderException,
-            IllegalArgumentException {
+            throws IOReaderException, IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -287,8 +280,7 @@ public class PoSecureSessionTest {
 
     @Test(expected = UnexpectedReaderException.class)
     public void processOpeningTestKif0xFFKey0x03WithCmdInsideUnexpectedReaderException()
-            throws IOReaderException,
-            IllegalArgumentException {
+            throws IOReaderException, IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -323,8 +315,7 @@ public class PoSecureSessionTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void processProceedingTestInconsistantCommandException()
-            throws IOReaderException,
-            IllegalArgumentException {
+            throws IOReaderException, IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -349,14 +340,12 @@ public class PoSecureSessionTest {
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, (byte) 0x08,
                 recordNumber, false, (byte) 0x00);
 
-        SeResponse seResponse2 = this.poPlainSecureSession
-                .processPoCommands(Arrays.asList(poCommandsInsideSession));
+        SeResponse seResponse2 =
+                this.poPlainSecureSession.processPoCommands(Arrays.asList(poCommandsInsideSession));
     }
 
     @Test
-    public void processProceedingTest()
-            throws IOReaderException,
-            IllegalArgumentException {
+    public void processProceedingTest() throws IOReaderException, IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -377,8 +366,8 @@ public class PoSecureSessionTest {
         poCommandsInsideSession[0] = new ReadRecordsCmdBuild(PoRevision.REV2_4, (byte) 0x08,
                 recordNumber, false, (byte) 0x00);
 
-        SeResponse seResponse2 = this.poPlainSecureSession
-                .processPoCommands(Arrays.asList(poCommandsInsideSession));
+        SeResponse seResponse2 =
+                this.poPlainSecureSession.processPoCommands(Arrays.asList(poCommandsInsideSession));
 
         assertEquals(1, seResponse2.getApduResponses().size());
         assertNull(seResponse2.getFci());

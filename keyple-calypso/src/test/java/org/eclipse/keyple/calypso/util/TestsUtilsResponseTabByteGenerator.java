@@ -8,10 +8,9 @@
 
 package org.eclipse.keyple.calypso.util;
 
-import org.eclipse.keyple.seproxy.ApduResponse;
-
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
+import org.eclipse.keyple.seproxy.ApduResponse;
 
 /**
  * @author f.razakarivony

@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.csm.parser;
 
+import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.hamcrest.core.IsNot;
@@ -15,8 +16,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.nio.ByteBuffer;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SelectDiversifierRespParsTest {

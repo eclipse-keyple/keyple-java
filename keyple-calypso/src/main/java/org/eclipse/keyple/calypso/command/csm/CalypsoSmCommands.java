@@ -8,11 +8,11 @@
 
 package org.eclipse.keyple.calypso.command.csm;
 
-import org.eclipse.keyple.calypso.command.csm.builder.SelectDiversifierCmdBuild;
-import org.eclipse.keyple.calypso.command.csm.parser.SelectDiversifierRespPars;
 import org.eclipse.keyple.calypso.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.calypso.command.AbstractApduResponseParser;
 import org.eclipse.keyple.calypso.command.CommandsTable;
+import org.eclipse.keyple.calypso.command.csm.builder.SelectDiversifierCmdBuild;
+import org.eclipse.keyple.calypso.command.csm.parser.SelectDiversifierRespPars;
 
 public enum CalypsoSmCommands implements CommandsTable {
 

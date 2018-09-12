@@ -8,15 +8,13 @@
 
 package org.eclipse.keyple.calypso.command.csm.builder;
 
+import static org.junit.Assert.assertEquals;
+import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.nio.ByteBuffer;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DigestInitCmdBuildTest {

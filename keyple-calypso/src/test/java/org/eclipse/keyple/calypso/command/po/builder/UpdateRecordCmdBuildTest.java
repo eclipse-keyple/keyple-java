@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.po.builder;
 
+import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.seproxy.ApduRequest;
@@ -16,14 +17,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.nio.ByteBuffer;
-
 @RunWith(MockitoJUnitRunner.class)
 public class UpdateRecordCmdBuildTest {
 
     private final byte record_number = 0x01;
 
-    private final ByteBuffer newRecordData = ByteBuffer.wrap(new byte[] {0x00, 0x01, 0x02, 0x03, 0x04});
+    private final ByteBuffer newRecordData =
+            ByteBuffer.wrap(new byte[] {0x00, 0x01, 0x02, 0x03, 0x04});
 
     private AbstractApduCommandBuilder apduCommandBuilder;
 

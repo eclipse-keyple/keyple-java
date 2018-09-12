@@ -9,6 +9,7 @@
 package org.eclipse.keyple.calypso.command.po.builder.session;
 
 
+import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.seproxy.ApduRequest;
@@ -18,12 +19,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.nio.ByteBuffer;
-
 @RunWith(MockitoJUnitRunner.class)
 public class OpenSessionCmdBuildTest {
 
-    private final ByteBuffer samChallenge = ByteBuffer.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
+    private final ByteBuffer samChallenge =
+            ByteBuffer.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
 
     private AbstractApduCommandBuilder apduCommandBuilder;
 
@@ -37,8 +37,8 @@ public class OpenSessionCmdBuildTest {
         byte sfiToSelect = (byte) 0x08;
 
 
-        apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV2_4, keyIndex, samChallenge,
-                sfiToSelect, recordNumberToRead);
+        apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV2_4, keyIndex,
+                samChallenge, sfiToSelect, recordNumberToRead);
     }
 
     @Test
