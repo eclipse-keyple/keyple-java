@@ -9,7 +9,6 @@
 package org.eclipse.keyple.command;
 
 import java.nio.ByteBuffer;
-
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
