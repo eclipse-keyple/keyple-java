@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.po;
 
-import org.eclipse.keyple.command.AbstractIso7816CommandBuilder;
+import org.eclipse.keyple.calypso.command.AbstractIso7816CommandBuilder;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**

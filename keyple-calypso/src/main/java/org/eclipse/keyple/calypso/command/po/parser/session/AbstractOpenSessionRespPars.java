@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.command.AbstractApduResponseParser;
+import org.eclipse.keyple.calypso.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.util.ByteBufferUtils;
 

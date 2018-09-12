@@ -10,7 +10,7 @@ package org.eclipse.keyple.calypso.command.csm.parser;
 
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.command.AbstractApduResponseParser;
+import org.eclipse.keyple.calypso.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 
 /**
