@@ -12,7 +12,7 @@ import static org.eclipse.keyple.calypso.transaction.PoSecureSession.*;
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CsmSettings.*;
 import java.util.*;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
+import org.eclipse.keyple.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
