@@ -31,7 +31,7 @@ import org.eclipse.keyple.calypso.command.po.parser.session.CloseSessionRespPars
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
+import org.eclipse.keyple.seproxy.exception.KeypleCalypsoSecureSessionException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -223,8 +223,8 @@ public class PoSecureSession {
         SeResponse csmSeResponse = csmReader.transmit(csmSeRequestSet).getSingleResponse();
 
         if (csmSeResponse == null) {
-            throw new InvalidMessageException("Null response received",
-                    InvalidMessageException.Type.CSM, csmSeRequest.getApduRequests(), null);
+            throw new KeypleCalypsoSecureSessionException("Null response received",
+                    KeypleCalypsoSecureSessionException.Type.CSM, csmSeRequest.getApduRequests(), null);
         }
 
         logger.debug("PoSecureSession => processOpening, identification: CSMSERESPONSE = {}",
@@ -244,8 +244,8 @@ public class PoSecureSession {
                         ByteBufferUtils.toHex(sessionTerminalChallenge));
             }
         } else {
-            throw new InvalidMessageException("Invalid message received",
-                    InvalidMessageException.Type.CSM, csmApduRequestList, csmApduResponseList);
+            throw new KeypleCalypsoSecureSessionException("Invalid message received",
+                    KeypleCalypsoSecureSessionException.Type.CSM, csmApduRequestList, csmApduResponseList);
         }
 
         /* PO ApduRequest List to hold Open Secure Session and other optional commands */
@@ -281,8 +281,8 @@ public class PoSecureSession {
                 poSeResponse);
 
         if (poSeResponse == null) {
-            throw new InvalidMessageException("Null response received",
-                    InvalidMessageException.Type.PO, poSeRequest.getApduRequests(), null);
+            throw new KeypleCalypsoSecureSessionException("Null response received",
+                    KeypleCalypsoSecureSessionException.Type.PO, poSeRequest.getApduRequests(), null);
         }
 
         /* Retrieve and check the ApduResponses */
@@ -290,14 +290,14 @@ public class PoSecureSession {
 
         /* Do some basic checks */
         if (poApduRequestList.size() != poApduResponseList.size()) {
-            throw new InvalidMessageException("Inconsistent requests and responses",
-                    InvalidMessageException.Type.PO, poApduRequestList, poApduResponseList);
+            throw new KeypleCalypsoSecureSessionException("Inconsistent requests and responses",
+                    KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList, poApduResponseList);
         }
 
         for (ApduResponse apduR : poApduResponseList) {
             if (!apduR.isSuccessful()) {
-                throw new InvalidMessageException("Invalid response",
-                        InvalidMessageException.Type.PO, poApduRequestList, poApduResponseList);
+                throw new KeypleCalypsoSecureSessionException("Invalid response",
+                        KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList, poApduResponseList);
             }
         }
 
@@ -414,8 +414,8 @@ public class PoSecureSession {
         logger.debug("PoSecureSession => processPoCommands:PORESPONSE = {}", poSeResponse);
 
         if (poSeResponse == null) {
-            throw new InvalidMessageException("Null response received",
-                    InvalidMessageException.Type.PO, poSeRequest.getApduRequests(), null);
+            throw new KeypleCalypsoSecureSessionException("Null response received",
+                    KeypleCalypsoSecureSessionException.Type.PO, poSeRequest.getApduRequests(), null);
         }
 
         /* Retrieve and check the ApduResponses */
@@ -423,14 +423,14 @@ public class PoSecureSession {
 
         /* Do some basic checks */
         if (poApduRequestList.size() != poApduResponseList.size()) {
-            throw new InvalidMessageException("Inconsistent requests and responses",
-                    InvalidMessageException.Type.PO, poApduRequestList, poApduResponseList);
+            throw new KeypleCalypsoSecureSessionException("Inconsistent requests and responses",
+                    KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList, poApduResponseList);
         }
 
         for (ApduResponse apduR : poApduResponseList) {
             if (!apduR.isSuccessful()) {
-                throw new InvalidMessageException("Invalid response",
-                        InvalidMessageException.Type.PO, poApduRequestList, poApduResponseList);
+                throw new KeypleCalypsoSecureSessionException("Invalid response",
+                        KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList, poApduResponseList);
             }
         }
 
@@ -550,8 +550,8 @@ public class PoSecureSession {
                             poAnticipatedResponses.get(i));
                 }
             } else {
-                throw new InvalidMessageException("Inconsistent requests and anticipated responses",
-                        InvalidMessageException.Type.PO, poApduRequestList, poAnticipatedResponses);
+                throw new KeypleCalypsoSecureSessionException("Inconsistent requests and anticipated responses",
+                        KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList, poAnticipatedResponses);
             }
         }
 
@@ -631,8 +631,8 @@ public class PoSecureSession {
         CloseSessionRespPars poCloseSessionPars = new CloseSessionRespPars(
                 poApduResponseList.get(poApduResponseList.size() - ((ratificationAsked) ? 1 : 2)));
         if (!poCloseSessionPars.isSuccessful()) {
-            throw new InvalidMessageException("Didn't get a signature",
-                    InvalidMessageException.Type.PO, poApduRequestList, poApduResponseList);
+            throw new KeypleCalypsoSecureSessionException("Didn't get a signature",
+                    KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList, poApduResponseList);
         }
 
         /* Check the PO signature part with the CSM */

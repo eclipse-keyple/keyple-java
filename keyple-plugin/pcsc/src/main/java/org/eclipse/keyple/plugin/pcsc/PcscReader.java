@@ -171,7 +171,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
      *
      * @param protocolFlag the protocol flag
      * @return true if the current SE matches the protocol flag
-     * @throws InvalidMessageException if the protocol mask is not found
+     * @throws KeypleCalypsoSecureSessionException if the protocol mask is not found
      */
     @Override
     protected final boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
@@ -184,7 +184,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
             // the requestSet will be executed only if the protocol match the requestElement
             String selectionMask = protocolsMap.get(protocolFlag);
             if (selectionMask == null) {
-                throw new InvalidMessageException("Target selector mask not found!", null);
+                throw new KeypleCalypsoSecureSessionException("Target selector mask not found!", null);
             }
             Pattern p = Pattern.compile(selectionMask);
             String atr = ByteBufferUtils.toHex(ByteBuffer.wrap(card.getATR().getBytes()));

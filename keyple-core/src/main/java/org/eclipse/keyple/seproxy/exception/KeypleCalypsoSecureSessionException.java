@@ -13,9 +13,8 @@ import java.util.List;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 
-//TODO concern only PoSecureSession, should be moved to calypso package, what name for this exception?
-@Deprecated
-public class InvalidMessageException extends KeypleReaderException {
+//TODO concerns only PoSecureSession, should be moved to calypso package
+public class KeypleCalypsoSecureSessionException extends KeypleReaderException {
 
     public enum Type {
         PO, CSM
@@ -25,19 +24,19 @@ public class InvalidMessageException extends KeypleReaderException {
     private final List<ApduRequest> requests;
     private final List<ApduResponse> responses;
 
-    public InvalidMessageException(String message, Type type, List<ApduRequest> requests,
-            List<ApduResponse> responses) {
+    public KeypleCalypsoSecureSessionException(String message, Type type, List<ApduRequest> requests,
+                                               List<ApduResponse> responses) {
         super(message);
         this.type = type;
         this.requests = requests;
         this.responses = responses;
     }
 
-    public InvalidMessageException(String message, ApduRequest req, ApduResponse resp) {
+    public KeypleCalypsoSecureSessionException(String message, ApduRequest req, ApduResponse resp) {
         this(message, null, Collections.singletonList(req), Collections.singletonList(resp));
     }
 
-    public InvalidMessageException(String message, ApduResponse resp) {
+    public KeypleCalypsoSecureSessionException(String message, ApduResponse resp) {
         this(message, null, resp);
     }
 
