@@ -13,7 +13,7 @@ import java.util.*;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
+import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
@@ -48,11 +48,11 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      *        command
      * @return an array of 2 ByteBuffers: ByteBuffer[0] the SE ATR, ByteBuffer[1] the SE FCI
      * @throws IOReaderException if a reader error occurs
-     * @throws SelectApplicationException if the application selection fails
+     * @throws KeypleApplicationSelectionException if the application selection fails
      */
     protected abstract ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Short> successfulSelectionStatusCodes)
-            throws IOReaderException, SelectApplicationException;
+            throws IOReaderException, KeypleApplicationSelectionException;
 
     /**
      * Closes the current physical channel.
@@ -322,7 +322,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                             seRequest.getSuccessfulSelectionStatusCodes());
                     logger.trace("[{}] processSeRequest => Logical channel opening success.",
                             this.getName());
-                } catch (SelectApplicationException e) {
+                } catch (KeypleApplicationSelectionException e) {
                     logger.trace("[{}] processSeRequest => Logical channel opening failure",
                             this.getName());
                     closeLogicalChannel();

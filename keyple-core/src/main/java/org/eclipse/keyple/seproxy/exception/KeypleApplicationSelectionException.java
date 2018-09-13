@@ -12,10 +12,13 @@ package org.eclipse.keyple.seproxy.exception;
 import org.eclipse.keyple.seproxy.ProxyReader;
 
 /**
- * Application selection failure {@link ProxyReader}
+ * Application selection failure {@link ProxyReader} by Aid
  */
-public class SelectApplicationException extends Exception {
-    public SelectApplicationException(String message) {
+public class KeypleApplicationSelectionException extends KeypleReaderException {
+
+
+    public KeypleApplicationSelectionException(String message) {
         super(message);
     }
+
 }
