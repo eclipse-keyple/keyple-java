@@ -326,6 +326,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                  * The compareTo method applied to ByteBuffers returns an int equals to the number
                  * of matching bytes + 1.
                  */
+                if (aidCurrentlySelected == null) {
+                    throw new IllegalStateException("AID currently selected shouldn't be null.");
+                }
                 int nbMatchingBytes = ((SeRequest.AidSelector) seRequest.getSelector())
                         .getAidToSelect().compareTo(aidCurrentlySelected) - 1;
                 if (nbMatchingBytes != aidCurrentlySelected.limit()) {
