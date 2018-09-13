@@ -30,7 +30,7 @@ import org.eclipse.keyple.calypso.command.po.parser.session.AbstractOpenSessionR
 import org.eclipse.keyple.calypso.command.po.parser.session.CloseSessionRespPars;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
@@ -171,11 +171,11 @@ public class PoSecureSession {
      * @param poCommandsInsideSession the po commands inside session
      * @return SeResponse response to all executed commands including the self generated "Open
      *         Secure Session" command
-     * @throws IOReaderException the IO reader exception
+     * @throws KeypleReaderException the IO reader exception
      */
     public SeResponse processOpening(ApduResponse poFciData, SessionAccessLevel accessLevel,
             byte openingSfiToSelect, byte openingRecordNumberToRead,
-            List<PoSendableInSession> poCommandsInsideSession) throws IOReaderException {
+            List<PoSendableInSession> poCommandsInsideSession) throws KeypleReaderException {
 
         /* CSM ApduRequest List to hold Select Diversifier and Get Challenge commands */
         List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
@@ -390,10 +390,10 @@ public class PoSecureSession {
      * @param poCommands the po commands inside session
      * @return SeResponse all responses to the provided commands
      *
-     * @throws IOReaderException IO Reader exception
+     * @throws KeypleReaderException IO Reader exception
      */
     public SeResponse processPoCommands(List<PoSendableInSession> poCommands)
-            throws IOReaderException {
+            throws KeypleReaderException {
 
         // Get PO ApduRequest List from PoSendableInSession List
         List<ApduRequest> poApduRequestList =
@@ -459,10 +459,10 @@ public class PoSecureSession {
      *
      * @param csmCommands a list of commands to sent to the CSM
      * @return SeResponse all csm responses
-     * @throws IOReaderException if a reader error occurs
+     * @throws KeypleReaderException if a reader error occurs
      */
     public SeResponse processCsmCommands(List<CsmSendableInSession> csmCommands)
-            throws IOReaderException {
+            throws KeypleReaderException {
 
         /* Init CSM ApduRequest List - for the first CSM exchange */
         List<ApduRequest> csmApduRequestList = this
@@ -520,11 +520,11 @@ public class PoSecureSession {
      * @param closeSeChannel if true the SE channel of the po reader is closed after the last
      *        command
      * @return SeResponse close session response
-     * @throws IOReaderException the IO reader exception
+     * @throws KeypleReaderException the IO reader exception
      */
     public SeResponse processClosing(List<PoModificationCommand> poModificationCommands,
             List<ApduResponse> poAnticipatedResponses, PoCommandBuilder ratificationCommand,
-            boolean closeSeChannel) throws IOReaderException {
+            boolean closeSeChannel) throws KeypleReaderException {
 
         if (currentState != SessionState.SESSION_OPEN) {
             throw new IllegalStateException("Bad session state. Current: " + currentState.toString()

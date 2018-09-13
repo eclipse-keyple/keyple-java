@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.plugin.android.nfc;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;

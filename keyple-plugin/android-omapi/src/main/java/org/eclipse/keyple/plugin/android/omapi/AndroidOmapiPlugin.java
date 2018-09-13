@@ -8,12 +8,11 @@
 
 package org.eclipse.keyple.plugin.android.omapi;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.plugin.AbstractStaticPlugin;
 import org.simalliance.openmobileapi.Reader;
@@ -66,10 +65,10 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
      * Returns all {@link AndroidOmapiReader} readers loaded by the plugin
      * 
      * @return {@link AndroidOmapiReader} readers loaded by the plugin
-     * @throws IOReaderException
+     * @throws KeypleReaderException
      */
     /*
-     * @Override public SortedSet<? extends ProxyReader> getReaders() throws IOReaderException {
+     * @Override public SortedSet<? extends ProxyReader> getReaders() throws KeypleReaderException {
      * return new TreeSet<ProxyReader>(proxyReaders.values()); }
      */
 
@@ -109,7 +108,7 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
     }
 
     @Override
-    protected AbstractObservableReader getNativeReader(String name) throws IOReaderException {
+    protected AbstractObservableReader getNativeReader(String name) throws KeypleReaderException {
         for (AbstractObservableReader aReader : readers) {
             if (aReader.getName().equals(name)) {
                 return aReader;

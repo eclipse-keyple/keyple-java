@@ -21,7 +21,7 @@ import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
@@ -198,7 +198,7 @@ public class Demo_SeProtocolDetection implements ObservableReader.ReaderObserver
      * 
      * @param args the program arguments
      * @throws IOException if a IO error occurs
-     * @throws IOReaderException if a reader error occurs
+     * @throws KeypleReaderException if a reader error occurs
      * @throws InterruptedException if thread error occurs
      */
     public static void main(String[] args) throws IllegalArgumentException, KeypleBaseException {

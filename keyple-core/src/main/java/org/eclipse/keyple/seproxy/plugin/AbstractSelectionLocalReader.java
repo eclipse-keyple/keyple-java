@@ -14,8 +14,8 @@ import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
@@ -54,11 +54,11 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
     /**
      * Attempts to open the physical channel
      *
-     * @throws IOReaderException if a reader error occurs
-     * @throws ChannelStateReaderException if the channel opening fails
+     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleReaderException if the channel opening fails
      */
     protected abstract void openPhysicalChannel()
-            throws IOReaderException, ChannelStateReaderException;
+            throws KeypleReaderException, KeypleReaderException;
 
     /**
      * Opens a logical channel
@@ -67,12 +67,12 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
      * @param successfulSelectionStatusCodes the list of successful status code for the select
      *        command
      * @return 2 ByteBuffers: ATR and FCI data
-     * @throws IOReaderException - if an IO exception occurred
+     * @throws KeypleReaderException - if an IO exception occurred
      * @throws KeypleApplicationSelectionException - if the application selection is not successful
      */
     protected final ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Short> successfulSelectionStatusCodes)
-            throws IOReaderException, KeypleApplicationSelectionException {
+            throws KeypleReaderException, KeypleApplicationSelectionException {
         ByteBuffer[] atrAndFci = new ByteBuffer[2];
 
         if (!isLogicalChannelOpen()) {
@@ -84,7 +84,7 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
                 openPhysicalChannel();
             }
             if (!isPhysicalChannelOpen()) {
-                throw new ChannelStateReaderException("Fail to open physical channel.");
+                throw new KeypleReaderException("Fail to open physical channel.");
             }
         }
 

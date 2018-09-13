@@ -23,8 +23,7 @@ import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
@@ -55,7 +54,7 @@ public class AndroidNfcReaderTest {
 
     // init before each test
     @Before
-    public void SetUp() throws IOReaderException {
+    public void SetUp() throws KeypleReaderException {
 
         // Mock others objects
         tagProxy = Mockito.mock(TagProxy.class);
@@ -176,7 +175,7 @@ public class AndroidNfcReaderTest {
 
     }
 
-    @Test(expected = ChannelStateReaderException.class)
+    @Test(expected = KeypleReaderException.class)
     public void transmitCardNotConnected() throws KeypleBaseException , IOException{
 
         // config reader with Isodep protocols
@@ -384,13 +383,13 @@ public class AndroidNfcReaderTest {
     }
 
     @Test
-    public void openPhysicalChannelSuccess() throws IOReaderException {
+    public void openPhysicalChannelSuccess() throws KeypleReaderException {
         insertSe();
         when(tagProxy.isConnected()).thenReturn(false);
         reader.openPhysicalChannel();
     }
 
-    @Test(expected = ChannelStateReaderException.class)
+    @Test(expected = KeypleReaderException.class)
     public void openPhysicalChannelError() throws KeypleBaseException, IOException {
         // init
         insertSe();
@@ -402,7 +401,7 @@ public class AndroidNfcReaderTest {
     }
 
     @Test
-    public void closePhysicalChannelSuccess() throws IOReaderException {
+    public void closePhysicalChannelSuccess() throws KeypleReaderException {
         // init
         insertSe();
         when(tagProxy.isConnected()).thenReturn(true);
@@ -414,7 +413,7 @@ public class AndroidNfcReaderTest {
 
     }
 
-    @Test(expected = ChannelStateReaderException.class)
+    @Test(expected = KeypleReaderException.class)
     public void closePhysicalChannelError() throws KeypleBaseException,IOException {
         // init
         insertSe();
@@ -444,7 +443,7 @@ public class AndroidNfcReaderTest {
 
     }
 
-    @Test(expected = ChannelStateReaderException.class)
+    @Test(expected = KeypleReaderException.class)
     public void transmitAPDUError() throws KeypleBaseException,IOException {
         // init
         insertSe();

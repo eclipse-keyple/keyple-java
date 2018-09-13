@@ -95,7 +95,7 @@ public class SmartCardIOReaderTest {
 
     }
 
-    @Test(expected = IOReaderException.class)
+    @Test(expected = KeypleReaderException.class)
     public void testIsSEPresentWithException() throws CardException, NoStackTraceThrowable {
 
         when(terminal.waitForCardAbsent(0)).thenReturn(false);
@@ -106,8 +106,8 @@ public class SmartCardIOReaderTest {
     }
 
     // TODO redesign @Test
-    public void testTransmitCardNotPresent() throws CardException, ChannelStateReaderException,
-           IOReaderException {
+    public void testTransmitCardNotPresent() throws CardException, KeypleReaderException,
+           KeypleReaderException {
 
         when(terminal.isCardPresent()).thenReturn(false);
         ApduRequest apduRequestMF =
@@ -130,8 +130,8 @@ public class SmartCardIOReaderTest {
 
     // TODO redesign @Test
     public void testTransmitToCardWithoutAidToSelect()
-            throws CardException, ChannelStateReaderException,
-            IOReaderException {
+            throws CardException, KeypleReaderException,
+            KeypleReaderException {
 
         atr = new ATR(new byte[] {(byte) 0x85, 0x17, 0x00, 0x01});
         when(terminal.isCardPresent()).thenReturn(true);
@@ -168,8 +168,8 @@ public class SmartCardIOReaderTest {
 
     // TODO redesign @Test
     public void testTransmitToCardWithAidToSelect()
-            throws CardException, ChannelStateReaderException,
-            IOReaderException {
+            throws CardException, KeypleReaderException,
+            KeypleReaderException {
 
 
         when(terminal.isCardPresent()).thenReturn(true);
@@ -204,8 +204,8 @@ public class SmartCardIOReaderTest {
     }
 
     // TODO redesign @Test
-    public void testTransmitToCardAndDisconnect() throws CardException, ChannelStateReaderException,
-            IOReaderException {
+    public void testTransmitToCardAndDisconnect() throws CardException, KeypleReaderException,
+            KeypleReaderException {
 
 
         when(terminal.isCardPresent()).thenReturn(true);

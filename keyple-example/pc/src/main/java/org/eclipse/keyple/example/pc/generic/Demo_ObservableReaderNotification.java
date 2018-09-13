@@ -44,7 +44,7 @@ public class Demo_ObservableReaderNotification {
         }
     }
 
-    private void setObservers() throws IOReaderException {
+    private void setObservers() throws KeypleReaderException {
 
         // we add an observer to each plugin (only one in this example)
         // the readers observers will be added upon plugin notification

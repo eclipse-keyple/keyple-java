@@ -11,7 +11,7 @@ package org.eclipse.keyple.seproxy.plugin;
 
 import java.io.IOException;
 import java.util.Map;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.util.NameableConfigurable;
 import org.eclipse.keyple.util.Observable;
@@ -112,7 +112,7 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
      * See {@link #setParameter(String, String)} for more details
      *
      * @param parameters the new parameters
-     * @throws IOReaderException This method can fail when disabling the exclusive mode as it's
+     * @throws KeypleReaderException This method can fail when disabling the exclusive mode as it's
      *         executed instantly
      */
     public final void setParameters(Map<String, String> parameters) throws IllegalArgumentException, KeypleBaseException {

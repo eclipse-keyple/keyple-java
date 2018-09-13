@@ -12,8 +12,8 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.seproxy.SeProtocol;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 public abstract class StubSecureElement {
@@ -32,11 +32,11 @@ public abstract class StubSecureElement {
         return isPhysicalChannelOpen;
     }
 
-    public void openPhysicalChannel() throws IOReaderException, ChannelStateReaderException {
+    public void openPhysicalChannel() throws KeypleReaderException, KeypleReaderException {
         isPhysicalChannelOpen = true;
     }
 
-    public void closePhysicalChannel() throws IOReaderException {
+    public void closePhysicalChannel() throws KeypleReaderException {
         isPhysicalChannelOpen = false;
     }
 
@@ -76,9 +76,9 @@ public abstract class StubSecureElement {
      *
      * @param apduIn : commands to be processed
      * @return APDU response
-     * @throws ChannelStateReaderException if the transmission fails
+     * @throws KeypleReaderException if the transmission fails
      */
-    public ByteBuffer processApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
+    public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleReaderException {
 
         if (apduIn == null) {
             return null;

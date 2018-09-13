@@ -12,7 +12,7 @@ import java.util.SortedSet;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 
@@ -40,7 +40,7 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginE
         if (readers == null) {
             try {
                 readers = getNativeReaders();
-            } catch (IOReaderException e) {
+            } catch (KeypleReaderException e) {
                 e.printStackTrace();
             }
         }
@@ -65,20 +65,20 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginE
      * Gets a list of native readers from the native methods
      * 
      * @return the list of AbstractObservableReader objects.
-     * @throws IOReaderException if a reader error occurs
+     * @throws KeypleReaderException if a reader error occurs
      */
     protected abstract SortedSet<AbstractObservableReader> getNativeReaders()
-            throws IOReaderException;
+            throws KeypleReaderException;
 
     /**
      * Gets the specific reader whose is provided as an argument.
      * 
      * @param name the of the reader
      * @return the AbstractObservableReader object (null if not found)
-     * @throws IOReaderException if a reader error occurs
+     * @throws KeypleReaderException if a reader error occurs
      */
     protected abstract AbstractObservableReader getNativeReader(String name)
-            throws IOReaderException;
+            throws KeypleReaderException;
 
     /**
      * Compare the name of the current ReaderPlugin to the name of the ReaderPlugin provided in

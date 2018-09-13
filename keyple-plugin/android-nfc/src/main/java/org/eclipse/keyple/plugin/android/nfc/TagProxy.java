@@ -10,7 +10,7 @@ package org.eclipse.keyple.plugin.android.nfc;
 
 import java.io.IOException;
 import java.util.Arrays;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,9 +63,9 @@ class TagProxy implements TagTechnology {
      * 
      * @param tag : tag to be proxied
      * @return tagProxy
-     * @throws IOReaderException
+     * @throws KeypleReaderException
      */
-    static TagProxy getTagProxy(Tag tag) throws IOReaderException {
+    static TagProxy getTagProxy(Tag tag) throws KeypleReaderException {
 
         LOG.info("Matching Tag Type : " + tag.toString());
 
@@ -90,7 +90,7 @@ class TagProxy implements TagTechnology {
                     AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_ISODEP);
         }
 
-        throw new IOReaderException("Keyple Android Reader supports only : "
+        throw new KeypleReaderException("Keyple Android Reader supports only : "
                 + AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC + ", "
                 + AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL + ", "
                 + AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_ISODEP

@@ -17,7 +17,7 @@ import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
@@ -105,7 +105,7 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
             } else {
                 csmOk = true;
             }
-        } catch (IOReaderException e) {
+        } catch (KeypleReaderException e) {
             logger.error("Reader exception: CAUSE = {}", e.getMessage());
             csmOk = false;
         }
@@ -199,10 +199,10 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
      * @param poTransaction PoSecureSession object
      * @param fciData FCI data from the selection step
      * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
-     * @throws IOReaderException reader exception (defined as public for purposes of javadoc)
+     * @throws KeypleReaderException reader exception (defined as public for purposes of javadoc)
      */
     public void doHoplinkReadWriteTransaction(PoSecureSession poTransaction, ApduResponse fciData,
-            boolean closeSeChannel) throws IOReaderException {
+            boolean closeSeChannel) throws KeypleReaderException {
 
 
         List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
@@ -262,10 +262,10 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
      *
      * @param poTransaction PoSecureSession object
      * @param fciData FCI data from the selection step
-     * @throws IOReaderException reader exception (defined as public for purposes of javadoc)
+     * @throws KeypleReaderException reader exception (defined as public for purposes of javadoc)
      */
     public void operateMultipleHoplinkTransactions(PoSecureSession poTransaction,
-            ApduResponse fciData) throws IOReaderException {
+            ApduResponse fciData) throws KeypleReaderException {
         /*
          * execute an Hoplink session: processOpening, processPoCommands, processClosing close the
          * logical channel

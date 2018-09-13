@@ -82,7 +82,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
     }
 
     @Override
-    protected final void closePhysicalChannel() throws IOReaderException {
+    protected final void closePhysicalChannel() throws KeypleReaderException {
         try {
             if (card != null) {
                 if (logging) {
@@ -99,7 +99,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 }
             }
         } catch (CardException e) {
-            throw new IOReaderException(e);
+            throw new KeypleReaderException("Error while closing physical channel",e);
         }
     }
 
@@ -135,7 +135,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
             } else {
                 return false;
             }
-        } catch (IOReaderException e) {
+        } catch (KeypleReaderException e) {
             logger.trace("[{}] Exception occured in waitForCardAbsent. Message: {}", this.getName(),
                     e.getMessage());
             throw new NoStackTraceThrowable();
@@ -151,15 +151,15 @@ public class PcscReader extends AbstractThreadedLocalReader {
      *
      * @param apduIn APDU in buffer
      * @return apduOut buffer
-     * @throws ChannelStateReaderException if the transmission failed
+     * @throws KeypleReaderException if the transmission failed
      */
     @Override
-    protected final ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
+    protected final ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleReaderException {
         ResponseAPDU apduResponseData;
         try {
             apduResponseData = channel.transmit(new CommandAPDU(apduIn));
         } catch (CardException e) {
-            throw new ChannelStateReaderException(this.getName() + ":" + e.getMessage());
+            throw new KeypleReaderException(this.getName() + ":" + e.getMessage());
         }
         return ByteBuffer.wrap(apduResponseData.getBytes());
     }
@@ -174,7 +174,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * @throws InvalidMessageException if the protocol mask is not found
      */
     @Override
-    protected final boolean protocolFlagMatches(SeProtocol protocolFlag) throws IOReaderException {
+    protected final boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
         boolean result;
         // Get protocolFlag to check if ATR filtering is required
         if (protocolFlag != null) {
@@ -371,17 +371,17 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * In this case be aware that on some platforms (ex. Windows 8+), the exclusivity is granted for
      * a limited time (ex. 5 seconds). After this delay, the card is automatically resetted.
      * 
-     * @throws IOReaderException if a reader error occurs
+     * @throws KeypleReaderException if a reader error occurs
      */
     @Override
     protected final void openPhysicalChannel()
-            throws IOReaderException, ChannelStateReaderException {
+            throws KeypleReaderException, KeypleReaderException {
         // init of the physical SE channel: if not yet established, opening of a new physical
         // channel
         try {
             if (card == null) {
                 if (isLogicalChannelOpen()) {
-                    throw new ChannelStateReaderException(
+                    throw new KeypleReaderException(
                             "Logical channel found open while physical channel is not!");
                 }
                 this.card = this.terminal.connect(parameterCardProtocol);
@@ -400,7 +400,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
             }
             this.channel = card.getBasicChannel();
         } catch (CardException e) {
-            throw new ChannelStateReaderException(e);
+            throw new KeypleReaderException("Error while opening Physical Channel",e);
         }
     }
 }

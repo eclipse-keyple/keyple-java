@@ -16,8 +16,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.SeRequest;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.plugin.AbstractStaticReader;
@@ -66,7 +65,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
      * Check if a SE is present in this reader. see {@link Reader#isSecureElementPresent()}
      * 
      * @return True if the SE is present, false otherwise
-     * @throws IOReaderException
+     * @throws KeypleReaderException
      */
     @Override
     public boolean isSePresent() throws NoStackTraceThrowable {
@@ -79,12 +78,12 @@ public class AndroidOmapiReader extends AbstractStaticReader {
      * 
      * @param selector: AID of the application to select
      * @return Array : index[0] : ATR and index[1] :FCI
-     * @throws IOReaderException
+     * @throws KeypleReaderException
      */
     @Override
     protected ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Short> successfulSelectionStatusCodes)
-            throws IOReaderException, KeypleApplicationSelectionException {
+            throws KeypleReaderException, KeypleApplicationSelectionException {
         ByteBuffer[] atrAndFci = new ByteBuffer[2];
         ByteBuffer aid = ((SeRequest.AidSelector) selector).getAidToSelect();
         try {
@@ -116,9 +115,9 @@ public class AndroidOmapiReader extends AbstractStaticReader {
 
             }
         } catch (IOException e) {
-            throw new IOReaderException(e.getMessage(), e.getCause());
+            throw new KeypleReaderException(e.getMessage(), e.getCause());
         } catch (SecurityException e) {
-            throw new IOReaderException(e.getMessage(), e.getCause());
+            throw new KeypleReaderException(e.getMessage(), e.getCause());
         } catch (NoSuchElementException e) {
             throw new KeypleApplicationSelectionException(e.getMessage());
         }
@@ -129,10 +128,10 @@ public class AndroidOmapiReader extends AbstractStaticReader {
     /**
      * Close session see {@link Session#close()}
      * 
-     * @throws IOReaderException
+     * @throws KeypleReaderException
      */
     @Override
-    protected void closePhysicalChannel() throws IOReaderException {
+    protected void closePhysicalChannel() throws KeypleReaderException {
         // close physical channel if exists
         if (openApplication != null) {
             openChannel.getSession().close();
@@ -146,10 +145,10 @@ public class AndroidOmapiReader extends AbstractStaticReader {
      * 
      * @param apduIn byte buffer containing the ingoing data
      * @return
-     * @throws ChannelStateReaderException
+     * @throws KeypleReaderException
      */
     @Override
-    protected ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
+    protected ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleReaderException {
         // Initialization
         Log.d(TAG, "Data Length to be sent to tag : " + apduIn.limit());
         Log.d(TAG, "Data in : " + ByteBufferUtils.toHex(apduIn));
@@ -159,7 +158,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
             dataOut = openChannel.transmit(data);
         } catch (IOException e) {
             e.printStackTrace();
-            throw new ChannelStateReaderException(e);
+            throw new KeypleReaderException("Error while transmitting APDU",e);
         }
         ByteBuffer out = ByteBuffer.wrap(dataOut);
         Log.d(TAG, "Data out : " + ByteBufferUtils.toHex(out));
@@ -171,10 +170,10 @@ public class AndroidOmapiReader extends AbstractStaticReader {
      * 
      * @param protocolFlag
      * @return true
-     * @throws IOReaderException
+     * @throws KeypleReaderException
      */
     @Override
-    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws IOReaderException {
+    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
         return protocolFlag.equals(ContactsProtocols.PROTOCOL_ISO7816_3);
     }
 }

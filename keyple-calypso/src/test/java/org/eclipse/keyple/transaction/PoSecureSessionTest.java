@@ -113,7 +113,7 @@ public class PoSecureSessionTest {
     }
 
     private void setBeforeTest(EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting)
-            throws IOReaderException {
+            throws KeypleReaderException {
 
         poPlainSecrureSession = new PoSecureSession(poReader, csmSessionReader, csmSetting);
         Mockito.when(poReader.transmit(Matchers.any(SeRequestSet.class)))
@@ -124,7 +124,7 @@ public class PoSecureSessionTest {
 
     @Test
     public void processOpeningTestKif0xFFKey0x03noCmdInside()
-            throws IOReaderException, ChannelStateReaderException,
+            throws KeypleReaderException, KeypleReaderException,
        IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
@@ -164,7 +164,7 @@ public class PoSecureSessionTest {
 
     @Test
     public void processOpeningTestKif0xFFKey0x01noCmdInside()
-            throws IOReaderException, ChannelStateReaderException
+            throws KeypleReaderException, KeypleReaderException
             , IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
@@ -204,7 +204,7 @@ public class PoSecureSessionTest {
 
     @Test
     public void processOpeningTestKif0xFFKey0x02noCmdInside()
-            throws IOReaderException, ChannelStateReaderException,
+            throws KeypleReaderException, KeypleReaderException,
             IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
@@ -245,7 +245,7 @@ public class PoSecureSessionTest {
 
     @Test
     public void processOpeningTestKif0xFFKey0x03WithCmdInside()
-            throws IOReaderException, ChannelStateReaderException,
+            throws KeypleReaderException, KeypleReaderException,
            IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
@@ -290,7 +290,7 @@ public class PoSecureSessionTest {
 
     // @Test(expected = UnexpectedReaderException.class)
     public void processOpeningTestKif0xFFKey0x03WithCmdInsideUnexpectedReaderException()
-            throws IOReaderException, ChannelStateReaderException,
+            throws KeypleReaderException, KeypleReaderException,
            IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
@@ -326,7 +326,7 @@ public class PoSecureSessionTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void processProceedingTestInconsitenteCommandException()
-            throws IOReaderException, ChannelStateReaderException,
+            throws KeypleReaderException, KeypleReaderException,
         IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
@@ -357,7 +357,7 @@ public class PoSecureSessionTest {
     }
 
     @Test
-    public void processProceedingTest() throws IOReaderException, ChannelStateReaderException,
+    public void processProceedingTest() throws KeypleReaderException, KeypleReaderException,
              IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
@@ -504,7 +504,7 @@ public class PoSecureSessionTest {
 
     // @Test
     // public void processIdentificationTest()
-    // throws IOReaderException, UnexpectedReaderException, ChannelStateReaderException,
+    // throws KeypleReaderException, UnexpectedReaderException, KeypleReaderException,
     // InvalidApduReaderException, ReaderTimeoutException, IllegalArgumentException {
     //
     // this.setBeforeTest(this.defaultKeyIndex);
@@ -548,7 +548,7 @@ public class PoSecureSessionTest {
     private SeResponse processOpeningTestKif0xFFKey(PoSecureSession.SessionAccessLevel accessLevel,
             byte sfi, byte recordNumber, List<ApduResponse> apduExpected,
             PoSendableInSession[] poCommandsInsideSession)
-            throws IOReaderException, IllegalArgumentException {
+            throws KeypleReaderException, IllegalArgumentException {
         return poPlainSecrureSession.processOpening(null, accessLevel, sfi, recordNumber,
                 poCommandsInsideSession != null ? Arrays.asList(poCommandsInsideSession) : null);
 

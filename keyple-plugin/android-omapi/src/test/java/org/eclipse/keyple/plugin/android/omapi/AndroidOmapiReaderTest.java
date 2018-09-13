@@ -23,7 +23,7 @@ import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
@@ -154,7 +154,7 @@ public class AndroidOmapiReaderTest {
 
     }
 
-    @Test(expected = IOReaderException.class)
+    @Test(expected = KeypleReaderException.class)
     public void transmitNotConnected() throws KeypleBaseException, IOException {
 
         // init
@@ -167,7 +167,7 @@ public class AndroidOmapiReaderTest {
         // test
         SeResponseSet seResponse = proxyReader.transmit(getCalypsoRequestSample());
 
-        // expected = IOReaderException.class
+        // expected = KeypleReaderException.class
     }
 
 

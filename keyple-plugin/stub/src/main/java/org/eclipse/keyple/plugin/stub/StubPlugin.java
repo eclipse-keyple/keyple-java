@@ -14,7 +14,7 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
@@ -52,7 +52,7 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
     }
 
     @Override
-    protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
+    protected SortedSet<AbstractObservableReader> getNativeReaders() throws KeypleReaderException {
         // init Stub Readers list
         SortedSet<AbstractObservableReader> nativeReaders =
                 new ConcurrentSkipListSet<AbstractObservableReader>();
@@ -98,7 +98,7 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
      * 
      * @param name
      */
-    public void unplugReader(String name) throws IOReaderException {
+    public void unplugReader(String name) throws KeypleReaderException {
         ProxyReader reader = getNativeReader(name);
         if (reader == null) {
             logger.warn("No reader found with name " + name);

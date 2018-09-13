@@ -12,8 +12,6 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Arrays;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Before;
@@ -50,7 +48,7 @@ public class TagProxyTest {
 
     // init before each test
     @Before
-    public void SetUp() throws IOReaderException {
+    public void SetUp() throws KeypleReaderException {
         initIsoDep();
         initMifare();
         initMifareUL();
@@ -62,27 +60,27 @@ public class TagProxyTest {
      * PUBLIC METHODS
      */
     @Test
-    public void getTagProxyIsoDep() throws IOReaderException {
+    public void getTagProxyIsoDep() throws KeypleReaderException {
         TagProxy tagProxy = TagProxy.getTagProxy(tagIso);
         assertEquals("android.nfc.tech.IsoDep", tagProxy.getTech());
     }
 
     @Test
-    public void getTagProxyMifareClassic() throws IOReaderException {
+    public void getTagProxyMifareClassic() throws KeypleReaderException {
         TagProxy tagProxy = TagProxy.getTagProxy(tagMifare);
         assertEquals("android.nfc.tech.MifareClassic", tagProxy.getTech());
 
     }
 
     @Test
-    public void getTagProxyMifareUltralight() throws IOReaderException {
+    public void getTagProxyMifareUltralight() throws KeypleReaderException {
         TagProxy tagProxy = TagProxy.getTagProxy(tagMifareUL);
         assertEquals("android.nfc.tech.MifareUltralight", tagProxy.getTech());
 
     }
 
-    @Test(expected = IOReaderException.class)
-    public void getTagProxyNull() throws IOReaderException {
+    @Test(expected = KeypleReaderException.class)
+    public void getTagProxyNull() throws KeypleReaderException {
         Tag tag = Mockito.mock(Tag.class);
         when(tag.getTechList()).thenReturn(new String[] {"unknown tag"});
         TagProxy tagProxy = TagProxy.getTagProxy(tag);

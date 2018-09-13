@@ -11,7 +11,7 @@ package org.eclipse.keyple.plugin.stub;
 
 import org.eclipse.keyple.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.junit.Assert;
@@ -29,7 +29,7 @@ public class StubPluginTest {
     Logger logger = LoggerFactory.getLogger(StubPluginTest.class);
 
     @Before
-    public void setUp() throws KeypleReaderException, IOReaderException {
+    public void setUp() throws KeypleReaderException, KeypleReaderException {
         logger.info("Reset Stubplugin readers and stubplugin observers");
 
         stubPlugin = StubPlugin.getInstance(); // singleton
@@ -67,7 +67,7 @@ public class StubPluginTest {
     }
 
     @Test
-    public void testB_UnplugReaders() throws KeypleReaderException, IOReaderException {
+    public void testB_UnplugReaders() throws KeypleReaderException, KeypleReaderException {
         // add a reader
         stubPlugin.plugStubReader("test");
         assert (stubPlugin.getReaders().size() == 1);
@@ -88,7 +88,7 @@ public class StubPluginTest {
     }
 
     @Test
-    public void testC_PlugSameReaderTwice() throws KeypleReaderException, IOReaderException {
+    public void testC_PlugSameReaderTwice() throws KeypleReaderException, KeypleReaderException {
         stubPlugin.plugStubReader("test");
         stubPlugin.plugStubReader("test");
         logger.debug("Stubplugin readers size {} ", stubPlugin.getReaders().size());
@@ -101,7 +101,7 @@ public class StubPluginTest {
 
 
     @Test
-    public void testD_GetName() throws IOReaderException {
+    public void testD_GetName() throws KeypleReaderException {
         assert (stubPlugin.getName() != null);
     }
 

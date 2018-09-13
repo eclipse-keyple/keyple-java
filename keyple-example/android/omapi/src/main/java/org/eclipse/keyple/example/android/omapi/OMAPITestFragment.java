@@ -25,7 +25,6 @@ import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -175,7 +174,7 @@ public class OMAPITestFragment extends Fragment {
                 }
             });
 
-        } catch (final IOReaderException e) {
+        } catch (final KeypleReaderException e) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

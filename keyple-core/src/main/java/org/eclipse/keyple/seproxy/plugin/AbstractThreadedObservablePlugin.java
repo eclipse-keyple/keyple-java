@@ -12,7 +12,7 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,9 +45,9 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      * Returns the list of names of all connected readers
      * 
      * @return readers names list
-     * @throws IOReaderException if a reader error occurs
+     * @throws KeypleReaderException if a reader error occurs
      */
-    abstract protected SortedSet<String> getNativeReadersNames() throws IOReaderException;
+    abstract protected SortedSet<String> getNativeReadersNames() throws KeypleReaderException;
 
     /**
      * Constructor

@@ -14,7 +14,8 @@ import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 
 //TODO concern only PoSecureSession, should be moved to calypso package, what name for this exception?
-public class InvalidMessageException extends IOReaderException {
+@Deprecated
+public class InvalidMessageException extends KeypleReaderException {
 
     public enum Type {
         PO, CSM
