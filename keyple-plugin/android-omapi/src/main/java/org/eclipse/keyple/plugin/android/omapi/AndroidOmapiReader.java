@@ -57,7 +57,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
     }
 
     @Override
-    public void setParameter(String key, String value) throws IOException {
+    public void setParameter(String key, String value) {
         Log.w(TAG, "No parameters are supported by AndroidOmapiReader");
         parameters.put(key, value);
     }

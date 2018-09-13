@@ -66,7 +66,7 @@ public class PoSecureSessionTest {
     private SeResponseSet responseOpenSessionError;
 
     @Before
-    public void setUp() throws InconsistentParameterValueException {
+    public void setUp(){
         samchallenge = ByteBuffer.wrap(new byte[] {0x01, 0x02, 0x03, 0x04});
 
         ApduResponse apduResponse = generateApduResponseOpenSessionCmd();

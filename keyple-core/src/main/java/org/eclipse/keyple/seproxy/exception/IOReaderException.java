@@ -8,13 +8,13 @@
 
 package org.eclipse.keyple.seproxy.exception;
 
-import java.io.IOException;
 import org.eclipse.keyple.seproxy.ProxyReader;
 
 /**
  * Any IO that occur around the {@link ProxyReader}
  */
-public class IOReaderException extends IOException {
+public class IOReaderException extends KeypleReaderException
+{
     public IOReaderException(String message, Throwable cause) {
         super(message, cause);
     }

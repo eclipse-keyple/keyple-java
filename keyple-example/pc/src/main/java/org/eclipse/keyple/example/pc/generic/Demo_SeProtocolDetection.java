@@ -22,6 +22,7 @@ import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
@@ -200,7 +201,7 @@ public class Demo_SeProtocolDetection implements ObservableReader.ReaderObserver
      * @throws IOReaderException if a reader error occurs
      * @throws InterruptedException if thread error occurs
      */
-    public static void main(String[] args) throws IOException, KeypleReaderException {
+    public static void main(String[] args) throws IllegalArgumentException, KeypleBaseException {
         // get the SeProxyService instance
         SeProxyService seProxyService = SeProxyService.getInstance();
 

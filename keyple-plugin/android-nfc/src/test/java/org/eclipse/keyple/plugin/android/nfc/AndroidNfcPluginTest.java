@@ -15,6 +15,8 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +58,7 @@ public class AndroidNfcPluginTest {
     }
 
     @Test
-    public void setParameters() throws IOException {
+    public void setParameters() throws KeypleBaseException {
 
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("key1", "value1");

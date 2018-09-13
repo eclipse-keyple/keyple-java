@@ -108,7 +108,7 @@ public class StubReaderTest {
     }
 
     @Test
-    public void transmit_Hoplink_Sucessfull() throws IOException {
+    public void transmit_Hoplink_Sucessfull() throws IOReaderException {
         // init Request
         SeRequestSet requests = getRequestIsoDepSetSample();
 

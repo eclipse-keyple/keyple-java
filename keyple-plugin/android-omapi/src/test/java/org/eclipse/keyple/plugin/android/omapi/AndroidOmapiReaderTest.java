@@ -24,6 +24,7 @@ import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
@@ -85,7 +86,7 @@ public class AndroidOmapiReaderTest {
     }
 
     @Test
-    public void setParameters() throws IOException {
+    public void setParameters() throws KeypleBaseException {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("key1", "value1");
         proxyReader.setParameters(parameters);
@@ -94,7 +95,7 @@ public class AndroidOmapiReaderTest {
     }
 
     @Test
-    public void setParameter() throws IOException {
+    public void setParameter() throws KeypleBaseException {
         proxyReader.setParameter("key2", "value2");
         Assert.assertTrue(proxyReader.getParameters().size() == 1);
         Assert.assertTrue(proxyReader.getParameters().get("key2").equals("value2"));
@@ -105,7 +106,7 @@ public class AndroidOmapiReaderTest {
      */
 
     @Test
-    public void transmitHoplinkSuccessfull() throws IOException {
+    public void transmitHoplinkSuccessfull() throws KeypleBaseException {
         // default init
 
         // test
@@ -118,7 +119,7 @@ public class AndroidOmapiReaderTest {
     }
 
     @Test
-    public void transmitNoAid() throws IOException {
+    public void transmitNoAid() throws KeypleBaseException, IOException {
 
         // init
         omapiReader = mockReaderWithNoAid();
@@ -133,7 +134,7 @@ public class AndroidOmapiReaderTest {
     }
 
     @Test
-    public void transmitWrongProtocol() throws IOException {
+    public void transmitWrongProtocol() throws KeypleBaseException {
         // init
         String poAid = "A000000291A000000191";
         ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
@@ -154,7 +155,7 @@ public class AndroidOmapiReaderTest {
     }
 
     @Test(expected = IOReaderException.class)
-    public void transmitNotConnected() throws IOException {
+    public void transmitNotConnected() throws KeypleBaseException, IOException {
 
         // init
         Reader omapiReader = Mockito.mock(Reader.class);
@@ -201,7 +202,7 @@ public class AndroidOmapiReaderTest {
 
     }
 
-    Reader mockReaderWithNoAid() throws IOException {
+    Reader mockReaderWithNoAid() throws KeypleBaseException, IOException {
 
         Reader omapiReader = Mockito.mock(Reader.class);
         Session session = Mockito.mock(Session.class);

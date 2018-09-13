@@ -76,9 +76,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
             setParameter(SETTING_KEY_MODE, null);
             setParameter(SETTING_KEY_DISCONNECT, null);
             setParameter(SETTING_KEY_LOGGING, null);
-        } catch (IOReaderException ex) {
-            // It's actually impossible to reach that state
-            throw new IllegalStateException("Could not initialize properly", ex);
+        } catch (KeypleBaseException ex) {
+            //can not fail with null value
         }
     }
 
@@ -240,11 +239,14 @@ public class PcscReader extends AbstractThreadedLocalReader {
      *
      * @param name Parameter name
      * @param value Parameter value
-     * @throws IOReaderException This method can fail when disabling the exclusive mode as it's
+     * @throws KeypleBaseException This method can fail when disabling the exclusive mode as it's
      *         executed instantly
+     * @throws IllegalArgumentException when parameter is wrong
+     *
+     *
      */
     @Override
-    public void setParameter(String name, String value) throws IOReaderException {
+    public void setParameter(String name, String value) throws IllegalArgumentException, KeypleBaseException {
         if (logging) {
             logger.trace("[{}] setParameter => PCSC: Set a parameter. NAME = {}, VALUE = {}",
                     this.getName(), name, value);
@@ -260,7 +262,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
             } else if (value.equals(SETTING_PROTOCOL_T1)) {
                 parameterCardProtocol = "T=1";
             } else {
-                throw new InconsistentParameterValueException("Bad protocol", name, value);
+                throw new IllegalArgumentException("Bad protocol "+  name + " : " +  value);
             }
         } else if (name.equals(SETTING_KEY_MODE)) {
             if (value == null || value.equals(SETTING_MODE_SHARED)) {
@@ -268,14 +270,14 @@ public class PcscReader extends AbstractThreadedLocalReader {
                     try {
                         card.endExclusive();
                     } catch (CardException e) {
-                        throw new IOReaderException("Couldn't disable exclusive mode", e);
+                        throw new KeypleReaderException("Couldn't disable exclusive mode", e);
                     }
                 }
                 cardExclusiveMode = false;
             } else if (value.equals(SETTING_MODE_EXCLUSIVE)) {
                 cardExclusiveMode = true;
             } else {
-                throw new InconsistentParameterValueException(name, value);
+                throw new IllegalArgumentException("Parameter value not supported " + name  + " : " + value);
             }
         } else if (name.equals(SETTING_KEY_THREAD_TIMEOUT)) {
             // TODO use setter
@@ -285,8 +287,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 long timeout = Long.parseLong(value);
 
                 if (timeout <= 0) {
-                    throw new InconsistentParameterValueException(
-                            "Timeout has to be of at least 1ms", name, value);
+                    throw new IllegalArgumentException(
+                            "Timeout has to be of at least 1ms "+  name +  value);
                 }
 
                 threadWaitTimeout = timeout;
@@ -298,16 +300,16 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 cardReset = false;
             } else if (value.equals(SETTING_DISCONNECT_EJECT)
                     || value.equals(SETTING_DISCONNECT_LEAVE)) {
-                throw new InconsistentParameterValueException(
-                        "This disconnection parameter is not supported by this plugin", name,
+                throw new IllegalArgumentException(
+                        "This disconnection parameter is not supported by this plugin" + name + " : " +
                         value);
             } else {
-                throw new InconsistentParameterValueException(name, value);
+                throw new IllegalArgumentException("Parameters not supported : " + name +" : "+ value);
             }
         } else if (name.equals(SETTING_KEY_LOGGING)) {
             logging = Boolean.parseBoolean(value); // default is null and perfectly acceptable
         } else {
-            throw new InconsistentParameterValueException("This parameter is unknown !", name,
+            throw new IllegalArgumentException("This parameter is unknown !" +  name + " : " +
                     value);
         }
     }

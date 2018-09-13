@@ -50,7 +50,7 @@ public class SmartCardIOReaderTest {
     private byte[] responseApduByte;
 
     @Before
-    public void setUp() throws CardException, IOReaderException {
+    public void setUp() throws CardException, IllegalArgumentException, KeypleBaseException {
         when(terminal.connect(any(String.class))).thenReturn(card);
         when(card.getBasicChannel()).thenReturn(channel);
 
@@ -70,7 +70,7 @@ public class SmartCardIOReaderTest {
     }
 
     // TODO redesign @Test
-    public void testGettersSetters() throws IOException {
+    public void testGettersSetters() throws IllegalArgumentException, KeypleBaseException {
         // this.reader = new PcscReader(terminal, readerName);
         reader.setParameter("TOTO", "TOTO");
         assertEquals(reader.getParameters().size(), 1);

@@ -107,7 +107,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
      * @throws IOException
      */
     @Override
-    public void setParameter(String key, String value) throws IOException {
+    public void setParameter(String key, String value) throws IllegalArgumentException {
         LOG.info("AndroidNfcReader supports the following parameters");
         LOG.info(READER_NAME,
                 "FLAG_READER_SKIP_NDEF_CHECK:\"int\", FLAG_READER_NO_PLATFORM_SOUNDS:\"int\", FLAG_READER_PRESENCE_CHECK_DELAY:\"int\"");
@@ -126,7 +126,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
         } else {
 
             LOG.warn("Unrecognized parameter : " + key);
-            throw new IOException("Unrecognized  parameter");
+            throw new IllegalArgumentException("Unrecognized parameter " + key + " : "+ value);
         }
 
     }

@@ -13,6 +13,8 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Arrays;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -87,7 +89,7 @@ public class TagProxyTest {
     }
 
     @Test(expected = Test.None.class /* no exception expected */)
-    public void getTag() throws IOReaderException {
+    public void getTag() throws KeypleReaderException, IOException{
 
         // test
         TagProxy tagProxy = TagProxy.getTagProxy(tagIso);
@@ -95,7 +97,7 @@ public class TagProxyTest {
     }
 
     @Test(expected = Test.None.class /* no exception expected */)
-    public void connect() throws IOException {
+    public void connect() throws KeypleReaderException, IOException {
         // test
         TagProxy tagProxy = TagProxy.getTagProxy(tagIso);
 
@@ -103,7 +105,7 @@ public class TagProxyTest {
     }
 
     @Test(expected = Test.None.class /* no exception expected */)
-    public void close() throws IOException {
+    public void close() throws KeypleReaderException, IOException {
 
         // test
         TagProxy tagProxy = TagProxy.getTagProxy(tagIso);
@@ -112,7 +114,7 @@ public class TagProxyTest {
     }
 
     @Test(expected = Test.None.class /* no exception expected */)
-    public void isConnected() throws IOException {
+    public void isConnected() throws KeypleReaderException, IOException {
 
         // test
         TagProxy tagProxy = TagProxy.getTagProxy(tagIso);
@@ -122,7 +124,7 @@ public class TagProxyTest {
 
 
     @Test(expected = Test.None.class /* no exception expected */)
-    public void transceive() throws IOException {
+    public void transceive() throws KeypleReaderException, IOException {
 
         TagProxy tagProxy = TagProxy.getTagProxy(tagIso);
 
@@ -131,7 +133,7 @@ public class TagProxyTest {
 
 
     @Test(expected = Test.None.class /* no exception expected */)
-    public void getATRMifare() throws IOException {
+    public void getATRMifare() throws KeypleReaderException, IOException {
 
         TagProxy tagProxy = TagProxy.getTagProxy(tagMifare);
 
@@ -140,7 +142,7 @@ public class TagProxyTest {
     }
 
     @Test(expected = Test.None.class /* no exception expected */)
-    public void getATRIsodep() throws IOException {
+    public void getATRIsodep() throws KeypleReaderException, IOException {
         // test
         TagProxy tagProxy = TagProxy.getTagProxy(tagIso);
 
@@ -148,7 +150,7 @@ public class TagProxyTest {
     }
 
     @Test(expected = Test.None.class /* no exception expected */)
-    public void getATRMifareUL() throws IOException {
+    public void getATRMifareUL() throws KeypleReaderException, IOException {
 
         TagProxy tagProxy = TagProxy.getTagProxy(tagMifareUL);
         Assert.assertTrue(Arrays.equals(tagProxy.getATR(),

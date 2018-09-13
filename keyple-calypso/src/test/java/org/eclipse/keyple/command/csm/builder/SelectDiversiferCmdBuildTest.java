@@ -52,7 +52,7 @@ public class SelectDiversiferCmdBuildTest {
     // Removed temporarily @Test
     public void selectDiversifier()
             throws IOReaderException, ChannelStateReaderException
-            , IllegalArgumentException, InconsistentParameterValueException {
+            , IllegalArgumentException {
 
         ApduRequest apdu = apduCommandBuilder.getApduRequest();
         ApduRequests.add(apdu);

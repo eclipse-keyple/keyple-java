@@ -19,6 +19,7 @@ import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
@@ -59,7 +60,7 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
     }
 
     @Override
-    public void setParameter(String key, String value) throws IOException {
+    public void setParameter(String key, String value) throws IllegalArgumentException, KeypleBaseException {
 
     }
 

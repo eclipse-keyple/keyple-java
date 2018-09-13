@@ -70,7 +70,7 @@ public class AndroidNfcPlugin extends AbstractStaticPlugin {
     }
 
     @Override
-    public void setParameter(String key, String value) throws IOException {
+    public void setParameter(String key, String value) {
         LOG.warn("Android NFC Plugin does not support parameters, see AndroidNfcReader instead");
         parameters.put(key, value);
     }
