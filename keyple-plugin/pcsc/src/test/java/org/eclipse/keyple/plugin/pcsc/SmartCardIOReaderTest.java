@@ -108,7 +108,7 @@ public class SmartCardIOReaderTest {
     // TODO redesign @Test
     public void testTransmitCardNotPresent()
             throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
+            IOReaderException, ReaderTimeoutException {
 
         when(terminal.isCardPresent()).thenReturn(false);
         ApduRequest apduRequestMF =
@@ -132,7 +132,7 @@ public class SmartCardIOReaderTest {
     // TODO redesign @Test
     public void testTransmitToCardWithoutAidToSelect()
             throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
+            IOReaderException, ReaderTimeoutException {
 
         atr = new ATR(new byte[] {(byte) 0x85, 0x17, 0x00, 0x01});
         when(terminal.isCardPresent()).thenReturn(true);
@@ -170,7 +170,7 @@ public class SmartCardIOReaderTest {
     // TODO redesign @Test
     public void testTransmitToCardWithAidToSelect()
             throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
+            IOReaderException, ReaderTimeoutException {
 
 
         when(terminal.isCardPresent()).thenReturn(true);
@@ -207,7 +207,7 @@ public class SmartCardIOReaderTest {
     // TODO redesign @Test
     public void testTransmitToCardAndDisconnect()
             throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
+            IOReaderException, ReaderTimeoutException {
 
 
         when(terminal.isCardPresent()).thenReturn(true);

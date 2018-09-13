@@ -13,7 +13,8 @@ import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 
 /**
  * Observable plugin. These plugin can report when a reader is added or removed.
@@ -51,9 +52,12 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginE
      * The list is initialized in the constructor and may be updated in background in the case of a
      * threaded plugin {@link AbstractThreadedObservablePlugin}
      * 
-     * @return the current reader list
+     * @return the current reader list, can be null if the
      */
-    public final SortedSet<AbstractObservableReader> getReaders() {
+    public final SortedSet<AbstractObservableReader> getReaders() throws KeypleReaderException {
+        if(readers ==null){
+            throw new KeypleReaderException("List of readers has not been initialized");
+        }
         return readers;
     }
 
@@ -92,14 +96,14 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginE
      * 
      * @param name of the reader
      * @return the reader
-     * @throws UnexpectedReaderException if the wanted reader is not found
+     * @throws KeypleReaderException if the wanted reader is not found
      */
-    public final ProxyReader getReader(String name) throws UnexpectedReaderException {
+    public final ProxyReader getReader(String name) throws KeypleReaderNotFoundException {
         for (ProxyReader reader : readers) {
             if (reader.getName().equals(name)) {
                 return reader;
             }
         }
-        throw new UnexpectedReaderException("Reader " + name + "not found.");
+        throw new KeypleReaderNotFoundException("Reader " + name + "not found.");
     }
 }

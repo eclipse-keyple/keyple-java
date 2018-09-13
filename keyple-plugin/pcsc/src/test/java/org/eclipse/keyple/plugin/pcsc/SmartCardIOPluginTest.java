@@ -14,6 +14,7 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +53,7 @@ public class SmartCardIOPluginTest {
     }
 
     @Test
-    public void testGetReaders() throws CardException, IOReaderException {
+    public void testGetReaders() throws KeypleReaderException {
         assertEquals(plugin.getReaders().size(), 1);
         assertEquals("PcscPlugin", plugin.getName());
     }

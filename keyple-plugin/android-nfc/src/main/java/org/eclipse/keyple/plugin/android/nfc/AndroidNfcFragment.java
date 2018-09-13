@@ -10,6 +10,7 @@ package org.eclipse.keyple.plugin.android.nfc;
 
 import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import android.app.Fragment;
@@ -109,26 +110,27 @@ public class AndroidNfcFragment extends Fragment {
         Intent intent = getActivity().getIntent();
         LOG.debug("Intent type : " + intent.getAction());
 
-        if (intent.getAction() != null
-                && intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED)) {
-            LOG.debug("Handle ACTION TECH intent");
-
-            ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().first())
-                    .processIntent(intent);
-
-        } else {
-            LOG.debug("Intent is not of type ACTION TECH, do not process");
-
-        }
-
         // Enable Reader Mode for NFC Adapter
         try {
+
+            if (intent.getAction() != null
+                    && intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED)) {
+                LOG.debug("Handle ACTION TECH intent");
+
+                ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().first())
+                        .processIntent(intent);
+
+            } else {
+                LOG.debug("Intent is not of type ACTION TECH, do not process");
+
+            }
+
             ((AndroidNfcReader) SeProxyService.getInstance().getPlugins().first().getReaders()
                     .first()).enableNFCReaderMode(getActivity());
 
-        } catch (IOReaderException e) {
+        } catch (KeypleReaderException e) {
             e.printStackTrace();
-            LOG.error("NFC Reader is not ready");
+            LOG.error("KeypleReaders are not ready");
         }
 
 
@@ -145,7 +147,7 @@ public class AndroidNfcFragment extends Fragment {
             ((AndroidNfcReader) SeProxyService.getInstance().getPlugins().first().getReaders()
                     .first()).disableNFCReaderMode(getActivity());
 
-        } catch (IOReaderException e) {
+        } catch (KeypleReaderException e) {
             e.printStackTrace();
             LOG.error("NFC Reader is not ready");
         }

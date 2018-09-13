@@ -13,10 +13,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.*;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
-import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
+import org.eclipse.keyple.seproxy.exception.*;
 
 
 public class Demo_ObservableReaderNotification {
@@ -29,7 +26,7 @@ public class Demo_ObservableReaderNotification {
         pluginObserver = new SpecificPluginObserver(readerObserver);
     }
 
-    private static void listReaders() throws IOReaderException {
+    private static void listReaders() throws KeypleReaderException {
 
         int pluginIndex = 0;
         for (ReaderPlugin plugin : SeProxyService.getInstance().getPlugins()) {
@@ -88,7 +85,7 @@ public class Demo_ObservableReaderNotification {
             }
             try {
                 listReaders();
-            } catch (IOReaderException e) {
+            } catch (KeypleReaderException e) {
                 e.printStackTrace();
             }
         }
@@ -116,9 +113,9 @@ public class Demo_ObservableReaderNotification {
             try {
                 reader = SeProxyService.getInstance().getPlugin(event.getPluginName())
                         .getReader(event.getReaderName());
-            } catch (UnexpectedPluginException e) {
+            } catch (KeyplePluginNotFoundException e) {
                 e.printStackTrace();
-            } catch (UnexpectedReaderException e) {
+            } catch (KeypleReaderNotFoundException e) {
                 e.printStackTrace();
             }
             switch (event.getEventType()) {
@@ -167,9 +164,9 @@ public class Demo_ObservableReaderNotification {
                         waitBeforeEnd.notify();
                     }
                 }
-            } catch (IOReaderException e) {
+            } catch (KeypleReaderException e) {
                 e.printStackTrace();
-            } catch (UnexpectedPluginException e) {
+            } catch (KeyplePluginNotFoundException e) {
                 e.printStackTrace();
             }
         }

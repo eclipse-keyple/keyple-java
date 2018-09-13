@@ -33,6 +33,7 @@ import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -119,7 +120,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
              * AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC);
              */
 
-        } catch (IOReaderException e) {
+        } catch (KeypleReaderException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
@@ -255,6 +256,8 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                 }
             });
 
+        } catch (KeypleReaderException e) {
+            e.printStackTrace();
         } catch (IOReaderException e) {
             e.printStackTrace();
         }
@@ -282,7 +285,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                 fm.beginTransaction().remove(f).commit();
             }
 
-        } catch (IOReaderException e) {
+        } catch (KeypleReaderException e) {
             e.printStackTrace();
         }
     }

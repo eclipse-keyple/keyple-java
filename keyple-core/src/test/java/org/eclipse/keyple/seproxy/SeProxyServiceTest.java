@@ -11,7 +11,8 @@ package org.eclipse.keyple.seproxy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
+
+import org.eclipse.keyple.seproxy.exception.KeyplePluginNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,7 +65,7 @@ public class SeProxyServiceTest {
     }
 
     @Test
-    public void testGetPlugin() throws Exception {
+    public void testGetPlugin() throws KeyplePluginNotFoundException {
         // init
 
         ConcurrentSkipListSet<ReaderPlugin> plugins = getPluginList();
@@ -75,7 +76,7 @@ public class SeProxyServiceTest {
         assertEquals(plugin1, proxyService.getPlugin(PLUGIN_NAME));
     }
 
-    @Test(expected = UnexpectedPluginException.class)
+    @Test(expected = KeyplePluginNotFoundException.class)
     public void testGetPluginFail() throws Exception {
 
         // init

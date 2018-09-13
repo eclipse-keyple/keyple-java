@@ -22,6 +22,7 @@ import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSettingList;
@@ -176,11 +177,10 @@ public class Demo_SeProtocolDetection implements ObservableReader.ReaderObserver
      * @param seProxyService SE Proxy service
      * @param pattern Pattern
      * @return ProxyReader
-     * @throws IOReaderException Any error with the card communication TODO make this method a
-     *         generic helper?
+     * @throws KeypleReaderException Readers are not initialized
      */
     private static ProxyReader getReaderByName(SeProxyService seProxyService, String pattern)
-            throws IOReaderException {
+            throws KeypleReaderException {
         Pattern p = Pattern.compile(pattern);
         for (ReaderPlugin plugin : seProxyService.getPlugins()) {
             for (ProxyReader reader : plugin.getReaders()) {
@@ -201,7 +201,7 @@ public class Demo_SeProtocolDetection implements ObservableReader.ReaderObserver
      * @throws InterruptedException if thread error occurs
      */
     public static void main(String[] args)
-            throws IOException, IOReaderException, InterruptedException {
+            throws IOException, KeypleReaderException {
         // get the SeProxyService instance
         SeProxyService seProxyService = SeProxyService.getInstance();
 
