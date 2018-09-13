@@ -12,6 +12,7 @@ package org.eclipse.keyple.seproxy.exception;
  * When the card channel cannot be opened or written to. It's just an other type of a
  * {@link IOReaderException}
  */
+//TODO keep or replace by IOReaderException?
 public class ChannelStateReaderException extends IOReaderException {
     public ChannelStateReaderException(Exception ex) {
         super(ex);

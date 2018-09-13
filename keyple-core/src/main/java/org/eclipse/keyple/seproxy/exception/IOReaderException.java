@@ -13,6 +13,7 @@ import org.eclipse.keyple.seproxy.ProxyReader;
 /**
  * Any IO that occur around the {@link ProxyReader}
  */
+//TODO what name for this exception?
 public class IOReaderException extends KeypleReaderException
 {
     public IOReaderException(String message, Throwable cause) {
