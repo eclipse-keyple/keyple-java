@@ -18,8 +18,8 @@ import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
 import org.eclipse.keyple.seproxy.plugin.AbstractStaticReader;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -84,7 +84,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
     @Override
     protected ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Short> successfulSelectionStatusCodes)
-            throws IOReaderException, SelectApplicationException {
+            throws IOReaderException, KeypleApplicationSelectionException {
         ByteBuffer[] atrAndFci = new ByteBuffer[2];
         ByteBuffer aid = ((SeRequest.AidSelector) selector).getAidToSelect();
         try {
@@ -120,7 +120,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
         } catch (SecurityException e) {
             throw new IOReaderException(e.getMessage(), e.getCause());
         } catch (NoSuchElementException e) {
-            throw new SelectApplicationException(e.getMessage());
+            throw new KeypleApplicationSelectionException(e.getMessage());
         }
 
         return atrAndFci;
