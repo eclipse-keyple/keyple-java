@@ -120,13 +120,17 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
     public void update(ReaderEvent event) {
         switch (event.getEventType()) {
             case SE_INSERTED:
-                logger.info("SE INSERTED");
-                logger.info("Start processing of a Calypso PO");
+                if (logger.isInfoEnabled()) {
+                    logger.info("SE INSERTED");
+                    logger.info("Start processing of a Calypso PO");
+                }
                 operatePoTransactions();
                 break;
             case SE_REMOVAL:
-                logger.info("SE REMOVED");
-                logger.info("Wait for Calypso PO");
+                if (logger.isInfoEnabled()) {
+                    logger.info("SE REMOVED");
+                    logger.info("Wait for Calypso PO");
+                }
                 break;
             default:
                 logger.error("IO Error");
@@ -220,7 +224,10 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
         List<ApduResponse> poAnticipatedResponses = new ArrayList<ApduResponse>();
         poAnticipatedResponses.add(new ApduResponse(ByteBufferUtils.fromHex("9000"), null));
 
-        logger.info("========= PO Hoplink session ======= Opening ============================");
+        if (logger.isInfoEnabled()) {
+            logger.info(
+                    "========= PO Hoplink session ======= Opening ============================");
+        }
         PoSecureSession.SessionAccessLevel accessLevel =
                 PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT;
 
@@ -231,19 +238,26 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
         poTransaction.processOpening(fciData, accessLevel, (byte) 0x1A, (byte) 0x01,
                 filesToReadInSession);
 
-        logger.info(
-                "========= PO Hoplink session ======= Processing of PO commands =======================");
+        if (logger.isInfoEnabled()) {
+            logger.info(
+                    "========= PO Hoplink session ======= Processing of PO commands =======================");
+        }
         poTransaction.processPoCommands(filesToReadInSession);
 
-        logger.info("========= PO Hoplink session ======= Closing ============================");
+        if (logger.isInfoEnabled()) {
+            logger.info(
+                    "========= PO Hoplink session ======= Closing ============================");
+        }
         poTransaction.processClosing(null, null, HoplinkInfoAndSampleCommands.poRatificationCommand,
                 false);
         // poTransaction.processClosing(poModificationCommands, poAnticipatedResponses,
         // HoplinkInfoAndSampleCommands.poRatificationCommand, false);
 
         if (poTransaction.isSuccessful()) {
-            logger.info(
-                    "========= PO Hoplink session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            if (logger.isInfoEnabled()) {
+                logger.info(
+                        "========= PO Hoplink session ======= SUCCESS !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
         } else {
             logger.error(
                     "========= PO Hoplink session ======= ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -307,18 +321,20 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
              * we expect up to 3 responses, only one should be not null since the selection process
              * stops at the first successful selection
              */
-            for (Iterator<SeResponse> seRespIterator = seResponses.iterator(); seRespIterator
-                    .hasNext();) {
-                SeResponse seResponse = seRespIterator.next();
-                if (seResponse != null) {
-                    printSelectAppResponseStatus(String.format("Selection case #%d", responseIndex),
-                            seReqIterator.next(), seResponse);
+            if (logger.isInfoEnabled()) {
+                for (Iterator<SeResponse> seRespIterator = seResponses.iterator(); seRespIterator
+                        .hasNext();) {
+                    SeResponse seResponse = seRespIterator.next();
+                    if (seResponse != null) {
+                        printSelectAppResponseStatus(
+                                String.format("Selection case #%d", responseIndex),
+                                seReqIterator.next(), seResponse);
+                    }
+                    responseIndex++;
                 }
-                responseIndex++;
             }
 
             PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting);
-            Thread.sleep(100);
             /*
              * If the Hoplink selection succeeded we should have 2 responses and the 2nd one not
              * null
@@ -328,7 +344,7 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
                 profiler.start("Hoplink1");
                 doHoplinkReadWriteTransaction(poTransaction, fciData, true);
             } else {
-                logger.info("No Hoplink transaction. SeResponse to Hoplink selection was null.");
+                logger.error("No Hoplink transaction. SeResponse to Hoplink selection was null.");
             }
 
             profiler.stop();
