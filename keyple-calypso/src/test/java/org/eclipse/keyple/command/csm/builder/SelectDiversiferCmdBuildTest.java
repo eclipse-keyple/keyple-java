@@ -51,7 +51,7 @@ public class SelectDiversiferCmdBuildTest {
     // TODO: rework this test and suppress SeRequest and SeResponse dependencies
     // Removed temporarily @Test
     public void selectDiversifier()
-            throws IOReaderException, ChannelStateReaderException, InvalidApduReaderException
+            throws IOReaderException, ChannelStateReaderException
             , IllegalArgumentException, InconsistentParameterValueException {
 
         ApduRequest apdu = apduCommandBuilder.getApduRequest();
