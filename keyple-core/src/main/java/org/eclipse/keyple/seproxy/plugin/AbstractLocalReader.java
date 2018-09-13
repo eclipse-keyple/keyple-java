@@ -33,9 +33,11 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     private ByteBuffer aidCurrentlySelected;
     private ApduResponse fciDataSelected;
     private ApduResponse atrData;
+    private long before; // timestamp recorder
 
     public AbstractLocalReader(String pluginName, String readerName) {
         super(pluginName, readerName);
+        this.before = System.nanoTime();
     }
 
     /**
@@ -93,10 +95,12 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     protected final ApduResponse processApduRequest(ApduRequest apduRequest)
             throws ChannelStateReaderException {
         ApduResponse apduResponse;
-        long before = 0;
         if (logger.isTraceEnabled()) {
-            logger.trace("[{}] processApduRequest => {}.", this.getName(), apduRequest);
-            before = System.nanoTime();
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
+            this.before = timeStamp;
+            logger.trace("[{}] processApduRequest => {}, elapsed {} ms.", this.getName(),
+                    apduRequest, elapsedMs);
         }
         /*
          * Fix buffer position before sending data We shouldn't have to re-use the buffer that was
@@ -115,7 +119,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         }
 
         if (logger.isTraceEnabled()) {
-            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
+            this.before = timeStamp;
             logger.trace("[{}] processApduRequest => {}, elapsed {} ms.", this.getName(),
                     apduResponse, elapsedMs);
         }
@@ -133,17 +139,18 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      */
     private ApduResponse case4HackGetResponse(int originalStatusCode)
             throws ChannelStateReaderException {
-        long before = 0;
         /*
          * build a get response command the actual length expected by the SE in the get response
          * command is handled in transmitApdu
          */
         ByteBuffer getResponseHackRequestBytes = ByteBufferUtils.fromHex("00C0000000");
         if (logger.isTraceEnabled()) {
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            this.before = timeStamp;
             logger.trace(
-                    "[{}] case4HackGetResponse => ApduRequest: NAME = \"Intrinsic Get Response\", RAWDATA = {}",
-                    this.getName(), ByteBufferUtils.toHex(getResponseHackRequestBytes));
-            before = System.nanoTime();
+                    "[{}] case4HackGetResponse => ApduRequest: NAME = \"Intrinsic Get Response\", RAWDATA = {}, elapsed = {}",
+                    this.getName(), ByteBufferUtils.toHex(getResponseHackRequestBytes), elapsedMs);
         }
 
         ByteBuffer getResponseHackResponseBytes = transmitApdu(getResponseHackRequestBytes);
@@ -152,7 +159,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         ApduResponse getResponseHackResponse = new ApduResponse(getResponseHackResponseBytes, null);
 
         if (logger.isTraceEnabled()) {
-            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            this.before = timeStamp;
             logger.trace("[{}] case4HackGetResponse => Intrinsic {}, elapsed {} ms.",
                     this.getName(), getResponseHackResponseBytes, elapsedMs);
         }
