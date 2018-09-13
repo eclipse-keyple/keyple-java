@@ -10,7 +10,6 @@ package org.eclipse.keyple.seproxy;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
@@ -60,8 +59,7 @@ public final class SeResponse implements Serializable {
     public SeResponse(boolean channelPreviouslyOpen, ApduResponse atr, ApduResponse fci,
             List<ApduResponse> apduResponses) throws IllegalArgumentException {
         if (atr == null && fci == null) {
-            throw new IllegalArgumentException(
-                    "Atr and Fci can't be null at the same time.", null);
+            throw new IllegalArgumentException("Atr and Fci can't be null at the same time.", null);
         }
         this.channelPreviouslyOpen = channelPreviouslyOpen;
         this.atr = atr;

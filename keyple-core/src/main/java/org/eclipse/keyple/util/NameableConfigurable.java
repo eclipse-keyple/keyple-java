@@ -13,7 +13,6 @@ import java.util.Map;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 
 /**
  * Allow {@link ProxyReader}s and {@link ReaderPlugin}s to be named and receive configuration
@@ -42,7 +41,8 @@ public interface NameableConfigurable {
      * @throws IllegalArgumentException if the parameter or the value is not supported
      * @throws KeypleBaseException if the parameter fails to be set up
      */
-    void setParameter(String key, String value) throws IllegalArgumentException,KeypleBaseException;
+    void setParameter(String key, String value)
+            throws IllegalArgumentException, KeypleBaseException;
 
     /**
      * allows to define a set of proprietary settings for a reader or a plugin (contactless
@@ -52,5 +52,6 @@ public interface NameableConfigurable {
      * @throws IOException if the parameters or the values is not supported
      * @throws KeypleBaseException if the parameter fails to be set up
      */
-    void setParameters(Map<String, String> parameters) throws IllegalArgumentException,KeypleBaseException;
+    void setParameters(Map<String, String> parameters)
+            throws IllegalArgumentException, KeypleBaseException;
 }

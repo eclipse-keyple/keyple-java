@@ -24,7 +24,7 @@ public class ReadRecordsRespParsTest {
 
     @Test
     // TODO: Fix the parsing code so that the test makes sense
-    public void readRecordRespPars_one_record()  {
+    public void readRecordRespPars_one_record() {
         ByteBuffer response =
                 ByteBuffer.wrap(new byte[] {0x04, 0x02, 0x01, 0x01, (byte) 0x90, 0x00});
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
@@ -48,7 +48,7 @@ public class ReadRecordsRespParsTest {
 
     @Test
     // TODO: Fix the parsing code so that the test makes sense
-    public void readRecordRespPars_records()  {
+    public void readRecordRespPars_records() {
         ByteBuffer response = ByteBuffer.wrap(new byte[] {0x01, 0x01, 0x01, 0x01, 0x30, 0x01, 0x01,
                 0x30, 0x01, 0x01, 0x30, 0x01, 0x01, 0x30, (byte) 0x90, 0x00});
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
@@ -108,7 +108,7 @@ public class ReadRecordsRespParsTest {
     }
 
     @Test
-    public void readRecordRespPars_records_sfi()  {
+    public void readRecordRespPars_records_sfi() {
         ByteBuffer response = ByteBuffer.wrap(new byte[] {0x01, 0x01, 0x01, 0x01, 0x30, 0x01, 0x01,
                 0x30, 0x01, 0x01, 0x30, 0x01, 0x01, 0x30, (byte) 0x90, 0x00});
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();

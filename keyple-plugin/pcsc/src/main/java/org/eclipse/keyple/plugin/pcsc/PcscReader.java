@@ -77,7 +77,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
             setParameter(SETTING_KEY_DISCONNECT, null);
             setParameter(SETTING_KEY_LOGGING, null);
         } catch (KeypleBaseException ex) {
-            //can not fail with null value
+            // can not fail with null value
         }
     }
 
@@ -99,7 +99,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 }
             }
         } catch (CardException e) {
-            throw new KeypleReaderException("Error while closing physical channel",e);
+            throw new KeypleReaderException("Error while closing physical channel", e);
         }
     }
 
@@ -174,7 +174,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * @throws KeypleCalypsoSecureSessionException if the protocol mask is not found
      */
     @Override
-    protected final boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
+    protected final boolean protocolFlagMatches(SeProtocol protocolFlag)
+            throws KeypleReaderException {
         boolean result;
         // Get protocolFlag to check if ATR filtering is required
         if (protocolFlag != null) {
@@ -184,7 +185,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
             // the requestSet will be executed only if the protocol match the requestElement
             String selectionMask = protocolsMap.get(protocolFlag);
             if (selectionMask == null) {
-                throw new KeypleCalypsoSecureSessionException("Target selector mask not found!", null);
+                throw new KeypleCalypsoSecureSessionException("Target selector mask not found!",
+                        null);
             }
             Pattern p = Pattern.compile(selectionMask);
             String atr = ByteBufferUtils.toHex(ByteBuffer.wrap(card.getATR().getBytes()));
@@ -246,7 +248,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
      *
      */
     @Override
-    public void setParameter(String name, String value) throws IllegalArgumentException, KeypleBaseException {
+    public void setParameter(String name, String value)
+            throws IllegalArgumentException, KeypleBaseException {
         if (logging) {
             logger.trace("[{}] setParameter => PCSC: Set a parameter. NAME = {}, VALUE = {}",
                     this.getName(), name, value);
@@ -262,7 +265,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
             } else if (value.equals(SETTING_PROTOCOL_T1)) {
                 parameterCardProtocol = "T=1";
             } else {
-                throw new IllegalArgumentException("Bad protocol "+  name + " : " +  value);
+                throw new IllegalArgumentException("Bad protocol " + name + " : " + value);
             }
         } else if (name.equals(SETTING_KEY_MODE)) {
             if (value == null || value.equals(SETTING_MODE_SHARED)) {
@@ -277,7 +280,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
             } else if (value.equals(SETTING_MODE_EXCLUSIVE)) {
                 cardExclusiveMode = true;
             } else {
-                throw new IllegalArgumentException("Parameter value not supported " + name  + " : " + value);
+                throw new IllegalArgumentException(
+                        "Parameter value not supported " + name + " : " + value);
             }
         } else if (name.equals(SETTING_KEY_THREAD_TIMEOUT)) {
             // TODO use setter
@@ -288,7 +292,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
 
                 if (timeout <= 0) {
                     throw new IllegalArgumentException(
-                            "Timeout has to be of at least 1ms "+  name +  value);
+                            "Timeout has to be of at least 1ms " + name + value);
                 }
 
                 threadWaitTimeout = timeout;
@@ -301,16 +305,17 @@ public class PcscReader extends AbstractThreadedLocalReader {
             } else if (value.equals(SETTING_DISCONNECT_EJECT)
                     || value.equals(SETTING_DISCONNECT_LEAVE)) {
                 throw new IllegalArgumentException(
-                        "This disconnection parameter is not supported by this plugin" + name + " : " +
-                        value);
+                        "This disconnection parameter is not supported by this plugin" + name
+                                + " : " + value);
             } else {
-                throw new IllegalArgumentException("Parameters not supported : " + name +" : "+ value);
+                throw new IllegalArgumentException(
+                        "Parameters not supported : " + name + " : " + value);
             }
         } else if (name.equals(SETTING_KEY_LOGGING)) {
             logging = Boolean.parseBoolean(value); // default is null and perfectly acceptable
         } else {
-            throw new IllegalArgumentException("This parameter is unknown !" +  name + " : " +
-                    value);
+            throw new IllegalArgumentException(
+                    "This parameter is unknown !" + name + " : " + value);
         }
     }
 
@@ -374,8 +379,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * @throws KeypleReaderException if a reader error occurs
      */
     @Override
-    protected final void openPhysicalChannel()
-            throws KeypleReaderException, KeypleReaderException {
+    protected final void openPhysicalChannel() throws KeypleReaderException, KeypleReaderException {
         // init of the physical SE channel: if not yet established, opening of a new physical
         // channel
         try {
@@ -400,7 +404,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
             }
             this.channel = card.getBasicChannel();
         } catch (CardException e) {
-            throw new KeypleReaderException("Error while opening Physical Channel",e);
+            throw new KeypleReaderException("Error while opening Physical Channel", e);
         }
     }
 }

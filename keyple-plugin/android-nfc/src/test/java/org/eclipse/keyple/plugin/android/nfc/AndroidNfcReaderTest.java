@@ -23,8 +23,8 @@ import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -176,7 +176,7 @@ public class AndroidNfcReaderTest {
     }
 
     @Test(expected = KeypleReaderException.class)
-    public void transmitCardNotConnected() throws KeypleBaseException , IOException{
+    public void transmitCardNotConnected() throws KeypleBaseException, IOException {
 
         // config reader with Isodep protocols
         reader.addSeProtocolSetting(
@@ -209,7 +209,7 @@ public class AndroidNfcReaderTest {
     }
 
     @Test
-    public void transmitUnkownCard() throws KeypleBaseException , IOException{
+    public void transmitUnkownCard() throws KeypleBaseException, IOException {
 
         // config reader with Isodep protocols
         reader.addSeProtocolSetting(
@@ -414,7 +414,7 @@ public class AndroidNfcReaderTest {
     }
 
     @Test(expected = KeypleReaderException.class)
-    public void closePhysicalChannelError() throws KeypleBaseException,IOException {
+    public void closePhysicalChannelError() throws KeypleBaseException, IOException {
         // init
         insertSe();
         when(tagProxy.isConnected()).thenReturn(true);
@@ -428,7 +428,7 @@ public class AndroidNfcReaderTest {
     }
 
     @Test
-    public void transmitAPDUSuccess() throws KeypleBaseException,IOException {
+    public void transmitAPDUSuccess() throws KeypleBaseException, IOException {
         // init
         insertSe();
         byte[] in = new byte[] {(byte) 0x90, 0x00};
@@ -444,7 +444,7 @@ public class AndroidNfcReaderTest {
     }
 
     @Test(expected = KeypleReaderException.class)
-    public void transmitAPDUError() throws KeypleBaseException,IOException {
+    public void transmitAPDUError() throws KeypleBaseException, IOException {
         // init
         insertSe();
         byte[] in = new byte[] {(byte) 0x90, 0x00};
@@ -458,7 +458,7 @@ public class AndroidNfcReaderTest {
     }
 
     @Test
-    public void protocolFlagMatchesTrue() throws KeypleBaseException,IOException {
+    public void protocolFlagMatchesTrue() throws KeypleBaseException, IOException {
         // init
         insertSe();
         reader.addSeProtocolSetting(

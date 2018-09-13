@@ -23,7 +23,7 @@ import org.junit.Test;
 public class CSMGetChallengeRespParsTest {
 
     @Test
-    public void getChallengeRespPars()  {
+    public void getChallengeRespPars() {
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(
                 ByteBuffer

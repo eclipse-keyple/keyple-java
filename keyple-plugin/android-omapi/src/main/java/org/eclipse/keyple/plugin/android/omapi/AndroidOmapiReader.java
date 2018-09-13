@@ -16,8 +16,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.SeRequest;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.plugin.AbstractStaticReader;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
@@ -158,7 +158,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
             dataOut = openChannel.transmit(data);
         } catch (IOException e) {
             e.printStackTrace();
-            throw new KeypleReaderException("Error while transmitting APDU",e);
+            throw new KeypleReaderException("Error while transmitting APDU", e);
         }
         ByteBuffer out = ByteBuffer.wrap(dataOut);
         Log.d(TAG, "Data out : " + ByteBufferUtils.toHex(out));

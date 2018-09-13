@@ -11,7 +11,6 @@ package org.eclipse.keyple.plugin.pcsc;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -106,8 +105,8 @@ public class SmartCardIOReaderTest {
     }
 
     // TODO redesign @Test
-    public void testTransmitCardNotPresent() throws CardException, KeypleReaderException,
-           KeypleReaderException {
+    public void testTransmitCardNotPresent()
+            throws CardException, KeypleReaderException, KeypleReaderException {
 
         when(terminal.isCardPresent()).thenReturn(false);
         ApduRequest apduRequestMF =
@@ -130,8 +129,7 @@ public class SmartCardIOReaderTest {
 
     // TODO redesign @Test
     public void testTransmitToCardWithoutAidToSelect()
-            throws CardException, KeypleReaderException,
-            KeypleReaderException {
+            throws CardException, KeypleReaderException, KeypleReaderException {
 
         atr = new ATR(new byte[] {(byte) 0x85, 0x17, 0x00, 0x01});
         when(terminal.isCardPresent()).thenReturn(true);
@@ -168,8 +166,7 @@ public class SmartCardIOReaderTest {
 
     // TODO redesign @Test
     public void testTransmitToCardWithAidToSelect()
-            throws CardException, KeypleReaderException,
-            KeypleReaderException {
+            throws CardException, KeypleReaderException, KeypleReaderException {
 
 
         when(terminal.isCardPresent()).thenReturn(true);
@@ -204,8 +201,8 @@ public class SmartCardIOReaderTest {
     }
 
     // TODO redesign @Test
-    public void testTransmitToCardAndDisconnect() throws CardException, KeypleReaderException,
-            KeypleReaderException {
+    public void testTransmitToCardAndDisconnect()
+            throws CardException, KeypleReaderException, KeypleReaderException {
 
 
         when(terminal.isCardPresent()).thenReturn(true);

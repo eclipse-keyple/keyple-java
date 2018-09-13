@@ -87,7 +87,7 @@ public class TagProxyTest {
     }
 
     @Test(expected = Test.None.class /* no exception expected */)
-    public void getTag() throws KeypleReaderException, IOException{
+    public void getTag() throws KeypleReaderException, IOException {
 
         // test
         TagProxy tagProxy = TagProxy.getTagProxy(tagIso);

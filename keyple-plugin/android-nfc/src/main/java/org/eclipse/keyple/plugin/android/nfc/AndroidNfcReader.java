@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractSelectionLocalReader;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -125,7 +125,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
         } else {
 
             LOG.warn("Unrecognized parameter : " + key);
-            throw new IllegalArgumentException("Unrecognized parameter " + key + " : "+ value);
+            throw new IllegalArgumentException("Unrecognized parameter " + key + " : " + value);
         }
 
     }
@@ -182,7 +182,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
             } catch (IOException e) {
                 LOG.error("Error while connecting to Tag ");
                 e.printStackTrace();
-                throw new KeypleReaderException("Error while opening physical channel",e);
+                throw new KeypleReaderException("Error while opening physical channel", e);
             }
         } else {
             LOG.info("Tag is already connected to : " + printTagId());
@@ -217,7 +217,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
             dataOut = tagProxy.transceive(data);
         } catch (IOException e) {
             e.printStackTrace();
-            throw new KeypleReaderException("Error while transmitting APDU",e);
+            throw new KeypleReaderException("Error while transmitting APDU", e);
         }
         LOG.debug("Data out : " + Arrays.toString(dataOut));
         return ByteBuffer.wrap(dataOut);

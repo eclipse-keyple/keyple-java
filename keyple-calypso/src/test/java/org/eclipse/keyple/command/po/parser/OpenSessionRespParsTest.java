@@ -46,7 +46,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void testgetResponse_rev3_1(){
+    public void testgetResponse_rev3_1() {
 
         // code de la reponse attendu
 

@@ -14,7 +14,6 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

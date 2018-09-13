@@ -30,8 +30,8 @@ import org.eclipse.keyple.calypso.command.po.parser.session.AbstractOpenSessionR
 import org.eclipse.keyple.calypso.command.po.parser.session.CloseSessionRespPars;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleCalypsoSecureSessionException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -224,7 +224,8 @@ public class PoSecureSession {
 
         if (csmSeResponse == null) {
             throw new KeypleCalypsoSecureSessionException("Null response received",
-                    KeypleCalypsoSecureSessionException.Type.CSM, csmSeRequest.getApduRequests(), null);
+                    KeypleCalypsoSecureSessionException.Type.CSM, csmSeRequest.getApduRequests(),
+                    null);
         }
 
         logger.debug("PoSecureSession => processOpening, identification: CSMSERESPONSE = {}",
@@ -245,7 +246,8 @@ public class PoSecureSession {
             }
         } else {
             throw new KeypleCalypsoSecureSessionException("Invalid message received",
-                    KeypleCalypsoSecureSessionException.Type.CSM, csmApduRequestList, csmApduResponseList);
+                    KeypleCalypsoSecureSessionException.Type.CSM, csmApduRequestList,
+                    csmApduResponseList);
         }
 
         /* PO ApduRequest List to hold Open Secure Session and other optional commands */
@@ -282,7 +284,8 @@ public class PoSecureSession {
 
         if (poSeResponse == null) {
             throw new KeypleCalypsoSecureSessionException("Null response received",
-                    KeypleCalypsoSecureSessionException.Type.PO, poSeRequest.getApduRequests(), null);
+                    KeypleCalypsoSecureSessionException.Type.PO, poSeRequest.getApduRequests(),
+                    null);
         }
 
         /* Retrieve and check the ApduResponses */
@@ -291,13 +294,15 @@ public class PoSecureSession {
         /* Do some basic checks */
         if (poApduRequestList.size() != poApduResponseList.size()) {
             throw new KeypleCalypsoSecureSessionException("Inconsistent requests and responses",
-                    KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList, poApduResponseList);
+                    KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList,
+                    poApduResponseList);
         }
 
         for (ApduResponse apduR : poApduResponseList) {
             if (!apduR.isSuccessful()) {
                 throw new KeypleCalypsoSecureSessionException("Invalid response",
-                        KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList, poApduResponseList);
+                        KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList,
+                        poApduResponseList);
             }
         }
 
@@ -415,7 +420,8 @@ public class PoSecureSession {
 
         if (poSeResponse == null) {
             throw new KeypleCalypsoSecureSessionException("Null response received",
-                    KeypleCalypsoSecureSessionException.Type.PO, poSeRequest.getApduRequests(), null);
+                    KeypleCalypsoSecureSessionException.Type.PO, poSeRequest.getApduRequests(),
+                    null);
         }
 
         /* Retrieve and check the ApduResponses */
@@ -424,13 +430,15 @@ public class PoSecureSession {
         /* Do some basic checks */
         if (poApduRequestList.size() != poApduResponseList.size()) {
             throw new KeypleCalypsoSecureSessionException("Inconsistent requests and responses",
-                    KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList, poApduResponseList);
+                    KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList,
+                    poApduResponseList);
         }
 
         for (ApduResponse apduR : poApduResponseList) {
             if (!apduR.isSuccessful()) {
                 throw new KeypleCalypsoSecureSessionException("Invalid response",
-                        KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList, poApduResponseList);
+                        KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList,
+                        poApduResponseList);
             }
         }
 
@@ -550,8 +558,10 @@ public class PoSecureSession {
                             poAnticipatedResponses.get(i));
                 }
             } else {
-                throw new KeypleCalypsoSecureSessionException("Inconsistent requests and anticipated responses",
-                        KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList, poAnticipatedResponses);
+                throw new KeypleCalypsoSecureSessionException(
+                        "Inconsistent requests and anticipated responses",
+                        KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList,
+                        poAnticipatedResponses);
             }
         }
 
@@ -632,7 +642,8 @@ public class PoSecureSession {
                 poApduResponseList.get(poApduResponseList.size() - ((ratificationAsked) ? 1 : 2)));
         if (!poCloseSessionPars.isSuccessful()) {
             throw new KeypleCalypsoSecureSessionException("Didn't get a signature",
-                    KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList, poApduResponseList);
+                    KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList,
+                    poApduResponseList);
         }
 
         /* Check the PO signature part with the CSM */

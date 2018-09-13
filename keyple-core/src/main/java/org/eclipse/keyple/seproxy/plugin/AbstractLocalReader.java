@@ -11,9 +11,8 @@ package org.eclipse.keyple.seproxy.plugin;
 import java.nio.ByteBuffer;
 import java.util.*;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
@@ -70,8 +69,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return apduResponse byte buffer containing the outgoing data.
      * @throws KeypleReaderException if the transmission fails
      */
-    protected abstract ByteBuffer transmitApdu(ByteBuffer apduIn)
-            throws KeypleReaderException;
+    protected abstract ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleReaderException;
 
     /**
      * Test if the current protocol matches the flag
@@ -131,8 +129,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return ApduResponse the response to the get response command
      * @throws KeypleReaderException if the transmission fails.
      */
-    private ApduResponse case4HackGetResponse(int originalStatusCode)
-            throws KeypleReaderException {
+    private ApduResponse case4HackGetResponse(int originalStatusCode) throws KeypleReaderException {
         long before = 0;
         /*
          * build a get response command the actual length expected by the SE in the get response

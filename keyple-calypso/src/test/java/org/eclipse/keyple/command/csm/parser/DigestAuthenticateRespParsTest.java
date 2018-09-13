@@ -23,7 +23,7 @@ import org.junit.Test;
 public class DigestAuthenticateRespParsTest {
 
     @Test
-    public void digestAuthenticateResp()  {
+    public void digestAuthenticateResp() {
 
         List<ApduResponse> listeResponse = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(ByteBuffer.wrap(new byte[] {90, 00}), null);

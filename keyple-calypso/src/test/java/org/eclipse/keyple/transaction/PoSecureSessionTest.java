@@ -66,7 +66,7 @@ public class PoSecureSessionTest {
     private SeResponseSet responseOpenSessionError;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         samchallenge = ByteBuffer.wrap(new byte[] {0x01, 0x02, 0x03, 0x04});
 
         ApduResponse apduResponse = generateApduResponseOpenSessionCmd();
@@ -124,8 +124,7 @@ public class PoSecureSessionTest {
 
     @Test
     public void processOpeningTestKif0xFFKey0x03noCmdInside()
-            throws KeypleReaderException, KeypleReaderException,
-       IllegalArgumentException {
+            throws KeypleReaderException, KeypleReaderException, IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -164,8 +163,7 @@ public class PoSecureSessionTest {
 
     @Test
     public void processOpeningTestKif0xFFKey0x01noCmdInside()
-            throws KeypleReaderException, KeypleReaderException
-            , IllegalArgumentException {
+            throws KeypleReaderException, KeypleReaderException, IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -204,8 +202,7 @@ public class PoSecureSessionTest {
 
     @Test
     public void processOpeningTestKif0xFFKey0x02noCmdInside()
-            throws KeypleReaderException, KeypleReaderException,
-            IllegalArgumentException {
+            throws KeypleReaderException, KeypleReaderException, IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -245,8 +242,7 @@ public class PoSecureSessionTest {
 
     @Test
     public void processOpeningTestKif0xFFKey0x03WithCmdInside()
-            throws KeypleReaderException, KeypleReaderException,
-           IllegalArgumentException {
+            throws KeypleReaderException, KeypleReaderException, IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -290,8 +286,7 @@ public class PoSecureSessionTest {
 
     // @Test(expected = UnexpectedReaderException.class)
     public void processOpeningTestKif0xFFKey0x03WithCmdInsideUnexpectedReaderException()
-            throws KeypleReaderException, KeypleReaderException,
-           IllegalArgumentException {
+            throws KeypleReaderException, KeypleReaderException, IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -326,8 +321,7 @@ public class PoSecureSessionTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void processProceedingTestInconsitenteCommandException()
-            throws KeypleReaderException, KeypleReaderException,
-        IllegalArgumentException {
+            throws KeypleReaderException, KeypleReaderException, IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);
@@ -357,8 +351,8 @@ public class PoSecureSessionTest {
     }
 
     @Test
-    public void processProceedingTest() throws KeypleReaderException, KeypleReaderException,
-             IllegalArgumentException {
+    public void processProceedingTest()
+            throws KeypleReaderException, KeypleReaderException, IllegalArgumentException {
 
         EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
                 new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class);

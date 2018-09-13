@@ -143,7 +143,7 @@ public class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEServic
     }
 
     @Override
-    public void setParameter(String key, String value)  {
+    public void setParameter(String key, String value) {
         Log.w(TAG, "Android OMAPI  Plugin does not support parameters, see OMAPINfcReader instead");
         parameters.put(key, value);
     }

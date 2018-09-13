@@ -10,14 +10,12 @@ package org.eclipse.keyple.plugin.stub;
 
 
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
@@ -249,8 +247,7 @@ public class StubReaderTest {
 
             // override methods to fail open connection
             @Override
-            public void openPhysicalChannel()
-                    throws KeypleReaderException, KeypleReaderException {
+            public void openPhysicalChannel() throws KeypleReaderException, KeypleReaderException {
                 throw new KeypleReaderException("Impossible to estasblish connection");
             }
 

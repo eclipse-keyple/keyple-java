@@ -13,7 +13,7 @@ import java.util.List;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 
-//TODO concerns only PoSecureSession, should be moved to calypso package
+// TODO concerns only PoSecureSession, should be moved to calypso package
 public class KeypleCalypsoSecureSessionException extends KeypleReaderException {
 
     public enum Type {
@@ -24,8 +24,8 @@ public class KeypleCalypsoSecureSessionException extends KeypleReaderException {
     private final List<ApduRequest> requests;
     private final List<ApduResponse> responses;
 
-    public KeypleCalypsoSecureSessionException(String message, Type type, List<ApduRequest> requests,
-                                               List<ApduResponse> responses) {
+    public KeypleCalypsoSecureSessionException(String message, Type type,
+            List<ApduRequest> requests, List<ApduResponse> responses) {
         super(message);
         this.type = type;
         this.requests = requests;
