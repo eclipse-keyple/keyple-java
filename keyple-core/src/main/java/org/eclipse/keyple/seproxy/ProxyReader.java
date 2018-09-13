@@ -46,13 +46,21 @@ public interface ProxyReader extends NameableConfigurable, Comparable<ProxyReade
     boolean isSePresent() throws NoStackTraceThrowable;
 
     /**
-     * Transmits a request to a SE application and get back the corresponding SE response o the
-     * usage of this method is conditioned to the presence of a SE in the selected reader, this
-     * method could also fail in case of IO error or wrong card state → some reader’s exception (SE
-     * missing, IO error, wrong card state, timeout) have to be caught during the processing of the
-     * SE request transmission.
+     * Transmits a SeRequestSet (list of SeRequest) to a SE application and get back the
+     * corresponding SeResponseSet (list of SeResponse).
+     * <p>
+     * The usage of this method is conditioned to the presence of a SE in the selected reader.
+     * <p>
+     * This method could also fail in case of IO error or wrong card state &rarr; some reader’s
+     * exception (SE missing, IO error, wrong card state, timeout) have to be caught during the
+     * processing of the SE request transmission.
      *
-     * @param seApplicationRequest the se application request
+     * <p>
+     * When no logical channel is currently open and if the keepChannelOpen flag of one of the
+     * SeRequest is set to true, the process of the whole SeRequestSet will stop at the first
+     * successful channel opening (successful selection procedure).
+     *
+     * @param seApplicationRequest the application request
      * @return the SE response
      * @throws IOReaderException Exception of type IO Reader
      */

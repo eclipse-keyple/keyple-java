@@ -123,7 +123,7 @@ public class StubReaderTest {
     }
 
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void transmit_null_Selection() throws IOReaderException {
         // init SE
         // no SE
@@ -133,9 +133,6 @@ public class StubReaderTest {
 
         // test
         SeResponseSet resp = reader.transmit(seRequest);
-
-        Assert.assertNotNull(resp);
-
     }
 
 

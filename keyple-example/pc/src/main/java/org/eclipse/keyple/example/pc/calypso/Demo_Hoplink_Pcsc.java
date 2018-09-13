@@ -22,8 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Demo_Hoplink_Pcsc {
-    private ProxyReader poReader, csmReader;
-
     /**
      * This object is used to freeze the main thread while card operations are handle through the
      * observers callbacks. A call to the notify() method would end the program (not demonstrated
@@ -77,6 +75,20 @@ public class Demo_Hoplink_Pcsc {
         poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
         csmReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
         csmReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
+
+        /*
+         * PC/SC card access mode:
+         *
+         * The CSM is left in the SHARED mode (by default) to avoid automatic resets due to the
+         * limited time between two consecutive exchanges granted by Windows.
+         *
+         * The PO reader is set to EXCLUSIVE mode to avoid side effects during the selection step
+         * that may result in session failures.
+         *
+         * These two points will be addressed in a coming release of the Keyple PcSc reader plugin.
+         */
+        csmReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
+        poReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_EXCLUSIVE);
 
         /* Set the PO reader protocol flag */
         poReader.addSeProtocolSetting(
