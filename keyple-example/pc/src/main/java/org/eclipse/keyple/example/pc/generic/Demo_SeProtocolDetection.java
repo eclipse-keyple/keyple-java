@@ -200,8 +200,7 @@ public class Demo_SeProtocolDetection implements ObservableReader.ReaderObserver
      * @throws IOReaderException if a reader error occurs
      * @throws InterruptedException if thread error occurs
      */
-    public static void main(String[] args)
-            throws IOException, KeypleReaderException {
+    public static void main(String[] args) throws IOException, KeypleReaderException {
         // get the SeProxyService instance
         SeProxyService seProxyService = SeProxyService.getInstance();
 

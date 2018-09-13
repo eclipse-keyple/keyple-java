@@ -10,8 +10,6 @@ package org.eclipse.keyple.seproxy;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-
-import org.eclipse.keyple.seproxy.exception.KeyplePluginException;
 import org.eclipse.keyple.seproxy.exception.KeyplePluginNotFoundException;
 
 /**
@@ -67,7 +65,7 @@ public final class SeProxyService {
      *
      * @param name the plugin name
      * @return the plugin.
-     * @throws KeyplePluginException:  if the wanted plugin is not found
+     * @throws KeyplePluginException: if the wanted plugin is not found
      */
     public ReaderPlugin getPlugin(String name) throws KeyplePluginNotFoundException {
         for (ReaderPlugin plugin : plugins) {

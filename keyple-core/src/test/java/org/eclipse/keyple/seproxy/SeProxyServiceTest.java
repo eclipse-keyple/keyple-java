@@ -11,7 +11,6 @@ package org.eclipse.keyple.seproxy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 import java.util.concurrent.ConcurrentSkipListSet;
-
 import org.eclipse.keyple.seproxy.exception.KeyplePluginNotFoundException;
 import org.junit.Before;
 import org.junit.Test;

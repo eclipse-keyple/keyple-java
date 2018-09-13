@@ -55,7 +55,7 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginE
      * @return the current reader list, can be null if the
      */
     public final SortedSet<AbstractObservableReader> getReaders() throws KeypleReaderException {
-        if(readers ==null){
+        if (readers == null) {
             throw new KeypleReaderException("List of readers has not been initialized");
         }
         return readers;

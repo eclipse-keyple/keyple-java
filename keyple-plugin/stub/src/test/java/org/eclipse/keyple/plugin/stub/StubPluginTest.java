@@ -12,7 +12,6 @@ package org.eclipse.keyple.plugin.stub;
 import org.eclipse.keyple.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.junit.Assert;
@@ -68,7 +67,7 @@ public class StubPluginTest {
     }
 
     @Test
-    public void testB_UnplugReaders() throws KeypleReaderException,IOReaderException {
+    public void testB_UnplugReaders() throws KeypleReaderException, IOReaderException {
         // add a reader
         stubPlugin.plugStubReader("test");
         assert (stubPlugin.getReaders().size() == 1);

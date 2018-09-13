@@ -39,7 +39,8 @@ public class Demo_Hoplink_Pcsc {
      * @throws IOException setParameter exception
      * @throws InterruptedException thread exception
      */
-    public static void main(String[] args) throws IOException, InterruptedException,KeypleReaderException {
+    public static void main(String[] args)
+            throws IOException, InterruptedException, KeypleReaderException {
         final Logger logger = LoggerFactory.getLogger(Demo_Hoplink_Pcsc.class);
 
         /* Get the instance of the SeProxyService (Singleton pattern) */

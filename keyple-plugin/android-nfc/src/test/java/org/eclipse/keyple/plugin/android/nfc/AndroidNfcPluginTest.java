@@ -15,7 +15,6 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,7 +80,7 @@ public class AndroidNfcPluginTest {
     }
 
     @Test
-    public void getReaders() throws  KeypleReaderException {
+    public void getReaders() throws KeypleReaderException {
         Assert.assertTrue(plugin.getReaders().size() == 1);
         assertThat(plugin.getReaders().first(), instanceOf(AndroidNfcReader.class));
     }
