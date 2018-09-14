@@ -37,11 +37,5 @@ save_directory () {
             mkdir -p ~/pages/$dir
             cp -a $dir/build/docs/javadoc ~/pages/$dir/javadoc
         fi
-
-        # JMH --> ~/artifacts/$project/jmh
-        if [ -f $dir/build/reports/jmh/results.txt ]; then
-            echo "   * Found JMH"
-            mv $dir/build/reports/jmh/results.txt ~/artifacts/$dir/jmh.txt
-        fi
     done
 }
