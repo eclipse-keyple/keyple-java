@@ -323,8 +323,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                  * beginning of the AID provided in the SeRequest (coming from FCI data and supposed
                  * to be longer than the selection AID).
                  *
-                 * The current AID (selector) length must be at least equal or greater the selection
-                 * AID. All bytes of the selection AID must match the beginning of the current AID.
+                 * The current AID (selector) length must be at least equal or greater than the
+                 * selection AID. All bytes of the selection AID must match the beginning of the
+                 * current AID.
                  */
                 if (aidCurrentlySelected == null) {
                     throw new IllegalStateException("AID currently selected shouldn't be null.");
