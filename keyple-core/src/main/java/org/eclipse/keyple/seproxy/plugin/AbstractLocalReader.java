@@ -329,9 +329,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 if (aidCurrentlySelected == null) {
                     throw new IllegalStateException("AID currently selected shouldn't be null.");
                 }
-                int nbMatchingBytes = ((SeRequest.AidSelector) seRequest.getSelector())
-                        .getAidToSelect().compareTo(aidCurrentlySelected) - 1;
-                if (nbMatchingBytes != aidCurrentlySelected.limit()) {
+                if (aidCurrentlySelected.equals(ByteBufferUtils.subLen(
+                        ((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect(), 0,
+                        aidCurrentlySelected.limit()))) {
                     // the AID changed, close the logical channel
                     if (logger.isTraceEnabled()) {
                         logger.trace(
