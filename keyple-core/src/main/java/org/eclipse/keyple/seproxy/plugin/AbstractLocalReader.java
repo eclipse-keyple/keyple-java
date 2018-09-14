@@ -323,15 +323,17 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                  * beginning of the AID provided in the SeRequest (coming from FCI data and supposed
                  * to be longer than the selection AID).
                  *
-                 * The compareTo method applied to ByteBuffers returns an int equals to the number
-                 * of matching bytes + 1.
+                 * The current AID (selector) length must be at least equal or greater the selection
+                 * AID. All bytes of the selection AID must match the beginning of the current AID.
                  */
                 if (aidCurrentlySelected == null) {
                     throw new IllegalStateException("AID currently selected shouldn't be null.");
                 }
-                if (aidCurrentlySelected.equals(ByteBufferUtils.subLen(
-                        ((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect(), 0,
-                        aidCurrentlySelected.limit()))) {
+                if (((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect()
+                        .limit() >= aidCurrentlySelected.limit()
+                        && aidCurrentlySelected.equals(ByteBufferUtils.subLen(
+                                ((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect(),
+                                0, aidCurrentlySelected.limit()))) {
                     // the AID changed, close the logical channel
                     if (logger.isTraceEnabled()) {
                         logger.trace(
