@@ -25,7 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class CsmGetChallengeRespParsTest {
 
     @Test
-    public void getChallengeRespPars(){
+    public void getChallengeRespPars() {
         List<ApduResponse> responses = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(
                 ByteBuffer

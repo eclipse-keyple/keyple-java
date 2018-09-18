@@ -117,11 +117,16 @@ public class AndroidOmapiReader extends AbstractStaticReader {
 
             }
         } catch (IOException e) {
-            throw new KeypleChannelStateException("Error while opening channel, aid :"+ByteBufferUtils.toBytes(aid), e.getCause());
+            throw new KeypleChannelStateException(
+                    "Error while opening channel, aid :" + ByteBufferUtils.toBytes(aid),
+                    e.getCause());
         } catch (SecurityException e) {
-            throw new KeypleChannelStateException("Error while opening channel, aid :"+ByteBufferUtils.toBytes(aid), e.getCause());
+            throw new KeypleChannelStateException(
+                    "Error while opening channel, aid :" + ByteBufferUtils.toBytes(aid),
+                    e.getCause());
         } catch (NoSuchElementException e) {
-            throw new KeypleApplicationSelectionException("Error while selecting application : " + ByteBufferUtils.toBytes(aid), e);
+            throw new KeypleApplicationSelectionException(
+                    "Error while selecting application : " + ByteBufferUtils.toBytes(aid), e);
         }
 
         return atrAndFci;

@@ -25,7 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class PoGetChallengeRespParsTest {
 
     @Test
-    public void POGetChallengetRespPars()  {
+    public void POGetChallengetRespPars() {
         byte[] response = {0x03, 0x0D, 0x0E, (byte) 0xFA, (byte) 0x9C, (byte) 0x8C, (byte) 0xB7,
                 0x27, (byte) 0x90, 0x00};
         List<ApduResponse> responses = new ArrayList<ApduResponse>();

@@ -10,7 +10,6 @@ package org.eclipse.keyple.seproxy.plugin;
 
 
 import java.util.Map;
-
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;

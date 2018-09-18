@@ -25,7 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class DigestCloseRespParsTest {
 
     @Test
-    public void digestCloseRespPars()  {
+    public void digestCloseRespPars() {
         List<ApduResponse> responses = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(
                 ByteBuffer

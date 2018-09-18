@@ -25,7 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class DigestInitRespParsTest {
 
     @Test
-    public void digestInitRespPars()  {
+    public void digestInitRespPars() {
         List<ApduResponse> responses = new ArrayList<ApduResponse>();
         ApduResponse apduResponse =
                 new ApduResponse(ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}), null);

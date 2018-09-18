@@ -14,7 +14,6 @@ import java.util.Map;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 public abstract class StubSecureElement {
@@ -79,7 +78,7 @@ public abstract class StubSecureElement {
      * @return APDU response
      * @throws KeypleIOReaderException if the transmission fails
      */
-    public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException{
+    public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
 
         if (apduIn == null) {
             return null;

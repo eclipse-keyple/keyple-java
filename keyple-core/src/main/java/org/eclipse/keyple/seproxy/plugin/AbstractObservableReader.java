@@ -37,7 +37,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     private long before; // timestamp recorder
 
     protected abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
-            throws KeypleIOReaderException,KeypleChannelStateException,KeypleReaderException;
+            throws KeypleIOReaderException, KeypleChannelStateException, KeypleReaderException;
 
     /**
      * Reader constructor

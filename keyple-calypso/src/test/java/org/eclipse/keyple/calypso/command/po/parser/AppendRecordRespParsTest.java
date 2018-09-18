@@ -25,7 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class AppendRecordRespParsTest {
 
     @Test
-    public void appendRecordRespPars(){
+    public void appendRecordRespPars() {
         List<ApduResponse> responses = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(ByteBuffer.wrap(new byte[] {90, 0}), null);
         responses.add(apduResponse);

@@ -185,8 +185,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
             // the requestSet will be executed only if the protocol match the requestElement
             String selectionMask = protocolsMap.get(protocolFlag);
             if (selectionMask == null) {
-                throw new KeypleReaderException("Target selector mask not found!",
-                        null);
+                throw new KeypleReaderException("Target selector mask not found!", null);
             }
             Pattern p = Pattern.compile(selectionMask);
             String atr = ByteBufferUtils.toHex(ByteBuffer.wrap(card.getATR().getBytes()));

@@ -173,7 +173,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
     }
 
     @Override
-    protected void openPhysicalChannel() throws KeypleChannelStateException{
+    protected void openPhysicalChannel() throws KeypleChannelStateException {
 
         if (!isSePresent()) {
             try {

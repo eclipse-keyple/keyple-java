@@ -54,8 +54,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @throws KeypleApplicationSelectionException if the application selection fails
      */
     protected abstract ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
-            Set<Short> successfulSelectionStatusCodes)
-            throws KeypleChannelStateException, KeypleApplicationSelectionException,KeypleIOReaderException;
+            Set<Short> successfulSelectionStatusCodes) throws KeypleChannelStateException,
+            KeypleApplicationSelectionException, KeypleIOReaderException;
 
     /**
      * Closes the current physical channel.
@@ -81,7 +81,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @param protocolFlag the protocol flag
      * @return true if the current protocol matches the provided protocol flag
      */
-    protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException;
+    protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag)
+            throws KeypleReaderException;
 
     /**
      * Transmits an ApduRequest and receives the ApduResponse with time measurement.
@@ -190,7 +191,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @throws KeypleIOReaderException if a reader error occurs
      */
     protected final SeResponseSet processSeRequestSet(SeRequestSet requestSet)
-            throws KeypleIOReaderException, KeypleChannelStateException,KeypleReaderException {
+            throws KeypleIOReaderException, KeypleChannelStateException, KeypleReaderException {
 
         boolean requestMatchesProtocol[] = new boolean[requestSet.getRequests().size()];
         int requestIndex = 0, lastRequestIndex;
@@ -303,7 +304,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      */
     @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
             "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity"})
-    private SeResponse processSeRequest(SeRequest seRequest) throws IllegalStateException, KeypleIOReaderException, KeypleChannelStateException {
+    private SeResponse processSeRequest(SeRequest seRequest)
+            throws IllegalStateException, KeypleIOReaderException, KeypleChannelStateException {
         boolean previouslyOpen = true;
 
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();

@@ -247,7 +247,7 @@ public class StubReaderTest {
 
             // override methods to fail open connection
             @Override
-            public void openPhysicalChannel() throws KeypleChannelStateException{
+            public void openPhysicalChannel() throws KeypleChannelStateException {
                 throw new KeypleChannelStateException("Impossible to estasblish connection");
             }
 

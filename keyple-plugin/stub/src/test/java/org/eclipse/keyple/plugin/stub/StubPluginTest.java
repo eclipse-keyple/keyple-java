@@ -48,7 +48,7 @@ public class StubPluginTest {
     }
 
     @Test
-    public void testA_PlugReaders() throws KeypleReaderException, InterruptedException  {
+    public void testA_PlugReaders() throws KeypleReaderException, InterruptedException {
 
         // add READER_CONNECTED assert observer
         stubPlugin.addObserver(new ObservablePlugin.PluginObserver() {

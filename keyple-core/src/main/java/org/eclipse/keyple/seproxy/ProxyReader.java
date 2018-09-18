@@ -64,7 +64,8 @@ public interface ProxyReader extends NameableConfigurable, Comparable<ProxyReade
      * @return the SE response
      * @throws KeypleReaderException An error occurs during transmit (channel, IO)
      */
-    SeResponseSet transmit(SeRequestSet seApplicationRequest) throws KeypleReaderException, IllegalArgumentException;
+    SeResponseSet transmit(SeRequestSet seApplicationRequest)
+            throws KeypleReaderException, IllegalArgumentException;
 
     void addSeProtocolSetting(SeProtocolSetting seProtocolSetting);
 }

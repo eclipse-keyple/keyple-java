@@ -57,8 +57,7 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
      *
      * @throws KeypleReaderException if the channel opening fails
      */
-    protected abstract void openPhysicalChannel()
-            throws KeypleChannelStateException;
+    protected abstract void openPhysicalChannel() throws KeypleChannelStateException;
 
     /**
      * Opens a logical channel
@@ -71,8 +70,8 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
      * @throws KeypleApplicationSelectionException - if the application selection is not successful
      */
     protected final ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
-            Set<Short> successfulSelectionStatusCodes)
-            throws KeypleChannelStateException, KeypleApplicationSelectionException, KeypleIOReaderException {
+            Set<Short> successfulSelectionStatusCodes) throws KeypleChannelStateException,
+            KeypleApplicationSelectionException, KeypleIOReaderException {
         ByteBuffer[] atrAndFci = new ByteBuffer[2];
 
         if (!isLogicalChannelOpen()) {
