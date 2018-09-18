@@ -12,6 +12,8 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
+import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -53,14 +55,14 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      */
     protected abstract ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Short> successfulSelectionStatusCodes)
-            throws KeypleReaderException, KeypleApplicationSelectionException;
+            throws KeypleChannelStateException, KeypleApplicationSelectionException,KeypleIOReaderException;
 
     /**
      * Closes the current physical channel.
      *
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleChannelStateException if a reader error occurs
      */
-    protected abstract void closePhysicalChannel() throws KeypleReaderException;
+    protected abstract void closePhysicalChannel() throws KeypleChannelStateException;
 
     /**
      * Transmits a single APDU and receives its response. The implementation of this abstract method
@@ -69,19 +71,17 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      *
      * @param apduIn byte buffer containing the ingoing data
      * @return apduResponse byte buffer containing the outgoing data.
-     * @throws KeypleReaderException if the transmission fails
+     * @throws KeypleIOReaderException if the transmission fails
      */
-    protected abstract ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleReaderException;
+    protected abstract ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleIOReaderException;
 
     /**
      * Test if the current protocol matches the flag
      *
      * @param protocolFlag the protocol flag
      * @return true if the current protocol matches the provided protocol flag
-     * @throws KeypleReaderException if a reader error occurs
      */
-    protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag)
-            throws KeypleReaderException;
+    protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException;
 
     /**
      * Transmits an ApduRequest and receives the ApduResponse with time measurement.
@@ -91,7 +91,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @throws KeypleReaderException Exception faced
      */
     protected final ApduResponse processApduRequest(ApduRequest apduRequest)
-            throws KeypleReaderException {
+            throws KeypleIOReaderException {
         ApduResponse apduResponse;
         if (logger.isTraceEnabled()) {
             long timeStamp = System.nanoTime();
@@ -136,7 +136,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @throws KeypleReaderException if the transmission fails.
      */
     private ApduResponse case4HackGetResponse(int originalStatusCode)
-            throws KeypleReaderException {
+            throws KeypleIOReaderException {
         /*
          * build a get response command the actual length expected by the SE in the get response
          * command is handled in transmitApdu
@@ -187,10 +187,10 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      *
      * @param requestSet the request set
      * @return SeResponseSet the response set
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleIOReaderException if a reader error occurs
      */
     protected final SeResponseSet processSeRequestSet(SeRequestSet requestSet)
-            throws KeypleReaderException {
+            throws KeypleIOReaderException, KeypleChannelStateException,KeypleReaderException {
 
         boolean requestMatchesProtocol[] = new boolean[requestSet.getRequests().size()];
         int requestIndex = 0, lastRequestIndex;
@@ -303,7 +303,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      */
     @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
             "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity"})
-    private SeResponse processSeRequest(SeRequest seRequest) throws KeypleReaderException {
+    private SeResponse processSeRequest(SeRequest seRequest) throws IllegalStateException, KeypleIOReaderException, KeypleChannelStateException {
         boolean previouslyOpen = true;
 
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();

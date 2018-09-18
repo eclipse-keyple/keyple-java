@@ -82,7 +82,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
     }
 
     @Override
-    protected final void closePhysicalChannel() throws KeypleReaderException {
+    protected final void closePhysicalChannel() throws KeypleChannelStateException {
         try {
             if (card != null) {
                 if (logging) {
@@ -99,7 +99,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 }
             }
         } catch (CardException e) {
-            throw new KeypleReaderException("Error while closing physical channel", e);
+            throw new KeypleChannelStateException("Error while closing physical channel", e);
         }
     }
 
@@ -135,7 +135,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
             } else {
                 return false;
             }
-        } catch (KeypleReaderException e) {
+        } catch (KeypleChannelStateException e) {
             logger.trace("[{}] Exception occured in waitForCardAbsent. Message: {}", this.getName(),
                     e.getMessage());
             throw new NoStackTraceThrowable();
@@ -154,12 +154,12 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * @throws KeypleReaderException if the transmission failed
      */
     @Override
-    protected final ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleReaderException {
+    protected final ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
         ResponseAPDU apduResponseData;
         try {
             apduResponseData = channel.transmit(new CommandAPDU(apduIn));
         } catch (CardException e) {
-            throw new KeypleReaderException(this.getName() + ":" + e.getMessage());
+            throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
         }
         return ByteBuffer.wrap(apduResponseData.getBytes());
     }
@@ -171,7 +171,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
      *
      * @param protocolFlag the protocol flag
      * @return true if the current SE matches the protocol flag
-     * @throws KeypleCalypsoSecureSessionException if the protocol mask is not found
+     * @throws KeypleReaderException if the protocol mask is not found
      */
     @Override
     protected final boolean protocolFlagMatches(SeProtocol protocolFlag)
@@ -185,7 +185,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
             // the requestSet will be executed only if the protocol match the requestElement
             String selectionMask = protocolsMap.get(protocolFlag);
             if (selectionMask == null) {
-                throw new KeypleCalypsoSecureSessionException("Target selector mask not found!",
+                throw new KeypleReaderException("Target selector mask not found!",
                         null);
             }
             Pattern p = Pattern.compile(selectionMask);
@@ -379,13 +379,13 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * @throws KeypleReaderException if a reader error occurs
      */
     @Override
-    protected final void openPhysicalChannel() throws KeypleReaderException, KeypleReaderException {
+    protected final void openPhysicalChannel() throws KeypleChannelStateException {
         // init of the physical SE channel: if not yet established, opening of a new physical
         // channel
         try {
             if (card == null) {
                 if (isLogicalChannelOpen()) {
-                    throw new KeypleReaderException(
+                    throw new KeypleChannelStateException(
                             "Logical channel found open while physical channel is not!");
                 }
                 this.card = this.terminal.connect(parameterCardProtocol);
@@ -404,7 +404,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
             }
             this.channel = card.getBasicChannel();
         } catch (CardException e) {
-            throw new KeypleReaderException("Error while opening Physical Channel", e);
+            throw new KeypleChannelStateException("Error while opening Physical Channel", e);
         }
     }
 }

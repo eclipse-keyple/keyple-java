@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractSelectionLocalReader;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
@@ -171,7 +173,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
     }
 
     @Override
-    protected void openPhysicalChannel() throws KeypleReaderException {
+    protected void openPhysicalChannel() throws KeypleChannelStateException{
 
         if (!isSePresent()) {
             try {
@@ -181,7 +183,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
             } catch (IOException e) {
                 LOG.error("Error while connecting to Tag ");
                 e.printStackTrace();
-                throw new KeypleReaderException("Error while opening physical channel", e);
+                throw new KeypleChannelStateException("Error while opening physical channel", e);
             }
         } else {
             LOG.info("Tag is already connected to : " + printTagId());
@@ -189,7 +191,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
     }
 
     @Override
-    protected void closePhysicalChannel() throws KeypleReaderException {
+    protected void closePhysicalChannel() throws KeypleChannelStateException {
         try {
             if (tagProxy != null) {
                 tagProxy.close();
@@ -199,14 +201,14 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
             }
         } catch (IOException e) {
             LOG.error("Disconnecting error");
-            throw new KeypleReaderException("Error while closing physical channel", e);
+            throw new KeypleChannelStateException("Error while closing physical channel", e);
         }
         tagProxy = null;
     }
 
 
     @Override
-    protected ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleReaderException {
+    protected ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
         // Initialization
         LOG.debug("Data Length to be sent to tag : " + apduIn.limit());
         LOG.debug("Data in : " + ByteBufferUtils.toHex(apduIn));
@@ -216,7 +218,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
             dataOut = tagProxy.transceive(data);
         } catch (IOException e) {
             e.printStackTrace();
-            throw new KeypleReaderException("Error while transmitting APDU", e);
+            throw new KeypleIOReaderException("Error while transmitting APDU", e);
         }
         LOG.debug("Data out : " + Arrays.toString(dataOut));
         return ByteBuffer.wrap(dataOut);

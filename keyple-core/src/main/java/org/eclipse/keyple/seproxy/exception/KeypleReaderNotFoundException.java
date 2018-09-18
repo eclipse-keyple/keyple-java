@@ -8,10 +8,13 @@
 
 package org.eclipse.keyple.seproxy.exception;
 
+/*
+ * Exception thrown when {@link org.eclipse.keyple.seproxy.ProxyReader} is not found
+ */
 public class KeypleReaderNotFoundException extends KeypleReaderException {
 
     /**
-     * Exception thrown when Reader is not found
+     * Exception thrown when @{@link org.eclipse.keyple.seproxy.ProxyReader} is not found
      * 
      * @param readerName : readerName that has not been found
      */

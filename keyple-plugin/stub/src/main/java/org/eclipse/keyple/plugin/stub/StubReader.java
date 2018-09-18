@@ -16,6 +16,8 @@ import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
+import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.plugin.AbstractThreadedLocalReader;
@@ -57,21 +59,21 @@ public class StubReader extends AbstractThreadedLocalReader {
     }
 
     @Override
-    protected void openPhysicalChannel() throws KeypleReaderException, KeypleReaderException {
+    protected void openPhysicalChannel() throws KeypleChannelStateException {
         if (se != null) {
             se.openPhysicalChannel();
         }
     }
 
     @Override
-    public void closePhysicalChannel() throws KeypleReaderException {
+    public void closePhysicalChannel() throws KeypleChannelStateException {
         if (se != null) {
             se.closePhysicalChannel();
         }
     }
 
     @Override
-    public ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleReaderException {
+    public ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
         return se.processApdu(apduIn);
     }
 
@@ -128,7 +130,7 @@ public class StubReader extends AbstractThreadedLocalReader {
             closeLogicalChannel();
             try {
                 closePhysicalChannel();
-            } catch (IOReaderException e) {
+            } catch (KeypleReaderException e) {
                 e.printStackTrace();
             }
         }

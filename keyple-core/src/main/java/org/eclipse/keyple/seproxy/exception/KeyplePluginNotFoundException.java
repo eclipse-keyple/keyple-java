@@ -9,12 +9,12 @@
 package org.eclipse.keyple.seproxy.exception;
 
 /**
- * Used when a generic checked occurs in plugin
+ * Exception thrown when {@link org.eclipse.keyple.seproxy.ReaderPlugin} is not found
  */
 public class KeyplePluginNotFoundException extends KeyplePluginException {
 
     /**
-     * Exception thrown when Reader is not found
+     * Exception thrown when {@link org.eclipse.keyple.seproxy.ReaderPlugin} is not found
      * 
      * @param pluginName : pluginName that has not been found
      */

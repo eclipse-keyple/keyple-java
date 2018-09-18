@@ -17,6 +17,8 @@ import java.util.Set;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
+import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.plugin.AbstractStaticReader;
@@ -83,7 +85,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
     @Override
     protected ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Short> successfulSelectionStatusCodes)
-            throws KeypleReaderException, KeypleApplicationSelectionException {
+            throws KeypleChannelStateException, KeypleApplicationSelectionException {
         ByteBuffer[] atrAndFci = new ByteBuffer[2];
         ByteBuffer aid = ((SeRequest.AidSelector) selector).getAidToSelect();
         try {
@@ -115,11 +117,11 @@ public class AndroidOmapiReader extends AbstractStaticReader {
 
             }
         } catch (IOException e) {
-            throw new KeypleReaderException(e.getMessage(), e.getCause());
+            throw new KeypleChannelStateException("Error while opening channel, aid :"+ByteBufferUtils.toBytes(aid), e.getCause());
         } catch (SecurityException e) {
-            throw new KeypleReaderException(e.getMessage(), e.getCause());
+            throw new KeypleChannelStateException("Error while opening channel, aid :"+ByteBufferUtils.toBytes(aid), e.getCause());
         } catch (NoSuchElementException e) {
-            throw new KeypleApplicationSelectionException(e.getMessage());
+            throw new KeypleApplicationSelectionException("Error while selecting application : " + ByteBufferUtils.toBytes(aid), e);
         }
 
         return atrAndFci;
@@ -131,7 +133,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
      * @throws KeypleReaderException
      */
     @Override
-    protected void closePhysicalChannel() throws KeypleReaderException {
+    protected void closePhysicalChannel() {
         // close physical channel if exists
         if (openApplication != null) {
             openChannel.getSession().close();
@@ -148,7 +150,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
      * @throws KeypleReaderException
      */
     @Override
-    protected ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleReaderException {
+    protected ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
         // Initialization
         Log.d(TAG, "Data Length to be sent to tag : " + apduIn.limit());
         Log.d(TAG, "Data in : " + ByteBufferUtils.toHex(apduIn));
@@ -158,7 +160,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
             dataOut = openChannel.transmit(data);
         } catch (IOException e) {
             e.printStackTrace();
-            throw new KeypleReaderException("Error while transmitting APDU", e);
+            throw new KeypleIOReaderException("Error while transmitting APDU", e);
         }
         ByteBuffer out = ByteBuffer.wrap(dataOut);
         Log.d(TAG, "Data out : " + ByteBufferUtils.toHex(out));
@@ -173,7 +175,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
      * @throws KeypleReaderException
      */
     @Override
-    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
+    protected boolean protocolFlagMatches(SeProtocol protocolFlag) {
         return protocolFlag.equals(ContactsProtocols.PROTOCOL_ISO7816_3);
     }
 }

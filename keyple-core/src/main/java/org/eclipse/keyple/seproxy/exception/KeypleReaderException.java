@@ -9,12 +9,12 @@
 package org.eclipse.keyple.seproxy.exception;
 
 /**
- * Used when a generic checked exception occurs in reader
+ * Base Exceptions thrown in a {@link org.eclipse.keyple.seproxy.ProxyReader} context
  */
 public class KeypleReaderException extends KeypleBaseException {
 
     /**
-     * New reader exception to be thrown
+     * New exception to be thrown
      * 
      * @param message : message to identify the exception and the context
      */

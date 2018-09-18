@@ -9,16 +9,16 @@
 package org.eclipse.keyple.seproxy.exception;
 
 /**
- * Exception thrown when IO operations failed in a @{@link org.eclipse.keyple.seproxy.ProxyReader}
+ * Exception thrown when Channel Operations (open/close) failed in a {@link org.eclipse.keyple.seproxy.ProxyReader}
  */
-public class KeypleIOReaderException extends KeypleBaseException {
+public class KeypleChannelStateException extends KeypleReaderException {
 
     /**
      * New exception to be thrown
      *
      * @param message : message to identify the exception and the context
      */
-    public KeypleIOReaderException(String message) {
+    public KeypleChannelStateException(String message) {
         super(message);
     }
 
@@ -28,7 +28,7 @@ public class KeypleIOReaderException extends KeypleBaseException {
      * @param message : message to add some context to the exception
      * @param cause : lower level exception
      */
-    public KeypleIOReaderException(String message, Throwable cause) {
+    public KeypleChannelStateException(String message, Throwable cause) {
         super(message, cause);
     }
 }

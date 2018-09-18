@@ -114,7 +114,7 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
         } catch (CardException e) {
             logger.trace("[{}] Terminal list is not accessible. Exception: {}", this.getName(),
                     e.getMessage());
-            throw new IOReaderException("Could not access terminals list", e);
+            throw new KeypleReaderException("Could not access terminals list", e);
         }
         return nativeReaders;
     }

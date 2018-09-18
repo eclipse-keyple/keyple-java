@@ -15,6 +15,8 @@ import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
+import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
@@ -53,11 +55,10 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
     /**
      * Attempts to open the physical channel
      *
-     * @throws KeypleReaderException if a reader error occurs
      * @throws KeypleReaderException if the channel opening fails
      */
     protected abstract void openPhysicalChannel()
-            throws KeypleReaderException, KeypleReaderException;
+            throws KeypleChannelStateException;
 
     /**
      * Opens a logical channel
@@ -71,7 +72,7 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
      */
     protected final ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Short> successfulSelectionStatusCodes)
-            throws KeypleReaderException, KeypleApplicationSelectionException {
+            throws KeypleChannelStateException, KeypleApplicationSelectionException, KeypleIOReaderException {
         ByteBuffer[] atrAndFci = new ByteBuffer[2];
 
         if (!isLogicalChannelOpen()) {
@@ -83,7 +84,7 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
                 openPhysicalChannel();
             }
             if (!isPhysicalChannelOpen()) {
-                throw new KeypleReaderException("Fail to open physical channel.");
+                throw new KeypleChannelStateException("Fail to open physical channel.");
             }
         }
 

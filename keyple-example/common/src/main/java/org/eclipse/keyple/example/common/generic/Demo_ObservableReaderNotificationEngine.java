@@ -15,8 +15,9 @@ import org.eclipse.keyple.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
-import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
+import org.eclipse.keyple.seproxy.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,9 +90,9 @@ public class Demo_ObservableReaderNotificationEngine {
             try {
                 reader = SeProxyService.getInstance().getPlugin(event.getPluginName())
                         .getReader(event.getReaderName());
-            } catch (UnexpectedPluginException e) {
+            } catch (KeyplePluginNotFoundException e) {
                 e.printStackTrace();
-            } catch (UnexpectedReaderException e) {
+            } catch (KeypleReaderNotFoundException e) {
                 e.printStackTrace();
             }
             switch (event.getEventType()) {

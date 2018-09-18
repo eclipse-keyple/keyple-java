@@ -16,6 +16,8 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
@@ -96,7 +98,7 @@ public class StubReaderTest {
     }
 
 
-    @Test(expected = KeypleReaderException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void transmit_Hoplink_null() throws Exception {
         reader.insertSe(hoplinkSE());
         reader.transmit((SeRequestSet) null);
@@ -205,7 +207,7 @@ public class StubReaderTest {
         return new StubSecureElement() {
 
             @Override
-            public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleReaderException {
+            public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
 
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
@@ -245,18 +247,18 @@ public class StubReaderTest {
 
             // override methods to fail open connection
             @Override
-            public void openPhysicalChannel() throws KeypleReaderException, KeypleReaderException {
-                throw new KeypleReaderException("Impossible to estasblish connection");
+            public void openPhysicalChannel() throws KeypleChannelStateException{
+                throw new KeypleChannelStateException("Impossible to estasblish connection");
             }
 
             @Override
-            public void closePhysicalChannel() throws KeypleReaderException {
-                throw new KeypleReaderException("Channel is not open");
+            public void closePhysicalChannel() throws KeypleChannelStateException {
+                throw new KeypleChannelStateException("Channel is not open");
             }
 
             @Override
-            public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleReaderException {
-                throw new KeypleReaderException("Error while transmitting apdu");
+            public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
+                throw new KeypleIOReaderException("Error while transmitting apdu");
             }
 
             @Override

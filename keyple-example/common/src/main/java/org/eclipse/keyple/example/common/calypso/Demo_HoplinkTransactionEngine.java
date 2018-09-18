@@ -277,10 +277,10 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
      *
      * @param poTransaction PoSecureSession object
      * @param fciData FCI data from the selection step
-     * @throws IOReaderException reader exception (defined as public for purposes of javadoc)
+     * @throws KeypleReaderException reader exception (defined as public for purposes of javadoc)
      */
     public void operateMultipleHoplinkTransactions(PoSecureSession poTransaction,
-            ApduResponse fciData) throws IOReaderException {
+            ApduResponse fciData) throws KeypleReaderException {
         /*
          * execute an Hoplink session: processOpening, processPoCommands, processClosing close the
          * logical channel

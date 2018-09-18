@@ -13,6 +13,8 @@ import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +37,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     private long before; // timestamp recorder
 
     protected abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
-            throws KeypleReaderException;
+            throws KeypleIOReaderException,KeypleChannelStateException,KeypleReaderException;
 
     /**
      * Reader constructor
@@ -60,7 +62,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      */
     public final SeResponseSet transmit(SeRequestSet requestSet) throws KeypleReaderException {
         if (requestSet == null) {
-            throw new KeypleReaderException("seRequestSet must not be null");
+            throw new IllegalArgumentException("seRequestSet must not be null");
         }
 
         SeResponseSet responseSet;
@@ -75,12 +77,18 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
 
         try {
             responseSet = processSeRequestSet(requestSet);
-        } catch (KeypleReaderException ex) {
+        } catch (KeypleChannelStateException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
             logger.trace("[{}] transmit => failure. elapsed {}", elapsedMs);
-            throw ex;
+            throw new KeypleReaderException("Transmit failed", ex);
+        } catch (KeypleIOReaderException ex) {
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            this.before = timeStamp;
+            logger.trace("[{}] transmit => failure. elapsed {}", elapsedMs);
+            throw new KeypleReaderException("Transmit failed", ex);
         }
 
         if (logger.isDebugEnabled()) {

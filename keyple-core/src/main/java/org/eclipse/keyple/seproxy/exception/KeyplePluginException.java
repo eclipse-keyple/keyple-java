@@ -9,7 +9,7 @@
 package org.eclipse.keyple.seproxy.exception;
 
 /**
- * Used when a generic checked occurs in plugin
+ * Base Exceptions thrown in a {@link org.eclipse.keyple.seproxy.ReaderPlugin} context
  */
 public class KeyplePluginException extends KeypleBaseException {
 

@@ -13,7 +13,7 @@ import java.util.List;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 
-// TODO concerns only PoSecureSession, should be moved to calypso package
+// TODO concerns only PoSecureSession, should it be moved to calypso package?
 public class KeypleCalypsoSecureSessionException extends KeypleReaderException {
 
     public enum Type {

@@ -9,26 +9,26 @@
 package org.eclipse.keyple.seproxy.exception;
 
 /**
- * Base Exceptions thrown in a @{@link org.eclipse.keyple.seproxy.ProxyReader} context
+ * Exception thrown when IO operations failed in a {@link org.eclipse.keyple.seproxy.ProxyReader}
  */
-public class KeypleReaderException extends KeypleBaseException {
+public class KeypleIOReaderException extends KeypleReaderException {
 
     /**
      * New exception to be thrown
-     * 
+     *
      * @param message : message to identify the exception and the context
      */
-    public KeypleReaderException(String message) {
+    public KeypleIOReaderException(String message) {
         super(message);
     }
 
     /**
      * Encapsulate a lower level reader exception
-     * 
+     *
      * @param message : message to add some context to the exception
      * @param cause : lower level exception
      */
-    public KeypleReaderException(String message, Throwable cause) {
+    public KeypleIOReaderException(String message, Throwable cause) {
         super(message, cause);
     }
 }
