@@ -32,6 +32,8 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
 
     private final String pluginName;
 
+    private long before; // timestamp recorder
+
     protected abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
             throws IOReaderException;
 
@@ -46,6 +48,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     protected AbstractObservableReader(String pluginName, String readerName) {
         super(readerName);
         this.pluginName = pluginName;
+        this.before = System.nanoTime();
     }
 
     /**
@@ -61,27 +64,29 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         }
 
         SeResponseSet responseSet;
-        long before = 0;
-
 
         if (logger.isDebugEnabled()) {
-            logger.trace("[{}] transmit => SeRequestSet: {}", this.getName(),
-                    requestSet.toString());
-            before = System.nanoTime();
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            this.before = timeStamp;
+            logger.trace("[{}] transmit => SeRequestSet: {}, elapsed {} ms.", this.getName(),
+                    requestSet.toString(), elapsedMs);
         }
 
         try {
             responseSet = processSeRequestSet(requestSet);
         } catch (IOReaderException ex) {
-            // Switching to the 10th of milliseconds and dividing by 10 to get the ms
-            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            this.before = timeStamp;
             logger.trace("[{}] transmit => failure. elapsed {}", elapsedMs);
             throw ex;
         }
 
         if (logger.isDebugEnabled()) {
-            // Switching to the 10th of milliseconds and dividing by 10 to get the ms
-            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
+            this.before = timeStamp;
             logger.trace("[{}] transmit => SeResponse: {}, elapsed {} ms.", this.getName(),
                     responseSet.toString(), elapsedMs);
         }

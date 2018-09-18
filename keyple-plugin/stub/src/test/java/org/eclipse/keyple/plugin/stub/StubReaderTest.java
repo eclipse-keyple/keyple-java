@@ -42,7 +42,6 @@ public class StubReaderTest {
         // clear observers from others tests as StubPlugin is a singleton
         StubPlugin.getInstance().clearObservers();
         reader = StubPlugin.getInstance().plugStubReader("StubReader");
-
     }
 
 
@@ -134,8 +133,7 @@ public class StubReaderTest {
         // test
         SeResponseSet resp = reader.transmit(seRequest);
 
-        Assert.assertNotNull(resp);
-
+        Assert.assertNull(resp.getSingleResponse());
     }
 
 

@@ -11,7 +11,7 @@ package org.eclipse.keyple.example.pc.calypso;
 import java.io.IOException;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.example.common.Demo_HoplinkTransactionEngine;
+import org.eclipse.keyple.example.common.calypso.Demo_HoplinkTransactionEngine;
 import org.eclipse.keyple.example.pc.calypso.stub.se.CsmStubSe;
 import org.eclipse.keyple.example.pc.calypso.stub.se.HoplinkStubSe;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
@@ -20,6 +20,7 @@ import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
+import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +50,10 @@ public class Demo_Hoplink_Stub {
 
         SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
 
+        StubPlugin stubPlugin = StubPlugin.getInstance();
+
         /* Get the instance of the PcscPlugin (Singleton pattern) */
-        pluginsSet.add(StubPlugin.getInstance());
+        pluginsSet.add(stubPlugin);
 
         /* Assign StubPlugin to the SeProxyService */
         seProxyService.setPlugins(pluginsSet);
@@ -61,8 +64,18 @@ public class Demo_Hoplink_Stub {
         /*
          * Get PO and CSM stub readers.
          */
-        StubReader poReader = StubPlugin.getInstance().plugStubReader("poReader");
-        StubReader csmReader = StubPlugin.getInstance().plugStubReader("csmReader");
+        stubPlugin.plugStubReader("poReader");
+        stubPlugin.plugStubReader("csmReader");
+
+        Thread.sleep(200);
+
+        StubReader poReader = null, csmReader = null;
+        try {
+            poReader = (StubReader) (stubPlugin.getReader("poReader"));
+            csmReader = (StubReader) (stubPlugin.getReader("csmReader"));
+        } catch (UnexpectedReaderException e) {
+            e.printStackTrace();
+        }
 
         /* Both readers are expected not null */
         if (poReader == csmReader || poReader == null || csmReader == null) {
@@ -87,11 +100,6 @@ public class Demo_Hoplink_Stub {
         logger.info("Insert stub CSM SE.");
         csmReader.insertSe(csmSE);
 
-        /* check if the expected CSM is available. */
-        if (!transactionEngine.checkCsm()) {
-            throw new IllegalStateException("No CSM available! Exit program.");
-        }
-
         /* Set the transactionEngine as Observer of the PO reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);
 
@@ -102,7 +110,7 @@ public class Demo_Hoplink_Stub {
         poReader.insertSe(hoplinkSE);
 
         /* Wait a while the time that the transaction ends. */
-        Thread.sleep(500);
+        Thread.sleep(1000);
 
         /* Withdraw SE */
         logger.info("Remove stub CSM and PO SE.");

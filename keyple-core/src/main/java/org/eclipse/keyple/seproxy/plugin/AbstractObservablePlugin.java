@@ -100,6 +100,6 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginE
                 return reader;
             }
         }
-        throw new UnexpectedReaderException("Reader " + name + "not found.");
+        throw new UnexpectedReaderException("Reader " + name + " not found.");
     }
 }

@@ -124,6 +124,15 @@ public class StubReader extends AbstractThreadedLocalReader {
      * STATE CONTROLLERS FOR INSERTING AND REMOVING SECURE ELEMENT
      */
     public void insertSe(StubSecureElement _se) {
+        /* clean channels status */
+        if (isPhysicalChannelOpen()) {
+            closeLogicalChannel();
+            try {
+                closePhysicalChannel();
+            } catch (IOReaderException e) {
+                e.printStackTrace();
+            }
+        }
         se = _se;
         sePresent = true;
     }

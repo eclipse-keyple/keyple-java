@@ -11,7 +11,7 @@ package org.eclipse.keyple.example.pc.calypso;
 import java.io.IOException;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.example.common.Demo_HoplinkTransactionEngine;
+import org.eclipse.keyple.example.common.calypso.Demo_HoplinkTransactionEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -22,8 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Demo_Hoplink_Pcsc {
-    private ProxyReader poReader, csmReader;
-
     /**
      * This object is used to freeze the main thread while card operations are handle through the
      * observers callbacks. A call to the notify() method would end the program (not demonstrated
@@ -78,17 +76,26 @@ public class Demo_Hoplink_Pcsc {
         csmReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
         csmReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
+        /*
+         * PC/SC card access mode:
+         *
+         * The CSM is left in the SHARED mode (by default) to avoid automatic resets due to the
+         * limited time between two consecutive exchanges granted by Windows.
+         *
+         * The PO reader is set to EXCLUSIVE mode to avoid side effects during the selection step
+         * that may result in session failures.
+         *
+         * These two points will be addressed in a coming release of the Keyple PcSc reader plugin.
+         */
+        csmReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
+        poReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
+
         /* Set the PO reader protocol flag */
         poReader.addSeProtocolSetting(
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
 
         /* Assign readers to Hoplink transaction engine */
         transactionEngine.setReaders(poReader, csmReader);
-
-        /* check if the expected CSM is available. */
-        if (!transactionEngine.checkCsm()) {
-            throw new IllegalStateException("No CSM available! Exit program.");
-        }
 
         /* Set terminal as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);
