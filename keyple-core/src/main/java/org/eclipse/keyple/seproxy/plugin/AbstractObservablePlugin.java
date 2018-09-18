@@ -95,7 +95,7 @@ abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginE
      * 
      * @param name of the reader
      * @return the reader
-     * @throws KeypleReaderException if the wanted reader is not found
+     * @throws KeypleReaderNotFoundException if the wanted reader is not found
      */
     public final ProxyReader getReader(String name) throws KeypleReaderNotFoundException {
         for (ProxyReader reader : readers) {

@@ -126,7 +126,6 @@ public final class SeResponse implements Serializable {
                 && (seResponse.getApduResponses() == null ? apduResponses == null
                         : seResponse.getApduResponses().equals(apduResponses))
                 && seResponse.wasChannelPreviouslyOpen() == channelPreviouslyOpen;
-
     }
 
     @Override

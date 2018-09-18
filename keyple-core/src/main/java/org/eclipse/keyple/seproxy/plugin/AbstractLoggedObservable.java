@@ -10,8 +10,10 @@ package org.eclipse.keyple.seproxy.plugin;
 
 
 import java.util.Map;
+
+import org.eclipse.keyple.seproxy.event.PluginEvent;
+import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.util.NameableConfigurable;
 import org.eclipse.keyple.util.Observable;
 import org.slf4j.Logger;
@@ -92,17 +94,18 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
     public final void notifyObservers(final T event) {
 
         if (this instanceof AbstractObservableReader) {
-            logger.trace("[{}] AbstractObservableReader => Notifying a reader event: ",
-                    this.getName(), event);
+            logger.trace(
+                    "[{}] AbstractObservableReader => Notifying a reader event. EVENTNAME = {}",
+                    this.getName(), ((ReaderEvent) event).getEventType().getName());
         } else if (this instanceof AbstractObservablePlugin) {
-            logger.trace("[{}] AbstractObservableReader => Notifying a plugin event: ",
-                    this.getName(), event);
+            logger.trace(
+                    "[{}] AbstractObservableReader => Notifying a plugin event. EVENTNAME = {} ",
+                    this.getName(), ((PluginEvent) event).getEventType().getName());
         }
 
         setChanged();
 
         super.notifyObservers(event);
-
     }
 
     /**
@@ -111,7 +114,7 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
      * See {@link #setParameter(String, String)} for more details
      *
      * @param parameters the new parameters
-     * @throws KeypleReaderException This method can fail when disabling the exclusive mode as it's
+     * @throws KeypleBaseException This method can fail when disabling the exclusive mode as it's
      *         executed instantly
      */
     public final void setParameters(Map<String, String> parameters)

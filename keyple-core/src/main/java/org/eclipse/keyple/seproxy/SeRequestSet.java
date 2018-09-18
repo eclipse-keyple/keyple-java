@@ -36,7 +36,7 @@ public final class SeRequestSet implements Serializable {
      * <ul>
      * <li>A SeRequestSet could contain several SeRequest to manage the selection of different types
      * of PO application.</li>
-     * <li>To exchange APDU commands with a soecific selected PO application a single SeRequest is
+     * <li>To exchange APDU commands with a specific selected PO application a single SeRequest is
      * necessary.</li>
      * </ul>
      *

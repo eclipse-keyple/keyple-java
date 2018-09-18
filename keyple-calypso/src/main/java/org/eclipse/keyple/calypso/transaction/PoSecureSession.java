@@ -128,7 +128,7 @@ public class PoSecureSession {
             this.csmSetting.put(CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER, DEFAULT_KEY_RECORD_NUMER);
         }
 
-        logger.debug("PoSecureSession => contructor: CSMSETTING = {}", this.csmSetting);
+        logger.debug("Contructor => CSMSETTING = {}", this.csmSetting);
 
         currentState = SessionState.SESSION_CLOSED;
     }
@@ -212,8 +212,7 @@ public class PoSecureSession {
         /* Build a CSM SeRequest */
         SeRequest csmSeRequest = new SeRequest(null, csmApduRequestList, true);
 
-        logger.debug("PoSecureSession => processOpening, identification: CSMSEREQUEST = {}",
-                csmSeRequest);
+        logger.debug("processOpening => identification: CSMSEREQUEST = {}", csmSeRequest);
 
         /*
          * Create a SeRequestSet (list of SeRequest), transmit it to the CSM and get back the
@@ -228,8 +227,7 @@ public class PoSecureSession {
                     null);
         }
 
-        logger.debug("PoSecureSession => processOpening, identification: CSMSERESPONSE = {}",
-                csmSeResponse);
+        logger.debug("processOpening => identification: CSMSERESPONSE = {}", csmSeResponse);
 
         List<ApduResponse> csmApduResponseList = csmSeResponse.getApduResponses();
         ByteBuffer sessionTerminalChallenge;
@@ -240,8 +238,7 @@ public class PoSecureSession {
                     new CsmGetChallengeRespPars(csmApduResponseList.get(1));
             sessionTerminalChallenge = csmChallengePars.getChallenge();
             if (logger.isDebugEnabled()) {
-                logger.debug(
-                        "PoSecureSession => processOpening, identification: TERMINALCHALLENGE = {}",
+                logger.debug("processOpening => identification: TERMINALCHALLENGE = {}",
                         ByteBufferUtils.toHex(sessionTerminalChallenge));
             }
         } else {
@@ -271,7 +268,7 @@ public class PoSecureSession {
         SeRequest poSeRequest = new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
                 poApduRequestList, true);
 
-        logger.debug("PoSecureSession => processOpening, opening:  POSEREQUEST = {}", poSeRequest);
+        logger.debug("processOpening => opening:  POSEREQUEST = {}", poSeRequest);
 
         /* Create a SeRequestSet from a unique SeRequest in this case */
         SeRequestSet poRequestSet = new SeRequestSet(poSeRequest);
@@ -279,8 +276,7 @@ public class PoSecureSession {
         /* Transmit the commands to the PO */
         SeResponse poSeResponse = poReader.transmit(poRequestSet).getSingleResponse();
 
-        logger.debug("PoSecureSession => processOpening, opening:  POSERESPONSE = {}",
-                poSeResponse);
+        logger.debug("processOpening => opening:  POSERESPONSE = {}", poSeResponse);
 
         if (poSeResponse == null) {
             throw new KeypleCalypsoSecureSessionException("Null response received",
@@ -314,8 +310,7 @@ public class PoSecureSession {
         /* Build the Digest Init command from PO Open Session */
         byte kif = poOpenSessionPars.getSelectedKif();
         if (logger.isDebugEnabled()) {
-            logger.debug(
-                    "PoSecureSession => processOpening, opening: CARDCHALLENGE = {}, POKIF = {}, POKVC = {}",
+            logger.debug("processOpening => opening: CARDCHALLENGE = {}, POKIF = {}, POKVC = {}",
                     ByteBufferUtils.toHex(sessionCardChallenge),
                     String.format("%02X", poOpenSessionPars.getSelectedKif()),
                     String.format("%02X", poOpenSessionPars.getSelectedKvc()));
@@ -408,7 +403,7 @@ public class PoSecureSession {
         SeRequest poSeRequest = new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
                 poApduRequestList, true);
 
-        logger.debug("PoSecureSession => processPoCommands: POREQUEST = {}", poSeRequest);
+        logger.debug("processPoCommands => POREQUEST = {}", poSeRequest);
 
         /* Create a SeRequestSet from a unique SeRequest in this case */
         SeRequestSet poRequestSet = new SeRequestSet(poSeRequest);
@@ -416,7 +411,7 @@ public class PoSecureSession {
         /* Transmit the commands to the PO */
         SeResponse poSeResponse = poReader.transmit(poRequestSet).getSingleResponse();
 
-        logger.debug("PoSecureSession => processPoCommands:PORESPONSE = {}", poSeResponse);
+        logger.debug("processPoCommands => PORESPONSE = {}", poSeResponse);
 
         if (poSeResponse == null) {
             throw new KeypleCalypsoSecureSessionException("Null response received",
@@ -479,14 +474,14 @@ public class PoSecureSession {
         /* SeRequest from the command list */
         SeRequest csmSeRequest = new SeRequest(null, csmApduRequestList, true);
 
-        logger.debug("PoSecureSession => processCsmCommands: CSMSEREQUEST = {}", csmSeRequest);
+        logger.debug("processCsmCommands => CSMSEREQUEST = {}", csmSeRequest);
 
         /* create a SeRequestSet (list of SeRequest) */
         SeRequestSet csmRequestSet = new SeRequestSet(csmSeRequest);
 
         SeResponse csmSeResponse = csmReader.transmit(csmRequestSet).getSingleResponse();
 
-        logger.debug("PoSecureSession => processCsmCommands: CSMSERESPONSE = {}", csmSeResponse);
+        logger.debug("processCsmCommands => CSMSERESPONSE = {}", csmSeResponse);
 
         return csmSeResponse;
     }
@@ -569,22 +564,21 @@ public class PoSecureSession {
         /* Get the CSM Digest request from the cache manager */
         SeRequest csmSeRequest = DigestProcessor.getCsmDigestRequest();
 
-        logger.debug("PoSecureSession => processClosing: CSMREQUEST = {}", csmSeRequest);
+        logger.debug("processClosing => CSMREQUEST = {}", csmSeRequest);
 
         /* create a SeRequestSet */
         SeRequestSet csmRequestSet = new SeRequestSet(csmSeRequest);
 
         SeResponse csmSeResponse = csmReader.transmit(csmRequestSet).getSingleResponse();
 
-        logger.debug("PoSecureSession => processClosing: CSMRESPONSE = {}", csmSeResponse);
+        logger.debug("processClosing => CSMRESPONSE = {}", csmSeResponse);
 
         List<ApduResponse> csmApduResponseList = csmSeResponse.getApduResponses();
 
         for (int i = 0; i < csmApduResponseList.size(); i++) {
             if (!csmApduResponseList.get(i).isSuccessful()) {
 
-                logger.debug(
-                        "PoSecureSession => processClosing: command failure REQUEST = {}, RESPONSE = {}",
+                logger.debug("processClosing => command failure REQUEST = {}, RESPONSE = {}",
                         csmSeRequest.getApduRequests().get(i), csmApduResponseList.get(i));
                 throw new IllegalStateException(
                         "ProcessClosing command failure during digest computation process.");
@@ -602,7 +596,7 @@ public class PoSecureSession {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("PoSecureSession => processClosing: SIGNATURE = {}",
+            logger.debug("processClosing => SIGNATURE = {}",
                     ByteBufferUtils.toHex(sessionTerminalSignature));
         }
 
@@ -626,13 +620,13 @@ public class PoSecureSession {
          */
         SeRequest poSeRequest = new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
                 poApduRequestList, !closeSeChannel);
-        logger.debug("PoSecureSession => processClosing: POSEREQUEST = {}", poSeRequest);
+        logger.debug("processClosing => POSEREQUEST = {}", poSeRequest);
 
         SeRequestSet poRequestSet = new SeRequestSet(poSeRequest);
 
         SeResponse poSeResponse = poReader.transmit(poRequestSet).getSingleResponse();
 
-        logger.debug("PoSecureSession => processClosing: POSERESPONSE = {}", poSeResponse);
+        logger.debug("processClosing => POSERESPONSE = {}", poSeResponse);
 
         List<ApduResponse> poApduResponseList = poSeResponse.getApduResponses();
 

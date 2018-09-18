@@ -32,9 +32,11 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     private ByteBuffer aidCurrentlySelected;
     private ApduResponse fciDataSelected;
     private ApduResponse atrData;
+    private long before; // timestamp recorder
 
     public AbstractLocalReader(String pluginName, String readerName) {
         super(pluginName, readerName);
+        this.before = System.nanoTime();
     }
 
     /**
@@ -91,10 +93,12 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     protected final ApduResponse processApduRequest(ApduRequest apduRequest)
             throws KeypleReaderException {
         ApduResponse apduResponse;
-        long before = 0;
         if (logger.isTraceEnabled()) {
-            logger.trace("[{}] processApduRequest => {}.", this.getName(), apduRequest);
-            before = System.nanoTime();
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
+            this.before = timeStamp;
+            logger.trace("[{}] processApduRequest => {}, elapsed {} ms.", this.getName(),
+                    apduRequest, elapsedMs);
         }
         /*
          * Fix buffer position before sending data We shouldn't have to re-use the buffer that was
@@ -113,7 +117,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         }
 
         if (logger.isTraceEnabled()) {
-            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
+            this.before = timeStamp;
             logger.trace("[{}] processApduRequest => {}, elapsed {} ms.", this.getName(),
                     apduResponse, elapsedMs);
         }
@@ -129,18 +135,20 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return ApduResponse the response to the get response command
      * @throws KeypleReaderException if the transmission fails.
      */
-    private ApduResponse case4HackGetResponse(int originalStatusCode) throws KeypleReaderException {
-        long before = 0;
+    private ApduResponse case4HackGetResponse(int originalStatusCode)
+            throws KeypleReaderException {
         /*
          * build a get response command the actual length expected by the SE in the get response
          * command is handled in transmitApdu
          */
         ByteBuffer getResponseHackRequestBytes = ByteBufferUtils.fromHex("00C0000000");
         if (logger.isTraceEnabled()) {
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            this.before = timeStamp;
             logger.trace(
-                    "[{}] case4HackGetResponse => ApduRequest: NAME = \"Intrinsic Get Response\", RAWDATA = {}",
-                    this.getName(), ByteBufferUtils.toHex(getResponseHackRequestBytes));
-            before = System.nanoTime();
+                    "[{}] case4HackGetResponse => ApduRequest: NAME = \"Intrinsic Get Response\", RAWDATA = {}, elapsed = {}",
+                    this.getName(), ByteBufferUtils.toHex(getResponseHackRequestBytes), elapsedMs);
         }
 
         ByteBuffer getResponseHackResponseBytes = transmitApdu(getResponseHackRequestBytes);
@@ -149,7 +157,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         ApduResponse getResponseHackResponse = new ApduResponse(getResponseHackResponseBytes, null);
 
         if (logger.isTraceEnabled()) {
-            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            this.before = timeStamp;
             logger.trace("[{}] case4HackGetResponse => Intrinsic {}, elapsed {} ms.",
                     this.getName(), getResponseHackResponseBytes, elapsedMs);
         }
@@ -200,10 +210,13 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         requestIndex = 0;
 
         /*
-         * The current requestSet is possibly made of several APDU command lists If the
-         * requestMatchesProtocol is true we process the requestSet If the requestMatchesProtocol is
-         * false we skip to the next requestSet If keepChannelOpen is false, we close the physical
-         * channel for the last request.
+         * The current requestSet is possibly made of several APDU command lists.
+         *
+         * If the requestMatchesProtocol is true we process the requestSet.
+         *
+         * If the requestMatchesProtocol is false we skip to the next requestSet.
+         *
+         * If keepChannelOpen is false, we close the physical channel for the last request.
          */
         List<SeResponse> responses = new ArrayList<SeResponse>();
         boolean stopProcess = false;
@@ -242,7 +255,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                                 this.getName());
                     }
                 } else {
-                    stopProcess = true;
+                    if (isLogicalChannelOpen()) {
+                        stopProcess = true;
+                    }
                     /*
                      * When keepChannelOpen is true, we stop after the first matching request we
                      * exit the for loop here For the processing of a SeRequest with a protocolFlag
@@ -293,20 +308,40 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
-        // unless the selector is null, we try to open a logical channel
+        /* unless the selector is null, we try to open a logical channel */
         if (seRequest.getSelector() != null) {
-            // check if AID changed if the channel is already open
-            if (isLogicalChannelOpen() && seRequest.getSelector() instanceof SeRequest.AidSelector
-                    && aidCurrentlySelected != ((SeRequest.AidSelector) seRequest.getSelector())
-                            .getAidToSelect()) {
-                // the AID changed, close the logical channel
-                if (logger.isTraceEnabled()) {
-                    logger.trace(
-                            "[{}] processSeRequest => The AID changed, close the logical channel. AID = {}, EXPECTEDAID = {}",
-                            this.getName(), ByteBufferUtils.toHex(aidCurrentlySelected),
-                            seRequest.getSelector());
+            /* check if AID changed if the channel is already open */
+            // TODO implement "select next" to handle SE having several matching AIDs
+            // for now we check only if the selection AID is included in the AID found in the FCI
+            // data
+            if (isLogicalChannelOpen()
+                    && seRequest.getSelector() instanceof SeRequest.AidSelector) {
+                /*
+                 * AID comparison hack: we check here if the initial selection AID matches the
+                 * beginning of the AID provided in the SeRequest (coming from FCI data and supposed
+                 * to be longer than the selection AID).
+                 *
+                 * The current AID (selector) length must be at least equal or greater than the
+                 * selection AID. All bytes of the selection AID must match the beginning of the
+                 * current AID.
+                 */
+                if (aidCurrentlySelected == null) {
+                    throw new IllegalStateException("AID currently selected shouldn't be null.");
                 }
-                closeLogicalChannel();
+                if (((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect()
+                        .limit() >= aidCurrentlySelected.limit()
+                        && aidCurrentlySelected.equals(ByteBufferUtils.subLen(
+                                ((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect(),
+                                0, aidCurrentlySelected.limit()))) {
+                    // the AID changed, close the logical channel
+                    if (logger.isTraceEnabled()) {
+                        logger.trace(
+                                "[{}] processSeRequest => The AID changed, close the logical channel. AID = {}, EXPECTEDAID = {}",
+                                this.getName(), ByteBufferUtils.toHex(aidCurrentlySelected),
+                                seRequest.getSelector());
+                    }
+                    closeLogicalChannel();
+                }
             }
 
             if (!isLogicalChannelOpen()) {
@@ -323,14 +358,14 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     logger.trace("[{}] processSeRequest => Logical channel opening failure",
                             this.getName());
                     closeLogicalChannel();
-                    // return a null SeResponse when the opening of the logical channel failed
+                    /* return a null SeResponse when the opening of the logical channel failed */
                     return null;
                 }
 
                 if (atrAndFciDataBytes[0] != null) { // the SE Answer to reset
                     atrData = new ApduResponse(atrAndFciDataBytes[0], null);
                     if (seRequest.getSelector() instanceof SeRequest.AtrSelector) {
-                        // channel is considered if the selection mode was ATR based
+                        /* channel is considered if the selection mode was ATR based */
                         setLogicalChannelOpen();
                     }
                 }
@@ -341,7 +376,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     fciDataSelected = new ApduResponse(atrAndFciDataBytes[1],
                             seRequest.getSuccessfulSelectionStatusCodes());
                     if (fciDataSelected.isSuccessful()) {
-                        // the channel opening is successful
+                        /* the channel opening is successful */
                         setLogicalChannelOpen();
                     } else {
                         closeLogicalChannel();
@@ -349,14 +384,14 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 }
             }
         } else {
-            // selector is null, we expect that the logical channel was previously opened
+            /* selector is null, we expect that the logical channel was previously opened */
             if (!isLogicalChannelOpen()) {
                 throw new IllegalStateException(
                         "[" + this.getName() + "] processSeRequest => No logical channel opened!");
             }
         }
 
-        // process request if not empty
+        /* process request if not empty */
         if (seRequest.getApduRequests() != null) {
             for (ApduRequest apduRequest : seRequest.getApduRequests()) {
                 apduResponseList.add(processApduRequest(apduRequest));

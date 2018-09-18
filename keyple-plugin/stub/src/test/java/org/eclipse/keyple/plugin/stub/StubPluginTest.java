@@ -48,7 +48,7 @@ public class StubPluginTest {
     }
 
     @Test
-    public void testA_PlugReaders() throws KeypleReaderException {
+    public void testA_PlugReaders() throws KeypleReaderException, InterruptedException  {
 
         // add READER_CONNECTED assert observer
         stubPlugin.addObserver(new ObservablePlugin.PluginObserver() {
@@ -59,6 +59,9 @@ public class StubPluginTest {
         });
 
         stubPlugin.plugStubReader("test");
+
+        Thread.sleep(100);
+
         logger.debug("Stubplugin readers size {} ", stubPlugin.getReaders().size());
 
         assert (stubPlugin.getReaders().size() == 1);
@@ -66,9 +69,13 @@ public class StubPluginTest {
     }
 
     @Test
-    public void testB_UnplugReaders() throws KeypleReaderException, KeypleReaderException {
+    public void testB_UnplugReaders() throws KeypleReaderException, InterruptedException {
         // add a reader
         stubPlugin.plugStubReader("test");
+
+        // let the monitor thread work
+        Thread.sleep(100);
+
         assert (stubPlugin.getReaders().size() == 1);
 
         // add READER_DISCONNECTED assert observer
@@ -82,17 +89,30 @@ public class StubPluginTest {
 
         // unplug reader
         stubPlugin.unplugReader("test");
+
+        // let the monitor thread work
+        Thread.sleep(100);
+
         logger.debug("Stubplugin readers size {} ", stubPlugin.getReaders().size());
+
         assert (stubPlugin.getReaders().size() == 0);
     }
 
     @Test
-    public void testC_PlugSameReaderTwice() throws KeypleReaderException, KeypleReaderException {
+    public void testC_PlugSameReaderTwice() throws KeypleReaderException, InterruptedException {
         stubPlugin.plugStubReader("test");
         stubPlugin.plugStubReader("test");
         logger.debug("Stubplugin readers size {} ", stubPlugin.getReaders().size());
+
+        // let the monitor thread work
+        Thread.sleep(100);
+
         assert (stubPlugin.getReaders().size() == 1);
         stubPlugin.unplugReader("test");
+
+        // let the monitor thread work
+        Thread.sleep(100);
+
         logger.debug("Stubplugin readers size {} ", stubPlugin.getReaders().size());
         assert (stubPlugin.getReaders().size() == 0);
     }
