@@ -53,6 +53,9 @@ public class wskPO {
             WskClient wskClient = new WskClient(new URI(ENDPOINT_URL));
             wskClient.connect();
 
+
+
+
         }  catch (URISyntaxException e) {
             e.printStackTrace();
         }

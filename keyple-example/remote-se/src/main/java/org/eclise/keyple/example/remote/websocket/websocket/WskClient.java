@@ -1,9 +1,6 @@
 package org.eclise.keyple.example.remote.websocket.websocket;
 
-import org.eclipse.keyple.plugin.remote_se.transport.DtoSender;
-import org.eclipse.keyple.plugin.remote_se.transport.DtoReceiver;
-import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTO;
-import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTOHelper;
+import org.eclipse.keyple.plugin.remote_se.transport.*;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
@@ -11,15 +8,13 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
-public class WskClient extends WebSocketClient implements DtoSender {
+public class WskClient extends WebSocketClient implements DtoSender, TransportNode {
 
     private static final Logger logger = LoggerFactory.getLogger(WskClient.class);
     DtoReceiver dtoReceiver;
 
-    public WskClient(URI url, DtoReceiver dtoReceiver){
+    public WskClient(URI url){
         super(url);
-        this.dtoReceiver = dtoReceiver;
-
     }
 
     @Override
@@ -51,5 +46,10 @@ public class WskClient extends WebSocketClient implements DtoSender {
     public void sendDTO(KeypleDTO message, Object connection) {
         this.send(KeypleDTOHelper.toJson(message));
 
+    }
+
+    @Override
+    public void setDtoReceiver(DtoReceiver receiver) {
+        this.dtoReceiver = receiver;
     }
 }

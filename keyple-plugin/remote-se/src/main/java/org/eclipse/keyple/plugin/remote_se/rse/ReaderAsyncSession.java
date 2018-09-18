@@ -10,7 +10,6 @@ package org.eclipse.keyple.plugin.remote_se.rse;
 
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclise.keyple.example.remote.webservice.webservice.rse.SeResponseSetCallback;
 
 public interface ReaderAsyncSession extends ReaderSession {
 
