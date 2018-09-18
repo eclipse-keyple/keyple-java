@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractSelectionLocalReader;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
@@ -225,7 +224,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
 
 
     @Override
-    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws InvalidMessageException {
+    protected boolean protocolFlagMatches(SeProtocol protocolFlag) {
         return protocolsMap.containsKey(protocolFlag)
                 && protocolsMap.get(protocolFlag).equals(tagProxy.getTech());
     }
