@@ -31,7 +31,7 @@ import android.util.Log;
 /**
  * Communicates with Android readers throught the Open Mobile API see {@link Reader} Instances of
  * this class represent SE readers supported by this device. These readers can be physical devices
- * or virtual devices. They can be removable or not. They can contain one SE that can or cannot be
+ * or rse devices. They can be removable or not. They can contain one SE that can or cannot be
  * removed.
  */
 public class AndroidOmapiReader extends AbstractStaticReader {
