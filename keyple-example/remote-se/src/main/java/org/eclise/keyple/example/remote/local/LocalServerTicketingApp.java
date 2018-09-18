@@ -22,11 +22,11 @@ import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
-import org.eclise.keyple.example.remote.server.RsePlugin;
-import org.eclise.keyple.example.remote.server.RseReader;
-import org.eclise.keyple.example.remote.server.transport.RseAPI;
-import org.eclise.keyple.example.remote.server.transport.local.LocalServer;
-import org.eclise.keyple.example.remote.server.transport.local.rse.LocalRseAPI;
+import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
+import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
+import org.eclise.keyple.example.remote.local.local.RseAPI;
+import org.eclise.keyple.example.remote.local.local.LocalServer;
+import org.eclise.keyple.example.remote.local.local.rse.LocalRseAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

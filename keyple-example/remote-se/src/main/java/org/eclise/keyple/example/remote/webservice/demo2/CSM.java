@@ -14,11 +14,9 @@ import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclise.keyple.example.remote.server.transport.RseNseSession;
-import org.eclise.keyple.example.remote.server.transport.webservice.nse.WsRseClient;
-import org.eclise.keyple.example.remote.server.transport.webservice.common.HttpHelper;
-import org.eclise.keyple.example.remote.server.transport.webservice.nse.NseEndpoint;
-import org.eclise.keyple.example.remote.server.transport.webservice.rse.WsNseClient;
+import org.eclise.keyple.example.remote.webservice.webservice.nse.WsRseClient;
+import org.eclise.keyple.example.remote.webservice.webservice.common.HttpHelper;
+import org.eclise.keyple.example.remote.webservice.webservice.nse.NseEndpoint;
 import org.eclise.keyple.example.stub.calypso.HoplinkStubSE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,7 +96,7 @@ public class CSM {
 
             Map<String, Object> options = new HashMap<String, Object>();
             options.put("transmitUrl",  "http://localhost:"+port+END_POINT + HttpHelper.TRANSMIT_ENDPOINT);
-            options.put("isDuplex", true);
+            options.put("isAsync", true);
 
             //todo connect reader to remote service and specify that we can communicate with a rse API /transmit
             String sessionId = wsClientRSEClient.connectReader(localReader,options);

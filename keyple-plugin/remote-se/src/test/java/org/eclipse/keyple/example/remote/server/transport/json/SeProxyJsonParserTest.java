@@ -10,7 +10,7 @@ package org.eclipse.keyple.example.remote.server.transport.json;
 
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclise.keyple.example.remote.server.serializer.json.SeProxyJsonParser;
+import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;

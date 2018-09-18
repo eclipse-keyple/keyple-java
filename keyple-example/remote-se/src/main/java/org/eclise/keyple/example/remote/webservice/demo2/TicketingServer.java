@@ -18,11 +18,11 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
-import org.eclise.keyple.example.remote.server.RsePlugin;
-import org.eclise.keyple.example.remote.server.RseReader;
-import org.eclise.keyple.example.remote.server.transport.webservice.common.HttpHelper;
-import org.eclise.keyple.example.remote.server.transport.webservice.rse.PluginEndpoint;
-import org.eclise.keyple.example.remote.server.transport.webservice.rse.ReaderEndpoint;
+import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
+import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
+import org.eclise.keyple.example.remote.webservice.webservice.common.HttpHelper;
+import org.eclise.keyple.example.remote.webservice.webservice.rse.PluginEndpoint;
+import org.eclise.keyple.example.remote.webservice.webservice.rse.ReaderEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

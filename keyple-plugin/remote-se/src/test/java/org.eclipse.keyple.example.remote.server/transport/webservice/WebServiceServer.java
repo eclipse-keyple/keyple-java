@@ -11,7 +11,7 @@ package org.eclipse.keyple.example.remote.server.transport.webservice;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
-import org.eclise.keyple.example.remote.server.transport.webservice.rse.PluginEndpoint;
+import org.eclise.keyple.example.remote.webservice.webservice.rse.PluginEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.sun.net.httpserver.HttpServer;
