@@ -11,6 +11,8 @@ package org.eclipse.keyple.seproxy.plugin;
 
 import java.io.IOException;
 import java.util.Map;
+import org.eclipse.keyple.seproxy.event.PluginEvent;
+import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.util.NameableConfigurable;
 import org.eclipse.keyple.util.Observable;
@@ -92,17 +94,18 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
     public final void notifyObservers(final T event) {
 
         if (this instanceof AbstractObservableReader) {
-            logger.trace("[{}] AbstractObservableReader => Notifying a reader event: ",
-                    this.getName(), event);
+            logger.trace(
+                    "[{}] AbstractObservableReader => Notifying a reader event. EVENTNAME = {}",
+                    this.getName(), ((ReaderEvent) event).getEventType().getName());
         } else if (this instanceof AbstractObservablePlugin) {
-            logger.trace("[{}] AbstractObservableReader => Notifying a plugin event: ",
-                    this.getName(), event);
+            logger.trace(
+                    "[{}] AbstractObservableReader => Notifying a plugin event. EVENTNAME = {} ",
+                    this.getName(), ((PluginEvent) event).getEventType().getName());
         }
 
         setChanged();
 
         super.notifyObservers(event);
-
     }
 
     /**

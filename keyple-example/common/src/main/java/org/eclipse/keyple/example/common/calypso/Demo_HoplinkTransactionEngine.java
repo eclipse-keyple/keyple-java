@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.example.common;
+package org.eclipse.keyple.example.common.calypso;
 
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.*;
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CsmSettings.*;
@@ -31,8 +31,7 @@ import org.slf4j.profiler.Profiler;
  * <li>Starting a card operation when a PO presence is notified ({@link #operatePoTransactions
  * operatePoTransactions})
  * <li>Opening a logical channel with the CSM (C1 CSM is expected) see
- * ({@link org.eclipse.keyple.example.common.HoplinkInfoAndSampleCommands#CSM_C1_ATR_REGEX
- * CSM_C1_ATR_REGEX})
+ * ({@link HoplinkInfoAndSampleCommands#CSM_C1_ATR_REGEX CSM_C1_ATR_REGEX})
  * <li>Attempting to open a logical channel with the PO with 3 options:
  * <ul>
  * <li>Selection with a fake AID
@@ -72,9 +71,12 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
 
     Profiler profiler;
 
+    boolean csmChannelOpen;
+
     /* Constructor */
     public Demo_HoplinkTransactionEngine() {
         super();
+        this.csmChannelOpen = false;
     }
 
     /* Assign readers to the transaction engine */
@@ -83,9 +85,12 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
         this.csmReader = csmReader;
     }
 
-    /* Check CSM presence and consistency */
-    public boolean checkCsm() {
-        boolean csmOk;
+    /**
+     * Check CSM presence and consistency
+     *
+     * Throw an exception if the expected CSM is not available
+     */
+    private void checkCsmAndOpenChannel() {
         /*
          * check the availability of the CSM, open its physical and logical channels and keep it
          * open
@@ -100,17 +105,12 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
             csmCheckResponse =
                     csmReader.transmit(new SeRequestSet(csmCheckRequest)).getSingleResponse();
             if (csmCheckResponse == null) {
-                logger.error("Unable to open a logical channel for CSM!");
-                csmOk = false;
+                throw new IllegalStateException("Unable to open a logical channel for CSM!");
             } else {
-                csmOk = true;
             }
         } catch (IOReaderException e) {
-            logger.error("Reader exception: CAUSE = {}", e.getMessage());
-            csmOk = false;
+            throw new IllegalStateException("Reader exception: " + e.getMessage());
         }
-
-        return csmOk;
     }
 
     @Override
@@ -269,6 +269,13 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
      */
     public void operatePoTransactions() {
         try {
+            /* first time: check CSM */
+            if (!this.csmChannelOpen) {
+                /* the following method will throw an exception if the CSM is not available. */
+                checkCsmAndOpenChannel();
+                this.csmChannelOpen = true;
+            }
+
             profiler = new Profiler("Entire transaction");
 
             /* operate multiple PO selections */

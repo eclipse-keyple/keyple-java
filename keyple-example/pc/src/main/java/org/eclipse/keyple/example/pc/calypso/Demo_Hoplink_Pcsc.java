@@ -11,7 +11,7 @@ package org.eclipse.keyple.example.pc.calypso;
 import java.io.IOException;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.example.common.Demo_HoplinkTransactionEngine;
+import org.eclipse.keyple.example.common.calypso.Demo_HoplinkTransactionEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -88,7 +88,7 @@ public class Demo_Hoplink_Pcsc {
          * These two points will be addressed in a coming release of the Keyple PcSc reader plugin.
          */
         csmReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
-        poReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_EXCLUSIVE);
+        poReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
 
         /* Set the PO reader protocol flag */
         poReader.addSeProtocolSetting(
@@ -96,11 +96,6 @@ public class Demo_Hoplink_Pcsc {
 
         /* Assign readers to Hoplink transaction engine */
         transactionEngine.setReaders(poReader, csmReader);
-
-        /* check if the expected CSM is available. */
-        if (!transactionEngine.checkCsm()) {
-            throw new IllegalStateException("No CSM available! Exit program.");
-        }
 
         /* Set terminal as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);

@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.example.common.HoplinkInfoAndSampleCommands;
+import org.eclipse.keyple.example.common.calypso.HoplinkInfoAndSampleCommands;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;

@@ -34,7 +34,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      *
      * This timeout value will determined the latency to detect changes
      */
-    private final long threadWaitTimeout = SETTING_THREAD_TIMEOUT_DEFAULT;
+    protected long threadWaitTimeout = SETTING_THREAD_TIMEOUT_DEFAULT;
 
     /**
      * List of names of the connected readers
@@ -56,7 +56,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      */
     public AbstractThreadedObservablePlugin(String name) {
         super(name);
-        /// create and launch the monitoring thread
+        /* create and launch the monitoring thread */
         thread = new EventThread(this.getName());
         thread.start();
     }
@@ -93,13 +93,16 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
         public void run() {
             try {
                 while (running) {
-                    // retrieves the current readers names list
+                    /* retrieves the current readers names list */
                     SortedSet<String> actualNativeReadersNames = getNativeReadersNames();
-                    // checks if it has changed
-                    // this algorithm favors cases where nothing change
+                    /*
+                     * checks if it has changed this algorithm favors cases where nothing change
+                     */
                     if (!nativeReadersNames.equals(actualNativeReadersNames)) {
-                        // parse the current readers list, notify for disappeared readers, update
-                        // readers list
+                        /*
+                         * parse the current readers list, notify for disappeared readers, update
+                         * readers list
+                         */
                         for (AbstractObservableReader reader : readers) {
                             if (!actualNativeReadersNames.contains(reader.getName())) {
                                 notifyObservers(new PluginEvent(this.pluginName, reader.getName(),
@@ -108,11 +111,15 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                                 logger.trace(
                                         "[{}][{}] Plugin thread => Remove unplugged reader from readers list.",
                                         this.pluginName, reader.getName());
+                                /* remove reader name from the current list */
+                                nativeReadersNames.remove(reader.getName());
                                 reader = null;
                             }
                         }
-                        // parse the new readers list, notify for readers appearance, update readers
-                        // list
+                        /*
+                         * parse the new readers list, notify for readers appearance, update readers
+                         * list
+                         */
                         for (String readerName : actualNativeReadersNames) {
                             if (!nativeReadersNames.contains(readerName)) {
                                 AbstractObservableReader reader = getNativeReader(readerName);
@@ -122,12 +129,12 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                                 logger.trace(
                                         "[{}][{}] Plugin thread => Add plugged reader to readers list.",
                                         this.pluginName, reader.getName());
+                                /* add reader name to the current list */
+                                nativeReadersNames.add(readerName);
                             }
                         }
-                        // update the readers names list
-                        nativeReadersNames = actualNativeReadersNames;
                     }
-                    // sleep for a while.
+                    /* sleep for a while. */
                     Thread.sleep(threadWaitTimeout);
                 }
             } catch (Exception e) {

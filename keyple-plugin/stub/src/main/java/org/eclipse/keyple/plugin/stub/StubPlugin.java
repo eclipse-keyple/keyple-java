@@ -12,8 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.plugin.AbstractThreadedObservablePlugin;
@@ -28,8 +26,11 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
 
     private final Map<String, String> parameters = new HashMap<String, String>();
 
+    private static SortedSet<String> nativeStubReadersNames = new ConcurrentSkipListSet<String>();
+
     private StubPlugin() {
         super("StubPlugin");
+        threadWaitTimeout = 50;
     }
 
     /**
@@ -53,10 +54,18 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
 
     @Override
     protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
-        // init Stub Readers list
+        /* init Stub Readers list */
         SortedSet<AbstractObservableReader> nativeReaders =
                 new ConcurrentSkipListSet<AbstractObservableReader>();
 
+        /*
+         * parse the current readers list to create the ProxyReader(s) associated with new reader(s)
+         */
+        if (nativeStubReadersNames != null && nativeStubReadersNames.size() > 0) {
+            for (String name : nativeStubReadersNames) {
+                nativeReaders.add(new StubReader(name));
+            }
+        }
         return nativeReaders;
     }
 
@@ -67,9 +76,12 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
                 return reader;
             }
         }
-        return null;
+        AbstractObservableReader reader = null;
+        if (nativeStubReadersNames.contains(name)) {
+            reader = new StubReader(name);
+        }
+        return reader;
     }
-
 
     /**
      * Plug a Stub Reader
@@ -78,19 +90,15 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
      */
     public StubReader plugStubReader(String name) {
 
-        if (getNativeReader(name) == null) {
+        if (!nativeStubReadersNames.contains(name)) {
             logger.info("Plugging a new reader with name " + name);
-            StubReader stubReader = new StubReader(name);
-            readers.add((AbstractObservableReader) stubReader);
-            notifyObservers(
-                    new PluginEvent(getName(), name, PluginEvent.EventType.READER_CONNECTED));
-            return stubReader;
-
+            nativeStubReadersNames.add(name);
+            // StubReader stubReader = new StubReader(name);
+            // readers.add((AbstractObservableReader) stubReader);
         } else {
-            logger.warn("Reader with name " + name + " was already plugged");
-            return (StubReader) getNativeReader(name);
+            logger.error("Reader with name " + name + " was already plugged");
         }
-
+        return (StubReader) getNativeReader(name);
     }
 
     /**
@@ -99,15 +107,12 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
      * @param name
      */
     public void unplugReader(String name) throws IOReaderException {
-        ProxyReader reader = getNativeReader(name);
-        if (reader == null) {
-            logger.warn("No reader found with name " + name);
 
+        if (!nativeStubReadersNames.contains(name)) {
+            logger.warn("No reader found with name " + name);
         } else {
-            readers.remove(reader);
-            notifyObservers(
-                    new PluginEvent(getName(), name, PluginEvent.EventType.READER_DISCONNECTED));
-            logger.info("Unplugged reader with name " + reader.getName());
+            nativeStubReadersNames.remove(name);
+            logger.info("Unplugged reader with name " + name);
         }
     }
 
@@ -118,10 +123,9 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
      */
     @Override
     protected SortedSet<String> getNativeReadersNames() {
-        SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
-        for (AbstractObservableReader reader : readers) {
-            nativeReadersNames.add(reader.getName());
+        if (nativeStubReadersNames.isEmpty()) {
+            logger.trace("No reader available.");
         }
-        return nativeReadersNames;
+        return nativeStubReadersNames;
     }
 }

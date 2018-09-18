@@ -42,7 +42,6 @@ public class StubReaderTest {
         // clear observers from others tests as StubPlugin is a singleton
         StubPlugin.getInstance().clearObservers();
         reader = StubPlugin.getInstance().plugStubReader("StubReader");
-
     }
 
 
@@ -123,7 +122,7 @@ public class StubReaderTest {
     }
 
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void transmit_null_Selection() throws IOReaderException {
         // init SE
         // no SE
@@ -133,6 +132,8 @@ public class StubReaderTest {
 
         // test
         SeResponseSet resp = reader.transmit(seRequest);
+
+        Assert.assertNull(resp.getSingleResponse());
     }
 
 
