@@ -45,6 +45,8 @@ public class StubPluginTest {
 
     @After
     public void tearDown() throws IOReaderException, InterruptedException {
+        stubPlugin = StubPlugin.getInstance(); // singleton
+        stubPlugin.clearObservers();
         Thread.sleep(1000);
 
     }
@@ -53,7 +55,7 @@ public class StubPluginTest {
     @Test
     public void testA_PlugReaders() throws IOReaderException, InterruptedException {
 
-        Observable.Observer obs = new ObservablePlugin.PluginObserver() {
+        Observable.Observer connected_obs = new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
                 Assert.assertEquals(PluginEvent.EventType.READER_CONNECTED, event.getEventType());
@@ -61,7 +63,7 @@ public class StubPluginTest {
         };
 
         // add READER_CONNECTED assert observer
-        stubPlugin.addObserver(obs);
+        stubPlugin.addObserver(connected_obs);
 
         //connect reader
         stubPlugin.plugStubReader("testA_PlugReaders");
@@ -72,7 +74,7 @@ public class StubPluginTest {
         assert (stubPlugin.getReaders().size() == 1);
 
         //clean
-        stubPlugin.removeObserver(obs);
+        stubPlugin.removeObserver(connected_obs);
         stubPlugin.unplugReader("testA_PlugReaders");
 
         Thread.sleep(100);
@@ -83,31 +85,34 @@ public class StubPluginTest {
     @Test
     public void testB_UnplugReaders() throws IOReaderException, InterruptedException {
 
-        Observable.Observer obs = new ObservablePlugin.PluginObserver() {
+        Observable.Observer disconnected_obs = new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
                 Assert.assertEquals(PluginEvent.EventType.READER_DISCONNECTED, event.getEventType());
             }
         };
-        stubPlugin.addObserver(obs);
+
 
         // add a reader
         stubPlugin.plugStubReader("testB_UnplugReaders");
 
         // let the monitor thread work
-        Thread.sleep(200);
+        Thread.sleep(1000);
 
-        assert (stubPlugin.getReaders().size() == 1);
 
         logger.debug("Stubplugin readers size {} ", stubPlugin.getReaders().size());
+        assert (stubPlugin.getReaders().size() == 1);
+
+
+        stubPlugin.addObserver(disconnected_obs);
         stubPlugin.unplugReader("testB_UnplugReaders");
 
-        Thread.sleep(100);
+        Thread.sleep(1000);
 
         Assert.assertEquals(0, stubPlugin.getReaders().size());
 
         //clean
-        stubPlugin.removeObserver(obs);
+        stubPlugin.removeObserver(disconnected_obs);
 
     }
 
