@@ -12,7 +12,6 @@ package org.eclipse.keyple.plugin.stub;
 import org.eclipse.keyple.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.util.Observable;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -65,7 +64,7 @@ public class StubPluginTest {
         // add READER_CONNECTED assert observer
         stubPlugin.addObserver(connected_obs);
 
-        //connect reader
+        // connect reader
         stubPlugin.plugStubReader("testA_PlugReaders");
 
         Thread.sleep(200);
@@ -73,7 +72,7 @@ public class StubPluginTest {
 
         assert (stubPlugin.getReaders().size() == 1);
 
-        //clean
+        // clean
         stubPlugin.removeObserver(connected_obs);
         stubPlugin.unplugReader("testA_PlugReaders");
 
@@ -88,7 +87,8 @@ public class StubPluginTest {
         Observable.Observer disconnected_obs = new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
-                Assert.assertEquals(PluginEvent.EventType.READER_DISCONNECTED, event.getEventType());
+                Assert.assertEquals(PluginEvent.EventType.READER_DISCONNECTED,
+                        event.getEventType());
             }
         };
 
@@ -111,7 +111,7 @@ public class StubPluginTest {
 
         Assert.assertEquals(0, stubPlugin.getReaders().size());
 
-        //clean
+        // clean
         stubPlugin.removeObserver(disconnected_obs);
 
     }
