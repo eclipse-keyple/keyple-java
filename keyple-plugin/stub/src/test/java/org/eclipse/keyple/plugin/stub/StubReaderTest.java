@@ -23,14 +23,14 @@ import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @SuppressWarnings("PMD.SignatureDeclareThrowsException")
 @RunWith(MockitoJUnitRunner.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StubReaderTest {
 
     StubReader reader;
@@ -38,10 +38,19 @@ public class StubReaderTest {
 
     // init before each test
     @Before
-    public void SetUp() throws IOReaderException {
+    public void SetUp() throws IOReaderException, InterruptedException {
         // clear observers from others tests as StubPlugin is a singleton
         StubPlugin.getInstance().clearObservers();
-        reader = StubPlugin.getInstance().plugStubReader("StubReader");
+        reader = StubPlugin.getInstance().plugStubReader("StubReaderTest");
+        Thread.sleep(1000);
+
+    }
+
+    @After
+    public void tearDown() throws IOReaderException, InterruptedException {
+        StubPlugin.getInstance().unplugReader("StubReaderTest");
+        Thread.sleep(1000);
+
     }
 
 
