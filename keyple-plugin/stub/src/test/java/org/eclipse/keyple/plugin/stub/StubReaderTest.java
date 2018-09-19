@@ -53,7 +53,7 @@ public class StubReaderTest {
         Assert.assertEquals(0, stubPlugin.countObservers());
 
         reader = StubPlugin.getInstance().plugStubReader("StubReaderTest");
-        Thread.sleep(1000);
+        Thread.sleep(500);
 
     }
 
@@ -61,7 +61,7 @@ public class StubReaderTest {
     public void tearDown() throws IOReaderException, InterruptedException {
         StubPlugin.getInstance().clearObservers();
         StubPlugin.getInstance().unplugReader("StubReaderTest");
-        Thread.sleep(1000);
+        Thread.sleep(500);
 
     }
 
