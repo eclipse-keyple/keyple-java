@@ -68,7 +68,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
 
     @Override
     public final void removeObserver(Observer observer) {
-        super.addObserver(observer);
+        super.removeObserver(observer);
     }
 
     /**
