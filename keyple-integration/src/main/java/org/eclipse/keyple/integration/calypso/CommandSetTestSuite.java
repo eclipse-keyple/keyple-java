@@ -19,7 +19,8 @@ import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -35,6 +36,8 @@ public class CommandSetTestSuite {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (KeypleBaseException e) {
             e.printStackTrace();
         }
     }
@@ -52,7 +55,8 @@ public class CommandSetTestSuite {
 
 
     private static byte[] readRecords(PoSecureSession poTransaction, ApduResponse fciData,
-            Byte fileSfi, Byte recordNumber, boolean readOneRecordFlag) throws IOReaderException {
+            Byte fileSfi, Byte recordNumber, boolean readOneRecordFlag)
+            throws KeypleReaderException {
 
         ReadRecordsCmdBuild poReadRecordCmd = new ReadRecordsCmdBuild(poTransaction.getRevision(),
                 fileSfi, (byte) recordNumber, readOneRecordFlag, (byte) 0x00);
@@ -78,7 +82,7 @@ public class CommandSetTestSuite {
 
 
     private static void updateRecord(PoSecureSession poTransaction, ApduResponse fciData, Byte sfi,
-            Byte recordNumber, byte[] dataToWrite) throws IOReaderException {
+            Byte recordNumber, byte[] dataToWrite) throws KeypleReaderException {
 
         poTransaction.processOpening(fciData, PoSecureSession.SessionAccessLevel.SESSION_LVL_LOAD,
                 (byte) 0x00, (byte) 0x00, null);
@@ -96,7 +100,8 @@ public class CommandSetTestSuite {
 
 
     private static void decreaseCounter(PoSecureSession poTransaction, ApduResponse fciData,
-            Byte countersSfi, Byte counterIndex, int valueToDecrement) throws IOReaderException {
+            Byte countersSfi, Byte counterIndex, int valueToDecrement)
+            throws KeypleReaderException {
 
         poTransaction.processOpening(fciData, PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT,
                 (byte) 0x00, (byte) 0x00, null);
@@ -114,7 +119,8 @@ public class CommandSetTestSuite {
 
 
     private static void increaseCounter(PoSecureSession poTransaction, ApduResponse fciData,
-            Byte countersSfi, Byte counterIndex, int valueToIncrement) throws IOReaderException {
+            Byte countersSfi, Byte counterIndex, int valueToIncrement)
+            throws KeypleReaderException {
 
         poTransaction.processOpening(fciData, PoSecureSession.SessionAccessLevel.SESSION_LVL_LOAD,
                 (byte) 0x00, (byte) 0x00, null);
