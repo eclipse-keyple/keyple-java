@@ -284,74 +284,65 @@ public class CommandSetTestSuite {
 
     }
 
-    /*
-     * @Test public void testReadRecords() {
-     * 
-     * try {
-     * 
-     * List<SeResponse> seResponses = selectPO();
-     * 
-     * PoSecureSession poTransaction = new PoSecureSession(TestEngine.poReader,
-     * TestEngine.csmReader, null);
-     * 
-     * if (seResponses.get(0) != null) { // Rev3
-     * 
-     * ApduResponse fciData = seResponses.get(0).getFci();
-     * 
-     * } else if (seResponses.get(1) != null) { // CLAP
-     * 
-     * ApduResponse fciData = seResponses.get(1).getFci();
-     * 
-     * byte[] firstRecordData = new byte[] {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-     * 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-     * 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-     * 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-     * 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
-     * 
-     * byte[] secondRecordData = new byte[] {0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-     * 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-     * 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-     * 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-     * 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02};
-     * 
-     * updateRecord(poTransaction, fciData, (byte) 0x15, (byte) 0x01, firstRecordData);
-     * updateRecord(poTransaction, fciData, (byte) 0x15, (byte) 0x02, secondRecordData);
-     * 
-     * byte[] contractRecordsData = readRecords(poTransaction, fciData, (byte) 0x15, (byte) 0x01,
-     * false);
-     * 
-     * Assertions.assertEquals(((64 + 2) * 2), contractRecordsData.length);
-     * 
-     * Assertions.assertEquals(0x01, contractRecordsData[0]); Assertions.assertEquals(0x40,
-     * contractRecordsData[1]);
-     * 
-     * 
-     * byte[] firstRecordDataRead = new byte[64]; System.arraycopy(contractRecordsData, 2,
-     * firstRecordDataRead, 0, 64);
-     * 
-     * Assertions.assertArrayEquals(firstRecordData, firstRecordDataRead);
-     * 
-     * Assertions.assertEquals(0x02, contractRecordsData[64+2]); Assertions.assertEquals(0x40,
-     * contractRecordsData[64+3]);
-     * 
-     * byte[] secondRecordDataRead = new byte[64]; System.arraycopy(contractRecordsData, 64+4,
-     * secondRecordDataRead, 0, 64);
-     * 
-     * Assertions.assertArrayEquals(secondRecordData, secondRecordDataRead);
-     * 
-     * } else if (seResponses.get(2) != null) { // Rev2.4
-     * 
-     * ApduResponse fciData = seResponses.get(2).getFci();
-     * 
-     * 
-     * } else { Assertions.fail("No recognizable PO detected.");
-     * System.out.println("No recognizable PO detected."); }
-     * 
-     * 
-     * } catch (Exception e) {
-     * 
-     * e.printStackTrace(); }
-     * 
-     * }
-     */
+
+    @Test
+    public void testReadRecords() {
+
+        try {
+
+            PoFileStructureInfo poData = selectPO();
+
+            PoSecureSession poTransaction =
+                    new PoSecureSession(TestEngine.poReader, TestEngine.csmReader, null);
+
+            byte[] firstRecordData = new byte[] {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                    0x01, 0x01, 0x01, 0x01};
+
+            byte[] secondRecordData = new byte[] {0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+                    0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+                    0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+                    0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+                    0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
+                    0x02, 0x02, 0x02, 0x02};
+
+            updateRecord(poTransaction, poData.getFciData(), poData.getContractFileData().getSfi(),
+                    (byte) 0x01, firstRecordData);
+            updateRecord(poTransaction, poData.getFciData(), poData.getContractFileData().getSfi(),
+                    (byte) 0x02, secondRecordData);
+
+            byte[] contractRecordsData = readRecords(poTransaction, poData.getFciData(),
+                    poData.getContractFileData().getSfi(), (byte) 0x01, false);
+
+            Assertions.assertEquals(((64 + 2) * 2), contractRecordsData.length);
+
+            Assertions.assertEquals(0x01, contractRecordsData[0]);
+            Assertions.assertEquals(0x40, contractRecordsData[1]);
+
+
+            byte[] firstRecordDataRead = new byte[64];
+            System.arraycopy(contractRecordsData, 2, firstRecordDataRead, 0, 64);
+
+            Assertions.assertArrayEquals(firstRecordData, firstRecordDataRead);
+
+            Assertions.assertEquals(0x02, contractRecordsData[64 + 2]);
+            Assertions.assertEquals(0x40, contractRecordsData[64 + 3]);
+
+            byte[] secondRecordDataRead = new byte[64];
+            System.arraycopy(contractRecordsData, 64 + 4, secondRecordDataRead, 0, 64);
+
+            Assertions.assertArrayEquals(secondRecordData, secondRecordDataRead);
+
+
+        } catch (Exception e) {
+
+            Assertions.fail("Exception caught: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+
 }
