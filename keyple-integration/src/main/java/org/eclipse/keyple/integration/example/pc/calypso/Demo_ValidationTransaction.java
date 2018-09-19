@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.example.pc.calypso;
+package org.eclipse.keyple.integration.example.pc.calypso;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -19,6 +19,7 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
+import org.eclipse.keyple.example.pc.calypso.PcscReadersSettings;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -302,7 +303,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         ApduResponse expectedGenericOkResponse =
                 new ApduResponse(ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}), null);
 
-        // Perform automatic top-up when the value is 0 by closing the current session and opening a new one with a
+        // Perform automatic top-up when the value is 0 by closing the current session and opening a
+        // new one with a
         // loading key
         if (counterValue == 0) {
 
@@ -412,7 +414,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
             PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, null);
 
-            // Depending on the PO detected perform either a Season Pass validation or a MultiTrip validation
+            // Depending on the PO detected perform either a Season Pass validation or a MultiTrip
+            // validation
             if (seResponses.get(0) != null) {
 
                 ApduResponse fciData = seResponses.get(0).getFci();
