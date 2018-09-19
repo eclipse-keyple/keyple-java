@@ -20,6 +20,7 @@ import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
@@ -38,10 +39,16 @@ public class StubReaderTest {
 
     // init before each test
     @Before
-    public void SetUp() throws IOReaderException {
+    public void SetUp() throws IOReaderException, InterruptedException {
         // clear observers from others tests as StubPlugin is a singleton
-        StubPlugin.getInstance().clearObservers();
-        reader = StubPlugin.getInstance().plugStubReader("StubReader");
+        StubPlugin stubPlugin = StubPlugin.getInstance();
+        stubPlugin.clearObservers();
+        // unplug all readers
+        for (AbstractObservableReader reader : stubPlugin.getReaders()) {
+            stubPlugin.unplugReader(reader.getName());
+        }
+        Thread.sleep(100);
+        reader = stubPlugin.plugStubReader("StubReader");
     }
 
 

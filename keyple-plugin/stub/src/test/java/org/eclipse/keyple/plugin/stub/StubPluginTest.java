@@ -28,7 +28,7 @@ public class StubPluginTest {
     Logger logger = LoggerFactory.getLogger(StubPluginTest.class);
 
     @Before
-    public void setUp() throws IOReaderException {
+    public void setUp() throws IOReaderException, InterruptedException {
         logger.info("Reset Stubplugin readers and stubplugin observers");
 
         stubPlugin = StubPlugin.getInstance(); // singleton
@@ -40,6 +40,10 @@ public class StubPluginTest {
         for (AbstractObservableReader reader : stubPlugin.getReaders()) {
             stubPlugin.unplugReader(reader.getName());
         }
+
+        // Let the monitoring thread work
+        Thread.sleep(100);
+
         logger.info("Stubplugin readers size {}", stubPlugin.getReaders().size());
         Assert.assertEquals(stubPlugin.getNativeReaders().size(), 0);
         logger.info("Stubplugin observers size {}", stubPlugin.countObservers());
@@ -117,11 +121,8 @@ public class StubPluginTest {
         assert (stubPlugin.getReaders().size() == 0);
     }
 
-
-
     @Test
     public void testD_GetName() throws IOReaderException {
         assert (stubPlugin.getName() != null);
     }
-
 }
