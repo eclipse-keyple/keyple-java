@@ -84,10 +84,14 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
                 nativeReadersNames.add(term.getName());
             }
         } catch (CardException e) {
-            logger.trace(
-                    "[{}] getNativeReadersNames => Terminal list is not accessible. Exception: {}",
-                    this.getName(), e.getMessage());
-            throw new KeypleReaderException("Could not access terminals list", e);
+            if (e.getCause().toString().contains("SCARD_E_NO_READERS_AVAILABLE")) {
+                logger.trace("No reader available.");
+            } else {
+                logger.trace(
+                        "[{}] getNativeReadersNames => Terminal list is not accessible. Exception: {}",
+                        this.getName(), e.getMessage());
+                throw new KeypleReaderException("Could not access terminals list", e);
+            }
         }
         return nativeReadersNames;
     }
@@ -112,9 +116,14 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
                 nativeReaders.add(new PcscReader(this.getName(), term));
             }
         } catch (CardException e) {
-            logger.trace("[{}] Terminal list is not accessible. Exception: {}", this.getName(),
-                    e.getMessage());
-            throw new KeypleReaderException("Could not access terminals list", e);
+            if (e.getCause().toString().contains("SCARD_E_NO_READERS_AVAILABLE")) {
+                logger.trace("No reader available.");
+            } else {
+                logger.trace("[{}] Terminal list is not accessible. Exception: {}", this.getName(),
+                        e.getMessage());
+                throw new KeypleReaderException("Could not access terminals list", e);
+
+            }
         }
         return nativeReaders;
     }

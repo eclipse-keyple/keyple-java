@@ -266,50 +266,6 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
     }
 
     /**
-     * Chain 3 Hoplink transactions with different logical channel management cases. (see @link
-     * doHoplinkReadWriteTransaction)
-     * <p>
-     * To illustrate the the logical channel management, it is kept open after the 1st transaction.
-     * <p>
-     * Closed after the end of the 2nd transaction and reopened before the 3rd transaction.
-     * <p>
-     * Finally the logical channel is closed at the end of the 3rd transaction.
-     *
-     * @param poTransaction PoSecureSession object
-     * @param fciData FCI data from the selection step
-     * @throws KeypleReaderException reader exception (defined as public for purposes of javadoc)
-     */
-    public void operateMultipleHoplinkTransactions(PoSecureSession poTransaction,
-            ApduResponse fciData) throws KeypleReaderException {
-        /*
-         * execute an Hoplink session: processOpening, processPoCommands, processClosing close the
-         * logical channel
-         */
-        profiler.start("Hoplink1");
-        doHoplinkReadWriteTransaction(poTransaction, fciData, true);
-
-
-        profiler.start("Hoplink2");
-        doHoplinkReadWriteTransaction(poTransaction, fciData, false);
-
-
-        /*
-         * redo the Hoplink PO selection after logical channel closing (may be not needed with some
-         * PO for which the application is selected by default)
-         */
-        profiler.start("Re-selection");
-        SeRequestSet selectionRequest =
-                new SeRequestSet(new SeRequest(
-                        new SeRequest.AidSelector(
-                                ByteBufferUtils.fromHex(HoplinkInfoAndSampleCommands.AID)),
-                        null, true));
-        fciData = poReader.transmit(selectionRequest).getSingleResponse().getFci();
-
-        profiler.start("Hoplink3");
-        doHoplinkReadWriteTransaction(poTransaction, fciData, false);
-    }
-
-    /**
      * Do the PO selection and possibly go on with Hoplink transactions.
      */
     public void operatePoTransactions() {
