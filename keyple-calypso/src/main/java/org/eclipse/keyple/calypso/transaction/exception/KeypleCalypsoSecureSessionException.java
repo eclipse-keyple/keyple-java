@@ -6,12 +6,13 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy.exception;
+package org.eclipse.keyple.calypso.transaction.exception;
 
 import java.util.Collections;
 import java.util.List;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 
 // TODO concerns only PoSecureSession, should it be moved to calypso package?
 public class KeypleCalypsoSecureSessionException extends KeypleReaderException {
