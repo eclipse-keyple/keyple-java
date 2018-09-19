@@ -1,21 +1,28 @@
-package org.eclipse.keyple.integration.calypso;
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
 
-import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
-import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
-import org.eclipse.keyple.plugin.pcsc.PcscReader;
-import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.ReaderPlugin;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
+package org.eclipse.keyple.integration.calypso;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
+import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
+import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
+import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.seproxy.*;
+import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.ReaderPlugin;
+import org.eclipse.keyple.seproxy.SeProxyService;
+import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 public class TestEngine {
@@ -25,14 +32,18 @@ public class TestEngine {
     public static ReadRecordsCmdBuild poRatificationCommand =
             new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x01);
 
-    public static PoFileStructureInfo selectPO() throws IOReaderException, IllegalArgumentException {
+    public static PoFileStructureInfo selectPO()
+            throws IOReaderException, IllegalArgumentException {
 
         // operate PO multiselection
         String CSM_ATR_REGEX = "3B3F9600805A[0-9a-fA-F]{2}80[0-9a-fA-F]{16}829000";
 
-        // check the availability of the CSM, open its physical and logical channels and keep it open
-        SeRequest csmCheckRequest = new SeRequest(new SeRequest.AtrSelector(CSM_ATR_REGEX), null, true);
-        SeResponse csmCheckResponse = csmReader.transmit(new SeRequestSet(csmCheckRequest)).getSingleResponse();
+        // check the availability of the CSM, open its physical and logical channels and keep it
+        // open
+        SeRequest csmCheckRequest =
+                new SeRequest(new SeRequest.AtrSelector(CSM_ATR_REGEX), null, true);
+        SeResponse csmCheckResponse =
+                csmReader.transmit(new SeRequestSet(csmCheckRequest)).getSingleResponse();
 
         if (csmCheckResponse == null) {
             System.out.println("Unable to open a logical channel for CSM!");
@@ -43,22 +54,31 @@ public class TestEngine {
         Set<SeRequest> selectionRequests = new LinkedHashSet<SeRequest>();
 
         // Add Audit C0 AID to the list
-        SeRequest seRequest = new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(PoFileStructureInfo.poAuditC0Aid)), null, false);
+        SeRequest seRequest =
+                new SeRequest(
+                        new SeRequest.AidSelector(
+                                ByteBufferUtils.fromHex(PoFileStructureInfo.poAuditC0Aid)),
+                        null, false);
         selectionRequests.add(seRequest);
 
         // Add CLAP AID to the list
-        seRequest = new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(PoFileStructureInfo.clapAid)), null, false);
+        seRequest = new SeRequest(
+                new SeRequest.AidSelector(ByteBufferUtils.fromHex(PoFileStructureInfo.clapAid)),
+                null, false);
         selectionRequests.add(seRequest);
 
         // Add cdLight AID to the list
-        seRequest = new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(PoFileStructureInfo.cdLightAid)), null, false);
+        seRequest = new SeRequest(
+                new SeRequest.AidSelector(ByteBufferUtils.fromHex(PoFileStructureInfo.cdLightAid)),
+                null, false);
         selectionRequests.add(seRequest);
 
-        List<SeResponse> responses = poReader.transmit(new SeRequestSet(selectionRequests)).getResponses();
+        List<SeResponse> responses =
+                poReader.transmit(new SeRequestSet(selectionRequests)).getResponses();
 
-        for(int i = 0; i < responses.size(); i++) {
+        for (int i = 0; i < responses.size(); i++) {
 
-            if(responses.get(i) != null) {
+            if (responses.get(i) != null) {
 
                 return new PoFileStructureInfo(responses.get(i).getFci());
             }
@@ -67,7 +87,8 @@ public class TestEngine {
         throw new IllegalArgumentException("No recognizable PO detected.");
     }
 
-    private static ProxyReader getReader(SeProxyService seProxyService, String pattern) throws IOReaderException {
+    private static ProxyReader getReader(SeProxyService seProxyService, String pattern)
+            throws IOReaderException {
 
         Pattern p = Pattern.compile(pattern);
         for (ReaderPlugin plugin : seProxyService.getPlugins()) {
@@ -80,7 +101,8 @@ public class TestEngine {
         return null;
     }
 
-    public static void configureReaders() throws IOException, IOReaderException, InterruptedException {
+    public static void configureReaders()
+            throws IOException, IOReaderException, InterruptedException {
 
         SeProxyService seProxyService = SeProxyService.getInstance();
         SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
@@ -98,16 +120,19 @@ public class TestEngine {
             throw new IllegalStateException("Bad PO/CSM setup");
         }
 
-        System.out.println("\n==================================================================================");
+        System.out.println(
+                "\n==================================================================================");
         System.out.println("PO Reader  : " + poReader.getName());
         System.out.println("CSM Reader : " + csmReader.getName());
-        System.out.println("==================================================================================");
+        System.out.println(
+                "==================================================================================");
 
         poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
         csmReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
         // provide the reader with the map
-        poReader.addSeProtocolSetting(new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        poReader.addSeProtocolSetting(
+                new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
     }
 
 }

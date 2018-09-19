@@ -1,16 +1,26 @@
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
+
 package org.eclipse.keyple.integration.calypso;
 
+import java.nio.ByteBuffer;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
-import java.nio.ByteBuffer;
-
 public class PoFileStructureInfo {
 
-    public final static String poAuditC0Aid = "315449432E4943414C54"; // AID of the Rev3 PO with Audit C0 profile
-    public final static String clapAid = "315449432E494341D62010029101"; // AID of the CLAP product being tested
-    public final static String cdLightAid = "315449432E494341"; // AID of the Rev2.4 PO emulating CDLight
+    public final static String poAuditC0Aid = "315449432E4943414C54"; // AID of the Rev3 PO with
+                                                                      // Audit C0 profile
+    public final static String clapAid = "315449432E494341D62010029101"; // AID of the CLAP product
+                                                                         // being tested
+    public final static String cdLightAid = "315449432E494341"; // AID of the Rev2.4 PO emulating
+                                                                // CDLight
 
     private EfData environmentFileData;
 
@@ -66,20 +76,22 @@ public class PoFileStructureInfo {
         GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(poFciData);
         ByteBuffer poCalypsoInstanceAid = poFciRespPars.getDfName();
 
-        if(poCalypsoInstanceAid.equals((ByteBufferUtils.fromHex(poAuditC0Aid)))) {
+        if (poCalypsoInstanceAid.equals((ByteBufferUtils.fromHex(poAuditC0Aid)))) {
 
             setFileStructureForAuditC0();
 
-        } else if(poCalypsoInstanceAid.equals((ByteBufferUtils.fromHex(clapAid)))) {
+        } else if (poCalypsoInstanceAid.equals((ByteBufferUtils.fromHex(clapAid)))) {
 
             setFileStructureForClap();
 
-        } else if(poCalypsoInstanceAid.equals((ByteBufferUtils.fromHex(cdLightAid)))) {
+        } else if (poCalypsoInstanceAid.equals((ByteBufferUtils.fromHex(cdLightAid)))) {
 
             setFileStructureForCdLight();
 
         } else {
-            throw new IllegalArgumentException("The file structure for AID " + ByteBufferUtils.toHex(poCalypsoInstanceAid) + " is not registered for testing.");
+            throw new IllegalArgumentException(
+                    "The file structure for AID " + ByteBufferUtils.toHex(poCalypsoInstanceAid)
+                            + " is not registered for testing.");
         }
 
         fciData = poFciData;
