@@ -20,35 +20,49 @@ import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("PMD.SignatureDeclareThrowsException")
 @RunWith(MockitoJUnitRunner.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StubReaderTest {
 
     StubReader reader;
 
+    Logger logger = LoggerFactory.getLogger(StubReaderTest.class);
 
     // init before each test
     @Before
     public void SetUp() throws IOReaderException, InterruptedException {
         // clear observers from others tests as StubPlugin is a singleton
+
         StubPlugin stubPlugin = StubPlugin.getInstance();
-        stubPlugin.clearObservers();
-        // unplug all readers
-        for (AbstractObservableReader reader : stubPlugin.getReaders()) {
-            stubPlugin.unplugReader(reader.getName());
-        }
-        Thread.sleep(100);
-        reader = stubPlugin.plugStubReader("StubReader");
+
+        logger.info("Stubplugin readers size {}", stubPlugin.getReaders().size());
+        Assert.assertEquals(0, stubPlugin.getReaders().size());
+
+        logger.info("Stubplugin observers size {}", stubPlugin.countObservers());
+        Assert.assertEquals(0, stubPlugin.countObservers());
+
+        reader = StubPlugin.getInstance().plugStubReader("StubReaderTest");
+        Thread.sleep(500);
+
+    }
+
+    @After
+    public void tearDown() throws IOReaderException, InterruptedException {
+        StubPlugin.getInstance().clearObservers();
+        StubPlugin.getInstance().unplugReader("StubReaderTest");
+        Thread.sleep(500);
+
     }
 
 
