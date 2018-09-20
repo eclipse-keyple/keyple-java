@@ -10,6 +10,6 @@ package org.eclipse.keyple.plugin.remote_se.transport;
 
 public interface DtoReceiver {
 
-    KeypleDTO onDTO(KeypleDTO msg, DtoSender responseTo, Object connection);
+    TransportDTO onDTO(TransportDTO msg);
 
 }

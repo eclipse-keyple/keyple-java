@@ -9,6 +9,11 @@
 package org.eclipse.keyple.plugin.remote_se.rse;
 
 import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
+import org.eclipse.keyple.seproxy.ReaderPlugin;
+import org.eclipse.keyple.seproxy.SeProxyService;
+
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class VirtualSeRemoteService {
 
@@ -22,6 +27,9 @@ public class VirtualSeRemoteService {
     }
 
     public void bindPlugin(RsePlugin plugin) {
+        SortedSet<ReaderPlugin> plugins = new TreeSet<ReaderPlugin>();
+        plugins.add(plugin);
+        SeProxyService.getInstance().setPlugins(plugins);
         this.node.setDtoReceiver(plugin);
     }
 

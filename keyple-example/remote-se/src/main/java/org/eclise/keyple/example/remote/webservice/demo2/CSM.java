@@ -20,7 +20,7 @@ import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclise.keyple.example.remote.webservice.webservice.common.HttpHelper;
+import org.eclise.keyple.example.remote.webservice.common.HttpHelper;
 import org.eclise.keyple.example.remote.webservice.webservice.nse.NseEndpoint;
 import org.eclise.keyple.example.remote.webservice.webservice.nse.WsRseClient;
 import org.eclise.keyple.example.stub.calypso.HoplinkStubSE;
@@ -100,8 +100,8 @@ public class CSM {
 
             // todo connect reader to remote service and specify that we can communicate with a rse
             // API /transmit
-            String sessionId = wsClientRSEClient.connectReader(localReader, options);
-            logger.info("Connect remotely the CSM Reader to rse with sessionId {}", sessionId);
+            wsClientRSEClient.connectReader(localReader, options);
+            logger.info("Connect remotely the CSM Reader to rse with sessionId {}");
 
 
             // IMPORTANT : only here for the demo, no need to listen to event in CSM

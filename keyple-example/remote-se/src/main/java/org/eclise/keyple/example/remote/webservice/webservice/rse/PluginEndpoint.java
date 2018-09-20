@@ -18,7 +18,7 @@ import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
 import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
-import org.eclise.keyple.example.remote.webservice.webservice.common.HttpHelper;
+import org.eclise.keyple.example.remote.webservice.common.HttpHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
@@ -88,9 +88,10 @@ public class PluginEndpoint implements HttpHandler {
 
         if (!isAsync) {
             // connect reader with readerName
-            plugin.connectRemoteReader(readerName, new ReaderAsyncClientImpl(sessionId,null));
+            //NEW ARCHI
+            //plugin.connectRemoteReader(readerName, new ReaderAsyncClientImpl(sessionId,null));
         } else {
-            plugin.connectRemoteReader(readerName, new WsReaderClient(serverUrl, sessionId));
+            //plugin.connectRemoteReader(readerName, new WsReaderClient(serverUrl, sessionId));
         }
 
 

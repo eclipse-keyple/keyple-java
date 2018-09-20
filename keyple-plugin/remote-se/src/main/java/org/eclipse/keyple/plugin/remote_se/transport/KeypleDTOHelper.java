@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.plugin.remote_se.transport;
 
+import com.google.gson.JsonObject;
 import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
 
 public class KeypleDTOHelper {
@@ -33,8 +34,29 @@ public class KeypleDTOHelper {
         return SeProxyJsonParser.getGson().fromJson(json, KeypleDTO.class);
     }
 
+    static public KeypleDTO fromJsonObject(JsonObject jsonObj) {
+        return SeProxyJsonParser.getGson().fromJson(jsonObj, KeypleDTO.class);
+    }
+
     static public KeypleDTO NoResponse() {
         return new KeypleDTO("", "", false);
+    }
+
+    static public KeypleDTO ErrorDTO() {
+        return new KeypleDTO("ERROR", "", false);
+    }
+
+
+    static public Boolean isNoResponse(KeypleDTO dto){
+        return dto.getAction().isEmpty();
+    }
+
+    static public Boolean isKeypleDTO(String json){
+        return  isKeypleDTO(SeProxyJsonParser.getGson().toJson(json));
+    }
+
+    static public Boolean isKeypleDTO(JsonObject json){
+        return json.has("action");
     }
 
 }

@@ -14,7 +14,7 @@ import org.eclipse.keyple.plugin.remote_se.rse.IReaderSyncSession;
 import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclise.keyple.example.remote.webservice.webservice.common.HttpHelper;
+import org.eclise.keyple.example.remote.webservice.common.HttpHelper;
 import org.eclise.keyple.example.remote.webservice.webservice.nse.WsRseClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

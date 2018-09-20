@@ -9,6 +9,7 @@
 package org.eclise.keyple.example.remote.websocket.demoCSM;
 
 import org.eclipse.keyple.plugin.remote_se.transport.*;
+import org.eclise.keyple.example.remote.websocket.WskTransportDTO;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
-public class WskClient extends WebSocketClient implements DtoSender, TransportNode {
+public class WskClient extends WebSocketClient implements TransportNode {
 
     private static final Logger logger = LoggerFactory.getLogger(WskClient.class);
     DtoReceiver dtoReceiver;
@@ -35,8 +36,10 @@ public class WskClient extends WebSocketClient implements DtoSender, TransportNo
     public void onMessage(String message) {
         logger.debug("Web socket onMessage {}", message);
         KeypleDTO dto = KeypleDTOHelper.fromJson(message);
-        KeypleDTO response = dtoReceiver.onDTO(dto,this, null);
-        if(!response.getAction().isEmpty()){
+        TransportDTO tdto = new WskTransportDTO(dto,null);
+        TransportDTO response = dtoReceiver.onDTO(tdto);
+
+        if(!response.getKeypleDTO().getAction().isEmpty()){
             sendDTO(response);
         }
     }
@@ -51,6 +54,12 @@ public class WskClient extends WebSocketClient implements DtoSender, TransportNo
     public void onError(Exception ex) {
         logger.debug("Web socket onError {}", ex);
 
+    }
+
+
+    @Override
+    public void sendDTO(TransportDTO message) {
+        //todo
     }
 
     @Override

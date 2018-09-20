@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice.webservice.common;
+package org.eclise.keyple.example.remote.webservice.common;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,7 +59,7 @@ public class HttpHelper {
     }
 
     public static JsonObject httpPUTJSON(HttpURLConnection conn, String json) throws IOException {
-        logger.debug("Url {} HTTP PUT  : {} ", conn.getURL(), json);
+        logger.trace("Url {} HTTP PUT  : {} ", conn.getURL(), json);
         conn.setRequestMethod("PUT");
         conn.setDoOutput(true);
         conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
@@ -72,14 +72,14 @@ public class HttpHelper {
         osw.close();
 
         int responseCode = conn.getResponseCode();
-        logger.debug("Response code {}", responseCode);
+        logger.trace("Response code {}", responseCode);
         JsonObject jsonObject = HttpHelper.parseBody((InputStream) conn.getContent());
-        logger.debug("Response {}", jsonObject);
+        logger.trace("Response {}", jsonObject);
         return jsonObject;
     }
 
     public static JsonObject httpPOSTJson(HttpURLConnection conn, String json) throws IOException {
-        logger.debug("Url {} HTTP POST  : {} ", conn.getURL(), json);
+        logger.trace("Url {} HTTP POST  : {} ", conn.getURL(), json);
         // Encode data
         conn.setRequestMethod("POST");
         conn.setDoOutput(true);
@@ -93,9 +93,9 @@ public class HttpHelper {
         osw.close();
 
         int responseCode = conn.getResponseCode();
-        logger.debug("Response code {}", responseCode);
+        logger.trace("Response code {}", responseCode);
         JsonObject jsonObject = HttpHelper.parseBody((InputStream) conn.getContent());
-        logger.debug("Response {}", jsonObject);
+        logger.trace("Response {}", jsonObject);
         return jsonObject;
     }
 
@@ -103,5 +103,7 @@ public class HttpHelper {
         URL url = new URL(urlString);
         return (HttpURLConnection) url.openConnection();
     }
+
+
 
 }

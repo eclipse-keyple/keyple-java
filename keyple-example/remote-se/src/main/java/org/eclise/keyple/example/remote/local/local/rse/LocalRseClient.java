@@ -30,9 +30,9 @@ public class LocalRseClient implements RseClient {
 
 
     @Override
-    public String connectReader(ProxyReader localReader, Map<String, Object> options) {
+    public void connectReader(ProxyReader localReader, Map<String, Object> options) {
         logger.info("connectReader {}", localReader);
-        return rseAPI.onReaderConnect(localReader.getName(), null);
+        rseAPI.onReaderConnect(localReader.getName(), null);
     }
 
     @Override

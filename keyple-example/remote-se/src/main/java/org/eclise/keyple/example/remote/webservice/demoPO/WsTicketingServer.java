@@ -6,20 +6,14 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice.demo1;
+package org.eclise.keyple.example.remote.webservice.demoPO;
 
-import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetSocketAddress;
-import java.util.Arrays;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
+import org.eclipse.keyple.plugin.remote_se.rse.ISeResponseSetCallback;
 import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
 import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
-import org.eclipse.keyple.plugin.remote_se.rse.ISeResponseSetCallback;
+import org.eclipse.keyple.plugin.remote_se.rse.VirtualSeRemoteService;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
@@ -27,25 +21,24 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
-import org.eclise.keyple.example.remote.webservice.common.HttpHelper;
-import org.eclise.keyple.example.remote.webservice.webservice.rse.PluginEndpoint;
-import org.eclise.keyple.example.remote.webservice.webservice.rse.ReaderEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.sun.net.httpserver.HttpServer;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
-public class TicketingServer implements org.eclipse.keyple.util.Observable.Observer {
+public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Observer {
 
-    private static final Logger logger = LoggerFactory.getLogger(TicketingServer.class);
-    public static Integer port = 8000;
-    public static String END_POINT = "/remote-se";
-    private static Integer MAX_CONNECTION = 5;
+    private static final Logger logger = LoggerFactory.getLogger(WsTicketingServer.class);
+    public static Integer PORT = 8007;
+    public static String END_POINT = "/keypleDTO";
     public static String URL = "0.0.0.0";
 
     public static void main(String[] args) throws Exception {
 
-        TicketingServer server = new TicketingServer();
+        WsTicketingServer server = new WsTicketingServer();
         server.boot();
         // rse.status();
 
@@ -54,45 +47,29 @@ public class TicketingServer implements org.eclipse.keyple.util.Observable.Obser
     public void boot() throws IOException {
 
         logger.info("*****************************");
-        logger.info("Boot Serverside Ticketing App");
+        logger.info("Boot Webservice server       ");
         logger.info("*****************************");
 
         logger.info("Init Web Service Server");
 
-        // Create Endpoints for plugin and reader API
-        PluginEndpoint pluginEndpoint = new PluginEndpoint();
-        ReaderEndpoint readerEndpoint = new ReaderEndpoint();
+        WsServer server = new WsServer(URL, PORT, END_POINT);
 
-        // deploy endpoint
-        InetSocketAddress inet = new InetSocketAddress(Inet4Address.getByName(URL), port);
-        HttpServer server = HttpServer.create(inet, MAX_CONNECTION);
-        server.createContext(END_POINT + HttpHelper.PLUGIN_ENDPOINT, pluginEndpoint);
-        server.createContext(END_POINT + HttpHelper.READER_ENDPOINT, readerEndpoint);
-
-        // start rse
-        server.setExecutor(null); // creates a default executor
-        server.start();
-        logger.info("Started Server on http://{}:{}{}", inet.getHostName(), inet.getPort(),
-                END_POINT);
-
+        logger.info("******************************");
+        logger.info("Create Remote PLugin Interface");
+        logger.info("******************************");
 
         logger.info("Create SeRemotePLugin and register it to SeProxyService");
         RsePlugin rsePlugin = new RsePlugin();
 
         logger.info("Observe SeRemotePLugin for Plugin Events and Reader Events");
+        VirtualSeRemoteService vse = new VirtualSeRemoteService();
+        vse.bindTransportNode(server);
+        vse.bindPlugin(rsePlugin);
+
         rsePlugin.addObserver(this);
 
-        SortedSet<ReaderPlugin> plugins = new TreeSet<ReaderPlugin>();
-        plugins.add(rsePlugin);
-        SeProxyService.getInstance().setPlugins(plugins);
-
-        logger.info("Link Webservice endpoints and RSE Plugin");
-        pluginEndpoint.setPlugin(rsePlugin);
-        readerEndpoint.setPlugin(rsePlugin);
-
+        server.start();
         logger.info("Waits for remote connections");
-
-
     }
 
     /*

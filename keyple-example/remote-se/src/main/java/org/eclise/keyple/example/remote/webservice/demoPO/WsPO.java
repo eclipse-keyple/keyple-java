@@ -6,32 +6,40 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice.demo1;
+package org.eclise.keyple.example.remote.webservice.demoPO;
 
 
-import java.io.IOException;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import org.eclipse.keyple.plugin.remote_se.nse.NativeSeRemoteService;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclise.keyple.example.remote.webservice.webservice.nse.WsRseClient;
 import org.eclise.keyple.example.stub.calypso.HoplinkStubSE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
-public class PO {
+public class WsPO {
 
-    private static final Logger logger = LoggerFactory.getLogger(PO.class);
+    private static final Logger logger = LoggerFactory.getLogger(WsPO.class);
 
-    private static String ENDPOINT_URL = "http://localhost:8000/remote-se";
+    private static String ENDPOINT_URL = "http://localhost:8007/keypleDTO";
 
     // physical reader
     StubReader localReader;
 
     void boot() {
+        logger.info("************************");
+        logger.info("Create Webservice Client");
+        logger.info("************************");
+
+        WsClient ws = new WsClient(ENDPOINT_URL);
+
         logger.info("************************");
         logger.info("Boot Client LocalReader ");
         logger.info("************************");
@@ -46,26 +54,18 @@ public class PO {
         seProxyService.setPlugins(plugins);
         localReader = stubPlugin.plugStubReader("stubPO");
 
-        try {
-            // todo configure remote service with web service nse
-            WsRseClient wsClientRSEClient = new WsRseClient(ENDPOINT_URL);
 
-            // logger.info(
-            // "Register wsClientRSEClient as an observer of the local stubPlugin thus events will
-            // be propagated");
+        NativeSeRemoteService seRemoteService = new NativeSeRemoteService();
+        seRemoteService.bind(ws);
+
+        Map<String, Object> options = new HashMap<String, Object>();
+        options.put("isAsync", true);
+
+        seRemoteService.connectReader(localReader, options);
+
+        logger.info("Connect remotely the StubPlugin ");
 
 
-            // todo connect reader to remote service
-            wsClientRSEClient.connectReader(localReader, null);
-            // todo observers is included in connect
-            localReader.addObserver(wsClientRSEClient);
-
-            logger.info("Connect remotely the StubPlugin to rse with sessionId {}");
-
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
-        }
     }
 
     void demo() {
@@ -91,7 +91,7 @@ public class PO {
     public static void main(String[] args) throws Exception {
 
 
-        PO client = new PO();
+        WsPO client = new WsPO();
         client.boot();
         client.demo();
 

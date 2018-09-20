@@ -9,6 +9,7 @@
 package org.eclise.keyple.example.remote.websocket.demoCSM;
 
 import org.eclipse.keyple.plugin.remote_se.transport.*;
+import org.eclise.keyple.example.remote.websocket.WskTransportDTO;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -19,7 +20,7 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WskServer extends WebSocketServer implements DtoSender, TransportNode {
+public class WskServer extends WebSocketServer implements TransportNode {
 
     private static final Logger logger = LoggerFactory.getLogger(WskServer.class);
     private DtoReceiver dtoReceiver;
@@ -54,7 +55,7 @@ public class WskServer extends WebSocketServer implements DtoSender, TransportNo
         logger.debug("Web socket onMessage {} {}", conn, message);
         KeypleDTO keypleDTO = KeypleDTOHelper.fromJson(message);
         if (dtoReceiver != null) {
-            KeypleDTO response = dtoReceiver.onDTO(keypleDTO,this,conn);
+            TransportDTO response = dtoReceiver.onDTO(new WskTransportDTO(keypleDTO,conn));
             this.sendDTO(response);
         } else {
             logger.warn("Received a message but no DtoReceiver");
@@ -88,9 +89,20 @@ public class WskServer extends WebSocketServer implements DtoSender, TransportNo
     }
 
 
+    @Override
+    public void sendDTO(TransportDTO message) {
+        //if socket is defined in tdto, use it
+        if(((WskTransportDTO)message).getConn()!=null){
+            ((WskTransportDTO)message).getConn().send(KeypleDTOHelper.toJson(message.getKeypleDTO()));
+        }else{
+            //find socket in mapping, call the basic method
+            sendDTO(message.getKeypleDTO());
+        }
+    }
+
     /*
-        DTO Sender
-    */
+            DTO Sender
+        */
     @Override
     public void sendDTO(KeypleDTO message) {
 

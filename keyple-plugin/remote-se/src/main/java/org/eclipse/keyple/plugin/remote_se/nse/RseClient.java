@@ -20,7 +20,7 @@ public interface RseClient extends ObservableReader.ReaderObserver {
      * Connect Physical Local Reader to Remote SE Creates a Session to exchange data with this
      * Reader with an option to duplex connection
      */
-    String connectReader(ProxyReader localReader, Map<String, Object> options)
+    void connectReader(ProxyReader localReader, Map<String, Object> options)
             throws IOReaderException;
 
 

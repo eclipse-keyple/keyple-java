@@ -52,7 +52,8 @@ public class wskNativeCSM {
         plugins.add(stubPlugin);
         seProxyService.setPlugins(plugins);
         localReader = stubPlugin.plugStubReader("stubPO");
-        localReader.insertSe(new CSMStubSE());
+        //localReader.insertSe(new CSMStubSE());
+        localReader.insertSe(new HoplinkStubSE());
 
         logger.info("Connect Reader : ", localReader.getName());
 
