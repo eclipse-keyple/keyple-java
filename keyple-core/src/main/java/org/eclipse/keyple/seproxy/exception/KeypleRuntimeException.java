@@ -8,11 +8,13 @@
 
 package org.eclipse.keyple.seproxy.exception;
 
-/**
- * @deprecated Nobody uses it, should we keep it ?
- */
-public class InvalidApduReaderException extends Exception {
-    public InvalidApduReaderException(String message) {
+public class KeypleRuntimeException extends RuntimeException {
+
+    public KeypleRuntimeException(String message) {
         super(message);
+    }
+
+    public KeypleRuntimeException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

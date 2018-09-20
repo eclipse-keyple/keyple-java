@@ -15,7 +15,6 @@ import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,7 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class PoGetChallengeRespParsTest {
 
     @Test
-    public void POGetChallengeRespPars() throws InconsistentParameterValueException {
+    public void POGetChallengetRespPars() {
         byte[] response = {0x03, 0x0D, 0x0E, (byte) 0xFA, (byte) 0x9C, (byte) 0x8C, (byte) 0xB7,
                 0x27, (byte) 0x90, 0x00};
         List<ApduResponse> responses = new ArrayList<ApduResponse>();

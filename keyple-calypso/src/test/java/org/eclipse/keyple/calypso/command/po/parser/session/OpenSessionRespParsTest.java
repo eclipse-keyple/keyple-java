@@ -15,7 +15,6 @@ import org.eclipse.keyple.calypso.util.TestsUtilsResponseTabByteGenerator;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +28,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void testGetResponse_rev2_4() throws InconsistentParameterValueException {
+    public void testgetResponse_rev2_4() {
 
         // expected response
 
@@ -46,7 +45,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void testGetResponse_rev3_1() throws InconsistentParameterValueException {
+    public void testgetResponse_rev3_1() {
 
         // expected response
 
@@ -63,7 +62,7 @@ public class OpenSessionRespParsTest {
     }
 
     @Test
-    public void testGetResponse_rev3_2() throws InconsistentParameterValueException {
+    public void testgetResponse_rev3_2() {
 
         // expected response
 

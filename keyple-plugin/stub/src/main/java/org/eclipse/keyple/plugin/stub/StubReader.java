@@ -16,8 +16,9 @@ import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.plugin.AbstractThreadedLocalReader;
 import org.slf4j.Logger;
@@ -58,21 +59,21 @@ public class StubReader extends AbstractThreadedLocalReader {
     }
 
     @Override
-    protected void openPhysicalChannel() throws IOReaderException, ChannelStateReaderException {
+    protected void openPhysicalChannel() throws KeypleChannelStateException {
         if (se != null) {
             se.openPhysicalChannel();
         }
     }
 
     @Override
-    public void closePhysicalChannel() throws IOReaderException {
+    public void closePhysicalChannel() throws KeypleChannelStateException {
         if (se != null) {
             se.closePhysicalChannel();
         }
     }
 
     @Override
-    public ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
+    public ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
         return se.processApdu(apduIn);
     }
 
@@ -87,11 +88,11 @@ public class StubReader extends AbstractThreadedLocalReader {
     }
 
     @Override
-    public void setParameter(String name, String value) throws IOReaderException {
+    public void setParameter(String name, String value) throws KeypleReaderException {
         if (name.equals(ALLOWED_PARAMETER_1) || name.equals(ALLOWED_PARAMETER_2)) {
             parameters.put(name, value);
         } else {
-            throw new IOReaderException("parameter name not supported : " + name);
+            throw new KeypleReaderException("parameter name not supported : " + name);
         }
     }
 
@@ -105,12 +106,12 @@ public class StubReader extends AbstractThreadedLocalReader {
      * HELPERS TO TEST INTERNAL METHOD TODO : is this necessary?
      */
     final ApduResponse processApduRequestTestProxy(ApduRequest apduRequest)
-            throws ChannelStateReaderException {
+            throws KeypleReaderException {
         return this.processApduRequest(apduRequest);
     }
 
     final SeResponseSet processSeRequestSetTestProxy(SeRequestSet requestSet)
-            throws IOReaderException {
+            throws KeypleReaderException {
         return this.processSeRequestSet(requestSet);
     }
 
@@ -129,7 +130,7 @@ public class StubReader extends AbstractThreadedLocalReader {
             closeLogicalChannel();
             try {
                 closePhysicalChannel();
-            } catch (IOReaderException e) {
+            } catch (KeypleReaderException e) {
                 e.printStackTrace();
             }
         }

@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.example.pc.calypso;
 
-import java.io.IOException;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.example.common.calypso.Demo_HoplinkTransactionEngine;
@@ -17,6 +16,7 @@ import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
+import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,10 +33,11 @@ public class Demo_Hoplink_Pcsc {
      * main program entry
      *
      * @param args the program arguments
-     * @throws IOException setParameter exception
+     * @throws IllegalArgumentException,KeypleBaseException setParameter exception
      * @throws InterruptedException thread exception
      */
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args)
+            throws IllegalArgumentException, KeypleBaseException, InterruptedException {
         final Logger logger = LoggerFactory.getLogger(Demo_Hoplink_Pcsc.class);
 
         /* Get the instance of the SeProxyService (Singleton pattern) */

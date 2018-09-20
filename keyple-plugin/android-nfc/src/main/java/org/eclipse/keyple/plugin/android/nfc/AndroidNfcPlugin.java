@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.plugin.android.nfc;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
@@ -70,7 +69,7 @@ public class AndroidNfcPlugin extends AbstractStaticPlugin {
     }
 
     @Override
-    public void setParameter(String key, String value) throws IOException {
+    public void setParameter(String key, String value) {
         LOG.warn("Android NFC Plugin does not support parameters, see AndroidNfcReader instead");
         parameters.put(key, value);
     }

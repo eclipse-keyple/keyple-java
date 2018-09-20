@@ -8,20 +8,21 @@
 
 package org.eclipse.keyple.seproxy.exception;
 
+
+import org.eclipse.keyple.seproxy.ProxyReader;
+
 /**
- * When the card channel cannot be opened or written to. It's just an other type of a
- * {@link IOReaderException}
+ * Application selection failure in {@link ProxyReader} by AID or ATR
  */
-public class ChannelStateReaderException extends IOReaderException {
-    public ChannelStateReaderException(Exception ex) {
-        super(ex);
-    }
+public class KeypleApplicationSelectionException extends KeypleReaderException {
 
-    public ChannelStateReaderException(String message, Exception ex) {
-        super(message, ex);
-    }
 
-    public ChannelStateReaderException(String message) {
+    public KeypleApplicationSelectionException(String message) {
         super(message);
     }
+
+    public KeypleApplicationSelectionException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

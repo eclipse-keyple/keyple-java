@@ -26,7 +26,8 @@ import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
@@ -94,7 +95,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
     // Not optimized for online/remote operation
     private void validateAuditC0(PoSecureSession poTransaction, ApduResponse fciData)
-            throws IOReaderException {
+            throws KeypleReaderException {
 
         byte eventSfi = 0x08;
         byte contractListSfi = 0x1E;
@@ -223,7 +224,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
     // Optimised for online/remote operation
     private void validateClap(PoSecureSession poTransaction, ApduResponse fciData)
-            throws IOReaderException {
+            throws KeypleReaderException {
 
         byte eventSfi = 0x08;
         byte countersSfi = 0x1B;
@@ -447,10 +448,10 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
      * @param seProxyService SE Proxy service
      * @param pattern Pattern
      * @return ProxyReader
-     * @throws IOReaderException Any error with the card communication
+     * @throws KeypleReaderException Any error with the card communication
      */
     private static ProxyReader getReader(SeProxyService seProxyService, String pattern)
-            throws IOReaderException {
+            throws KeypleReaderException {
         Pattern p = Pattern.compile(pattern);
         for (ReaderPlugin plugin : seProxyService.getPlugins()) {
             for (ProxyReader reader : plugin.getReaders()) {
@@ -465,7 +466,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
     private static final Object waitForEnd = new Object();
 
     public static void main(String[] args)
-            throws IOException, IOReaderException, InterruptedException {
+            throws IOException, InterruptedException, KeypleBaseException {
 
         SeProxyService seProxyService = SeProxyService.getInstance();
         SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();

@@ -10,15 +10,18 @@ package org.eclipse.keyple.plugin.stub;
 
 
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -41,7 +44,7 @@ public class StubReaderTest {
 
     // init before each test
     @Before
-    public void SetUp() throws IOReaderException, InterruptedException {
+    public void SetUp() throws InterruptedException, KeypleReaderException {
         // clear observers from others tests as StubPlugin is a singleton
 
         StubPlugin stubPlugin = StubPlugin.getInstance();
@@ -58,7 +61,7 @@ public class StubReaderTest {
     }
 
     @After
-    public void tearDown() throws IOReaderException, InterruptedException {
+    public void tearDown() throws InterruptedException, KeypleReaderException {
         StubPlugin.getInstance().clearObservers();
         StubPlugin.getInstance().unplugReader("StubReaderTest");
         Thread.sleep(500);
@@ -91,7 +94,7 @@ public class StubReaderTest {
     }
 
     @Test
-    public void testATR() throws IOReaderException {
+    public void testATR() {
         // add observer
         reader.addObserver(new Observable.Observer<ReaderEvent>() {
             @Override
@@ -105,7 +108,7 @@ public class StubReaderTest {
 
                     Assert.assertNotNull(atrResponse);
 
-                } catch (IOReaderException e) {
+                } catch (KeypleReaderException e) {
                     Assert.fail();
                 }
 
@@ -119,7 +122,7 @@ public class StubReaderTest {
     }
 
 
-    @Test(expected = IOReaderException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void transmit_Hoplink_null() throws Exception {
         reader.insertSe(hoplinkSE());
         reader.transmit((SeRequestSet) null);
@@ -128,7 +131,7 @@ public class StubReaderTest {
     }
 
     @Test
-    public void transmit_Hoplink_Sucessfull() throws IOException {
+    public void transmit_Hoplink_Sucessfull() throws KeypleReaderException {
         // init Request
         SeRequestSet requests = getRequestIsoDepSetSample();
 
@@ -144,7 +147,7 @@ public class StubReaderTest {
 
 
     @Test
-    public void transmit_null_Selection() throws IOReaderException {
+    public void transmit_null_Selection() throws KeypleReaderException {
         // init SE
         // no SE
 
@@ -168,13 +171,13 @@ public class StubReaderTest {
     }
 
     // Set wrong parameter
-    @Test(expected = IOReaderException.class)
+    @Test(expected = KeypleReaderException.class)
     public void testSetWrongParameter() throws Exception {
         reader.setParameter("WRONG_PARAMETER", "a");
     }
 
     // Set wrong parameters
-    @Test(expected = IOReaderException.class)
+    @Test(expected = KeypleReaderException.class)
     public void testSetWrongParameters() throws Exception {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("WRONG_PARAMETER", "d");
@@ -228,7 +231,7 @@ public class StubReaderTest {
         return new StubSecureElement() {
 
             @Override
-            public ByteBuffer processApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
+            public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
 
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
@@ -268,19 +271,18 @@ public class StubReaderTest {
 
             // override methods to fail open connection
             @Override
-            public void openPhysicalChannel()
-                    throws IOReaderException, ChannelStateReaderException {
-                throw new IOReaderException("Impossible to estasblish connection");
+            public void openPhysicalChannel() throws KeypleChannelStateException {
+                throw new KeypleChannelStateException("Impossible to estasblish connection");
             }
 
             @Override
-            public void closePhysicalChannel() throws IOReaderException {
-                throw new IOReaderException("Channel is not open");
+            public void closePhysicalChannel() throws KeypleChannelStateException {
+                throw new KeypleChannelStateException("Channel is not open");
             }
 
             @Override
-            public ByteBuffer processApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
-                throw new ChannelStateReaderException("Error while transmitting apdu");
+            public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
+                throw new KeypleIOReaderException("Error while transmitting apdu");
             }
 
             @Override

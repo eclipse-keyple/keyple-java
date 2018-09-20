@@ -76,14 +76,13 @@ public class PcscReader extends AbstractThreadedLocalReader {
             setParameter(SETTING_KEY_MODE, null);
             setParameter(SETTING_KEY_DISCONNECT, null);
             setParameter(SETTING_KEY_LOGGING, null);
-        } catch (IOReaderException ex) {
-            // It's actually impossible to reach that state
-            throw new IllegalStateException("Could not initialize properly", ex);
+        } catch (KeypleBaseException ex) {
+            // can not fail with null value
         }
     }
 
     @Override
-    protected final void closePhysicalChannel() throws IOReaderException {
+    protected final void closePhysicalChannel() throws KeypleChannelStateException {
         try {
             if (card != null) {
                 if (logging) {
@@ -100,7 +99,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 }
             }
         } catch (CardException e) {
-            throw new IOReaderException(e);
+            throw new KeypleChannelStateException("Error while closing physical channel", e);
         }
     }
 
@@ -136,7 +135,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
             } else {
                 return false;
             }
-        } catch (IOReaderException e) {
+        } catch (KeypleChannelStateException e) {
             logger.trace("[{}] Exception occured in waitForCardAbsent. Message: {}", this.getName(),
                     e.getMessage());
             throw new NoStackTraceThrowable();
@@ -152,15 +151,15 @@ public class PcscReader extends AbstractThreadedLocalReader {
      *
      * @param apduIn APDU in buffer
      * @return apduOut buffer
-     * @throws ChannelStateReaderException if the transmission failed
+     * @throws KeypleReaderException if the transmission failed
      */
     @Override
-    protected final ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
+    protected final ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
         ResponseAPDU apduResponseData;
         try {
             apduResponseData = channel.transmit(new CommandAPDU(apduIn));
         } catch (CardException e) {
-            throw new ChannelStateReaderException(this.getName() + ":" + e.getMessage());
+            throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
         }
         return ByteBuffer.wrap(apduResponseData.getBytes());
     }
@@ -172,10 +171,11 @@ public class PcscReader extends AbstractThreadedLocalReader {
      *
      * @param protocolFlag the protocol flag
      * @return true if the current SE matches the protocol flag
-     * @throws InvalidMessageException if the protocol mask is not found
+     * @throws KeypleReaderException if the protocol mask is not found
      */
     @Override
-    protected final boolean protocolFlagMatches(SeProtocol protocolFlag) throws IOReaderException {
+    protected final boolean protocolFlagMatches(SeProtocol protocolFlag)
+            throws KeypleReaderException {
         boolean result;
         // Get protocolFlag to check if ATR filtering is required
         if (protocolFlag != null) {
@@ -185,7 +185,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
             // the requestSet will be executed only if the protocol match the requestElement
             String selectionMask = protocolsMap.get(protocolFlag);
             if (selectionMask == null) {
-                throw new InvalidMessageException("Target selector mask not found!", null);
+                throw new KeypleReaderException("Target selector mask not found!", null);
             }
             Pattern p = Pattern.compile(selectionMask);
             String atr = ByteBufferUtils.toHex(ByteBuffer.wrap(card.getATR().getBytes()));
@@ -240,11 +240,15 @@ public class PcscReader extends AbstractThreadedLocalReader {
      *
      * @param name Parameter name
      * @param value Parameter value
-     * @throws IOReaderException This method can fail when disabling the exclusive mode as it's
+     * @throws KeypleBaseException This method can fail when disabling the exclusive mode as it's
      *         executed instantly
+     * @throws IllegalArgumentException when parameter is wrong
+     *
+     *
      */
     @Override
-    public void setParameter(String name, String value) throws IOReaderException {
+    public void setParameter(String name, String value)
+            throws IllegalArgumentException, KeypleBaseException {
         if (logging) {
             logger.trace("[{}] setParameter => PCSC: Set a parameter. NAME = {}, VALUE = {}",
                     this.getName(), name, value);
@@ -260,7 +264,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
             } else if (value.equals(SETTING_PROTOCOL_T1)) {
                 parameterCardProtocol = "T=1";
             } else {
-                throw new InconsistentParameterValueException("Bad protocol", name, value);
+                throw new IllegalArgumentException("Bad protocol " + name + " : " + value);
             }
         } else if (name.equals(SETTING_KEY_MODE)) {
             if (value == null || value.equals(SETTING_MODE_SHARED)) {
@@ -268,14 +272,15 @@ public class PcscReader extends AbstractThreadedLocalReader {
                     try {
                         card.endExclusive();
                     } catch (CardException e) {
-                        throw new IOReaderException("Couldn't disable exclusive mode", e);
+                        throw new KeypleReaderException("Couldn't disable exclusive mode", e);
                     }
                 }
                 cardExclusiveMode = false;
             } else if (value.equals(SETTING_MODE_EXCLUSIVE)) {
                 cardExclusiveMode = true;
             } else {
-                throw new InconsistentParameterValueException(name, value);
+                throw new IllegalArgumentException(
+                        "Parameter value not supported " + name + " : " + value);
             }
         } else if (name.equals(SETTING_KEY_THREAD_TIMEOUT)) {
             // TODO use setter
@@ -285,8 +290,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 long timeout = Long.parseLong(value);
 
                 if (timeout <= 0) {
-                    throw new InconsistentParameterValueException(
-                            "Timeout has to be of at least 1ms", name, value);
+                    throw new IllegalArgumentException(
+                            "Timeout has to be of at least 1ms " + name + value);
                 }
 
                 threadWaitTimeout = timeout;
@@ -298,17 +303,18 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 cardReset = false;
             } else if (value.equals(SETTING_DISCONNECT_EJECT)
                     || value.equals(SETTING_DISCONNECT_LEAVE)) {
-                throw new InconsistentParameterValueException(
-                        "This disconnection parameter is not supported by this plugin", name,
-                        value);
+                throw new IllegalArgumentException(
+                        "This disconnection parameter is not supported by this plugin" + name
+                                + " : " + value);
             } else {
-                throw new InconsistentParameterValueException(name, value);
+                throw new IllegalArgumentException(
+                        "Parameters not supported : " + name + " : " + value);
             }
         } else if (name.equals(SETTING_KEY_LOGGING)) {
             logging = Boolean.parseBoolean(value); // default is null and perfectly acceptable
         } else {
-            throw new InconsistentParameterValueException("This parameter is unknown !", name,
-                    value);
+            throw new IllegalArgumentException(
+                    "This parameter is unknown !" + name + " : " + value);
         }
     }
 
@@ -369,17 +375,16 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * In this case be aware that on some platforms (ex. Windows 8+), the exclusivity is granted for
      * a limited time (ex. 5 seconds). After this delay, the card is automatically resetted.
      * 
-     * @throws IOReaderException if a reader error occurs
+     * @throws KeypleReaderException if a reader error occurs
      */
     @Override
-    protected final void openPhysicalChannel()
-            throws IOReaderException, ChannelStateReaderException {
+    protected final void openPhysicalChannel() throws KeypleChannelStateException {
         // init of the physical SE channel: if not yet established, opening of a new physical
         // channel
         try {
             if (card == null) {
                 if (isLogicalChannelOpen()) {
-                    throw new ChannelStateReaderException(
+                    throw new KeypleChannelStateException(
                             "Logical channel found open while physical channel is not!");
                 }
                 this.card = this.terminal.connect(parameterCardProtocol);
@@ -398,7 +403,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
             }
             this.channel = card.getBasicChannel();
         } catch (CardException e) {
-            throw new ChannelStateReaderException(e);
+            throw new KeypleChannelStateException("Error while opening Physical Channel", e);
         }
     }
 }

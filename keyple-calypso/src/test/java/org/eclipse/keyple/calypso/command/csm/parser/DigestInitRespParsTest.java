@@ -15,7 +15,6 @@ import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,7 +25,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class DigestInitRespParsTest {
 
     @Test
-    public void digestInitRespPars() throws InconsistentParameterValueException {
+    public void digestInitRespPars() {
         List<ApduResponse> responses = new ArrayList<ApduResponse>();
         ApduResponse apduResponse =
                 new ApduResponse(ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}), null);

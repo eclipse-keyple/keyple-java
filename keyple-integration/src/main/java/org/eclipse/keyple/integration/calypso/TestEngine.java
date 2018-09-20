@@ -21,7 +21,8 @@ import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
@@ -33,7 +34,7 @@ public class TestEngine {
             new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x01);
 
     public static PoFileStructureInfo selectPO()
-            throws IOReaderException, IllegalArgumentException {
+            throws IllegalArgumentException, KeypleReaderException {
 
         // operate PO multiselection
         String CSM_ATR_REGEX = "3B3F9600805A[0-9a-fA-F]{2}80[0-9a-fA-F]{16}829000";
@@ -88,7 +89,7 @@ public class TestEngine {
     }
 
     private static ProxyReader getReader(SeProxyService seProxyService, String pattern)
-            throws IOReaderException {
+            throws KeypleReaderException {
 
         Pattern p = Pattern.compile(pattern);
         for (ReaderPlugin plugin : seProxyService.getPlugins()) {
@@ -102,7 +103,7 @@ public class TestEngine {
     }
 
     public static void configureReaders()
-            throws IOException, IOReaderException, InterruptedException {
+            throws IOException, InterruptedException, KeypleBaseException {
 
         SeProxyService seProxyService = SeProxyService.getInstance();
         SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();

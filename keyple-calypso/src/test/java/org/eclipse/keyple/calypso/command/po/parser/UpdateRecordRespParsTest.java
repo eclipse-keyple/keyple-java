@@ -15,7 +15,6 @@ import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,9 +26,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class UpdateRecordRespParsTest {
 
     @Test
-    public void updateRecordRespPars() throws InconsistentParameterValueException {
+    public void updateRecordRespPars() {
         List<ApduResponse> responses = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse = new ApduResponse(ByteBuffer.wrap(new byte[] {90, 0}), null);
+        ApduResponse apduResponse = new ApduResponse(ByteBuffer.wrap(new byte[] {90, 00}), null);
         responses.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
                 new ApduResponse(ByteBufferUtils.fromHex("9000"), null), responses));

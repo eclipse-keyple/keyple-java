@@ -6,14 +6,16 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.seproxy.exception;
+package org.eclipse.keyple.calypso.transaction.exception;
 
 import java.util.Collections;
 import java.util.List;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 
-public class InvalidMessageException extends IOReaderException {
+// TODO concerns only PoSecureSession, should it be moved to calypso package?
+public class KeypleCalypsoSecureSessionException extends KeypleReaderException {
 
     public enum Type {
         PO, CSM
@@ -23,19 +25,19 @@ public class InvalidMessageException extends IOReaderException {
     private final List<ApduRequest> requests;
     private final List<ApduResponse> responses;
 
-    public InvalidMessageException(String message, Type type, List<ApduRequest> requests,
-            List<ApduResponse> responses) {
+    public KeypleCalypsoSecureSessionException(String message, Type type,
+            List<ApduRequest> requests, List<ApduResponse> responses) {
         super(message);
         this.type = type;
         this.requests = requests;
         this.responses = responses;
     }
 
-    public InvalidMessageException(String message, ApduRequest req, ApduResponse resp) {
+    public KeypleCalypsoSecureSessionException(String message, ApduRequest req, ApduResponse resp) {
         this(message, null, Collections.singletonList(req), Collections.singletonList(resp));
     }
 
-    public InvalidMessageException(String message, ApduResponse resp) {
+    public KeypleCalypsoSecureSessionException(String message, ApduResponse resp) {
         this(message, null, resp);
     }
 

@@ -9,7 +9,7 @@
 package org.eclipse.keyple.seproxy;
 
 
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.NameableConfigurable;
@@ -62,9 +62,10 @@ public interface ProxyReader extends NameableConfigurable, Comparable<ProxyReade
      *
      * @param seApplicationRequest the application request
      * @return the SE response
-     * @throws IOReaderException Exception of type IO Reader
+     * @throws KeypleReaderException An error occurs during transmit (channel, IO)
      */
-    SeResponseSet transmit(SeRequestSet seApplicationRequest) throws IOReaderException;
+    SeResponseSet transmit(SeRequestSet seApplicationRequest)
+            throws KeypleReaderException, IllegalArgumentException;
 
     void addSeProtocolSetting(SeProtocolSetting seProtocolSetting);
 }

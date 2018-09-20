@@ -14,9 +14,10 @@ import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
+import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
+import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,11 +55,9 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
     /**
      * Attempts to open the physical channel
      *
-     * @throws IOReaderException if a reader error occurs
-     * @throws ChannelStateReaderException if the channel opening fails
+     * @throws KeypleReaderException if the channel opening fails
      */
-    protected abstract void openPhysicalChannel()
-            throws IOReaderException, ChannelStateReaderException;
+    protected abstract void openPhysicalChannel() throws KeypleChannelStateException;
 
     /**
      * Opens a logical channel
@@ -67,12 +66,12 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
      * @param successfulSelectionStatusCodes the list of successful status code for the select
      *        command
      * @return 2 ByteBuffers: ATR and FCI data
-     * @throws IOReaderException - if an IO exception occurred
-     * @throws SelectApplicationException - if the application selection is not successful
+     * @throws KeypleReaderException - if an IO exception occurred
+     * @throws KeypleApplicationSelectionException - if the application selection is not successful
      */
     protected final ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
-            Set<Short> successfulSelectionStatusCodes)
-            throws IOReaderException, SelectApplicationException {
+            Set<Short> successfulSelectionStatusCodes) throws KeypleChannelStateException,
+            KeypleApplicationSelectionException, KeypleIOReaderException {
         ByteBuffer[] atrAndFci = new ByteBuffer[2];
 
         if (!isLogicalChannelOpen()) {
@@ -84,7 +83,7 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
                 openPhysicalChannel();
             }
             if (!isPhysicalChannelOpen()) {
-                throw new ChannelStateReaderException("Fail to open physical channel.");
+                throw new KeypleChannelStateException("Fail to open physical channel.");
             }
         }
 
@@ -134,7 +133,8 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
                         logger.trace(
                                 "[{}] openLogicalChannelAndSelect => Application Selection failed. SELECTOR = {}",
                                 this.getName(), selector);
-                        throw new SelectApplicationException("Application selection failed");
+                        throw new KeypleApplicationSelectionException(
+                                "Application selection by AID failed " + selector.toString());
                     }
                 }
             } else {
@@ -142,7 +142,8 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
                     logger.trace(
                             "[{}] openLogicalChannelAndSelect => ATR Selection failed. SELECTOR = {}",
                             this.getName(), selector);
-                    throw new SelectApplicationException("ATR selection failed");
+                    throw new KeypleApplicationSelectionException(
+                            "Application selection by ATR failed " + selector.toString());
                 }
             }
         }

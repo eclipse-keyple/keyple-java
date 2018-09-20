@@ -11,7 +11,6 @@ package org.eclipse.keyple.plugin.pcsc;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +49,7 @@ public class SmartCardIOReaderTest {
     private byte[] responseApduByte;
 
     @Before
-    public void setUp() throws CardException, IOReaderException {
+    public void setUp() throws CardException, IllegalArgumentException, KeypleBaseException {
         when(terminal.connect(any(String.class))).thenReturn(card);
         when(card.getBasicChannel()).thenReturn(channel);
 
@@ -70,7 +69,7 @@ public class SmartCardIOReaderTest {
     }
 
     // TODO redesign @Test
-    public void testGettersSetters() throws IOException {
+    public void testGettersSetters() throws IllegalArgumentException, KeypleBaseException {
         // this.reader = new PcscReader(terminal, readerName);
         reader.setParameter("TOTO", "TOTO");
         assertEquals(reader.getParameters().size(), 1);
@@ -95,7 +94,7 @@ public class SmartCardIOReaderTest {
 
     }
 
-    @Test(expected = IOReaderException.class)
+    @Test(expected = KeypleReaderException.class)
     public void testIsSEPresentWithException() throws CardException, NoStackTraceThrowable {
 
         when(terminal.waitForCardAbsent(0)).thenReturn(false);
@@ -107,8 +106,7 @@ public class SmartCardIOReaderTest {
 
     // TODO redesign @Test
     public void testTransmitCardNotPresent()
-            throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
+            throws CardException, KeypleReaderException, KeypleReaderException {
 
         when(terminal.isCardPresent()).thenReturn(false);
         ApduRequest apduRequestMF =
@@ -131,8 +129,7 @@ public class SmartCardIOReaderTest {
 
     // TODO redesign @Test
     public void testTransmitToCardWithoutAidToSelect()
-            throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
+            throws CardException, KeypleReaderException, KeypleReaderException {
 
         atr = new ATR(new byte[] {(byte) 0x85, 0x17, 0x00, 0x01});
         when(terminal.isCardPresent()).thenReturn(true);
@@ -169,8 +166,7 @@ public class SmartCardIOReaderTest {
 
     // TODO redesign @Test
     public void testTransmitToCardWithAidToSelect()
-            throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
+            throws CardException, KeypleReaderException, KeypleReaderException {
 
 
         when(terminal.isCardPresent()).thenReturn(true);
@@ -206,8 +202,7 @@ public class SmartCardIOReaderTest {
 
     // TODO redesign @Test
     public void testTransmitToCardAndDisconnect()
-            throws CardException, ChannelStateReaderException, InvalidApduReaderException,
-            IOReaderException, ReaderTimeoutException, UnexpectedReaderException {
+            throws CardException, KeypleReaderException, KeypleReaderException {
 
 
         when(terminal.isCardPresent()).thenReturn(true);

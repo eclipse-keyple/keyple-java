@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.plugin.pcsc;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,8 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
@@ -59,7 +59,8 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
     }
 
     @Override
-    public void setParameter(String key, String value) throws IOException {
+    public void setParameter(String key, String value)
+            throws IllegalArgumentException, KeypleBaseException {
 
     }
 
@@ -75,7 +76,7 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
         return this;
     }
 
-    protected SortedSet<String> getNativeReadersNames() throws IOReaderException {
+    protected SortedSet<String> getNativeReadersNames() throws KeypleReaderException {
         SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
         CardTerminals terminals = getCardTerminals();
         try {
@@ -89,7 +90,7 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
                 logger.trace(
                         "[{}] getNativeReadersNames => Terminal list is not accessible. Exception: {}",
                         this.getName(), e.getMessage());
-                throw new IOReaderException("Could not access terminals list", e);
+                throw new KeypleReaderException("Could not access terminals list", e);
             }
         }
         return nativeReadersNames;
@@ -101,10 +102,10 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
      * New reader objects are created.
      *
      * @return the list of new readers.
-     * @throws IOReaderException if a reader error occurs
+     * @throws KeypleReaderException if a reader error occurs
      */
     @Override
-    protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
+    protected SortedSet<AbstractObservableReader> getNativeReaders() throws KeypleReaderException {
         SortedSet<AbstractObservableReader> nativeReaders =
                 new ConcurrentSkipListSet<AbstractObservableReader>();
 
@@ -120,7 +121,8 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
             } else {
                 logger.trace("[{}] Terminal list is not accessible. Exception: {}", this.getName(),
                         e.getMessage());
-                throw new IOReaderException("Could not access terminals list", e);
+                throw new KeypleReaderException("Could not access terminals list", e);
+
             }
         }
         return nativeReaders;
@@ -137,10 +139,10 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
      *
      * @param name name of the reader
      * @return the reader object
-     * @throws IOReaderException if a reader error occurs
+     * @throws KeypleReaderException if a reader error occurs
      */
     @Override
-    protected AbstractObservableReader getNativeReader(String name) throws IOReaderException {
+    protected AbstractObservableReader getNativeReader(String name) throws KeypleReaderException {
         // return the current reader if it is already listed
         for (AbstractObservableReader reader : readers) {
             if (reader.getName().equals(name)) {
@@ -163,10 +165,10 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
         } catch (CardException e) {
             logger.trace("[{}] Terminal list is not accessible. Exception: {}", this.getName(),
                     e.getMessage());
-            throw new IOReaderException("Could not access terminals list", e);
+            throw new KeypleReaderException("Could not access terminals list", e);
         }
         if (reader == null) {
-            throw new IOReaderException("Reader " + name + " not found!");
+            throw new KeypleReaderException("Reader " + name + " not found!");
         }
         return reader;
     }

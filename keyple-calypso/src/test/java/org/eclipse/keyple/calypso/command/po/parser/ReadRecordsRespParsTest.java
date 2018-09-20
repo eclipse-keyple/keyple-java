@@ -15,7 +15,6 @@ import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,7 +26,7 @@ public class ReadRecordsRespParsTest {
 
     @Test
     // TODO: Fix the parsing code so that the test makes sense
-    public void readRecordRespPars_one_record() throws InconsistentParameterValueException {
+    public void readRecordRespPars_one_record() {
         ByteBuffer response =
                 ByteBuffer.wrap(new byte[] {0x04, 0x02, 0x01, 0x01, (byte) 0x90, 0x00});
         List<ApduResponse> responses = new ArrayList<ApduResponse>();
@@ -51,7 +50,7 @@ public class ReadRecordsRespParsTest {
 
     @Test
     // TODO: Fix the parsing code so that the test makes sense
-    public void readRecordRespPars_records() throws InconsistentParameterValueException {
+    public void readRecordRespPars_records() {
         ByteBuffer response = ByteBuffer.wrap(new byte[] {0x01, 0x01, 0x01, 0x01, 0x30, 0x01, 0x01,
                 0x30, 0x01, 0x01, 0x30, 0x01, 0x01, 0x30, (byte) 0x90, 0x00});
         List<ApduResponse> responses = new ArrayList<ApduResponse>();
@@ -95,7 +94,7 @@ public class ReadRecordsRespParsTest {
     }
 
     @Test
-    public void readRecordRespPars_one_record_sfi() throws InconsistentParameterValueException {
+    public void readRecordRespPars_one_record_sfi() {
         ByteBuffer response = ByteBuffer.wrap(new byte[] {0x01, 0x01, 0x01, 0x01, 0x30, 0x01, 0x01,
                 0x30, 0x01, 0x01, 0x30, 0x01, 0x01, 0x30, (byte) 0x90, 0x00});
         List<ApduResponse> responses = new ArrayList<ApduResponse>();
@@ -111,7 +110,7 @@ public class ReadRecordsRespParsTest {
     }
 
     @Test
-    public void readRecordRespPars_records_sfi() throws InconsistentParameterValueException {
+    public void readRecordRespPars_records_sfi() {
         ByteBuffer response = ByteBuffer.wrap(new byte[] {0x01, 0x01, 0x01, 0x01, 0x30, 0x01, 0x01,
                 0x30, 0x01, 0x01, 0x30, 0x01, 0x01, 0x30, (byte) 0x90, 0x00});
         List<ApduResponse> responses = new ArrayList<ApduResponse>();

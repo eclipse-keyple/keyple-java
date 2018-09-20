@@ -11,7 +11,7 @@ package org.eclipse.keyple.plugin.stub;
 
 import org.eclipse.keyple.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.util.Observable;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -28,7 +28,7 @@ public class StubPluginTest {
     Logger logger = LoggerFactory.getLogger(StubPluginTest.class);
 
     @Before
-    public void setUp() throws IOReaderException, InterruptedException {
+    public void setUp() throws InterruptedException, KeypleReaderException {
         logger.info("setUp, assert stubplugin is empty");
         stubPlugin = StubPlugin.getInstance(); // singleton
 
@@ -43,7 +43,7 @@ public class StubPluginTest {
     }
 
     @After
-    public void tearDown() throws IOReaderException, InterruptedException {
+    public void tearDown() throws InterruptedException {
         stubPlugin = StubPlugin.getInstance(); // singleton
         stubPlugin.clearObservers();
         Thread.sleep(500);
@@ -52,7 +52,7 @@ public class StubPluginTest {
 
 
     @Test
-    public void testA_PlugReaders() throws IOReaderException, InterruptedException {
+    public void testA_PlugReaders() throws InterruptedException, KeypleReaderException {
 
         Observable.Observer connected_obs = new ObservablePlugin.PluginObserver() {
             @Override
@@ -82,7 +82,7 @@ public class StubPluginTest {
     }
 
     @Test
-    public void testB_UnplugReaders() throws IOReaderException, InterruptedException {
+    public void testB_UnplugReaders() throws InterruptedException, KeypleReaderException {
 
         Observable.Observer disconnected_obs = new ObservablePlugin.PluginObserver() {
             @Override
@@ -117,7 +117,7 @@ public class StubPluginTest {
     }
 
     @Test
-    public void testC_PlugSameReaderTwice() throws IOReaderException, InterruptedException {
+    public void testC_PlugSameReaderTwice() throws InterruptedException, KeypleReaderException {
         stubPlugin.plugStubReader("testC_PlugSameReaderTwice");
         stubPlugin.plugStubReader("testC_PlugSameReaderTwice");
         logger.debug("Stubplugin readers size {} ", stubPlugin.getReaders().size());
@@ -136,7 +136,7 @@ public class StubPluginTest {
     }
 
     @Test
-    public void testD_GetName() throws IOReaderException {
+    public void testD_GetName() {
         assert (stubPlugin.getName() != null);
     }
 }

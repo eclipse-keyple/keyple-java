@@ -20,7 +20,7 @@ import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +73,7 @@ public class Demo_Hoplink_Stub {
         try {
             poReader = (StubReader) (stubPlugin.getReader("poReader"));
             csmReader = (StubReader) (stubPlugin.getReader("csmReader"));
-        } catch (UnexpectedReaderException e) {
+        } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
         }
 
