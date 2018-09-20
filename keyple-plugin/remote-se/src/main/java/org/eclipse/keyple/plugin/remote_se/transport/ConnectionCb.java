@@ -6,19 +6,10 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.plugin.remote_se.rse;
+package org.eclipse.keyple.plugin.remote_se.transport;
 
-import org.eclipse.keyple.seproxy.SeResponseSet;
+public interface ConnectionCb {
 
-/**
- * Callback function for AsyncTransmit
- */
-public interface SeResponseSetCallback {
+    void onConnection(Object connection);
 
-    /**
-     * Callback function called when SeResponseSet is received
-     * 
-     * @param seResponseSet
-     */
-    void getResponseSet(SeResponseSet seResponseSet);
 }

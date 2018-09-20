@@ -12,7 +12,6 @@ package org.eclise.keyple.example.remote.webservice.demo1;
 import java.io.IOException;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
@@ -37,7 +36,7 @@ public class PO {
         logger.info("Boot Client LocalReader ");
         logger.info("************************");
 
-        //get seProxyService
+        // get seProxyService
         SeProxyService seProxyService = SeProxyService.getInstance();
 
         logger.info("Create Local StubPlugin");
@@ -48,16 +47,17 @@ public class PO {
         localReader = stubPlugin.plugStubReader("stubPO");
 
         try {
-            //todo configure remote service with web service nse
+            // todo configure remote service with web service nse
             WsRseClient wsClientRSEClient = new WsRseClient(ENDPOINT_URL);
 
-            //logger.info(
-            //        "Register wsClientRSEClient as an observer of the local stubPlugin thus events will be propagated");
+            // logger.info(
+            // "Register wsClientRSEClient as an observer of the local stubPlugin thus events will
+            // be propagated");
 
 
-            //todo connect reader to remote service
-            String sessionId = wsClientRSEClient.connectReader(localReader,null);
-            //todo observers is included in connect
+            // todo connect reader to remote service
+            String sessionId = wsClientRSEClient.connectReader(localReader, null);
+            // todo observers is included in connect
             localReader.addObserver(wsClientRSEClient);
 
             logger.info("Connect remotely the StubPlugin to rse with sessionId {}", sessionId);

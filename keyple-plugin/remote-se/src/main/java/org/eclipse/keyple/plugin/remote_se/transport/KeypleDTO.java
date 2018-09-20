@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
+
 package org.eclipse.keyple.plugin.remote_se.transport;
 
 public class KeypleDTO {
@@ -14,7 +22,7 @@ public class KeypleDTO {
         this.isRequest = isRequest;
     }
 
-    public KeypleDTO(String sessionId, String action, String body, Boolean isRequest) {
+    public KeypleDTO(String action, String body, Boolean isRequest, String sessionId) {
         this.sessionId = sessionId;
         this.action = action;
         this.body = body;

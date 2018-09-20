@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice.demo1;
+package org.eclise.keyple.example.remote.websocket.demoPO;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -20,6 +20,9 @@ import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
 import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
 import org.eclipse.keyple.plugin.remote_se.rse.ISeResponseSetCallback;
+import org.eclipse.keyple.plugin.remote_se.rse.VirtualSeRemoteService;
+import org.eclipse.keyple.plugin.remote_se.transport.ConnectionCb;
+import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
@@ -27,17 +30,13 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
-import org.eclise.keyple.example.remote.webservice.webservice.common.HttpHelper;
-import org.eclise.keyple.example.remote.webservice.webservice.rse.PluginEndpoint;
-import org.eclise.keyple.example.remote.webservice.webservice.rse.ReaderEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.sun.net.httpserver.HttpServer;
 
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
-public class TicketingServer implements org.eclipse.keyple.util.Observable.Observer {
+public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.Observer {
 
-    private static final Logger logger = LoggerFactory.getLogger(TicketingServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(wskTicketingTerminal.class);
     public static Integer port = 8000;
     public static String END_POINT = "/remote-se";
     private static Integer MAX_CONNECTION = 5;
@@ -45,7 +44,7 @@ public class TicketingServer implements org.eclipse.keyple.util.Observable.Obser
 
     public static void main(String[] args) throws Exception {
 
-        TicketingServer server = new TicketingServer();
+        wskTicketingTerminal server = new wskTicketingTerminal();
         server.boot();
         // rse.status();
 
@@ -53,30 +52,27 @@ public class TicketingServer implements org.eclipse.keyple.util.Observable.Obser
 
     public void boot() throws IOException {
 
-        logger.info("*****************************");
-        logger.info("Boot Serverside Ticketing App");
-        logger.info("*****************************");
+        logger.info("************************");
+        logger.info("Boot Server Network     ");
+        logger.info("************************");
 
-        logger.info("Init Web Service Server");
-
-        // Create Endpoints for plugin and reader API
-        PluginEndpoint pluginEndpoint = new PluginEndpoint();
-        ReaderEndpoint readerEndpoint = new ReaderEndpoint();
-
-        // deploy endpoint
+        logger.info("Init Web Socket Server");
         InetSocketAddress inet = new InetSocketAddress(Inet4Address.getByName(URL), port);
-        HttpServer server = HttpServer.create(inet, MAX_CONNECTION);
-        server.createContext(END_POINT + HttpHelper.PLUGIN_ENDPOINT, pluginEndpoint);
-        server.createContext(END_POINT + HttpHelper.READER_ENDPOINT, readerEndpoint);
 
-        // start rse
-        server.setExecutor(null); // creates a default executor
-        server.start();
-        logger.info("Started Server on http://{}:{}{}", inet.getHostName(), inet.getPort(),
-                END_POINT);
+        WskServer wskServer = new WskServer(inet, new ConnectionCb() {
+            @Override
+            public void onConnection(Object connection) {
+
+            }
+        });
 
 
-        logger.info("Create SeRemotePLugin and register it to SeProxyService");
+
+        logger.info("**********************************");
+        logger.info("Boot Remote SE Plugin Network     ");
+        logger.info("**********************************");
+
+        logger.info("Create SeRemotePLugin");
         RsePlugin rsePlugin = new RsePlugin();
 
         logger.info("Observe SeRemotePLugin for Plugin Events and Reader Events");
@@ -86,9 +82,13 @@ public class TicketingServer implements org.eclipse.keyple.util.Observable.Obser
         plugins.add(rsePlugin);
         SeProxyService.getInstance().setPlugins(plugins);
 
-        logger.info("Link Webservice endpoints and RSE Plugin");
-        pluginEndpoint.setPlugin(rsePlugin);
-        readerEndpoint.setPlugin(rsePlugin);
+        VirtualSeRemoteService remoteService = new VirtualSeRemoteService();
+        remoteService.bindTransportNode((TransportNode) wskServer);
+        remoteService.bindPlugin(rsePlugin);
+
+        logger.info("Started Server on http://{}:{}{}", inet.getHostName(), inet.getPort(),
+                END_POINT);
+        wskServer.run();
 
         logger.info("Waits for remote connections");
 
@@ -185,7 +185,7 @@ public class TicketingServer implements org.eclipse.keyple.util.Observable.Obser
                     ContactlessProtocols.PROTOCOL_ISO14443_4);
 
             // ASYNC transmit seRequestSet to Reader With Callback function
-            ((RseReader) reader).asyncTransmit(new SeRequestSet(seRequest),
+            reader.asyncTransmit(new SeRequestSet(seRequest),
                     new ISeResponseSetCallback() {
                         @Override
                         public void getResponseSet(SeResponseSet seResponseSet) {
@@ -209,7 +209,6 @@ public class TicketingServer implements org.eclipse.keyple.util.Observable.Obser
                             try {
                                 ((RseReader) reader).asyncTransmit(new SeRequestSet(seRequest2),
                                         new ISeResponseSetCallback() {
-
                                             @Override
                                             public void getResponseSet(
                                                     SeResponseSet seResponseSet) {

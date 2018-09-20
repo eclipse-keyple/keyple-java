@@ -9,14 +9,13 @@
 package org.eclise.keyple.example.remote.local.local.rse;
 
 
+import java.util.Map;
+import org.eclipse.keyple.plugin.remote_se.nse.RseClient;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.plugin.remote_se.nse.RseClient;
 import org.eclise.keyple.example.remote.local.local.RseAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 public class LocalRseClient implements RseClient {
 
@@ -33,17 +32,17 @@ public class LocalRseClient implements RseClient {
     @Override
     public String connectReader(ProxyReader localReader, Map<String, Object> options) {
         logger.info("connectReader {}", localReader);
-        return rseAPI.onReaderConnect(localReader.getName(),null);
+        return rseAPI.onReaderConnect(localReader.getName(), null);
     }
 
     @Override
-    public void disconnectReader(ProxyReader localReader){
-        //not implemented
+    public void disconnectReader(ProxyReader localReader) {
+        // not implemented
     }
 
     @Override
     public void update(ReaderEvent event) {
         logger.info("publishReaderEvent {}", event);
-        rseAPI.onRemoteReaderEvent(event,null);
+        rseAPI.onRemoteReaderEvent(event, null);
     }
 }

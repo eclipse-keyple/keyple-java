@@ -6,10 +6,15 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.websocket;
+package org.eclise.keyple.example.remote.websocket.demoCSM;
 
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
+import org.eclipse.keyple.plugin.remote_se.rse.ISeResponseSetCallback;
+import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
+import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
+import org.eclipse.keyple.plugin.remote_se.rse.VirtualSeRemoteService;
+import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
@@ -17,58 +22,49 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
-import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
-import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
-import org.eclise.keyple.example.remote.local.local.RseAPI;
-import org.eclipse.keyple.plugin.remote_se.nse.RseClient;
-import org.eclipse.keyple.plugin.remote_se.rse.SeResponseSetCallback;
-import org.eclise.keyple.example.remote.websocket.websocket.WskServer;
+import org.java_websocket.client.WebSocketClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
-public class wskTicketingServer implements org.eclipse.keyple.util.Observable.Observer {
+public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.Observer {
 
-    private static final Logger logger = LoggerFactory.getLogger(wskTicketingServer.class);
-    public static Integer port = 8000;
-    public static String END_POINT = "/remote-se";
-    private static Integer MAX_CONNECTION = 5;
-    public static String URL = "0.0.0.0";
+    private static final Logger logger = LoggerFactory.getLogger(wskTicketingTerminal.class);
+
 
     public static void main(String[] args) throws Exception {
 
-        wskTicketingServer server = new wskTicketingServer();
+        wskTicketingTerminal server = new wskTicketingTerminal();
         server.boot();
+
+
         // rse.status();
 
     }
 
-    public void boot() throws IOException {
+    public void boot() throws IOException, URISyntaxException {
 
-        logger.info("*****************************");
-        logger.info("Boot Serverside Ticketing App");
-        logger.info("*****************************");
+        logger.info("************************");
+        logger.info("Boot Client Network     ");
+        logger.info("************************");
 
-        logger.info("Init Web Socket Server");
+        String ENDPOINT_URL = "http://localhost:8000/remote-se";
+        WebSocketClient wskClient = new WskClient(new URI(ENDPOINT_URL));
+        wskClient.connect();
 
-        InetSocketAddress inet = new InetSocketAddress(Inet4Address.getByName(URL), port);
-        logger.info("Started Server on http://{}:{}{}", inet.getHostName(), inet.getPort(),
-                END_POINT);
+        logger.info("**********************************");
+        logger.info("Boot Remote SE Plugin Network     ");
+        logger.info("**********************************");
 
-        RseAPI rseAPI = new WskRseAPI();
-        RseClient wskRseClient = new WskRseClient();
-        WskServer wskServer = new WskServer(inet, rseAPI, wskRseClient);
-
-
-        logger.info("Create SeRemotePLugin and register it to SeProxyService");
+        logger.info("Create SeRemotePLugin");
         RsePlugin rsePlugin = new RsePlugin();
 
         logger.info("Observe SeRemotePLugin for Plugin Events and Reader Events");
@@ -78,10 +74,9 @@ public class wskTicketingServer implements org.eclipse.keyple.util.Observable.Ob
         plugins.add(rsePlugin);
         SeProxyService.getInstance().setPlugins(plugins);
 
-        wskServer.run();
-
-        logger.info("Waits for remote connections");
-
+        VirtualSeRemoteService remoteService = new VirtualSeRemoteService();
+        remoteService.bindTransportNode((TransportNode) wskClient);
+        remoteService.bindPlugin(rsePlugin);
 
     }
 
@@ -109,20 +104,7 @@ public class wskTicketingServer implements org.eclipse.keyple.util.Observable.Ob
                 case READER_CONNECTED:
                     logger.info("READER_CONNECTED {} {}", event.getPluginName(),
                             event.getReaderName());
-                    try {
-                        RsePlugin rsePlugin =
-                                (RsePlugin) SeProxyService.getInstance().getPlugins().first();
-                        RseReader rseReader =
-                                (RseReader) rsePlugin.getReader(event.getReaderName());
-
-                        logger.info("Add ServerTicketingApp as a Observer of RSE reader");
-                        rseReader.addObserver(this);
-
-                    } catch (UnexpectedReaderException e) {
-                        logger.error(e.getMessage());
-                        e.printStackTrace();
-                    }
-
+                        runCommandTest(event);
                     break;
                 case READER_DISCONNECTED:
                     logger.info("READER_DISCONNECTED {} {}", event.getPluginName(),
@@ -130,34 +112,20 @@ public class wskTicketingServer implements org.eclipse.keyple.util.Observable.Ob
                     break;
             }
         }
-        // ReaderEvent
-        else if (o instanceof ReaderEvent) {
-            ReaderEvent event = (ReaderEvent) o;
-            switch (event.getEventType()) {
-                case SE_INSERTED:
-                    logger.info("SE_INSERTED {} {}", event.getPluginName(), event.getReaderName());
-                    runCommandTest(event);
-                    break;
-                case SE_REMOVAL:
-                    logger.info("SE_REMOVAL {} {}", event.getPluginName(), event.getReaderName());
-                    break;
-                case IO_ERROR:
-                    logger.info("IO_ERROR {} {}", event.getPluginName(), event.getReaderName());
-                    break;
-
-            }
-        }
     }
 
 
 
-    private void runCommandTest(ReaderEvent event) {
+    private void runCommandTest(PluginEvent event) {
         try {
+
+            logger.info("Goes to sleep");
+            Thread.sleep(10000);
 
             // get the reader by its name
             final RseReader reader =
                     (RseReader) ((RsePlugin) SeProxyService.getInstance().getPlugins().first())
-                            .getReaderByRemoteName(event.getReaderName());
+                            .getReader(event.getReaderName());
 
             String poAid = "A000000291A000000191";
 
@@ -175,8 +143,8 @@ public class wskTicketingServer implements org.eclipse.keyple.util.Observable.Ob
                     ContactlessProtocols.PROTOCOL_ISO14443_4);
 
             // ASYNC transmit seRequestSet to Reader With Callback function
-            ((RseReader) reader).asyncTransmit(new SeRequestSet(seRequest),
-                    new SeResponseSetCallback() {
+            reader.asyncTransmit(new SeRequestSet(seRequest),
+                    new ISeResponseSetCallback() {
                         @Override
                         public void getResponseSet(SeResponseSet seResponseSet) {
                             logger.info(
@@ -198,7 +166,7 @@ public class wskTicketingServer implements org.eclipse.keyple.util.Observable.Ob
                             // ASYNC transmit seRequestSet to Reader
                             try {
                                 ((RseReader) reader).asyncTransmit(new SeRequestSet(seRequest2),
-                                        new SeResponseSetCallback() {
+                                        new ISeResponseSetCallback() {
                                             @Override
                                             public void getResponseSet(
                                                     SeResponseSet seResponseSet) {
@@ -218,6 +186,8 @@ public class wskTicketingServer implements org.eclipse.keyple.util.Observable.Ob
         } catch (UnexpectedReaderException e) {
             e.printStackTrace();
         } catch (IOReaderException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 

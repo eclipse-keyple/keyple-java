@@ -9,13 +9,12 @@
 package org.eclise.keyple.example.remote.local.local;
 
 import java.net.UnknownHostException;
-
 import org.eclipse.keyple.plugin.remote_se.nse.NseAPI;
-import org.eclipse.keyple.plugin.remote_se.rse.ReaderSession;
+import org.eclipse.keyple.plugin.remote_se.nse.RseClient;
+import org.eclipse.keyple.plugin.remote_se.rse.IReaderSession;
+import org.eclise.keyple.example.remote.local.local.nse.LocalReaderClient;
 import org.eclise.keyple.example.remote.local.local.rse.LocalRseAPI;
 import org.eclise.keyple.example.remote.local.local.rse.LocalRseClient;
-import org.eclise.keyple.example.remote.local.local.nse.LocalReaderClient;
-import org.eclipse.keyple.plugin.remote_se.nse.RseClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +25,7 @@ public class LocalServer {
     static LocalServer uniqueInstance = new LocalServer();
 
     // ServerConnection must be initialized before the ClientConnection
-    ReaderSession RSEReaderSession;
+    IReaderSession RSERseSession;
     RseAPI syncRseAPI;
 
     RseClient rseClient;
@@ -43,13 +42,13 @@ public class LocalServer {
     public RseAPI initServerListener() {
         if (syncRseAPI == null) {
             syncRseAPI = new LocalRseAPI();
-            RSEReaderSession = new LocalReaderClient(); // prepare transport for nse
+            RSERseSession = new LocalReaderClient(); // prepare transport for nse
         }
         return syncRseAPI;
     }
 
-    public ReaderSession getServerSession() {
-        return RSEReaderSession;
+    public IReaderSession getServerSession() {
+        return RSERseSession;
     }
 
 
@@ -62,7 +61,7 @@ public class LocalServer {
             if (rseClient == null) {
                 logger.info("Init duplex connection");
                 // link transport with listener in duplex (nse-rse and rse-nse)
-                ((LocalReaderClient) RSEReaderSession).setClientListener(clientlistener);
+                ((LocalReaderClient) RSERseSession).setClientListener(clientlistener);
                 rseClient = new LocalRseClient(syncRseAPI);
             } else {
                 logger.debug("Duplex connection already created");

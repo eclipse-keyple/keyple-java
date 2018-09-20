@@ -8,13 +8,13 @@
 
 package org.eclise.keyple.example.remote.local.local.nse;
 
+import org.eclipse.keyple.plugin.remote_se.nse.NseAPI;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.plugin.remote_se.nse.NseAPI;
 
 /**
  * Link with Local Reader
@@ -28,7 +28,7 @@ public class LocalNseAPI implements NseAPI {
     }
 
     @Override
-    public SeResponseSet onTransmit(SeRequestSet req) {
+    public SeResponseSet onTransmit(String sessionId, SeRequestSet req) {
         try {
             return localReader.transmit(req);
         } catch (IOReaderException e) {
@@ -37,23 +37,4 @@ public class LocalNseAPI implements NseAPI {
         return null;
     }
 
-    @Override
-    public String onGetName() {
-        return localReader.getName();
-    }
-
-    @Override
-    public Boolean onIsSePresent() {
-        try {
-            return localReader.isSePresent();
-        } catch (NoStackTraceThrowable noStackTraceThrowable) {
-            noStackTraceThrowable.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    public void onAddSeProtocolSetting(SeProtocolSetting seProtocolSetting) {
-        localReader.addSeProtocolSetting(seProtocolSetting);
-    }
 }

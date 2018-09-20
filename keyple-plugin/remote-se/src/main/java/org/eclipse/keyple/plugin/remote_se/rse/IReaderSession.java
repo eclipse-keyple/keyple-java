@@ -9,11 +9,10 @@
 package org.eclipse.keyple.plugin.remote_se.rse;
 
 
-public interface ReaderSession {
+public interface IReaderSession {
 
     String getSessionId();
 
     Boolean isAsync();
-
 
 }

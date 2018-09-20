@@ -25,13 +25,13 @@ import org.slf4j.LoggerFactory;
 
 public class RseReader extends Observable implements ObservableReader {
 
-    ReaderSession session;// can be sync or async
+    IReaderSession session;// can be sync or async
     String remoteName;
     String name;
 
     private static final Logger logger = LoggerFactory.getLogger(RseReader.class);
 
-    public RseReader(ReaderSession session, String remoteName) {
+    public RseReader(IReaderSession session, String remoteName) {
         this.session = session;
         this.remoteName = remoteName;
         this.name = "remote-" + remoteName;
@@ -46,13 +46,13 @@ public class RseReader extends Observable implements ObservableReader {
         return remoteName;
     }
 
-    public ReaderSession getNseClient() {
+    public IReaderSession getSession() {
         return session;
     }
 
     @Override
     public boolean isSePresent() throws NoStackTraceThrowable {
-        return false;//not implemented
+        return false;// not implemented
     }
 
     /**
@@ -64,7 +64,7 @@ public class RseReader extends Observable implements ObservableReader {
      */
     @Override
     public SeResponseSet transmit(SeRequestSet seRequestSet) throws IOReaderException {
-        return ((ReaderSyncSession) session).transmit(seRequestSet);
+        return ((IReaderSyncSession) session).transmit(seRequestSet);
     }
 
     /**
@@ -75,13 +75,13 @@ public class RseReader extends Observable implements ObservableReader {
      * @throws IOReaderException
      */
     public void asyncTransmit(SeRequestSet seRequestSet,
-            SeResponseSetCallback seResponseSetCallback) throws IOReaderException {
-        ((ReaderAsyncSession) session).asyncTransmit(seRequestSet, seResponseSetCallback);
+            ISeResponseSetCallback seResponseSetCallback) throws IOReaderException {
+        ((IReaderAsyncSession) session).asyncTransmit(seRequestSet, seResponseSetCallback);
     }
 
     @Override
     public void addSeProtocolSetting(SeProtocolSetting seProtocolSetting) {
-        //not implemented
+        // not implemented
     }
 
     /**
@@ -107,12 +107,12 @@ public class RseReader extends Observable implements ObservableReader {
     @Override
     public int compareTo(ProxyReader o) {
         return o.getName().compareTo(this.getName());
-    }//todo
+    }// todo
 
     @Override
     public Map<String, String> getParameters() {
         return null;
-    }//todo
+    }// todo
 
 
 
@@ -167,12 +167,12 @@ public class RseReader extends Observable implements ObservableReader {
      *         executed instantly
      */
     public final void setParameters(Map<String, String> parameters) throws IOException {
-        //todo
+        // todo
     }
 
     @Override
     public void setParameter(String key, String value) throws IOException {
-        //todo
+        // todo
     }
 
 }

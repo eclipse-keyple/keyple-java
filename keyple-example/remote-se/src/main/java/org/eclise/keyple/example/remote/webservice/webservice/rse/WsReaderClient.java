@@ -1,20 +1,27 @@
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
+
 package org.eclise.keyple.example.remote.webservice.webservice.rse;
 
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import java.io.IOException;
+import org.eclipse.keyple.plugin.remote_se.rse.IReaderSyncSession;
+import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
-import org.eclipse.keyple.plugin.remote_se.rse.ReaderSyncSession;
 import org.eclise.keyple.example.remote.webservice.webservice.common.HttpHelper;
 import org.eclise.keyple.example.remote.webservice.webservice.nse.WsRseClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
-import java.io.IOException;
-
-public class WsReaderClient implements ReaderSyncSession {
+public class WsReaderClient implements IReaderSyncSession {
 
     private static final Logger logger = LoggerFactory.getLogger(WsRseClient.class);
 
@@ -26,7 +33,7 @@ public class WsReaderClient implements ReaderSyncSession {
         this.sessionId = sessionId;
     }
 
-    public String getTransmitUrl(){
+    public String getTransmitUrl() {
         return transmitUrl;
     }
 
@@ -44,8 +51,7 @@ public class WsReaderClient implements ReaderSyncSession {
         String data = parser.toJson(seRequestSet, SeRequestSet.class);;
 
         // send data to /transmit endpoint
-        JsonObject response =
-                null;
+        JsonObject response = null;
         try {
             response = HttpHelper.httpPOSTJson(HttpHelper.getConnection(transmitUrl), data);
             logger.info("Receive Response {}", response);
@@ -57,7 +63,7 @@ public class WsReaderClient implements ReaderSyncSession {
 
         } catch (IOException e) {
             e.printStackTrace();
-            return null;//todo
+            return null;// todo
         }
 
 
@@ -72,4 +78,5 @@ public class WsReaderClient implements ReaderSyncSession {
     public Boolean isAsync() {
         return false;
     }
+
 }

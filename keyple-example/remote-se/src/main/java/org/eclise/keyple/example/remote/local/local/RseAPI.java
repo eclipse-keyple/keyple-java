@@ -8,9 +8,8 @@
 
 package org.eclise.keyple.example.remote.local.local;
 
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
-
 import java.util.Map;
+import org.eclipse.keyple.seproxy.event.ReaderEvent;
 
 public interface RseAPI {
 

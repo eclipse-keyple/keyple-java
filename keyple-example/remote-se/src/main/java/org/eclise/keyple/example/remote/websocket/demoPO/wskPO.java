@@ -6,22 +6,23 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.websocket;
+package org.eclise.keyple.example.remote.websocket.demoPO;
 
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+
+import org.eclipse.keyple.plugin.remote_se.nse.NativeSeRemoteService;
+import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclise.keyple.example.remote.websocket.websocket.WskClient;
 import org.eclise.keyple.example.stub.calypso.HoplinkStubSE;
+import org.java_websocket.client.WebSocketClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class wskPO {
@@ -33,13 +34,26 @@ public class wskPO {
     // physical reader
     StubReader localReader;
 
-    void boot() {
+    void boot() throws URISyntaxException {
         logger.info("************************");
-        logger.info("Boot Client LocalReader ");
+        logger.info("Boot Client Network     ");
         logger.info("************************");
 
-        //get seProxyService
+
+        WebSocketClient wskClient = new WskClient(new URI(ENDPOINT_URL));
+        wskClient.connect();
+
+
+
+        logger.info("**********************************************************");
+        logger.info("Connect a Native Reader through NativeSeRemoteService     ");
+        logger.info("**********************************************************");
+
+        logger.info("Get SeProxy services");
         SeProxyService seProxyService = SeProxyService.getInstance();
+        NativeSeRemoteService nseService = new NativeSeRemoteService();
+        nseService.bind((TransportNode) wskClient);
+
 
         logger.info("Create Local StubPlugin");
         StubPlugin stubPlugin = StubPlugin.getInstance();
@@ -48,20 +62,18 @@ public class wskPO {
         seProxyService.setPlugins(plugins);
         localReader = stubPlugin.plugStubReader("stubPO");
 
-        try {
-            //todo configure remote service with web service nse
-            WskClient wskClient = new WskClient(new URI(ENDPOINT_URL));
-            wskClient.connect();
+        logger.info("Connect Reader : ", localReader.getName());
+
+        Map<String, Object> options = new HashMap<String, Object>();
+        options.put("isAsync", true);
+        options.put("transmitUrl", ENDPOINT_URL);
+
+        nseService.connectReader(localReader, options);
 
 
-
-
-        }  catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
     }
 
-    void demo() {
+    void insertPO() {
         logger.info("************************");
         logger.info("Start DEMO - insert SE  ");
         logger.info("************************");
@@ -86,7 +98,8 @@ public class wskPO {
 
         wskPO client = new wskPO();
         client.boot();
-        client.demo();
+        Thread.sleep(5000);
+        client.insertPO();
 
 
     }

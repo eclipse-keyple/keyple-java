@@ -10,14 +10,13 @@ package org.eclise.keyple.example.remote.webservice.webservice.nse;
 
 import java.io.IOException;
 import java.util.Map;
-
+import org.eclipse.keyple.plugin.remote_se.nse.RseClient;
+import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
-import org.eclipse.keyple.plugin.remote_se.nse.RseClient;
 import org.eclise.keyple.example.remote.webservice.webservice.common.HttpHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +48,8 @@ public class WsRseClient implements RseClient {
      * @param localReader
      * @return sessionId
      */
-    public String connectReader(ProxyReader localReader, Map<String,Object> options) throws IOReaderException{
+    public String connectReader(ProxyReader localReader, Map<String, Object> options)
+            throws IOReaderException {
         logger.info("Send connect Reader event {}", localReader.getName());
 
         Boolean isDuplex = (Boolean) options.get("isAsync");
@@ -59,22 +59,23 @@ public class WsRseClient implements RseClient {
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("localReaderName", new JsonPrimitive(localReader.getName()));
         jsonObject.add("isAsync", new JsonPrimitive(isDuplex));
-        if(isDuplex){
+        if (isDuplex) {
             jsonObject.add("transmitUrl", new JsonPrimitive(transmitUrl));
         }
         String data = jsonObject.toString();
 
         // send data to /plugin endpoint
-        JsonObject response =
-                null;
+        JsonObject response = null;
         try {
-            response = HttpHelper.httpPUTJSON(HttpHelper.getConnection(serverUrl + HttpHelper.PLUGIN_ENDPOINT), data);
+            response = HttpHelper.httpPUTJSON(
+                    HttpHelper.getConnection(serverUrl + HttpHelper.PLUGIN_ENDPOINT), data);
             logger.info("Receive Response {}", response);
 
             // parse response to get sessionId
             Gson gson = SeProxyJsonParser.getGson();
             gson.fromJson(response, JsonObject.class);
-            String sessionId = gson.fromJson(response, JsonObject.class).get("sessionId").getAsString();
+            String sessionId =
+                    gson.fromJson(response, JsonObject.class).get("sessionId").getAsString();
 
             // set localReader
             this.localReader = localReader;
@@ -113,8 +114,8 @@ public class WsRseClient implements RseClient {
             String data = jsonObject.toString();
 
             // send data to /plugin endpoint
-            JsonObject response = HttpHelper
-                    .httpPOSTJson(HttpHelper.getConnection(serverUrl + HttpHelper.PLUGIN_ENDPOINT), data);
+            JsonObject response = HttpHelper.httpPOSTJson(
+                    HttpHelper.getConnection(serverUrl + HttpHelper.PLUGIN_ENDPOINT), data);
 
             // parse response
             processResponse(response);
@@ -147,8 +148,8 @@ public class WsRseClient implements RseClient {
 
             try {
                 // send SeResponseSet to /reader endpoint
-                JsonObject responseBody = HttpHelper
-                        .httpPOSTJson(HttpHelper.getConnection(serverUrl + HttpHelper.READER_ENDPOINT), data);
+                JsonObject responseBody = HttpHelper.httpPOSTJson(
+                        HttpHelper.getConnection(serverUrl + HttpHelper.READER_ENDPOINT), data);
 
                 // Loop, if there is more SeRequestSet
                 processResponse(responseBody);
@@ -162,7 +163,6 @@ public class WsRseClient implements RseClient {
             logger.debug("No seRequestSet to process ");
         }
     }
-
 
 
 

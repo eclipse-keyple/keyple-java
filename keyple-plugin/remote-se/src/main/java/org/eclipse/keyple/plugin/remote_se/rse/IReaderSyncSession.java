@@ -11,20 +11,13 @@ package org.eclipse.keyple.plugin.remote_se.rse;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 
-public interface ReaderAsyncSession extends ReaderSession {
+public interface IReaderSyncSession extends IReaderSession {
+
 
     /*
-     * Async Sessions (web services)
+     * Sync Sessions (local, websocket = duplex connection)
      */
-    void asyncTransmit(SeRequestSet seApplicationRequest, SeResponseSetCallback seResponseSet);
-
-    void asyncSetSeResponseSet(SeResponseSet seResponseSet);
-
-    Boolean hasSeRequestSet();
-
-    SeRequestSet getSeRequestSet();
-
-    String getTransmitUrl();
+    SeResponseSet transmit(SeRequestSet seApplicationRequest);
 
 
 }

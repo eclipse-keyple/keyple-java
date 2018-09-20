@@ -8,6 +8,10 @@
 
 package org.eclipse.keyple.plugin.remote_se.rse;
 
+import org.eclipse.keyple.plugin.remote_se.transport.DtoSender;
+import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTO;
+import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTOHelper;
+import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.slf4j.Logger;
@@ -17,17 +21,19 @@ import org.slf4j.LoggerFactory;
  * Manage RSE Reader Session Manage SeRequestSet to transmit and receive SeResponseSet in an
  * asynchronous way
  */
-public class ReaderAsyncClientImpl implements ReaderAsyncSession {
+public class ReaderAsyncClientImpl implements IReaderAsyncSession {
 
     private static final Logger logger = LoggerFactory.getLogger(ReaderAsyncClientImpl.class);
 
     String sessionId;
     SeRequestSet seRequestSet;
-    SeResponseSetCallback seResponseSetCallback;
+    ISeResponseSetCallback seResponseSetCallback;
+    DtoSender dtoSender;
 
     // constructor
-    public ReaderAsyncClientImpl(String sessionId) {
+    public ReaderAsyncClientImpl(String sessionId, DtoSender dtoSender) {
         this.sessionId = sessionId;
+        this.dtoSender = dtoSender;
     }
 
     /**
@@ -37,12 +43,19 @@ public class ReaderAsyncClientImpl implements ReaderAsyncSession {
      * @param seResponseSetCallback : callback that will be called once seResponseSet is received
      */
     public void asyncTransmit(SeRequestSet seRequestSet,
-            SeResponseSetCallback seResponseSetCallback) {
+            ISeResponseSetCallback seResponseSetCallback) {
         logger.debug("Session {} asyncTransmit {}", sessionId, seRequestSet);
         if (this.seRequestSet == null) {
             logger.debug("Set a new seRequestSet in Session {}", sessionId);
             this.seRequestSet = seRequestSet;
             this.seResponseSetCallback = seResponseSetCallback;
+
+            dtoSender.sendDTO(new KeypleDTO(
+                    KeypleDTOHelper.READER_TRANSMIT,
+                    SeProxyJsonParser.getGson().toJson(this.seRequestSet, SeRequestSet.class),
+                    true,
+                    sessionId));
+
         } else {
             logger.warn("SeRequestSet is already set in Session {}", sessionId);
 
@@ -98,4 +111,5 @@ public class ReaderAsyncClientImpl implements ReaderAsyncSession {
     public Boolean isAsync() {
         return true;
     }
+
 }

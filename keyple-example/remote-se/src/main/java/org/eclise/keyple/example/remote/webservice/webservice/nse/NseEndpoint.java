@@ -9,25 +9,24 @@
 package org.eclise.keyple.example.remote.webservice.webservice.nse;
 
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
+import java.io.IOException;
+import java.io.OutputStream;
+import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
 import org.eclise.keyple.example.remote.webservice.webservice.common.HttpHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.OutputStream;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 
 /**
  * Endpoint "/transmit" executes seRequestSet on the native SE Reader
  */
 public class NseEndpoint implements HttpHandler {
 
-    ProxyReader reader; //todo should be stateless?
+    ProxyReader reader; // todo should be stateless?
 
     private static final Logger logger = LoggerFactory.getLogger(NseEndpoint.class);
 
@@ -74,7 +73,8 @@ public class NseEndpoint implements HttpHandler {
         SeResponseSet seResponseSet = reader.transmit(seRequestSet);
 
         // return response
-        String responseBody = SeProxyJsonParser.getGson().toJson(seResponseSet, SeResponseSet.class);
+        String responseBody =
+                SeProxyJsonParser.getGson().toJson(seResponseSet, SeResponseSet.class);
 
         Integer responseCode = 200;
         t.getResponseHeaders().add("Content-Type", "application/json");

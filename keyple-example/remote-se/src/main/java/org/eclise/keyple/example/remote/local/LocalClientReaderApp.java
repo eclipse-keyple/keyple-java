@@ -9,10 +9,10 @@
 package org.eclise.keyple.example.remote.local;
 
 import java.io.IOException;
+import org.eclipse.keyple.plugin.remote_se.nse.NseAPI;
+import org.eclipse.keyple.plugin.remote_se.nse.RseClient;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.remote_se.nse.RseClient;
-import org.eclipse.keyple.plugin.remote_se.nse.NseAPI;
 import org.eclise.keyple.example.remote.local.local.LocalServer;
 import org.eclise.keyple.example.remote.local.local.nse.LocalNseAPI;
 import org.eclise.keyple.example.stub.calypso.HoplinkStubSE;

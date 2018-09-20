@@ -8,14 +8,13 @@
 
 package org.eclise.keyple.example.remote.local.local.rse;
 
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
+import java.util.Map;
 import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
-import org.eclise.keyple.example.remote.local.local.RseAPI;
+import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclise.keyple.example.remote.local.local.LocalServer;
+import org.eclise.keyple.example.remote.local.local.RseAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 public class LocalRseAPI implements RseAPI {
 
@@ -37,8 +36,7 @@ public class LocalRseAPI implements RseAPI {
     public String onReaderConnect(String readerName, Map<String, Object> options) {
         logger.debug("onReaderConnect {}", readerName);
         logger.info("A Remote Reader is attempting a connection to the rse");
-        return plugin.connectRemoteReader(readerName,
-                LocalServer.getInstance().getServerSession());
+        return plugin.connectRemoteReader(readerName, LocalServer.getInstance().getServerSession());
 
     }
 
@@ -48,7 +46,7 @@ public class LocalRseAPI implements RseAPI {
     }
 
     @Override
-    public void onRemoteReaderEvent(ReaderEvent event,String sessionId) {
+    public void onRemoteReaderEvent(ReaderEvent event, String sessionId) {
         logger.debug("onRemoteReaderEvent {}", event);
         plugin.onReaderEvent(event, null);// no need for session in local
     }

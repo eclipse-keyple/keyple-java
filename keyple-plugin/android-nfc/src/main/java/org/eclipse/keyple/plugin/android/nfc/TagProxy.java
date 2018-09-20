@@ -100,8 +100,8 @@ class TagProxy implements TagTechnology {
 
     /**
      * Retrieve Answer to reset from Tag. For Isodep, getHiLayerResponse and getHiLayerResponse are
-     * used to retrieve ATR. For Mifare (Classic and UL) Smartcard, a rse ATR is returned
-     * inspired by PS/SC standard 3B8F8001804F0CA000000306030001000000006A for Mifare Classic
+     * used to retrieve ATR. For Mifare (Classic and UL) Smartcard, a rse ATR is returned inspired
+     * by PS/SC standard 3B8F8001804F0CA000000306030001000000006A for Mifare Classic
      * 3B8F8001804F0CA0000003060300030000000068 for Mifare Ultralight
      *
      * @return

@@ -8,15 +8,14 @@
 
 package org.eclise.keyple.example.remote.local.local.nse;
 
+import org.eclipse.keyple.plugin.remote_se.nse.NseAPI;
+import org.eclipse.keyple.plugin.remote_se.rse.IReaderSyncSession;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.plugin.remote_se.nse.NseAPI;
-import org.eclipse.keyple.plugin.remote_se.rse.ReaderSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LocalReaderClient implements ReaderSession {
+public class LocalReaderClient implements IReaderSyncSession {
 
     private static final Logger logger = LoggerFactory.getLogger(LocalReaderClient.class);
 
@@ -28,8 +27,8 @@ public class LocalReaderClient implements ReaderSession {
     }
 
     @Override
-    public Boolean isDuplex() {
-        return true;
+    public Boolean isAsync() {
+        return null;
     }
 
     NseAPI client;
@@ -49,29 +48,7 @@ public class LocalReaderClient implements ReaderSession {
 
 
     @Override
-    public String getName() {
-        logger.debug("getName");
-        return client.onGetName();
-    }
-
-    @Override
-    public boolean isSePresent() {
-        logger.debug("isSePresent");
-        return client.onIsSePresent();
-    }
-
-    @Override
     public SeResponseSet transmit(SeRequestSet seApplicationRequest) {
-        logger.debug("transmit {}", seApplicationRequest);
-        return client.onTransmit(seApplicationRequest);
+        return null;
     }
-
-
-    @Override
-    public void addSeProtocolSetting(SeProtocolSetting seProtocolSetting) {
-        logger.debug("addSeProtocolSetting {}", seProtocolSetting);
-        client.onAddSeProtocolSetting(seProtocolSetting);
-    }
-
-
 }

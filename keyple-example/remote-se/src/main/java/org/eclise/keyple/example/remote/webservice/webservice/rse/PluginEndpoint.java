@@ -10,15 +10,15 @@ package org.eclise.keyple.example.remote.webservice.webservice.rse;
 
 
 import java.io.*;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
+import org.eclipse.keyple.plugin.remote_se.rse.ReaderAsyncClientImpl;
+import org.eclipse.keyple.plugin.remote_se.rse.IReaderAsyncSession;
+import org.eclipse.keyple.plugin.remote_se.rse.IReaderSession;
 import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
 import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
 import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
-import org.eclipse.keyple.plugin.remote_se.rse.ReaderAsyncSession;
-import org.eclipse.keyple.plugin.remote_se.rse.ReaderSession;
+import org.eclipse.keyple.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclise.keyple.example.remote.webservice.webservice.common.HttpHelper;
-import org.eclipse.keyple.plugin.remote_se.rse.ReaderAsyncClientImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
@@ -86,10 +86,10 @@ public class PluginEndpoint implements HttpHandler {
         // generate sessionId
         String sessionId = String.valueOf(System.currentTimeMillis());
 
-        if(!isAsync){
+        if (!isAsync) {
             // connect reader with readerName
-            plugin.connectRemoteReader(readerName, new ReaderAsyncClientImpl(sessionId));
-        }else{
+            plugin.connectRemoteReader(readerName, new ReaderAsyncClientImpl(sessionId,null));
+        } else {
             plugin.connectRemoteReader(readerName, new WsReaderClient(serverUrl, sessionId));
         }
 
@@ -130,21 +130,22 @@ public class PluginEndpoint implements HttpHandler {
 
         String responseBody = null;
 
-        //reader get SeRequest to transmit from Reader Session
+        // reader get SeRequest to transmit from Reader Session
         try {
             RseReader reader = (RseReader) plugin.getReaderByRemoteName(readerName);
-            ReaderSession session = reader.getNseClient();
+            IReaderSession session = reader.getSession();
 
-            //if session has not double way communication
-            if (!session.isAsync()){
-               // there are SeRequestSet to process, attach them to the response
-              if(((ReaderAsyncSession)session).hasSeRequestSet()) {
-                  responseBody = SeProxyJsonParser.getGson().toJson(((ReaderAsyncSession)session).getSeRequestSet());
-              } else {
-                  responseBody = "{}";
-              }
-            }else{
-                //session has a double way communication, seRequestSet will be managed by the nse
+            // if session has not double way communication
+            if (!session.isAsync()) {
+                // there are SeRequestSet to process, attach them to the response
+                if (((IReaderAsyncSession) session).hasSeRequestSet()) {
+                    responseBody = SeProxyJsonParser.getGson()
+                            .toJson(((IReaderAsyncSession) session).getSeRequestSet());
+                } else {
+                    responseBody = "{}";
+                }
+            } else {
+                // session has a double way communication, seRequestSet will be managed by the nse
                 responseBody = "{}";
             }
 

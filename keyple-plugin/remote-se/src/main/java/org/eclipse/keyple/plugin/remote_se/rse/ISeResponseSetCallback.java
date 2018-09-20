@@ -6,21 +6,19 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.plugin.remote_se.nse;
+package org.eclipse.keyple.plugin.remote_se.rse;
 
-import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
 
-public interface NseAPI {
+/**
+ * Callback function for AsyncTransmit
+ */
+public interface ISeResponseSetCallback {
 
-    SeResponseSet onTransmit(String sessionId, SeRequestSet req) throws IOReaderException;
-
-    // String onGetName();
-
-    // Boolean onIsSePresent();
-
-    // void onAddSeProtocolSetting(SeProtocolSetting seProtocolSetting);
-
-
+    /**
+     * Callback function called when SeResponseSet is received
+     * 
+     * @param seResponseSet
+     */
+    void getResponseSet(SeResponseSet seResponseSet);
 }

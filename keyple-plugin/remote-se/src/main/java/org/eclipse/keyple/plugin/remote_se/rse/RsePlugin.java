@@ -13,27 +13,30 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import org.eclipse.keyple.plugin.remote_se.transport.DtoReceiver;
+import org.eclipse.keyple.plugin.remote_se.transport.DtoSender;
+import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTO;
+import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTOHelper;
+import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
+import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclipse.keyple.util.Observable;
-import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
-import org.eclipse.keyple.plugin.remote_se.transport.DtoReceiver;
-import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTO;
-import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTOHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.JsonObject;
 
 public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiver {
 
     private static final Logger logger = LoggerFactory.getLogger(RsePlugin.class);
 
-    SortedSet<RseReader> remoteReaders = new TreeSet<RseReader>();
+    SortedSet<RseReader> rseReaders = new TreeSet<RseReader>();
 
     public RsePlugin() {
         logger.info("RemoteSePlugin");
@@ -56,12 +59,12 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
 
     @Override
     public SortedSet<? extends ProxyReader> getReaders() {
-        return remoteReaders;
+        return rseReaders;
     }
 
     @Override
     public ProxyReader getReader(String name) throws UnexpectedReaderException {
-        for (RseReader RseReader : remoteReaders) {
+        for (RseReader RseReader : rseReaders) {
             if (RseReader.getName().equals(name)) {
                 return RseReader;
             }
@@ -70,7 +73,7 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
     }
 
     public ProxyReader getReaderByRemoteName(String remoteName) throws UnexpectedReaderException {
-        for (RseReader RseReader : remoteReaders) {
+        for (RseReader RseReader : rseReaders) {
             if (RseReader.getRemoteName().equals(remoteName)) {
                 return RseReader;
             }
@@ -78,19 +81,20 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
         throw new UnexpectedReaderException("reader with Remote Name not found : " + remoteName);
     }
 
-
-    public String connectRemoteReader(String name, ReaderSession session) {
+    //todo private
+    public String connectRemoteReader(String name, IReaderSession session) {
         logger.debug("connectRemoteReader {}", name);
 
         // check if reader is not already connected (by name)
         if (!isReaderConnected(name)) {
-            logger.info("Connecting a new RemoteSeReader with name {}", name);
-            RseReader RseReader = new RseReader(session, name);
-            remoteReaders.add(RseReader);
-            notifyObservers(new PluginEvent(getName(), RseReader.getName(),
+            logger.info("Connecting a new RemoteSeReader with name {} with session {}", name, session);
+
+            RseReader rseReader = new RseReader(session, name);
+            rseReaders.add(rseReader);
+            notifyObservers(new PluginEvent(getName(), rseReader.getName(),
                     PluginEvent.EventType.READER_CONNECTED));
             logger.info("*****************************");
-            logger.info(" CONNECTED {} ", RseReader.getName());
+            logger.info(" CONNECTED {} ", rseReader.getName());
             logger.info("*****************************");
 
             return session.getSessionId();
@@ -98,23 +102,24 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
             logger.warn("RemoteSeReader with name {} is already connected", name);
             return session.getSessionId();
         }
+        //todo errors
     }
 
+    //todo private
     public void onReaderEvent(ReaderEvent event, String sessionId) {
         logger.debug("OnReaderEvent {}", event);
         logger.debug("Dispatch ReaderEvent to the appropriate Reader {} {}", event.getReaderName(),
                 sessionId);
         try {
             // todo dispatch is managed by name, should take sessionId also
-            RseReader RseReader = (RseReader) getReaderByRemoteName(event.getReaderName());
-            RseReader.onRemoteReaderEvent(event);
+            RseReader rseReader = (RseReader) getReaderByRemoteName(event.getReaderName());
+            rseReader.onRemoteReaderEvent(event);
 
         } catch (UnexpectedReaderException e) {
             e.printStackTrace();
         }
 
     }
-
 
 
 
@@ -169,12 +174,12 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
      *         executed instantly
      */
     public final void setParameters(Map<String, String> parameters) throws IOException {
-        //todo
+        // todo
     }
 
 
     private Boolean isReaderConnected(String name) {
-        for (RseReader RseReader : remoteReaders) {
+        for (RseReader RseReader : rseReaders) {
             if (RseReader.getRemoteName().equals(name)) {
                 return true;
             }
@@ -182,54 +187,83 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
         return false;
     }
 
-    //todo
+    // todo
     @Override
     public int compareTo(ReaderPlugin o) {
         return 0;
     }
 
 
+    //called by node transport
     @Override
-    public void onDTO(KeypleDTO msg) {
-        if(!KeypleDTOHelper.verifyHash(msg, msg.getHash())){
-            //return exception
-        }
+    public KeypleDTO onDTO(KeypleDTO msg, DtoSender responseTo, Object connection) {
 
-        if(msg.getAction().equals(KeypleDTOHelper.READER_EVENT)){
-            ReaderEvent event = SeProxyJsonParser.getGson().fromJson(msg.getBody(), ReaderEvent.class);
+        //if (msg.getHash()!=null && !KeypleDTOHelper.verifyHash(msg, msg.getHash())) {
+            // return exception, msg is signed but has is invalid
+        //}
+
+        if (msg.getAction().equals(KeypleDTOHelper.READER_EVENT)) {
+            ReaderEvent event =
+                    SeProxyJsonParser.getGson().fromJson(msg.getBody(), ReaderEvent.class);
             this.onReaderEvent(event, msg.getSessionId());
-        }
 
-        if(msg.getAction().equals(KeypleDTOHelper.READER_CONNECT)){
+            //no response
+            return KeypleDTOHelper.NoResponse();
+        }
+        else if (msg.getAction().equals(KeypleDTOHelper.READER_CONNECT)) {
+            //parse msg
             JsonObject body = SeProxyJsonParser.getGson().fromJson(msg.getBody(), JsonObject.class);
-            String readerName = body.get("localReaderName").getAsString();
+            String readerName = body.get("nativeReaderName").getAsString();
             Boolean isAsync = body.get("isAsync").getAsBoolean();
-            String serverUrl = body.get("transmitUrl").getAsString();//todo
 
             String sessionId = generateSessionId();
-            ReaderSession readerSession;//reader session
+            IReaderSession rseSession;// reader session
 
-            if(!isAsync){
-                readerSession = new ReaderSyncClientImpl(sessionId);
-            }else{
-                readerSession = new ReaderAsyncClientImpl(sessionId);
+            if (!isAsync) {
+                rseSession = new ReaderSyncClientImpl(sessionId);
+            } else {
+                rseSession = new ReaderAsyncClientImpl(sessionId,responseTo);
             }
 
-            this.connectRemoteReader(readerName, readerSession);
-        }
+            this.connectRemoteReader(readerName, rseSession);
 
-        if(msg.getAction().equals(KeypleDTOHelper.READER_DISCONNECT)){
-            //not implemented yet
-        }
+            //response
+            JsonObject respBody = new JsonObject();
+            respBody.add("statusCode", new JsonPrimitive(0));
+            respBody.add("nativeReaderName", new JsonPrimitive(readerName));
+            return new KeypleDTO(KeypleDTOHelper.READER_CONNECT,respBody.toString(),false, sessionId);
 
-        if(msg.getAction().equals(KeypleDTOHelper.READER_TRANSMIT) && !msg.isRequest()){
+        } else if (msg.getAction().equals(KeypleDTOHelper.READER_DISCONNECT)) {
+            // not implemented yet
+            return KeypleDTOHelper.NoResponse();
 
+        } else if (msg.getAction().equals(KeypleDTOHelper.READER_TRANSMIT) && !msg.isRequest()) {
+            //parse msg
+            SeResponseSet seResponseSet = SeProxyJsonParser.getGson().fromJson(msg.getBody(), SeResponseSet.class);
+            logger.debug("Receive responseSet from transmit {}", seResponseSet);
+            RseReader reader = getReaderBySessionId(msg.getSessionId());
+            ((IReaderAsyncSession)reader.getSession()).asyncSetSeResponseSet(seResponseSet);
 
+            //no response
+            return KeypleDTOHelper.NoResponse();
+
+        } else{
+            logger.error("Receive unrecognized message action {}", msg);
+            return KeypleDTOHelper.NoResponse();
         }
 
     }
 
-    private String generateSessionId(){
+    private String generateSessionId() {
         return String.valueOf(System.currentTimeMillis());
+    }
+
+    private RseReader getReaderBySessionId(String sessionId){
+        for(RseReader reader : rseReaders){
+            if(reader.getSession().getSessionId().equals(sessionId)){
+                return reader;
+            }
+        }
+        return null;//throw ex
     }
 }

@@ -10,12 +10,12 @@ package org.eclise.keyple.example.remote.webservice.webservice.rse;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import org.eclipse.keyple.seproxy.SeResponseSet;
+import org.eclipse.keyple.plugin.remote_se.rse.IReaderAsyncSession;
+import org.eclipse.keyple.plugin.remote_se.rse.IReaderSession;
 import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
 import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
 import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
-import org.eclipse.keyple.plugin.remote_se.rse.ReaderAsyncSession;
-import org.eclipse.keyple.plugin.remote_se.rse.ReaderSession;
+import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclise.keyple.example.remote.webservice.webservice.common.HttpHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,16 +69,17 @@ public class ReaderEndpoint implements HttpHandler {
 
         // todo should retrieve the matching session from reader
         RseReader reader = (RseReader) plugin.getReaders().first();
-        ReaderSession session = (ReaderSession) reader.getNseClient();
+        IReaderSession session = (IReaderSession) reader.getSession();
 
         // notify of the arrival of the SeResponseSet
-        ((ReaderAsyncSession) session).asyncSetSeResponseSet(seResponseSet);
+        ((IReaderAsyncSession) session).asyncSetSeResponseSet(seResponseSet);
 
         String responseBody = null;
 
         // todo check is there is more seRequestSet to send
-        if (((ReaderAsyncSession) session).hasSeRequestSet()) {
-            responseBody = SeProxyJsonParser.getGson().toJson(((ReaderAsyncSession) session).getSeRequestSet());
+        if (((IReaderAsyncSession) session).hasSeRequestSet()) {
+            responseBody = SeProxyJsonParser.getGson()
+                    .toJson(((IReaderAsyncSession) session).getSeRequestSet());
         } else {
             responseBody = "{}";
         }
