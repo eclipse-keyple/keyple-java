@@ -123,7 +123,8 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
             switch (event.getEventType()) {
                 case SE_INSERTED:
                     logger.info("SE_INSERTED {} {}", event.getPluginName(), event.getReaderName());
-                    runCommandTest(event);
+                    //runAsyncCommandTest(event);
+                    runSyncCommandTest(event);
                     break;
                 case SE_REMOVAL:
                     logger.info("SE_REMOVAL {} {}", event.getPluginName(), event.getReaderName());
@@ -137,8 +138,47 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
     }
 
 
+    private void runSyncCommandTest(ReaderEvent event) {
+        try {
 
-    private void runCommandTest(ReaderEvent event) {
+            // get the reader by its name
+            final RseReader reader =
+                    (RseReader) ((RsePlugin) SeProxyService.getInstance().getPlugins().first())
+                            .getReaderByRemoteName(event.getReaderName());
+
+            String poAid = "A000000291A000000191";
+
+            // build 1st seRequestSet with keep channel open to true
+            final ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(
+                    PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
+
+
+            List<ApduRequest> poApduRequestList;
+            poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
+            final SeRequest.Selector selector =
+                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
+            SeRequest seRequest = new SeRequest(selector, poApduRequestList, true,
+                    ContactlessProtocols.PROTOCOL_ISO14443_4);
+
+            // ASYNC transmit seRequestSet to Reader With Callback function
+            logger.info(
+                    "Execute sync transmit with seRequest {}" , seRequest);
+            SeResponseSet seResponseSet = ((RseReader) reader).transmit(new SeRequestSet(seRequest));
+            logger.info(
+                    "Received synchronously a SeResponseSet with Webservice RemoteSE {}",
+                    seResponseSet);
+
+
+
+        } catch (UnexpectedReaderException e) {
+            e.printStackTrace();
+        } catch (IOReaderException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void runAsyncCommandTest(ReaderEvent event) {
         try {
 
             // get the reader by its name
@@ -160,7 +200,8 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
                     new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
             SeRequest seRequest = new SeRequest(selector, poApduRequestList, true,
                     ContactlessProtocols.PROTOCOL_ISO14443_4);
-
+            logger.info(
+                    "Execute async transmit with seRequest {}" , seRequest);
             // ASYNC transmit seRequestSet to Reader With Callback function
             ((RseReader) reader).asyncTransmit(new SeRequestSet(seRequest),
                     new ISeResponseSetCallback() {
@@ -169,35 +210,6 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
                             logger.info(
                                     "Received asynchronously a SeResponseSet with Webservice RemoteSE {}",
                                     seResponseSet);
-
-                            List<ApduRequest> poApduRequestList2;
-
-                            final ReadRecordsCmdBuild poReadRecordCmd_T2Usage =
-                                    new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1A,
-                                            (byte) 0x01, true, (byte) 0x30);
-                            poApduRequestList2 =
-                                    Arrays.asList(poReadRecordCmd_T2Usage.getApduRequest(),
-                                            poReadRecordCmd_T2Usage.getApduRequest());
-
-                            SeRequest seRequest2 = new SeRequest(selector, poApduRequestList2,
-                                    false, ContactlessProtocols.PROTOCOL_ISO14443_4);
-
-                            // ASYNC transmit seRequestSet to Reader
-                            try {
-                                ((RseReader) reader).asyncTransmit(new SeRequestSet(seRequest2),
-                                        new ISeResponseSetCallback() {
-
-                                            @Override
-                                            public void getResponseSet(
-                                                    SeResponseSet seResponseSet) {
-                                                logger.info(
-                                                        "Received asynchronously a SeResponseSet with Webservice RemoteSE : {}",
-                                                        seResponseSet);
-                                            }
-                                        });
-                            } catch (IOReaderException e) {
-                                e.printStackTrace();
-                            }
                         }
                     });
 

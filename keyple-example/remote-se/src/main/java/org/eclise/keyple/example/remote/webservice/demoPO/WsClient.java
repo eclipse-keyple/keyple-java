@@ -42,7 +42,7 @@ public class WsClient implements TransportNode{
     public void sendDTO(TransportDTO tdto) {
         KeypleDTO ktdo = tdto.getKeypleDTO();
         logger.debug("Ws Client send DTO {}", KeypleDTOHelper.toJson(ktdo));
-        if (!tdto.getKeypleDTO().getAction().isEmpty()) {
+        if (!KeypleDTOHelper.isNoResponse(tdto.getKeypleDTO())) {
             try {
                 //send keyple dto
                 JsonObject httpResponse = HttpHelper.httpPOSTJson(HttpHelper.getConnection(endoint), KeypleDTOHelper.toJson(ktdo));

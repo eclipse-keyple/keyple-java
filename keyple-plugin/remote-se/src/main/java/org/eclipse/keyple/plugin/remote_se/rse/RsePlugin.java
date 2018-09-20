@@ -194,14 +194,14 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
     public TransportDTO onDTO(TransportDTO tdto) {
 
         KeypleDTO msg = tdto.getKeypleDTO();
-        logger.debug("RsePlugin onDTO {}",tdto.getKeypleDTO());
+        logger.debug("RsePlugin onDTO {}", tdto.getKeypleDTO());
         //if (msg.getHash()!=null && !KeypleDTOHelper.verifyHash(msg, msg.getHash())) {
             // return exception, msg is signed but has is invalid
         //}
 
         //READER EVENT : SE_INSERTED, SE_REMOVED etc..
         if (msg.getAction().equals(KeypleDTOHelper.READER_EVENT)) {
-
+            logger.debug("RsePlugin action {}",KeypleDTOHelper.READER_EVENT);
             ReaderEvent event =
                     SeProxyJsonParser.getGson().fromJson(msg.getBody(), ReaderEvent.class);
 

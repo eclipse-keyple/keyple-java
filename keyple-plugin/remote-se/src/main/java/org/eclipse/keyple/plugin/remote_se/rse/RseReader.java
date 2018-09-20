@@ -64,7 +64,7 @@ public class RseReader extends Observable implements ObservableReader {
      */
     @Override
     public SeResponseSet transmit(SeRequestSet seRequestSet) throws IOReaderException {
-        return ((IReaderSyncSession) session).transmit(seRequestSet);
+        return ((IReaderAsyncSession) session).transmit(seRequestSet);
     }
 
     /**

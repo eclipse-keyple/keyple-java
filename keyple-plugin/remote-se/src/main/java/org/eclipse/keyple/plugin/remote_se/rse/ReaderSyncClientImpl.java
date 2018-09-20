@@ -14,6 +14,8 @@ import org.eclipse.keyple.seproxy.SeResponseSet;
 public class ReaderSyncClientImpl implements IReaderSyncSession {
 
     String sessionId;
+    SeRequestSet seRequestSet;
+    ISeResponseSetCallback seResponseSetCallback;
 
     public ReaderSyncClientImpl(String sessionId) {
         this.sessionId = sessionId;
@@ -21,7 +23,11 @@ public class ReaderSyncClientImpl implements IReaderSyncSession {
 
     @Override
     public SeResponseSet transmit(SeRequestSet seApplicationRequest) {
+
         return null;
+
+
+
     }
 
     @Override

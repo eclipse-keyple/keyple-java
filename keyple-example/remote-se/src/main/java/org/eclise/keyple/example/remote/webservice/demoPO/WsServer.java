@@ -13,7 +13,7 @@ import java.io.OutputStream;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 
-public class WsServer implements TransportNode{
+public class WsServer implements TransportNode {
 
     private InetSocketAddress inet;
     private String endpoint;
@@ -38,7 +38,7 @@ public class WsServer implements TransportNode{
         server.createContext(endpoint, keypleDTOEndpoint);
 
         // start rse
-        server.setExecutor(null); // creates a default executor
+        server.setExecutor(java.util.concurrent.Executors.newCachedThreadPool()); // creates a default executor
     }
 
     public void start(){
@@ -80,6 +80,7 @@ public class WsServer implements TransportNode{
         @Override
         public void handle(HttpExchange t) throws IOException {
 
+            logger.trace("Incoming HttpExchange {} ", t.toString());
             logger.trace("Incoming Request {} ", t.getRequestMethod());
             String requestMethod = t.getRequestMethod();
 
@@ -96,6 +97,9 @@ public class WsServer implements TransportNode{
             }
         }
 
+        /*
+        TransportNode
+         */
         @Override
         public void setDtoReceiver(DtoReceiver receiver) {
             this.dtoReceiver = receiver;
