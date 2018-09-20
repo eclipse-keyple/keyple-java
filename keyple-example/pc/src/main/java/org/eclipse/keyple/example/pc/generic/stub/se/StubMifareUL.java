@@ -13,14 +13,17 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
- * Simple contactless stub SE (no command)
+ * Simple contact stub SE (no command)
  */
-public class StubSe2 extends StubSecureElement {
+public class StubMifareUL extends StubSecureElement {
 
-    final static String seProtocol = "PROTOCOL_ISO14443_4";
-    final String ATR_HEX = "3B8E800180318066409089120802830190000B";
+    final static String seProtocol = "PROTOCOL_MIFARE_UL";
+    final String ATR_HEX = "3B8F8001804F0CA0000003060300030000000068";
 
-    public StubSe2() {}
+    public StubMifareUL() {
+        /* Get data */
+        addHexCommand("FFCA 000000", "223344556677889000");
+    }
 
     @Override
     public ByteBuffer getATR() {
@@ -31,4 +34,6 @@ public class StubSe2 extends StubSecureElement {
     public String getSeProcotol() {
         return seProtocol;
     }
+
+
 }

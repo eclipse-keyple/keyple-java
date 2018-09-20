@@ -19,7 +19,7 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
-import org.eclipse.keyple.example.pc.calypso.PcscReadersSettings;
+import org.eclipse.keyple.example.pc.generic.PcscReadersSettings;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;

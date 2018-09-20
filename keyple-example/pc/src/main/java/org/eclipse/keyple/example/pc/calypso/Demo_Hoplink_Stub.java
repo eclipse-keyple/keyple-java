@@ -8,16 +8,12 @@
 
 package org.eclipse.keyple.example.pc.calypso;
 
-import java.io.IOException;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.example.common.calypso.Demo_HoplinkTransactionEngine;
-import org.eclipse.keyple.example.pc.calypso.stub.se.CsmStubSe;
-import org.eclipse.keyple.example.pc.calypso.stub.se.HoplinkStubSe;
+import org.eclipse.keyple.example.pc.calypso.stub.se.*;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
-import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.*;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
@@ -26,20 +22,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Demo_Hoplink_Stub {
-    private ProxyReader poReader, csmReader;
-
-    /**
-     * This object is used to freeze the main thread while card operations are handle through the
-     * observers callbacks. A call to the notify() method would end the program (not demonstrated
-     * here).
-     */
-    private static final Object waitForEnd = new Object();
 
     /**
      * main program entry
      *
      * @param args the program arguments
-     * @throws IOException setParameter exception
      * @throws InterruptedException thread exception
      */
     public static void main(String[] args) throws InterruptedException {
@@ -62,7 +49,7 @@ public class Demo_Hoplink_Stub {
         Demo_HoplinkTransactionEngine transactionEngine = new Demo_HoplinkTransactionEngine();
 
         /*
-         * Get PO and CSM stub readers.
+         * Plug PO and CSM stub readers.
          */
         stubPlugin.plugStubReader("poReader");
         stubPlugin.plugStubReader("csmReader");
@@ -112,10 +99,14 @@ public class Demo_Hoplink_Stub {
         /* Wait a while the time that the transaction ends. */
         Thread.sleep(1000);
 
-        /* Withdraw SE */
+        /* Remove SE */
         logger.info("Remove stub CSM and PO SE.");
+
         poReader.removeSe();
         csmReader.removeSe();
+
         logger.info("END.");
+
+        System.exit(0);
     }
 }

@@ -11,7 +11,6 @@ package org.eclipse.keyple.example.common.calypso;
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.*;
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CsmSettings.*;
 import java.util.*;
-import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.seproxy.*;
@@ -360,26 +359,5 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Get the terminal which names match the expected pattern
-     *
-     * @param seProxyService SE Proxy service
-     * @param pattern regex pattern to select a reader
-     * @return ProxyReader
-     * @throws KeypleReaderException : readers are not initialized
-     */
-    public ProxyReader getReader(SeProxyService seProxyService, String pattern)
-            throws KeypleReaderException {
-        Pattern p = Pattern.compile(pattern);
-        for (ReaderPlugin plugin : seProxyService.getPlugins()) {
-            for (ProxyReader reader : plugin.getReaders()) {
-                if (p.matcher(reader.getName()).matches()) {
-                    return reader;
-                }
-            }
-        }
-        return null;
     }
 }
