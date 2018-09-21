@@ -15,21 +15,34 @@ import org.eclipse.keyple.seproxy.SeProxyService;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+/**
+ * Service to bind a RSE Plugin to a Transport Node
+ */
 public class VirtualSeRemoteService {
 
     private TransportNode node;
+    private SeProxyService seProxyService;
 
     public VirtualSeRemoteService() {
+        this.seProxyService = SeProxyService.getInstance();
     }
 
+    /**
+     * Bind TransportNode to VirtualSeRemoteService
+     * @param node
+     */
     public void bindTransportNode(TransportNode node) {
         this.node = node;
     }
 
-    public void bindPlugin(RsePlugin plugin) {
+    /**
+     * Bind plugin to VirtualSeRemoteService
+     * @param plugin
+     */
+    public void registerRsePlugin(RsePlugin plugin) {
         SortedSet<ReaderPlugin> plugins = new TreeSet<ReaderPlugin>();
         plugins.add(plugin);
-        SeProxyService.getInstance().setPlugins(plugins);
+        seProxyService.setPlugins(plugins);
         this.node.setDtoReceiver(plugin);
     }
 

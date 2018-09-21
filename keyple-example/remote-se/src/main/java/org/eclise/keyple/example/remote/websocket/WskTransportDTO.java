@@ -7,17 +7,18 @@ import org.java_websocket.WebSocket;
 
 public class WskTransportDTO implements TransportDTO{
 
-    KeypleDTO dto;
-
-    public WebSocket getConn() {
-        return conn;
+    public KeypleDTO getDto() {
+        return dto;
     }
 
-    WebSocket conn;
 
-    public WskTransportDTO(KeypleDTO dto , WebSocket conn){
+    KeypleDTO dto;
+    WebSocket socketWeb;
+
+
+    public WskTransportDTO(KeypleDTO dto , WebSocket socketWeb){
            this.dto = dto;
-           this.conn =conn;
+           this.socketWeb =socketWeb;
     }
 
     @Override
@@ -26,12 +27,23 @@ public class WskTransportDTO implements TransportDTO{
     }
 
     @Override
-    public TransportDTO nextTransportDTO(KeypleDTO kdto) {
-        return null;
+    public TransportDTO nextTransportDTO(KeypleDTO keypleDto) {
+
+        return new WskTransportDTO(keypleDto, this.socketWeb);
     }
 
-    @Override
-    public DtoSender getDtoSender() {
-        return null;
+
+
+    public void setDto(KeypleDTO dto) {
+        this.dto = dto;
     }
+
+    public WebSocket getSocketWeb() {
+        return socketWeb;
+    }
+
+    public void setSocketWeb(WebSocket socketWeb) {
+        this.socketWeb = socketWeb;
+    }
+
 }

@@ -6,8 +6,11 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.plugin.remote_se.transport;
+package org.eclise.keyple.example.remote.websocket;
 
+/*
+    Callback used by TransportNode when a network connection is established
+ */
 public interface ConnectionCb {
 
     void onConnection(Object connection);

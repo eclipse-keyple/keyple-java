@@ -5,9 +5,11 @@ import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import java.util.HashMap;
 import java.util.Map;
 
+
+/**
+ * Manages binding between readerName and a Master SessionId
+ */
 public class NseSessionManager {
-
-
 
     private Map<String, String> readerName_sessionId;
 

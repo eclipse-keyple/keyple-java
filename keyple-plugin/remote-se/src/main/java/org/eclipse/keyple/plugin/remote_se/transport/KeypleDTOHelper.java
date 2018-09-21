@@ -9,8 +9,11 @@
 package org.eclipse.keyple.plugin.remote_se.transport;
 
 import com.google.gson.JsonObject;
-import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
+import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
 
+/**
+ * Utility class to manipulate KeypleDTO
+ */
 public class KeypleDTOHelper {
 
     public static String READER_TRANSMIT = "reader_transmit";
@@ -27,15 +30,15 @@ public class KeypleDTOHelper {
     }
 
     static public String toJson(KeypleDTO keypleDTO) {
-        return SeProxyJsonParser.getGson().toJson(keypleDTO);
+        return JsonParser.getGson().toJson(keypleDTO);
     }
 
     static public KeypleDTO fromJson(String json) {
-        return SeProxyJsonParser.getGson().fromJson(json, KeypleDTO.class);
+        return JsonParser.getGson().fromJson(json, KeypleDTO.class);
     }
 
     static public KeypleDTO fromJsonObject(JsonObject jsonObj) {
-        return SeProxyJsonParser.getGson().fromJson(jsonObj, KeypleDTO.class);
+        return JsonParser.getGson().fromJson(jsonObj, KeypleDTO.class);
     }
 
     static public KeypleDTO NoResponse() {
@@ -43,7 +46,7 @@ public class KeypleDTOHelper {
     }
 
     static public KeypleDTO ErrorDTO() {
-        return new KeypleDTO("ERROR", "", false);
+        return new KeypleDTO("ERROR", "", false);//todo statuscode
     }
 
 
@@ -52,7 +55,7 @@ public class KeypleDTOHelper {
     }
 
     static public Boolean isKeypleDTO(String json){
-        return  isKeypleDTO(SeProxyJsonParser.getGson().toJson(json));
+        return  isKeypleDTO(JsonParser.getGson().toJson(json));
     }
 
     static public Boolean isKeypleDTO(JsonObject json){

@@ -6,19 +6,19 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice.webservice.rse;
+package org.eclise.keyple.example.remote.webservice.old.rse;
 
 
 import java.io.*;
-import org.eclipse.keyple.plugin.remote_se.rse.ReaderAsyncClientImpl;
+
 import org.eclipse.keyple.plugin.remote_se.rse.IReaderAsyncSession;
 import org.eclipse.keyple.plugin.remote_se.rse.IReaderSession;
 import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
 import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
-import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
+import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
-import org.eclise.keyple.example.remote.webservice.common.HttpHelper;
+import org.eclise.keyple.example.remote.webservice.HttpHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
@@ -140,7 +140,7 @@ public class PluginEndpoint implements HttpHandler {
             if (!session.isAsync()) {
                 // there are SeRequestSet to process, attach them to the response
                 if (((IReaderAsyncSession) session).hasSeRequestSet()) {
-                    responseBody = SeProxyJsonParser.getGson()
+                    responseBody = JsonParser.getGson()
                             .toJson(((IReaderAsyncSession) session).getSeRequestSet());
                 } else {
                     responseBody = "{}";

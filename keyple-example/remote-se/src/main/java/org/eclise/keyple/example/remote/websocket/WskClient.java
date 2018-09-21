@@ -6,11 +6,10 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.websocket.demoPO;
+package org.eclise.keyple.example.remote.websocket;
 
 import java.net.URI;
 import org.eclipse.keyple.plugin.remote_se.transport.*;
-import org.eclise.keyple.example.remote.websocket.WskTransportDTO;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
@@ -35,9 +34,13 @@ public class WskClient extends WebSocketClient implements  TransportNode {
     public void onMessage(String message) {
         logger.debug("Web socket onMessage {}", message);
         KeypleDTO dto = KeypleDTOHelper.fromJson(message);
-        TransportDTO response = dtoReceiver.onDTO(new WskTransportDTO(dto,null));
-        if(!response.getKeypleDTO().getAction().isEmpty()){
-            sendDTO(response);
+
+        //process dto
+        TransportDTO transportDTO = dtoReceiver.onDTO(new WskTransportDTO(dto,null));
+
+        //there is a response/request to send back
+        if(!KeypleDTOHelper.isNoResponse(transportDTO.getKeypleDTO())){
+            this.sendDTO(transportDTO);
         }
     }
 
@@ -54,15 +57,18 @@ public class WskClient extends WebSocketClient implements  TransportNode {
     }
 
     @Override
-    public void sendDTO(TransportDTO message) {
-
+    public void sendDTO(TransportDTO transportDTO) {
+        this.sendDTO(transportDTO.getKeypleDTO());
     }
 
     @Override
-    public void sendDTO(KeypleDTO message) {
-        if (!message.getAction().isEmpty()) {
-            logger.debug("send DTO {}", KeypleDTOHelper.toJson(message));
-            this.send(KeypleDTOHelper.toJson(message));
+    public void sendDTO(KeypleDTO keypleDTO) {
+        //if keypkeDTO is no empty
+        if (!KeypleDTOHelper.isNoResponse(keypleDTO)) {
+            logger.debug("send DTO {}", KeypleDTOHelper.toJson(keypleDTO));
+            this.send(KeypleDTOHelper.toJson(keypleDTO));
+        }else{
+            logger.debug("No message to send back");
         }
     }
 
@@ -71,8 +77,5 @@ public class WskClient extends WebSocketClient implements  TransportNode {
         this.dtoReceiver = receiver;
     }
 
-    @Override
-    public Object getConnection(String sessionId) {
-        return null;//not in used in wsk client
-    }
+
 }

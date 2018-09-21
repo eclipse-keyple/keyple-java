@@ -21,7 +21,6 @@ import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
 import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
 import org.eclipse.keyple.plugin.remote_se.rse.ISeResponseSetCallback;
 import org.eclipse.keyple.plugin.remote_se.rse.VirtualSeRemoteService;
-import org.eclipse.keyple.plugin.remote_se.transport.ConnectionCb;
 import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
@@ -30,6 +29,7 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclise.keyple.example.remote.websocket.WskServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,13 +58,9 @@ public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.
 
         logger.info("Init Web Socket Server");
         InetSocketAddress inet = new InetSocketAddress(Inet4Address.getByName(URL), port);
+        Boolean isSlave = false;
 
-        WskServer wskServer = new WskServer(inet, new ConnectionCb() {
-            @Override
-            public void onConnection(Object connection) {
-
-            }
-        });
+        WskServer wskServer = new WskServer(inet, null, isSlave);
 
 
 
@@ -84,7 +80,7 @@ public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.
 
         VirtualSeRemoteService remoteService = new VirtualSeRemoteService();
         remoteService.bindTransportNode((TransportNode) wskServer);
-        remoteService.bindPlugin(rsePlugin);
+        remoteService.registerRsePlugin(rsePlugin);
 
         logger.info("Started Server on http://{}:{}{}", inet.getHostName(), inet.getPort(),
                 END_POINT);

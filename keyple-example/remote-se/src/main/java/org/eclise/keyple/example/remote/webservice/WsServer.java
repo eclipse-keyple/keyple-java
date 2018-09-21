@@ -1,10 +1,9 @@
-package org.eclise.keyple.example.remote.webservice.demoPO;
+package org.eclise.keyple.example.remote.webservice;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.eclipse.keyple.plugin.remote_se.transport.*;
-import org.eclise.keyple.example.remote.webservice.common.HttpHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,11 +55,6 @@ public class WsServer implements TransportNode {
     }
 
     @Override
-    public Object getConnection(String sessionId) {
-        return this.keypleDTOEndpoint.getConnection(sessionId);
-    }
-
-    @Override
     public void sendDTO(TransportDTO message) {
         this.keypleDTOEndpoint.sendDTO(message);
     }
@@ -105,10 +99,6 @@ public class WsServer implements TransportNode {
             this.dtoReceiver = receiver;
         }
 
-        @Override
-        public Object getConnection(String sessionId) {
-            return null;//stateless not in use;
-        }
 
         @Override
         public void sendDTO(TransportDTO message) {

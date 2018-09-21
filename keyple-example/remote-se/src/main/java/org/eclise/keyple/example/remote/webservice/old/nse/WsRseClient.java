@@ -6,18 +6,18 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice.webservice.nse;
+package org.eclise.keyple.example.remote.webservice.old.nse;
 
 import java.io.IOException;
 import java.util.Map;
 import org.eclipse.keyple.plugin.remote_se.nse.RseClient;
-import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
+import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclise.keyple.example.remote.webservice.common.HttpHelper;
+import org.eclise.keyple.example.remote.webservice.HttpHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
@@ -72,7 +72,7 @@ public class WsRseClient implements RseClient {
             logger.info("Receive Response {}", response);
 
             // parse response to get sessionId
-            Gson gson = SeProxyJsonParser.getGson();
+            Gson gson = JsonParser.getGson();
             gson.fromJson(response, JsonObject.class);
             String sessionId =
                     gson.fromJson(response, JsonObject.class).get("sessionId").getAsString();
@@ -137,14 +137,14 @@ public class WsRseClient implements RseClient {
     public void processResponse(JsonObject object) throws IOReaderException {
         // if seResquestSet is present in the response, execute it and send back response to
         // ticketing app
-        if (SeProxyJsonParser.isSeRequestSet(object)) {
+        if (JsonParser.isSeRequestSet(object)) {
             logger.debug("seRequestSet to process {}", object);
 
             SeRequestSet seRequestSet =
-                    SeProxyJsonParser.getGson().fromJson(object, SeRequestSet.class);
+                    JsonParser.getGson().fromJson(object, SeRequestSet.class);
             SeResponseSet responseSet = localReader.transmit(seRequestSet);
 
-            String data = SeProxyJsonParser.getGson().toJson(responseSet);
+            String data = JsonParser.getGson().toJson(responseSet);
 
             try {
                 // send SeResponseSet to /reader endpoint

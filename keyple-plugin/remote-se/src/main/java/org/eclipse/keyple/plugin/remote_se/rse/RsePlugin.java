@@ -15,7 +15,7 @@ import java.util.TreeSet;
 
 import com.google.gson.JsonPrimitive;
 import org.eclipse.keyple.plugin.remote_se.transport.*;
-import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
+import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeResponseSet;
@@ -191,36 +191,39 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
 
     //called by node transport
     @Override
-    public TransportDTO onDTO(TransportDTO tdto) {
+    public TransportDTO onDTO(TransportDTO message) {
 
-        KeypleDTO msg = tdto.getKeypleDTO();
-        logger.debug("RsePlugin onDTO {}", tdto.getKeypleDTO());
+        KeypleDTO msg = message.getKeypleDTO();
+        logger.debug("RsePlugin onDTO {}", message.getKeypleDTO());
         //if (msg.getHash()!=null && !KeypleDTOHelper.verifyHash(msg, msg.getHash())) {
             // return exception, msg is signed but has is invalid
         //}
 
         //READER EVENT : SE_INSERTED, SE_REMOVED etc..
         if (msg.getAction().equals(KeypleDTOHelper.READER_EVENT)) {
-            logger.debug("RsePlugin action {}",KeypleDTOHelper.READER_EVENT);
+            logger.info("**** ACTION - READER_EVENT ****");
+
             ReaderEvent event =
-                    SeProxyJsonParser.getGson().fromJson(msg.getBody(), ReaderEvent.class);
+                    JsonParser.getGson().fromJson(msg.getBody(), ReaderEvent.class);
 
             this.onReaderEvent(event, msg.getSessionId());
 
             //check if there is SeRequest to send back
-            TransportDTO response = sendBackSeRequest(tdto);
+            TransportDTO response = sendBackSeRequest(message);
 
             if(response == null){
                 //if not send, no response
-                return tdto.nextTransportDTO(KeypleDTOHelper.NoResponse());
+                return message.nextTransportDTO(KeypleDTOHelper.NoResponse());
             }else{
                 return response;
             }
 
         }
         else if (msg.getAction().equals(KeypleDTOHelper.READER_CONNECT)) {
+            logger.info("**** ACTION - READER_CONNECT ****");
+
             //parse msg
-            JsonObject body = SeProxyJsonParser.getGson().fromJson(msg.getBody(), JsonObject.class);
+            JsonObject body = JsonParser.getGson().fromJson(msg.getBody(), JsonObject.class);
             String readerName = body.get("nativeReaderName").getAsString();
             Boolean isAsync = body.get("isAsync").getAsBoolean();
 
@@ -230,7 +233,8 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
             if (!isAsync) {
                 rseSession = new ReaderSyncClientImpl(sessionId);
             } else {
-                rseSession = new ReaderAsyncClientImpl(sessionId,tdto.getDtoSender());
+                //rseSession = new ReaderAsyncClientImpl(sessionId, message.getDtoSender());
+                rseSession = new ReaderAsyncClientImpl(sessionId);
             }
 
             this.connectRemoteReader(readerName, rseSession);
@@ -239,15 +243,19 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
             JsonObject respBody = new JsonObject();
             respBody.add("statusCode", new JsonPrimitive(0));
             respBody.add("nativeReaderName", new JsonPrimitive(readerName));
-            return tdto.nextTransportDTO(new KeypleDTO(KeypleDTOHelper.READER_CONNECT,respBody.toString(),false, sessionId));
+            return message.nextTransportDTO(new KeypleDTO(KeypleDTOHelper.READER_CONNECT,respBody.toString(),false, sessionId));
 
         } else if (msg.getAction().equals(KeypleDTOHelper.READER_DISCONNECT)) {
+            logger.info("**** ACTION - READER_DISCONNECT ****");
+
             // not implemented yet
-            return tdto.nextTransportDTO(KeypleDTOHelper.NoResponse());
+            return message.nextTransportDTO(KeypleDTOHelper.NoResponse());
 
         } else if (msg.getAction().equals(KeypleDTOHelper.READER_TRANSMIT) && !msg.isRequest()) {
+            logger.info("**** RESPONSE - READER_TRANSMIT ****");
+
             //parse msg
-            SeResponseSet seResponseSet = SeProxyJsonParser.getGson().fromJson(msg.getBody(), SeResponseSet.class);
+            SeResponseSet seResponseSet = JsonParser.getGson().fromJson(msg.getBody(), SeResponseSet.class);
             logger.debug("Receive responseSet from transmit {}", seResponseSet);
             RseReader reader = null;
             try {
@@ -255,21 +263,22 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
                 ((IReaderAsyncSession)reader.getSession()).asyncSetSeResponseSet(seResponseSet);
 
                 //check if there is SeRequest to send back
-                TransportDTO response = sendBackSeRequest(tdto);
+                TransportDTO response = sendBackSeRequest(message);
                 if(response == null){
                     //if not send, no response
-                    return tdto.nextTransportDTO(KeypleDTOHelper.NoResponse());
+                    return message.nextTransportDTO(KeypleDTOHelper.NoResponse());
                 }else{
                     return response;
                 }
 
             } catch (UnexpectedReaderException e) {
                 e.printStackTrace();
-                return tdto.nextTransportDTO(KeypleDTOHelper.ErrorDTO());
+                return message.nextTransportDTO(KeypleDTOHelper.ErrorDTO());
             }
         } else{
-            logger.error("Receive unrecognized message action {}", msg);
-            return tdto.nextTransportDTO(KeypleDTOHelper.ErrorDTO());
+            logger.info("**** ERROR - UNRECOGNIZED ****");
+            logger.error("Receive unrecognized message action : {} {} {} {}", msg.getAction(), msg.getSessionId(), msg.getBody(), msg.isRequest());
+            return message.nextTransportDTO(KeypleDTOHelper.NoResponse());
         }
 
     }
@@ -298,7 +307,7 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
                 //send back seRequestSet
                 return tdto.nextTransportDTO(new KeypleDTO(
                         KeypleDTOHelper.READER_TRANSMIT,
-                        SeProxyJsonParser.getGson().toJson(((IReaderAsyncSession)rseReader.getSession()).getSeRequestSet()),
+                        JsonParser.getGson().toJson(((IReaderAsyncSession)rseReader.getSession()).getSeRequestSet()),
                         true,
                         rseReader.getSession().getSessionId()));
             }

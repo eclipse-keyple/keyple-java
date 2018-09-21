@@ -19,15 +19,16 @@ import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
+import org.eclise.keyple.example.remote.websocket.WskClient;
 import org.eclise.keyple.example.stub.calypso.HoplinkStubSE;
 import org.java_websocket.client.WebSocketClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
-public class wskPO {
+public class WskPO {
 
-    private static final Logger logger = LoggerFactory.getLogger(wskPO.class);
+    private static final Logger logger = LoggerFactory.getLogger(WskPO.class);
 
     private static String ENDPOINT_URL = "http://localhost:8000/remote-se";
 
@@ -96,7 +97,7 @@ public class wskPO {
     public static void main(String[] args) throws Exception {
 
 
-        wskPO client = new wskPO();
+        WskPO client = new WskPO();
         client.boot();
         Thread.sleep(5000);
         client.insertPO();

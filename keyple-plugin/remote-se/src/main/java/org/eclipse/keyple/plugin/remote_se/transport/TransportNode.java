@@ -8,11 +8,11 @@
 
 package org.eclipse.keyple.plugin.remote_se.transport;
 
+/**
+ * TransportNode is a gateway for incoming and outgoing TransportDTO
+ */
 public interface TransportNode extends DtoSender {
 
     void setDtoReceiver(DtoReceiver receiver);
-
-    Object getConnection(String sessionId);
-
 
 }

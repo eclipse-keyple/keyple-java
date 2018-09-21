@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice.demo2;
+package org.eclise.keyple.example.remote.webservice.old.demo2;
 
 
 import java.io.IOException;
@@ -20,9 +20,9 @@ import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclise.keyple.example.remote.webservice.common.HttpHelper;
-import org.eclise.keyple.example.remote.webservice.webservice.nse.NseEndpoint;
-import org.eclise.keyple.example.remote.webservice.webservice.nse.WsRseClient;
+import org.eclise.keyple.example.remote.webservice.HttpHelper;
+import org.eclise.keyple.example.remote.webservice.old.nse.NseEndpoint;
+import org.eclise.keyple.example.remote.webservice.old.nse.WsRseClient;
 import org.eclise.keyple.example.stub.calypso.HoplinkStubSE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

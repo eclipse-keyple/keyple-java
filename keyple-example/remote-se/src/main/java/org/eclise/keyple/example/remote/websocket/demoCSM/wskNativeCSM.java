@@ -10,13 +10,13 @@ package org.eclise.keyple.example.remote.websocket.demoCSM;
 
 
 import org.eclipse.keyple.plugin.remote_se.nse.NativeSeRemoteService;
-import org.eclipse.keyple.plugin.remote_se.transport.ConnectionCb;
+import org.eclise.keyple.example.remote.websocket.ConnectionCb;
 import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclise.keyple.example.stub.calypso.CSMStubSE;
+import org.eclise.keyple.example.remote.websocket.WskServer;
 import org.eclise.keyple.example.stub.calypso.HoplinkStubSE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +32,8 @@ public class wskNativeCSM {
 
     private static final Logger logger = LoggerFactory.getLogger(wskNativeCSM.class);
 
-
-    // physical reader
     StubReader localReader;
+    // physical reader
 
     void boot() throws URISyntaxException, UnknownHostException {
 
@@ -68,10 +67,11 @@ public class wskNativeCSM {
 
 
         logger.info("Init Web Socket Server");
-        Integer port = 8000;
+        Integer port = 8009;
         String END_POINT = "/remote-se";
         String URL = "0.0.0.0";
         InetSocketAddress inet = new InetSocketAddress(Inet4Address.getByName(URL), port);
+        Boolean isSlave = true;
 
         final WskServer wskServer = new WskServer(inet, new ConnectionCb() {
             @Override
@@ -83,7 +83,7 @@ public class wskNativeCSM {
                 nseService.connectReader(localReader, options);
 
             }
-        });
+        }, isSlave);
 
         nseService.bind((TransportNode) wskServer);
 
@@ -97,7 +97,6 @@ public class wskNativeCSM {
 
 
     public static void main(String[] args) throws Exception {
-
 
         wskNativeCSM client = new wskNativeCSM();
         client.boot();

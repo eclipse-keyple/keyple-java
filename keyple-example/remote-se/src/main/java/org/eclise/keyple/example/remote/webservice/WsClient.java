@@ -1,8 +1,7 @@
-package org.eclise.keyple.example.remote.webservice.demoPO;
+package org.eclise.keyple.example.remote.webservice;
 
 import com.google.gson.JsonObject;
 import org.eclipse.keyple.plugin.remote_se.transport.*;
-import org.eclise.keyple.example.remote.webservice.common.HttpHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +18,6 @@ public class WsClient implements TransportNode{
         this.endoint = url;
     }
 
-    /*
-    public KeypleDTO processResponse(KeypleDTO msg){
-        return KeypleDTOHelper.NoResponse();
-    }*/
-
 
     /*
     TransportNode
@@ -33,10 +27,7 @@ public class WsClient implements TransportNode{
         this.dtoReceiver = receiver;
     }
 
-    @Override
-    public Object getConnection(String sessionId) {
-        return null;//stateless connection, thus not in use
-    }
+
 
     @Override
     public void sendDTO(TransportDTO tdto) {

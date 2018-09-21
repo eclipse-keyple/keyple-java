@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice.webservice.rse;
+package org.eclise.keyple.example.remote.webservice.old.rse;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -14,9 +14,9 @@ import org.eclipse.keyple.plugin.remote_se.rse.IReaderAsyncSession;
 import org.eclipse.keyple.plugin.remote_se.rse.IReaderSession;
 import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
 import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
-import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
+import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclise.keyple.example.remote.webservice.common.HttpHelper;
+import org.eclise.keyple.example.remote.webservice.HttpHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.sun.net.httpserver.HttpExchange;
@@ -65,7 +65,7 @@ public class ReaderEndpoint implements HttpHandler {
         String body = HttpHelper.parseBodyToString(t.getRequestBody());// .. parse the request body
         logger.debug("Incoming Response Body {} ", body);
         SeResponseSet seResponseSet =
-                SeProxyJsonParser.getGson().fromJson(body, SeResponseSet.class);
+                JsonParser.getGson().fromJson(body, SeResponseSet.class);
 
         // todo should retrieve the matching session from reader
         RseReader reader = (RseReader) plugin.getReaders().first();
@@ -78,7 +78,7 @@ public class ReaderEndpoint implements HttpHandler {
 
         // todo check is there is more seRequestSet to send
         if (((IReaderAsyncSession) session).hasSeRequestSet()) {
-            responseBody = SeProxyJsonParser.getGson()
+            responseBody = JsonParser.getGson()
                     .toJson(((IReaderAsyncSession) session).getSeRequestSet());
         } else {
             responseBody = "{}";

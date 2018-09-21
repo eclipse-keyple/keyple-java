@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice.common;
+package org.eclise.keyple.example.remote.webservice;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +14,8 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
-import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
+
+import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
@@ -42,7 +43,7 @@ public class HttpHelper {
     static public JsonObject parseBody(InputStream is) {
         Scanner s = new Scanner(is).useDelimiter("\\A");
         String result = s.hasNext() ? s.next() : "";
-        Gson gson = SeProxyJsonParser.getGson();
+        Gson gson = JsonParser.getGson();
         return gson.fromJson(result, JsonObject.class);
     }
 

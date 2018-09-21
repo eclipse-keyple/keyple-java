@@ -8,8 +8,16 @@
 
 package org.eclipse.keyple.plugin.remote_se.transport;
 
+/**
+    Components that receive a DTO to process it
+ */
 public interface DtoReceiver {
 
-    TransportDTO onDTO(TransportDTO msg);
+    /**
+     * Process synchronously a message and returns a response
+     * @param message to be processed
+     * @return response can be a NO_RESPONSE DTO, can not be null
+     */
+    TransportDTO onDTO(TransportDTO message);
 
 }

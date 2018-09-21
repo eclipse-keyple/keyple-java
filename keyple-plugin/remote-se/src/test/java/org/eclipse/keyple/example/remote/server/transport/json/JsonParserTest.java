@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.example.remote.server.transport.json;
 
-import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
+import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.junit.Test;
@@ -17,7 +17,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.google.gson.Gson;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SeProxyJsonParserTest {
+public class JsonParserTest {
 
     @Test
     public void testHoplinkSeRequestSet() {
@@ -40,7 +40,7 @@ public class SeProxyJsonParserTest {
     }
 
     public Object testSerializeDeserializeObj(Object obj, Class objectClass) {
-        Gson gson = SeProxyJsonParser.getGson();
+        Gson gson = JsonParser.getGson();
         String json = gson.toJson(obj);
         System.out.println(json);
         Object deserializeObj = gson.fromJson(json, objectClass);

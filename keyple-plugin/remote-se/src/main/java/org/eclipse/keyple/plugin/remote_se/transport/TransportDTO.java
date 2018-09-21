@@ -1,22 +1,29 @@
 package org.eclipse.keyple.plugin.remote_se.transport;
 
+
 /**
  * Message with layer transport information
  */
 public interface TransportDTO {
 
-    /*
-    Get information about keyple DTO
+
+    /**
+     * Retrieve the embedded Keyple DTO
+     * @return embedded Keyple DTO
      */
     KeypleDTO getKeypleDTO();
 
-    /*
-    Build next message to be sent with layer transport information
+    /**
+     * Embed a Keyple DTO into a new TransportDTO with transport information
+     * @param kdto : keyple DTO to be embedded
+     * @return Transport DTO with embedded keyple DTO
      */
     TransportDTO nextTransportDTO(KeypleDTO kdto);
 
 
-    DtoSender getDtoSender();
+    //@Deprecated
+    //DtoSender getDtoSender();
+
 
 
 }

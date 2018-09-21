@@ -21,6 +21,7 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclise.keyple.example.remote.webservice.WsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +65,7 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
         logger.info("Observe SeRemotePLugin for Plugin Events and Reader Events");
         VirtualSeRemoteService vse = new VirtualSeRemoteService();
         vse.bindTransportNode(server);
-        vse.bindPlugin(rsePlugin);
+        vse.registerRsePlugin(rsePlugin);
 
         rsePlugin.addObserver(this);
 

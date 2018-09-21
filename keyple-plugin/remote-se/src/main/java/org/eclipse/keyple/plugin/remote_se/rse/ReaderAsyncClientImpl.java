@@ -9,15 +9,10 @@
 package org.eclipse.keyple.plugin.remote_se.rse;
 
 import org.eclipse.keyple.plugin.remote_se.transport.DtoSender;
-import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTO;
-import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTOHelper;
-import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Manage RSE Reader Session Manage SeRequestSet to transmit and receive SeResponseSet in an
@@ -30,14 +25,14 @@ public class ReaderAsyncClientImpl implements IReaderAsyncSession {
     String sessionId;
     SeRequestSet seRequestSet;
     ISeResponseSetCallback seResponseSetCallback;
-    DtoSender dtoSender;
+    //DtoSender dtoSender;
     //final CountDownLatch lock = new CountDownLatch(1);
     SeResponseSet seResponseSet;
 
     // constructor
-    public ReaderAsyncClientImpl(String sessionId, DtoSender dtoSender) {
+    public ReaderAsyncClientImpl(String sessionId) {
         this.sessionId = sessionId;
-        this.dtoSender = dtoSender;
+        //this.dtoSender = dtoSender; not in used
     }
 
     /**
@@ -57,7 +52,7 @@ public class ReaderAsyncClientImpl implements IReaderAsyncSession {
             //todo only for duplex connection
             //dtoSender.sendDTO(new KeypleDTO(
             //        KeypleDTOHelper.READER_TRANSMIT,
-            //        SeProxyJsonParser.getGson().toJson(this.seRequestSet, SeRequestSet.class),
+            //        JsonParser.getGson().toJson(this.seRequestSet, SeRequestSet.class),
             //        true,
             //        sessionId));
 

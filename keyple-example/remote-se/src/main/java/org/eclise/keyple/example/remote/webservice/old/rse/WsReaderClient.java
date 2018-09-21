@@ -6,16 +6,16 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice.webservice.rse;
+package org.eclise.keyple.example.remote.webservice.old.rse;
 
 
 import java.io.IOException;
 import org.eclipse.keyple.plugin.remote_se.rse.IReaderSyncSession;
-import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
+import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclise.keyple.example.remote.webservice.common.HttpHelper;
-import org.eclise.keyple.example.remote.webservice.webservice.nse.WsRseClient;
+import org.eclise.keyple.example.remote.webservice.HttpHelper;
+import org.eclise.keyple.example.remote.webservice.old.nse.WsRseClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
@@ -47,7 +47,7 @@ public class WsReaderClient implements IReaderSyncSession {
         logger.info("Transmit {}", seRequestSet);
 
         // construct json data
-        Gson parser = SeProxyJsonParser.getGson();
+        Gson parser = JsonParser.getGson();
         String data = parser.toJson(seRequestSet, SeRequestSet.class);;
 
         // send data to /transmit endpoint

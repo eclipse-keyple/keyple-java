@@ -6,16 +6,16 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice.webservice.nse;
+package org.eclise.keyple.example.remote.webservice.old.nse;
 
 
 import java.io.IOException;
 import java.io.OutputStream;
-import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
+import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclise.keyple.example.remote.webservice.common.HttpHelper;
+import org.eclise.keyple.example.remote.webservice.HttpHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.sun.net.httpserver.HttpExchange;
@@ -66,7 +66,7 @@ public class NseEndpoint implements HttpHandler {
         String body = HttpHelper.parseBodyToString(t.getRequestBody());// .. parse the request body
 
         logger.debug("Parse SeRequestSet from body {} ", body);
-        SeRequestSet seRequestSet = SeProxyJsonParser.getGson().fromJson(body, SeRequestSet.class);
+        SeRequestSet seRequestSet = JsonParser.getGson().fromJson(body, SeRequestSet.class);
 
         // connect reader with readerName
         logger.debug("Transmit SeRequestSet to local reader : {} ", reader.getName());
@@ -74,7 +74,7 @@ public class NseEndpoint implements HttpHandler {
 
         // return response
         String responseBody =
-                SeProxyJsonParser.getGson().toJson(seResponseSet, SeResponseSet.class);
+                JsonParser.getGson().toJson(seResponseSet, SeResponseSet.class);
 
         Integer responseCode = 200;
         t.getResponseHeaders().add("Content-Type", "application/json");

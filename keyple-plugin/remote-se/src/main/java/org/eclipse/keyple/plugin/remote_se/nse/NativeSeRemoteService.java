@@ -9,11 +9,10 @@
 package org.eclipse.keyple.plugin.remote_se.nse;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.keyple.plugin.remote_se.transport.*;
-import org.eclipse.keyple.plugin.remote_se.transport.json.SeProxyJsonParser;
+import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.IOReaderException;
@@ -33,21 +32,22 @@ public class NativeSeRemoteService implements NseAPI, RseClient,DtoReceiver {
     private NseSessionManager nseSessionManager;
 
     public NativeSeRemoteService() {
-        this.seProxyService = SeProxyService.getInstance();//todo make this as a service?
+        this.seProxyService = SeProxyService.getInstance();
         this.nseSessionManager = new NseSessionManager();
     }
 
     @Override
-    public TransportDTO onDTO(TransportDTO dto) {
+    public TransportDTO onDTO(TransportDTO message) {
 
-        KeypleDTO msg = dto.getKeypleDTO();
+        KeypleDTO msg = message.getKeypleDTO();
 
         logger.debug("onDto {}",KeypleDTOHelper.toJson(msg));
 
         //receive a response to a reader_connect
         if (msg.getAction().equals(KeypleDTOHelper.READER_CONNECT) && !msg.isRequest()) {
+            logger.info("**** ACTION - READER_CONNECT ****");
             // parse response
-            JsonObject body = SeProxyJsonParser.getGson().fromJson(msg.getBody(), JsonObject.class);
+            JsonObject body = JsonParser.getGson().fromJson(msg.getBody(), JsonObject.class);
             String sessionId = msg.getSessionId();
             Integer statusCode = body.get("statusCode").getAsInt();
             String nativeReaderName = body.get("nativeReaderName").getAsString();
@@ -69,22 +69,30 @@ public class NativeSeRemoteService implements NseAPI, RseClient,DtoReceiver {
                 logger.warn("Receive a error statusCode {} {}",statusCode, KeypleDTOHelper.toJson(msg));
             }
 
-            return dto.nextTransportDTO(KeypleDTOHelper.NoResponse());
+            return message.nextTransportDTO(KeypleDTOHelper.NoResponse());
 
         }else if (msg.getAction().equals(KeypleDTOHelper.READER_TRANSMIT)) {
+            logger.info("**** ACTION - READER_TRANSMIT ****");
+
             SeRequestSet seRequestSet =
-                    SeProxyJsonParser.getGson().fromJson(msg.getBody(), SeRequestSet.class);
+                    JsonParser.getGson().fromJson(msg.getBody(), SeRequestSet.class);
+
             SeResponseSet seResponseSet = null;
             try {
+                //execute transmit
                 seResponseSet = this.onTransmit(msg.getSessionId(), seRequestSet);
             } catch (IOReaderException e) {
                 e.printStackTrace();
             }
-            String parseBody = SeProxyJsonParser.getGson().toJson(seResponseSet, SeResponseSet.class);
-            return dto.nextTransportDTO(new KeypleDTO( msg.getAction(), parseBody, false,msg.getSessionId()));
+            //prepare response
+            String parseBody = JsonParser.getGson().toJson(seResponseSet, SeResponseSet.class);
+            return message.nextTransportDTO(new KeypleDTO( msg.getAction(), parseBody, false,msg.getSessionId()));
+
+
         }else{
+            logger.warn("**** ACTION - UNRECOGNIZED ****");
             logger.warn("Receive uncoregnized message action", msg.getAction());
-            return dto.nextTransportDTO(KeypleDTOHelper.NoResponse());
+            return message.nextTransportDTO(KeypleDTOHelper.NoResponse());
         }
     }
 
@@ -97,7 +105,7 @@ public class NativeSeRemoteService implements NseAPI, RseClient,DtoReceiver {
         String sessionId = nseSessionManager.getLastSession(event.getReaderName());
 
         // construct json data
-        String data = SeProxyJsonParser.getGson().toJson(event);
+        String data = JsonParser.getGson().toJson(event);
 
         transportNode.sendDTO(new KeypleDTO(KeypleDTOHelper.READER_EVENT, data, true, sessionId));
 
@@ -113,9 +121,6 @@ public class NativeSeRemoteService implements NseAPI, RseClient,DtoReceiver {
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("nativeReaderName", new JsonPrimitive(localReader.getName()));
         jsonObject.add("isAsync", new JsonPrimitive(isAsync));
-        //if (isAsync) {
-        //    jsonObject.add("transmitUrl", new JsonPrimitive(transmitUrl));
-        //}
         String data = jsonObject.toString();
 
         transportNode.sendDTO(new KeypleDTO(KeypleDTOHelper.READER_CONNECT, data, true));
