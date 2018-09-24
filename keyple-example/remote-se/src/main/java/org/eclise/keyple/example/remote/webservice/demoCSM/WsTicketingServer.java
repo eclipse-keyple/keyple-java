@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice.demoPO;
+package org.eclise.keyple.example.remote.webservice.demoCSM;
 
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
@@ -21,6 +21,7 @@ import org.eclipse.keyple.seproxy.exception.IOReaderException;
 import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclise.keyple.example.remote.webservice.WsClient;
 import org.eclise.keyple.example.remote.webservice.WsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,9 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
     public static Integer PORT = 8007;
     public static String END_POINT = "/keypleDTO";
     public static String URL = "0.0.0.0";
+
+    private static String ENDPOINT_URL = "http://localhost:8009/keypleDTO";
+
 
     public static void main(String[] args) throws Exception {
 
@@ -54,6 +58,12 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
         logger.info("Init Web Service Server");
 
         WsServer server = new WsServer(URL, PORT, END_POINT);
+
+        logger.info("************************");
+        logger.info("Create Webservice Client");
+        logger.info("************************");
+
+        WsClient ws = new WsClient(ENDPOINT_URL);
 
         logger.info("******************************");
         logger.info("Create Remote PLugin Interface");
@@ -204,14 +214,32 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
                     ContactlessProtocols.PROTOCOL_ISO14443_4);
             logger.info(
                     "Execute async transmit with seRequest {}" , seRequest);
+
+
             // ASYNC transmit seRequestSet to Reader With Callback function
             ((RseReader) reader).asyncTransmit(new SeRequestSet(seRequest),
                     new ISeResponseSetCallback() {
+
+
                         @Override
                         public void getResponseSet(SeResponseSet seResponseSet) {
                             logger.info(
                                     "Received asynchronously a SeResponseSet with Webservice RemoteSE {}",
                                     seResponseSet);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                         }
                     });
 
