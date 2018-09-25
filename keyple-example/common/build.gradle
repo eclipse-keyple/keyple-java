@@ -5,6 +5,12 @@ apply plugin: 'java'
 
 sourceCompatibility = 1.6
 
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Keyple Example Common',
+                'Implementation-Version': version
+    }
+}
 
 dependencies {
     compile project(':keyple-calypso')

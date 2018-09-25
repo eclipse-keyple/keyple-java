@@ -2,6 +2,14 @@ plugins {
     id "com.diffplug.gradle.spotless" version "3.9.0"
 }
 
+subprojects {
+    group 'org.eclipse.keyple'
+    version = '0.9.0-SNAPSHOT'
+}
+
+
+
+
 allprojects {
     repositories {
         mavenCentral()
@@ -37,6 +45,24 @@ allprojects {
                 // "java-comments"       // 87 issues --> Kind of conflicting with spotless
         ]
     }
+
+    apply plugin: 'maven'
+
+    task createPom {
+        pom {
+            project {
+                groupId project.group
+                version project.version
+
+                licenses {
+                    license {
+                        name 'Eclipse'
+                    }
+                }
+            }
+        }.writeTo("pom.xml")
+    }
+
 }
 
 
@@ -60,9 +86,4 @@ spotless {
         indentWithSpaces()
         endWithNewline()
     }
-}
-
-
-subprojects {
-    version = '1.0'
 }

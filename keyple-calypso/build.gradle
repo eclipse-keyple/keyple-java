@@ -1,9 +1,19 @@
-group 'org.eclipse.keyple'
-version '1.0-SNAPSHOT'
+//group 'org.eclipse.keyple'
+//version are synchronized in top directory
+//version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
 sourceCompatibility = 1.6
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Keyple Calypso',
+                'Implementation-Version': version
+    }
+}
+
+build.dependsOn createPom
 
 dependencies {
     //compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
