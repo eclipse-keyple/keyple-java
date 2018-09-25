@@ -122,15 +122,15 @@ Demo_SeProtocolDetection_Stub {
         // Set terminal as Observer of the first reader
         ((ObservableReader) poReader).addObserver(observer);
 
-        // poReader.insertSe(new StubISO14443_4());
+        // poReader.insertSe(new StubCalypsoBasic());
         //
         // Thread.sleep(300);
         //
         // poReader.removeSe();
 
-        Thread.sleep(100);
-
-        poReader.insertSe(new StubCalypsoBPrime());
+        // Thread.sleep(100);
+        //
+        // poReader.insertSe(new StubCalypsoBPrime());
 
         Thread.sleep(300);
 
