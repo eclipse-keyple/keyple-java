@@ -29,22 +29,24 @@ allprojects {
                 "java-braces",
         ]
     }
+
+    apply plugin: 'maven'
+
+
+    task createPom {
+        pom {
+            project {
+                groupId project.group
+                version project.version
+            }
+        }.writeTo("pom.xml")
+    }
 }
 
 group 'org.eclipse.keyple'
 version = '0.9.1-SNAPSHOT'
 
-apply plugin: 'maven'
 
-
-task createPom {
-    pom {
-        project {
-            groupId project.group
-            version project.version
-        }
-    }.writeTo("pom.xml")
-}
 
 apply plugin: 'com.android.application'
 

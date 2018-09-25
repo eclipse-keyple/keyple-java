@@ -30,6 +30,16 @@ allprojects {
                 "java-braces",
         ]
     }
+    apply plugin: 'maven'
+
+    task createPom {
+        pom {
+            project {
+                groupId project.group
+                version project.version
+            }
+        }.writeTo("pom.xml")
+    }
 }
 
 group 'org.eclipse.keyple'
@@ -39,16 +49,7 @@ apply plugin: 'com.android.library'
 
 sourceCompatibility = 1.6
 
-apply plugin: 'maven'
 
-task createPom {
-    pom {
-        project {
-            groupId project.group
-            version project.version
-        }
-    }.writeTo("pom.xml")
-}
 
 android {
     compileSdkVersion 26
