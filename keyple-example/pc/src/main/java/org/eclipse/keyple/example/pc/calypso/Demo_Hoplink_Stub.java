@@ -81,7 +81,7 @@ public class Demo_Hoplink_Stub {
 
         /* Create 'virtual' Hoplink and CSM SE */
         StubSecureElement hoplinkSE = new StubHoplink();
-        StubSecureElement csmSE = new StubCsm();
+        StubSecureElement csmSE = new StubCsmHoplink();
 
         /* Insert the CSM into the CSM reader */
         logger.info("Insert stub CSM SE.");

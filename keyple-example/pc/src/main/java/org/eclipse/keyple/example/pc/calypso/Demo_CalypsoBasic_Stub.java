@@ -82,7 +82,7 @@ public class Demo_CalypsoBasic_Stub {
 
         /* Create 'virtual' Hoplink and CSM SE */
         StubSecureElement calypsoStubSe = new StubCalypsoBasic();
-        StubSecureElement csmSE = new StubCsm();
+        StubSecureElement csmSE = new StubCsmCalypsoBasic();
 
         /* Insert the CSM into the CSM reader */
         logger.info("Insert stub CSM SE.");
