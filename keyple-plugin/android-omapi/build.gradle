@@ -39,6 +39,16 @@ apply plugin: 'com.android.library'
 
 sourceCompatibility = 1.6
 
+apply plugin: 'maven'
+
+task createPom {
+    pom {
+        project {
+            groupId project.group
+            version project.version
+        }
+    }.writeTo("pom.xml")
+}
 
 android {
     compileSdkVersion 26
