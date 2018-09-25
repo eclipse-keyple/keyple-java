@@ -5,7 +5,7 @@ sourceCompatibility = 1.6
 jar {
     manifest {
         attributes 'Implementation-Title': 'Keyple Integration',
-                'Implementation-Version': version
+                'Implementation-Version': project.version
     }
 }
 
