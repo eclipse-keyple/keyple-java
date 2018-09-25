@@ -1,75 +1,47 @@
-**Using the Keyple Core library**
+**Folder content**
 ---
 
-**Resources common to all Keyple Core demonstration examples**
+|Package|File|Description|
+|---|---|---|
+|`org.eclipse.keyple.example.common.generic`|`CustomProtocools.java`|Custom protocol definition|
+|`...`|`CustomProtocolSetting.java`|Custom protocols list|
+|`...`|`Demo_ObservableReaderNotificationEngine.java`|This class provides all the mechanisms to implement to perform the plugin/reader events handling.|
+|`...`|`Demo_SeProtocolDetectionEngine.java`|This class provides all the mechanisms to implement to perform the protocol detection.|
+|`...`|`DemoHelpers.java`|Helper class (reader management method)|
+|`org.eclipse.keyple.example.common.calypso`|`CalypsoBasicInfoAndSampleCommands.java`|This class provides Calypso data elements (files definitions, commands).|
+|`...`|`Demo_CalypsoBasicTransactionEngine.java`|This class provides all the mechanisms to implement to perform a ticketing scenario with a basic Calypso Secure Session.<br>It is independent of the platform.|
+|`...`|`HoplinkInfoAndSampleCommands.java`|This class provides Hoplink data elements (files definitions, commands).|
+|`...`|`Demo_HoplinkTransactionEngine.java`|This class provides all the mechanisms to implement to perform a ticketing scenario with an Hoplink Secure Session.<br>It is independent of the platform.|
+|`org.eclipse.keyple.example.pc.generic`|`Demo_ObservableReaderNotification_Pcsc.java`|Main class for the plugin/reader observability example (PC/SC)|
+|`...`|`Demo_ObservableReaderNotification_Stub.java`|Main class for the plugin/reader observability example (stub)|
+|`...`|`Demo_SeProtocolDetection_Pcsc.java`|Main class for the protocol detection example (PC/SC)|
+|`...`|`Demo_SeProtocolDetection_Stub.java`|Main class for the protocol detection example (stub)|
+|`...`|`PcscReadersSettings.java`|Interface defining PC/SC readers identifiers (for PO / CSM reader role assignment)|
+|`org.eclipse.keyple.example.pc.generic.stub.se`|`StubISO14443_4.java`|ISO 14443-4 stub SE|
+|`...`|`StubCalypsoBPrime.java`|Calypso B Prime stub SE|
+|`...`|`StubMemoryST25.java`|ST25 Memory stub SE|
+|`...`|`StubMifareClassic.java`|Mifare Classic stub SE|
+|`...`|`StubMifareDesfire.java`|Mifare Desfire stub SE|
+|`...`|`StubMifareUL.java`|Mifare Ultralight stub SE|
+|`...`|`StubSe1.java`|Generic stub SE 1|
+|`...`|`StubSe2.java`|Generic stub SE 2|
+|`org.eclipse.keyple.example.pc.calypso`|`Demo_CalypsoBasic_Pcsc.java`|Contains the main class for the Calypso PC/SC demo|
+|`...`|`Demo_CalypsoBasic_Stub.java`|Contains the main class for the Calypso basic without the need of hardware readers|
+|`...`|`Demo_Hoplink_Pcsc.java`|Contains the main class for the Hoplink PC/SC demo|
+|`...`|`Demo_Hoplink_Stub.java`|Contains the main class for the Hoplink basic without the need of hardware readers|
+|`org.eclipse.keyple.example.pc.calypso.stub.se`|`StubCalypsoBasic.java`|Calypso PO stub SE (`StubSecureElement`)|
+|`...`|`StubCsm.java`|Calypso CSM stub SE (`StubSecureElement`)|
+|`...`|`StubHoplink.java`|Hoplink PO stub SE (`StubSecureElement`)|
 
-`org.eclipse.keyple.example.common.generic`
-
-* The purpose of this package is to demonstrate the use of the Core library.
-  * Reader management:
-    * Observability of plugins to manage the insertion / removal of readers
-    * Observability of readers to manage the insertion / removal of secure elements
-  * SeRequestSet/SeResponseSet building
-  * PO technology identification (protocol based filtering)
-  * Application selection (AID or ATR based)
-  * Two basic scenarios
-    * Plugins and readers monitoring
-    * PO selection
-
-* Package content
-
-|File|Description|
-|---|---|
-|`Demo_ObservableReaderNotificationEngine.java`|This class provides all the mechanisms to implement to perform the observability operations.<br>It is independent of the platform.|
-
-**PC platform**
-
-`org.eclipse.keyple.example.pc.generic`
-
-* This package contains two implementations of the Keyple Core demonstration on a PC platform.
-  * Real mode with PC/SC readers (Secure Elements required [Calypso and/or others])
-  * Simulation mode (virtual Secure Elements included)
-
-* Package content
-
-|File|Description|
-|---|---|
-|`Demo_ObservableReaderNotification_Pcsc.java`|Contains the main class for the PC/SC demo|
-|`Demo_ObservableReaderNotification_Stub.java`|Contains the main class for the same demo without the need of hardware readers|
-|`stub.se/StubSe1.java`|Virtual SE (`StubSecureElement`)|
-|`stub.se/StubSe2.java`|Virtual SE (`StubSecureElement`)|
-
-**Using the Keyple Calypso library**
+**Build configuration**
 ---
+### Gradle
+    TBD
+### Maven
+    TBD
 
-**Resources common to all Keyple Calypso demonstration examples**
-
-`org.eclipse.keyple.example.common.calypso`
-* The purpose of this package is to demonstrate the use of the Calypso library.
-  * Dual reader configuration (PO and CSM)
-  * PO Secure Session management
-  * Basic scenario for ticketing
-
-* Package content
-
-|File|Description|
-|---|---|
-|`Demo_HoplinkTransactionEngine.java`|This class provides all the mechanisms to implement to perform a ticketing scenario with a full PO Secure Session.<br>It is independent of the platform.
-|`HoplinkInfoAndSampleCommands.java`|This class provides Hoplink data elements.|
-
-**PC platform**
-
-`org.eclipse.keyple.example.pc.calypso`
-* This package contains two implementations of the Keyple Calypso demonstration on a PC platform.
-  * Real mode with PC/SC readers (Calypso Secure Elements required [PO and CSM])
-  * Simulation mode (virtual Secure Elements included)
-
-* Package content
-
-|File|Description|
-|---|---|
-|`Demo_Hoplink_Pcsc.java`|Contains the main class for the PC/SC demo|
-|`PcscReadersSettings.java`|Interface defining PC/SC settings to identify readers|
-|`Demo_Hoplink_Stub.java`|Contains the main class for the same demo without the need of hardware readers|
-|`stub.se/CsmStubSe.java`|Virtual Hoplink PO (`StubSecureElement`)|
-|`stub.se/HoplinkStubSe.java`|Virtual CSM (`StubSecureElement`)|
+**Log configuration**
+---
+The application log output format is configurable in the properties files
+`resources/simplelogger.properties`.
+The user will mainly be interested in setting the log level with the `org.slf4j.simpleLogger.defaultLogLevel` field (see the documentation inside the file).
