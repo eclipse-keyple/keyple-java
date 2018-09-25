@@ -10,20 +10,23 @@ package org.eclipse.keyple.example.pc.calypso;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.example.common.calypso.Demo_HoplinkTransactionEngine;
+import org.eclipse.keyple.example.common.calypso.Demo_CalypsoBasicTransactionEngine;
 import org.eclipse.keyple.example.common.generic.DemoHelpers;
 import org.eclipse.keyple.example.pc.generic.PcscReadersSettings;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
-import org.eclipse.keyple.seproxy.*;
+import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.ReaderPlugin;
+import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Demo_Hoplink_Pcsc {
+public class Demo_CalypsoBasic_Pcsc {
     /**
      * This object is used to freeze the main thread while card operations are handle through the
      * observers callbacks. A call to the notify() method would end the program (not demonstrated
@@ -35,35 +38,42 @@ public class Demo_Hoplink_Pcsc {
      * main program entry
      *
      * @param args the program arguments
-     * @throws IllegalArgumentException,KeypleBaseException setParameter exception
+     * @throws KeypleBaseException setParameter exception
      * @throws InterruptedException thread exception
      */
-    public static void main(String[] args)
-            throws IllegalArgumentException, KeypleBaseException, InterruptedException {
-        final Logger logger = LoggerFactory.getLogger(Demo_Hoplink_Pcsc.class);
+    public static void main(String[] args) throws KeypleBaseException, InterruptedException {
+        final Logger logger = LoggerFactory.getLogger(Demo_CalypsoBasic_Pcsc.class);
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
         SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
 
+        PcscPlugin pcscPlugin = PcscPlugin.getInstance();
+
         /* Get the instance of the PcscPlugin (Singleton pattern) */
-        pluginsSet.add(PcscPlugin.getInstance());
+        pluginsSet.add(pcscPlugin);
 
         /* Assign PcscPlugin to the SeProxyService */
         seProxyService.setPlugins(pluginsSet);
 
         /* Setting up the transaction engine (implements Observer) */
-        Demo_HoplinkTransactionEngine transactionEngine = new Demo_HoplinkTransactionEngine();
+        Demo_CalypsoBasicTransactionEngine transactionEngine =
+                new Demo_CalypsoBasicTransactionEngine();
 
         /*
          * Get PO and CSM readers. Apply regulars expressions to reader names to select PO / CSM
          * readers. Use the getReader helper method from the transaction engine.
          */
-        ProxyReader poReader = DemoHelpers.getReaderByName(seProxyService,
-                PcscReadersSettings.PO_READER_NAME_REGEX);
-        ProxyReader csmReader = DemoHelpers.getReaderByName(seProxyService,
-                PcscReadersSettings.CSM_READER_NAME_REGEX);
+        ProxyReader poReader = null, csmReader = null;
+        try {
+            poReader = DemoHelpers.getReaderByName(seProxyService,
+                    PcscReadersSettings.PO_READER_NAME_REGEX);
+            csmReader = DemoHelpers.getReaderByName(seProxyService,
+                    PcscReadersSettings.CSM_READER_NAME_REGEX);
+        } catch (KeypleReaderNotFoundException e) {
+            e.printStackTrace();
+        }
 
         /* Both readers are expected not null */
         if (poReader == csmReader || poReader == null || csmReader == null) {
@@ -85,19 +95,22 @@ public class Demo_Hoplink_Pcsc {
          * The CSM is left in the SHARED mode (by default) to avoid automatic resets due to the
          * limited time between two consecutive exchanges granted by Windows.
          *
-         * The PO reader is set to EXCLUSIVE mode to avoid side effects during the selection step
-         * that may result in session failures.
+         * This point will be addressed in a coming release of the Keyple PcSc reader plugin.
          *
-         * These two points will be addressed in a coming release of the Keyple PcSc reader plugin.
+         * The PO reader is set to EXCLUSIVE mode to avoid side effects (on OS Windows 8+) during
+         * the selection step that may result in session failures.
+         *
+         * See KEYPLE-CORE.PC.md file to learn more about this point.
+         *
          */
         csmReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
-        poReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
+        poReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_EXCLUSIVE);
 
         /* Set the PO reader protocol flag */
         poReader.addSeProtocolSetting(
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
 
-        /* Assign readers to Hoplink transaction engine */
+        /* Assign readers to Calypso transaction engine */
         transactionEngine.setReaders(poReader, csmReader);
 
         /* Set terminal as Observer of the first reader */

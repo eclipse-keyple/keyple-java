@@ -6,24 +6,21 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.example.pc.calypso.stub.se;
+package org.eclipse.keyple.example.pc.generic.stub.se;
 
 import java.nio.ByteBuffer;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
-import org.eclipse.keyple.seproxy.SeProtocol;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
- * This class is an example of a Stub Implementation of SecureElement. It works with the protocol
- * PROTOCOL_ISO14443_4 and simulates a Calypso PO with an Hoplink application
+ * Simple contact stub SE (no command)
  */
-public class HoplinkStubSe extends StubSecureElement {
+public class StubISO14443_4 extends StubSecureElement {
 
-    final static SeProtocol seProtocol = ContactlessProtocols.PROTOCOL_ISO14443_4;
-    final String ATR_HEX = "3B8E800180318066409089120802830190000B";
+    final static String seProtocol = "PROTOCOL_ISO14443_4";
+    final String ATR_HEX = "3B8880010000000000718100F9";
 
-    public HoplinkStubSe() {
+    public StubISO14443_4() {
         /* Select fake Application */
         addHexCommand("00A4 0400 05AABBCCDDEE00", "6A82");
 
@@ -64,7 +61,9 @@ public class HoplinkStubSe extends StubSecureElement {
     }
 
     @Override
-    public SeProtocol getSeProcotol() {
+    public String getSeProcotol() {
         return seProtocol;
     }
+
+
 }
