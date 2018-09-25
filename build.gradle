@@ -4,7 +4,7 @@ plugins {
 
 subprojects {
     group 'org.eclipse.keyple'
-    version = '0.9.0-SNAPSHOT'
+    version = '0.9.1-SNAPSHOT'
 }
 
 
@@ -53,12 +53,6 @@ allprojects {
             project {
                 groupId project.group
                 version project.version
-
-                licenses {
-                    license {
-                        name 'Eclipse'
-                    }
-                }
             }
         }.writeTo("pom.xml")
     }
