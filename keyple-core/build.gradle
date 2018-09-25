@@ -22,7 +22,7 @@ task preBuild {
 jar {
     manifest {
         attributes 'Implementation-Title': 'Keyple Core',
-        'Implementation-Version': version
+        'Implementation-Version': project.version
     }
 }
 
