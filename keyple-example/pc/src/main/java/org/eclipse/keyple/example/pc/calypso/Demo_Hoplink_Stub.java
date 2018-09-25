@@ -80,8 +80,8 @@ public class Demo_Hoplink_Stub {
         transactionEngine.setReaders(poReader, csmReader);
 
         /* Create 'virtual' Hoplink and CSM SE */
-        StubSecureElement hoplinkSE = new HoplinkStubSe();
-        StubSecureElement csmSE = new CsmStubSe();
+        StubSecureElement hoplinkSE = new StubHoplink();
+        StubSecureElement csmSE = new StubCsm();
 
         /* Insert the CSM into the CSM reader */
         logger.info("Insert stub CSM SE.");

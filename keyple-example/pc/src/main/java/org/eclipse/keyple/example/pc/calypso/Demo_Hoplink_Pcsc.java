@@ -19,7 +19,6 @@ import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,10 +35,11 @@ public class Demo_Hoplink_Pcsc {
      * main program entry
      *
      * @param args the program arguments
-     * @throws KeypleBaseException setParameter exception
+     * @throws IllegalArgumentException,KeypleBaseException setParameter exception
      * @throws InterruptedException thread exception
      */
-    public static void main(String[] args) throws KeypleBaseException, InterruptedException {
+    public static void main(String[] args)
+            throws IllegalArgumentException, KeypleBaseException, InterruptedException {
         final Logger logger = LoggerFactory.getLogger(Demo_Hoplink_Pcsc.class);
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
@@ -47,10 +47,8 @@ public class Demo_Hoplink_Pcsc {
 
         SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
 
-        PcscPlugin pcscPlugin = PcscPlugin.getInstance();
-
         /* Get the instance of the PcscPlugin (Singleton pattern) */
-        pluginsSet.add(pcscPlugin);
+        pluginsSet.add(PcscPlugin.getInstance());
 
         /* Assign PcscPlugin to the SeProxyService */
         seProxyService.setPlugins(pluginsSet);
@@ -62,15 +60,10 @@ public class Demo_Hoplink_Pcsc {
          * Get PO and CSM readers. Apply regulars expressions to reader names to select PO / CSM
          * readers. Use the getReader helper method from the transaction engine.
          */
-        ProxyReader poReader = null, csmReader = null;
-        try {
-            poReader = DemoHelpers.getReaderByName(seProxyService,
-                    PcscReadersSettings.PO_READER_NAME_REGEX);
-            csmReader = DemoHelpers.getReaderByName(seProxyService,
-                    PcscReadersSettings.CSM_READER_NAME_REGEX);
-        } catch (KeypleReaderNotFoundException e) {
-            e.printStackTrace();
-        }
+        ProxyReader poReader = DemoHelpers.getReaderByName(seProxyService,
+                PcscReadersSettings.PO_READER_NAME_REGEX);
+        ProxyReader csmReader = DemoHelpers.getReaderByName(seProxyService,
+                PcscReadersSettings.CSM_READER_NAME_REGEX);
 
         /* Both readers are expected not null */
         if (poReader == csmReader || poReader == null || csmReader == null) {
@@ -92,16 +85,13 @@ public class Demo_Hoplink_Pcsc {
          * The CSM is left in the SHARED mode (by default) to avoid automatic resets due to the
          * limited time between two consecutive exchanges granted by Windows.
          *
-         * This point will be addressed in a coming release of the Keyple PcSc reader plugin.
+         * The PO reader is set to EXCLUSIVE mode to avoid side effects during the selection step
+         * that may result in session failures.
          *
-         * The PO reader is set to EXCLUSIVE mode to avoid side effects (on OS Windows 8+) during
-         * the selection step that may result in session failures.
-         *
-         * See README.md file to learn more about this point.
-         *
+         * These two points will be addressed in a coming release of the Keyple PcSc reader plugin.
          */
         csmReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
-        poReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_EXCLUSIVE);
+        poReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
 
         /* Set the PO reader protocol flag */
         poReader.addSeProtocolSetting(
