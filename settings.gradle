@@ -18,6 +18,7 @@ include 'keyple-example-pc'
 include 'keyple-integration'
 
 project(':keyple-plugin-pcsc').projectDir = file('./keyple-plugin/pcsc')
+project(':keyple-plugin-stub').projectDir = file('./keyple-plugin/stub')
 
 project(':keyple-example-pc').projectDir = file('./keyple-example/pc')
 project(':keyple-example-common').projectDir = file('./keyple-example/common')
