@@ -1,7 +1,3 @@
-//group 'org.eclipse.keyple'
-//version are synchronized in top directory
-//version '1.0-SNAPSHOT'
-
 apply plugin: 'java'
 
 sourceCompatibility = 1.6
