@@ -11,6 +11,7 @@ package org.eclipse.keyple.plugin.stub;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeProtocol;
@@ -78,9 +79,37 @@ public class StubReader extends AbstractThreadedLocalReader {
     }
 
     @Override
-    public boolean protocolFlagMatches(SeProtocol protocolFlag) {
-        return protocolFlag == null || se != null && protocolFlag.equals(se.getSeProcotol());
+    protected final boolean protocolFlagMatches(SeProtocol protocolFlag)
+            throws KeypleReaderException {
+        boolean result;
+        // Get protocolFlag to check if ATR filtering is required
+        if (protocolFlag != null) {
+            if (!isPhysicalChannelOpen()) {
+                openPhysicalChannel();
+            }
+            // the requestSet will be executed only if the protocol match the requestElement
+            String selectionMask = protocolsMap.get(protocolFlag);
+            if (selectionMask == null) {
+                throw new KeypleReaderException("Target selector mask not found!", null);
+            }
+            Pattern p = Pattern.compile(selectionMask);
+            String protocol = se.getSeProcotol();
+            if (!p.matcher(protocol).matches()) {
+                logger.trace("[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}",
+                        this.getName(), protocolFlag);
+                result = false;
+            } else {
+                logger.trace("[{}] protocolFlagMatches => matching SE. PROTOCOLFLAG = {}",
+                        this.getName(), protocolFlag);
+                result = true;
+            }
+        } else {
+            // no protocol defined returns true
+            result = true;
+        }
+        return result;
     }
+
 
     @Override
     public boolean isSePresent() {

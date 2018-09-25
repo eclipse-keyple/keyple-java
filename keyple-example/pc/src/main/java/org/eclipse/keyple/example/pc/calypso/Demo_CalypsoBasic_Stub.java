@@ -10,7 +10,7 @@ package org.eclipse.keyple.example.pc.calypso;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.example.common.calypso.Demo_HoplinkTransactionEngine;
+import org.eclipse.keyple.example.common.calypso.Demo_CalypsoBasicTransactionEngine;
 import org.eclipse.keyple.example.pc.calypso.stub.se.*;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.stub.*;
@@ -21,7 +21,7 @@ import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Demo_Hoplink_Stub {
+public class Demo_CalypsoBasic_Stub {
 
     /**
      * main program entry
@@ -46,7 +46,8 @@ public class Demo_Hoplink_Stub {
         seProxyService.setPlugins(pluginsSet);
 
         /* Setting up the transaction engine (implements Observer) */
-        Demo_HoplinkTransactionEngine transactionEngine = new Demo_HoplinkTransactionEngine();
+        Demo_CalypsoBasicTransactionEngine transactionEngine =
+                new Demo_CalypsoBasicTransactionEngine();
 
         /*
          * Plug PO and CSM stub readers.
@@ -80,7 +81,7 @@ public class Demo_Hoplink_Stub {
         transactionEngine.setReaders(poReader, csmReader);
 
         /* Create 'virtual' Hoplink and CSM SE */
-        StubSecureElement hoplinkSE = new StubHoplink();
+        StubSecureElement calypsoStubSe = new StubCalypsoBasic();
         StubSecureElement csmSE = new StubCsm();
 
         /* Insert the CSM into the CSM reader */
@@ -94,7 +95,7 @@ public class Demo_Hoplink_Stub {
         Thread.sleep(10);
 
         logger.info("Insert stub PO SE.");
-        poReader.insertSe(hoplinkSE);
+        poReader.insertSe(calypsoStubSe);
 
         /* Wait a while the time that the transaction ends. */
         Thread.sleep(1000);

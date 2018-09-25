@@ -10,8 +10,6 @@ package org.eclipse.keyple.example.pc.generic.stub.se;
 
 import java.nio.ByteBuffer;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
-import org.eclipse.keyple.seproxy.SeProtocol;
-import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
@@ -19,7 +17,7 @@ import org.eclipse.keyple.util.ByteBufferUtils;
  */
 public class StubSe1 extends StubSecureElement {
 
-    final static SeProtocol seProtocol = ContactsProtocols.PROTOCOL_ISO7816_3;
+    final static String seProtocol = "PROTOCOL_ISO7816_3";
     final String ATR_HEX = "3B3F9600805A0080C120000012345678829000";// serial number : 12345678
 
     public StubSe1() {}
@@ -30,7 +28,7 @@ public class StubSe1 extends StubSecureElement {
     }
 
     @Override
-    public SeProtocol getSeProcotol() {
+    public String getSeProcotol() {
         return seProtocol;
     }
 

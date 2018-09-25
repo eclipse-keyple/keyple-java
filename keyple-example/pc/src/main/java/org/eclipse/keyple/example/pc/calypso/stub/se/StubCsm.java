@@ -10,22 +10,21 @@ package org.eclipse.keyple.example.pc.calypso.stub.se;
 
 import java.nio.ByteBuffer;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
-import org.eclipse.keyple.seproxy.SeProtocol;
-import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
  * This class is an example of a Stub CSM
  */
-public class CsmStubSe extends StubSecureElement {
+public class StubCsm extends StubSecureElement {
 
-    final static SeProtocol seProtocol = ContactsProtocols.PROTOCOL_ISO7816_3;
+    final static String seProtocol = "PROTOCOL_ISO7816_3";
     final String ATR_HEX = "3B3F9600805A0080C120000012345678829000";// serial number : 12345678
 
-    public CsmStubSe() {
+    public StubCsm() {
         /* Select Diversifier */
         addHexCommand("8014 0000 08 1122334455667788", "9000");
         addHexCommand("9414 0000 08 1122334455667788", "9000");
+        addHexCommand("8014 0000 08 00000000AA4201D4", "9000");
 
         /* Get Challenge */
         addHexCommand("0084 0000 04", "11223344 9000");
@@ -67,6 +66,18 @@ public class CsmStubSe extends StubSecureElement {
                 "9000");
         addHexCommand("808C 0000 05 00B201A420", "9000");
         addHexCommand("948C 0000 05 00B201A420", "9000");
+        addHexCommand("808C 0000 05 00B2014400", "9000");
+        addHexCommand("808C 0000 1F 00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000",
+                "9000");
+        addHexCommand("808C 0000 05 00B201F400", "9000");
+        addHexCommand("808C 0000 0C 010000000000000000009000", "9000");
+        addHexCommand("808C 0000 05 00B2014C00", "9000");
+        addHexCommand("808C 0000 1F 00000000000000000000000000000000000000000000000000000000009000",
+                "9000");
+        addHexCommand(
+                "808C 0000 22 00E200401D00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC",
+                "9000");
+        addHexCommand("808C 0000 02 9000", "9000");
     }
 
     @Override
@@ -75,7 +86,7 @@ public class CsmStubSe extends StubSecureElement {
     }
 
     @Override
-    public SeProtocol getSeProcotol() {
+    public String getSeProcotol() {
         return seProtocol;
     }
 
