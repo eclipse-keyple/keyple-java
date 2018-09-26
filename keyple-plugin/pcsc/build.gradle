@@ -9,8 +9,6 @@ jar {
     }
 }
 
-build.dependsOn createPom
-
 dependencies {
     compile project(':keyple-core')
 

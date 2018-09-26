@@ -35,7 +35,7 @@ allprojects {
     task createPom {
         pom {
             project {
-                groupId project.group
+                groupId project.version
                 version project.version
             }
         }.writeTo("pom.xml")
@@ -43,12 +43,11 @@ allprojects {
 }
 
 group 'org.eclipse.keyple'
-version = '0.9.1-SNAPSHOT'
+project.version = '0.9.1-SNAPSHOT'
 
 apply plugin: 'com.android.library'
 
 sourceCompatibility = 1.6
-
 
 
 android {
