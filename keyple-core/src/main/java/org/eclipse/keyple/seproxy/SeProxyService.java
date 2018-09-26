@@ -52,6 +52,15 @@ public final class SeProxyService {
     }
 
     /**
+     * Adds a single plugin to the plugin list.
+     * 
+     * @param plugin the plugin to add.
+     */
+    public void addPlugin(ReaderPlugin plugin) {
+        this.plugins.add(plugin);
+    }
+
+    /**
      * Gets the plugins.
      *
      * @return the plugins the list of interfaced reader’s plugins.

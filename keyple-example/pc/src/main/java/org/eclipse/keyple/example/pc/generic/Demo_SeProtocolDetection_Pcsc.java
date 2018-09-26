@@ -13,7 +13,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.example.common.generic.CustomProtocolSetting;
 import org.eclipse.keyple.example.common.generic.Demo_SeProtocolDetectionEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
@@ -48,13 +47,9 @@ public class Demo_SeProtocolDetection_Pcsc {
         SeProxyService seProxyService = SeProxyService.getInstance();
 
         /* add the PcscPlugin to the SeProxyService */
-        SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
-
         PcscPlugin pcscPlugin = PcscPlugin.getInstance();
 
-        pluginsSet.add(pcscPlugin);
-
-        seProxyService.setPlugins(pluginsSet);
+        seProxyService.addPlugin(pcscPlugin);
 
         /* attempt to get the ProxyReader (the right reader should be ready here) */
         ProxyReader poReader =
