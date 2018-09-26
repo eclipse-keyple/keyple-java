@@ -46,25 +46,55 @@ public interface ProxyReader extends NameableConfigurable, Comparable<ProxyReade
     boolean isSePresent() throws NoStackTraceThrowable;
 
     /**
-     * Transmits a SeRequestSet (list of SeRequest) to a SE application and get back the
-     * corresponding SeResponseSet (list of SeResponse).
+     * Transmits a {@link SeRequestSet} (list of {@link SeRequest}) to a SE application and get back
+     * the corresponding {@link SeResponseSet} (list of {@link SeResponse}).
      * <p>
      * The usage of this method is conditioned to the presence of a SE in the selected reader.
+     * <p>
+     * All the {@link SeRequest} are processed consecutively. The received {@link SeResponse} and
+     * placed in the {@link SeResponseSet}.
+     * <p>
+     * If the protocol flag set in the request match the current SE protocol and the keepChannelOpen
+     * flag is set to true, the transmit method returns immediately with a {@link SeResponseSet}.
+     * This response contains the received response from the matching SE in the last position of
+     * set. The previous one are set to null, the logical channel is open.
+     * <p>
+     * If the protocol flag set in the request match the current SE protocol and the keepChannelOpen
+     * flag is set to false, the transmission go on for the next {@link SeRequest}. The channel is
+     * left closed.
      * <p>
      * This method could also fail in case of IO error or wrong card state &rarr; some reader’s
      * exception (SE missing, IO error, wrong card state, timeout) have to be caught during the
      * processing of the SE request transmission.
-     *
-     * <p>
-     * When no logical channel is currently open and if the keepChannelOpen flag of one of the
-     * SeRequest is set to true, the process of the whole SeRequestSet will stop at the first
-     * successful channel opening (successful selection procedure).
      *
      * @param seApplicationRequest the application request
      * @return the SE response
      * @throws KeypleReaderException An error occurs during transmit (channel, IO)
      */
     SeResponseSet transmit(SeRequestSet seApplicationRequest)
+            throws KeypleReaderException, IllegalArgumentException;
+
+    /**
+     * Transmits a single {@link SeRequest} (list of {@link ApduRequest}) and get back the
+     * corresponding {@link SeResponse}
+     * <p>
+     * The usage of this method is conditioned to the presence of a SE in the selected reader.
+     * <p>
+     * The {@link SeRequest} is processed and the received {@link SeResponse} is returned.
+     * <p>
+     * The logical channel is set according to the keepChannelOpen flag.
+     *
+     * <p>
+     * This method could also fail in case of IO error or wrong card state &rarr; some reader’s
+     * exception (SE missing, IO error, wrong card state, timeout) have to be caught during the
+     * processing of the SE request transmission. *
+     * 
+     * @param seApplicationRequest
+     * @return
+     * @throws KeypleReaderException
+     * @throws IllegalArgumentException
+     */
+    SeResponse transmit(SeRequest seApplicationRequest)
             throws KeypleReaderException, IllegalArgumentException;
 
     void addSeProtocolSetting(SeProtocolSetting seProtocolSetting);
