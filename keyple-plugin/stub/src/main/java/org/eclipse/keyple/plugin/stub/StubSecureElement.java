@@ -91,8 +91,7 @@ public abstract class StubSecureElement {
             return ByteBufferUtils.fromHex(hexCommands.get(hexApdu));
         }
 
-        // return empty buffer if not found
-        return ByteBuffer.allocate(0);
+        // throw a KeypleIOReaderException if not found
+        throw new KeypleIOReaderException("No response available for this request.");
     }
-
 }
