@@ -9,9 +9,7 @@
 package org.eclipse.keyple.seproxy.plugin;
 
 
-import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.SeRequestSet;
-import org.eclipse.keyple.seproxy.SeResponseSet;
+import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
@@ -39,6 +37,9 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     protected abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
             throws KeypleIOReaderException, KeypleChannelStateException, KeypleReaderException;
 
+    protected abstract SeResponse processSeRequest(SeRequest seRequest)
+            throws KeypleIOReaderException, KeypleChannelStateException, KeypleReaderException;
+
     /**
      * Reader constructor
      *
@@ -54,7 +55,8 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     }
 
     /**
-     * Implementation must call logSeRequestSet before transmit and logSeResponseSet after transmit
+     * Execute the transmission of a list of {@link SeRequest} and returns a list of
+     * {@link SeResponse}
      *
      * @param requestSet the request set
      * @return responseSet the response set
@@ -71,7 +73,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace("[{}] transmit => SeRequestSet: {}, elapsed {} ms.", this.getName(),
+            logger.trace("[{}] transmit => SEREQUESTSET = {}, elapsed {} ms.", this.getName(),
                     requestSet.toString(), elapsedMs);
         }
 
@@ -81,25 +83,70 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace("[{}] transmit => failure. elapsed {}", elapsedMs);
-            throw new KeypleReaderException("Transmit failed", ex);
+            logger.trace("[{}] transmit => SEREQUESTSET channel failure. elapsed {}", elapsedMs);
+            throw new KeypleReaderException("SeRequestSet Transmit failed", ex);
         } catch (KeypleIOReaderException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace("[{}] transmit => failure. elapsed {}", elapsedMs);
-            throw new KeypleReaderException("Transmit failed", ex);
+            logger.trace("[{}] transmit => SEREQUESTSET IO failure. elapsed {}", elapsedMs);
+            throw new KeypleReaderException("SeRequestSet Transmit failed", ex);
         }
 
         if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace("[{}] transmit => SeResponse: {}, elapsed {} ms.", this.getName(),
+            logger.trace("[{}] transmit => SERESPONSESET = {}, elapsed {} ms.", this.getName(),
                     responseSet.toString(), elapsedMs);
         }
 
         return responseSet;
+    }
+
+    /**
+     * Execute the transmission of a {@link SeRequest} and returns a {@link SeResponse}
+     * 
+     * @param seRequest the request to be transmitted
+     * @return the received response
+     * @throws KeypleReaderException if a reader error occurs
+     */
+    public final SeResponse transmit(SeRequest seRequest) throws KeypleReaderException {
+        SeResponse seResponse;
+
+        if (logger.isDebugEnabled()) {
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            this.before = timeStamp;
+            logger.trace("[{}] transmit => SEREQUEST = {}, elapsed {} ms.", this.getName(),
+                    seRequest.toString(), elapsedMs);
+        }
+
+        try {
+            seResponse = processSeRequest(seRequest);
+        } catch (KeypleChannelStateException ex) {
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            this.before = timeStamp;
+            logger.trace("[{}] transmit => SEREQUEST channel failure. elapsed {}", elapsedMs);
+            throw new KeypleReaderException("SeRequest Transmit failed", ex);
+        } catch (KeypleIOReaderException ex) {
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            this.before = timeStamp;
+            logger.trace("[{}] transmit => SEREQUEST IO failure. elapsed {}", elapsedMs);
+            throw new KeypleReaderException("SeRequest Transmit failed", ex);
+        }
+
+        if (logger.isDebugEnabled()) {
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
+            this.before = timeStamp;
+            logger.trace("[{}] transmit => SERESPONSE = {}, elapsed {} ms.", this.getName(),
+                    seResponse.toString(), elapsedMs);
+        }
+
+        return seResponse;
     }
 
     /**

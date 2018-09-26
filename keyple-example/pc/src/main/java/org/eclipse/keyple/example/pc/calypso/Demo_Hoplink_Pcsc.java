@@ -8,8 +8,7 @@
 
 package org.eclipse.keyple.example.pc.calypso;
 
-import java.util.SortedSet;
-import java.util.concurrent.ConcurrentSkipListSet;
+
 import org.eclipse.keyple.example.common.calypso.Demo_HoplinkTransactionEngine;
 import org.eclipse.keyple.example.common.generic.DemoHelpers;
 import org.eclipse.keyple.example.pc.generic.PcscReadersSettings;
@@ -45,13 +44,11 @@ public class Demo_Hoplink_Pcsc {
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
-
-        /* Get the instance of the PcscPlugin (Singleton pattern) */
-        pluginsSet.add(PcscPlugin.getInstance());
+        /* Get the instance of the PC/SC plugin */
+        PcscPlugin pcscPlugin = PcscPlugin.getInstance();
 
         /* Assign PcscPlugin to the SeProxyService */
-        seProxyService.setPlugins(pluginsSet);
+        seProxyService.addPlugin(pcscPlugin);
 
         /* Setting up the transaction engine (implements Observer) */
         Demo_HoplinkTransactionEngine transactionEngine = new Demo_HoplinkTransactionEngine();
