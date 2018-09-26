@@ -30,16 +30,7 @@ allprojects {
         ]
     }
 
-    apply plugin: 'maven'
 
-    task createPom {
-        pom {
-            project {
-                groupId project.group
-                version project.version
-            }
-        }.writeTo("pom.xml")
-    }
 }
 
 group 'org.eclipse.keyple'
