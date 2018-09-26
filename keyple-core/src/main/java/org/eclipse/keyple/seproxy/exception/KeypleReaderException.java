@@ -8,10 +8,15 @@
 
 package org.eclipse.keyple.seproxy.exception;
 
+import org.eclipse.keyple.seproxy.SeResponse;
+import org.eclipse.keyple.seproxy.SeResponseSet;
+
 /**
  * Base Exceptions thrown in a {@link org.eclipse.keyple.seproxy.ProxyReader} context
  */
 public class KeypleReaderException extends KeypleBaseException {
+    private final SeResponseSet seResponseSet;
+    private final SeResponse seResponse;
 
     /**
      * New exception to be thrown
@@ -20,15 +25,55 @@ public class KeypleReaderException extends KeypleBaseException {
      */
     public KeypleReaderException(String message) {
         super(message);
+        this.seResponseSet = null;
+        this.seResponse = null;
     }
 
     /**
      * Encapsulate a lower level reader exception
      * 
-     * @param message : message to add some context to the exception
-     * @param cause : lower level exception
+     * @param message: message to add some context to the exception
+     * @param cause: lower level exception
      */
     public KeypleReaderException(String message, Throwable cause) {
         super(message, cause);
+        this.seResponseSet = null;
+        this.seResponse = null;
+    }
+
+    /**
+     * Encapsulate a lower level reader exception but allow the current SeResponseSet to be provided
+     * to the application.
+     * 
+     * @param message: message to add some context to the exception
+     * @param cause: lower level exception
+     * @param seResponseSet: current {@link SeResponseSet}
+     */
+    public KeypleReaderException(String message, Throwable cause, SeResponseSet seResponseSet) {
+        super(message, cause);
+        this.seResponseSet = seResponseSet;
+        this.seResponse = null;
+    }
+
+    /**
+     * Encapsulate a lower level reader exception but allow the current SeResponseSet to be provided
+     * to the application.
+     *
+     * @param message: message to add some context to the exception
+     * @param cause: lower level exception
+     * @param seResponse: current {@link SeResponse}
+     */
+    public KeypleReaderException(String message, Throwable cause, SeResponse seResponse) {
+        super(message, cause);
+        this.seResponseSet = null;
+        this.seResponse = seResponse;
+    }
+
+    public SeResponseSet getSeResponseSet() {
+        return seResponseSet;
+    }
+
+    public SeResponse getSeResponse() {
+        return seResponse;
     }
 }

@@ -227,7 +227,17 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 if (requestMatchesProtocol[requestIndex]) {
                     logger.debug("[{}] processSeRequestSet => transmit {}", this.getName(),
                             request);
-                    SeResponse response = processSeRequest(request);
+                    SeResponse response = null;
+                    try {
+                        response = processSeRequest(request);
+                    } catch (KeypleReaderException ex) {
+                        /*
+                         * The process has been interrupted. We are launching a
+                         * KeypleReaderException with the responses collected so far.
+                         */
+                        throw new KeypleReaderException(ex.getMessage(), ex.getCause(),
+                                new SeResponseSet(ex.getSeResponse()));
+                    }
                     responses.add(response);
                     logger.debug("[{}] processSeRequestSet => receive {}", this.getName(),
                             response);
@@ -305,7 +315,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
             "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity"})
     protected final SeResponse processSeRequest(SeRequest seRequest)
-            throws IllegalStateException, KeypleIOReaderException, KeypleChannelStateException {
+            throws IllegalStateException, KeypleReaderException {
         boolean previouslyOpen = true;
 
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
@@ -396,7 +406,17 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         /* process request if not empty */
         if (seRequest.getApduRequests() != null) {
             for (ApduRequest apduRequest : seRequest.getApduRequests()) {
-                apduResponseList.add(processApduRequest(apduRequest));
+                try {
+                    apduResponseList.add(processApduRequest(apduRequest));
+                } catch (KeypleIOReaderException ex) {
+                    /*
+                     * The process has been interrupted. We are launching a KeypleReaderException
+                     * with the Apdu responses collected so far.
+                     */
+                    throw new KeypleReaderException("IO Reader exception", ex.getCause(),
+                            new SeResponse(previouslyOpen, atrData, fciDataSelected,
+                                    apduResponseList));
+                }
             }
         }
 
