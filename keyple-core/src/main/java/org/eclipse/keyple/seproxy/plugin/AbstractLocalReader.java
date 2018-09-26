@@ -313,7 +313,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @throws KeypleReaderException if a transmission fails
      */
     @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
-            "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity"})
+            "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity", "PMD.ExcessiveMethodLength"})
     protected final SeResponse processSeRequest(SeRequest seRequest)
             throws IllegalStateException, KeypleReaderException {
         boolean previouslyOpen = true;
