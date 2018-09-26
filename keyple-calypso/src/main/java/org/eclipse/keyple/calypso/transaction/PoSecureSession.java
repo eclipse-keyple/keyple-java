@@ -9,9 +9,7 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
+import java.util.*;
 import org.eclipse.keyple.calypso.command.SendableInSession;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 import org.eclipse.keyple.calypso.command.csm.CsmSendableInSession;
@@ -357,7 +355,12 @@ public class PoSecureSession {
         }
 
         currentState = SessionState.SESSION_OPEN;
-        return poSeResponse;
+
+        /* Remove Open Secure Session response and create a new SeResponse */
+        poApduResponseList.remove(0);
+
+        return new SeResponse(true, poSeResponse.getAtr(), poSeResponse.getFci(),
+                poApduResponseList);
     }
 
     /**
@@ -642,7 +645,6 @@ public class PoSecureSession {
 
         /* Check the PO signature part with the CSM */
         /* Build and send CSM Digest Authenticate command */
-
         AbstractApduCommandBuilder digestAuth =
                 new DigestAuthenticateCmdBuild(csmRevision, poCloseSessionPars.getSignatureLo());
 
@@ -683,7 +685,17 @@ public class PoSecureSession {
         }
 
         currentState = SessionState.SESSION_CLOSED;
-        return poSeResponse;
+
+        /* Remove ratification response if any */
+        if (!ratificationAsked) {
+            poApduResponseList.remove(poApduResponseList.size() - 1);
+        }
+        /* Remove Close Secure Session response and create a new SeResponse */
+        poApduResponseList.remove(poApduResponseList.size() - 1);
+
+        return new SeResponse(true, poSeResponse.getAtr(), poSeResponse.getFci(),
+                poApduResponseList);
+
     }
 
     /**
