@@ -52,6 +52,15 @@ public final class SeProxyService {
     }
 
     /**
+     * Adds a single plugin to the plugin list.
+     * 
+     * @param plugin the plugin to add.
+     */
+    public void addPlugin(ReaderPlugin plugin) {
+        this.plugins.add(plugin);
+    }
+
+    /**
      * Gets the plugins.
      *
      * @return the plugins the list of interfaced reader’s plugins.
@@ -65,7 +74,7 @@ public final class SeProxyService {
      *
      * @param name the plugin name
      * @return the plugin.
-     * @throws KeyplePluginException: if the wanted plugin is not found
+     * @throws KeyplePluginNotFoundException: if the wanted plugin is not found
      */
     public ReaderPlugin getPlugin(String name) throws KeyplePluginNotFoundException {
         for (ReaderPlugin plugin : plugins) {
