@@ -53,12 +53,6 @@ public class HoplinkInfoAndSampleCommands {
     public static UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
             new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
                     ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
-    /**
-     * Ratification command. The chosen ratification command is a simple read record of 1 byte
-     * (short execution time)
-     */
-    public static ReadRecordsCmdBuild poRatificationCommand =
-            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x01);
 
     /**
      * Build an ApduRequest list including:

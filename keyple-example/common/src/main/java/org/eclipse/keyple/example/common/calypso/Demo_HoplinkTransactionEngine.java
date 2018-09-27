@@ -248,10 +248,7 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
             logger.info(
                     "========= PO Hoplink session ======= Closing ============================");
         }
-        poTransaction.processClosing(null, null, HoplinkInfoAndSampleCommands.poRatificationCommand,
-                false);
-        // poTransaction.processClosing(poModificationCommands, poAnticipatedResponses,
-        // HoplinkInfoAndSampleCommands.poRatificationCommand, false);
+        poTransaction.processClosing(null, null, CommunicationMode.CONTACTLESS_MODE, false);
 
         if (poTransaction.isSuccessful()) {
             if (logger.isInfoEnabled()) {

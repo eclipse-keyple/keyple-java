@@ -287,7 +287,7 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
         poAnticipatedResponses.add(new ApduResponse(ByteBufferUtils.fromHex("9000"), null));
 
         seResponse = poTransaction.processClosing(eventLogAppend, poAnticipatedResponses,
-                poRatificationCommand, false);
+                CommunicationMode.CONTACTLESS_MODE, false);
 
         if (poTransaction.isSuccessful()) {
             if (logger.isInfoEnabled()) {

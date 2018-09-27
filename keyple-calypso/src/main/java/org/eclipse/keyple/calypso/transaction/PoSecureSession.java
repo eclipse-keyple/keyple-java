@@ -23,6 +23,7 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.builder.session.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.session.CloseSessionCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.session.RatificationCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.session.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.session.CloseSessionRespPars;
@@ -88,6 +89,14 @@ public class PoSecureSession {
     private PoRevision poRevision = PoRevision.REV3_1;
     /** The PO Secure Session final status according to mutual authentication result */
     private boolean transactionResult;
+    /** The PO KIF */
+    private byte poKif;
+    /** The PO KVC */
+    private byte poKvc;
+    /** The previous PO Secure Session ratification status */
+    private boolean wasRatified;
+    /** The data read at opening */
+    private ByteBuffer openRecordDataRead;
 
     /**
      * Instantiates a new po plain secure session.
@@ -301,15 +310,17 @@ public class PoSecureSession {
         ByteBuffer sessionCardChallenge = poOpenSessionPars.getPoChallenge();
 
         /* Build the Digest Init command from PO Open Session */
-        byte kif = poOpenSessionPars.getSelectedKif();
+        poKif = poOpenSessionPars.getSelectedKif();
+        poKvc = poOpenSessionPars.getSelectedKvc();
+
         if (logger.isDebugEnabled()) {
             logger.debug("processOpening => opening: CARDCHALLENGE = {}, POKIF = {}, POKVC = {}",
-                    ByteBufferUtils.toHex(sessionCardChallenge),
-                    String.format("%02X", poOpenSessionPars.getSelectedKif()),
-                    String.format("%02X", poOpenSessionPars.getSelectedKvc()));
+                    ByteBufferUtils.toHex(sessionCardChallenge), String.format("%02X", poKif),
+                    String.format("%02X", poKvc));
         }
 
-        if (kif == KIF_UNDEFINED) {
+        byte kif;
+        if (poKif == KIF_UNDEFINED) {
             switch (accessLevel) {
                 case SESSION_LVL_PERSO:
                     kif = csmSetting.get(CsmSettings.CS_DEFAULT_KIF_PERSO);
@@ -318,10 +329,17 @@ public class PoSecureSession {
                     kif = csmSetting.get(CsmSettings.CS_DEFAULT_KIF_LOAD);
                     break;
                 case SESSION_LVL_DEBIT:
+                default:
                     kif = csmSetting.get(CsmSettings.CS_DEFAULT_KIF_DEBIT);
                     break;
             }
+        } else {
+            kif = poKif;
         }
+
+        /* Keep the ratification status and read data */
+        wasRatified = poOpenSessionPars.wasRatified();
+        openRecordDataRead = poOpenSessionPars.getRecordDataRead();
 
         /*
          * Initialize the DigestProcessor. It will store all digest operations (Digest Init, Digest
@@ -330,8 +348,8 @@ public class PoSecureSession {
          */
         DigestProcessor.initialize(poRevision, csmRevision, false, false,
                 poRevision.equals(PoRevision.REV3_2),
-                csmSetting.get(CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER), kif,
-                poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
+                csmSetting.get(CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER), kif, poKvc,
+                openRecordDataRead);
 
         /*
          * Add all commands data to the digest computation. The first command in the list is the
@@ -516,8 +534,13 @@ public class PoSecureSession {
      * @param closeSeChannel if true the SE channel of the po reader is closed after the last
      *        command
      * @return SeResponse close session response
-     * @throws KeypleReaderException the IO reader exception
+     * @throws KeypleReaderException the IO reader exception This method is deprecated.
+     *         <ul>
+     *         <li>The argument of the ratification command is replaced by an indication of the PO
+     *         communication mode.</li>
+     *         </ul>
      */
+    @Deprecated
     public SeResponse processClosing(List<PoModificationCommand> poModificationCommands,
             List<ApduResponse> poAnticipatedResponses, PoCommandBuilder ratificationCommand,
             boolean closeSeChannel) throws KeypleReaderException {
@@ -709,6 +732,27 @@ public class PoSecureSession {
     }
 
     /**
+     * TODO Complete the Javadoc.
+     * 
+     * @param poModificationCommands
+     * @param poAnticipatedResponses
+     * @param communicationMode
+     * @param closeSeChannel
+     * @return
+     * @throws KeypleReaderException
+     */
+    public SeResponse processClosing(List<PoModificationCommand> poModificationCommands,
+            List<ApduResponse> poAnticipatedResponses, CommunicationMode communicationMode,
+            boolean closeSeChannel) throws KeypleReaderException {
+        PoCommandBuilder ratificationCommand = null;
+        if (communicationMode == CommunicationMode.CONTACTLESS_MODE) {
+            ratificationCommand = new RatificationCmdBuild(poRevision);
+        }
+        return processClosing(poModificationCommands, poAnticipatedResponses, ratificationCommand,
+                closeSeChannel);
+    }
+
+    /**
      * Determine the PO revision from the application type byte:
      *
      * <ul>
@@ -765,6 +809,42 @@ public class PoSecureSession {
         }
 
         return transactionResult;
+    }
+
+    /**
+     * Get the PO KIF
+     * 
+     * @return the PO KIF byte
+     */
+    public byte getPoKif() {
+        return poKif;
+    }
+
+    /**
+     * Get the ratification status obtained at Session Opening
+     * 
+     * @return true or false
+     */
+    public boolean wasRatified() {
+        return wasRatified;
+    }
+
+    /**
+     * Get the data read at Session Opening
+     * 
+     * @return a ByteBuffer containing the data
+     */
+    public ByteBuffer getOpenRecordDataRead() {
+        return openRecordDataRead;
+    }
+
+    /**
+     * Two communication modes are available for the PO.
+     * 
+     * It will be taken into account to handle the ratification when closing the Secure Session.
+     */
+    public enum CommunicationMode {
+        CONTACTLESS_MODE, CONTACTS_MODE
     }
 
     /**
