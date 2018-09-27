@@ -73,7 +73,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace("[{}] transmit => SEREQUESTSET = {}, elapsed {} ms.", this.getName(),
+            logger.debug("[{}] transmit => SEREQUESTSET = {}, elapsed {} ms.", this.getName(),
                     requestSet.toString(), elapsedMs);
         }
 
@@ -83,7 +83,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace("[{}] transmit => SEREQUESTSET channel failure. elapsed {}", elapsedMs);
+            logger.debug("[{}] transmit => SEREQUESTSET channel failure. elapsed {}", elapsedMs);
             /* Throw an exception with the responses collected so far. */
             throw new KeypleReaderException("SeRequestSet Transmit failed", ex,
                     ex.getSeResponseSet());
@@ -91,7 +91,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace("[{}] transmit => SEREQUESTSET IO failure. elapsed {}", elapsedMs);
+            logger.debug("[{}] transmit => SEREQUESTSET IO failure. elapsed {}", elapsedMs);
             /* Throw an exception with the responses collected so far. */
             throw new KeypleReaderException("SeRequestSet Transmit failed", ex,
                     ex.getSeResponseSet());
@@ -101,7 +101,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace("[{}] transmit => SERESPONSESET = {}, elapsed {} ms.", this.getName(),
+            logger.debug("[{}] transmit => SERESPONSESET = {}, elapsed {} ms.", this.getName(),
                     responseSet.toString(), elapsedMs);
         }
 
@@ -126,7 +126,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace("[{}] transmit => SEREQUEST = {}, elapsed {} ms.", this.getName(),
+            logger.debug("[{}] transmit => SEREQUEST = {}, elapsed {} ms.", this.getName(),
                     seRequest.toString(), elapsedMs);
         }
 
@@ -136,14 +136,14 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace("[{}] transmit => SEREQUEST channel failure. elapsed {}", elapsedMs);
+            logger.debug("[{}] transmit => SEREQUEST channel failure. elapsed {}", elapsedMs);
             /* Throw an exception with the responses collected so far. */
             throw new KeypleReaderException("SeRequest Transmit failed", ex, ex.getSeResponse());
         } catch (KeypleIOReaderException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace("[{}] transmit => SEREQUEST IO failure. elapsed {}", elapsedMs);
+            logger.debug("[{}] transmit => SEREQUEST IO failure. elapsed {}", elapsedMs);
             /* Throw an exception with the responses collected so far. */
             throw new KeypleReaderException("SeRequest Transmit failed", ex, ex.getSeResponse());
         }
@@ -152,7 +152,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace("[{}] transmit => SERESPONSE = {}, elapsed {} ms.", this.getName(),
+            logger.debug("[{}] transmit => SERESPONSE = {}, elapsed {} ms.", this.getName(),
                     seResponse.toString(), elapsedMs);
         }
 
