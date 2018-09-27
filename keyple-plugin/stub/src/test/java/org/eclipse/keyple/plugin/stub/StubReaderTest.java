@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
@@ -169,6 +170,21 @@ public class StubReaderTest {
     // }
 
 
+    @Test(expected = KeypleReaderException.class)
+    public void transmit_no_response() throws KeypleReaderException {
+        // init Request
+        SeRequestSet requests = getNoResponseRequest();
+
+        // init SE
+        reader.insertSe(hoplinkSE());
+
+        // add Protocol flag
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        // test
+        SeResponseSet seResponse = reader.transmit(requests);
+    }
+
     /*
      * NAME and PARAMETERS
      */
@@ -223,6 +239,30 @@ public class StubReaderTest {
         List<ApduRequest> poApduRequestList;
 
         poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
+
+        SeRequest.Selector selector = new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
+
+        SeRequest seRequest = new SeRequest(selector, poApduRequestList, false,
+                ContactlessProtocols.PROTOCOL_ISO14443_4);
+
+        return new SeRequestSet(seRequest);
+
+    }
+
+    /*
+     * No Response: increase command is not defined in the StubSE
+     *
+     * An Exception will be thrown.
+     */
+    private SeRequestSet getNoResponseRequest() {
+        String poAid = "A000000291A000000191";
+
+        IncreaseCmdBuild poIncreaseCmdBuild =
+                new IncreaseCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, 0);
+
+        List<ApduRequest> poApduRequestList;
+
+        poApduRequestList = Arrays.asList(poIncreaseCmdBuild.getApduRequest());
 
         SeRequest.Selector selector = new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
 
