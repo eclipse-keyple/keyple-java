@@ -22,19 +22,16 @@ public class StubCalypsoBasic extends StubSecureElement {
     final String ATR_HEX = "3B8E800180318066409089120802830190000B";
 
     public StubCalypsoBasic() {
-        /* Select fake Application */
+        /* Intrinsic Select Application */
         addHexCommand("00A4 0400 05 AABBCCDDEE 00", "6A82");
-
         /* Intrinsic Select Application */
-        addHexCommand("00A4040005AABBCCDDEE00", "6A82");
-        /* Intrinsic Select Application */
-        addHexCommand("00A404000AA000000404012509010100",
-                "6F24840AA0000004040125090101A516BF0C13C70800000000C0E11FA153070A3C23121410019000");
+        addHexCommand("00A4 0400 0A A0000004040125090101 00",
+                "6F24840AA0000004040125090101A516BF0C13C708 0000000011223344 53070A3C23121410019000");
         /* Read Records */
         addHexCommand("00B2014400",
                 "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC9000");
         /* Open Secure Session V3.1 */
-        addHexCommand("008A0B3904DFDEB63A00",
+        addHexCommand("008A0B3904C1C2C3C400",
                 "0308306C00307E1D24B928480800000606F0001200000000000000000000000000000000009000");
         /* Read Records */
         addHexCommand("00B2014400",
@@ -49,9 +46,12 @@ public class StubCalypsoBasic extends StubSecureElement {
         addHexCommand("00E200401D00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC",
                 "9000");
         /* Close Secure Session */
-        addHexCommand("008E0000049E7B8C9100", "492B5BAF9000");
-        /* Get Challenge */
-        addHexCommand("0084011008", "030830D3762295819000");
+        /* no ratification asked */
+        addHexCommand("008E0000040506070800", "010203049000");
+        /* ratification asked */
+        addHexCommand("008E8000040506070800", "010203049000");
+        /* Ratification */
+        addHexCommand("00B2000000", "6B00");
     }
 
     @Override

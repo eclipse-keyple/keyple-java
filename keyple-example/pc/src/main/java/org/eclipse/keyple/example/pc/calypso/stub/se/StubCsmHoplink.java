@@ -22,9 +22,9 @@ public class StubCsmHoplink extends StubSecureElement {
 
     public StubCsmHoplink() {
         /* Select Diversifier */
-        addHexCommand("801400000800000000C0E11FA1", "9000");
+        addHexCommand("8014 0000 08 0000000011223344", "9000");
         /* Get Challenge */
-        addHexCommand("0084000004", "C1A5E5009000");
+        addHexCommand("0084000004", "C1C2C3C49000");
         /* Digest Init */
         addHexCommand(
                 "808A00FF3A300E03082ED700300E300102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F30",
@@ -54,9 +54,9 @@ public class StubCsmHoplink extends StubSecureElement {
                 "808C0000320102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F309000",
                 "9000");
         /* Digest Close */
-        addHexCommand("808E000004", "C234FA7D9000");
+        addHexCommand("808E000004", "050607089000");
         /* Digest Authenticate */
-        addHexCommand("80820000046C8A486C", "9000");
+        addHexCommand("808200000401020304", "9000");
     }
 
     @Override
