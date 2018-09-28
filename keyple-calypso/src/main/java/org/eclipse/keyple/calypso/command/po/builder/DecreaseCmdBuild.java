@@ -43,6 +43,11 @@ public class DecreaseCmdBuild extends PoCommandBuilder
             this.defaultRevision = revision;
         }
 
+        // only counter number >= 1 are allowed
+        if (counterNumber < 1) {
+            throw new IllegalArgumentException("Counter number out of range!");
+        }
+
         // check if the incValue is in the allowed interval
         if (decValue < 0 || decValue > 0xFFFFFF) {
             throw new IllegalArgumentException("Decrement value out of range!");

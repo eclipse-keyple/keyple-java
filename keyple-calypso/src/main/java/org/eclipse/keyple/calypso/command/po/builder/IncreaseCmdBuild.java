@@ -42,6 +42,11 @@ public class IncreaseCmdBuild extends PoCommandBuilder
             this.defaultRevision = revision;
         }
 
+        // only counter number >= 1 are allowed
+        if (counterNumber < 1) {
+            throw new IllegalArgumentException("Counter number out of range!");
+        }
+
         // check if the incValue is in the allowed interval
         if (incValue < 0 || incValue > 0xFFFFFF) {
             throw new IllegalArgumentException("Increment value out of range!");
