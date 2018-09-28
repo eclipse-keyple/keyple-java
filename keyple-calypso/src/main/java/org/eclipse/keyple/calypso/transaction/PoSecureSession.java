@@ -9,6 +9,7 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.SendableInSession;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
@@ -21,6 +22,7 @@ import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoModificationCommand;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
+import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.command.po.builder.session.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.session.CloseSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.session.RatificationCmdBuild;
@@ -69,6 +71,13 @@ public class PoSecureSession {
     private final static byte CHALLENGE_LENGTH_REV32 = (byte) 0x08;
     private final static byte SIGNATURE_LENGTH_REV_INF_32 = (byte) 0x04;
     private final static byte SIGNATURE_LENGTH_REV32 = (byte) 0x08;
+
+    private final static int OFFSET_CLA = 0;
+    private final static int OFFSET_INS = 1;
+    private final static int OFFSET_P1 = 2;
+    private final static int OFFSET_P2 = 3;
+    private final static int OFFSET_Lc = 4;
+    private final static int OFFSET_DATA = 5;
 
     private static final Logger logger = LoggerFactory.getLogger(PoSecureSession.class);
 
@@ -304,6 +313,10 @@ public class PoSecureSession {
             }
         }
 
+        /* Track Read Records for later use to build anticipated responses. */
+        AnticipatedResponseBuilder.storeCommandResponse(poCommandsInsideSession, poApduRequestList,
+                poApduResponseList, true);
+
         /* Parse the response to Open Secure Session (the first item of poApduResponseList) */
         AbstractOpenSessionRespPars poOpenSessionPars =
                 AbstractOpenSessionRespPars.create(poApduResponseList.get(0), poRevision);
@@ -449,6 +462,10 @@ public class PoSecureSession {
                         poApduResponseList);
             }
         }
+
+        /* Track Read Records for later use to build anticipated responses. */
+        AnticipatedResponseBuilder.storeCommandResponse(poCommands, poApduRequestList,
+                poApduResponseList, false);
 
         /*
          * Add all commands data to the digest computation if this method is called within a Secure
@@ -728,7 +745,6 @@ public class PoSecureSession {
 
         return new SeResponse(true, poSeResponse.getAtr(), poSeResponse.getFci(),
                 poApduResponseList);
-
     }
 
     /**
@@ -748,6 +764,28 @@ public class PoSecureSession {
         if (communicationMode == CommunicationMode.CONTACTLESS_MODE) {
             ratificationCommand = new RatificationCmdBuild(poRevision);
         }
+        return processClosing(poModificationCommands, poAnticipatedResponses, ratificationCommand,
+                closeSeChannel);
+    }
+
+    /**
+     * Complete the Javadoc
+     * 
+     * @param poModificationCommands
+     * @param communicationMode
+     * @param closeSeChannel
+     * @return
+     * @throws KeypleReaderException
+     */
+    public SeResponse processClosing(List<PoModificationCommand> poModificationCommands,
+            CommunicationMode communicationMode, boolean closeSeChannel)
+            throws KeypleReaderException {
+        PoCommandBuilder ratificationCommand = null;
+        if (communicationMode == CommunicationMode.CONTACTLESS_MODE) {
+            ratificationCommand = new RatificationCmdBuild(poRevision);
+        }
+        List<ApduResponse> poAnticipatedResponses =
+                AnticipatedResponseBuilder.getResponses(poModificationCommands);
         return processClosing(poModificationCommands, poAnticipatedResponses, ratificationCommand,
                 closeSeChannel);
     }
@@ -1038,6 +1076,174 @@ public class PoSecureSession {
 
 
             return new SeRequest(null, csmApduRequestList, true);
+        }
+    }
+
+    /**
+     * The class handles the anticipated response computation.
+     */
+    private static class AnticipatedResponseBuilder {
+        /**
+         * A nested class to associate a request with a response
+         */
+        private static class CommandResponse {
+            private final ApduRequest apduRequest;
+            private final ApduResponse apduResponse;
+
+            CommandResponse(ApduRequest apduRequest, ApduResponse apduResponse) {
+                this.apduRequest = apduRequest;
+                this.apduResponse = apduResponse;
+            }
+
+            public ApduRequest getApduRequest() {
+                return apduRequest;
+            }
+
+            public ApduResponse getApduResponse() {
+                return apduResponse;
+            }
+        }
+
+        /**
+         * A Map of SFI and Commands/Responses
+         */
+        private static Map<Byte, CommandResponse> sfiCommandResponseHashMap =
+                new HashMap<Byte, CommandResponse>();
+
+        /**
+         * Store all Read Record exchanges in a Map whose key is the SFI.
+         * 
+         * @param poSendableInSessions the list of commands sent to the PO
+         * @param apduRequests the sent apduRequests
+         * @param apduResponses the received apduResponses
+         * @param skipFirstItem a flag to indicate if the first apduRequest/apduResponse pair has to
+         *        be ignored or not.
+         */
+        static void storeCommandResponse(List<PoSendableInSession> poSendableInSessions,
+                List<ApduRequest> apduRequests, List<ApduResponse> apduResponses,
+                Boolean skipFirstItem) {
+            if (poSendableInSessions != null) {
+                /*
+                 * Store Read Records' requests and responses for later use to build anticipated
+                 * responses.
+                 */
+                Iterator<ApduRequest> apduRequestIterator = apduRequests.iterator();
+                Iterator<ApduResponse> apduResponseIterator = apduResponses.iterator();
+                if (skipFirstItem) {
+                    /* case of processOpening */
+                    apduRequestIterator.next();
+                    apduResponseIterator.next();
+                }
+                /* Iterate over the poCommandsInsideSession list */
+                for (PoSendableInSession poSendableInSession : poSendableInSessions) {
+                    if (poSendableInSession instanceof ReadRecordsCmdBuild) {
+                        ApduRequest apduRequest = apduRequestIterator.next();
+                        byte sfi = (byte) ((apduRequest.getBytes().get(OFFSET_P2) >> 3) & 0x1F);
+                        sfiCommandResponseHashMap.put(sfi,
+                                new CommandResponse(apduRequest, apduResponseIterator.next()));
+                    } else {
+                        apduRequestIterator.next();
+                        apduResponseIterator.next();
+                    }
+                }
+            }
+        }
+
+        /**
+         * Establish the anticipated responses to commands provided in poModificationCommands.
+         * <p>
+         * Append Record and Update Record commands return 9000
+         * <p>
+         * Increase and Decrease return NNNNNN9000 where NNNNNNN is the new counter value.
+         * <p>
+         * NNNNNN is determine with the current value of the counter (extracted from the Read Record
+         * responses previously collected) and the value to add or subtract provided in the command.
+         * <p>
+         * The SFI field is used to determine which data should be used to extract the needed
+         * information.
+         *
+         * @param poModificationCommands the modification command list
+         * @return the anticipated responses.
+         * @throws KeypleCalypsoSecureSessionException if an response can't be determined.
+         */
+        public static List<ApduResponse> getResponses(
+                List<PoModificationCommand> poModificationCommands)
+                throws KeypleCalypsoSecureSessionException {
+            List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
+            if (poModificationCommands != null) {
+                for (PoModificationCommand poModificationCommand : poModificationCommands) {
+                    if (poModificationCommand instanceof AppendRecordCmdBuild
+                            || poModificationCommand instanceof UpdateRecordCmdBuild) {
+                        /* Append/Update Record: response = 9000 */
+                        apduResponses.add(new ApduResponse(ByteBufferUtils.fromHex("9000"), null));
+                    } else if (poModificationCommand instanceof DecreaseCmdBuild
+                            || poModificationCommand instanceof IncreaseCmdBuild) {
+                        /* response = NNNNNN9000 */
+                        ByteBuffer modCounterApduRequest =
+                                ((PoCommandBuilder) poModificationCommand).getApduRequest()
+                                        .getBytes();
+                        /* Retrieve SFI from the current Decrease command */
+                        byte sfi = (byte) ((modCounterApduRequest.get(OFFSET_P2) >> 3) & 0x1F);
+                        /*
+                         * Look for the counter value in the stored records. Only the first
+                         * occurrence of the SFI is taken into account. We assume here that the
+                         * record number is always 1.
+                         */
+                        CommandResponse commandResponse = sfiCommandResponseHashMap.get(sfi);
+                        if (commandResponse != null) {
+                            byte counterNumber = modCounterApduRequest.get(OFFSET_P1);
+                            /*
+                             * The record containing the counters is structured as follow:
+                             * AAAAAAABBBBBBCCCCCC...XXXXXX each counter being a 3-byte unsigned
+                             * number. Convert the 3-byte block indexed by the counter number to an
+                             * int.
+                             */
+                            int currentCounterValue = commandResponse.getApduResponse().getBytes()
+                                    .order(ByteOrder.BIG_ENDIAN)
+                                    .getInt((counterNumber - 1) * 3) >> 8;
+                            /* Extract the add or subtract value from the modification request */
+                            int addSubtractValue = modCounterApduRequest.order(ByteOrder.BIG_ENDIAN)
+                                    .getInt(OFFSET_DATA) >> 8;
+                            /* Build the response */
+                            ByteBuffer response = ByteBuffer.allocate(5);
+                            int newCounterValue;
+                            if (poModificationCommand instanceof DecreaseCmdBuild) {
+                                newCounterValue = currentCounterValue - addSubtractValue;
+                            } else {
+                                newCounterValue = currentCounterValue + addSubtractValue;
+                            }
+                            response.order(ByteOrder.BIG_ENDIAN).putInt((newCounterValue) << 8);
+                            response.put(3, (byte) 0x90);
+                            response.put(4, (byte) 0x00);
+                            response.position(0);
+                            apduResponses.add(new ApduResponse(response, null));
+                            if (logger.isDebugEnabled()) {
+                                logger.debug(
+                                        "Anticipated response. COMMAND = {}, SFI = {}, COUNTERVALUE = {}, DECREMENT = {}, NEWVALUE = {} ",
+                                        (poModificationCommand instanceof DecreaseCmdBuild)
+                                                ? "Decrease"
+                                                : "Increase",
+                                        sfi, currentCounterValue, addSubtractValue,
+                                        newCounterValue);
+                            }
+                        } else {
+                            throw new KeypleCalypsoSecureSessionException(
+                                    "Anticipated response. COMMAND = "
+                                            + ((poModificationCommand instanceof DecreaseCmdBuild)
+                                                    ? "Decrease"
+                                                    : "Increase")
+                                            + ". Unable to determine anticipated counter value. SFI = "
+                                            + sfi,
+                                    ((PoCommandBuilder) poModificationCommand).getApduRequest(),
+                                    null);
+                        }
+                    } else {
+                        throw new IllegalArgumentException("Unexpected modification command: "
+                                + poModificationCommand.toString());
+                    }
+                }
+            }
+            return apduResponses;
         }
     }
 }
