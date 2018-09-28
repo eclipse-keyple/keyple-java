@@ -279,14 +279,9 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
         eventLogAppend.add(poAppendRecordCmd_EventLog);
 
         /*
-         * The successful execution status of the Append Record command is anticipated.
-         *
-         * A ratification command is provided (short Read Record).
+         * A ratification command will be sent (CONTACTLESS_MODE).
          */
-        List<ApduResponse> poAnticipatedResponses = new ArrayList<ApduResponse>();
-        poAnticipatedResponses.add(new ApduResponse(ByteBufferUtils.fromHex("9000"), null));
-
-        seResponse = poTransaction.processClosing(eventLogAppend, poAnticipatedResponses,
+        seResponse = poTransaction.processClosing(eventLogAppend,
                 CommunicationMode.CONTACTLESS_MODE, false);
 
         if (poTransaction.isSuccessful()) {
