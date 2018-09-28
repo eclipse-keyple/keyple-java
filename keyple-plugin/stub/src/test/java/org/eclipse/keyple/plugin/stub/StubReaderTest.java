@@ -176,7 +176,7 @@ public class StubReaderTest {
         SeRequestSet requests = getNoResponseRequest();
 
         // init SE
-        reader.insertSe(hoplinkSE());
+        reader.insertSe(noResponseToCommandSE());
 
         // add Protocol flag
         reader.addSeProtocolSetting(
@@ -303,6 +303,31 @@ public class StubReaderTest {
 
 
 
+    }
+
+    private StubSecureElement noResponseToCommandSE() {
+        return new StubSecureElement() {
+
+            @Override
+            public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
+
+                addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
+                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
+
+                return super.processApdu(apduIn);
+            }
+
+            @Override
+            public ByteBuffer getATR() {
+                return ByteBufferUtils
+                        .fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
+            }
+
+            @Override
+            public String getSeProcotol() {
+                return "PROTOCOL_ISO14443_4";
+            }
+        };
     }
 
     private StubSecureElement getSENoconnection() {
