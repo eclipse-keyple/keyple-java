@@ -31,6 +31,7 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
 
     private static final Logger logger = LoggerFactory.getLogger(RsePlugin.class);
 
+    //virtal readers
     SortedSet<RseReader> rseReaders = new TreeSet<RseReader>();
 
     public RsePlugin() {
@@ -50,7 +51,6 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
     @Override
     public void setParameter(String key, String value)
             throws IllegalArgumentException, KeypleBaseException {
-
     }
 
     @Override
@@ -85,7 +85,13 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
                 "reader with Remote Name not found : " + remoteName);
     }
 
-    public String connectRemoteReader(String name, IReaderSession session) {
+    /**
+     * Create a virtual reader
+     * @param name
+     * @param session
+     * @return
+     */
+    private String connectRemoteReader(String name, IReaderSession session) {
         logger.debug("connectRemoteReader {}", name);
 
         // check if reader is not already connected (by name)
@@ -109,7 +115,7 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
         // todo errors
     }
 
-    public void onReaderEvent(ReaderEvent event, String sessionId) {
+    private void onReaderEvent(ReaderEvent event, String sessionId) {
         logger.debug("OnReaderEvent {}", event);
         logger.debug("Dispatch ReaderEvent to the appropriate Reader {} {}", event.getReaderName(),
                 sessionId);
@@ -166,8 +172,6 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
         super.notifyObservers(event);
 
     }
-
-
 
     private Boolean isReaderConnected(String name) {
         for (RseReader RseReader : rseReaders) {
@@ -229,6 +233,8 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
             } else {
                 // rseSession = new ReaderAsyncClientImpl(sessionId, message.getDtoSender());
                 rseSession = new ReaderAsyncClientImpl(sessionId);
+                //add the web socket node as an observer for the session as the session will send KeypleDTO
+                ((ReaderAsyncClientImpl)rseSession).addObserver( message.getDtoSender());
             }
 
             this.connectRemoteReader(readerName, rseSession);

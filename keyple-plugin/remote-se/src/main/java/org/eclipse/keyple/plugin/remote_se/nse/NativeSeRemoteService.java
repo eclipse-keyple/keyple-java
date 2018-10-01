@@ -44,7 +44,7 @@ public class NativeSeRemoteService implements NseAPI, RseClient, DtoReceiver {
 
         // receive a response to a reader_connect
         if (msg.getAction().equals(KeypleDTOHelper.READER_CONNECT) && !msg.isRequest()) {
-            logger.info("**** ACTION - READER_CONNECT ****");
+            logger.info("**** RESPONSE - READER_CONNECT ****");
             // parse response
             JsonObject body = JsonParser.getGson().fromJson(msg.getBody(), JsonObject.class);
             String sessionId = msg.getSessionId();
@@ -57,13 +57,16 @@ public class NativeSeRemoteService implements NseAPI, RseClient, DtoReceiver {
                     // observe reader
                     ProxyReader localReader = this.findLocalReader(nativeReaderName);
                     if (localReader instanceof AbstractObservableReader) {
+                        logger.debug(
+                                "Add NativeSeRemoteService as an observer for native reader {}",
+                                localReader.getName());
                         ((AbstractObservableReader) localReader).addObserver(this);
                     }
                     // store sessionId
                     nseSessionManager.addNewSession(sessionId, localReader.getName());
                 } catch (KeypleReaderNotFoundException e) {
                     logger.warn(
-                            "While receiving a confirmation of Rse connection, local reader were not found");
+                            "While receiving a confirmation of Rse connection, local reader was not found");
                 }
             } else {
                 logger.warn("Receive a error statusCode {} {}", statusCode,
@@ -153,7 +156,7 @@ public class NativeSeRemoteService implements NseAPI, RseClient, DtoReceiver {
 
     public void bind(TransportNode node) {
         this.transportNode = node;
-        node.setDtoReceiver(this);
+        node.setStubplugin(this);
     }
 
     public ProxyReader findLocalReader(String readerName) throws KeypleReaderNotFoundException {

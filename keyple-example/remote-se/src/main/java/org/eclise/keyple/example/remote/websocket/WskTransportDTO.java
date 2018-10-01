@@ -8,6 +8,7 @@
 
 package org.eclise.keyple.example.remote.websocket;
 
+import org.eclipse.keyple.plugin.remote_se.transport.DtoSender;
 import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTO;
 import org.eclipse.keyple.plugin.remote_se.transport.TransportDTO;
 import org.java_websocket.WebSocket;
@@ -21,11 +22,18 @@ public class WskTransportDTO implements TransportDTO {
 
     KeypleDTO dto;
     WebSocket socketWeb;
+    DtoSender wskNode;
 
 
     public WskTransportDTO(KeypleDTO dto, WebSocket socketWeb) {
         this.dto = dto;
         this.socketWeb = socketWeb;
+    }
+
+    public WskTransportDTO(KeypleDTO dto, WebSocket socketWeb, DtoSender wskNode) {
+        this.dto = dto;
+        this.socketWeb = socketWeb;
+        this.wskNode = wskNode;
     }
 
     @Override
@@ -39,6 +47,10 @@ public class WskTransportDTO implements TransportDTO {
         return new WskTransportDTO(keypleDto, this.socketWeb);
     }
 
+    @Override
+    public DtoSender getDtoSender() {
+        return wskNode;
+    }
 
 
     public void setDto(KeypleDTO dto) {

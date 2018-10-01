@@ -8,8 +8,14 @@
 
 package org.eclipse.keyple.plugin.remote_se.rse;
 
+import java.util.concurrent.CountDownLatch;
+
+import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTO;
+import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTOHelper;
+import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
+import org.eclipse.keyple.util.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * Manage RSE Reader Session Manage SeRequestSet to transmit and receive SeResponseSet in an
  * asynchronous way
  */
-public class ReaderAsyncClientImpl implements IReaderAsyncSession {
+public class ReaderAsyncClientImpl extends Observable<KeypleDTO> implements IReaderAsyncSession  {
 
     private static final Logger logger = LoggerFactory.getLogger(ReaderAsyncClientImpl.class);
 
@@ -25,7 +31,7 @@ public class ReaderAsyncClientImpl implements IReaderAsyncSession {
     SeRequestSet seRequestSet;
     ISeResponseSetCallback seResponseSetCallback;
     // DtoSender dtoSender;
-    // final CountDownLatch lock = new CountDownLatch(1);
+    final CountDownLatch lock = new CountDownLatch(1);
     SeResponseSet seResponseSet;
 
     // constructor
@@ -45,15 +51,17 @@ public class ReaderAsyncClientImpl implements IReaderAsyncSession {
         logger.debug("Session {} asyncTransmit {}", sessionId, seRequestSet);
         if (this.seRequestSet == null) {
             logger.debug("Set a new seRequestSet in Session {}", sessionId);
+
+            //used for 1way communication
             this.seRequestSet = seRequestSet;
             this.seResponseSetCallback = seResponseSetCallback;
 
-            // todo only for duplex connection
-            // dtoSender.sendDTO(new KeypleDTO(
-            // KeypleDTOHelper.READER_TRANSMIT,
-            // JsonParser.getGson().toJson(this.seRequestSet, SeRequestSet.class),
-            // true,
-            // sessionId));
+            //used for 2way communications
+            notifyObservers(new KeypleDTO(
+                     KeypleDTOHelper.READER_TRANSMIT,
+                     JsonParser.getGson().toJson(this.seRequestSet, SeRequestSet.class),
+                     true,
+                     sessionId));
 
         } else {
             logger.warn("SeRequestSet is already set in Session {}", sessionId);
@@ -69,8 +77,11 @@ public class ReaderAsyncClientImpl implements IReaderAsyncSession {
     @Override
     public void asyncSetSeResponseSet(SeResponseSet seResponseSet) {
         logger.debug("Session {} asyncSetSeResponseSet {}", sessionId, seResponseSet);
-        if (this.seRequestSet != null) {
-            // todo check that responseSet is matching requestSet
+        if (this.seRequestSet== null) {
+            logger.warn(
+                    "seRequestSet is missing while receiving seResponseSet {}",
+                    seResponseSet);
+        }
 
             // release seRequestSet next work
             this.seRequestSet = null;
@@ -80,12 +91,6 @@ public class ReaderAsyncClientImpl implements IReaderAsyncSession {
 
             // return seResponseSet by callback
             this.seResponseSetCallback.getResponseSet(seResponseSet);
-        } else {
-            logger.warn(
-                    "Session has been lost, seRequestSet is missing while receiving seResponseSet {}",
-                    seResponseSet);
-
-        }
     }
 
     @Override
@@ -101,24 +106,23 @@ public class ReaderAsyncClientImpl implements IReaderAsyncSession {
 
     @Override
     public SeResponseSet transmit(SeRequestSet seApplicationRequest) {
-        return null;
-        // logger.debug("Session {} sync transmit {}",sessionId, seApplicationRequest);
-        // asyncTransmit(seApplicationRequest, new ISeResponseSetCallback() {
-        // @Override
-        // public void getResponseSet(SeResponseSet seResponseSet) {
-        // logger.debug("Receive SeResponseSetCallback, release lock ");
-        // lock.countDown();
-        // }
-        // });
-        // try {
-        // logger.debug("Send SeRequestSet, set lock on thread");
-        // lock.await();
-        // logger.debug("Send SeRequestSet, thread unlock");
-        // return seResponseSet;
-        // } catch (InterruptedException e) {
-        // e.printStackTrace();
-        // return null;
-        // }
+        logger.debug("Session {} sync transmit {}", sessionId, seApplicationRequest);
+        asyncTransmit(seApplicationRequest, new ISeResponseSetCallback() {
+            @Override
+            public void getResponseSet(SeResponseSet seResponseSet) {
+                logger.debug("Receive SeResponseSetCallback, release lock ");
+                lock.countDown();
+            }
+        });
+        try {
+            logger.debug("Send SeRequestSet, set lock on thread");
+            lock.await();
+            logger.debug("Send SeRequestSet, thread unlock");
+            return seResponseSet;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
 
 
     }
@@ -138,7 +142,6 @@ public class ReaderAsyncClientImpl implements IReaderAsyncSession {
     public Boolean isAsync() {
         return true;
     }
-
 
 
 }

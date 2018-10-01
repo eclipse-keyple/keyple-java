@@ -44,7 +44,7 @@ public class VirtualSeRemoteService {
         SortedSet<ReaderPlugin> plugins = new TreeSet<ReaderPlugin>();
         plugins.add(plugin);
         seProxyService.setPlugins(plugins);
-        this.node.setDtoReceiver(plugin);
+        this.node.setStubplugin(plugin);
     }
 
 

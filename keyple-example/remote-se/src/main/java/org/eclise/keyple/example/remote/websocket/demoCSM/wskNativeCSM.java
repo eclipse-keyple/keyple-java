@@ -21,6 +21,7 @@ import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclise.keyple.example.remote.websocket.ConnectionCb;
 import org.eclise.keyple.example.remote.websocket.WskServer;
 import org.slf4j.Logger;
@@ -34,7 +35,8 @@ public class wskNativeCSM {
     StubReader localReader;
     // physical reader
 
-    void boot() throws URISyntaxException, UnknownHostException {
+    void boot() throws URISyntaxException, UnknownHostException, InterruptedException,
+            KeypleReaderNotFoundException {
 
         logger.info("**********************************************************");
         logger.info("Connect a Native Reader through NativeSeRemoteService     ");
@@ -49,13 +51,21 @@ public class wskNativeCSM {
         SortedSet<ReaderPlugin> plugins = new TreeSet<ReaderPlugin>();
         plugins.add(stubPlugin);
         seProxyService.setPlugins(plugins);
-        localReader = stubPlugin.plugStubReader("stubPO");
-        // localReader.insertSe(new CSMStubSE());
-        localReader.insertSe(new StubHoplink());
+        stubPlugin.plugStubReader("stubCSM");
 
+        Thread.sleep(1000);
+
+        // get the created proxy reader
+        localReader = (StubReader) stubPlugin.getReader("stubCSM");
         logger.info("Connect Reader : ", localReader.getName());
 
-        logger.info("Bing Web Socket Server to NatiseSeRemoteServer");
+        // localReader.insertSe(new CSMStubSE());
+        localReader.insertSe(new StubHoplink());// should be a csm
+
+        Thread.sleep(1000);
+
+
+        logger.info("Bind Web Socket Server to NatiseSeRemoteServer");
         final NativeSeRemoteService nseService = new NativeSeRemoteService();
 
 
@@ -66,7 +76,7 @@ public class wskNativeCSM {
 
 
         logger.info("Init Web Socket Server");
-        Integer port = 8009;
+        Integer port = 8002;
         String END_POINT = "/remote-se";
         String URL = "0.0.0.0";
         InetSocketAddress inet = new InetSocketAddress(Inet4Address.getByName(URL), port);

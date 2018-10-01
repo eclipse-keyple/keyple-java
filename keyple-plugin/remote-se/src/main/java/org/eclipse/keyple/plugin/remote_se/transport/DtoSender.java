@@ -8,10 +8,12 @@
 
 package org.eclipse.keyple.plugin.remote_se.transport;
 
+import org.eclipse.keyple.util.Observable;
+
 /**
  * Components that sends a DTO
  */
-public interface DtoSender {
+public interface DtoSender extends Observable.Observer<KeypleDTO> {
 
     /**
      * Send DTO with transport information

@@ -59,8 +59,8 @@ public class WsServer implements TransportNode {
      * TransportNode
      */
     @Override
-    public void setDtoReceiver(DtoReceiver receiver) {
-        this.keypleDTOEndpoint.setDtoReceiver(receiver);;
+    public void setStubplugin(DtoReceiver receiver) {
+        this.keypleDTOEndpoint.setStubplugin(receiver);;
     }
 
     @Override
@@ -70,6 +70,12 @@ public class WsServer implements TransportNode {
 
     @Override
     public void sendDTO(KeypleDTO message) {
+
+    }
+
+    @Override
+    public void update(KeypleDTO event) {
+        //not in used in ws
 
     }
 
@@ -105,7 +111,7 @@ public class WsServer implements TransportNode {
          * TransportNode
          */
         @Override
-        public void setDtoReceiver(DtoReceiver receiver) {
+        public void setStubplugin(DtoReceiver receiver) {
             this.dtoReceiver = receiver;
         }
 
@@ -142,6 +148,11 @@ public class WsServer implements TransportNode {
                 os.write(responseBody.getBytes());
                 os.close();
             }
+        }
+
+        @Override
+        public void update(KeypleDTO event) {
+            //not in used in ws
         }
     }
 

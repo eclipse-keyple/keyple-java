@@ -19,6 +19,7 @@ import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclise.keyple.example.remote.websocket.WskClient;
 import org.java_websocket.client.WebSocketClient;
 import org.slf4j.Logger;
@@ -29,12 +30,12 @@ public class WskPO {
 
     private static final Logger logger = LoggerFactory.getLogger(WskPO.class);
 
-    private static String ENDPOINT_URL = "http://localhost:8000/remote-se";
+    private static String ENDPOINT_URL = "http://localhost:8002/remote-se";
 
     // physical reader
     StubReader localReader;
 
-    void boot() throws URISyntaxException {
+    void boot() throws URISyntaxException, KeypleReaderNotFoundException, InterruptedException {
         logger.info("************************");
         logger.info("Boot Client Network     ");
         logger.info("************************");
@@ -42,7 +43,6 @@ public class WskPO {
 
         WebSocketClient wskClient = new WskClient(new URI(ENDPOINT_URL));
         wskClient.connect();
-
 
 
         logger.info("**********************************************************");
@@ -60,9 +60,14 @@ public class WskPO {
         SortedSet<ReaderPlugin> plugins = new TreeSet<ReaderPlugin>();
         plugins.add(stubPlugin);
         seProxyService.setPlugins(plugins);
-        localReader = stubPlugin.plugStubReader("stubPO");
+        stubPlugin.plugStubReader("stubPO");
 
+        Thread.sleep(1000);
+
+        // get the created proxy reader
+        localReader = (StubReader) stubPlugin.getReader("stubPO");
         logger.info("Connect Reader : ", localReader.getName());
+
 
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("isAsync", true);

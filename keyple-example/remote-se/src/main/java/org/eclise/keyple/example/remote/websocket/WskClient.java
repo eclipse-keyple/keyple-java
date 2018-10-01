@@ -65,7 +65,7 @@ public class WskClient extends WebSocketClient implements TransportNode {
     public void sendDTO(KeypleDTO keypleDTO) {
         // if keypkeDTO is no empty
         if (!KeypleDTOHelper.isNoResponse(keypleDTO)) {
-            logger.debug("send DTO {}", KeypleDTOHelper.toJson(keypleDTO));
+            logger.trace("send DTO {}", KeypleDTOHelper.toJson(keypleDTO));
             this.send(KeypleDTOHelper.toJson(keypleDTO));
         } else {
             logger.debug("No message to send back");
@@ -73,9 +73,14 @@ public class WskClient extends WebSocketClient implements TransportNode {
     }
 
     @Override
-    public void setDtoReceiver(DtoReceiver receiver) {
+    public void setStubplugin(DtoReceiver receiver) {
         this.dtoReceiver = receiver;
     }
 
 
+    //observer of keypleDTOSenders
+    @Override
+    public void update(KeypleDTO event) {
+        this.sendDTO(event);
+    }
 }

@@ -31,8 +31,8 @@ public interface TransportDTO {
     TransportDTO nextTransportDTO(KeypleDTO kdto);
 
 
-    // @Deprecated
-    // DtoSender getDtoSender();
+    @Deprecated
+    DtoSender getDtoSender();
 
 
 

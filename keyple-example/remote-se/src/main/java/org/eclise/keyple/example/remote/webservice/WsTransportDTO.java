@@ -8,6 +8,7 @@
 
 package org.eclise.keyple.example.remote.webservice;
 
+import org.eclipse.keyple.plugin.remote_se.transport.DtoSender;
 import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTO;
 import org.eclipse.keyple.plugin.remote_se.transport.TransportDTO;
 import com.sun.net.httpserver.HttpExchange;
@@ -36,6 +37,11 @@ public class WsTransportDTO implements TransportDTO {
         return new WsTransportDTO(kdto, t);
     }
 
+    @Override
+    public DtoSender getDtoSender() {
+        //not in used in ws
+        return null;
+    }
 
 
 }

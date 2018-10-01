@@ -19,6 +19,7 @@ import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclise.keyple.example.remote.webservice.WsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class WsPO {
     // physical reader
     StubReader localReader;
 
-    void boot() {
+    void boot() throws InterruptedException, KeypleReaderNotFoundException {
         logger.info("************************");
         logger.info("Create Webservice Client");
         logger.info("************************");
@@ -52,8 +53,12 @@ public class WsPO {
         SortedSet<ReaderPlugin> plugins = new TreeSet<ReaderPlugin>();
         plugins.add(stubPlugin);
         seProxyService.setPlugins(plugins);
-        localReader = stubPlugin.plugStubReader("stubPO");
+        stubPlugin.plugStubReader("stubPO");
 
+        Thread.sleep(1000);
+
+        // get the created proxy reader
+        localReader = (StubReader) stubPlugin.getReader("stubPO");
 
         NativeSeRemoteService seRemoteService = new NativeSeRemoteService();
         seRemoteService.bind(ws);

@@ -11,6 +11,7 @@ package org.eclise.keyple.example.remote.websocket;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.eclipse.keyple.plugin.remote_se.transport.*;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -21,7 +22,7 @@ import org.slf4j.LoggerFactory;
 public class WskServer extends WebSocketServer implements TransportNode {
 
     private static final Logger logger = LoggerFactory.getLogger(WskServer.class);
-    private DtoReceiver dtoReceiver;
+    private DtoReceiver stubplugin;
     private ConnectionCb connectionCb;
 
     // only for when server is slave
@@ -51,13 +52,20 @@ public class WskServer extends WebSocketServer implements TransportNode {
         logger.debug("Web socket onClose {} {} {} {}", conn, code, reason, remote);
     }
 
+    /**
+     * Incoming message
+     * @param conn
+     * @param message
+     */
     @Override
     public void onMessage(WebSocket conn, String message) {
         logger.trace("Web socket onMessage {} {}", conn, message);
         KeypleDTO keypleDTO = KeypleDTOHelper.fromJson(message);
 
-        if (dtoReceiver != null) {
-            TransportDTO transportDTO = dtoReceiver.onDTO(new WskTransportDTO(keypleDTO, conn));
+        if (stubplugin != null) {
+
+            //LOOP pass DTO and get DTO Response is any
+            TransportDTO transportDTO = stubplugin.onDTO(new WskTransportDTO(keypleDTO, conn,this));
 
             if (!isSlave) {
                 // if server is master, can have numerous clients
@@ -96,8 +104,8 @@ public class WskServer extends WebSocketServer implements TransportNode {
         return sessionId_Connection.get(sessionId);
     }
 
-    public void setDtoReceiver(DtoReceiver dtoReceiver) {
-        this.dtoReceiver = dtoReceiver;
+    public void setStubplugin(DtoReceiver stubplugin) {
+        this.stubplugin = stubplugin;
     }
 
 
@@ -146,5 +154,8 @@ public class WskServer extends WebSocketServer implements TransportNode {
     }
 
 
-
+    @Override
+    public void update(KeypleDTO event) {
+        sendDTO(event);
+    }
 }

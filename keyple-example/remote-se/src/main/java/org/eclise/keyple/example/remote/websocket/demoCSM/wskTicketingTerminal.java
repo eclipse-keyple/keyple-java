@@ -26,7 +26,6 @@ import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclise.keyple.example.remote.websocket.WskClient;
 import org.java_websocket.client.WebSocketClient;
@@ -55,7 +54,7 @@ public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.
         logger.info("Boot Client Network     ");
         logger.info("************************");
 
-        String ENDPOINT_URL = "http://localhost:8009/remote-se";
+        String ENDPOINT_URL = "http://localhost:8002/remote-se";
         WebSocketClient wskClient = new WskClient(new URI(ENDPOINT_URL));
         wskClient.connect();
 
@@ -147,8 +146,7 @@ public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.
                     poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
                     final SeRequest.Selector selector =
                             new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
-                    SeRequest seRequest = new SeRequest(selector, poApduRequestList, true,
-                            ContactlessProtocols.PROTOCOL_ISO14443_4);
+                    SeRequest seRequest = new SeRequest(selector, poApduRequestList, true);
 
                     // ASYNC transmit seRequestSet to Reader With Callback function
                     reader.asyncTransmit(new SeRequestSet(seRequest), new ISeResponseSetCallback() {
@@ -167,8 +165,8 @@ public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.
                                     Arrays.asList(poReadRecordCmd_T2Usage.getApduRequest(),
                                             poReadRecordCmd_T2Usage.getApduRequest());
 
-                            SeRequest seRequest2 = new SeRequest(selector, poApduRequestList2,
-                                    false, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                            SeRequest seRequest2 =
+                                    new SeRequest(selector, poApduRequestList2, false);
 
                             // ASYNC transmit seRequestSet to Reader
                             try {

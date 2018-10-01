@@ -30,7 +30,7 @@ public class WsClient implements TransportNode {
      * TransportNode
      */
     @Override
-    public void setDtoReceiver(DtoReceiver receiver) {
+    public void setStubplugin(DtoReceiver receiver) {
         this.dtoReceiver = receiver;
     }
 
@@ -71,5 +71,10 @@ public class WsClient implements TransportNode {
     @Override
     public void sendDTO(KeypleDTO message) {
         sendDTO(new WsTransportDTO(message, null));
+    }
+
+    @Override
+    public void update(KeypleDTO event) {
+        //not in used in webservice
     }
 }
