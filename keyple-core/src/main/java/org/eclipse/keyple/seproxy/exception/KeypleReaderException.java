@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.seproxy.exception;
 
+
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 

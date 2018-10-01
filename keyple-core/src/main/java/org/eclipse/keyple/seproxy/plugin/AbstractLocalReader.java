@@ -239,7 +239,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                         responses.add(ex.getSeResponse());
                         /* Build a SeResponseSet with the available data. */
                         ex.setSeResponseSet(new SeResponseSet(responses));
-                        throw new KeypleReaderException(ex.getMessage(), ex);
+                        throw ex;
                     }
                     responses.add(response);
                     logger.debug("[{}] processSeRequestSet => receive {}", this.getName(),
@@ -418,8 +418,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                      */
                     ex.setSeResponse(new SeResponse(previouslyOpen, atrData, fciDataSelected,
                             apduResponseList));
-                    throw new KeypleIOReaderException(
-                            "IO Reader exception. Partial SeResponse available.", ex);
+                    throw ex;
                 }
             }
         }
