@@ -11,7 +11,6 @@ package org.eclise.keyple.example.remote.websocket;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.keyple.plugin.remote_se.transport.*;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -19,13 +18,13 @@ import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WskServer extends WebSocketServer implements  TransportNode {
+public class WskServer extends WebSocketServer implements TransportNode {
 
     private static final Logger logger = LoggerFactory.getLogger(WskServer.class);
     private DtoReceiver dtoReceiver;
     private ConnectionCb connectionCb;
 
-    //only for when server is slave
+    // only for when server is slave
     private Boolean isSlave;
     private WebSocket masterWebSocket;
 
@@ -36,13 +35,15 @@ public class WskServer extends WebSocketServer implements  TransportNode {
     }
 
     /*
-        WebSocketServer
+     * WebSocketServer
      */
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         logger.debug("Web socket onOpen {} {}", conn, handshake);
         masterWebSocket = conn;
-        if(connectionCb!=null){connectionCb.onConnection(conn); }
+        if (connectionCb != null) {
+            connectionCb.onConnection(conn);
+        }
     }
 
     @Override
@@ -56,13 +57,13 @@ public class WskServer extends WebSocketServer implements  TransportNode {
         KeypleDTO keypleDTO = KeypleDTOHelper.fromJson(message);
 
         if (dtoReceiver != null) {
-            TransportDTO transportDTO = dtoReceiver.onDTO(new WskTransportDTO(keypleDTO,conn));
+            TransportDTO transportDTO = dtoReceiver.onDTO(new WskTransportDTO(keypleDTO, conn));
 
-            if(!isSlave){
-                //if server is master, can have numerous clients
-                 if(transportDTO.getKeypleDTO().getSessionId()!=null){
+            if (!isSlave) {
+                // if server is master, can have numerous clients
+                if (transportDTO.getKeypleDTO().getSessionId() != null) {
                     sessionId_Connection.put(transportDTO.getKeypleDTO().getSessionId(), conn);
-                }else{
+                } else {
                     logger.warn("No session defined in response {}", transportDTO);
                 }
             }
@@ -86,8 +87,8 @@ public class WskServer extends WebSocketServer implements  TransportNode {
 
 
     /*
-        TransportNode
-    */
+     * TransportNode
+     */
 
     Map<String, Object> sessionId_Connection = new HashMap<String, Object>();
 
@@ -106,24 +107,26 @@ public class WskServer extends WebSocketServer implements  TransportNode {
 
         if (KeypleDTOHelper.isNoResponse(tdto.getKeypleDTO())) {
             logger.trace("Keyple DTO is empty, do not send it");
-        }else{
+        } else {
 
-            if(isSlave){
-                //only one client -> master
+            if (isSlave) {
+                // only one client -> master
                 masterWebSocket.send(KeypleDTOHelper.toJson(tdto.getKeypleDTO()));
-            }else{
-                //server is master and can have numerous clients
-                if(((WskTransportDTO)tdto).getSocketWeb()!=null){
+            } else {
+                // server is master and can have numerous clients
+                if (((WskTransportDTO) tdto).getSocketWeb() != null) {
                     logger.trace("Use socketweb included in TransportDTO");
-                    ((WskTransportDTO)tdto).getSocketWeb().send(KeypleDTOHelper.toJson(tdto.getKeypleDTO()));
-                }else{
-                    if(tdto.getKeypleDTO().getSessionId()==null){
+                    ((WskTransportDTO) tdto).getSocketWeb()
+                            .send(KeypleDTOHelper.toJson(tdto.getKeypleDTO()));
+                } else {
+                    if (tdto.getKeypleDTO().getSessionId() == null) {
                         logger.warn("No sessionId defined in message, Keyple DTO can not be sent");
-                    }else{
+                    } else {
                         logger.trace("Retrieve socketweb from sessionId");
-                        //retrieve connection object from the transport
+                        // retrieve connection object from the transport
                         Object conn = getConnection(tdto.getKeypleDTO().getSessionId());
-                        logger.debug("send DTO {} {}", KeypleDTOHelper.toJson(tdto.getKeypleDTO()), conn);
+                        logger.debug("send DTO {} {}", KeypleDTOHelper.toJson(tdto.getKeypleDTO()),
+                                conn);
                         ((WebSocket) conn).send(KeypleDTOHelper.toJson(tdto.getKeypleDTO()));
                     }
                 }
@@ -133,11 +136,12 @@ public class WskServer extends WebSocketServer implements  TransportNode {
     }
 
     /*
-            DTO Sender
-        */
+     * DTO Sender
+     */
     @Override
     public void sendDTO(KeypleDTO message) {
-        logger.trace("Web socket sendDTO without predefined socket {}", KeypleDTOHelper.toJson(message));
+        logger.trace("Web socket sendDTO without predefined socket {}",
+                KeypleDTOHelper.toJson(message));
         this.sendDTO(new WskTransportDTO(message, null));
     }
 

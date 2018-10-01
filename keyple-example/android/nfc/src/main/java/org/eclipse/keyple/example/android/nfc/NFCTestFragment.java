@@ -194,10 +194,12 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
-                initTextView();
-
                 try {
+
+
+
+                    initTextView();
+
                     ProxyReader reader = null;
                     reader = SeProxyService.getInstance().getPlugins().first().getReaders().first();
 
@@ -277,12 +279,15 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                                 mText.append("\n ---- \n");
                             }
                             mText.append("\n\n\n\n\n");
+                        }
+                    }
+                } catch (Exception e) {
+                    e.fillInStackTrace();
+                }
+            }
 
-        } catch (KeypleReaderException e) {
-            e.printStackTrace();
-        } catch (KeypleBaseException e) {
-            e.printStackTrace();
-        }
+        });
+
     }
 
 

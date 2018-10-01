@@ -11,7 +11,7 @@ package org.eclipse.keyple.plugin.remote_se.nse;
 import java.util.Map;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 
 public interface RseClient extends ObservableReader.ReaderObserver {
 
@@ -21,11 +21,10 @@ public interface RseClient extends ObservableReader.ReaderObserver {
      * Reader with an option to duplex connection
      */
     void connectReader(ProxyReader localReader, Map<String, Object> options)
-            throws IOReaderException;
+            throws KeypleReaderException;
 
 
-    void disconnectReader(ProxyReader localReader) throws IOReaderException;
-
+    void disconnectReader(ProxyReader localReader) throws KeypleReaderException;
 
 
 

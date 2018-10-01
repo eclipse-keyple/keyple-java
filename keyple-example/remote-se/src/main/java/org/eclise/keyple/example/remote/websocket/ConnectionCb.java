@@ -9,7 +9,7 @@
 package org.eclise.keyple.example.remote.websocket;
 
 /*
-    Callback used by TransportNode when a network connection is established
+ * Callback used by TransportNode when a network connection is established
  */
 public interface ConnectionCb {
 

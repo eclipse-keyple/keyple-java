@@ -99,7 +99,7 @@ public class SeResponseTest {
      * HELPERS
      */
 
-    static SeResponse getASeResponse() throws IllegalArgumentException {
+    public static SeResponse getASeResponse() throws IllegalArgumentException {
         return new SeResponse(true, ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(),
                 ApduResponseTest.getAListOfAPDUs());
     }

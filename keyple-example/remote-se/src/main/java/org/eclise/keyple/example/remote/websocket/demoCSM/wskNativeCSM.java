@@ -9,23 +9,22 @@
 package org.eclise.keyple.example.remote.websocket.demoCSM;
 
 
-import org.eclipse.keyple.plugin.remote_se.nse.NativeSeRemoteService;
-import org.eclise.keyple.example.remote.websocket.ConnectionCb;
-import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
-import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.seproxy.ReaderPlugin;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclise.keyple.example.remote.websocket.WskServer;
-import org.eclise.keyple.example.stub.calypso.HoplinkStubSE;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import org.eclipse.keyple.example.pc.calypso.stub.se.StubHoplink;
+import org.eclipse.keyple.plugin.remote_se.nse.NativeSeRemoteService;
+import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
+import org.eclipse.keyple.plugin.stub.StubPlugin;
+import org.eclipse.keyple.plugin.stub.StubReader;
+import org.eclipse.keyple.seproxy.ReaderPlugin;
+import org.eclipse.keyple.seproxy.SeProxyService;
+import org.eclise.keyple.example.remote.websocket.ConnectionCb;
+import org.eclise.keyple.example.remote.websocket.WskServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class wskNativeCSM {
@@ -51,8 +50,8 @@ public class wskNativeCSM {
         plugins.add(stubPlugin);
         seProxyService.setPlugins(plugins);
         localReader = stubPlugin.plugStubReader("stubPO");
-        //localReader.insertSe(new CSMStubSE());
-        localReader.insertSe(new HoplinkStubSE());
+        // localReader.insertSe(new CSMStubSE());
+        localReader.insertSe(new StubHoplink());
 
         logger.info("Connect Reader : ", localReader.getName());
 
@@ -92,7 +91,6 @@ public class wskNativeCSM {
         wskServer.run();
 
     }
-
 
 
 

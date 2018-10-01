@@ -17,10 +17,10 @@ targetCompatibility = 1.6
 dependencies {
 
     compile project(':keyple-example-common')
+    compile project(':keyple-example-pc')
     compile project(':keyple-calypso')
     compile project(':keyple-core')
     compile project(':keyple-plugin-stub')
-    compile project(':keyple-example-stub')
     compile project(':keyple-plugin-remote-se')
 
 

@@ -1,16 +1,23 @@
-package org.eclise.keyple.example.remote.webservice;
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
-import org.eclipse.keyple.plugin.remote_se.transport.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package org.eclise.keyple.example.remote.webservice;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
+import org.eclipse.keyple.plugin.remote_se.transport.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 
 public class WsServer implements TransportNode {
 
@@ -24,11 +31,11 @@ public class WsServer implements TransportNode {
 
 
     public WsServer(String url, Integer port, String endpoint) throws IOException {
-        logger.info("Init Web Service Server on url : {}:{}", url,port);
+        logger.info("Init Web Service Server on url : {}:{}", url, port);
 
         // Create Endpoints for plugin and reader API
         keypleDTOEndpoint = new KeypleDTOEndpoint();
-        //ReaderEndpoint readerEndpoint = new ReaderEndpoint();
+        // ReaderEndpoint readerEndpoint = new ReaderEndpoint();
 
         // deploy endpoint
         this.inet = new InetSocketAddress(Inet4Address.getByName(url), port);
@@ -37,17 +44,19 @@ public class WsServer implements TransportNode {
         server.createContext(endpoint, keypleDTOEndpoint);
 
         // start rse
-        server.setExecutor(java.util.concurrent.Executors.newCachedThreadPool()); // creates a default executor
+        server.setExecutor(java.util.concurrent.Executors.newCachedThreadPool()); // creates a
+                                                                                  // default
+                                                                                  // executor
     }
 
-    public void start(){
+    public void start() {
         logger.info("Starting Server on http://{}:{}{}", inet.getHostName(), inet.getPort(),
                 endpoint);
         server.start();
     }
 
     /*
-    TransportNode
+     * TransportNode
      */
     @Override
     public void setDtoReceiver(DtoReceiver receiver) {
@@ -79,20 +88,21 @@ public class WsServer implements TransportNode {
             String requestMethod = t.getRequestMethod();
 
             if (requestMethod.equals("POST")) {
-                String body = HttpHelper.parseBodyToString(t.getRequestBody());// .. parse the request body
+                String body = HttpHelper.parseBodyToString(t.getRequestBody());// .. parse the
+                                                                               // request body
                 KeypleDTO incoming = KeypleDTOHelper.fromJson(body);
-                TransportDTO transportDTO = new WsTransportDTO(incoming,t);
+                TransportDTO transportDTO = new WsTransportDTO(incoming, t);
 
                 logger.trace("Incoming DTO {} ", KeypleDTOHelper.toJson(incoming));
                 TransportDTO outcoming = dtoReceiver.onDTO(transportDTO);
 
-                setHttpResponse(t,outcoming.getKeypleDTO());
+                setHttpResponse(t, outcoming.getKeypleDTO());
 
             }
         }
 
         /*
-        TransportNode
+         * TransportNode
          */
         @Override
         public void setDtoReceiver(DtoReceiver receiver) {
@@ -103,7 +113,7 @@ public class WsServer implements TransportNode {
         @Override
         public void sendDTO(TransportDTO message) {
             logger.warn("Send DTO can not be used in Web Service Server");
-            //not in use, oneway communication, server do not send message
+            // not in use, oneway communication, server do not send message
         }
 
         @Override
@@ -113,7 +123,7 @@ public class WsServer implements TransportNode {
 
 
         private void setHttpResponse(HttpExchange t, KeypleDTO resp) throws IOException {
-            if(!resp.getAction().isEmpty()){
+            if (!resp.getAction().isEmpty()) {
                 String responseBody = KeypleDTOHelper.toJson(resp);
                 Integer responseCode = 200;
                 t.getResponseHeaders().add("Content-Type", "application/json");
@@ -123,7 +133,7 @@ public class WsServer implements TransportNode {
                 os.close();
                 logger.debug("Outcoming Response Code {} ", responseCode);
                 logger.debug("Outcoming Response Body {} ", responseBody);
-            }else{
+            } else {
                 String responseBody = "{}";
                 Integer responseCode = 200;
                 t.getResponseHeaders().add("Content-Type", "application/json");

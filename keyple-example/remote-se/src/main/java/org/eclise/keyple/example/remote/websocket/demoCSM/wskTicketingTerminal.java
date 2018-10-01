@@ -8,6 +8,13 @@
 
 package org.eclise.keyple.example.remote.websocket.demoCSM;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.plugin.remote_se.rse.ISeResponseSetCallback;
@@ -17,22 +24,14 @@ import org.eclipse.keyple.plugin.remote_se.rse.VirtualSeRemoteService;
 import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclise.keyple.example.remote.websocket.WskClient;
 import org.java_websocket.client.WebSocketClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.Observer {
@@ -105,7 +104,7 @@ public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.
                     logger.info("READER_CONNECTED {} {}", event.getPluginName(),
                             event.getReaderName());
 
-                        runCommandTest(event);
+                    runCommandTest(event);
 
 
 
@@ -122,22 +121,19 @@ public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.
 
     private void runCommandTest(final PluginEvent event) {
 
-        //start in another thread
+        // start in another thread
 
-        Thread task = new Thread()
-        {
+        Thread task = new Thread() {
             @Override
-            public void run()
-            {
+            public void run() {
                 try {
                     logger.info("Wait 10 seconds before sending commands to CSM");
 
                     Thread.sleep(10000);
                     logger.info("Let's sent them");
                     // get the reader by its name
-                    final RseReader reader =
-                            (RseReader) ((RsePlugin) SeProxyService.getInstance().getPlugins().first())
-                                    .getReader(event.getReaderName());
+                    final RseReader reader = (RseReader) ((RsePlugin) SeProxyService.getInstance()
+                            .getPlugins().first()).getReader(event.getReaderName());
 
                     String poAid = "A000000291A000000191";
 
@@ -155,49 +151,48 @@ public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.
                             ContactlessProtocols.PROTOCOL_ISO14443_4);
 
                     // ASYNC transmit seRequestSet to Reader With Callback function
-                    reader.asyncTransmit(new SeRequestSet(seRequest),
-                            new ISeResponseSetCallback() {
-                                @Override
-                                public void getResponseSet(SeResponseSet seResponseSet) {
-                                    logger.info(
-                                            "Received asynchronously a SeResponseSet with Webservice RemoteSE {}",
-                                            seResponseSet);
+                    reader.asyncTransmit(new SeRequestSet(seRequest), new ISeResponseSetCallback() {
+                        @Override
+                        public void getResponseSet(SeResponseSet seResponseSet) {
+                            logger.info(
+                                    "Received asynchronously a SeResponseSet with Webservice RemoteSE {}",
+                                    seResponseSet);
 
-                                    List<ApduRequest> poApduRequestList2;
+                            List<ApduRequest> poApduRequestList2;
 
-                                    final ReadRecordsCmdBuild poReadRecordCmd_T2Usage =
-                                            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1A,
-                                                    (byte) 0x01, true, (byte) 0x30);
-                                    poApduRequestList2 =
-                                            Arrays.asList(poReadRecordCmd_T2Usage.getApduRequest(),
-                                                    poReadRecordCmd_T2Usage.getApduRequest());
+                            final ReadRecordsCmdBuild poReadRecordCmd_T2Usage =
+                                    new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1A,
+                                            (byte) 0x01, true, (byte) 0x30);
+                            poApduRequestList2 =
+                                    Arrays.asList(poReadRecordCmd_T2Usage.getApduRequest(),
+                                            poReadRecordCmd_T2Usage.getApduRequest());
 
-                                    SeRequest seRequest2 = new SeRequest(selector, poApduRequestList2,
-                                            false, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                            SeRequest seRequest2 = new SeRequest(selector, poApduRequestList2,
+                                    false, ContactlessProtocols.PROTOCOL_ISO14443_4);
 
-                                    // ASYNC transmit seRequestSet to Reader
-                                    try {
-                                        ((RseReader) reader).asyncTransmit(new SeRequestSet(seRequest2),
-                                                new ISeResponseSetCallback() {
-                                                    @Override
-                                                    public void getResponseSet(
-                                                            SeResponseSet seResponseSet) {
-                                                        logger.info(
-                                                                "Received asynchronously a SeResponseSet with Webservice RemoteSE : {}",
-                                                                seResponseSet);
-                                                    }
-                                                });
-                                    } catch (IOReaderException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-
+                            // ASYNC transmit seRequestSet to Reader
+                            try {
+                                ((RseReader) reader).asyncTransmit(new SeRequestSet(seRequest2),
+                                        new ISeResponseSetCallback() {
+                                            @Override
+                                            public void getResponseSet(
+                                                    SeResponseSet seResponseSet) {
+                                                logger.info(
+                                                        "Received asynchronously a SeResponseSet with Webservice RemoteSE : {}",
+                                                        seResponseSet);
+                                            }
+                                        });
+                            } catch (KeypleReaderException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
 
 
-                } catch (UnexpectedReaderException e) {
+
+                } catch (KeypleReaderNotFoundException e) {
                     e.printStackTrace();
-                } catch (IOReaderException e) {
+                } catch (KeypleReaderException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -206,7 +201,6 @@ public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.
         };
 
         task.start();
-
 
 
 

@@ -10,11 +10,11 @@ package org.eclipse.keyple.plugin.remote_se.nse;
 
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 
 public interface NseAPI {
 
-    SeResponseSet onTransmit(String sessionId, SeRequestSet req) throws IOReaderException;
+    SeResponseSet onTransmit(String sessionId, SeRequestSet req) throws KeypleReaderException;
 
     // String onGetName();
 

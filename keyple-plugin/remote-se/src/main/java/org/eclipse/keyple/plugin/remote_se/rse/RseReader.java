@@ -8,14 +8,14 @@
 
 package org.eclipse.keyple.plugin.remote_se.rse;
 
-import java.io.IOException;
 import java.util.Map;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.Observable;
@@ -60,10 +60,11 @@ public class RseReader extends Observable implements ObservableReader {
      * 
      * @param seRequestSet : SeRequestSe to be transmitted
      * @return seResponseSet : SeResponSet
-     * @throws IOReaderException
+     * @throws KeypleReaderException, IllegalArgumentException
      */
     @Override
-    public SeResponseSet transmit(SeRequestSet seRequestSet) throws IOReaderException {
+    public SeResponseSet transmit(SeRequestSet seRequestSet)
+            throws KeypleReaderException, IllegalArgumentException {
         return ((IReaderAsyncSession) session).transmit(seRequestSet);
     }
 
@@ -72,10 +73,10 @@ public class RseReader extends Observable implements ObservableReader {
      * 
      * @param seRequestSet : SeRequestSe to be transmitted
      * @param seResponseSetCallback : callback to get the seResponseSet
-     * @throws IOReaderException
      */
     public void asyncTransmit(SeRequestSet seRequestSet,
-            ISeResponseSetCallback seResponseSetCallback) throws IOReaderException {
+            ISeResponseSetCallback seResponseSetCallback)
+            throws KeypleReaderException, IllegalArgumentException {
         ((IReaderAsyncSession) session).asyncTransmit(seRequestSet, seResponseSetCallback);
     }
 
@@ -114,6 +115,17 @@ public class RseReader extends Observable implements ObservableReader {
         return null;
     }// todo
 
+    @Override
+    public void setParameter(String key, String value)
+            throws IllegalArgumentException, KeypleBaseException {
+
+    }
+
+    @Override
+    public void setParameters(Map<String, String> parameters)
+            throws IllegalArgumentException, KeypleBaseException {
+
+    }
 
 
     /**
@@ -157,22 +169,6 @@ public class RseReader extends Observable implements ObservableReader {
 
     }
 
-    /**
-     * Set a list of parameters on a reader.
-     * <p>
-     * See {@link #setParameter(String, String)} for more details
-     *
-     * @param parameters the new parameters
-     * @throws IOReaderException This method can fail when disabling the exclusive mode as it's
-     *         executed instantly
-     */
-    public final void setParameters(Map<String, String> parameters) throws IOException {
-        // todo
-    }
 
-    @Override
-    public void setParameter(String key, String value) throws IOException {
-        // todo
-    }
 
 }

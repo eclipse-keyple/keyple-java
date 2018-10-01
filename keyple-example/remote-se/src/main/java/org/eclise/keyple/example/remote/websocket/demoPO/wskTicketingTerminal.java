@@ -17,16 +17,16 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
+import org.eclipse.keyple.plugin.remote_se.rse.ISeResponseSetCallback;
 import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
 import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
-import org.eclipse.keyple.plugin.remote_se.rse.ISeResponseSetCallback;
 import org.eclipse.keyple.plugin.remote_se.rse.VirtualSeRemoteService;
 import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclise.keyple.example.remote.websocket.WskServer;
@@ -124,7 +124,7 @@ public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.
                         logger.info("Add ServerTicketingApp as a Observer of RSE reader");
                         rseReader.addObserver(this);
 
-                    } catch (UnexpectedReaderException e) {
+                    } catch (KeypleReaderNotFoundException e) {
                         logger.error(e.getMessage());
                         e.printStackTrace();
                     }
@@ -181,49 +181,45 @@ public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.
                     ContactlessProtocols.PROTOCOL_ISO14443_4);
 
             // ASYNC transmit seRequestSet to Reader With Callback function
-            reader.asyncTransmit(new SeRequestSet(seRequest),
-                    new ISeResponseSetCallback() {
-                        @Override
-                        public void getResponseSet(SeResponseSet seResponseSet) {
-                            logger.info(
-                                    "Received asynchronously a SeResponseSet with Webservice RemoteSE {}",
-                                    seResponseSet);
+            reader.asyncTransmit(new SeRequestSet(seRequest), new ISeResponseSetCallback() {
+                @Override
+                public void getResponseSet(SeResponseSet seResponseSet) {
+                    logger.info(
+                            "Received asynchronously a SeResponseSet with Webservice RemoteSE {}",
+                            seResponseSet);
 
-                            List<ApduRequest> poApduRequestList2;
+                    List<ApduRequest> poApduRequestList2;
 
-                            final ReadRecordsCmdBuild poReadRecordCmd_T2Usage =
-                                    new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1A,
-                                            (byte) 0x01, true, (byte) 0x30);
-                            poApduRequestList2 =
-                                    Arrays.asList(poReadRecordCmd_T2Usage.getApduRequest(),
-                                            poReadRecordCmd_T2Usage.getApduRequest());
+                    final ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(
+                            PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01, true, (byte) 0x30);
+                    poApduRequestList2 = Arrays.asList(poReadRecordCmd_T2Usage.getApduRequest(),
+                            poReadRecordCmd_T2Usage.getApduRequest());
 
-                            SeRequest seRequest2 = new SeRequest(selector, poApduRequestList2,
-                                    false, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                    SeRequest seRequest2 = new SeRequest(selector, poApduRequestList2, false,
+                            ContactlessProtocols.PROTOCOL_ISO14443_4);
 
-                            // ASYNC transmit seRequestSet to Reader
-                            try {
-                                ((RseReader) reader).asyncTransmit(new SeRequestSet(seRequest2),
-                                        new ISeResponseSetCallback() {
-                                            @Override
-                                            public void getResponseSet(
-                                                    SeResponseSet seResponseSet) {
-                                                logger.info(
-                                                        "Received asynchronously a SeResponseSet with Webservice RemoteSE : {}",
-                                                        seResponseSet);
-                                            }
-                                        });
-                            } catch (IOReaderException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
+                    // ASYNC transmit seRequestSet to Reader
+                    try {
+                        ((RseReader) reader).asyncTransmit(new SeRequestSet(seRequest2),
+                                new ISeResponseSetCallback() {
+                                    @Override
+                                    public void getResponseSet(SeResponseSet seResponseSet) {
+                                        logger.info(
+                                                "Received asynchronously a SeResponseSet with Webservice RemoteSE : {}",
+                                                seResponseSet);
+                                    }
+                                });
+                    } catch (KeypleReaderException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
 
 
 
-        } catch (UnexpectedReaderException e) {
+        } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
-        } catch (IOReaderException e) {
+        } catch (KeypleReaderException e) {
             e.printStackTrace();
         }
 

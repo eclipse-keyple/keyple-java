@@ -15,7 +15,7 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WskClient extends WebSocketClient implements  TransportNode {
+public class WskClient extends WebSocketClient implements TransportNode {
 
     private static final Logger logger = LoggerFactory.getLogger(WskClient.class);
     DtoReceiver dtoReceiver;
@@ -35,11 +35,11 @@ public class WskClient extends WebSocketClient implements  TransportNode {
         logger.debug("Web socket onMessage {}", message);
         KeypleDTO dto = KeypleDTOHelper.fromJson(message);
 
-        //process dto
-        TransportDTO transportDTO = dtoReceiver.onDTO(new WskTransportDTO(dto,null));
+        // process dto
+        TransportDTO transportDTO = dtoReceiver.onDTO(new WskTransportDTO(dto, null));
 
-        //there is a response/request to send back
-        if(!KeypleDTOHelper.isNoResponse(transportDTO.getKeypleDTO())){
+        // there is a response/request to send back
+        if (!KeypleDTOHelper.isNoResponse(transportDTO.getKeypleDTO())) {
             this.sendDTO(transportDTO);
         }
     }
@@ -63,11 +63,11 @@ public class WskClient extends WebSocketClient implements  TransportNode {
 
     @Override
     public void sendDTO(KeypleDTO keypleDTO) {
-        //if keypkeDTO is no empty
+        // if keypkeDTO is no empty
         if (!KeypleDTOHelper.isNoResponse(keypleDTO)) {
             logger.debug("send DTO {}", KeypleDTOHelper.toJson(keypleDTO));
             this.send(KeypleDTOHelper.toJson(keypleDTO));
-        }else{
+        } else {
             logger.debug("No message to send back");
         }
     }

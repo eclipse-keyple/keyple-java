@@ -14,7 +14,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
-
 import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

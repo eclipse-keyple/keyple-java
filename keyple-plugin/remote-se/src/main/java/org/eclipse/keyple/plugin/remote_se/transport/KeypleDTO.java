@@ -9,24 +9,25 @@
 package org.eclipse.keyple.plugin.remote_se.transport;
 
 /**
- * Data Transfer Tbject used to tranport a API call from a Master reader to a Slave Reader (or reverse)
- * POJO
+ * Data Transfer Tbject used to tranport a API call from a Master reader to a Slave Reader (or
+ * reverse) POJO
  */
 public class KeypleDTO {
 
-    //Master reader session
+    // Master reader session
     String sessionId;
-    //API method to be called
+    // API method to be called
     String action;
-    //Arguments of the API (json)
+    // Arguments of the API (json)
     String body;
-    //Is a request or a response
+    // Is a request or a response
     Boolean isRequest;
-    //Integrity hash (not in used yet)
+    // Integrity hash (not in used yet)
     Integer hash;
 
     /**
      * Basic Constructor
+     * 
      * @param action
      * @param body
      * @param isRequest
@@ -36,8 +37,10 @@ public class KeypleDTO {
         this.body = body;
         this.isRequest = isRequest;
     }
+
     /**
      * Constructor with a Virtual Reader Session Id
+     * 
      * @param action
      * @param body
      * @param isRequest
@@ -51,7 +54,7 @@ public class KeypleDTO {
     }
 
     /*
-    Getters and Setters
+     * Getters and Setters
      */
 
     public Boolean isRequest() {

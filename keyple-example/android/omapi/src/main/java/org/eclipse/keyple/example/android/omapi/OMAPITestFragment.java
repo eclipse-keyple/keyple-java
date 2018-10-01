@@ -198,16 +198,16 @@ public class OMAPITestFragment extends Fragment {
                             mText.append("\n\n\n\n\n");
                         }
                     }
-                }
-            });
+                } catch (final KeypleReaderException e) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            e.printStackTrace();
+                            mText.append("\n ---- \n");
+                            mText.append("IOReader Exception : " + e.getMessage());
 
-        } catch (final KeypleReaderException e) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    e.printStackTrace();
-                    mText.append("\n ---- \n");
-                    mText.append("IOReader Exception : " + e.getMessage());
+                        }
+                    });
 
                 }
             }

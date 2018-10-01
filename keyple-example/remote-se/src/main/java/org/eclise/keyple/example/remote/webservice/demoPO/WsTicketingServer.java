@@ -8,6 +8,9 @@
 
 package org.eclise.keyple.example.remote.webservice.demoPO;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.plugin.remote_se.rse.ISeResponseSetCallback;
@@ -17,17 +20,13 @@ import org.eclipse.keyple.plugin.remote_se.rse.VirtualSeRemoteService;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclise.keyple.example.remote.webservice.WsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Observer {
@@ -106,7 +105,7 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
                         logger.info("Add ServerTicketingApp as a Observer of RSE reader");
                         rseReader.addObserver(this);
 
-                    } catch (UnexpectedReaderException e) {
+                    } catch (KeypleReaderNotFoundException e) {
                         logger.error(e.getMessage());
                         e.printStackTrace();
                     }
@@ -125,7 +124,7 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
                 case SE_INSERTED:
                     logger.info("SE_INSERTED {} {}", event.getPluginName(), event.getReaderName());
                     runAsyncCommandTest(event);
-                    //runSyncCommandTest(event);
+                    // runSyncCommandTest(event);
                     break;
                 case SE_REMOVAL:
                     logger.info("SE_REMOVAL {} {}", event.getPluginName(), event.getReaderName());
@@ -162,19 +161,18 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
                     ContactlessProtocols.PROTOCOL_ISO14443_4);
 
             // ASYNC transmit seRequestSet to Reader With Callback function
-            logger.info(
-                    "Execute sync transmit with seRequest {}" , seRequest);
-            SeResponseSet seResponseSet = ((RseReader) reader).transmit(new SeRequestSet(seRequest));
+            logger.info("Execute sync transmit with seRequest {}", seRequest);
+            SeResponseSet seResponseSet =
+                    ((RseReader) reader).transmit(new SeRequestSet(seRequest));
 
-            logger.info(
-                    "Received synchronously a SeResponseSet with Webservice RemoteSE {}",
+            logger.info("Received synchronously a SeResponseSet with Webservice RemoteSE {}",
                     seResponseSet);
 
 
 
-        } catch (UnexpectedReaderException e) {
+        } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
-        } catch (IOReaderException e) {
+        } catch (KeypleReaderException e) {
             e.printStackTrace();
         }
 
@@ -202,8 +200,7 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
                     new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
             SeRequest seRequest = new SeRequest(selector, poApduRequestList, true,
                     ContactlessProtocols.PROTOCOL_ISO14443_4);
-            logger.info(
-                    "Execute async transmit with seRequest {}" , seRequest);
+            logger.info("Execute async transmit with seRequest {}", seRequest);
             // ASYNC transmit seRequestSet to Reader With Callback function
             ((RseReader) reader).asyncTransmit(new SeRequestSet(seRequest),
                     new ISeResponseSetCallback() {
@@ -217,9 +214,9 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
 
 
 
-        } catch (UnexpectedReaderException e) {
+        } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
-        } catch (IOReaderException e) {
+        } catch (KeypleReaderException e) {
             e.printStackTrace();
         }
 

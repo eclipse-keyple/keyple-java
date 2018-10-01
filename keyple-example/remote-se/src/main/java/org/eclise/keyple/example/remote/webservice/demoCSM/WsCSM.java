@@ -9,6 +9,12 @@
 package org.eclise.keyple.example.remote.webservice.demoCSM;
 
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import org.eclipse.keyple.example.pc.calypso.stub.se.StubHoplink;
 import org.eclipse.keyple.plugin.remote_se.nse.NativeSeRemoteService;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
@@ -16,15 +22,8 @@ import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclise.keyple.example.remote.webservice.WsClient;
 import org.eclise.keyple.example.remote.webservice.WsServer;
-import org.eclise.keyple.example.stub.calypso.HoplinkStubSE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class WsCSM {
@@ -79,15 +78,10 @@ public class WsCSM {
 
 
 
-
-
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("isAsync", true);
 
         seRemoteService.connectReader(localReader, options);
-
-
-
 
 
 
@@ -103,7 +97,7 @@ public class WsCSM {
 
         logger.info("Insert HoplinkStubSE into Local StubReader");
         // insert SE
-        localReader.insertSe(new HoplinkStubSE());
+        localReader.insertSe(new StubHoplink());
 
         // todo Remove SE
         // logger.info("************************");

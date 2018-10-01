@@ -10,20 +10,19 @@ package org.eclipse.keyple.plugin.remote_se.nse;
 
 import java.util.ArrayList;
 import java.util.Map;
-
 import org.eclipse.keyple.plugin.remote_se.transport.*;
 import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.UnexpectedReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-public class NativeSeRemoteService implements NseAPI, RseClient,DtoReceiver {
+public class NativeSeRemoteService implements NseAPI, RseClient, DtoReceiver {
 
     private static final Logger logger = LoggerFactory.getLogger(NativeSeRemoteService.class);
 
@@ -41,9 +40,9 @@ public class NativeSeRemoteService implements NseAPI, RseClient,DtoReceiver {
 
         KeypleDTO msg = message.getKeypleDTO();
 
-        logger.debug("onDto {}",KeypleDTOHelper.toJson(msg));
+        logger.debug("onDto {}", KeypleDTOHelper.toJson(msg));
 
-        //receive a response to a reader_connect
+        // receive a response to a reader_connect
         if (msg.getAction().equals(KeypleDTOHelper.READER_CONNECT) && !msg.isRequest()) {
             logger.info("**** ACTION - READER_CONNECT ****");
             // parse response
@@ -52,26 +51,28 @@ public class NativeSeRemoteService implements NseAPI, RseClient,DtoReceiver {
             Integer statusCode = body.get("statusCode").getAsInt();
             String nativeReaderName = body.get("nativeReaderName").getAsString();
 
-            //reader connection was a success
-            if(statusCode == 0){
+            // reader connection was a success
+            if (statusCode == 0) {
                 try {
-                    //observe reader
+                    // observe reader
                     ProxyReader localReader = this.findLocalReader(nativeReaderName);
-                    if(localReader instanceof AbstractObservableReader){
+                    if (localReader instanceof AbstractObservableReader) {
                         ((AbstractObservableReader) localReader).addObserver(this);
                     }
-                    //store sessionId
+                    // store sessionId
                     nseSessionManager.addNewSession(sessionId, localReader.getName());
-                }catch (UnexpectedReaderException e){
-                    logger.warn("While receiving a confirmation of Rse connection, local reader were not found");
+                } catch (KeypleReaderNotFoundException e) {
+                    logger.warn(
+                            "While receiving a confirmation of Rse connection, local reader were not found");
                 }
-            }else {
-                logger.warn("Receive a error statusCode {} {}",statusCode, KeypleDTOHelper.toJson(msg));
+            } else {
+                logger.warn("Receive a error statusCode {} {}", statusCode,
+                        KeypleDTOHelper.toJson(msg));
             }
 
             return message.nextTransportDTO(KeypleDTOHelper.NoResponse());
 
-        }else if (msg.getAction().equals(KeypleDTOHelper.READER_TRANSMIT)) {
+        } else if (msg.getAction().equals(KeypleDTOHelper.READER_TRANSMIT)) {
             logger.info("**** ACTION - READER_TRANSMIT ****");
 
             SeRequestSet seRequestSet =
@@ -79,17 +80,18 @@ public class NativeSeRemoteService implements NseAPI, RseClient,DtoReceiver {
 
             SeResponseSet seResponseSet = null;
             try {
-                //execute transmit
+                // execute transmit
                 seResponseSet = this.onTransmit(msg.getSessionId(), seRequestSet);
-            } catch (IOReaderException e) {
+            } catch (KeypleReaderException e) {
                 e.printStackTrace();
             }
-            //prepare response
+            // prepare response
             String parseBody = JsonParser.getGson().toJson(seResponseSet, SeResponseSet.class);
-            return message.nextTransportDTO(new KeypleDTO( msg.getAction(), parseBody, false,msg.getSessionId()));
+            return message.nextTransportDTO(
+                    new KeypleDTO(msg.getAction(), parseBody, false, msg.getSessionId()));
 
 
-        }else{
+        } else {
             logger.warn("**** ACTION - UNRECOGNIZED ****");
             logger.warn("Receive uncoregnized message action", msg.getAction());
             return message.nextTransportDTO(KeypleDTOHelper.NoResponse());
@@ -101,7 +103,7 @@ public class NativeSeRemoteService implements NseAPI, RseClient,DtoReceiver {
     public void update(ReaderEvent event) {
         logger.info("update Reader Event {}", event.getEventType());
 
-        //retrieve last sessionId known for this reader
+        // retrieve last sessionId known for this reader
         String sessionId = nseSessionManager.getLastSession(event.getReaderName());
 
         // construct json data
@@ -130,38 +132,41 @@ public class NativeSeRemoteService implements NseAPI, RseClient,DtoReceiver {
     // RseClient
     @Override
     public void disconnectReader(ProxyReader localReader) {
-        //todo
+        // todo
     }
 
 
 
     // NseAPI
     @Override
-    public SeResponseSet onTransmit(String sessionId, SeRequestSet req) throws IOReaderException {
+    public SeResponseSet onTransmit(String sessionId, SeRequestSet req)
+            throws KeypleReaderException {
         try {
-            ProxyReader reader = findLocalReader(nseSessionManager.findReaderNameBySession(sessionId));
+            ProxyReader reader =
+                    findLocalReader(nseSessionManager.findReaderNameBySession(sessionId));
             return reader.transmit(req);
-        } catch (UnexpectedReaderException e) {
+        } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
-            return new SeResponseSet(new ArrayList<SeResponse>());//todo
+            return new SeResponseSet(new ArrayList<SeResponse>());// todo
         }
     }
 
-    public void bind(TransportNode node){
+    public void bind(TransportNode node) {
         this.transportNode = node;
         node.setDtoReceiver(this);
     }
 
-    public ProxyReader findLocalReader(String readerName) throws UnexpectedReaderException{
-        logger.debug("Find local reader by name {} in {} plugin(s)", readerName, seProxyService.getPlugins().size());
-        for(ReaderPlugin plugin : seProxyService.getPlugins()){
+    public ProxyReader findLocalReader(String readerName) throws KeypleReaderNotFoundException {
+        logger.debug("Find local reader by name {} in {} plugin(s)", readerName,
+                seProxyService.getPlugins().size());
+        for (ReaderPlugin plugin : seProxyService.getPlugins()) {
             try {
                 return plugin.getReader(readerName);
-            }catch (UnexpectedReaderException e){
-                //continue
+            } catch (KeypleReaderNotFoundException e) {
+                // continue
             }
         }
-        throw new UnexpectedReaderException("Local Reader not found");
+        throw new KeypleReaderNotFoundException("Local Reader not found");
     }
 
 

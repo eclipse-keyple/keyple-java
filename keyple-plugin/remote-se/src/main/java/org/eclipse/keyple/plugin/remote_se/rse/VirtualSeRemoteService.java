@@ -8,12 +8,11 @@
 
 package org.eclipse.keyple.plugin.remote_se.rse;
 
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
-
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
  * Service to bind a RSE Plugin to a Transport Node
@@ -29,6 +28,7 @@ public class VirtualSeRemoteService {
 
     /**
      * Bind TransportNode to VirtualSeRemoteService
+     * 
      * @param node
      */
     public void bindTransportNode(TransportNode node) {
@@ -37,6 +37,7 @@ public class VirtualSeRemoteService {
 
     /**
      * Bind plugin to VirtualSeRemoteService
+     * 
      * @param plugin
      */
     public void registerRsePlugin(RsePlugin plugin) {
@@ -47,7 +48,7 @@ public class VirtualSeRemoteService {
     }
 
 
-    //manage session
+    // manage session
 
 
 }

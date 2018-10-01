@@ -9,18 +9,20 @@
 package org.eclipse.keyple.plugin.remote_se.transport;
 
 /**
-    Components that sends a DTO
+ * Components that sends a DTO
  */
 public interface DtoSender {
 
     /**
      * Send DTO with transport information
+     * 
      * @param message to be sent
      */
     void sendDTO(TransportDTO message);
 
     /**
      * Send DTO with no transport information (usually a new message)
+     * 
      * @param message to be sent
      */
     void sendDTO(KeypleDTO message);

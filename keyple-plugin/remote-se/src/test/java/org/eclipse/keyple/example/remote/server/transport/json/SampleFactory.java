@@ -13,8 +13,7 @@ import java.util.*;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
+    import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
@@ -71,15 +70,11 @@ public class SampleFactory {
     }
 
     public static SeResponseSet getCompeleteResponseSet() {
-        try {
-            List<SeResponse> seResponses = new ArrayList<SeResponse>();
-            seResponses.add(SeResponseTest.getASeResponse());
-            seResponses.add(SeResponseTest.getASeResponse());
-            return new SeResponseSet(seResponses);
-        } catch (InconsistentParameterValueException e) {
-            e.printStackTrace();
-        }
-        return null;
+        List<SeResponse> seResponses = new ArrayList<SeResponse>();
+        seResponses.add(SeResponseTest.getASeResponse());
+        seResponses.add(SeResponseTest.getASeResponse());
+        return new SeResponseSet(seResponses);
+
 
     }
 
