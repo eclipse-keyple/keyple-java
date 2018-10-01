@@ -8,8 +8,7 @@
 
 package org.eclipse.keyple.example.pc.calypso;
 
-import java.util.SortedSet;
-import java.util.concurrent.ConcurrentSkipListSet;
+
 import org.eclipse.keyple.example.common.calypso.Demo_CalypsoBasicTransactionEngine;
 import org.eclipse.keyple.example.common.generic.DemoHelpers;
 import org.eclipse.keyple.example.pc.generic.PcscReadersSettings;
@@ -17,7 +16,6 @@ import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
@@ -47,15 +45,11 @@ public class Demo_CalypsoBasic_Pcsc {
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
-
+        /* Get the instance of the PC/SC plugin */
         PcscPlugin pcscPlugin = PcscPlugin.getInstance();
 
-        /* Get the instance of the PcscPlugin (Singleton pattern) */
-        pluginsSet.add(pcscPlugin);
-
         /* Assign PcscPlugin to the SeProxyService */
-        seProxyService.setPlugins(pluginsSet);
+        seProxyService.addPlugin(pcscPlugin);
 
         /* Setting up the transaction engine (implements Observer) */
         Demo_CalypsoBasicTransactionEngine transactionEngine =
@@ -104,7 +98,7 @@ public class Demo_CalypsoBasic_Pcsc {
          *
          */
         csmReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
-        poReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_EXCLUSIVE);
+        poReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
 
         /* Set the PO reader protocol flag */
         poReader.addSeProtocolSetting(

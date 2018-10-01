@@ -8,8 +8,7 @@
 
 package org.eclipse.keyple.example.pc.generic;
 
-import java.util.SortedSet;
-import java.util.concurrent.ConcurrentSkipListSet;
+
 import org.eclipse.keyple.example.common.generic.Demo_ObservableReaderNotificationEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.*;
@@ -22,11 +21,10 @@ public class Demo_ObservableReaderNotification_Pcsc {
         Demo_ObservableReaderNotificationEngine demoEngine =
                 new Demo_ObservableReaderNotificationEngine();
 
-        /* Set PCSC plugin */
+        /* Instantiate SeProxyService and add PC/SC plugin */
         SeProxyService seProxyService = SeProxyService.getInstance();
-        SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
-        pluginsSet.add(PcscPlugin.getInstance());
-        seProxyService.setPlugins(pluginsSet);
+
+        seProxyService.addPlugin(PcscPlugin.getInstance());
 
         /* Set observers */
         demoEngine.setPluginObserver();

@@ -9,9 +9,7 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
+import java.util.*;
 import org.eclipse.keyple.calypso.command.SendableInSession;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 import org.eclipse.keyple.calypso.command.csm.CsmSendableInSession;
@@ -215,11 +213,9 @@ public class PoSecureSession {
         logger.debug("processOpening => identification: CSMSEREQUEST = {}", csmSeRequest);
 
         /*
-         * Create a SeRequestSet (list of SeRequest), transmit it to the CSM and get back the
-         * SeResponse (list of ApduResponse)
+         * Transmit the SeRequest to the CSM and get back the SeResponse (list of ApduResponse)
          */
-        SeRequestSet csmSeRequestSet = new SeRequestSet(csmSeRequest);
-        SeResponse csmSeResponse = csmReader.transmit(csmSeRequestSet).getSingleResponse();
+        SeResponse csmSeResponse = csmReader.transmit(csmSeRequest);
 
         if (csmSeResponse == null) {
             throw new KeypleCalypsoSecureSessionException("Null response received",
@@ -270,11 +266,8 @@ public class PoSecureSession {
 
         logger.debug("processOpening => opening:  POSEREQUEST = {}", poSeRequest);
 
-        /* Create a SeRequestSet from a unique SeRequest in this case */
-        SeRequestSet poRequestSet = new SeRequestSet(poSeRequest);
-
         /* Transmit the commands to the PO */
-        SeResponse poSeResponse = poReader.transmit(poRequestSet).getSingleResponse();
+        SeResponse poSeResponse = poReader.transmit(poSeRequest);
 
         logger.debug("processOpening => opening:  POSERESPONSE = {}", poSeResponse);
 
@@ -357,7 +350,12 @@ public class PoSecureSession {
         }
 
         currentState = SessionState.SESSION_OPEN;
-        return poSeResponse;
+
+        /* Remove Open Secure Session response and create a new SeResponse */
+        poApduResponseList.remove(0);
+
+        return new SeResponse(true, poSeResponse.getAtr(), poSeResponse.getFci(),
+                poApduResponseList);
     }
 
     /**
@@ -405,11 +403,8 @@ public class PoSecureSession {
 
         logger.debug("processPoCommands => POREQUEST = {}", poSeRequest);
 
-        /* Create a SeRequestSet from a unique SeRequest in this case */
-        SeRequestSet poRequestSet = new SeRequestSet(poSeRequest);
-
         /* Transmit the commands to the PO */
-        SeResponse poSeResponse = poReader.transmit(poRequestSet).getSingleResponse();
+        SeResponse poSeResponse = poReader.transmit(poSeRequest);
 
         logger.debug("processPoCommands => PORESPONSE = {}", poSeResponse);
 
@@ -476,10 +471,8 @@ public class PoSecureSession {
 
         logger.debug("processCsmCommands => CSMSEREQUEST = {}", csmSeRequest);
 
-        /* create a SeRequestSet (list of SeRequest) */
-        SeRequestSet csmRequestSet = new SeRequestSet(csmSeRequest);
-
-        SeResponse csmSeResponse = csmReader.transmit(csmRequestSet).getSingleResponse();
+        /* Transmit SeRequest and get SeResponse */
+        SeResponse csmSeResponse = csmReader.transmit(csmSeRequest);
 
         logger.debug("processCsmCommands => CSMSERESPONSE = {}", csmSeResponse);
 
@@ -566,10 +559,8 @@ public class PoSecureSession {
 
         logger.debug("processClosing => CSMREQUEST = {}", csmSeRequest);
 
-        /* create a SeRequestSet */
-        SeRequestSet csmRequestSet = new SeRequestSet(csmSeRequest);
-
-        SeResponse csmSeResponse = csmReader.transmit(csmRequestSet).getSingleResponse();
+        /* Transmit SeRequest and get SeResponse */
+        SeResponse csmSeResponse = csmReader.transmit(csmSeRequest);
 
         logger.debug("processClosing => CSMRESPONSE = {}", csmSeResponse);
 
@@ -616,15 +607,14 @@ public class PoSecureSession {
         }
 
         /*
-         * Create a SeRequestSet (list of SeRequests), transfer PO commands
+         * Transfer PO commands
          */
         SeRequest poSeRequest = new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
                 poApduRequestList, !closeSeChannel);
+
         logger.debug("processClosing => POSEREQUEST = {}", poSeRequest);
 
-        SeRequestSet poRequestSet = new SeRequestSet(poSeRequest);
-
-        SeResponse poSeResponse = poReader.transmit(poRequestSet).getSingleResponse();
+        SeResponse poSeResponse = poReader.transmit(poSeRequest);
 
         logger.debug("processClosing => POSERESPONSE = {}", poSeResponse);
 
@@ -642,7 +632,6 @@ public class PoSecureSession {
 
         /* Check the PO signature part with the CSM */
         /* Build and send CSM Digest Authenticate command */
-
         AbstractApduCommandBuilder digestAuth =
                 new DigestAuthenticateCmdBuild(csmRevision, poCloseSessionPars.getSignatureLo());
 
@@ -654,9 +643,7 @@ public class PoSecureSession {
         logger.debug("PoSecureSession.DigestProcessor => checkPoSignature: CSMREQUEST = {}",
                 csmSeRequest);
 
-        csmRequestSet = new SeRequestSet(csmSeRequest);
-
-        csmSeResponse = csmReader.transmit(csmRequestSet).getSingleResponse();
+        csmSeResponse = csmReader.transmit(csmSeRequest);
 
         logger.debug("PoSecureSession.DigestProcessor => checkPoSignature: CSMRESPONSE = {}",
                 csmSeResponse);
@@ -683,7 +670,17 @@ public class PoSecureSession {
         }
 
         currentState = SessionState.SESSION_CLOSED;
-        return poSeResponse;
+
+        /* Remove ratification response if any */
+        if (!ratificationAsked) {
+            poApduResponseList.remove(poApduResponseList.size() - 1);
+        }
+        /* Remove Close Secure Session response and create a new SeResponse */
+        poApduResponseList.remove(poApduResponseList.size() - 1);
+
+        return new SeResponse(true, poSeResponse.getAtr(), poSeResponse.getFci(),
+                poApduResponseList);
+
     }
 
     /**

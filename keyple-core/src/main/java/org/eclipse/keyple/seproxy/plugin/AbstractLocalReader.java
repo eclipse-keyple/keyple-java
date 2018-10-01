@@ -304,7 +304,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      */
     @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
             "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity"})
-    private SeResponse processSeRequest(SeRequest seRequest)
+    protected final SeResponse processSeRequest(SeRequest seRequest)
             throws IllegalStateException, KeypleIOReaderException, KeypleChannelStateException {
         boolean previouslyOpen = true;
 
