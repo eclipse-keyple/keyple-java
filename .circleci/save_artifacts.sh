@@ -3,7 +3,7 @@
 . .circleci/functions.sh
 
 mkdir -p ~/artifacts/jars ~/pages/jars
-find . -name "keyple-*.jar" -not -name "*-jmh.jar" \
+find . -name "keyple-*.jar" \
   -exec cp {} ~/artifacts/jars \; \
   -exec cp {} ~/pages/jars \;
 

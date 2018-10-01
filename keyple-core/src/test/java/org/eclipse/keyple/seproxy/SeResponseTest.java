@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.seproxy;
 
-import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +19,7 @@ public class SeResponseTest {
 
 
     @Test
-    public void constructorSuccessfullResponse() throws InconsistentParameterValueException {
+    public void constructorSuccessfullResponse() throws IllegalArgumentException {
 
         SeResponse response = new SeResponse(true, ApduResponseTest.getAAtr(),
                 ApduResponseTest.getAFCI(), ApduResponseTest.getAListOfAPDUs());
@@ -33,21 +32,21 @@ public class SeResponseTest {
     }
 
     @Test
-    public void constructorATRNull() throws InconsistentParameterValueException {
+    public void constructorATRNull() throws IllegalArgumentException {
         SeResponse response = new SeResponse(true, null, ApduResponseTest.getAFCI(),
                 ApduResponseTest.getAListOfAPDUs());
         Assert.assertNotNull(response);
     }
 
     @Test
-    public void constructorFCINull() throws InconsistentParameterValueException {
+    public void constructorFCINull() throws IllegalArgumentException {
         SeResponse response = new SeResponse(true, ApduResponseTest.getAAtr(), null,
                 ApduResponseTest.getAListOfAPDUs());
         Assert.assertNotNull(response);
     }
 
-    @Test(expected = InconsistentParameterValueException.class)
-    public void constructorFCIAndATRNull() throws InconsistentParameterValueException {
+    @Test(expected = IllegalArgumentException.class)
+    public void constructorFCIAndATRNull() throws IllegalArgumentException {
         SeResponse response = new SeResponse(true, null, null, ApduResponseTest.getAListOfAPDUs());
         Assert.assertNull(response);
     }
@@ -100,7 +99,7 @@ public class SeResponseTest {
      * HELPERS
      */
 
-    public static SeResponse getASeResponse() throws InconsistentParameterValueException {
+    static SeResponse getASeResponse() throws IllegalArgumentException {
         return new SeResponse(true, ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(),
                 ApduResponseTest.getAListOfAPDUs());
     }

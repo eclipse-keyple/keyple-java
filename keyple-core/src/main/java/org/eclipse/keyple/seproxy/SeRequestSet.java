@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.seproxy;
 
+import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -18,7 +19,10 @@ import java.util.Set;
  *
  * @see SeResponseSet
  */
-public final class SeRequestSet {
+public final class SeRequestSet implements Serializable {
+
+    static final long serialVersionUID = 6255369841122636812L;
+
 
     /**
      * List of requests. Each {@link SeRequest} will result in a {@link SeResponse} wrapped in a
@@ -32,7 +36,7 @@ public final class SeRequestSet {
      * <ul>
      * <li>A SeRequestSet could contain several SeRequest to manage the selection of different types
      * of PO application.</li>
-     * <li>To exchange APDU commands with a soecific selected PO application a single SeRequest is
+     * <li>To exchange APDU commands with a specific selected PO application a single SeRequest is
      * necessary.</li>
      * </ul>
      *

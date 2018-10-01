@@ -1,21 +1,18 @@
-# Calypso SDK (Java)
+# Keyple Java
 
-This is the Java SDK of the [keyple](https://keyple.org/) project.
+This is the repository for the Java implementation of the [keyple](https://keyple.org/) API.
 
-# Goals
-- patati
-- patata
+## Supported platforms
+- Java SE 1.6 compact2
+- Android 4.4 KitKat API level 19
 
-# Samples
-- Demonstrators animated GIFs / videos
-- Link to the demonstrators
+## Documentation
+Function specification, Javadoc and compiled JARs are on [keyple-doc](https://calypsonet.github.io/keyple-doc/).
 
-# Supported platforms
-- Java 1.6 compact2
-- Android
+## keyple-java repositories structure
 
-# Other languages
-- C++ on this repo
-
-# Documentation
-... is on the [wiki](https://github.com/calypsonet/calypso_sdk_java/wiki).
+- keyple-core: source and unit tests for the SeProxy module.
+- keyple-calypso: source and unit tests for the Calypso library.
+- keyple-plugin: source and unit tests for the different plugins: smartcard.io PC/SC, Stub, Android NFC, Android OMAPI, etc.
+- keyple-example: source for the generic and Calypso implementation examples.
+- keyple-integration: source for the integration code (SDK).

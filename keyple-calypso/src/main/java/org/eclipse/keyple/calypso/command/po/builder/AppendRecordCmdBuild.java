@@ -9,20 +9,16 @@
 package org.eclipse.keyple.calypso.command.po.builder;
 
 import java.nio.ByteBuffer;
-import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
-import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
-import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
+import org.eclipse.keyple.calypso.command.po.*;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class AppendRecordCmdBuild. This class provides the dedicated constructor to build the Update
  * Record APDU command.
  *
- * @author Ixxi
- *
  */
-public class AppendRecordCmdBuild extends PoCommandBuilder implements PoSendableInSession {
+public class AppendRecordCmdBuild extends PoCommandBuilder
+        implements PoSendableInSession, PoModificationCommand {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.APPEND_RECORD;

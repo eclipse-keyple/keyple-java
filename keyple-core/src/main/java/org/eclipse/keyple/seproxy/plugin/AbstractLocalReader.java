@@ -11,9 +11,10 @@ package org.eclipse.keyple.seproxy.plugin;
 import java.nio.ByteBuffer;
 import java.util.*;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
+import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
+import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
@@ -31,12 +32,13 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
     private boolean logicalChannelIsOpen = false;
     private ByteBuffer aidCurrentlySelected;
-    private ApduResponse fciDataSelected; // if fciDataSelected is NULL, it means that no
-                                          // application is selected
+    private ApduResponse fciDataSelected;
     private ApduResponse atrData;
+    private long before; // timestamp recorder
 
     public AbstractLocalReader(String pluginName, String readerName) {
         super(pluginName, readerName);
+        this.before = System.nanoTime();
     }
 
     /**
@@ -48,19 +50,19 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @param successfulSelectionStatusCodes the list of successful status code for the select
      *        command
      * @return an array of 2 ByteBuffers: ByteBuffer[0] the SE ATR, ByteBuffer[1] the SE FCI
-     * @throws IOReaderException if a reader error occurs
-     * @throws SelectApplicationException if the application selection fails
+     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleApplicationSelectionException if the application selection fails
      */
     protected abstract ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
-            Set<Short> successfulSelectionStatusCodes)
-            throws IOReaderException, SelectApplicationException;
+            Set<Short> successfulSelectionStatusCodes) throws KeypleChannelStateException,
+            KeypleApplicationSelectionException, KeypleIOReaderException;
 
     /**
      * Closes the current physical channel.
      *
-     * @throws IOReaderException if a reader error occurs
+     * @throws KeypleChannelStateException if a reader error occurs
      */
-    protected abstract void closePhysicalChannel() throws IOReaderException;
+    protected abstract void closePhysicalChannel() throws KeypleChannelStateException;
 
     /**
      * Transmits a single APDU and receives its response. The implementation of this abstract method
@@ -69,35 +71,35 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      *
      * @param apduIn byte buffer containing the ingoing data
      * @return apduResponse byte buffer containing the outgoing data.
-     * @throws ChannelStateReaderException if the transmission fails
+     * @throws KeypleIOReaderException if the transmission fails
      */
-    protected abstract ByteBuffer transmitApdu(ByteBuffer apduIn)
-            throws ChannelStateReaderException;
+    protected abstract ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleIOReaderException;
 
     /**
      * Test if the current protocol matches the flag
      *
      * @param protocolFlag the protocol flag
      * @return true if the current protocol matches the provided protocol flag
-     * @throws IOReaderException if a reader error occurs
      */
     protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag)
-            throws IOReaderException;
+            throws KeypleReaderException;
 
     /**
      * Transmits an ApduRequest and receives the ApduResponse with time measurement.
      *
      * @param apduRequest APDU request
      * @return APDU response
-     * @throws ChannelStateReaderException Exception faced
+     * @throws KeypleReaderException Exception faced
      */
     protected final ApduResponse processApduRequest(ApduRequest apduRequest)
-            throws ChannelStateReaderException {
+            throws KeypleIOReaderException {
         ApduResponse apduResponse;
-        long before = 0;
         if (logger.isTraceEnabled()) {
-            logger.trace("[{}] processApduRequest => {}.", this.getName(), apduRequest);
-            before = System.nanoTime();
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
+            this.before = timeStamp;
+            logger.trace("[{}] processApduRequest => {}, elapsed {} ms.", this.getName(),
+                    apduRequest, elapsedMs);
         }
         /*
          * Fix buffer position before sending data We shouldn't have to re-use the buffer that was
@@ -116,7 +118,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         }
 
         if (logger.isTraceEnabled()) {
-            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
+            this.before = timeStamp;
             logger.trace("[{}] processApduRequest => {}, elapsed {} ms.", this.getName(),
                     apduResponse, elapsedMs);
         }
@@ -130,21 +134,22 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * 
      * @param originalStatusCode the status code of the command that didn't returned data
      * @return ApduResponse the response to the get response command
-     * @throws ChannelStateReaderException if the transmission fails.
+     * @throws KeypleReaderException if the transmission fails.
      */
     private ApduResponse case4HackGetResponse(int originalStatusCode)
-            throws ChannelStateReaderException {
-        long before = 0;
+            throws KeypleIOReaderException {
         /*
          * build a get response command the actual length expected by the SE in the get response
          * command is handled in transmitApdu
          */
         ByteBuffer getResponseHackRequestBytes = ByteBufferUtils.fromHex("00C0000000");
         if (logger.isTraceEnabled()) {
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            this.before = timeStamp;
             logger.trace(
-                    "[{}] case4HackGetResponse => ApduRequest: NAME = \"Intrinsic Get Response\", RAWDATA = {}",
-                    this.getName(), ByteBufferUtils.toHex(getResponseHackRequestBytes));
-            before = System.nanoTime();
+                    "[{}] case4HackGetResponse => ApduRequest: NAME = \"Intrinsic Get Response\", RAWDATA = {}, elapsed = {}",
+                    this.getName(), ByteBufferUtils.toHex(getResponseHackRequestBytes), elapsedMs);
         }
 
         ByteBuffer getResponseHackResponseBytes = transmitApdu(getResponseHackRequestBytes);
@@ -153,7 +158,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         ApduResponse getResponseHackResponse = new ApduResponse(getResponseHackResponseBytes, null);
 
         if (logger.isTraceEnabled()) {
-            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            this.before = timeStamp;
             logger.trace("[{}] case4HackGetResponse => Intrinsic {}, elapsed {} ms.",
                     this.getName(), getResponseHackResponseBytes, elapsedMs);
         }
@@ -181,10 +188,10 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      *
      * @param requestSet the request set
      * @return SeResponseSet the response set
-     * @throws IOReaderException if a reader error occurs
+     * @throws KeypleIOReaderException if a reader error occurs
      */
     protected final SeResponseSet processSeRequestSet(SeRequestSet requestSet)
-            throws IOReaderException {
+            throws KeypleIOReaderException, KeypleChannelStateException, KeypleReaderException {
 
         boolean requestMatchesProtocol[] = new boolean[requestSet.getRequests().size()];
         int requestIndex = 0, lastRequestIndex;
@@ -195,16 +202,23 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             requestIndex++;
         }
 
-        // we have now an array of booleans saying whether the corresponding request and the
-        // current SE match or not
+        /*
+         * we have now an array of booleans saying whether the corresponding request and the current
+         * SE match or not
+         */
 
         lastRequestIndex = requestIndex;
         requestIndex = 0;
 
-        // The current requestSet is possibly made of several APDU command lists
-        // If the requestMatchesProtocol is true we process the requestSet
-        // If the requestMatchesProtocol is false we skip to the next requestSet
-        // If keepChannelOpen is false, we close the physical channel for the last request.
+        /*
+         * The current requestSet is possibly made of several APDU command lists.
+         *
+         * If the requestMatchesProtocol is true we process the requestSet.
+         *
+         * If the requestMatchesProtocol is false we skip to the next requestSet.
+         *
+         * If keepChannelOpen is false, we close the physical channel for the last request.
+         */
         List<SeResponse> responses = new ArrayList<SeResponse>();
         boolean stopProcess = false;
         for (SeRequest request : requestSet.getRequests()) {
@@ -218,8 +232,10 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     logger.debug("[{}] processSeRequestSet => receive {}", this.getName(),
                             response);
                 } else {
-                    // in case the protocolFlag of a SeRequest doesn't match the reader status, a
-                    // null SeResponse is added to the SeResponseSet.
+                    /*
+                     * in case the protocolFlag of a SeRequest doesn't match the reader status, a
+                     * null SeResponse is added to the SeResponseSet.
+                     */
                     responses.add(null);
                 }
                 requestIndex++;
@@ -240,7 +256,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                                 this.getName());
                     }
                 } else {
-                    stopProcess = true;
+                    if (isLogicalChannelOpen()) {
+                        stopProcess = true;
+                    }
                     /*
                      * When keepChannelOpen is true, we stop after the first matching request we
                      * exit the for loop here For the processing of a SeRequest with a protocolFlag
@@ -282,23 +300,50 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      *
      * @param seRequest the SeRequest
      * @return the SeResponse to the SeRequest
-     * @throws ChannelStateReaderException if a transmission fails
+     * @throws KeypleReaderException if a transmission fails
      */
     @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
             "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity"})
-    private SeResponse processSeRequest(SeRequest seRequest) throws IOReaderException {
+    private SeResponse processSeRequest(SeRequest seRequest)
+            throws IllegalStateException, KeypleIOReaderException, KeypleChannelStateException {
         boolean previouslyOpen = true;
 
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
-        // unless the selector is null, we try to open a logical channel
+        /* unless the selector is null, we try to open a logical channel */
         if (seRequest.getSelector() != null) {
-            // check if AID changed if the channel is already open
-            if (isLogicalChannelOpen() && seRequest.getSelector() instanceof SeRequest.AidSelector
-                    && aidCurrentlySelected != ((SeRequest.AidSelector) seRequest.getSelector())
-                            .getAidToSelect()) {
-                // the AID changed, close the logical channel
-                closeLogicalChannel();
+            /* check if AID changed if the channel is already open */
+            // TODO implement "select next" to handle SE having several matching AIDs
+            // for now we check only if the selection AID is included in the AID found in the FCI
+            // data
+            if (isLogicalChannelOpen()
+                    && seRequest.getSelector() instanceof SeRequest.AidSelector) {
+                /*
+                 * AID comparison hack: we check here if the initial selection AID matches the
+                 * beginning of the AID provided in the SeRequest (coming from FCI data and supposed
+                 * to be longer than the selection AID).
+                 *
+                 * The current AID (selector) length must be at least equal or greater than the
+                 * selection AID. All bytes of the selection AID must match the beginning of the
+                 * current AID.
+                 */
+                if (aidCurrentlySelected == null) {
+                    throw new IllegalStateException("AID currently selected shouldn't be null.");
+                }
+                if (((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect()
+                        .limit() >= aidCurrentlySelected.limit()
+                        && aidCurrentlySelected.equals(ByteBufferUtils.subLen(
+                                ((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect(),
+                                0, aidCurrentlySelected.limit()))) {
+                    // the AID changed, close the logical channel
+                    if (logger.isTraceEnabled()) {
+                        logger.trace(
+                                "[{}] processSeRequest => The AID changed, close the logical channel. AID = {}, EXPECTEDAID = {}",
+                                this.getName(), ByteBufferUtils.toHex(aidCurrentlySelected),
+                                seRequest.getSelector());
+                    }
+                    closeLogicalChannel();
+                }
             }
 
             if (!isLogicalChannelOpen()) {
@@ -311,18 +356,18 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                             seRequest.getSuccessfulSelectionStatusCodes());
                     logger.trace("[{}] processSeRequest => Logical channel opening success.",
                             this.getName());
-                } catch (SelectApplicationException e) {
+                } catch (KeypleApplicationSelectionException e) {
                     logger.trace("[{}] processSeRequest => Logical channel opening failure",
                             this.getName());
                     closeLogicalChannel();
-                    // return a null SeReponse when the opening of the logical channel failed
+                    /* return a null SeResponse when the opening of the logical channel failed */
                     return null;
                 }
 
                 if (atrAndFciDataBytes[0] != null) { // the SE Answer to reset
                     atrData = new ApduResponse(atrAndFciDataBytes[0], null);
                     if (seRequest.getSelector() instanceof SeRequest.AtrSelector) {
-                        // channel is considered if the selection mode was ATR based
+                        /* channel is considered if the selection mode was ATR based */
                         setLogicalChannelOpen();
                     }
                 }
@@ -333,7 +378,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     fciDataSelected = new ApduResponse(atrAndFciDataBytes[1],
                             seRequest.getSuccessfulSelectionStatusCodes());
                     if (fciDataSelected.isSuccessful()) {
-                        // the channel opening is successful
+                        /* the channel opening is successful */
                         setLogicalChannelOpen();
                     } else {
                         closeLogicalChannel();
@@ -341,14 +386,14 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 }
             }
         } else {
-            // selector is null, we expect that the logical channel was previously opened
+            /* selector is null, we expect that the logical channel was previously opened */
             if (!isLogicalChannelOpen()) {
                 throw new IllegalStateException(
                         "[" + this.getName() + "] processSeRequest => No logical channel opened!");
             }
         }
 
-        // process request if not empty
+        /* process request if not empty */
         if (seRequest.getApduRequests() != null) {
             for (ApduRequest apduRequest : seRequest.getApduRequests()) {
                 apduResponseList.add(processApduRequest(apduRequest));

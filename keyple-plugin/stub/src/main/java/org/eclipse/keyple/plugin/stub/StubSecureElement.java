@@ -11,9 +11,8 @@ package org.eclipse.keyple.plugin.stub;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.seproxy.SeProtocol;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 public abstract class StubSecureElement {
@@ -32,11 +31,11 @@ public abstract class StubSecureElement {
         return isPhysicalChannelOpen;
     }
 
-    public void openPhysicalChannel() throws IOReaderException, ChannelStateReaderException {
+    public void openPhysicalChannel() throws KeypleChannelStateException {
         isPhysicalChannelOpen = true;
     }
 
-    public void closePhysicalChannel() throws IOReaderException {
+    public void closePhysicalChannel() throws KeypleChannelStateException {
         isPhysicalChannelOpen = false;
     }
 
@@ -44,7 +43,7 @@ public abstract class StubSecureElement {
     /**
      * @return SE protocol supported by the SE
      */
-    public abstract SeProtocol getSeProcotol();
+    public abstract String getSeProcotol();
 
 
     Map<String, String> hexCommands = new HashMap<String, String>();
@@ -76,9 +75,9 @@ public abstract class StubSecureElement {
      *
      * @param apduIn : commands to be processed
      * @return APDU response
-     * @throws ChannelStateReaderException if the transmission fails
+     * @throws KeypleIOReaderException if the transmission fails
      */
-    public ByteBuffer processApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
+    public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
 
         if (apduIn == null) {
             return null;

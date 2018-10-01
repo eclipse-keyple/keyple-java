@@ -12,15 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.event.PluginEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
-import org.eclipse.keyple.seproxy.plugin.AbstractStaticPlugin;
+import org.eclipse.keyple.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class StubPlugin extends AbstractStaticPlugin {
+public final class StubPlugin extends AbstractThreadedObservablePlugin {
 
     private static final StubPlugin uniqueInstance = new StubPlugin();
 
@@ -28,9 +26,16 @@ public final class StubPlugin extends AbstractStaticPlugin {
 
     private final Map<String, String> parameters = new HashMap<String, String>();
 
+    private static SortedSet<String> nativeStubReadersNames = new ConcurrentSkipListSet<String>();
+
     private StubPlugin() {
         super("StubPlugin");
 
+        /*
+         * Monitoring is not handled by a lower layer (as in PC/SC), reduce the threading period to
+         * 50 ms to speed up responsiveness.
+         */
+        threadWaitTimeout = 50;
     }
 
     /**
@@ -53,11 +58,19 @@ public final class StubPlugin extends AbstractStaticPlugin {
     }
 
     @Override
-    protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
-        // init Stub Readers list
+    protected SortedSet<AbstractObservableReader> getNativeReaders() throws KeypleReaderException {
+        /* init Stub Readers list */
         SortedSet<AbstractObservableReader> nativeReaders =
                 new ConcurrentSkipListSet<AbstractObservableReader>();
 
+        /*
+         * parse the current readers list to create the ProxyReader(s) associated with new reader(s)
+         */
+        if (nativeStubReadersNames != null && nativeStubReadersNames.size() > 0) {
+            for (String name : nativeStubReadersNames) {
+                nativeReaders.add(new StubReader(name));
+            }
+        }
         return nativeReaders;
     }
 
@@ -68,9 +81,12 @@ public final class StubPlugin extends AbstractStaticPlugin {
                 return reader;
             }
         }
-        return null;
+        AbstractObservableReader reader = null;
+        if (nativeStubReadersNames.contains(name)) {
+            reader = new StubReader(name);
+        }
+        return reader;
     }
-
 
     /**
      * Plug a Stub Reader
@@ -79,19 +95,15 @@ public final class StubPlugin extends AbstractStaticPlugin {
      */
     public StubReader plugStubReader(String name) {
 
-        if (getNativeReader(name) == null) {
+        if (!nativeStubReadersNames.contains(name)) {
             logger.info("Plugging a new reader with name " + name);
-            StubReader stubReader = new StubReader(name);
-            readers.add((AbstractObservableReader) stubReader);
-            notifyObservers(
-                    new PluginEvent(getName(), name, PluginEvent.EventType.READER_CONNECTED));
-            return stubReader;
-
+            nativeStubReadersNames.add(name);
+            // StubReader stubReader = new StubReader(name);
+            // readers.add((AbstractObservableReader) stubReader);
         } else {
-            logger.warn("Reader with name " + name + " was already plugged");
-            return (StubReader) getNativeReader(name);
+            logger.error("Reader with name " + name + " was already plugged");
         }
-
+        return (StubReader) getNativeReader(name);
     }
 
     /**
@@ -99,17 +111,26 @@ public final class StubPlugin extends AbstractStaticPlugin {
      * 
      * @param name
      */
-    public void unplugReader(String name) throws IOReaderException {
-        ProxyReader reader = getNativeReader(name);
-        if (reader == null) {
+    public void unplugReader(String name) throws KeypleReaderException {
+
+        if (!nativeStubReadersNames.contains(name)) {
             logger.warn("No reader found with name " + name);
-
         } else {
-            readers.remove(reader);
-            notifyObservers(
-                    new PluginEvent(getName(), name, PluginEvent.EventType.READER_DISCONNECTED));
-            logger.info("Unplugged reader with name " + reader.getName());
+            nativeStubReadersNames.remove(name);
+            logger.info("Unplugged reader with name " + name);
         }
+    }
 
+    /**
+     * Get a list of available reader names
+     * 
+     * @return String list
+     */
+    @Override
+    protected SortedSet<String> getNativeReadersNames() {
+        if (nativeStubReadersNames.isEmpty()) {
+            logger.trace("No reader available.");
+        }
+        return nativeStubReadersNames;
     }
 }

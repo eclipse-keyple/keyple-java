@@ -13,7 +13,7 @@ import java.util.List;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +41,7 @@ public class SmartCardIOPluginTest {
     // PCSC-specific when we
     // should be returning ProxyReaders
     @Before
-    public void setUp() throws IOReaderException, CardException {
+    public void setUp() throws KeypleReaderException, CardException {
         // smartCardPluginSpyied = spy(plugin);
         /*
          * when(plugin.getReaders()).thenReturn(cardTerminals); List<CardTerminal> terms = new
@@ -52,7 +52,7 @@ public class SmartCardIOPluginTest {
     }
 
     @Test
-    public void testGetReaders() throws CardException, IOReaderException {
+    public void testGetReaders() throws KeypleReaderException {
         assertEquals(plugin.getReaders().size(), 1);
         assertEquals("PcscPlugin", plugin.getName());
     }

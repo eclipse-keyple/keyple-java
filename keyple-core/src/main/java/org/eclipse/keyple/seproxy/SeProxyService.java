@@ -10,13 +10,12 @@ package org.eclipse.keyple.seproxy;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.seproxy.exception.UnexpectedPluginException;
+import org.eclipse.keyple.seproxy.exception.KeyplePluginNotFoundException;
 
 /**
  * The Class SeProxyService. This singleton is the entry point of the SE Proxy Service, its instance
  * has to be called by a ticketing application in order to establish a link with a SE’s application.
  *
- * @author Ixxi
  */
 public final class SeProxyService {
 
@@ -66,15 +65,15 @@ public final class SeProxyService {
      *
      * @param name the plugin name
      * @return the plugin.
-     * @throws UnexpectedPluginException if the wanted plugin is not found
+     * @throws KeyplePluginException: if the wanted plugin is not found
      */
-    public ReaderPlugin getPlugin(String name) throws UnexpectedPluginException {
+    public ReaderPlugin getPlugin(String name) throws KeyplePluginNotFoundException {
         for (ReaderPlugin plugin : plugins) {
             if (plugin.getName().equals(name)) {
                 return plugin;
             }
         }
-        throw new UnexpectedPluginException("Plugin " + name + " not found.");
+        throw new KeyplePluginNotFoundException(name);
     }
 
     /**

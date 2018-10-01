@@ -16,9 +16,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.InvalidMessageException;
+import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractSelectionLocalReader;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -107,7 +107,10 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
      * @throws IOException
      */
     @Override
-    public void setParameter(String key, String value) throws IOException {
+    public void setParameter(String key, String value) throws IllegalArgumentException {
+        LOG.info("AndroidNfcReader supports the following parameters");
+        LOG.info(READER_NAME,
+                "FLAG_READER_SKIP_NDEF_CHECK:\"int\", FLAG_READER_NO_PLATFORM_SOUNDS:\"int\", FLAG_READER_PRESENCE_CHECK_DELAY:\"int\"");
 
         Boolean correctParameter = (key.equals(AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK)
                 && value.equals("1") || value.equals("0"))
@@ -122,10 +125,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
             parameters.put(key, value);
         } else {
             LOG.warn("Unrecognized parameter : " + key);
-            LOG.warn("AndroidNfcReader supports the following parameters");
-            LOG.warn(
-                    "FLAG_READER_SKIP_NDEF_CHECK:\"int\", FLAG_READER_NO_PLATFORM_SOUNDS:\"int\", FLAG_READER_PRESENCE_CHECK_DELAY:\"int\"");
-            throw new IOException("Unrecognized  parameter");
+            throw new IllegalArgumentException("Unrecognized parameter " + key + " : " + value);
         }
 
     }
@@ -145,7 +145,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
             notifyObservers(
                     new ReaderEvent(PLUGIN_NAME, READER_NAME, ReaderEvent.EventType.SE_INSERTED));
 
-        } catch (IOReaderException e) {
+        } catch (KeypleReaderException e) {
             // print and do nothing
             e.printStackTrace();
             LOG.error(e.getLocalizedMessage());
@@ -172,7 +172,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
     }
 
     @Override
-    protected void openPhysicalChannel() throws ChannelStateReaderException {
+    protected void openPhysicalChannel() throws KeypleChannelStateException {
 
         if (!isSePresent()) {
             try {
@@ -182,7 +182,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
             } catch (IOException e) {
                 LOG.error("Error while connecting to Tag ");
                 e.printStackTrace();
-                throw new ChannelStateReaderException(e);
+                throw new KeypleChannelStateException("Error while opening physical channel", e);
             }
         } else {
             LOG.info("Tag is already connected to : " + printTagId());
@@ -190,7 +190,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
     }
 
     @Override
-    protected void closePhysicalChannel() throws ChannelStateReaderException {
+    protected void closePhysicalChannel() throws KeypleChannelStateException {
         try {
             if (tagProxy != null) {
                 tagProxy.close();
@@ -200,14 +200,14 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
             }
         } catch (IOException e) {
             LOG.error("Disconnecting error");
-            throw new ChannelStateReaderException(e);
+            throw new KeypleChannelStateException("Error while closing physical channel", e);
         }
         tagProxy = null;
     }
 
 
     @Override
-    protected ByteBuffer transmitApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
+    protected ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
         // Initialization
         LOG.debug("Data Length to be sent to tag : " + apduIn.limit());
         LOG.debug("Data in : " + ByteBufferUtils.toHex(apduIn));
@@ -217,7 +217,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
             dataOut = tagProxy.transceive(data);
         } catch (IOException e) {
             e.printStackTrace();
-            throw new ChannelStateReaderException(e);
+            throw new KeypleIOReaderException("Error while transmitting APDU", e);
         }
         LOG.debug("Data out : " + Arrays.toString(dataOut));
         return ByteBuffer.wrap(dataOut);
@@ -225,7 +225,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
 
 
     @Override
-    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws InvalidMessageException {
+    protected boolean protocolFlagMatches(SeProtocol protocolFlag) {
         return protocolsMap.containsKey(protocolFlag)
                 && protocolsMap.get(protocolFlag).equals(tagProxy.getTech());
     }

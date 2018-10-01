@@ -14,13 +14,17 @@ import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
-import org.eclipse.keyple.seproxy.exception.SelectApplicationException;
+import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
+import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+@SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
+        "PMD.StdCyclomaticComplexity"})
 /**
  * Local reader class implementing the logical channel opening based on the selection of the SE
  * application
@@ -51,11 +55,9 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
     /**
      * Attempts to open the physical channel
      *
-     * @throws IOReaderException if a reader error occurs
-     * @throws ChannelStateReaderException if the channel opening fails
+     * @throws KeypleReaderException if the channel opening fails
      */
-    protected abstract void openPhysicalChannel()
-            throws IOReaderException, ChannelStateReaderException;
+    protected abstract void openPhysicalChannel() throws KeypleChannelStateException;
 
     /**
      * Opens a logical channel
@@ -64,62 +66,75 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
      * @param successfulSelectionStatusCodes the list of successful status code for the select
      *        command
      * @return 2 ByteBuffers: ATR and FCI data
-     * @throws IOReaderException - if an IO exception occurred
-     * @throws SelectApplicationException - if the application selection is not successful
+     * @throws KeypleReaderException - if an IO exception occurred
+     * @throws KeypleApplicationSelectionException - if the application selection is not successful
      */
     protected final ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
-            Set<Short> successfulSelectionStatusCodes)
-            throws IOReaderException, SelectApplicationException {
+            Set<Short> successfulSelectionStatusCodes) throws KeypleChannelStateException,
+            KeypleApplicationSelectionException, KeypleIOReaderException {
         ByteBuffer[] atrAndFci = new ByteBuffer[2];
 
         if (!isLogicalChannelOpen()) {
-            // init of the physical SE channel: if not yet established, opening of a new physical
-            // channel
+            /*
+             * init of the physical SE channel: if not yet established, opening of a new physical
+             * channel
+             */
             if (!isPhysicalChannelOpen()) {
                 openPhysicalChannel();
             }
             if (!isPhysicalChannelOpen()) {
-                throw new ChannelStateReaderException("Fail to open physical channel.");
+                throw new KeypleChannelStateException("Fail to open physical channel.");
             }
         }
 
-        // add ATR
+        /* add ATR */
         atrAndFci[0] = getATR();
-        logger.trace("[{}] openLogicalChannelAndSelect => ATR: {}", this.getName(),
-                ByteBufferUtils.toHex(atrAndFci[0]));
-
-        // selector may be null, in this case we consider the logical channel open
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] openLogicalChannelAndSelect => ATR: {}", this.getName(),
+                    ByteBufferUtils.toHex(atrAndFci[0]));
+        }
+        /* selector may be null, in this case we consider the logical channel open */
         if (selector != null) {
             if (selector instanceof SeRequest.AidSelector) {
                 ByteBuffer aid = ((SeRequest.AidSelector) selector).getAidToSelect();
                 if (aid != null) {
-                    logger.trace(
-                            "[{}] openLogicalChannelAndSelect => Select Application with AID = {}",
-                            this.getName(), ByteBufferUtils.toHex(aid));
+                    if (logger.isTraceEnabled()) {
+                        logger.trace(
+                                "[{}] openLogicalChannelAndSelect => Select Application with AID = {}",
+                                this.getName(), ByteBufferUtils.toHex(aid));
+                    }
+                    /*
+                     * build a get response command the actual length expected by the SE in the get
+                     * response command is handled in transmitApdu
+                     */
+                    ByteBuffer selectApplicationCommand = ByteBuffer.allocate(6 + aid.limit());
+                    selectApplicationCommand.put((byte) 0x00); // CLA
+                    selectApplicationCommand.put((byte) 0xA4); // INS
+                    selectApplicationCommand.put((byte) 0x04); // P1
+                    selectApplicationCommand.put((byte) 0x00); // P2
+                    selectApplicationCommand.put((byte) (aid.limit())); // Lc
+                    selectApplicationCommand.put(aid); // data
+                    selectApplicationCommand.put((byte) 0x00); // Le
+                    selectApplicationCommand.position(0);
 
-                    // build a get response command
-                    // the actual length expected by the SE in the get response command is handled
-                    // in
-                    // transmitApdu
-                    ByteBuffer selectApplicationCommand = ByteBufferUtils
-                            .fromHex("00A40400" + String.format("%02X", (byte) aid.limit())
-                                    + ByteBufferUtils.toHex(aid) + "00");
-
-                    // we use here processApduRequest to manage case 4 hack
-                    // the successful status codes list for this command is provided
+                    /*
+                     * we use here processApduRequest to manage case 4 hack the successful status
+                     * codes list for this command is provided
+                     */
                     ApduResponse fciResponse =
                             processApduRequest(new ApduRequest(selectApplicationCommand, true,
                                     successfulSelectionStatusCodes)
                                             .setName("Intrinsic Select Application"));
 
-                    // add FCI
+                    /* add FCI */
                     atrAndFci[1] = fciResponse.getBytes();
 
                     if (!fciResponse.isSuccessful()) {
                         logger.trace(
                                 "[{}] openLogicalChannelAndSelect => Application Selection failed. SELECTOR = {}",
                                 this.getName(), selector);
-                        throw new SelectApplicationException("Application selection failed");
+                        throw new KeypleApplicationSelectionException(
+                                "Application selection by AID failed " + selector.toString());
                     }
                 }
             } else {
@@ -127,7 +142,8 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
                     logger.trace(
                             "[{}] openLogicalChannelAndSelect => ATR Selection failed. SELECTOR = {}",
                             this.getName(), selector);
-                    throw new SelectApplicationException("ATR selection failed");
+                    throw new KeypleApplicationSelectionException(
+                            "Application selection by ATR failed " + selector.toString());
                 }
             }
         }

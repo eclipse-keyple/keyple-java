@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.plugin.pcsc;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,8 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
@@ -59,7 +59,8 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
     }
 
     @Override
-    public void setParameter(String key, String value) throws IOException {
+    public void setParameter(String key, String value)
+            throws IllegalArgumentException, KeypleBaseException {
 
     }
 
@@ -75,7 +76,7 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
         return this;
     }
 
-    protected SortedSet<String> getNativeReadersNames() throws IOReaderException {
+    protected SortedSet<String> getNativeReadersNames() throws KeypleReaderException {
         SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
         CardTerminals terminals = getCardTerminals();
         try {
@@ -83,10 +84,14 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
                 nativeReadersNames.add(term.getName());
             }
         } catch (CardException e) {
-            logger.trace(
-                    "[{}] getNativeReadersNames => Terminal list is not accessible. Exception: {}",
-                    this.getName(), e.getMessage());
-            throw new IOReaderException("Could not access terminals list", e);
+            if (e.getCause().toString().contains("SCARD_E_NO_READERS_AVAILABLE")) {
+                logger.trace("No reader available.");
+            } else {
+                logger.trace(
+                        "[{}] getNativeReadersNames => Terminal list is not accessible. Exception: {}",
+                        this.getName(), e.getMessage());
+                throw new KeypleReaderException("Could not access terminals list", e);
+            }
         }
         return nativeReadersNames;
     }
@@ -97,10 +102,10 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
      * New reader objects are created.
      *
      * @return the list of new readers.
-     * @throws IOReaderException if a reader error occurs
+     * @throws KeypleReaderException if a reader error occurs
      */
     @Override
-    protected SortedSet<AbstractObservableReader> getNativeReaders() throws IOReaderException {
+    protected SortedSet<AbstractObservableReader> getNativeReaders() throws KeypleReaderException {
         SortedSet<AbstractObservableReader> nativeReaders =
                 new ConcurrentSkipListSet<AbstractObservableReader>();
 
@@ -111,9 +116,14 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
                 nativeReaders.add(new PcscReader(this.getName(), term));
             }
         } catch (CardException e) {
-            logger.trace("[{}] Terminal list is not accessible. Exception: {}", this.getName(),
-                    e.getMessage());
-            throw new IOReaderException("Could not access terminals list", e);
+            if (e.getCause().toString().contains("SCARD_E_NO_READERS_AVAILABLE")) {
+                logger.trace("No reader available.");
+            } else {
+                logger.trace("[{}] Terminal list is not accessible. Exception: {}", this.getName(),
+                        e.getMessage());
+                throw new KeypleReaderException("Could not access terminals list", e);
+
+            }
         }
         return nativeReaders;
     }
@@ -129,10 +139,10 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
      *
      * @param name name of the reader
      * @return the reader object
-     * @throws IOReaderException if a reader error occurs
+     * @throws KeypleReaderException if a reader error occurs
      */
     @Override
-    protected AbstractObservableReader getNativeReader(String name) throws IOReaderException {
+    protected AbstractObservableReader getNativeReader(String name) throws KeypleReaderException {
         // return the current reader if it is already listed
         for (AbstractObservableReader reader : readers) {
             if (reader.getName().equals(name)) {
@@ -155,18 +165,42 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
         } catch (CardException e) {
             logger.trace("[{}] Terminal list is not accessible. Exception: {}", this.getName(),
                     e.getMessage());
-            throw new IOReaderException("Could not access terminals list", e);
+            throw new KeypleReaderException("Could not access terminals list", e);
         }
         if (reader == null) {
-            throw new IOReaderException("Reader " + name + " not found!");
+            throw new KeypleReaderException("Reader " + name + " not found!");
         }
         return reader;
     }
 
     private CardTerminals getCardTerminals() {
+        // try {
+        // Class pcscterminal = null;
+        // pcscterminal = Class.forName("sun.security.smartcardio.PCSCTerminals");
+        // Field contextId = pcscterminal.getDeclaredField("contextId");
+        // contextId.setAccessible(true);
+        //
+        // if (contextId.getLong(pcscterminal) != 0L) {
+        // Class pcsc = Class.forName("sun.security.smartcardio.PCSC");
+        // Method SCardEstablishContext =
+        // pcsc.getDeclaredMethod("SCardEstablishContext", new Class[] {Integer.TYPE});
+        // SCardEstablishContext.setAccessible(true);
+        //
+        // Field SCARD_SCOPE_USER = pcsc.getDeclaredField("SCARD_SCOPE_USER");
+        // SCARD_SCOPE_USER.setAccessible(true);
+        //
+        // long newId = ((Long) SCardEstablishContext.invoke(pcsc,
+        // new Object[] {Integer.valueOf(SCARD_SCOPE_USER.getInt(pcsc))})).longValue();
+        // contextId.setLong(pcscterminal, newId);
+        // }
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // }
+
         if (factory == null) {
             factory = TerminalFactory.getDefault();
         }
+
         CardTerminals terminals = factory.terminals();
 
         return terminals;

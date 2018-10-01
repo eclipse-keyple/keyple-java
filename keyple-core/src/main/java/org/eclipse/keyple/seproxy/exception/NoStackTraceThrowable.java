@@ -11,6 +11,7 @@ package org.eclipse.keyple.seproxy.exception;
 /**
  * Exception that do not print stack trace Useful when the exceptions are expected and managed.
  */
+// TODO workaround for no stackstrace; should we keep it?
 public class NoStackTraceThrowable extends Throwable {
     @Override
     public synchronized Throwable fillInStackTrace() {

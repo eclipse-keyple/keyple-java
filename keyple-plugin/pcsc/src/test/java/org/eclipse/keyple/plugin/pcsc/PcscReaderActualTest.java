@@ -9,7 +9,7 @@
 package org.eclipse.keyple.plugin.pcsc;
 
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.util.Observable;
 import org.junit.Assert;
@@ -47,12 +47,12 @@ public class PcscReaderActualTest {
      * This test registers/deregisters on an {@link AbstractObservableReader} twice. This allows to
      * verify we create and dispose threads correctly.
      * 
-     * @throws IOReaderException
+     * @throws KeypleReaderException
      * @throws InterruptedException
      */
     @Ignore // <-- This test works but can only be executed with an actual card present
     @Test
-    public void testActual() throws IOReaderException, InterruptedException {
+    public void testActual() throws KeypleReaderException, InterruptedException {
         PcscPlugin plugin = PcscPlugin.getInstance().setLogging(true);
 
         final MyReaderObserver observer = new MyReaderObserver();

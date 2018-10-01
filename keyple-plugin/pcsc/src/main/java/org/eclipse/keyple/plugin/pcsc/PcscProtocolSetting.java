@@ -30,7 +30,7 @@ public enum PcscProtocolSetting implements SeProtocolSettingList {
             ProtocolSetting.REGEX_PROTOCOL_MIFARE_CLASSIC),
 
     SETTING_PROTOCOL_MIFARE_DESFIRE(ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE,
-            ProtocolSetting.REGEX_PROTOCOL_DESFIRE),
+            ProtocolSetting.REGEX_PROTOCOL_MIFARE_DESFIRE),
 
     SETTING_PROTOCOL_MEMORY_ST25(ContactlessProtocols.PROTOCOL_MEMORY_ST25,
             ProtocolSetting.REGEX_PROTOCOL_MEMORY_ST25);
@@ -49,7 +49,7 @@ public enum PcscProtocolSetting implements SeProtocolSettingList {
         public static String REGEX_PROTOCOL_MIFARE_CLASSIC =
                 "3B8F8001804F0CA000000306030001000000006A";
 
-        public static String REGEX_PROTOCOL_DESFIRE = "3B8180018080";
+        public static String REGEX_PROTOCOL_MIFARE_DESFIRE = "3B8180018080";
 
         public static String REGEX_PROTOCOL_MEMORY_ST25 =
                 "3B8F8001804F0CA000000306070007D0020C00B6";

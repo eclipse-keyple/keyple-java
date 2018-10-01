@@ -11,13 +11,19 @@ package org.eclipse.keyple.command;
 import java.nio.ByteBuffer;
 import org.eclipse.keyple.seproxy.ApduRequest;
 
-@SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
-        "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity"})
 /**
- * Iso7816 APDU command builder. It has to be extended by all PO and CSM command builder classes, it
- * provides, through the AbstractApduCommandBuilder superclass,the generic getters to retrieve: the
- * name of the command, the built APDURequest, the corresponding AbstractApduResponseParser class.
+ * Iso7816 APDU command builder.
+ * <p>
+ * It has to be extended by all PO and CSM command builder classes.
+ * <p>
+ * It provides, through the AbstractApduCommandBuilder superclass, the generic getters to retrieve:
+ * <ul>
+ * <li>the name of the command,</li>
+ * <li>the built APDURequest,</li>
+ * <li>the corresponding AbstractApduResponseParser class.</li>
+ * </ul>
  */
+
 public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandBuilder {
 
     /**
@@ -33,80 +39,83 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
     /**
      * Helper method to create an ApduRequest from separated elements.
      * <p>
-     * Case 4 is determined from provided arguments: if outgoing data is present and ingoing data is
-     * expected (le &gt; 0), we are in case 4.
+     * The ISO7816-4 case for data in a command-response pair is determined from the provided
+     * arguments:
+     * <ul>
+     * <li><code>dataIn &nbsp;= null, le &nbsp;= null</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;case 1: no
+     * command data, no response data expected.</li>
+     * <li><code>dataIn &nbsp;= null, le != null</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;case 2: no
+     * command data, expected response data.</li>
+     * <li><code>dataIn != null, le &nbsp;= null</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;case 3: command
+     * data, no response data expected.</li>
+     * <li><code>dataIn != null, le &nbsp;= 0&nbsp;&nbsp;&nbsp;</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;case
+     * 4: command data, expected response data.</li>
+     * </ul>
      * <p>
-     * le must be set to null when no outgoing data is expected.
-     * 
-     * @param cla class
-     * @param command instruction
-     * @param p1 p1
-     * @param p2 p2
-     * @param dataIn data byte array
-     * @param le data out length
+     * If dataIn is not null and Le &gt; 0 an IllegalArgumentException is thrown
+     *
+     * @param cla class of instruction
+     * @param command instruction code
+     * @param p1 instruction parameter 1
+     * @param p2 instruction parameter 2
+     * @param dataIn bytes sent in the data field of the command. dataIn.limit will be Lc (Number of
+     *        bytes present in the data field of the command)
+     * @param le maximum number of bytes expected in the data field of the response to the command
+     *        (set to 0 is the case where ingoing and outgoing are present. Let the lower layer to
+     *        handle the actual length [case4])
      * @return an ApduRequest
      */
     protected ApduRequest setApduRequest(byte cla, CommandsTable command, byte p1, byte p2,
             ByteBuffer dataIn, Byte le) {
-        if (dataIn == null) {
-            // TODO: Drop this
-            dataIn = ByteBuffer.allocate(0);
-        } else {
-            dataIn.position(0);
+        boolean case4;
+        /* sanity check */
+        if (dataIn != null && le != null && le != 0) {
+            throw new IllegalArgumentException(
+                    "Le must be equal to 0 when not null and ingoing data are present.");
         }
 
-        byte ins = command.getInstructionByte();
-
-        boolean forceLe;
-        if (le == null) {
-            le = 0;
-            forceLe = false;
-        } else {
-            forceLe = true;
-        }
-
-        int localCaseId = 0;
-        {
-            // try to retrieve case
-            if (dataIn.limit() == 0 && le == 0x00) {
-                localCaseId = 1;
-            }
-            if (dataIn.limit() == 0 && le != 0x00) {
-                localCaseId = 2;
-            }
-            if (dataIn.limit() != 0 && le == 0x00) {
-                localCaseId = 3;
-            }
-            if (dataIn.limit() != 0 && le != 0x00) {
-                localCaseId = 4;
-            }
-        }
-
+        /* Buffer allocation for all APDUs */
         ByteBuffer apdu = ByteBuffer.allocate(261);
 
+        /* Build APDU buffer from provided arguments */
         apdu.put(cla);
-        apdu.put(ins);
+        apdu.put(command.getInstructionByte());
         apdu.put(p1);
         apdu.put(p2);
 
-        if (dataIn.limit() != 0) {
+        /* ISO7618 case determination and Le management */
+        if (dataIn != null) {
+            /* set ByteBuffer index at the beginning */
+            dataIn.position(0);
+            /* append Lc and ingoing data */
             apdu.put((byte) dataIn.limit());
             apdu.put(dataIn);
-        }
-
-
-        if (forceLe) {
-            if (localCaseId == 4) {
+            if (le != null) {
+                /*
+                 * case4: ingoing and outgoing data, Le is always set to 0 (see Calypso Reader
+                 * Recommendations - T84)
+                 */
+                case4 = true;
                 apdu.put((byte) 0x00);
             } else {
-                apdu.put(le);
+                /* case3: ingoing data only, no Le */
+                case4 = false;
             }
+        } else {
+            if (le != null) {
+                /* case2: outgoing data only */
+                apdu.put(le);
+            } else {
+                /* case1: no ingoing, no outgoing data, P3/Le = 0 */
+                apdu.put((byte) 0x00);
+            }
+            case4 = false;
         }
 
+        /* Reset ByteBuffer indexes */
         apdu.limit(apdu.position());
         apdu.position(0);
 
-        // byte[] array = ArrayUtils.toPrimitive(apdu.toArray(new Byte[0]));
-        return new ApduRequest(apdu, localCaseId == 4).setName(command.getName());
+        return new ApduRequest(apdu, case4).setName(command.getName());
     }
 }

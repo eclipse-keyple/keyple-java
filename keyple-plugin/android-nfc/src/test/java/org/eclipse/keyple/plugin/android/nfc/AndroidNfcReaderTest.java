@@ -23,8 +23,8 @@ import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -54,7 +54,7 @@ public class AndroidNfcReaderTest {
 
     // init before each test
     @Before
-    public void SetUp() throws IOReaderException {
+    public void SetUp() throws KeypleReaderException {
 
         // Mock others objects
         tagProxy = Mockito.mock(TagProxy.class);
@@ -80,7 +80,7 @@ public class AndroidNfcReaderTest {
      */
 
     @Test
-    public void transmitSuccessfull() throws IOException {
+    public void transmitSuccessfull() throws KeypleBaseException, IOException {
 
         // config
         reader.addSeProtocolSetting(
@@ -112,7 +112,7 @@ public class AndroidNfcReaderTest {
     }
 
     @Test
-    public void transmitWrongProtocols() throws IOException {
+    public void transmitWrongProtocols() throws KeypleBaseException, IOException {
 
         // config reader with Isodep protocols
         reader.addSeProtocolSetting(
@@ -144,7 +144,7 @@ public class AndroidNfcReaderTest {
     }
 
     @Test
-    public void transmitWrongProtocol2() throws IOException {
+    public void transmitWrongProtocol2() throws KeypleBaseException, IOException {
 
         // config reader with Mifare protocols
         reader.addSeProtocolSetting(
@@ -175,8 +175,8 @@ public class AndroidNfcReaderTest {
 
     }
 
-    @Test(expected = ChannelStateReaderException.class)
-    public void transmitCardNotConnected() throws IOException {
+    @Test(expected = KeypleReaderException.class)
+    public void transmitCardNotConnected() throws KeypleBaseException, IOException {
 
         // config reader with Isodep protocols
         reader.addSeProtocolSetting(
@@ -209,7 +209,7 @@ public class AndroidNfcReaderTest {
     }
 
     @Test
-    public void transmitUnkownCard() throws IOException {
+    public void transmitUnkownCard() throws KeypleBaseException, IOException {
 
         // config reader with Isodep protocols
         reader.addSeProtocolSetting(
@@ -242,7 +242,7 @@ public class AndroidNfcReaderTest {
 
 
     @Test
-    public void transmitUnknownApplication() throws IOException {
+    public void transmitUnknownApplication() throws KeypleBaseException, IOException {
 
         // config reader with Isodep protocols
         reader.addSeProtocolSetting(
@@ -276,14 +276,14 @@ public class AndroidNfcReaderTest {
      * Test PUBLIC methods
      */
 
-    @Test(expected = IOException.class)
-    public void setUnknownParameter() throws IOException {
+    @Test(expected = IllegalArgumentException.class)
+    public void setUnknownParameter() throws IllegalArgumentException {
         reader.setParameter("dsfsdf", "sdfdsf");
     }
 
 
     @Test
-    public void setCorrectParameter() throws IOException {
+    public void setCorrectParameter() throws IllegalArgumentException {
         reader.setParameter(AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS, "1");
         Assert.assertEquals(NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS, reader.getFlags());
         reader.setParameter(AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS, "0");
@@ -302,18 +302,18 @@ public class AndroidNfcReaderTest {
 
     }
 
-    @Test(expected = IOException.class)
-    public void setUnCorrectParameter() throws IOException {
+    @Test(expected = IllegalArgumentException.class)
+    public void setUnCorrectParameter() throws IllegalArgumentException {
         reader.setParameter(AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS, "A");
     }
 
-    @Test(expected = IOException.class)
-    public void setUnCorrectParameter2() throws IOException {
+    @Test(expected = IllegalArgumentException.class)
+    public void setUnCorrectParameter2() throws IllegalArgumentException {
         reader.setParameter(AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK, "2");
     }
 
-    @Test(expected = IOException.class)
-    public void setUnCorrectParameter3() throws IOException {
+    @Test(expected = IllegalArgumentException.class)
+    public void setUnCorrectParameter3() throws IllegalArgumentException {
         reader.setParameter(AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY, "-1");
     }
 
@@ -383,14 +383,14 @@ public class AndroidNfcReaderTest {
     }
 
     @Test
-    public void openPhysicalChannelSuccess() throws IOReaderException {
+    public void openPhysicalChannelSuccess() throws KeypleReaderException {
         insertSe();
         when(tagProxy.isConnected()).thenReturn(false);
         reader.openPhysicalChannel();
     }
 
-    @Test(expected = ChannelStateReaderException.class)
-    public void openPhysicalChannelError() throws IOException {
+    @Test(expected = KeypleReaderException.class)
+    public void openPhysicalChannelError() throws KeypleBaseException, IOException {
         // init
         insertSe();
         when(tagProxy.isConnected()).thenReturn(false);
@@ -401,7 +401,7 @@ public class AndroidNfcReaderTest {
     }
 
     @Test
-    public void closePhysicalChannelSuccess() throws IOReaderException {
+    public void closePhysicalChannelSuccess() throws KeypleReaderException {
         // init
         insertSe();
         when(tagProxy.isConnected()).thenReturn(true);
@@ -413,8 +413,8 @@ public class AndroidNfcReaderTest {
 
     }
 
-    @Test(expected = ChannelStateReaderException.class)
-    public void closePhysicalChannelError() throws IOException {
+    @Test(expected = KeypleReaderException.class)
+    public void closePhysicalChannelError() throws KeypleBaseException, IOException {
         // init
         insertSe();
         when(tagProxy.isConnected()).thenReturn(true);
@@ -428,7 +428,7 @@ public class AndroidNfcReaderTest {
     }
 
     @Test
-    public void transmitAPDUSuccess() throws IOException {
+    public void transmitAPDUSuccess() throws KeypleBaseException, IOException {
         // init
         insertSe();
         byte[] in = new byte[] {(byte) 0x90, 0x00};
@@ -443,8 +443,8 @@ public class AndroidNfcReaderTest {
 
     }
 
-    @Test(expected = ChannelStateReaderException.class)
-    public void transmitAPDUError() throws IOException {
+    @Test(expected = KeypleReaderException.class)
+    public void transmitAPDUError() throws KeypleBaseException, IOException {
         // init
         insertSe();
         byte[] in = new byte[] {(byte) 0x90, 0x00};
@@ -458,7 +458,7 @@ public class AndroidNfcReaderTest {
     }
 
     @Test
-    public void protocolFlagMatchesTrue() throws IOException {
+    public void protocolFlagMatchesTrue() throws KeypleBaseException, IOException {
         // init
         insertSe();
         reader.addSeProtocolSetting(

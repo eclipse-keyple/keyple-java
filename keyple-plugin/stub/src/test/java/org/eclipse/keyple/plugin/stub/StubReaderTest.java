@@ -10,38 +10,62 @@ package org.eclipse.keyple.plugin.stub;
 
 
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.ChannelStateReaderException;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.eclipse.keyple.util.Observable;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("PMD.SignatureDeclareThrowsException")
 @RunWith(MockitoJUnitRunner.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StubReaderTest {
 
     StubReader reader;
 
+    Logger logger = LoggerFactory.getLogger(StubReaderTest.class);
 
     // init before each test
     @Before
-    public void SetUp() throws IOReaderException {
+    public void SetUp() throws InterruptedException, KeypleReaderException {
         // clear observers from others tests as StubPlugin is a singleton
+
+        StubPlugin stubPlugin = StubPlugin.getInstance();
+
+        logger.info("Stubplugin readers size {}", stubPlugin.getReaders().size());
+        Assert.assertEquals(0, stubPlugin.getReaders().size());
+
+        logger.info("Stubplugin observers size {}", stubPlugin.countObservers());
+        Assert.assertEquals(0, stubPlugin.countObservers());
+
+        reader = StubPlugin.getInstance().plugStubReader("StubReaderTest");
+        Thread.sleep(500);
+
+    }
+
+    @After
+    public void tearDown() throws InterruptedException, KeypleReaderException {
         StubPlugin.getInstance().clearObservers();
-        reader = StubPlugin.getInstance().plugStubReader("StubReader");
+        StubPlugin.getInstance().unplugReader("StubReaderTest");
+        Thread.sleep(500);
 
     }
 
@@ -71,7 +95,7 @@ public class StubReaderTest {
     }
 
     @Test
-    public void testATR() throws IOReaderException {
+    public void testATR() {
         // add observer
         reader.addObserver(new Observable.Observer<ReaderEvent>() {
             @Override
@@ -85,7 +109,7 @@ public class StubReaderTest {
 
                     Assert.assertNotNull(atrResponse);
 
-                } catch (IOReaderException e) {
+                } catch (KeypleReaderException e) {
                     Assert.fail();
                 }
 
@@ -99,7 +123,7 @@ public class StubReaderTest {
     }
 
 
-    @Test(expected = IOReaderException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void transmit_Hoplink_null() throws Exception {
         reader.insertSe(hoplinkSE());
         reader.transmit((SeRequestSet) null);
@@ -108,13 +132,16 @@ public class StubReaderTest {
     }
 
     @Test
-    public void transmit_Hoplink_Sucessfull() throws IOException {
+    public void transmit_Hoplink_Sucessfull() throws KeypleReaderException {
         // init Request
         SeRequestSet requests = getRequestIsoDepSetSample();
 
         // init SE
         reader.insertSe(hoplinkSE());
 
+        // add Protocol flag
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
         // test
         SeResponseSet seResponse = reader.transmit(requests);
 
@@ -123,20 +150,23 @@ public class StubReaderTest {
     }
 
 
-    @Test
-    public void transmit_null_Selection() throws IOReaderException {
-        // init SE
-        // no SE
-
-        // init request
-        SeRequestSet seRequest = getRequestIsoDepSetSample();
-
-        // test
-        SeResponseSet resp = reader.transmit(seRequest);
-
-        Assert.assertNotNull(resp);
-
-    }
+    // @Test
+    // public void transmit_null_Selection() throws KeypleReaderException {
+    // // init SE
+    // // no SE
+    //
+    // // init request
+    // SeRequestSet seRequest = getRequestIsoDepSetSample();
+    //
+    // // add Protocol flag
+    // reader.addSeProtocolSetting(
+    // new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+    //
+    // // test
+    // SeResponseSet resp = reader.transmit(seRequest);
+    //
+    // Assert.assertNull(resp.getSingleResponse());
+    // }
 
 
     /*
@@ -149,13 +179,13 @@ public class StubReaderTest {
     }
 
     // Set wrong parameter
-    @Test(expected = IOReaderException.class)
+    @Test(expected = KeypleReaderException.class)
     public void testSetWrongParameter() throws Exception {
         reader.setParameter("WRONG_PARAMETER", "a");
     }
 
     // Set wrong parameters
-    @Test(expected = IOReaderException.class)
+    @Test(expected = KeypleReaderException.class)
     public void testSetWrongParameters() throws Exception {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("WRONG_PARAMETER", "d");
@@ -209,7 +239,7 @@ public class StubReaderTest {
         return new StubSecureElement() {
 
             @Override
-            public ByteBuffer processApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
+            public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
 
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
@@ -226,8 +256,8 @@ public class StubReaderTest {
             }
 
             @Override
-            public SeProtocol getSeProcotol() {
-                return ContactlessProtocols.PROTOCOL_ISO14443_4;
+            public String getSeProcotol() {
+                return "PROTOCOL_ISO14443_4";
             }
         };
 
@@ -249,23 +279,22 @@ public class StubReaderTest {
 
             // override methods to fail open connection
             @Override
-            public void openPhysicalChannel()
-                    throws IOReaderException, ChannelStateReaderException {
-                throw new IOReaderException("Impossible to estasblish connection");
+            public void openPhysicalChannel() throws KeypleChannelStateException {
+                throw new KeypleChannelStateException("Impossible to estasblish connection");
             }
 
             @Override
-            public void closePhysicalChannel() throws IOReaderException {
-                throw new IOReaderException("Channel is not open");
+            public void closePhysicalChannel() throws KeypleChannelStateException {
+                throw new KeypleChannelStateException("Channel is not open");
             }
 
             @Override
-            public ByteBuffer processApdu(ByteBuffer apduIn) throws ChannelStateReaderException {
-                throw new ChannelStateReaderException("Error while transmitting apdu");
+            public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
+                throw new KeypleIOReaderException("Error while transmitting apdu");
             }
 
             @Override
-            public SeProtocol getSeProcotol() {
+            public String getSeProcotol() {
                 return null;
             }
         };

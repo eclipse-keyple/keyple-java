@@ -13,7 +13,9 @@ import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.IOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +34,10 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
 
     private final String pluginName;
 
+    private long before; // timestamp recorder
+
     protected abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
-            throws IOReaderException;
+            throws KeypleIOReaderException, KeypleChannelStateException, KeypleReaderException;
 
     /**
      * Reader constructor
@@ -46,6 +50,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     protected AbstractObservableReader(String pluginName, String readerName) {
         super(readerName);
         this.pluginName = pluginName;
+        this.before = System.nanoTime();
     }
 
     /**
@@ -53,35 +58,43 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      *
      * @param requestSet the request set
      * @return responseSet the response set
-     * @throws IOReaderException if a reader error occurs
+     * @throws KeypleReaderException if a reader error occurs
      */
-    public final SeResponseSet transmit(SeRequestSet requestSet) throws IOReaderException {
+    public final SeResponseSet transmit(SeRequestSet requestSet) throws KeypleReaderException {
         if (requestSet == null) {
-            throw new IOReaderException("seRequestSet must not be null");
+            throw new IllegalArgumentException("seRequestSet must not be null");
         }
 
         SeResponseSet responseSet;
-        long before = 0;
-
 
         if (logger.isDebugEnabled()) {
-            logger.trace("[{}] transmit => SeRequestSet: {}", this.getName(),
-                    requestSet.toString());
-            before = System.nanoTime();
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            this.before = timeStamp;
+            logger.trace("[{}] transmit => SeRequestSet: {}, elapsed {} ms.", this.getName(),
+                    requestSet.toString(), elapsedMs);
         }
 
         try {
             responseSet = processSeRequestSet(requestSet);
-        } catch (IOReaderException ex) {
-            // Switching to the 10th of milliseconds and dividing by 10 to get the ms
-            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+        } catch (KeypleChannelStateException ex) {
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            this.before = timeStamp;
             logger.trace("[{}] transmit => failure. elapsed {}", elapsedMs);
-            throw ex;
+            throw new KeypleReaderException("Transmit failed", ex);
+        } catch (KeypleIOReaderException ex) {
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
+            this.before = timeStamp;
+            logger.trace("[{}] transmit => failure. elapsed {}", elapsedMs);
+            throw new KeypleReaderException("Transmit failed", ex);
         }
 
         if (logger.isDebugEnabled()) {
-            // Switching to the 10th of milliseconds and dividing by 10 to get the ms
-            double elapsedMs = (double) ((System.nanoTime() - before) / 100000) / 10;
+            long timeStamp = System.nanoTime();
+            double elapsedMs = (double) ((timeStamp - before) / 100000) / 10;
+            this.before = timeStamp;
             logger.trace("[{}] transmit => SeResponse: {}, elapsed {} ms.", this.getName(),
                     responseSet.toString(), elapsedMs);
         }

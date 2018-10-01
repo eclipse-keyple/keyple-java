@@ -8,8 +8,8 @@
 
 package org.eclipse.keyple.seproxy;
 
+import java.io.Serializable;
 import java.util.List;
-import org.eclipse.keyple.seproxy.exception.InconsistentParameterValueException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
@@ -18,7 +18,9 @@ import org.eclipse.keyple.util.ByteBufferUtils;
  * @see SeRequest
  */
 @SuppressWarnings("PMD.NPathComplexity")
-public final class SeResponse {
+public final class SeResponse implements Serializable {
+
+    static final long serialVersionUID = 265369841119873812L;
 
 
     /**
@@ -52,13 +54,12 @@ public final class SeResponse {
      * @param atr the SE atr (may be null)
      * @param fci the fci data
      * @param apduResponses the apdu responses
-     * @throws InconsistentParameterValueException if both atr and fci are null
+     * @throws IllegalArgumentException if both atr and fci are null
      */
     public SeResponse(boolean channelPreviouslyOpen, ApduResponse atr, ApduResponse fci,
-            List<ApduResponse> apduResponses) throws InconsistentParameterValueException {
+            List<ApduResponse> apduResponses) throws IllegalArgumentException {
         if (atr == null && fci == null) {
-            throw new InconsistentParameterValueException(
-                    "Atr and Fci can't be null at the same time.", null);
+            throw new IllegalArgumentException("Atr and Fci can't be null at the same time.", null);
         }
         this.channelPreviouslyOpen = channelPreviouslyOpen;
         this.atr = atr;
@@ -127,7 +128,6 @@ public final class SeResponse {
                 && (seResponse.getApduResponses() == null ? apduResponses == null
                         : seResponse.getApduResponses().equals(apduResponses))
                 && seResponse.wasChannelPreviouslyOpen() == channelPreviouslyOpen;
-
     }
 
     @Override
