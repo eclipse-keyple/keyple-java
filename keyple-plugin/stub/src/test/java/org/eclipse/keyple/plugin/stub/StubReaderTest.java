@@ -176,7 +176,7 @@ public class StubReaderTest {
         SeRequestSet requests = getNoResponseRequest();
 
         // init SE
-        reader.insertSe(noResponseToCommandSE());
+        reader.insertSe(noApduResponseSE());
 
         // add Protocol flag
         reader.addSeProtocolSetting(
@@ -209,7 +209,7 @@ public class StubReaderTest {
         reader.setParameters(parameters);
     }
 
-    // Set correct paramaters
+    // Set correct parameters
     @Test
     public void testSetParameters() throws Exception {
         Map<String, String> p1 = new HashMap<String, String>();
@@ -305,7 +305,7 @@ public class StubReaderTest {
 
     }
 
-    private StubSecureElement noResponseToCommandSE() {
+    private StubSecureElement noApduResponseSE() {
         return new StubSecureElement() {
 
             @Override
