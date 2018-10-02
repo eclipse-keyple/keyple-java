@@ -601,8 +601,14 @@ public class PoSecureSession {
 
         poApduRequestList.add(closeCommand.getApduRequest());
 
-        /* Add the PO Ratification command is present */
-        if (ratificationCommand != null) {
+        /* Keep the position of the Close Session command in request list */
+        int closeCommandIndex = poApduRequestList.size() - 1;
+
+        /*
+         * Add the PO Ratification command if any (ratification not asked with Close Session
+         * command)
+         */
+        if (!ratificationAsked) {
             poApduRequestList.add(ratificationCommand.getApduRequest());
         }
 
@@ -614,7 +620,28 @@ public class PoSecureSession {
 
         logger.debug("processClosing => POSEREQUEST = {}", poSeRequest);
 
-        SeResponse poSeResponse = poReader.transmit(poSeRequest);
+        SeResponse poSeResponse;
+        try {
+            poSeResponse = poReader.transmit(poSeRequest);
+        } catch (KeypleReaderException ex) {
+            poSeResponse = ex.getSeResponse();
+            /*
+             * The current exception may have been caused by a communication issue with the PO
+             * during the ratification command.
+             *
+             * In this case, we do not stop the process and consider the Secure Session close. We'll
+             * check the signature.
+             *
+             * We should have one response less than requests.
+             */
+            if (ratificationAsked || poSeResponse == null
+                    || poSeResponse.getApduResponses().size() != poApduRequestList.size() - 1) {
+                /* Add current PO SeResponse to exception */
+                ex.setSeResponse(poSeResponse);
+                throw new KeypleReaderException("PO Reader Exception while closing Secure Session",
+                        ex);
+            }
+        }
 
         logger.debug("processClosing => POSERESPONSE = {}", poSeResponse);
 
@@ -622,8 +649,8 @@ public class PoSecureSession {
 
         // TODO add support of poRevision parameter to CloseSessionRespPars for REV2.4 PO CLAss byte
         // before last if ratification, otherwise last one
-        CloseSessionRespPars poCloseSessionPars = new CloseSessionRespPars(
-                poApduResponseList.get(poApduResponseList.size() - ((ratificationAsked) ? 1 : 2)));
+        CloseSessionRespPars poCloseSessionPars =
+                new CloseSessionRespPars(poApduResponseList.get(closeCommandIndex));
         if (!poCloseSessionPars.isSuccessful()) {
             throw new KeypleCalypsoSecureSessionException("Didn't get a signature",
                     KeypleCalypsoSecureSessionException.Type.PO, poApduRequestList,
