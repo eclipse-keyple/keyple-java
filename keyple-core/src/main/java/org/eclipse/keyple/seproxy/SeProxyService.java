@@ -8,6 +8,9 @@
 
 package org.eclipse.keyple.seproxy;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.seproxy.exception.KeyplePluginNotFoundException;
@@ -21,9 +24,6 @@ public final class SeProxyService {
 
     /** singleton instance of SeProxyService */
     private static SeProxyService uniqueInstance = new SeProxyService();
-
-    /** version number of the SE Proxy Service API */
-    private Integer version = 1;
 
     /** the list of readers’ plugins interfaced with the SE Proxy Service */
     private SortedSet<ReaderPlugin> plugins = new ConcurrentSkipListSet<ReaderPlugin>();
@@ -86,12 +86,25 @@ public final class SeProxyService {
     }
 
     /**
-     * Gets the version.
+     * Gets the version API, (the version of the sdk).
      *
      * @return the version
      */
-    public Integer getVersion() {
-        // TODO improve version management
-        return version;
+    public String getVersion() {
+        try {
+            // load keyple core property file
+            InputStream propertiesIs = this.getClass().getClassLoader()
+                    .getResourceAsStream("META-INF/keyple.properties");
+            Properties prop = new Properties();
+            prop.load(propertiesIs);
+            String version = prop.getProperty("version");
+            if (version != null) {
+                return version;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return "no-version-found";
     }
 }

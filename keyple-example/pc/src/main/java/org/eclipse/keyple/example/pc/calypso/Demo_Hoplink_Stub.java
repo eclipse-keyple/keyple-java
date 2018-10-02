@@ -35,6 +35,8 @@ public class Demo_Hoplink_Stub {
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
+        logger.debug("SeProxyService version : {}", seProxyService.getVersion());
+
         SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
 
         StubPlugin stubPlugin = StubPlugin.getInstance();
