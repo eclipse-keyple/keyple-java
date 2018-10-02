@@ -29,14 +29,15 @@ allprojects {
                 "java-braces",
         ]
     }
+
 }
 
 group 'org.eclipse.keyple'
-version '1.0-SNAPSHOT'
+version = '0.9.2-RELEASE'
+
 
 
 apply plugin: 'com.android.application'
-
 
 
 android {
