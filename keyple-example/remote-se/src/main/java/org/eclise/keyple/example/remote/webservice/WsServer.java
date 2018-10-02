@@ -75,7 +75,7 @@ public class WsServer implements TransportNode {
 
     @Override
     public void update(KeypleDTO event) {
-        //not in used in ws
+        // not in used in ws
 
     }
 
@@ -152,7 +152,7 @@ public class WsServer implements TransportNode {
 
         @Override
         public void update(KeypleDTO event) {
-            //not in used in ws
+            // not in used in ws
         }
     }
 

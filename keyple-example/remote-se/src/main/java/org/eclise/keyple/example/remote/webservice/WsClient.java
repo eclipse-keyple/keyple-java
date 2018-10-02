@@ -75,6 +75,6 @@ public class WsClient implements TransportNode {
 
     @Override
     public void update(KeypleDTO event) {
-        //not in used in webservice
+        // not in used in webservice
     }
 }

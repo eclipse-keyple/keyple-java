@@ -11,7 +11,6 @@ package org.eclise.keyple.example.remote.websocket;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.keyple.plugin.remote_se.transport.*;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -54,6 +53,7 @@ public class WskServer extends WebSocketServer implements TransportNode {
 
     /**
      * Incoming message
+     * 
      * @param conn
      * @param message
      */
@@ -64,8 +64,9 @@ public class WskServer extends WebSocketServer implements TransportNode {
 
         if (stubplugin != null) {
 
-            //LOOP pass DTO and get DTO Response is any
-            TransportDTO transportDTO = stubplugin.onDTO(new WskTransportDTO(keypleDTO, conn,this));
+            // LOOP pass DTO and get DTO Response is any
+            TransportDTO transportDTO =
+                    stubplugin.onDTO(new WskTransportDTO(keypleDTO, conn, this));
 
             if (!isSlave) {
                 // if server is master, can have numerous clients

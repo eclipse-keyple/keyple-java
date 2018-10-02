@@ -36,7 +36,7 @@ public class WskClient extends WebSocketClient implements TransportNode {
         KeypleDTO dto = KeypleDTOHelper.fromJson(message);
 
         // process dto
-        TransportDTO transportDTO = dtoReceiver.onDTO(new WskTransportDTO(dto, null));
+        TransportDTO transportDTO = dtoReceiver.onDTO(new WskTransportDTO(dto, null, this));
 
         // there is a response/request to send back
         if (!KeypleDTOHelper.isNoResponse(transportDTO.getKeypleDTO())) {
@@ -78,7 +78,7 @@ public class WskClient extends WebSocketClient implements TransportNode {
     }
 
 
-    //observer of keypleDTOSenders
+    // observer of keypleDTOSenders
     @Override
     public void update(KeypleDTO event) {
         this.sendDTO(event);

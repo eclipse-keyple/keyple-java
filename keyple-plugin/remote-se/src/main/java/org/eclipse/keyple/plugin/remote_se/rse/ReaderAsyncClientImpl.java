@@ -9,7 +9,6 @@
 package org.eclipse.keyple.plugin.remote_se.rse;
 
 import java.util.concurrent.CountDownLatch;
-
 import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTO;
 import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTOHelper;
 import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
@@ -23,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * Manage RSE Reader Session Manage SeRequestSet to transmit and receive SeResponseSet in an
  * asynchronous way
  */
-public class ReaderAsyncClientImpl extends Observable<KeypleDTO> implements IReaderAsyncSession  {
+public class ReaderAsyncClientImpl extends Observable<KeypleDTO> implements IReaderAsyncSession {
 
     private static final Logger logger = LoggerFactory.getLogger(ReaderAsyncClientImpl.class);
 
@@ -52,16 +51,14 @@ public class ReaderAsyncClientImpl extends Observable<KeypleDTO> implements IRea
         if (this.seRequestSet == null) {
             logger.debug("Set a new seRequestSet in Session {}", sessionId);
 
-            //used for 1way communication
+            // used for 1way communication
             this.seRequestSet = seRequestSet;
             this.seResponseSetCallback = seResponseSetCallback;
 
-            //used for 2way communications
-            notifyObservers(new KeypleDTO(
-                     KeypleDTOHelper.READER_TRANSMIT,
-                     JsonParser.getGson().toJson(this.seRequestSet, SeRequestSet.class),
-                     true,
-                     sessionId));
+            // used for 2way communications
+            notifyObservers(new KeypleDTO(KeypleDTOHelper.READER_TRANSMIT,
+                    JsonParser.getGson().toJson(this.seRequestSet, SeRequestSet.class), true,
+                    sessionId));
 
         } else {
             logger.warn("SeRequestSet is already set in Session {}", sessionId);
@@ -77,20 +74,18 @@ public class ReaderAsyncClientImpl extends Observable<KeypleDTO> implements IRea
     @Override
     public void asyncSetSeResponseSet(SeResponseSet seResponseSet) {
         logger.debug("Session {} asyncSetSeResponseSet {}", sessionId, seResponseSet);
-        if (this.seRequestSet== null) {
-            logger.warn(
-                    "seRequestSet is missing while receiving seResponseSet {}",
-                    seResponseSet);
+        if (this.seRequestSet == null) {
+            logger.warn("seRequestSet is missing while receiving seResponseSet {}", seResponseSet);
         }
 
-            // release seRequestSet next work
-            this.seRequestSet = null;
+        // release seRequestSet next work
+        this.seRequestSet = null;
 
-            // set SeResponseSet in session for syncTransmit
-            this.seResponseSet = seResponseSet;
+        // set SeResponseSet in session for syncTransmit
+        this.seResponseSet = seResponseSet;
 
-            // return seResponseSet by callback
-            this.seResponseSetCallback.getResponseSet(seResponseSet);
+        // return seResponseSet by callback
+        this.seResponseSetCallback.getResponseSet(seResponseSet);
     }
 
     @Override

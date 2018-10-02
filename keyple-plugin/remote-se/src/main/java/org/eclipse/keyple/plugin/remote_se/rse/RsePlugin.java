@@ -31,7 +31,7 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
 
     private static final Logger logger = LoggerFactory.getLogger(RsePlugin.class);
 
-    //virtal readers
+    // virtal readers
     SortedSet<RseReader> rseReaders = new TreeSet<RseReader>();
 
     public RsePlugin() {
@@ -50,8 +50,7 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
 
     @Override
     public void setParameter(String key, String value)
-            throws IllegalArgumentException, KeypleBaseException {
-    }
+            throws IllegalArgumentException, KeypleBaseException {}
 
     @Override
     public void setParameters(Map<String, String> parameters)
@@ -87,6 +86,7 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
 
     /**
      * Create a virtual reader
+     * 
      * @param name
      * @param session
      * @return
@@ -233,8 +233,9 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
             } else {
                 // rseSession = new ReaderAsyncClientImpl(sessionId, message.getDtoSender());
                 rseSession = new ReaderAsyncClientImpl(sessionId);
-                //add the web socket node as an observer for the session as the session will send KeypleDTO
-                ((ReaderAsyncClientImpl)rseSession).addObserver( message.getDtoSender());
+                // add the web socket node as an observer for the session as the session will send
+                // KeypleDTO
+                ((ReaderAsyncClientImpl) rseSession).addObserver(message.getDtoSender());
             }
 
             this.connectRemoteReader(readerName, rseSession);

@@ -39,7 +39,7 @@ public class WsTransportDTO implements TransportDTO {
 
     @Override
     public DtoSender getDtoSender() {
-        //not in used in ws
+        // not in used in ws
         return null;
     }
 
