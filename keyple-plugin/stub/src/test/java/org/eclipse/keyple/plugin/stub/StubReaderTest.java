@@ -54,16 +54,20 @@ public class StubReaderTest {
         logger.info("Stubplugin observers size {}", stubPlugin.countObservers());
         Assert.assertEquals(0, stubPlugin.countObservers());
 
-        reader = StubPlugin.getInstance().plugStubReader("StubReaderTest");
-        Thread.sleep(500);
+        StubPlugin.getInstance().plugStubReader("StubReaderTest");
 
+        Thread.sleep(100);
+
+        reader = (StubReader) StubPlugin.getInstance().getReader("StubReaderTest");
+
+        Thread.sleep(100);
     }
 
     @After
     public void tearDown() throws InterruptedException, KeypleReaderException {
         StubPlugin.getInstance().clearObservers();
         StubPlugin.getInstance().unplugReader("StubReaderTest");
-        Thread.sleep(500);
+        Thread.sleep(100);
 
     }
 
