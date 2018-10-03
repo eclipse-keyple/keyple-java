@@ -65,5 +65,7 @@ public class DecreaseCmdBuild extends PoCommandBuilder
 
         /* this is a case4 command, we set Le = 0 */
         this.request = setApduRequest(cla, command, p1, p2, decValueBuffer, (byte) 0);
+        this.addSubName(
+                String.format("SFI: %02X, counter: %d, dec: %d", sfi, counterNumber, decValue));
     }
 }

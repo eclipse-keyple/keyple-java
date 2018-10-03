@@ -51,8 +51,10 @@ public class ReadRecordsCmdBuild extends PoCommandBuilder implements PoSendableI
         if (readJustOneRecord) {
             p2 = (byte) (p2 - (byte) 0x01);
         }
-
         this.request = setApduRequest(cla, command, p1, p2, null, expectedLength);
+        /* Add helper subname (order in important, the request created above must exist */
+        this.addSubName(String.format("SFI: %02X, rec: %d, multiple: %b", sfi, firstRecordNumber,
+                !readJustOneRecord));
     }
 
     /**

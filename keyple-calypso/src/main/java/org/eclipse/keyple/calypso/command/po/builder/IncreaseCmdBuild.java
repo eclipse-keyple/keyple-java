@@ -64,5 +64,8 @@ public class IncreaseCmdBuild extends PoCommandBuilder
 
         /* this is a case4 command, we set Le = 0 */
         this.request = setApduRequest(cla, command, p1, p2, incValueBuffer, (byte) 0);
+        /* Add helper subname (order in important, the request created above must exist */
+        this.addSubName(
+                String.format("SFI: %02X, counter: %d, inc: %d", sfi, counterNumber, incValue));
     }
 }
