@@ -11,13 +11,12 @@ package org.eclipse.keyple.calypso.command.po.builder.session;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 
 /**
  * The Class PoGetChallengeCmdBuild. This class provides the dedicated constructor to build the PO
  * Get Challenge.
  */
-public class PoGetChallengeCmdBuild extends PoCommandBuilder implements PoSendableInSession {
+public class PoGetChallengeCmdBuild extends PoCommandBuilder {
 
     private static final CalypsoPoCommands command = CalypsoPoCommands.GET_CHALLENGE;
 
