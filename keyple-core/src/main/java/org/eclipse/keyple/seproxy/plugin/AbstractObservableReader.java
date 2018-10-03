@@ -85,16 +85,14 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             this.before = timeStamp;
             logger.debug("[{}] transmit => SEREQUESTSET channel failure. elapsed {}", elapsedMs);
             /* Throw an exception with the responses collected so far. */
-            throw new KeypleReaderException("SeRequestSet Transmit failed", ex,
-                    ex.getSeResponseSet());
+            throw ex;
         } catch (KeypleIOReaderException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SEREQUESTSET IO failure. elapsed {}", elapsedMs);
             /* Throw an exception with the responses collected so far. */
-            throw new KeypleReaderException("SeRequestSet Transmit failed", ex,
-                    ex.getSeResponseSet());
+            throw ex;
         }
 
         if (logger.isDebugEnabled()) {
@@ -120,7 +118,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             throw new IllegalArgumentException("seRequest must not be null");
         }
 
-        SeResponse seResponse;
+        SeResponse seResponse = null;
 
         if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
@@ -137,15 +135,15 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SEREQUEST channel failure. elapsed {}", elapsedMs);
-            /* Throw an exception with the responses collected so far. */
-            throw new KeypleReaderException("SeRequest Transmit failed", ex, ex.getSeResponse());
+            /* Throw an exception with the responses collected so far (ex.getSeResponse()). */
+            throw ex;
         } catch (KeypleIOReaderException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
             logger.debug("[{}] transmit => SEREQUEST IO failure. elapsed {}", elapsedMs);
-            /* Throw an exception with the responses collected so far. */
-            throw new KeypleReaderException("SeRequest Transmit failed", ex, ex.getSeResponse());
+            /* Throw an exception with the responses collected so far (ex.getSeResponse()). */
+            throw ex;
         }
 
         if (logger.isDebugEnabled()) {

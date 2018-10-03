@@ -17,10 +17,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("PMD.SignatureDeclareThrowsException")
 @RunWith(MockitoJUnitRunner.class)
 public class SeProxyServiceTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(SeProxyServiceTest.class);
+
 
     // class to test
     SeProxyService proxyService;
@@ -49,8 +54,13 @@ public class SeProxyServiceTest {
 
     @Test
     public void testGetVersion() {
-        // test
-        assertEquals(1, proxyService.getVersion().intValue());
+        // test that version follows semver guidelines
+        String regex =
+                "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?$";
+        String version = SeProxyService.getInstance().getVersion();
+        logger.info("Version of SeProxyService {}", version);
+        System.out.println("Version of SeProxyService " + version);
+        assertTrue(version.matches(regex));
     }
 
     @Test

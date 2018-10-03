@@ -38,7 +38,7 @@ public class StubPluginTest {
         logger.info("Stubplugin observers size {}", stubPlugin.countObservers());
         Assert.assertEquals(0, stubPlugin.countObservers());
 
-        Thread.sleep(500);
+        Thread.sleep(100);
 
     }
 
@@ -46,7 +46,7 @@ public class StubPluginTest {
     public void tearDown() throws InterruptedException {
         stubPlugin = StubPlugin.getInstance(); // singleton
         stubPlugin.clearObservers();
-        Thread.sleep(500);
+        Thread.sleep(100);
 
     }
 
@@ -97,7 +97,7 @@ public class StubPluginTest {
         stubPlugin.plugStubReader("testB_UnplugReaders");
 
         // let the monitor thread work
-        Thread.sleep(500);
+        Thread.sleep(100);
 
 
         logger.debug("Stubplugin readers size {} ", stubPlugin.getReaders().size());
@@ -107,7 +107,7 @@ public class StubPluginTest {
         stubPlugin.addObserver(disconnected_obs);
         stubPlugin.unplugReader("testB_UnplugReaders");
 
-        Thread.sleep(500);
+        Thread.sleep(100);
 
         Assert.assertEquals(0, stubPlugin.getReaders().size());
 
