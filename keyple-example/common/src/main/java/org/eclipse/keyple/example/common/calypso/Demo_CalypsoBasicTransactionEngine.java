@@ -9,6 +9,7 @@
 package org.eclipse.keyple.example.common.calypso;
 
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.*;
+import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CommunicationMode.*;
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CsmSettings.*;
 import static org.eclipse.keyple.example.common.calypso.CalypsoBasicInfoAndSampleCommands.*;
 import java.util.*;
@@ -236,57 +237,79 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
                 RECORD_NUMBER_1, eventLogContractListFilesReading);
 
         if (!poTransaction.wasRatified()) {
-            logger.info("### Previous Secure Session was not ratified. ###");
-        }
-
-        /*
-         * [------------------------------------]
-         *
-         * Place to analyze the PO profile available in seResponse: Environment/Holder, EventLog,
-         * ContractList.
-         *
-         * The information available allows the determination of the contract to be read.
-         *
-         * [------------------------------------]
-         */
-
-        if (logger.isInfoEnabled()) {
             logger.info(
-                    "========= PO Calypso session ======= Processing of PO commands =======================");
+                    "========= Previous Secure Session was not ratified. =====================");
+
+            /*
+             * [------------------------------------]
+             *
+             * The previous Secure Session has not been ratified, so we simply close the Secure
+             * Session.
+             *
+             * We would analyze here the event log read during the opening phase.
+             *
+             * [------------------------------------]
+             */
+
+            if (logger.isInfoEnabled()) {
+                logger.info(
+                        "========= PO Calypso session ======= Closing ============================");
+            }
+
+            /*
+             * A ratification command will be sent (CONTACTLESS_MODE).
+             */
+            seResponse = poTransaction.processClosing(null, CONTACTLESS_MODE, false);
+
+        } else {
+            /*
+             * [------------------------------------]
+             *
+             * Place to analyze the PO profile available in seResponse: Environment/Holder,
+             * EventLog, ContractList.
+             *
+             * The information available allows the determination of the contract to be read.
+             *
+             * [------------------------------------]
+             */
+
+            if (logger.isInfoEnabled()) {
+                logger.info(
+                        "========= PO Calypso session ======= Processing of PO commands =======================");
+            }
+
+            /* Read contract command (we assume we have determine Contract #1 to be read. */
+            List<PoSendableInSession> contractFileReading = new ArrayList<PoSendableInSession>();
+            contractFileReading.add(poReadRecordCmd_Contract);
+
+            seResponse = poTransaction.processPoCommands(contractFileReading);
+
+            if (logger.isInfoEnabled()) {
+                logger.info(
+                        "========= PO Calypso session ======= Closing ============================");
+            }
+
+            /*
+             * [------------------------------------]
+             *
+             * Place to analyze the Contract (in seResponse).
+             *
+             * The content of the contract will grant or not access.
+             *
+             * In any case, a new record will be added to the EventLog.
+             *
+             * [------------------------------------]
+             */
+
+            /* Create an modification command list (a single command here) */
+            List<PoModificationCommand> eventLogAppend = new ArrayList<PoModificationCommand>();
+            eventLogAppend.add(poAppendRecordCmd_EventLog);
+
+            /*
+             * A ratification command will be sent (CONTACTLESS_MODE).
+             */
+            seResponse = poTransaction.processClosing(eventLogAppend, CONTACTLESS_MODE, false);
         }
-
-        /* Read contract command (we assume we have determine Contract #1 to be read. */
-        List<PoSendableInSession> contractFileReading = new ArrayList<PoSendableInSession>();
-        contractFileReading.add(poReadRecordCmd_Contract);
-
-        seResponse = poTransaction.processPoCommands(contractFileReading);
-
-        if (logger.isInfoEnabled()) {
-            logger.info(
-                    "========= PO Calypso session ======= Closing ============================");
-        }
-
-        /*
-         * [------------------------------------]
-         *
-         * Place to analyze the Contract (in seResponse).
-         *
-         * The content of the contract will grant or not access.
-         *
-         * In any case, a new record will be added to the EventLog.
-         *
-         * [------------------------------------]
-         */
-
-        /* Create an modification command list (a single command here) */
-        List<PoModificationCommand> eventLogAppend = new ArrayList<PoModificationCommand>();
-        eventLogAppend.add(poAppendRecordCmd_EventLog);
-
-        /*
-         * A ratification command will be sent (CONTACTLESS_MODE).
-         */
-        seResponse = poTransaction.processClosing(eventLogAppend,
-                CommunicationMode.CONTACTLESS_MODE, false);
 
         if (poTransaction.isSuccessful()) {
             if (logger.isInfoEnabled()) {
