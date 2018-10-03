@@ -24,10 +24,13 @@ import org.eclipse.keyple.seproxy.ApduRequest;
 public abstract class AbstractApduCommandBuilder {
 
     /**
-     * the reference of the command in the matrix array enumeration, in order to get the name and
-     * the response parser class of the command.
+     * The command name (will appear in logs)
      */
-    private CommandsTable commandReference;
+    private String name;
+    /**
+     * The command parser class
+     */
+    private Class<? extends AbstractApduResponseParser> commandParserClass;
 
     /** the byte array APDU request. */
     protected ApduRequest request;
@@ -41,11 +44,33 @@ public abstract class AbstractApduCommandBuilder {
      */
     // public AbstractApduCommandBuilder(CalypsoCommands commandReference, ApduRequest request) {
     public AbstractApduCommandBuilder(CommandsTable commandReference, ApduRequest request) {
-        this.commandReference = commandReference;
+        this.name = commandReference.getName();
+        this.commandParserClass = commandReference.getResponseParserClass();
         this.request = request;
         // set APDU name for non null request
         if (request != null) {
             this.request.setName(commandReference.getName());
+        }
+    }
+
+    public AbstractApduCommandBuilder(String name, ApduRequest request) {
+        this.name = name;
+        this.request = request;
+        // set APDU name for non null request
+        if (request != null) {
+            this.request.setName(name);
+        }
+    }
+
+    /**
+     * Append a string to the current name
+     * 
+     * @param subName the string to append
+     */
+    public final void addSubName(String subName) {
+        this.name = this.name + " - " + subName;
+        if (request != null) {
+            this.request.setName(this.name);
         }
     }
 
@@ -55,7 +80,7 @@ public abstract class AbstractApduCommandBuilder {
      * @return the name of the APDU command from the CalypsoCommands information.
      */
     public final String getName() {
-        return commandReference.getName();
+        return this.name;
     }
 
     /**
@@ -65,7 +90,7 @@ public abstract class AbstractApduCommandBuilder {
      *         CommandsTable information
      */
     public final Class<? extends AbstractApduResponseParser> getApduResponseParserClass() {
-        return commandReference.getResponseParserClass();
+        return this.commandParserClass;
     }
 
     /**

@@ -64,10 +64,7 @@ public enum CalypsoPoCommands implements CommandsTable {
             org.eclipse.keyple.calypso.command.po.parser.IncreaseRespPars.class),
 
     /** The po decrease counter. */
-    DECREASE("Decrease", (byte) 0x30, DecreaseCmdBuild.class, DecreaseRespPars.class),
-
-    /** The po ratification command. */
-    RATIFICATION("Ratification", (byte) 0xB2, RatificationCmdBuild.class, null);
+    DECREASE("Decrease", (byte) 0x30, DecreaseCmdBuild.class, DecreaseRespPars.class);
 
     /** The name. */
     private final String name;

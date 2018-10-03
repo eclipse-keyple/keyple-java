@@ -27,13 +27,23 @@ import org.eclipse.keyple.seproxy.ApduRequest;
 public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandBuilder {
 
     /**
-     * Abstract constructor to build an APDU request with a command reference and a byte array.
+     * Abstract constructor to build a command with a command reference and an {@link ApduRequest}.
      *
      * @param commandReference command reference
-     * @param request request
+     * @param request ApduRequest
      */
     public AbstractIso7816CommandBuilder(CommandsTable commandReference, ApduRequest request) {
         super(commandReference, request);
+    }
+
+    /**
+     * Abstract constructor to build a command with a command name and an {@link ApduRequest}
+     * 
+     * @param name name of command
+     * @param request ApduRequest
+     */
+    public AbstractIso7816CommandBuilder(String name, ApduRequest request) {
+        super(name, request);
     }
 
     /**
