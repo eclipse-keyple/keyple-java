@@ -49,6 +49,9 @@ public class KeypleDTOHelper {
         return new KeypleDTO("ERROR", "", false);// todo statuscode
     }
 
+    static public KeypleDTO ACK() {
+        return new KeypleDTO("ACK", "", false);// todo statuscode
+    }
 
     static public Boolean isNoResponse(KeypleDTO dto) {
         return dto.getAction().isEmpty();
@@ -61,5 +64,6 @@ public class KeypleDTOHelper {
     static public Boolean isKeypleDTO(JsonObject json) {
         return json.has("action");
     }
+
 
 }

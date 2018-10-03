@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice;
+package org.eclise.keyple.example.remote.ws;
 
 import org.eclipse.keyple.plugin.remote_se.transport.DtoSender;
 import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTO;
@@ -18,9 +18,6 @@ public class WsTransportDTO implements TransportDTO {
     KeypleDTO keypleDTO;
     HttpExchange t;
 
-    public HttpExchange getT() {
-        return t;
-    }
 
     public WsTransportDTO(KeypleDTO kdto, HttpExchange t) {
         this.keypleDTO = kdto;

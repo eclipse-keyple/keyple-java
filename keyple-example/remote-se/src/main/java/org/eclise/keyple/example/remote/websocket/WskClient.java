@@ -15,10 +15,10 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WskClient extends WebSocketClient implements TransportNode {
+public class WskClient extends WebSocketClient implements ClientNode {
 
     private static final Logger logger = LoggerFactory.getLogger(WskClient.class);
-    DtoReceiver dtoReceiver;
+    DtoDispatcher dtoDispatcher;
 
     public WskClient(URI url) {
         super(url);
@@ -36,7 +36,7 @@ public class WskClient extends WebSocketClient implements TransportNode {
         KeypleDTO dto = KeypleDTOHelper.fromJson(message);
 
         // process dto
-        TransportDTO transportDTO = dtoReceiver.onDTO(new WskTransportDTO(dto, null, this));
+        TransportDTO transportDTO = dtoDispatcher.onDTO(new WskTransportDTO(dto, null, this));
 
         // there is a response/request to send back
         if (!KeypleDTOHelper.isNoResponse(transportDTO.getKeypleDTO())) {
@@ -73,8 +73,8 @@ public class WskClient extends WebSocketClient implements TransportNode {
     }
 
     @Override
-    public void setStubplugin(DtoReceiver receiver) {
-        this.dtoReceiver = receiver;
+    public void setDtoDispatcher(DtoDispatcher receiver) {
+        this.dtoDispatcher = receiver;
     }
 
 

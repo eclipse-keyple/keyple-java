@@ -65,17 +65,17 @@ public class wskNativeCSM {
         Thread.sleep(1000);
 
 
-        logger.info("Bind Web Socket Server to NatiseSeRemoteServer");
+        logger.info("Bind Web Socket Master to NatiseSeRemoteServer");
         final NativeSeRemoteService nseService = new NativeSeRemoteService();
 
 
 
         logger.info("************************");
-        logger.info("Boot Server Network     ");
+        logger.info("Boot Master Network     ");
         logger.info("************************");
 
 
-        logger.info("Init Web Socket Server");
+        logger.info("Init Web Socket Master");
         Integer port = 8002;
         String END_POINT = "/remote-se";
         String URL = "0.0.0.0";
@@ -96,7 +96,7 @@ public class wskNativeCSM {
 
         nseService.bind((TransportNode) wskServer);
 
-        logger.info("Starting Server on http://{}:{}{}", inet.getHostName(), inet.getPort(),
+        logger.info("Starting Master on http://{}:{}{}", inet.getHostName(), inet.getPort(),
                 END_POINT);
         wskServer.run();
 

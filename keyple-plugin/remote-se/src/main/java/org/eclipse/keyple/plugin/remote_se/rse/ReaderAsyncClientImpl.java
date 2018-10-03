@@ -30,7 +30,7 @@ public class ReaderAsyncClientImpl extends Observable<KeypleDTO> implements IRea
     SeRequestSet seRequestSet;
     ISeResponseSetCallback seResponseSetCallback;
     // DtoSender dtoSender;
-    final CountDownLatch lock = new CountDownLatch(1);
+    CountDownLatch lock;
     SeResponseSet seResponseSet;
 
     // constructor
@@ -111,6 +111,7 @@ public class ReaderAsyncClientImpl extends Observable<KeypleDTO> implements IRea
         });
         try {
             logger.debug("Send SeRequestSet, set lock on thread");
+            lock = new CountDownLatch(1);
             lock.await();
             logger.debug("Send SeRequestSet, thread unlock");
             return seResponseSet;

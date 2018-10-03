@@ -18,10 +18,10 @@ import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WskServer extends WebSocketServer implements TransportNode {
+public class WskServer extends WebSocketServer implements ServerNode {
 
     private static final Logger logger = LoggerFactory.getLogger(WskServer.class);
-    private DtoReceiver stubplugin;
+    private DtoDispatcher stubplugin;
     private ConnectionCb connectionCb;
 
     // only for when server is slave
@@ -79,7 +79,7 @@ public class WskServer extends WebSocketServer implements TransportNode {
 
             this.sendDTO(transportDTO);
         } else {
-            logger.warn("Received a message but no DtoReceiver");
+            logger.warn("Received a message but no DtoDispatcher");
         }
     }
 
@@ -105,7 +105,7 @@ public class WskServer extends WebSocketServer implements TransportNode {
         return sessionId_Connection.get(sessionId);
     }
 
-    public void setStubplugin(DtoReceiver stubplugin) {
+    public void setDtoDispatcher(DtoDispatcher stubplugin) {
         this.stubplugin = stubplugin;
     }
 

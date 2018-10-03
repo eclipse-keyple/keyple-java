@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice;
+package org.eclise.keyple.example.remote.ws;
 
 import java.io.IOException;
 import org.eclipse.keyple.plugin.remote_se.transport.*;
@@ -19,7 +19,7 @@ public class WsClient implements TransportNode {
     private static final Logger logger = LoggerFactory.getLogger(WsClient.class);
 
     private String endoint;
-    private DtoReceiver dtoReceiver;
+    private DtoDispatcher dtoDispatcher;
 
     public WsClient(String url) {
         this.endoint = url;
@@ -30,8 +30,8 @@ public class WsClient implements TransportNode {
      * TransportNode
      */
     @Override
-    public void setStubplugin(DtoReceiver receiver) {
-        this.dtoReceiver = receiver;
+    public void setDtoDispatcher(DtoDispatcher receiver) {
+        this.dtoDispatcher = receiver;
     }
 
 
@@ -39,7 +39,7 @@ public class WsClient implements TransportNode {
     @Override
     public void sendDTO(TransportDTO tdto) {
         KeypleDTO ktdo = tdto.getKeypleDTO();
-        logger.debug("Ws Client send DTO {}", KeypleDTOHelper.toJson(ktdo));
+        logger.debug("Ws Slave send DTO {}", KeypleDTOHelper.toJson(ktdo));
         if (!KeypleDTOHelper.isNoResponse(tdto.getKeypleDTO())) {
             try {
                 // send keyple dto
@@ -51,7 +51,7 @@ public class WsClient implements TransportNode {
 
                     KeypleDTO responseDTO = KeypleDTOHelper.fromJsonObject(httpResponse);
                     WsTransportDTO transportDTO = new WsTransportDTO(responseDTO, null);
-                    TransportDTO sendback = this.dtoReceiver.onDTO(transportDTO);// stateless
+                    TransportDTO sendback = this.dtoDispatcher.onDTO(transportDTO);// stateless
                                                                                  // connection
 
                     // if sendBack is not a not reponse
@@ -75,6 +75,6 @@ public class WsClient implements TransportNode {
 
     @Override
     public void update(KeypleDTO event) {
-        // not in used in webservice
+        // not in used in ws
     }
 }

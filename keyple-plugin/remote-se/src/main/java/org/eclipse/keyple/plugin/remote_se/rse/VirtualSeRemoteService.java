@@ -41,10 +41,10 @@ public class VirtualSeRemoteService {
      * @param plugin
      */
     public void registerRsePlugin(RsePlugin plugin) {
-        SortedSet<ReaderPlugin> plugins = new TreeSet<ReaderPlugin>();
+        SortedSet<ReaderPlugin> plugins  = seProxyService.getPlugins();
         plugins.add(plugin);
         seProxyService.setPlugins(plugins);
-        this.node.setStubplugin(plugin);
+        this.node.setDtoDispatcher(plugin);
     }
 
 

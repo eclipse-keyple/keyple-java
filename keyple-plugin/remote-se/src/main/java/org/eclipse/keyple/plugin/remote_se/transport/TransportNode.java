@@ -13,6 +13,6 @@ package org.eclipse.keyple.plugin.remote_se.transport;
  */
 public interface TransportNode extends DtoSender {
 
-    void setStubplugin(DtoReceiver receiver);
+    void setDtoDispatcher(DtoDispatcher receiver);
 
 }

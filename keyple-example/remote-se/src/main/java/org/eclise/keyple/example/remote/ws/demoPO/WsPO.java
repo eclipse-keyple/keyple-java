@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice.demoPO;
+package org.eclise.keyple.example.remote.ws.demoPO;
 
 
 import java.util.HashMap;
@@ -20,7 +20,7 @@ import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclise.keyple.example.remote.webservice.WsClient;
+import org.eclise.keyple.example.remote.ws.WsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,13 +36,13 @@ public class WsPO {
 
     void boot() throws InterruptedException, KeypleReaderNotFoundException {
         logger.info("************************");
-        logger.info("Create Webservice Client");
+        logger.info("Create Webservice Slave");
         logger.info("************************");
 
         WsClient ws = new WsClient(ENDPOINT_URL);
 
         logger.info("************************");
-        logger.info("Boot Client LocalReader ");
+        logger.info("Boot Slave LocalReader ");
         logger.info("************************");
 
         // get seProxyService

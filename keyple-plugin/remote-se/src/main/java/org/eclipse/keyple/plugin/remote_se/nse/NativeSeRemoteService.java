@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-public class NativeSeRemoteService implements NseAPI, RseClient, DtoReceiver {
+public class NativeSeRemoteService implements NseAPI, RseClient, DtoDispatcher {
 
     private static final Logger logger = LoggerFactory.getLogger(NativeSeRemoteService.class);
 
@@ -121,11 +121,16 @@ public class NativeSeRemoteService implements NseAPI, RseClient, DtoReceiver {
     public void connectReader(ProxyReader localReader, Map<String, Object> options) {
         logger.info("connectReader {} {}", localReader, options);
 
-        Boolean isAsync = (Boolean) options.get("isAsync");
-        String transmitUrl = (String) options.get("transmitUrl");
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("nativeReaderName", new JsonPrimitive(localReader.getName()));
-        jsonObject.add("isAsync", new JsonPrimitive(isAsync));
+
+        Boolean isAsync = (Boolean) options.get("isAsync");
+        if(isAsync!=null){
+            jsonObject.add("isAsync", new JsonPrimitive(isAsync));
+
+        }
+        //String transmitUrl = (String) options.get("transmitUrl");
+
         String data = jsonObject.toString();
 
         transportNode.sendDTO(new KeypleDTO(KeypleDTOHelper.READER_CONNECT, data, true));
@@ -156,7 +161,7 @@ public class NativeSeRemoteService implements NseAPI, RseClient, DtoReceiver {
 
     public void bind(TransportNode node) {
         this.transportNode = node;
-        node.setStubplugin(this);
+        node.setDtoDispatcher(this);
     }
 
     public ProxyReader findLocalReader(String readerName) throws KeypleReaderNotFoundException {

@@ -43,7 +43,7 @@ public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.
     public void boot() throws IOException, URISyntaxException {
 
         logger.info("************************");
-        logger.info("Boot Client Network     ");
+        logger.info("Boot Slave Network     ");
         logger.info("************************");
 
         String ENDPOINT_URL = "http://localhost:8002/remote-se";

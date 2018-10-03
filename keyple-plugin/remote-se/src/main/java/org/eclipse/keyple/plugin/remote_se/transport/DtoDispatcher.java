@@ -11,7 +11,7 @@ package org.eclipse.keyple.plugin.remote_se.transport;
 /**
  * Components that receive a DTO to process it
  */
-public interface DtoReceiver {
+public interface DtoDispatcher {
 
     /**
      * Process synchronously a message and returns a response

@@ -6,14 +6,19 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice;
+package org.eclise.keyple.example.remote.ws;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
+
+import com.sun.net.httpserver.HttpExchange;
+import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTO;
+import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTOHelper;
 import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +97,10 @@ public class HttpHelper {
         osw.flush();
         osw.close();
 
+        conn.setConnectTimeout(70000);
+        conn.setReadTimeout(70000);
+
+
         int responseCode = conn.getResponseCode();
         logger.trace("Response code {}", responseCode);
         JsonObject jsonObject = HttpHelper.parseBody((InputStream) conn.getContent());
@@ -102,6 +111,58 @@ public class HttpHelper {
     public static HttpURLConnection getConnection(String urlString) throws IOException {
         URL url = new URL(urlString);
         return (HttpURLConnection) url.openConnection();
+    }
+
+
+    public static JsonObject httpPoll(HttpURLConnection conn, String json) throws IOException {
+        logger.trace("Url {} HTTP POST  : {} ", conn.getURL(), json);
+        // Encode data
+
+
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(true);
+        conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+        conn.setRequestProperty("Accept", "application/json");
+        conn.connect();
+
+        OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
+        osw.write(json);
+        osw.flush();
+        osw.close();
+
+
+        conn.setConnectTimeout(70000);
+        conn.setReadTimeout(70000);
+
+        int responseCode = conn.getResponseCode();
+        logger.trace("Response code {}", responseCode);
+        JsonObject jsonObject = HttpHelper.parseBody((InputStream) conn.getContent());
+        logger.trace("Response {}", jsonObject);
+        return jsonObject;
+    }
+
+    static public void setHttpResponse(HttpExchange t, KeypleDTO resp) throws IOException {
+        if (!resp.getAction().isEmpty()) {
+            String responseBody = KeypleDTOHelper.toJson(resp);
+            Integer responseCode = 200;
+            t.getResponseHeaders().add("Content-Type", "application/json");
+            t.sendResponseHeaders(responseCode, responseBody.length());
+            OutputStream os = t.getResponseBody();
+            os.write(responseBody.getBytes());
+            os.close();
+            logger.debug("Outcoming Response Code {} ", responseCode);
+            logger.debug("Outcoming Response Body {} ", responseBody);
+
+
+        } else {
+            String responseBody = "{}";
+            Integer responseCode = 200;
+            t.getResponseHeaders().add("Content-Type", "application/json");
+            t.sendResponseHeaders(responseCode, responseBody.length());
+            OutputStream os = t.getResponseBody();
+            os.write(responseBody.getBytes());
+            os.close();
+        }
     }
 
 

@@ -6,10 +6,9 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice;
+package org.eclise.keyple.example.remote.ws;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import org.eclipse.keyple.plugin.remote_se.transport.*;
@@ -31,7 +30,7 @@ public class WsServer implements TransportNode {
 
 
     public WsServer(String url, Integer port, String endpoint) throws IOException {
-        logger.info("Init Web Service Server on url : {}:{}", url, port);
+        logger.info("Init Web Service Master on url : {}:{}", url, port);
 
         // Create Endpoints for plugin and reader API
         keypleDTOEndpoint = new KeypleDTOEndpoint();
@@ -50,7 +49,7 @@ public class WsServer implements TransportNode {
     }
 
     public void start() {
-        logger.info("Starting Server on http://{}:{}{}", inet.getHostName(), inet.getPort(),
+        logger.info("Starting Master on http://{}:{}{}", inet.getHostName(), inet.getPort(),
                 endpoint);
         server.start();
     }
@@ -59,8 +58,8 @@ public class WsServer implements TransportNode {
      * TransportNode
      */
     @Override
-    public void setStubplugin(DtoReceiver receiver) {
-        this.keypleDTOEndpoint.setStubplugin(receiver);;
+    public void setDtoDispatcher(DtoDispatcher receiver) {
+        this.keypleDTOEndpoint.setDtoDispatcher(receiver);;
     }
 
     @Override
@@ -84,7 +83,7 @@ public class WsServer implements TransportNode {
 
         private final Logger logger = LoggerFactory.getLogger(KeypleDTOEndpoint.class);
 
-        DtoReceiver dtoReceiver;
+        DtoDispatcher dtoDispatcher;
 
         @Override
         public void handle(HttpExchange t) throws IOException {
@@ -100,9 +99,9 @@ public class WsServer implements TransportNode {
                 TransportDTO transportDTO = new WsTransportDTO(incoming, t);
 
                 logger.trace("Incoming DTO {} ", KeypleDTOHelper.toJson(incoming));
-                TransportDTO outcoming = dtoReceiver.onDTO(transportDTO);
+                TransportDTO outcoming = dtoDispatcher.onDTO(transportDTO);
 
-                setHttpResponse(t, outcoming.getKeypleDTO());
+                HttpHelper.setHttpResponse(t, outcoming.getKeypleDTO());
 
             }
         }
@@ -111,8 +110,8 @@ public class WsServer implements TransportNode {
          * TransportNode
          */
         @Override
-        public void setStubplugin(DtoReceiver receiver) {
-            this.dtoReceiver = receiver;
+        public void setDtoDispatcher(DtoDispatcher receiver) {
+            this.dtoDispatcher = receiver;
         }
 
 
@@ -124,31 +123,12 @@ public class WsServer implements TransportNode {
 
         @Override
         public void sendDTO(KeypleDTO message) {
+
             logger.warn("Send DTO can not be used in Web Service Server");
         }
 
 
-        private void setHttpResponse(HttpExchange t, KeypleDTO resp) throws IOException {
-            if (!resp.getAction().isEmpty()) {
-                String responseBody = KeypleDTOHelper.toJson(resp);
-                Integer responseCode = 200;
-                t.getResponseHeaders().add("Content-Type", "application/json");
-                t.sendResponseHeaders(responseCode, responseBody.length());
-                OutputStream os = t.getResponseBody();
-                os.write(responseBody.getBytes());
-                os.close();
-                logger.debug("Outcoming Response Code {} ", responseCode);
-                logger.debug("Outcoming Response Body {} ", responseBody);
-            } else {
-                String responseBody = "{}";
-                Integer responseCode = 200;
-                t.getResponseHeaders().add("Content-Type", "application/json");
-                t.sendResponseHeaders(responseCode, responseBody.length());
-                OutputStream os = t.getResponseBody();
-                os.write(responseBody.getBytes());
-                os.close();
-            }
-        }
+
 
         @Override
         public void update(KeypleDTO event) {

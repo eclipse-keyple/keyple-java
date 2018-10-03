@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice.demoCSM;
+package org.eclise.keyple.example.remote.ws.demoCSM;
 
 
 import java.io.IOException;
@@ -21,8 +21,8 @@ import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclise.keyple.example.remote.webservice.WsClient;
-import org.eclise.keyple.example.remote.webservice.WsServer;
+import org.eclise.keyple.example.remote.ws.WsClient;
+import org.eclise.keyple.example.remote.ws.WsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +42,7 @@ public class WsCSM {
 
     void boot() throws IOException, InterruptedException, KeypleReaderNotFoundException {
         logger.info("************************");
-        logger.info("Create Webservice Client");
+        logger.info("Create Webservice Slave");
         logger.info("************************");
 
         WsClient ws = new WsClient(ENDPOINT_URL);
@@ -51,12 +51,12 @@ public class WsCSM {
         logger.info("Boot Webservice server       ");
         logger.info("*****************************");
 
-        logger.info("Init Web Service Server");
+        logger.info("Init Web Service Master");
 
         WsServer server = new WsServer(URL, PORT, END_POINT);
 
         logger.info("************************");
-        logger.info("Boot Client LocalReader ");
+        logger.info("Boot Slave LocalReader ");
         logger.info("************************");
 
         // get seProxyService

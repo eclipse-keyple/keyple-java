@@ -1,61 +1,46 @@
-/*
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
- *
- * All rights reserved. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
- * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
- */
+package org.eclise.keyple.example.remote.clientslave;
 
-package org.eclise.keyple.example.remote.webservice.demoCSM;
-
-import java.io.IOException;
 import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
 import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
 import org.eclipse.keyple.plugin.remote_se.rse.VirtualSeRemoteService;
-import org.eclipse.keyple.seproxy.*;
+import org.eclipse.keyple.plugin.remote_se.transport.ServerNode;
+import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
+import org.eclipse.keyple.seproxy.ReaderPlugin;
+import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclise.keyple.example.remote.common.TransportFactory;
 import org.eclise.keyple.example.remote.common.CommandSample;
-import org.eclise.keyple.example.remote.webservice.WsClient;
-import org.eclise.keyple.example.remote.webservice.WsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("PMD.AvoidUsingHardCodedIP")
-public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Observer {
+import java.io.IOException;
+import java.util.SortedSet;
 
-    private static final Logger logger = LoggerFactory.getLogger(WsTicketingServer.class);
-    public static Integer PORT = 8007;
-    public static String END_POINT = "/keypleDTO";
-    public static String URL = "0.0.0.0";
+public class Master implements org.eclipse.keyple.util.Observable.Observer {
 
-    private static String ENDPOINT_URL = "http://localhost:8009/keypleDTO";
+    private static final Logger logger = LoggerFactory.getLogger(Master.class);
 
+    private TransportFactory transportFactory;
+    private Boolean isServer;
+    private TransportNode node;
 
-    public static void main(String[] args) throws Exception {
-
-        WsTicketingServer server = new WsTicketingServer();
-        server.boot();
-        // rse.status();
-
+    public Master(TransportFactory transportFactory, Boolean isServer) {
+        this.transportFactory = transportFactory;
+        this.isServer = isServer;
     }
 
     public void boot() throws IOException {
 
-        logger.info("*****************************");
-        logger.info("Boot Webservice server       ");
-        logger.info("*****************************");
 
-        logger.info("Init Web Service Server");
+        if(isServer){
+            node = transportFactory.getServer(true);
+        }else{
+            node = transportFactory.getClient(true);
+        }
 
-        WsServer server = new WsServer(URL, PORT, END_POINT);
-
-        logger.info("************************");
-        logger.info("Create Webservice Client");
-        logger.info("************************");
-
-        WsClient ws = new WsClient(ENDPOINT_URL);
 
         logger.info("******************************");
         logger.info("Create Remote PLugin Interface");
@@ -66,14 +51,20 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
 
         logger.info("Observe SeRemotePLugin for Plugin Events and Reader Events");
         VirtualSeRemoteService vse = new VirtualSeRemoteService();
-        vse.bindTransportNode(server);
+        vse.bindTransportNode(node);
         vse.registerRsePlugin(rsePlugin);
 
         rsePlugin.addObserver(this);
 
-        server.start();
-        logger.info("Waits for remote connections");
+        if(isServer){
+            ((ServerNode)node).start();
+            logger.info("Waits for remote connections");
+        }
+
     }
+
+
+
 
     /*
      * public void status() throws UnexpectedPluginException, IOReaderException { // should show
@@ -84,7 +75,7 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
 
     /**
      * Receives Event from RSE Plugin
-     * 
+     *
      * @param o : can be a ReaderEvent or PluginEvent
      */
     @Override
@@ -101,7 +92,7 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
                             event.getReaderName());
                     try {
                         RsePlugin rsePlugin =
-                                (RsePlugin) SeProxyService.getInstance().getPlugins().first();
+                                (RsePlugin) SeProxyService.getInstance().getPlugin("RemoteSePlugin");
                         RseReader rseReader =
                                 (RseReader) rsePlugin.getReader(event.getReaderName());
 
@@ -111,7 +102,11 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
                     } catch (KeypleReaderNotFoundException e) {
                         logger.error(e.getMessage());
                         e.printStackTrace();
+                    }catch (KeyplePluginNotFoundException e) {
+                        logger.error(e.getMessage());
+                        e.printStackTrace();
                     }
+
 
                     break;
                 case READER_DISCONNECTED:
@@ -127,8 +122,7 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
                 case SE_INSERTED:
                     logger.info("SE_INSERTED {} {}", event.getPluginName(), event.getReaderName());
                     CommandSample.transmitASyncCommand(logger, event.getReaderName());
-                    // CommandSample.transmitSyncCommand(logger, event.getReaderName());
-                    // runSyncCommandTest(event);
+                    //CommandSample.transmitSyncCommand(logger, event.getReaderName());
                     break;
                 case SE_REMOVAL:
                     logger.info("SE_REMOVAL {} {}", event.getPluginName(), event.getReaderName());
@@ -140,7 +134,5 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
             }
         }
     }
-
-
 
 }

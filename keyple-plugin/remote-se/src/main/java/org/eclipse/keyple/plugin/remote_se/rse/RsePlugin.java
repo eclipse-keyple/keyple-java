@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiver {
+public class RsePlugin extends Observable implements ObservablePlugin, DtoDispatcher {
 
     private static final Logger logger = LoggerFactory.getLogger(RsePlugin.class);
 
@@ -298,7 +298,7 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoReceiv
             }
         }
         throw new KeypleReaderNotFoundException(
-                "Reader sesssion was not found for session : " + sessionId);
+                "Reader was not found for session : " + sessionId);
     }
 
 

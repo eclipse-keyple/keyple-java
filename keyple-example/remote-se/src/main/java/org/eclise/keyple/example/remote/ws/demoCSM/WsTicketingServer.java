@@ -6,38 +6,36 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.websocket.demoPO;
+package org.eclise.keyple.example.remote.ws.demoCSM;
 
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetSocketAddress;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
 import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
 import org.eclipse.keyple.plugin.remote_se.rse.VirtualSeRemoteService;
-import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclise.keyple.example.remote.common.CommandSample;
-import org.eclise.keyple.example.remote.websocket.WskServer;
+import org.eclise.keyple.example.remote.ws.WsClient;
+import org.eclise.keyple.example.remote.ws.WsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
-public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.Observer {
+public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Observer {
 
-    private static final Logger logger = LoggerFactory.getLogger(wskTicketingTerminal.class);
-    public static Integer port = 8002;
-    public static String END_POINT = "/remote-se";
-    private static Integer MAX_CONNECTION = 5;
+    private static final Logger logger = LoggerFactory.getLogger(WsTicketingServer.class);
+    public static Integer PORT = 8007;
+    public static String END_POINT = "/keypleDTO";
     public static String URL = "0.0.0.0";
+
+    private static String ENDPOINT_URL = "http://localhost:8009/keypleDTO";
+
 
     public static void main(String[] args) throws Exception {
 
-        wskTicketingTerminal server = new wskTicketingTerminal();
+        WsTicketingServer server = new WsTicketingServer();
         server.boot();
         // rse.status();
 
@@ -45,42 +43,36 @@ public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.
 
     public void boot() throws IOException {
 
+        logger.info("*****************************");
+        logger.info("Boot Webservice server       ");
+        logger.info("*****************************");
+
+        logger.info("Init Web Service Master");
+
+        WsServer server = new WsServer(URL, PORT, END_POINT);
+
         logger.info("************************");
-        logger.info("Boot Master Network     ");
+        logger.info("Create Webservice Slave");
         logger.info("************************");
 
-        logger.info("Init Web Socket Master");
-        InetSocketAddress inet = new InetSocketAddress(Inet4Address.getByName(URL), port);
-        Boolean isSlave = false;
+        WsClient ws = new WsClient(ENDPOINT_URL);
 
-        WskServer wskServer = new WskServer(inet, null, isSlave);
+        logger.info("******************************");
+        logger.info("Create Remote PLugin Interface");
+        logger.info("******************************");
 
-
-        logger.info("**********************************");
-        logger.info("Boot Remote SE Plugin Network     ");
-        logger.info("**********************************");
-
-        logger.info("Create SeRemotePLugin");
+        logger.info("Create SeRemotePLugin and register it to SeProxyService");
         RsePlugin rsePlugin = new RsePlugin();
 
         logger.info("Observe SeRemotePLugin for Plugin Events and Reader Events");
+        VirtualSeRemoteService vse = new VirtualSeRemoteService();
+        vse.bindTransportNode(server);
+        vse.registerRsePlugin(rsePlugin);
+
         rsePlugin.addObserver(this);
 
-        SortedSet<ReaderPlugin> plugins = new TreeSet<ReaderPlugin>();
-        plugins.add(rsePlugin);
-        SeProxyService.getInstance().setPlugins(plugins);
-
-        VirtualSeRemoteService remoteService = new VirtualSeRemoteService();
-        remoteService.bindTransportNode((TransportNode) wskServer);
-        remoteService.registerRsePlugin(rsePlugin);
-
-        logger.info("Started Master on http://{}:{}{}", inet.getHostName(), inet.getPort(),
-                END_POINT);
-        wskServer.run();
-
+        server.start();
         logger.info("Waits for remote connections");
-
-
     }
 
     /*
@@ -134,8 +126,9 @@ public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.
             switch (event.getEventType()) {
                 case SE_INSERTED:
                     logger.info("SE_INSERTED {} {}", event.getPluginName(), event.getReaderName());
-                    // CommandSample.transmitASyncCommand(logger, event.getReaderName());
-                    CommandSample.transmitSyncCommand(logger, event.getReaderName());
+                    CommandSample.transmitASyncCommand(logger, event.getReaderName());
+                    // CommandSample.transmitSyncCommand(logger, event.getReaderName());
+                    // runSyncCommandTest(event);
                     break;
                 case SE_REMOVAL:
                     logger.info("SE_REMOVAL {} {}", event.getPluginName(), event.getReaderName());

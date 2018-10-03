@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.webservice.demoPO;
+package org.eclise.keyple.example.remote.ws.demoPO;
 
 import java.io.IOException;
 import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
@@ -17,7 +17,7 @@ import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclise.keyple.example.remote.common.CommandSample;
-import org.eclise.keyple.example.remote.webservice.WsServer;
+import org.eclise.keyple.example.remote.ws.WsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
         logger.info("Boot Webservice server       ");
         logger.info("*****************************");
 
-        logger.info("Init Web Service Server");
+        logger.info("Init Web Service Master");
 
         WsServer server = new WsServer(URL, PORT, END_POINT);
 

@@ -24,18 +24,18 @@ import org.slf4j.Logger;
 public class CommandSample {
 
 
-    static public void transmitSyncCommand(final Logger logger, final String readerName) {
+    static public void transmitSyncCommand(final Logger logger, final String remoteReaderName) {
 
         Thread thread = new Thread() {
             public void run() {
                 try {
 
 
-                    System.out.println("--- NEW THREAD FOR SYNC COMMAND RUNNING");
+                    System.out.println("--- NEW THREAD FOR SYNC COMMAND RUNNING ---");
 
                     // get the reader by its name
                     final RseReader reader = (RseReader) ((RsePlugin) SeProxyService.getInstance()
-                            .getPlugins().first()).getReader(readerName);
+                            .getPlugins().first()).getReaderByRemoteName(remoteReaderName);
 
                     String poAid = "A000000291A000000191";
 
@@ -51,13 +51,30 @@ public class CommandSample {
                             new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
                     SeRequest seRequest = new SeRequest(selector, poApduRequestList, true);
 
-                    // ASYNC transmit seRequestSet to Reader With Callback function
+                    // SYNC transmit seRequestSet to Reader With Callback function
                     SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
 
+                    logger.info(
+                            "Received SYNCHRONOUSLY a 1rt SeResponseSet with keep channel open {}, details : {}",
+                            seResponseSet.getResponses().get(0).wasChannelPreviouslyOpen(), seResponseSet);
+
+                    // build 1st seRequestSet with keep channel open to true
+                    final ReadRecordsCmdBuild poReadRecordCmd_T2Env2 = new ReadRecordsCmdBuild(
+                            PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
+
+
+
+                    List<ApduRequest> poApduRequestList2;
+                    poApduRequestList2 = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
+
+                    SeRequest seRequest2 = new SeRequest(selector, poApduRequestList2, false);
+
+                    // SYNC transmit seRequestSet to Reader With Callback function
+                    SeResponseSet seResponseSet2 = reader.transmit(new SeRequestSet(seRequest2));
 
                     logger.info(
-                            "Received Synchronnously a SeResponseSet with Webservice RemoteSE {}",
-                            seResponseSet);
+                            "Received SYNCHRONOUSLY a 2nd SeResponseSet with keep channel open {}, details : {}",
+                            seResponseSet2.getResponses().get(0).wasChannelPreviouslyOpen(), seResponseSet2);
 
 
                 } catch (KeypleReaderNotFoundException e) {
@@ -73,13 +90,13 @@ public class CommandSample {
         thread.start();
     }
 
-    static public void transmitASyncCommand(final Logger logger, final String readerName) {
+    static public void transmitASyncCommand(final Logger logger, final String remoteReaderName) {
         try {
 
             // get the reader by its name
             final RseReader reader =
                     (RseReader) ((RsePlugin) SeProxyService.getInstance().getPlugins().first())
-                            .getReader(readerName);
+                            .getReaderByRemoteName(remoteReaderName);
 
             String poAid = "A000000291A000000191";
 
@@ -121,6 +138,9 @@ public class CommandSample {
                                         logger.info(
                                                 "Received asynchronously a SeResponseSet with Webservice RemoteSE : {}",
                                                 seResponseSet);
+
+                                        //continue here
+
                                     }
                                 });
                     } catch (KeypleReaderException e) {

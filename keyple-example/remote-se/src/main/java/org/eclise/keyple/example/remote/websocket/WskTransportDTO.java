@@ -52,17 +52,9 @@ public class WskTransportDTO implements TransportDTO {
         return wskNode;
     }
 
-
-    public void setDto(KeypleDTO dto) {
-        this.dto = dto;
-    }
-
     public WebSocket getSocketWeb() {
         return socketWeb;
     }
 
-    public void setSocketWeb(WebSocket socketWeb) {
-        this.socketWeb = socketWeb;
-    }
 
 }

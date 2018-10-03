@@ -22,7 +22,7 @@ public class KeypleDTO {
     String body;
     // Is a request or a response
     Boolean isRequest;
-    // Integrity hash (not in used yet)
+    // Integrity hash (not used yet)
     Integer hash;
 
     /**

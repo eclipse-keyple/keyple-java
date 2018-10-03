@@ -37,7 +37,7 @@ public class WskPO {
 
     void boot() throws URISyntaxException, KeypleReaderNotFoundException, InterruptedException {
         logger.info("************************");
-        logger.info("Boot Client Network     ");
+        logger.info("Boot Slave Network     ");
         logger.info("************************");
 
 
