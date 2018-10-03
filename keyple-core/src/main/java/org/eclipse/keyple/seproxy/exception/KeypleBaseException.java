@@ -9,11 +9,11 @@
 package org.eclipse.keyple.seproxy.exception;
 
 
+
 /**
  * Base Exception for all Keyple Checked Exception
  */
 public class KeypleBaseException extends Exception {
-
     private static final long serialVersionUID = -500856379312027085L;
 
     /**

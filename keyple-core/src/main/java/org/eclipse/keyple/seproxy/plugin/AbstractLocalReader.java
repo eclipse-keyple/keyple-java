@@ -54,8 +54,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @throws KeypleApplicationSelectionException if the application selection fails
      */
     protected abstract ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
-            Set<Short> successfulSelectionStatusCodes) throws KeypleChannelStateException,
-            KeypleApplicationSelectionException, KeypleIOReaderException;
+            Set<Short> successfulSelectionStatusCodes)
+            throws KeypleApplicationSelectionException, KeypleReaderException;
 
     /**
      * Closes the current physical channel.
@@ -89,7 +89,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      *
      * @param apduRequest APDU request
      * @return APDU response
-     * @throws KeypleReaderException Exception faced
+     * @throws KeypleIOReaderException Exception faced
      */
     protected final ApduResponse processApduRequest(ApduRequest apduRequest)
             throws KeypleIOReaderException {
@@ -134,7 +134,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * 
      * @param originalStatusCode the status code of the command that didn't returned data
      * @return ApduResponse the response to the get response command
-     * @throws KeypleReaderException if the transmission fails.
+     * @throws KeypleIOReaderException if the transmission fails.
      */
     private ApduResponse case4HackGetResponse(int originalStatusCode)
             throws KeypleIOReaderException {
@@ -191,7 +191,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @throws KeypleIOReaderException if a reader error occurs
      */
     protected final SeResponseSet processSeRequestSet(SeRequestSet requestSet)
-            throws KeypleIOReaderException, KeypleChannelStateException, KeypleReaderException {
+            throws KeypleReaderException {
 
         boolean requestMatchesProtocol[] = new boolean[requestSet.getRequests().size()];
         int requestIndex = 0, lastRequestIndex;
@@ -235,8 +235,11 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                          * The process has been interrupted. We are launching a
                          * KeypleReaderException with the responses collected so far.
                          */
-                        throw new KeypleReaderException(ex.getMessage(), ex.getCause(),
-                                new SeResponseSet(ex.getSeResponse()));
+                        /* Add the latest (and partial) SeResponse to the current list. */
+                        responses.add(ex.getSeResponse());
+                        /* Build a SeResponseSet with the available data. */
+                        ex.setSeResponseSet(new SeResponseSet(responses));
+                        throw ex;
                     }
                     responses.add(response);
                     logger.debug("[{}] processSeRequestSet => receive {}", this.getName(),
@@ -413,9 +416,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                      * The process has been interrupted. We are launching a KeypleReaderException
                      * with the Apdu responses collected so far.
                      */
-                    throw new KeypleReaderException("IO Reader exception", ex.getCause(),
-                            new SeResponse(previouslyOpen, atrData, fciDataSelected,
-                                    apduResponseList));
+                    ex.setSeResponse(new SeResponse(previouslyOpen, atrData, fciDataSelected,
+                            apduResponseList));
+                    throw ex;
                 }
             }
         }
