@@ -25,7 +25,6 @@ import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.command.po.builder.session.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.session.CloseSessionCmdBuild;
-import org.eclipse.keyple.calypso.command.po.builder.session.RatificationCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.session.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.session.CloseSessionRespPars;
@@ -78,6 +77,12 @@ public class PoSecureSession {
     private final static int OFFSET_P2 = 3;
     private final static int OFFSET_Lc = 4;
     private final static int OFFSET_DATA = 5;
+
+    /** Ratification command APDU for rev <= 2.4 */
+    private final static ByteBuffer ratificationCmdApduLegacy =
+            ByteBufferUtils.fromHex("94B2000000");
+    /** Ratification command APDU for rev > 2.4 */
+    private final static ByteBuffer ratificationCmdApdu = ByteBufferUtils.fromHex("00B2000000");
 
     private static final Logger logger = LoggerFactory.getLogger(PoSecureSession.class);
 
@@ -529,8 +534,14 @@ public class PoSecureSession {
      * new PO commands to send in the session, a Close Session command (defined with the CSM
      * certificate), and optionally a ratificationCommand.
      * <ul>
-     * <li>If a PO ratification command is present, the PO Close Secure Session command is defined
-     * to set the PO as non ratified.</li>
+     * <li>The management of ratification is conditioned by the mode of communication.
+     * <ul>
+     * <li>If the communication mode is CONTACTLESS, a specific ratification command is sent after
+     * the Close Session command. No ratification is requested in the Close Session command.</li>
+     * <li>If the communication mode is CONTACTS, no ratification command is sent after the Close
+     * Session command. Ratification is requested in the Close Session command.</li>
+     * </ul>
+     * </li>
      * <li>Otherwise, the PO Close Secure Session command is defined to directly set the PO as
      * ratified.</li>
      * </ul>
@@ -545,10 +556,18 @@ public class PoSecureSession {
      * <li>Returns the corresponding PO SeResponse.</li>
      * </ul>
      *
+     * The method is marked as deprecated because the advanced variant defined below must be used at
+     * the application level.
+     * 
      * @param poModificationCommands a list of commands that can modify the PO memory content
-     * @param poAnticipatedResponses The anticipated PO response in the sessions
-     * @param ratificationCommand the ratification command
-     * @param closeSeChannel if true the SE channel of the po reader is closed after the last
+     * @param poAnticipatedResponses a list of anticipated PO responses to the modification commands
+     * @param communicationMode the communication mode. If the communication mode is
+     *        CONTACTLESS_MODE, a ratification command will be generated and sent to the PO after
+     *        the Close Session command; the ratification will not be requested in the Close Session
+     *        command. On the contrary, if the communication mode is CONTACTS_MODE, no ratification
+     *        command will be sent to the PO and ratification will be requested in the Close Session
+     *        command
+     * @param closeSeChannel if true the SE channel of the PO reader must be closed after the last
      *        command
      * @return SeResponse close session response
      * @throws KeypleReaderException the IO reader exception This method is deprecated.
@@ -559,7 +578,7 @@ public class PoSecureSession {
      */
     @Deprecated
     public SeResponse processClosing(List<PoModificationCommand> poModificationCommands,
-            List<ApduResponse> poAnticipatedResponses, PoCommandBuilder ratificationCommand,
+            List<ApduResponse> poAnticipatedResponses, CommunicationMode communicationMode,
             boolean closeSeChannel) throws KeypleReaderException {
 
         if (currentState != SessionState.SESSION_OPEN) {
@@ -631,9 +650,27 @@ public class PoSecureSession {
                     ByteBufferUtils.toHex(sessionTerminalSignature));
         }
 
+        PoCommandBuilder ratificationCommand;
+        boolean ratificationAsked;
 
-        /* the ratification will be asked only if no ratification command is provided */
-        boolean ratificationAsked = (ratificationCommand == null);
+        if (communicationMode == CommunicationMode.CONTACTLESS_MODE) {
+            if (poRevision == PoRevision.REV2_4) {
+                ratificationCommand = new PoCommandBuilder("Ratification command",
+                        new ApduRequest(ratificationCmdApduLegacy, false));
+            } else {
+                ratificationCommand = new PoCommandBuilder("Ratification command",
+                        new ApduRequest(ratificationCmdApdu, false));
+            }
+            /*
+             * Ratification is done by the ratification command above so is not requested in the
+             * Close Session command
+             */
+            ratificationAsked = false;
+        } else {
+            /* Ratification is requested in the Close Session command in contacts mode */
+            ratificationAsked = true;
+            ratificationCommand = null;
+        }
 
         /* Build the PO Close Session command. The last one for this session */
         CloseSessionCmdBuild closeCommand =
@@ -645,10 +682,9 @@ public class PoSecureSession {
         int closeCommandIndex = poApduRequestList.size() - 1;
 
         /*
-         * Add the PO Ratification command if any (ratification not asked with Close Session
-         * command)
+         * Add the PO Ratification command if any
          */
-        if (!ratificationAsked) {
+        if (ratificationCommand != null) {
             poApduRequestList.add(ratificationCommand.getApduRequest());
         }
 
@@ -750,28 +786,8 @@ public class PoSecureSession {
     }
 
     /**
-     * TODO Complete the Javadoc.
-     * 
-     * @param poModificationCommands
-     * @param poAnticipatedResponses
-     * @param communicationMode
-     * @param closeSeChannel
-     * @return
-     * @throws KeypleReaderException
-     */
-    public SeResponse processClosing(List<PoModificationCommand> poModificationCommands,
-            List<ApduResponse> poAnticipatedResponses, CommunicationMode communicationMode,
-            boolean closeSeChannel) throws KeypleReaderException {
-        PoCommandBuilder ratificationCommand = null;
-        if (communicationMode == CommunicationMode.CONTACTLESS_MODE) {
-            ratificationCommand = new RatificationCmdBuild(poRevision);
-        }
-        return processClosing(poModificationCommands, poAnticipatedResponses, ratificationCommand,
-                closeSeChannel);
-    }
-
-    /**
-     * Complete the Javadoc
+     * Advanced variant of processClosing in which the list of expected responses is determined from
+     * previous reading operations.
      * 
      * @param poModificationCommands
      * @param communicationMode
@@ -782,13 +798,9 @@ public class PoSecureSession {
     public SeResponse processClosing(List<PoModificationCommand> poModificationCommands,
             CommunicationMode communicationMode, boolean closeSeChannel)
             throws KeypleReaderException {
-        PoCommandBuilder ratificationCommand = null;
-        if (communicationMode == CommunicationMode.CONTACTLESS_MODE) {
-            ratificationCommand = new RatificationCmdBuild(poRevision);
-        }
         List<ApduResponse> poAnticipatedResponses =
                 AnticipatedResponseBuilder.getResponses(poModificationCommands);
-        return processClosing(poModificationCommands, poAnticipatedResponses, ratificationCommand,
+        return processClosing(poModificationCommands, poAnticipatedResponses, communicationMode,
                 closeSeChannel);
     }
 
