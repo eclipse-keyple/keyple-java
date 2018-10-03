@@ -231,6 +231,10 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
         poTransaction.processOpening(fciData, accessLevel, (byte) 0x1A, (byte) 0x01,
                 filesToReadInSession);
 
+        if (!poTransaction.wasRatified()) {
+            logger.info("### Previous Secure Session was not ratified. ###");
+        }
+
         if (logger.isInfoEnabled()) {
             logger.info(
                     "========= PO Hoplink session ======= Processing of PO commands =======================");

@@ -22,7 +22,7 @@ public class OpenSession31RespPars extends AbstractOpenSessionRespPars {
     @Override
     SecureSession toSecureSession(ByteBuffer apduResponse) {
         SecureSession secureSession;
-        boolean previousSessionRatified = (apduResponse.get(4) == (byte) 0x01);
+        boolean previousSessionRatified = (apduResponse.get(4) == (byte) 0x00);
         boolean manageSecureSessionAuthorized = false;
 
         byte kif = apduResponse.get(5);

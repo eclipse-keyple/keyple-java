@@ -235,6 +235,10 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
         seResponse = poTransaction.processOpening(fciData, accessLevel, SFI_EnvironmentAndHolder,
                 RECORD_NUMBER_1, eventLogContractListFilesReading);
 
+        if (!poTransaction.wasRatified()) {
+            logger.info("### Previous Secure Session was not ratified. ###");
+        }
+
         /*
          * [------------------------------------]
          *
