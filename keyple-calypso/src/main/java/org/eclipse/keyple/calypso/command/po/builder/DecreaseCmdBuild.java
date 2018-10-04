@@ -16,8 +16,7 @@ import org.eclipse.keyple.calypso.command.po.*;
  * APDU command.
  *
  */
-public class DecreaseCmdBuild extends PoCommandBuilder
-        implements PoSendableInSession, PoModificationCommand {
+public class DecreaseCmdBuild extends PoCommandBuilder implements PoModificationCommand {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.DECREASE;
@@ -31,12 +30,13 @@ public class DecreaseCmdBuild extends PoCommandBuilder
      *        file.
      * @param decValue Value to subtract to the counter (defined as a positive int &lt;= 16777215
      *        [FFFFFFh])
+     * @param extraInfo extra information included in the logs (can be null or empty)
      * @throws java.lang.IllegalArgumentException - if the decrement value is out of range
      * @throws java.lang.IllegalArgumentException - if the command is inconsistent
      */
 
-    public DecreaseCmdBuild(PoRevision revision, byte sfi, byte counterNumber, int decValue)
-            throws IllegalArgumentException {
+    public DecreaseCmdBuild(PoRevision revision, byte sfi, byte counterNumber, int decValue,
+            String extraInfo) throws IllegalArgumentException {
         super(command, null);
 
         if (revision != null) {
@@ -65,7 +65,8 @@ public class DecreaseCmdBuild extends PoCommandBuilder
 
         /* this is a case4 command, we set Le = 0 */
         this.request = setApduRequest(cla, command, p1, p2, decValueBuffer, (byte) 0);
-        this.addSubName(
-                String.format("SFI: %02X, counter: %d, dec: %d", sfi, counterNumber, decValue));
+        if (extraInfo != null) {
+            this.addSubName(extraInfo);
+        }
     }
 }

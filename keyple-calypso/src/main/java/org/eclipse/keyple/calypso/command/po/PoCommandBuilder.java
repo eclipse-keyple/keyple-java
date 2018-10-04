@@ -38,6 +38,6 @@ public class PoCommandBuilder extends AbstractIso7816CommandBuilder {
      * @param request the ApduRequest (the correct instruction byte must be provided)
      */
     public PoCommandBuilder(String name, ApduRequest request) {
-        super(name, request);
+        super("PO Custom Command: " + name, request);
     }
 }

@@ -20,11 +20,12 @@ public class OpenSession24CmdBuild extends AbstractOpenSessionCmdBuild {
      * @param samChallenge the sam challenge returned by the CSM Get Challenge APDU command
      * @param sfiToSelect the sfi to select
      * @param recordNumberToRead the record number to read
+     * @param extraInfo extra information included in the logs (can be null or empty)
      * @throws java.lang.IllegalArgumentException - if key index is 0 (rev 2.4)
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public OpenSession24CmdBuild(byte keyIndex, ByteBuffer samChallenge, byte sfiToSelect,
-            byte recordNumberToRead) throws IllegalArgumentException {
+            byte recordNumberToRead, String extraInfo) throws IllegalArgumentException {
         super(PoRevision.REV2_4);
 
         if (keyIndex == 0x00) {
@@ -41,7 +42,8 @@ public class OpenSession24CmdBuild extends AbstractOpenSessionCmdBuild {
 
         this.request = setApduRequest((byte) 0x94,
                 CalypsoPoCommands.getOpenSessionForRev(defaultRevision), p1, p2, samChallenge, le);
-        /* Add helper subname (order in important, the request created above must exist */
-        this.addSubName(String.format("SFI: %02X, rec: %d", sfiToSelect, recordNumberToRead));
+        if (extraInfo != null) {
+            this.addSubName(extraInfo);
+        }
     }
 }

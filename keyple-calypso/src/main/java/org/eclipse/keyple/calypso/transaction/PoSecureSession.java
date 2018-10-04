@@ -270,9 +270,10 @@ public class PoSecureSession {
         List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
 
         /* Build the PO Open Secure Session command */
+        // TODO decide how to define the extraInfo field. Empty for the moment.
         AbstractOpenSessionCmdBuild poOpenSession = AbstractOpenSessionCmdBuild.create(
                 getRevision(), (byte) (accessLevel.ordinal() + 1), sessionTerminalChallenge,
-                openingSfiToSelect, openingRecordNumberToRead);
+                openingSfiToSelect, openingRecordNumberToRead, "");
 
         /* Add the resulting ApduRequest to the PO ApduRequest list */
         poApduRequestList.add(poOpenSession.getApduRequest());

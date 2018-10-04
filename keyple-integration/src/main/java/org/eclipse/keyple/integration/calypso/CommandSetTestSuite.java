@@ -62,7 +62,8 @@ public class CommandSetTestSuite {
             throws KeypleReaderException {
 
         ReadRecordsCmdBuild poReadRecordCmd = new ReadRecordsCmdBuild(poTransaction.getRevision(),
-                fileSfi, (byte) recordNumber, readOneRecordFlag, (byte) 0x00);
+                fileSfi, (byte) recordNumber, readOneRecordFlag, (byte) 0x00,
+                String.format("SFI=%02X, recnbr=%d", fileSfi, recordNumber));
 
         List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
         filesToReadInSession.add(poReadRecordCmd);
@@ -91,10 +92,11 @@ public class CommandSetTestSuite {
                 (byte) 0x00, (byte) 0x00, null);
 
         UpdateRecordCmdBuild poUpdateRecordCmd = new UpdateRecordCmdBuild(
-                poTransaction.getRevision(), sfi, recordNumber, ByteBuffer.wrap(dataToWrite));
+                poTransaction.getRevision(), sfi, recordNumber, ByteBuffer.wrap(dataToWrite),
+                String.format("SFI=%02X, recnbr=%d", sfi, recordNumber));
 
         List<PoSendableInSession> filesToChangeInSession = new ArrayList<PoSendableInSession>();
-        filesToChangeInSession.add(poUpdateRecordCmd);
+        filesToChangeInSession.add((PoSendableInSession) poUpdateRecordCmd);
 
         poTransaction.processPoCommands(filesToChangeInSession);
 
@@ -109,11 +111,13 @@ public class CommandSetTestSuite {
         poTransaction.processOpening(fciData, PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT,
                 (byte) 0x00, (byte) 0x00, null);
 
-        DecreaseCmdBuild poDecreaseCmd_Counter = new DecreaseCmdBuild(poTransaction.getRevision(),
-                countersSfi, counterIndex, valueToDecrement);
+        DecreaseCmdBuild poDecreaseCmd_Counter =
+                new DecreaseCmdBuild(poTransaction.getRevision(), countersSfi, counterIndex,
+                        valueToDecrement, String.format("SFI=%02X, index=%d, decvalue=%d",
+                                countersSfi, counterIndex, valueToDecrement));
 
         List<PoSendableInSession> filesToChangeInSession = new ArrayList<PoSendableInSession>();
-        filesToChangeInSession.add(poDecreaseCmd_Counter);
+        filesToChangeInSession.add((PoSendableInSession) poDecreaseCmd_Counter);
 
         poTransaction.processPoCommands(filesToChangeInSession);
 
@@ -128,11 +132,13 @@ public class CommandSetTestSuite {
         poTransaction.processOpening(fciData, PoSecureSession.SessionAccessLevel.SESSION_LVL_LOAD,
                 (byte) 0x00, (byte) 0x00, null);
 
-        IncreaseCmdBuild poIncreaseCmd_Counter = new IncreaseCmdBuild(poTransaction.getRevision(),
-                countersSfi, counterIndex, valueToIncrement);
+        IncreaseCmdBuild poIncreaseCmd_Counter =
+                new IncreaseCmdBuild(poTransaction.getRevision(), countersSfi, counterIndex,
+                        valueToIncrement, String.format("SFI=%02X, index=%d, decvalue=%d",
+                                countersSfi, counterIndex, valueToIncrement));
 
         List<PoSendableInSession> filesToChangeInSession = new ArrayList<PoSendableInSession>();
-        filesToChangeInSession.add(poIncreaseCmd_Counter);
+        filesToChangeInSession.add((PoSendableInSession) poIncreaseCmd_Counter);
 
         poTransaction.processPoCommands(filesToChangeInSession);
 

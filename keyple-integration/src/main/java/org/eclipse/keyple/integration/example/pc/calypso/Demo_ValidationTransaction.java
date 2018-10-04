@@ -107,9 +107,9 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         SeResponse dataReadInSession;
         ReadRecordsCmdBuild poReadRecordCmd_Event = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                eventSfi, (byte) 0x01, true, (byte) 0x00);
+                eventSfi, (byte) 0x01, true, (byte) 0x00, "Event");
         ReadRecordsCmdBuild poReadRecordCmd_ContractList = new ReadRecordsCmdBuild(
-                PoRevision.REV3_1, contractListSfi, (byte) 0x01, true, (byte) 0x00);
+                PoRevision.REV3_1, contractListSfi, (byte) 0x01, true, (byte) 0x00, "ContractList");
 
         List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
         filesToReadInSession.add(poReadRecordCmd_Event);
@@ -166,7 +166,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                 "\t------------------------------------------------------------------------------\n");
 
         ReadRecordsCmdBuild poReadRecordCmd_Contract = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                (byte) 0x29, (byte) (contractIndex + 1), true, (byte) 0x1D);
+                (byte) 0x29, (byte) (contractIndex + 1), true, (byte) 0x1D, "Contract");
 
         // Based on the event file data read the correct contract to validate (season pass)
         filesToReadInSession = new ArrayList<PoSendableInSession>();
@@ -205,9 +205,9 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         UpdateRecordCmdBuild poUpdateRecordCmd_ContractList =
                 new UpdateRecordCmdBuild(poTransaction.getRevision(), contractListSfi, (byte) 0x01,
-                        ByteBuffer.wrap(newContractListData));
+                        ByteBuffer.wrap(newContractListData), "ContractList");
         AppendRecordCmdBuild poAppendRecordCmd_Event = new AppendRecordCmdBuild(
-                poTransaction.getRevision(), eventSfi, ByteBuffer.wrap(newEventData));
+                poTransaction.getRevision(), eventSfi, ByteBuffer.wrap(newEventData), "Event");
 
         List<PoModificationCommand> filesToWriteInSession = new ArrayList<PoModificationCommand>();
         List<ApduResponse> expectedResponses = new ArrayList<ApduResponse>();
@@ -238,11 +238,11 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         SeResponse dataReadInSession;
         ReadRecordsCmdBuild poReadRecordCmd_Event = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                eventSfi, (byte) 0x01, true, (byte) 0x00);
+                eventSfi, (byte) 0x01, true, (byte) 0x00, "Event");
         ReadRecordsCmdBuild poReadRecordCmd_Counters = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                countersSfi, (byte) 0x01, true, (byte) 0x00);
+                countersSfi, (byte) 0x01, true, (byte) 0x00, "Counters");
         ReadRecordsCmdBuild poReadRecordCmd_Contracts = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                contractsSfi, (byte) 0x01, false, (byte) 0x00);
+                contractsSfi, (byte) 0x01, false, (byte) 0x00, "Contracts");
 
 
         List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
@@ -327,7 +327,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
             UpdateRecordCmdBuild poUpdateRecordCmd_Counter =
                     new UpdateRecordCmdBuild(poTransaction.getRevision(), countersSfi, (byte) 0x01,
-                            ByteBuffer.wrap(newCounterData));
+                            ByteBuffer.wrap(newCounterData), "Counter");
 
             filesToWriteInSession.add(poUpdateRecordCmd_Counter);
             expectedResponses.add(expectedGenericOkResponse);
@@ -350,13 +350,13 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         System.arraycopy(dateToInsert, 0, newEventData, 1, (Long.SIZE / Byte.SIZE));
 
         AppendRecordCmdBuild poAppendRecordCmd_Event = new AppendRecordCmdBuild(
-                poTransaction.getRevision(), eventSfi, ByteBuffer.wrap(newEventData));
+                poTransaction.getRevision(), eventSfi, ByteBuffer.wrap(newEventData), "Event");
 
         filesToWriteInSession.add(poAppendRecordCmd_Event);
         expectedResponses.add(expectedGenericOkResponse);
 
-        DecreaseCmdBuild poDecreaseCmd_Counter =
-                new DecreaseCmdBuild(poTransaction.getRevision(), countersSfi, (byte) 0x01, 1);
+        DecreaseCmdBuild poDecreaseCmd_Counter = new DecreaseCmdBuild(poTransaction.getRevision(),
+                countersSfi, (byte) 0x01, 1, "Counter decval=1");
 
         byte[] expectedCounterResponseBytes = new byte[] {0x00, 0x00, 0x00, (byte) 0x90, 0x00};
 
