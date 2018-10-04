@@ -102,11 +102,17 @@ public class WsPClient implements TransportNode {
             KeypleDTO responseDTO = KeypleDTOHelper.fromJsonObject(httpResponse);
             TransportDTO transportDTO = new WsPTransportDTO(responseDTO, null);
             // connection
-            TransportDTO sendback = this.dtoDispatcher.onDTO(transportDTO);
+            final TransportDTO sendback = this.dtoDispatcher.onDTO(transportDTO);
 
-            // if sendBack is not a not reponse
+            // if sendBack is not a noresponse (can be a keyple request or keyple response)
             if (!KeypleDTOHelper.isNoResponse(sendback.getKeypleDTO())) {
-                this.sendDTO(sendback);
+                //send the keyple object in a new thread to avoid blocking the polling
+                new Thread() {
+                    @Override
+                    public void run() {
+                        sendDTO(sendback);
+                    }
+                }.start();
             }
         }
 
