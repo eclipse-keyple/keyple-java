@@ -16,7 +16,8 @@ import org.eclipse.keyple.calypso.command.po.*;
  * APDU command.
  *
  */
-public class DecreaseCmdBuild extends PoCommandBuilder implements PoModificationCommand {
+public class DecreaseCmdBuild extends PoCommandBuilder
+        implements PoSendableInSession, PoModificationCommand {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.DECREASE;

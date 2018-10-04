@@ -8,10 +8,9 @@
 
 package org.eclipse.keyple.calypso.command.po;
 
-import org.eclipse.keyple.calypso.command.SendableInSession;
 
 /**
  * Interface for commands that can modify the PO memory content
  */
-public interface PoModificationCommand extends SendableInSession {
+public interface PoModificationCommand {
 }

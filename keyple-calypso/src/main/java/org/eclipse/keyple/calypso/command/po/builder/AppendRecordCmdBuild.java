@@ -17,7 +17,8 @@ import org.eclipse.keyple.calypso.command.po.*;
  * Record APDU command.
  *
  */
-public class AppendRecordCmdBuild extends PoCommandBuilder implements PoModificationCommand {
+public class AppendRecordCmdBuild extends PoCommandBuilder
+        implements PoSendableInSession, PoModificationCommand {
 
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.APPEND_RECORD;
