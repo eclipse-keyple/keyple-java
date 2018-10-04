@@ -220,7 +220,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
             UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
                     new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
-                            ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
+                            ByteBufferUtils.fromHex(t2UsageRecord1_dataFill), "TestT2Usage");
 
             List<ApduRequest> poApduRequestList;
 
