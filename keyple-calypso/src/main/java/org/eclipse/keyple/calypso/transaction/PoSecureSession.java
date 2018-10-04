@@ -9,6 +9,7 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.SendableInSession;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
@@ -21,6 +22,7 @@ import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoModificationCommand;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
+import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.command.po.builder.session.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.session.CloseSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
@@ -69,6 +71,19 @@ public class PoSecureSession {
     private final static byte SIGNATURE_LENGTH_REV_INF_32 = (byte) 0x04;
     private final static byte SIGNATURE_LENGTH_REV32 = (byte) 0x08;
 
+    private final static int OFFSET_CLA = 0;
+    private final static int OFFSET_INS = 1;
+    private final static int OFFSET_P1 = 2;
+    private final static int OFFSET_P2 = 3;
+    private final static int OFFSET_Lc = 4;
+    private final static int OFFSET_DATA = 5;
+
+    /** Ratification command APDU for rev <= 2.4 */
+    private final static ByteBuffer ratificationCmdApduLegacy =
+            ByteBufferUtils.fromHex("94B2000000");
+    /** Ratification command APDU for rev > 2.4 */
+    private final static ByteBuffer ratificationCmdApdu = ByteBufferUtils.fromHex("00B2000000");
+
     private static final Logger logger = LoggerFactory.getLogger(PoSecureSession.class);
 
     /** The reader for PO. */
@@ -88,6 +103,14 @@ public class PoSecureSession {
     private PoRevision poRevision = PoRevision.REV3_1;
     /** The PO Secure Session final status according to mutual authentication result */
     private boolean transactionResult;
+    /** The PO KIF */
+    private byte poKif;
+    /** The PO KVC */
+    private byte poKvc;
+    /** The previous PO Secure Session ratification status */
+    private boolean wasRatified;
+    /** The data read at opening */
+    private ByteBuffer openRecordDataRead;
 
     /**
      * Instantiates a new po plain secure session.
@@ -295,21 +318,27 @@ public class PoSecureSession {
             }
         }
 
+        /* Track Read Records for later use to build anticipated responses. */
+        AnticipatedResponseBuilder.storeCommandResponse(poCommandsInsideSession, poApduRequestList,
+                poApduResponseList, true);
+
         /* Parse the response to Open Secure Session (the first item of poApduResponseList) */
         AbstractOpenSessionRespPars poOpenSessionPars =
                 AbstractOpenSessionRespPars.create(poApduResponseList.get(0), poRevision);
         ByteBuffer sessionCardChallenge = poOpenSessionPars.getPoChallenge();
 
         /* Build the Digest Init command from PO Open Session */
-        byte kif = poOpenSessionPars.getSelectedKif();
+        poKif = poOpenSessionPars.getSelectedKif();
+        poKvc = poOpenSessionPars.getSelectedKvc();
+
         if (logger.isDebugEnabled()) {
             logger.debug("processOpening => opening: CARDCHALLENGE = {}, POKIF = {}, POKVC = {}",
-                    ByteBufferUtils.toHex(sessionCardChallenge),
-                    String.format("%02X", poOpenSessionPars.getSelectedKif()),
-                    String.format("%02X", poOpenSessionPars.getSelectedKvc()));
+                    ByteBufferUtils.toHex(sessionCardChallenge), String.format("%02X", poKif),
+                    String.format("%02X", poKvc));
         }
 
-        if (kif == KIF_UNDEFINED) {
+        byte kif;
+        if (poKif == KIF_UNDEFINED) {
             switch (accessLevel) {
                 case SESSION_LVL_PERSO:
                     kif = csmSetting.get(CsmSettings.CS_DEFAULT_KIF_PERSO);
@@ -318,10 +347,17 @@ public class PoSecureSession {
                     kif = csmSetting.get(CsmSettings.CS_DEFAULT_KIF_LOAD);
                     break;
                 case SESSION_LVL_DEBIT:
+                default:
                     kif = csmSetting.get(CsmSettings.CS_DEFAULT_KIF_DEBIT);
                     break;
             }
+        } else {
+            kif = poKif;
         }
+
+        /* Keep the ratification status and read data */
+        wasRatified = poOpenSessionPars.wasRatified();
+        openRecordDataRead = poOpenSessionPars.getRecordDataRead();
 
         /*
          * Initialize the DigestProcessor. It will store all digest operations (Digest Init, Digest
@@ -330,8 +366,8 @@ public class PoSecureSession {
          */
         DigestProcessor.initialize(poRevision, csmRevision, false, false,
                 poRevision.equals(PoRevision.REV3_2),
-                csmSetting.get(CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER), kif,
-                poOpenSessionPars.getSelectedKvc(), poOpenSessionPars.getRecordDataRead());
+                csmSetting.get(CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER), kif, poKvc,
+                openRecordDataRead);
 
         /*
          * Add all commands data to the digest computation. The first command in the list is the
@@ -432,6 +468,10 @@ public class PoSecureSession {
             }
         }
 
+        /* Track Read Records for later use to build anticipated responses. */
+        AnticipatedResponseBuilder.storeCommandResponse(poCommands, poApduRequestList,
+                poApduResponseList, false);
+
         /*
          * Add all commands data to the digest computation if this method is called within a Secure
          * Session.
@@ -494,8 +534,14 @@ public class PoSecureSession {
      * new PO commands to send in the session, a Close Session command (defined with the CSM
      * certificate), and optionally a ratificationCommand.
      * <ul>
-     * <li>If a PO ratification command is present, the PO Close Secure Session command is defined
-     * to set the PO as non ratified.</li>
+     * <li>The management of ratification is conditioned by the mode of communication.
+     * <ul>
+     * <li>If the communication mode is CONTACTLESS, a specific ratification command is sent after
+     * the Close Session command. No ratification is requested in the Close Session command.</li>
+     * <li>If the communication mode is CONTACTS, no ratification command is sent after the Close
+     * Session command. Ratification is requested in the Close Session command.</li>
+     * </ul>
+     * </li>
      * <li>Otherwise, the PO Close Secure Session command is defined to directly set the PO as
      * ratified.</li>
      * </ul>
@@ -510,16 +556,29 @@ public class PoSecureSession {
      * <li>Returns the corresponding PO SeResponse.</li>
      * </ul>
      *
+     * The method is marked as deprecated because the advanced variant defined below must be used at
+     * the application level.
+     * 
      * @param poModificationCommands a list of commands that can modify the PO memory content
-     * @param poAnticipatedResponses The anticipated PO response in the sessions
-     * @param ratificationCommand the ratification command
-     * @param closeSeChannel if true the SE channel of the po reader is closed after the last
+     * @param poAnticipatedResponses a list of anticipated PO responses to the modification commands
+     * @param communicationMode the communication mode. If the communication mode is
+     *        CONTACTLESS_MODE, a ratification command will be generated and sent to the PO after
+     *        the Close Session command; the ratification will not be requested in the Close Session
+     *        command. On the contrary, if the communication mode is CONTACTS_MODE, no ratification
+     *        command will be sent to the PO and ratification will be requested in the Close Session
+     *        command
+     * @param closeSeChannel if true the SE channel of the PO reader must be closed after the last
      *        command
      * @return SeResponse close session response
-     * @throws KeypleReaderException the IO reader exception
+     * @throws KeypleReaderException the IO reader exception This method is deprecated.
+     *         <ul>
+     *         <li>The argument of the ratification command is replaced by an indication of the PO
+     *         communication mode.</li>
+     *         </ul>
      */
+    @Deprecated
     public SeResponse processClosing(List<PoModificationCommand> poModificationCommands,
-            List<ApduResponse> poAnticipatedResponses, PoCommandBuilder ratificationCommand,
+            List<ApduResponse> poAnticipatedResponses, CommunicationMode communicationMode,
             boolean closeSeChannel) throws KeypleReaderException {
 
         if (currentState != SessionState.SESSION_OPEN) {
@@ -591,9 +650,27 @@ public class PoSecureSession {
                     ByteBufferUtils.toHex(sessionTerminalSignature));
         }
 
+        PoCommandBuilder ratificationCommand;
+        boolean ratificationAsked;
 
-        /* the ratification will be asked only if no ratification command is provided */
-        boolean ratificationAsked = (ratificationCommand == null);
+        if (communicationMode == CommunicationMode.CONTACTLESS_MODE) {
+            if (poRevision == PoRevision.REV2_4) {
+                ratificationCommand = new PoCommandBuilder("Ratification command",
+                        new ApduRequest(ratificationCmdApduLegacy, false));
+            } else {
+                ratificationCommand = new PoCommandBuilder("Ratification command",
+                        new ApduRequest(ratificationCmdApdu, false));
+            }
+            /*
+             * Ratification is done by the ratification command above so is not requested in the
+             * Close Session command
+             */
+            ratificationAsked = false;
+        } else {
+            /* Ratification is requested in the Close Session command in contacts mode */
+            ratificationAsked = true;
+            ratificationCommand = null;
+        }
 
         /* Build the PO Close Session command. The last one for this session */
         CloseSessionCmdBuild closeCommand =
@@ -605,10 +682,9 @@ public class PoSecureSession {
         int closeCommandIndex = poApduRequestList.size() - 1;
 
         /*
-         * Add the PO Ratification command if any (ratification not asked with Close Session
-         * command)
+         * Add the PO Ratification command if any
          */
-        if (!ratificationAsked) {
+        if (ratificationCommand != null) {
             poApduRequestList.add(ratificationCommand.getApduRequest());
         }
 
@@ -707,7 +783,25 @@ public class PoSecureSession {
 
         return new SeResponse(true, poSeResponse.getAtr(), poSeResponse.getFci(),
                 poApduResponseList);
+    }
 
+    /**
+     * Advanced variant of processClosing in which the list of expected responses is determined from
+     * previous reading operations.
+     * 
+     * @param poModificationCommands
+     * @param communicationMode
+     * @param closeSeChannel
+     * @return
+     * @throws KeypleReaderException
+     */
+    public SeResponse processClosing(List<PoModificationCommand> poModificationCommands,
+            CommunicationMode communicationMode, boolean closeSeChannel)
+            throws KeypleReaderException {
+        List<ApduResponse> poAnticipatedResponses =
+                AnticipatedResponseBuilder.getResponses(poModificationCommands);
+        return processClosing(poModificationCommands, poAnticipatedResponses, communicationMode,
+                closeSeChannel);
     }
 
     /**
@@ -767,6 +861,42 @@ public class PoSecureSession {
         }
 
         return transactionResult;
+    }
+
+    /**
+     * Get the PO KIF
+     * 
+     * @return the PO KIF byte
+     */
+    public byte getPoKif() {
+        return poKif;
+    }
+
+    /**
+     * Get the ratification status obtained at Session Opening
+     * 
+     * @return true or false
+     */
+    public boolean wasRatified() {
+        return wasRatified;
+    }
+
+    /**
+     * Get the data read at Session Opening
+     * 
+     * @return a ByteBuffer containing the data
+     */
+    public ByteBuffer getOpenRecordDataRead() {
+        return openRecordDataRead;
+    }
+
+    /**
+     * Two communication modes are available for the PO.
+     * 
+     * It will be taken into account to handle the ratification when closing the Secure Session.
+     */
+    public enum CommunicationMode {
+        CONTACTLESS_MODE, CONTACTS_MODE
     }
 
     /**
@@ -960,6 +1090,174 @@ public class PoSecureSession {
 
 
             return new SeRequest(null, csmApduRequestList, true);
+        }
+    }
+
+    /**
+     * The class handles the anticipated response computation.
+     */
+    private static class AnticipatedResponseBuilder {
+        /**
+         * A nested class to associate a request with a response
+         */
+        private static class CommandResponse {
+            private final ApduRequest apduRequest;
+            private final ApduResponse apduResponse;
+
+            CommandResponse(ApduRequest apduRequest, ApduResponse apduResponse) {
+                this.apduRequest = apduRequest;
+                this.apduResponse = apduResponse;
+            }
+
+            public ApduRequest getApduRequest() {
+                return apduRequest;
+            }
+
+            public ApduResponse getApduResponse() {
+                return apduResponse;
+            }
+        }
+
+        /**
+         * A Map of SFI and Commands/Responses
+         */
+        private static Map<Byte, CommandResponse> sfiCommandResponseHashMap =
+                new HashMap<Byte, CommandResponse>();
+
+        /**
+         * Store all Read Record exchanges in a Map whose key is the SFI.
+         * 
+         * @param poSendableInSessions the list of commands sent to the PO
+         * @param apduRequests the sent apduRequests
+         * @param apduResponses the received apduResponses
+         * @param skipFirstItem a flag to indicate if the first apduRequest/apduResponse pair has to
+         *        be ignored or not.
+         */
+        static void storeCommandResponse(List<PoSendableInSession> poSendableInSessions,
+                List<ApduRequest> apduRequests, List<ApduResponse> apduResponses,
+                Boolean skipFirstItem) {
+            if (poSendableInSessions != null) {
+                /*
+                 * Store Read Records' requests and responses for later use to build anticipated
+                 * responses.
+                 */
+                Iterator<ApduRequest> apduRequestIterator = apduRequests.iterator();
+                Iterator<ApduResponse> apduResponseIterator = apduResponses.iterator();
+                if (skipFirstItem) {
+                    /* case of processOpening */
+                    apduRequestIterator.next();
+                    apduResponseIterator.next();
+                }
+                /* Iterate over the poCommandsInsideSession list */
+                for (PoSendableInSession poSendableInSession : poSendableInSessions) {
+                    if (poSendableInSession instanceof ReadRecordsCmdBuild) {
+                        ApduRequest apduRequest = apduRequestIterator.next();
+                        byte sfi = (byte) ((apduRequest.getBytes().get(OFFSET_P2) >> 3) & 0x1F);
+                        sfiCommandResponseHashMap.put(sfi,
+                                new CommandResponse(apduRequest, apduResponseIterator.next()));
+                    } else {
+                        apduRequestIterator.next();
+                        apduResponseIterator.next();
+                    }
+                }
+            }
+        }
+
+        /**
+         * Establish the anticipated responses to commands provided in poModificationCommands.
+         * <p>
+         * Append Record and Update Record commands return 9000
+         * <p>
+         * Increase and Decrease return NNNNNN9000 where NNNNNNN is the new counter value.
+         * <p>
+         * NNNNNN is determine with the current value of the counter (extracted from the Read Record
+         * responses previously collected) and the value to add or subtract provided in the command.
+         * <p>
+         * The SFI field is used to determine which data should be used to extract the needed
+         * information.
+         *
+         * @param poModificationCommands the modification command list
+         * @return the anticipated responses.
+         * @throws KeypleCalypsoSecureSessionException if an response can't be determined.
+         */
+        public static List<ApduResponse> getResponses(
+                List<PoModificationCommand> poModificationCommands)
+                throws KeypleCalypsoSecureSessionException {
+            List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
+            if (poModificationCommands != null) {
+                for (PoModificationCommand poModificationCommand : poModificationCommands) {
+                    if (poModificationCommand instanceof AppendRecordCmdBuild
+                            || poModificationCommand instanceof UpdateRecordCmdBuild) {
+                        /* Append/Update Record: response = 9000 */
+                        apduResponses.add(new ApduResponse(ByteBufferUtils.fromHex("9000"), null));
+                    } else if (poModificationCommand instanceof DecreaseCmdBuild
+                            || poModificationCommand instanceof IncreaseCmdBuild) {
+                        /* response = NNNNNN9000 */
+                        ByteBuffer modCounterApduRequest =
+                                ((PoCommandBuilder) poModificationCommand).getApduRequest()
+                                        .getBytes();
+                        /* Retrieve SFI from the current Decrease command */
+                        byte sfi = (byte) ((modCounterApduRequest.get(OFFSET_P2) >> 3) & 0x1F);
+                        /*
+                         * Look for the counter value in the stored records. Only the first
+                         * occurrence of the SFI is taken into account. We assume here that the
+                         * record number is always 1.
+                         */
+                        CommandResponse commandResponse = sfiCommandResponseHashMap.get(sfi);
+                        if (commandResponse != null) {
+                            byte counterNumber = modCounterApduRequest.get(OFFSET_P1);
+                            /*
+                             * The record containing the counters is structured as follow:
+                             * AAAAAAABBBBBBCCCCCC...XXXXXX each counter being a 3-byte unsigned
+                             * number. Convert the 3-byte block indexed by the counter number to an
+                             * int.
+                             */
+                            int currentCounterValue = commandResponse.getApduResponse().getBytes()
+                                    .order(ByteOrder.BIG_ENDIAN)
+                                    .getInt((counterNumber - 1) * 3) >> 8;
+                            /* Extract the add or subtract value from the modification request */
+                            int addSubtractValue = modCounterApduRequest.order(ByteOrder.BIG_ENDIAN)
+                                    .getInt(OFFSET_DATA) >> 8;
+                            /* Build the response */
+                            ByteBuffer response = ByteBuffer.allocate(5);
+                            int newCounterValue;
+                            if (poModificationCommand instanceof DecreaseCmdBuild) {
+                                newCounterValue = currentCounterValue - addSubtractValue;
+                            } else {
+                                newCounterValue = currentCounterValue + addSubtractValue;
+                            }
+                            response.order(ByteOrder.BIG_ENDIAN).putInt((newCounterValue) << 8);
+                            response.put(3, (byte) 0x90);
+                            response.put(4, (byte) 0x00);
+                            response.position(0);
+                            apduResponses.add(new ApduResponse(response, null));
+                            if (logger.isDebugEnabled()) {
+                                logger.debug(
+                                        "Anticipated response. COMMAND = {}, SFI = {}, COUNTERVALUE = {}, DECREMENT = {}, NEWVALUE = {} ",
+                                        (poModificationCommand instanceof DecreaseCmdBuild)
+                                                ? "Decrease"
+                                                : "Increase",
+                                        sfi, currentCounterValue, addSubtractValue,
+                                        newCounterValue);
+                            }
+                        } else {
+                            throw new KeypleCalypsoSecureSessionException(
+                                    "Anticipated response. COMMAND = "
+                                            + ((poModificationCommand instanceof DecreaseCmdBuild)
+                                                    ? "Decrease"
+                                                    : "Increase")
+                                            + ". Unable to determine anticipated counter value. SFI = "
+                                            + sfi,
+                                    ((PoCommandBuilder) poModificationCommand).getApduRequest(),
+                                    null);
+                        }
+                    } else {
+                        throw new IllegalArgumentException("Unexpected modification command: "
+                                + poModificationCommand.toString());
+                    }
+                }
+            }
+            return apduResponses;
         }
     }
 }

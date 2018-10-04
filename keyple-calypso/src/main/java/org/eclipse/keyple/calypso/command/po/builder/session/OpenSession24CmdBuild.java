@@ -41,5 +41,7 @@ public class OpenSession24CmdBuild extends AbstractOpenSessionCmdBuild {
 
         this.request = setApduRequest((byte) 0x94,
                 CalypsoPoCommands.getOpenSessionForRev(defaultRevision), p1, p2, samChallenge, le);
+        /* Add helper subname (order in important, the request created above must exist */
+        this.addSubName(String.format("SFI: %02X, rec: %d", sfiToSelect, recordNumberToRead));
     }
 }

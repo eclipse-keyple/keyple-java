@@ -47,5 +47,7 @@ public class UpdateRecordCmdBuild extends PoCommandBuilder
         byte p2 = (sfi == 0) ? (byte) 0x04 : (byte) ((byte) (sfi * 8) + 4);
 
         this.request = setApduRequest(cla, command, p1, p2, newRecordData, null);
+        /* Add helper subname (order in important, the request created above must exist */
+        this.addSubName(String.format("SFI: %02X", sfi));
     }
 }

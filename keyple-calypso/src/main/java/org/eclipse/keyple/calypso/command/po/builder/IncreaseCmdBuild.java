@@ -42,6 +42,11 @@ public class IncreaseCmdBuild extends PoCommandBuilder
             this.defaultRevision = revision;
         }
 
+        // only counter number >= 1 are allowed
+        if (counterNumber < 1) {
+            throw new IllegalArgumentException("Counter number out of range!");
+        }
+
         // check if the incValue is in the allowed interval
         if (incValue < 0 || incValue > 0xFFFFFF) {
             throw new IllegalArgumentException("Increment value out of range!");
@@ -59,5 +64,8 @@ public class IncreaseCmdBuild extends PoCommandBuilder
 
         /* this is a case4 command, we set Le = 0 */
         this.request = setApduRequest(cla, command, p1, p2, incValueBuffer, (byte) 0);
+        /* Add helper subname (order in important, the request created above must exist */
+        this.addSubName(
+                String.format("SFI: %02X, counter: %d, inc: %d", sfi, counterNumber, incValue));
     }
 }

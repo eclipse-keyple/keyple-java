@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.integration.example.pc.calypso;
 
+import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CommunicationMode;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
@@ -17,7 +18,10 @@ import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.po.PoModificationCommand;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
-import org.eclipse.keyple.calypso.command.po.builder.*;
+import org.eclipse.keyple.calypso.command.po.builder.AppendRecordCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.DecreaseCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.example.pc.generic.PcscReadersSettings;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
@@ -214,7 +218,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         filesToWriteInSession.add(poAppendRecordCmd_Event);
         expectedResponses.add(expectedGenericOkResponse);
 
-        poTransaction.processClosing(filesToWriteInSession, expectedResponses, null, false);
+        poTransaction.processClosing(filesToWriteInSession, expectedResponses,
+                CommunicationMode.CONTACTLESS_MODE, false);
 
         System.out.println("\nValidation Successful!");
         System.out.println(
@@ -311,7 +316,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
             System.out.println("No value present in the card. Initiating auto top-up...");
 
-            poTransaction.processClosing(null, null, null, false);
+            poTransaction.processClosing(null, null,
+                    PoSecureSession.CommunicationMode.CONTACTLESS_MODE, false);
 
             poTransaction.processOpening(fciData,
                     PoSecureSession.SessionAccessLevel.SESSION_LVL_LOAD, (byte) 0x00, (byte) 0x00,
@@ -363,7 +369,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         filesToWriteInSession.add(poDecreaseCmd_Counter);
         expectedResponses.add(expectedCounterResponse);
 
-        poTransaction.processClosing(filesToWriteInSession, expectedResponses, null, false);
+        poTransaction.processClosing(filesToWriteInSession, expectedResponses,
+                CommunicationMode.CONTACTLESS_MODE, false);
 
         System.out.println("\nValidation Successful!");
         System.out.println(

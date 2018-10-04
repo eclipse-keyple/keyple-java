@@ -217,13 +217,6 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
          * the modification command sent sent on closing is disabled for the moment due to CAAD
          * configuration of the current Hoplink test PO
          */
-        // List<PoModificationCommand> poModificationCommands = new
-        // ArrayList<PoModificationCommand>();
-        // poModificationCommands.add(HoplinkInfoAndSampleCommands.poUpdateRecordCmd_T2UsageFill);
-
-        List<ApduResponse> poAnticipatedResponses = new ArrayList<ApduResponse>();
-        poAnticipatedResponses.add(new ApduResponse(ByteBufferUtils.fromHex("9000"), null));
-
         if (logger.isInfoEnabled()) {
             logger.info(
                     "========= PO Hoplink session ======= Opening ============================");
@@ -238,6 +231,10 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
         poTransaction.processOpening(fciData, accessLevel, (byte) 0x1A, (byte) 0x01,
                 filesToReadInSession);
 
+        if (!poTransaction.wasRatified()) {
+            logger.info("### Previous Secure Session was not ratified. ###");
+        }
+
         if (logger.isInfoEnabled()) {
             logger.info(
                     "========= PO Hoplink session ======= Processing of PO commands =======================");
@@ -248,10 +245,7 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
             logger.info(
                     "========= PO Hoplink session ======= Closing ============================");
         }
-        poTransaction.processClosing(null, null, HoplinkInfoAndSampleCommands.poRatificationCommand,
-                false);
-        // poTransaction.processClosing(poModificationCommands, poAnticipatedResponses,
-        // HoplinkInfoAndSampleCommands.poRatificationCommand, false);
+        poTransaction.processClosing(null, CommunicationMode.CONTACTLESS_MODE, false);
 
         if (poTransaction.isSuccessful()) {
             if (logger.isInfoEnabled()) {

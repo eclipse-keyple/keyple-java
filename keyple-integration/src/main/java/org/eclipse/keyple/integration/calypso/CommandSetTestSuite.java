@@ -8,17 +8,20 @@
 
 package org.eclipse.keyple.integration.calypso;
 
-import static org.eclipse.keyple.integration.calypso.TestEngine.*;
+import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CommunicationMode;
+import static org.eclipse.keyple.integration.calypso.TestEngine.selectPO;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.command.po.builder.DecreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
-import org.eclipse.keyple.seproxy.*;
+import org.eclipse.keyple.seproxy.ApduResponse;
+import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
@@ -68,7 +71,7 @@ public class CommandSetTestSuite {
                 PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0x00, (byte) 0x00,
                 filesToReadInSession);
 
-        poTransaction.processClosing(null, null, null, false);
+        poTransaction.processClosing(null, null, CommunicationMode.CONTACTLESS_MODE, false);
         /*
          * System.out.println("DataRead#: " +
          * ByteBufferUtils.toHex(dataReadInSession.getApduResponses().get(1).getDataOut()));
@@ -95,7 +98,7 @@ public class CommandSetTestSuite {
 
         poTransaction.processPoCommands(filesToChangeInSession);
 
-        poTransaction.processClosing(null, null, null, false);
+        poTransaction.processClosing(null, null, CommunicationMode.CONTACTLESS_MODE, false);
     }
 
 
@@ -114,7 +117,7 @@ public class CommandSetTestSuite {
 
         poTransaction.processPoCommands(filesToChangeInSession);
 
-        poTransaction.processClosing(null, null, null, false);
+        poTransaction.processClosing(null, null, CommunicationMode.CONTACTLESS_MODE, false);
     }
 
 
@@ -133,7 +136,7 @@ public class CommandSetTestSuite {
 
         poTransaction.processPoCommands(filesToChangeInSession);
 
-        poTransaction.processClosing(null, null, null, false);
+        poTransaction.processClosing(null, null, CommunicationMode.CONTACTLESS_MODE, false);
     }
 
     @Test
