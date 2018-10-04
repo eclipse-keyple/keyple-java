@@ -231,11 +231,11 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
             if (!isAsync) {
                 rseSession = new ReaderSyncClientImpl(sessionId);
             } else {
-                // rseSession = new ReaderAsyncClientImpl(sessionId, message.getDtoSender());
-                rseSession = new ReaderAsyncClientImpl(sessionId);
+                // rseSession = new ReaderAsyncSessionImpl(sessionId, message.getDtoSender());
+                rseSession = new ReaderAsyncSessionImpl(sessionId);
                 // add the web socket node as an observer for the session as the session will send
                 // KeypleDTO
-                ((ReaderAsyncClientImpl) rseSession).addObserver(message.getDtoSender());
+                ((ReaderAsyncSessionImpl) rseSession).addObserver(message.getDtoSender());
             }
 
             this.connectRemoteReader(readerName, rseSession);

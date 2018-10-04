@@ -22,9 +22,9 @@ import org.slf4j.LoggerFactory;
  * Manage RSE Reader Session Manage SeRequestSet to transmit and receive SeResponseSet in an
  * asynchronous way
  */
-public class ReaderAsyncClientImpl extends Observable<KeypleDTO> implements IReaderAsyncSession {
+public class ReaderAsyncSessionImpl extends Observable<KeypleDTO> implements IReaderAsyncSession {
 
-    private static final Logger logger = LoggerFactory.getLogger(ReaderAsyncClientImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ReaderAsyncSessionImpl.class);
 
     String sessionId;
     SeRequestSet seRequestSet;
@@ -34,7 +34,7 @@ public class ReaderAsyncClientImpl extends Observable<KeypleDTO> implements IRea
     SeResponseSet seResponseSet;
 
     // constructor
-    public ReaderAsyncClientImpl(String sessionId) {
+    public ReaderAsyncSessionImpl(String sessionId) {
         this.sessionId = sessionId;
         // this.dtoSender = dtoSender; not in used
     }
