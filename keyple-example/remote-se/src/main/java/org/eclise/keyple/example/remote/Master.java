@@ -1,11 +1,10 @@
-package org.eclise.keyple.example.remote.clientslave;
+package org.eclise.keyple.example.remote;
 
 import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
 import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
 import org.eclipse.keyple.plugin.remote_se.rse.VirtualSeRemoteService;
 import org.eclipse.keyple.plugin.remote_se.transport.ServerNode;
 import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
-import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
@@ -17,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.SortedSet;
 
 public class Master implements org.eclipse.keyple.util.Observable.Observer {
 
@@ -28,6 +26,11 @@ public class Master implements org.eclipse.keyple.util.Observable.Observer {
     private TransportNode node;
 
     public Master(TransportFactory transportFactory, Boolean isServer) {
+        logger.info("*******************");
+        logger.info("Create Master    ");
+        logger.info("*******************");
+
+
         this.transportFactory = transportFactory;
         this.isServer = isServer;
     }
@@ -42,9 +45,9 @@ public class Master implements org.eclipse.keyple.util.Observable.Observer {
         }
 
 
-        logger.info("******************************");
+
         logger.info("Create Remote PLugin Interface");
-        logger.info("******************************");
+
 
         logger.info("Create SeRemotePLugin and register it to SeProxyService");
         RsePlugin rsePlugin = new RsePlugin();

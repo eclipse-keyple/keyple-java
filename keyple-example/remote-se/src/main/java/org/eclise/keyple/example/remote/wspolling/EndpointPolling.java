@@ -92,7 +92,7 @@ public class EndpointPolling implements HttpHandler, TransportNode {
 
         @Override
         public void update(KeypleDTO event) {
-            logger.warn("Send DTO from update {}", event);
+            logger.info("Send DTO from update {}", event);
             this.sendDTO(event);
         }
 

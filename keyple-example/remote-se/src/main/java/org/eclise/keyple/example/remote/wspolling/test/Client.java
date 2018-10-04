@@ -1,6 +1,10 @@
 package org.eclise.keyple.example.remote.wspolling.test;
 
+import org.eclipse.keyple.plugin.remote_se.transport.DtoDispatcher;
+import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTOHelper;
+import org.eclipse.keyple.plugin.remote_se.transport.TransportDTO;
 import org.eclise.keyple.example.remote.wspolling.WsPClient;
+import org.eclise.keyple.example.remote.wspolling.WsPTransportDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +22,12 @@ public class Client {
 
         WsPClient client = new WsPClient(ENDPOINT_URL, POLLING_URL);
         client.startPollingWorker("node1");
+        client.setDtoDispatcher(new DtoDispatcher() {
+            @Override
+            public TransportDTO onDTO(TransportDTO message) {
+                return new WsPTransportDTO(KeypleDTOHelper.NoResponse(), null);
+            }
+        });
 
     }
 

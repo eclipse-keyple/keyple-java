@@ -7,6 +7,8 @@ import org.eclise.keyple.example.remote.common.TransportFactory;
 import org.eclise.keyple.example.remote.wspolling.WsPClient;
 import org.eclise.keyple.example.remote.wspolling.WsPServer;
 import org.java_websocket.client.WebSocketClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -24,9 +26,14 @@ public class WskFactory extends TransportFactory {
     String bindUrl="0.0.0.0";
     String protocol = "http://";
 
+    private static final Logger logger = LoggerFactory.getLogger(WskFactory.class);
+
 
     @Override
     public TransportNode getClient(Boolean isMaster) {
+
+        logger.info("*** Create Websocket Client ***");
+
 
         ClientNode wskClient = null;
         try {
@@ -42,6 +49,9 @@ public class WskFactory extends TransportFactory {
 
     @Override
     public ServerNode getServer(Boolean isMaster) throws IOException {
+
+        logger.info("*** Create Websocket Server ***");
+
         InetSocketAddress inet = new InetSocketAddress(Inet4Address.getByName(bindUrl), port);
         WskServer wskServer = new WskServer(inet, null, !isMaster);
         return wskServer;

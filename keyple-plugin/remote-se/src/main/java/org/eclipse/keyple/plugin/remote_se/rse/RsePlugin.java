@@ -298,7 +298,7 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
             }
         }
         throw new KeypleReaderNotFoundException(
-                "Reader was not found for session : " + sessionId);
+                "Reader sesssion was not found for session : " + sessionId);
     }
 
 

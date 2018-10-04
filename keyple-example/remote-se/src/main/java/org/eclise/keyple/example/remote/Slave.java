@@ -1,4 +1,4 @@
-package org.eclise.keyple.example.remote.clientslave;
+package org.eclise.keyple.example.remote;
 
 import org.eclipse.keyple.example.pc.calypso.stub.se.StubHoplink;
 import org.eclipse.keyple.plugin.remote_se.nse.NativeSeRemoteService;
@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 public class Slave {
 
@@ -29,15 +28,16 @@ public class Slave {
     private TransportNode node;
 
     public Slave(TransportFactory transportFactory, Boolean isServer) {
+        logger.info("*******************");
+        logger.info("Create Slave    ");
+        logger.info("*******************");
+
         this.transportFactory = transportFactory;
         this.isServer = isServer;
     }
 
     public void connect() throws KeypleReaderNotFoundException, InterruptedException, IOException {
 
-        logger.info("*******************");
-        logger.info("Create Slave Thread");
-        logger.info("*******************");
 
         if(isServer){
             node = transportFactory.getServer(false);
@@ -46,9 +46,9 @@ public class Slave {
         }
 
 
-        logger.info("************************");
+
         logger.info("Boot Slave LocalReader ");
-        logger.info("************************");
+
 
 
         // get seProxyService
