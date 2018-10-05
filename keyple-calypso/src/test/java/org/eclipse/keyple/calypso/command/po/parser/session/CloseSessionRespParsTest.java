@@ -80,17 +80,11 @@ public class CloseSessionRespParsTest {
 
     @Test
     public void existingTestConverted() {
-        try {
-            /*
-             * Close Secure Session with no output data is not supported for the moment (session
-             * abort case)
-             */
-            CloseSessionRespPars parser = new CloseSessionRespPars(
-                    new ApduResponse(ByteBufferUtils.fromHex("9000h"), null));
-            Assert.fail();
-        } catch (IllegalArgumentException ex) {
-            /* expected case */
-        }
+        CloseSessionRespPars parser =
+                new CloseSessionRespPars(new ApduResponse(ByteBufferUtils.fromHex("9000h"), null));
+        // This assert wasn't passing
+        Assert.assertEquals("", ByteBufferUtils.toHex(parser.getSignatureLo()));
+        Assert.assertEquals("", ByteBufferUtils.toHex(parser.getPostponedData()));
     }
 
     @Test // Calypso / page 105 / Example command aborting a session:
