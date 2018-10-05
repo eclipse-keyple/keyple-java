@@ -18,10 +18,7 @@ import org.eclipse.keyple.calypso.command.csm.builder.*;
 import org.eclipse.keyple.calypso.command.csm.parser.CsmGetChallengeRespPars;
 import org.eclipse.keyple.calypso.command.csm.parser.DigestAuthenticateRespPars;
 import org.eclipse.keyple.calypso.command.csm.parser.DigestCloseRespPars;
-import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
-import org.eclipse.keyple.calypso.command.po.PoModificationCommand;
-import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
+import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.command.po.builder.session.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.session.CloseSessionCmdBuild;
@@ -270,9 +267,10 @@ public class PoSecureSession {
         List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
 
         /* Build the PO Open Secure Session command */
+        // TODO decide how to define the extraInfo field. Empty for the moment.
         AbstractOpenSessionCmdBuild poOpenSession = AbstractOpenSessionCmdBuild.create(
                 getRevision(), (byte) (accessLevel.ordinal() + 1), sessionTerminalChallenge,
-                openingSfiToSelect, openingRecordNumberToRead);
+                openingSfiToSelect, openingRecordNumberToRead, "");
 
         /* Add the resulting ApduRequest to the PO ApduRequest list */
         poApduRequestList.add(poOpenSession.getApduRequest());
@@ -650,15 +648,15 @@ public class PoSecureSession {
                     ByteBufferUtils.toHex(sessionTerminalSignature));
         }
 
-        PoCommandBuilder ratificationCommand;
+        PoCustomCommandBuilder ratificationCommand;
         boolean ratificationAsked;
 
         if (communicationMode == CommunicationMode.CONTACTLESS_MODE) {
             if (poRevision == PoRevision.REV2_4) {
-                ratificationCommand = new PoCommandBuilder("Ratification command",
+                ratificationCommand = new PoCustomCommandBuilder("Ratification command",
                         new ApduRequest(ratificationCmdApduLegacy, false));
             } else {
-                ratificationCommand = new PoCommandBuilder("Ratification command",
+                ratificationCommand = new PoCustomCommandBuilder("Ratification command",
                         new ApduRequest(ratificationCmdApdu, false));
             }
             /*

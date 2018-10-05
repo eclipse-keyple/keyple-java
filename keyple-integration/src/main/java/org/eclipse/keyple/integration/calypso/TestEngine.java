@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -29,9 +27,6 @@ import org.eclipse.keyple.util.ByteBufferUtils;
 public class TestEngine {
 
     public static ProxyReader poReader, csmReader;
-
-    public static ReadRecordsCmdBuild poRatificationCommand =
-            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x01);
 
     public static PoFileStructureInfo selectPO()
             throws IllegalArgumentException, KeypleReaderException {

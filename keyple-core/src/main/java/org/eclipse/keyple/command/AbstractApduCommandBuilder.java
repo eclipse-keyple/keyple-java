@@ -56,6 +56,7 @@ public abstract class AbstractApduCommandBuilder {
     public AbstractApduCommandBuilder(String name, ApduRequest request) {
         this.name = name;
         this.request = request;
+        this.commandParserClass = null;
         // set APDU name for non null request
         if (request != null) {
             this.request.setName(name);

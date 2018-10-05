@@ -8,6 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.po;
 
+
 /**
  * Interface for commands that can modify the PO memory content
  */

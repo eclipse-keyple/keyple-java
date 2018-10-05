@@ -38,7 +38,7 @@ public class OpenSessionCmdBuildTest {
 
 
         apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV2_4, keyIndex,
-                samChallenge, sfiToSelect, recordNumberToRead);
+                samChallenge, sfiToSelect, recordNumberToRead, "");
     }
 
     @Test
@@ -57,7 +57,7 @@ public class OpenSessionCmdBuildTest {
                 {cla, cmd, p1, p2, (byte) dataIn.limit(), (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, le};
 
         apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV2_4, keyIndex, dataIn,
-                sfiToSelect, recordNumberToRead);
+                sfiToSelect, recordNumberToRead, "");
         apduRequest = apduCommandBuilder.getApduRequest();
         Assert.assertArrayEquals(request2_4, ByteBufferUtils.toBytes(apduRequest.getBytes()));
     }
@@ -78,7 +78,7 @@ public class OpenSessionCmdBuildTest {
         byte[] request3_1 =
                 {cla, cmd, p1, p2, (byte) dataIn.limit(), (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, le};
         apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV3_1, keyIndex, dataIn,
-                sfiToSelect, recordNumberToRead);
+                sfiToSelect, recordNumberToRead, "");
         apduRequest = apduCommandBuilder.getApduRequest();
         Assert.assertArrayEquals(request3_1, ByteBufferUtils.toBytes(apduRequest.getBytes()));
     }
@@ -100,7 +100,7 @@ public class OpenSessionCmdBuildTest {
                 ByteBuffer.wrap(new byte[] {cla, cmd, p1, p2, (byte) (samChallenge.limit() + 1),
                         (byte) 0x00, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, le});
         apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV3_2, keyIndex,
-                samChallenge, sfiToSelect, recordNumberToRead);
+                samChallenge, sfiToSelect, recordNumberToRead, "");
         apduRequest = apduCommandBuilder.getApduRequest();
         Assert.assertEquals(ByteBufferUtils.toHex(request3_2),
                 ByteBufferUtils.toHex(apduRequest.getBytes()));

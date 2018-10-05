@@ -29,9 +29,11 @@ public class AppendRecordCmdBuild extends PoCommandBuilder
      * @param revision the revision of the PO
      * @param sfi the sfi to select
      * @param newRecordData the new record data to write
+     * @param extraInfo extra information included in the logs (can be null or empty)
      * @throws java.lang.IllegalArgumentException - if the command is inconsistent
      */
-    public AppendRecordCmdBuild(PoRevision revision, byte sfi, ByteBuffer newRecordData) {
+    public AppendRecordCmdBuild(PoRevision revision, byte sfi, ByteBuffer newRecordData,
+            String extraInfo) {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -41,7 +43,8 @@ public class AppendRecordCmdBuild extends PoCommandBuilder
         byte p2 = (sfi == 0) ? (byte) 0x00 : (byte) (sfi * 8);
 
         this.request = setApduRequest(cla, command, p1, p2, newRecordData, null);
-        /* Add helper subname (order in important, the request created above must exist */
-        this.addSubName(String.format("SFI: %02X", sfi));
+        if (extraInfo != null) {
+            this.addSubName(extraInfo);
+        }
     }
 }

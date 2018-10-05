@@ -401,15 +401,21 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
                 }
             }
 
-            PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting);
             /*
              * If the Calypso selection succeeded we should have 2 responses and the 2nd one not
              * null
              */
             if (seResponses.size() == 2 && seResponses.get(1) != null) {
-                ApduResponse fciData = seResponses.get(1).getFci();
+
                 profiler.start("Calypso1");
+
+                PoSecureSession poTransaction =
+                        new PoSecureSession(poReader, csmReader, csmSetting);
+
+                ApduResponse fciData = seResponses.get(1).getFci();
+
                 doCalypsoReadWriteTransaction(poTransaction, fciData, true);
+
             } else {
                 logger.error("No Calypso transaction. SeResponse to Calypso selection was null.");
             }

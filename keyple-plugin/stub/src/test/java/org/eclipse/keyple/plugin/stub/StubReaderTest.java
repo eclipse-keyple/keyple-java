@@ -413,7 +413,7 @@ public class StubReaderTest {
         String poAid = "A000000291A000000191";
 
         ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
+                (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "");
 
         List<ApduRequest> poApduRequestList;
 
@@ -437,7 +437,7 @@ public class StubReaderTest {
         String poAid = "A000000291A000000191";
 
         IncreaseCmdBuild poIncreaseCmdBuild =
-                new IncreaseCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, 0);
+                new IncreaseCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, 0, "");
 
         List<ApduRequest> poApduRequestList;
 
@@ -461,11 +461,11 @@ public class StubReaderTest {
         String poAid = "A000000291A000000191";
 
         ReadRecordsCmdBuild poReadRecord1CmdBuild =
-                new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true);
+                new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, "");
 
         /* this command doesn't in the PartialSE */
         ReadRecordsCmdBuild poReadRecord2CmdBuild =
-                new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1E, (byte) 0x01, true);
+                new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1E, (byte) 0x01, true, "");
 
         List<ApduRequest> poApduRequestList1 = new ArrayList<ApduRequest>();
         poApduRequestList1.add(poReadRecord1CmdBuild.getApduRequest());
@@ -542,11 +542,11 @@ public class StubReaderTest {
         String poAid = "A000000291A000000191";
 
         ReadRecordsCmdBuild poReadRecord1CmdBuild =
-                new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true);
+                new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, "");
 
         /* this command doesn't in the PartialSE */
         ReadRecordsCmdBuild poReadRecord2CmdBuild =
-                new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1E, (byte) 0x01, true);
+                new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1E, (byte) 0x01, true, "");
 
         List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
 

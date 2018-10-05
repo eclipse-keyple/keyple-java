@@ -36,7 +36,7 @@ public class UpdateRecordCmdBuildTest {
         ByteBuffer request2_4 = ByteBuffer.wrap(new byte[] {(byte) 0x94, (byte) 0xDC, (byte) 0x01,
                 0x44, (byte) 0x05, 0x00, 0x01, 0x02, 0x03, 0x04});
         apduCommandBuilder = new UpdateRecordCmdBuild(PoRevision.REV2_4, (byte) 0x08, record_number,
-                newRecordData);
+                newRecordData, "TestRev2_4");
         ApduRequest = apduCommandBuilder.getApduRequest();
         Assert.assertEquals(request2_4, ApduRequest.getBytes());
     }
@@ -47,7 +47,7 @@ public class UpdateRecordCmdBuildTest {
         ByteBuffer request3_1 = ByteBuffer.wrap(new byte[] {(byte) 0x00, (byte) 0xDC, (byte) 0x01,
                 0x44, (byte) 0x05, 0x00, 0x01, 0x02, 0x03, 0x04});
         apduCommandBuilder = new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x08, record_number,
-                newRecordData);
+                newRecordData, "TestRev3_1");
         ApduRequest = apduCommandBuilder.getApduRequest();
         Assert.assertEquals(request3_1, ApduRequest.getBytes());
     }
@@ -58,7 +58,7 @@ public class UpdateRecordCmdBuildTest {
         ByteBuffer request3_2 = ByteBuffer.wrap(new byte[] {(byte) 0x00, (byte) 0xDC, (byte) 0x01,
                 0x44, (byte) 0x05, 0x00, 0x01, 0x02, 0x03, 0x04});
         apduCommandBuilder = new UpdateRecordCmdBuild(PoRevision.REV3_2, (byte) 0x08, record_number,
-                newRecordData);
+                newRecordData, "TestRev3_2");
         ApduRequest = apduCommandBuilder.getApduRequest();
         Assert.assertEquals(request3_2, ApduRequest.getBytes());
     }

@@ -30,11 +30,12 @@ public class UpdateRecordCmdBuild extends PoCommandBuilder
      * @param sfi the sfi to select
      * @param recordNumber the record number to update
      * @param newRecordData the new record data to write
+     * @param extraInfo extra information included in the logs (can be null or empty)
      * @throws java.lang.IllegalArgumentException - if record number is &lt; 1
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public UpdateRecordCmdBuild(PoRevision revision, byte sfi, byte recordNumber,
-            ByteBuffer newRecordData) throws IllegalArgumentException {
+            ByteBuffer newRecordData, String extraInfo) throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -47,7 +48,8 @@ public class UpdateRecordCmdBuild extends PoCommandBuilder
         byte p2 = (sfi == 0) ? (byte) 0x04 : (byte) ((byte) (sfi * 8) + 4);
 
         this.request = setApduRequest(cla, command, p1, p2, newRecordData, null);
-        /* Add helper subname (order in important, the request created above must exist */
-        this.addSubName(String.format("SFI: %02X", sfi));
+        if (extraInfo != null) {
+            this.addSubName(extraInfo);
+        }
     }
 }

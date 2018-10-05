@@ -31,11 +31,12 @@ public class IncreaseCmdBuild extends PoCommandBuilder
      * @param sfi SFI of the file to select or 00h for current EF
      * @param incValue Value to add to the counter (defined as a positive int &lt;= 16777215
      *        [FFFFFFh])
+     * @param extraInfo extra information included in the logs (can be null or empty)
      * @throws java.lang.IllegalArgumentException - if the decrement value is out of range
      * @throws java.lang.IllegalArgumentException - if the command is inconsistent
      */
-    public IncreaseCmdBuild(PoRevision revision, byte sfi, byte counterNumber, int incValue)
-            throws IllegalArgumentException {
+    public IncreaseCmdBuild(PoRevision revision, byte sfi, byte counterNumber, int incValue,
+            String extraInfo) throws IllegalArgumentException {
         super(command, null);
 
         if (revision != null) {
@@ -64,8 +65,8 @@ public class IncreaseCmdBuild extends PoCommandBuilder
 
         /* this is a case4 command, we set Le = 0 */
         this.request = setApduRequest(cla, command, p1, p2, incValueBuffer, (byte) 0);
-        /* Add helper subname (order in important, the request created above must exist */
-        this.addSubName(
-                String.format("SFI: %02X, counter: %d, inc: %d", sfi, counterNumber, incValue));
+        if (extraInfo != null) {
+            this.addSubName(extraInfo);
+        }
     }
 }
