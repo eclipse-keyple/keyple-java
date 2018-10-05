@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+
 @RunWith(MockitoJUnitRunner.class)
 public class CloseSessionRespParsTest {
 
@@ -67,19 +68,29 @@ public class CloseSessionRespParsTest {
         }
 
         {// Case Other
-            CloseSessionRespPars pars =
-                    new CloseSessionRespPars(new ApduResponse(apduResponseCaseThree, null));
-            Assert.assertEquals("", ByteBufferUtils.toHex(pars.getSignatureLo()));
+            try {
+                CloseSessionRespPars pars =
+                        new CloseSessionRespPars(new ApduResponse(apduResponseCaseThree, null));
+                Assert.fail();
+            } catch (IllegalArgumentException ex) {
+                /* expected case */
+            }
         }
     }
 
     @Test
     public void existingTestConverted() {
-        CloseSessionRespPars parser =
-                new CloseSessionRespPars(new ApduResponse(ByteBufferUtils.fromHex("9000h"), null));
-        // This assert wasn't passing
-        Assert.assertEquals("", ByteBufferUtils.toHex(parser.getSignatureLo()));
-        Assert.assertEquals("", ByteBufferUtils.toHex(parser.getPostponedData()));
+        try {
+            /*
+             * Close Secure Session with no output data is not supported for the moment (session
+             * abort case)
+             */
+            CloseSessionRespPars parser = new CloseSessionRespPars(
+                    new ApduResponse(ByteBufferUtils.fromHex("9000h"), null));
+            Assert.fail();
+        } catch (IllegalArgumentException ex) {
+            /* expected case */
+        }
     }
 
     @Test // Calypso / page 105 / Example command aborting a session:

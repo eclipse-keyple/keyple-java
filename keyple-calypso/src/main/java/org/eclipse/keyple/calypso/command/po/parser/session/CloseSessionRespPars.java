@@ -54,17 +54,21 @@ public class CloseSessionRespPars extends AbstractApduResponseParser {
      */
     public CloseSessionRespPars(ApduResponse response) {
         super(response);
-        parse(response.getBytes());
+        parse(response.getDataOut());
     }
 
     private void parse(ByteBuffer response) {
-        final int size = response.limit() - 2;
-
-        if (size == 8) {
+        if (response.limit() == 8) {
             signatureLo = ByteBufferUtils.subIndex(response, 4, 8);
             postponedData = ByteBufferUtils.subIndex(response, 0, 4);
-        } else if (size == 4) {
-            signatureLo = ByteBufferUtils.subIndex(response, 0, size);
+        } else if (response.limit() == 4) {
+            signatureLo = ByteBufferUtils.subIndex(response, 0, 4);
+        } else {
+            if (response.limit() != 0) {
+                throw new IllegalArgumentException(
+                        "Unexpected length in response to CloseSecureSession command: "
+                                + response.limit());
+            }
         }
     }
 

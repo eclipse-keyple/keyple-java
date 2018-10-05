@@ -29,7 +29,8 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractLocalReader extends AbstractObservableReader {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractLocalReader.class);
-
+    private static final ByteBuffer getResponseHackRequestBytes =
+            ByteBufferUtils.fromHex("00C0000000");
     private boolean logicalChannelIsOpen = false;
     private ByteBuffer aidCurrentlySelected;
     private ApduResponse fciDataSelected;
@@ -143,7 +144,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
          * build a get response command the actual length expected by the SE in the get response
          * command is handled in transmitApdu
          */
-        ByteBuffer getResponseHackRequestBytes = ByteBufferUtils.fromHex("00C0000000");
         if (logger.isTraceEnabled()) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;

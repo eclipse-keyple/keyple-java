@@ -22,11 +22,11 @@ public class OpenSession32RespPars extends AbstractOpenSessionRespPars {
     /**
      * Method to get a Secure Session from the response in revision 3.2 mode.
      *
-     * @param apduResponse the apdu response
+     * @param apduResponseData the apdu response data
      * @return a SecureSession
      */
-    SecureSession toSecureSession(ByteBuffer apduResponse) {
-        return createSecureSession(apduResponse);
+    SecureSession toSecureSession(ByteBuffer apduResponseData) {
+        return createSecureSession(apduResponseData);
     }
 
     public static SecureSession createSecureSession(ByteBuffer apduResponse) {

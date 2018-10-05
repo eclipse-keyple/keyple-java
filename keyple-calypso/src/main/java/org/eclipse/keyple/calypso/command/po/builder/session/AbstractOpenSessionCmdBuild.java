@@ -36,6 +36,9 @@ public abstract class AbstractOpenSessionCmdBuild extends PoCommandBuilder {
     public static AbstractOpenSessionCmdBuild create(PoRevision revision, byte debitKeyIndex,
             ByteBuffer sessionTerminalChallenge, byte sfi, byte recordNb, String extraInfo) {
         switch (revision) {
+            case REV1_0:
+                return new OpenSession10CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
+                        recordNb, extraInfo);
             case REV2_4:
                 return new OpenSession24CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
                         recordNb, extraInfo);

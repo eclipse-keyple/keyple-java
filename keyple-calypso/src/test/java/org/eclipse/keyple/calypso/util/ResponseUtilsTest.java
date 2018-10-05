@@ -277,17 +277,4 @@ public class ResponseUtilsTest {
         Assert.assertEquals(SecureSessionExpectedCaseThree.getChallengeTransactionCounter(),
                 SecureSessionTestedCaseThree.getChallengeTransactionCounter());
     }
-
-    @Test
-    public void TestToKVCRev2() {
-        ByteBuffer apduResponse = ByteBuffer
-                .wrap(new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14, (byte) 0x53});
-        byte KVCRev2Expected = (byte) 0x7E;
-        byte KVCRev2Tested = AbstractOpenSessionRespPars.toKVCRev2(apduResponse);
-
-        Assert.assertEquals(KVCRev2Expected, KVCRev2Tested);
-
-
-    }
-
 }

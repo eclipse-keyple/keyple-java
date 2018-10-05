@@ -20,18 +20,18 @@ public class OpenSession31RespPars extends AbstractOpenSessionRespPars {
     }
 
     @Override
-    SecureSession toSecureSession(ByteBuffer apduResponse) {
+    SecureSession toSecureSession(ByteBuffer apduResponseData) {
         SecureSession secureSession;
-        boolean previousSessionRatified = (apduResponse.get(4) == (byte) 0x00);
+        boolean previousSessionRatified = (apduResponseData.get(4) == (byte) 0x00);
         boolean manageSecureSessionAuthorized = false;
 
-        byte kif = apduResponse.get(5);
-        byte kvc = apduResponse.get(6);
-        int dataLength = apduResponse.get(7);
-        ByteBuffer data = ByteBufferUtils.subIndex(apduResponse, 8, 8 + dataLength);
+        byte kif = apduResponseData.get(5);
+        byte kvc = apduResponseData.get(6);
+        int dataLength = apduResponseData.get(7);
+        ByteBuffer data = ByteBufferUtils.subIndex(apduResponseData, 8, 8 + dataLength);
 
-        return new SecureSession(ByteBufferUtils.subIndex(apduResponse, 0, 3),
-                ByteBufferUtils.subIndex(apduResponse, 3, 4), previousSessionRatified,
-                manageSecureSessionAuthorized, kif, kvc, data, apduResponse);
+        return new SecureSession(ByteBufferUtils.subIndex(apduResponseData, 0, 3),
+                ByteBufferUtils.subIndex(apduResponseData, 3, 4), previousSessionRatified,
+                manageSecureSessionAuthorized, kif, kvc, data, apduResponseData);
     }
 }

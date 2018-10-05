@@ -790,12 +790,22 @@ public class PoSecureSession {
     /**
      * Advanced variant of processClosing in which the list of expected responses is determined from
      * previous reading operations.
-     * 
-     * @param poModificationCommands
-     * @param communicationMode
-     * @param closeSeChannel
-     * @return
-     * @throws KeypleReaderException
+     *
+     * @param poModificationCommands a list of commands that can modify the PO memory content
+     * @param communicationMode the communication mode. If the communication mode is
+     *        CONTACTLESS_MODE, a ratification command will be generated and sent to the PO after
+     *        the Close Session command; the ratification will not be requested in the Close Session
+     *        command. On the contrary, if the communication mode is CONTACTS_MODE, no ratification
+     *        command will be sent to the PO and ratification will be requested in the Close Session
+     *        command
+     * @param closeSeChannel if true the SE channel of the PO reader must be closed after the last
+     *        command
+     * @return SeResponse close session response
+     * @throws KeypleReaderException the IO reader exception This method is deprecated.
+     *         <ul>
+     *         <li>The argument of the ratification command is replaced by an indication of the PO
+     *         communication mode.</li>
+     *         </ul>
      */
     public SeResponse processClosing(List<PoModificationCommand> poModificationCommands,
             CommunicationMode communicationMode, boolean closeSeChannel)
