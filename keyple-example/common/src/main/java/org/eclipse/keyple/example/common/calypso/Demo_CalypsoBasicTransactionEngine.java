@@ -21,7 +21,7 @@ import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.Profiler;
@@ -153,14 +153,14 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
         int i;
         logger.info("===== " + message);
         logger.info("* Request: AID = {}, keepChannelOpenFlag = {}, protocolFlag = {}",
-                ByteBufferUtils
+                ByteArrayUtils
                         .toHex(((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect()),
                 seRequest.isKeepChannelOpen(), seRequest.getProtocolFlag());
         List<ApduRequest> apduRequests = seRequest.getApduRequests();
         i = 0;
         if (apduRequests != null && apduRequests.size() > 0) {
             for (ApduRequest apduRequest : apduRequests) {
-                logger.info("COMMAND#" + i + ": " + ByteBufferUtils.toHex(apduRequest.getBytes()));
+                logger.info("COMMAND#" + i + ": " + ByteArrayUtils.toHex(apduRequest.getBytes()));
                 i++;
             }
         } else {
@@ -176,13 +176,13 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
             fci = seResponse.getFci();
             List<ApduResponse> apduResponses = seResponse.getApduResponses();
             logger.info("Atr = {}, Fci = {}",
-                    atr == null ? "null" : ByteBufferUtils.toHex(atr.getBytes()),
-                    fci == null ? "null" : ByteBufferUtils.toHex(fci.getBytes()));
+                    atr == null ? "null" : ByteArrayUtils.toHex(atr.getBytes()),
+                    fci == null ? "null" : ByteArrayUtils.toHex(fci.getBytes()));
             if (apduResponses.size() > 0) {
                 i = 0;
                 for (ApduResponse apduResponse : apduResponses) {
                     logger.info("RESPONSE#" + i + ": "
-                            + ByteBufferUtils.toHex(apduResponse.getDataOut()) + ", SW1SW2: "
+                            + ByteArrayUtils.toHex(apduResponse.getDataOut()) + ", SW1SW2: "
                             + Integer.toHexString(apduResponse.getStatusCode() & 0xFFFF));
                     i++;
                 }
@@ -350,7 +350,7 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
 
             /* fake application seRequest preparation, addition to the list */
             SeRequest seRequest = new SeRequest(
-                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(poFakeAid1)), null, true);
+                    new SeRequest.AidSelector(ByteArrayUtils.fromHex(poFakeAid1)), null, true);
             selectionRequests.add(seRequest);
 
             /*
@@ -363,15 +363,15 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
 
             /* AID based selection */
             seRequest = new SeRequest(
-                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(poCalypsoAid)),
+                    new SeRequest.AidSelector(ByteArrayUtils.fromHex(poCalypsoAid)),
                     requestToExecuteBeforeSession, true,
                     CalypsoBasicInfoAndSampleCommands.selectApplicationSuccessfulStatusCodes);
 
             selectionRequests.add(seRequest);
 
             /* fake application seRequest preparation, addition to the list */
-            seRequest = new SeRequest(
-                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(poFakeAid2)), null, true);
+            seRequest = new SeRequest(new SeRequest.AidSelector(ByteArrayUtils.fromHex(poFakeAid2)),
+                    null, true);
             selectionRequests.add(seRequest);
 
 

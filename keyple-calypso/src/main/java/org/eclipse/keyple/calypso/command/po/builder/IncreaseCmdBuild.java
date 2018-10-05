@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.po.builder;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.po.*;
 
 /**
@@ -54,17 +54,17 @@ public class IncreaseCmdBuild extends PoCommandBuilder
         }
 
         // convert the integer value into a 3-byte buffer
-        ByteBuffer incValueBuffer = ByteBuffer.allocate(3);
-        incValueBuffer.put(0, (byte) ((incValue >> 16) & 0xFF));
-        incValueBuffer.put(1, (byte) ((incValue >> 8) & 0xFF));
-        incValueBuffer.put(2, (byte) (incValue & 0xFF));
+        byte[] incValueBuffer = new byte[3];
+        incValueBuffer[0] = (byte) ((incValue >> 16) & 0xFF);
+        incValueBuffer[1] = (byte) ((incValue >> 8) & 0xFF);
+        incValueBuffer[2] = (byte) (incValue & 0xFF);
 
         byte cla = PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00;
         byte p1 = counterNumber;
         byte p2 = (byte) (sfi * 8);
 
         /* this is a case4 command, we set Le = 0 */
-        this.request = setApduRequest(cla, command, p1, p2, incValueBuffer, (byte) 0);
+        this.request = setApduRequest(cla, command, p1, p2, incValueBuffer, (byte) 0x00);
         if (extraInfo != null) {
             this.addSubName(extraInfo);
         }

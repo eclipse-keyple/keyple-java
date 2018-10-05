@@ -9,12 +9,12 @@
 package org.eclipse.keyple.calypso.command.po.parser.session;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
-import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
  * Open session response parser. See specs: Calypso / page 100 / 9.5.1 - Open secure session
@@ -84,15 +84,15 @@ public abstract class AbstractOpenSessionRespPars extends AbstractApduResponsePa
         }
     }
 
-    abstract SecureSession toSecureSession(ByteBuffer apduResponseData);
+    abstract SecureSession toSecureSession(byte[] apduResponseData);
 
-    public ByteBuffer getPoChallenge() {
+    public byte[] getPoChallenge() {
         return secureSession.getChallengeRandomNumber();
     }
 
 
     public int getTransactionCounterValue() {
-        return secureSession.getChallengeTransactionCounter().duplicate()
+        return ByteBuffer.wrap(secureSession.getChallengeTransactionCounter())
                 .order(java.nio.ByteOrder.LITTLE_ENDIAN).getInt();
     }
 
@@ -112,9 +112,9 @@ public abstract class AbstractOpenSessionRespPars extends AbstractApduResponsePa
         return secureSession.getKVC();
     }
 
-    public ByteBuffer getRecordDataRead() {
-        ByteBuffer secureSessionData = secureSession.getSecureSessionData();
-        return ByteBufferUtils.subIndex(secureSessionData, 0, secureSessionData.limit());
+    public byte[] getRecordDataRead() {
+        byte[] secureSessionData = secureSession.getSecureSessionData();
+        return Arrays.copyOfRange(secureSessionData, 0, secureSessionData.length);
     }
 
     /**
@@ -123,10 +123,10 @@ public abstract class AbstractOpenSessionRespPars extends AbstractApduResponsePa
     public static class SecureSession {
 
         /** Challenge transaction counter */
-        private final ByteBuffer challengeTransactionCounter;
+        private final byte[] challengeTransactionCounter;
 
         /** Challenge random number */
-        private final ByteBuffer challengeRandomNumber;
+        private final byte[] challengeRandomNumber;
 
         /** The previous session ratified boolean. */
         private final boolean previousSessionRatified;
@@ -141,10 +141,10 @@ public abstract class AbstractOpenSessionRespPars extends AbstractApduResponsePa
         private final Byte kvc;
 
         /** The original data. */
-        private final ByteBuffer originalData;
+        private final byte[] originalData;
 
         /** The secure session data. */
-        private final ByteBuffer secureSessionData;
+        private final byte[] secureSessionData;
 
         /**
          * Instantiates a new SecureSession for a Calypso application revision 3
@@ -160,10 +160,9 @@ public abstract class AbstractOpenSessionRespPars extends AbstractApduResponsePa
          * @param secureSessionData the secure session data from the response of open secure session
          *        APDU command
          */
-        public SecureSession(ByteBuffer challengeTransactionCounter,
-                ByteBuffer challengeRandomNumber, boolean previousSessionRatified,
-                boolean manageSecureSessionAuthorized, byte kif, byte kvc, ByteBuffer originalData,
-                ByteBuffer secureSessionData) {
+        public SecureSession(byte[] challengeTransactionCounter, byte[] challengeRandomNumber,
+                boolean previousSessionRatified, boolean manageSecureSessionAuthorized, byte kif,
+                byte kvc, byte[] originalData, byte[] secureSessionData) {
             this.challengeTransactionCounter = challengeTransactionCounter;
             this.challengeRandomNumber = challengeRandomNumber;
             this.previousSessionRatified = previousSessionRatified;
@@ -187,10 +186,9 @@ public abstract class AbstractOpenSessionRespPars extends AbstractApduResponsePa
          * @param secureSessionData the secure session data from the response of open secure session
          *        APDU command
          */
-        public SecureSession(ByteBuffer challengeTransactionCounter,
-                ByteBuffer challengeRandomNumber, boolean previousSessionRatified,
-                boolean manageSecureSessionAuthorized, Byte kvc, ByteBuffer originalData,
-                ByteBuffer secureSessionData) {
+        public SecureSession(byte[] challengeTransactionCounter, byte[] challengeRandomNumber,
+                boolean previousSessionRatified, boolean manageSecureSessionAuthorized, Byte kvc,
+                byte[] originalData, byte[] secureSessionData) {
             this.challengeTransactionCounter = challengeTransactionCounter;
             this.challengeRandomNumber = challengeRandomNumber;
             this.previousSessionRatified = previousSessionRatified;
@@ -201,11 +199,11 @@ public abstract class AbstractOpenSessionRespPars extends AbstractApduResponsePa
             this.secureSessionData = secureSessionData;
         }
 
-        public ByteBuffer getChallengeTransactionCounter() {
+        public byte[] getChallengeTransactionCounter() {
             return challengeTransactionCounter;
         }
 
-        public ByteBuffer getChallengeRandomNumber() {
+        public byte[] getChallengeRandomNumber() {
             return challengeRandomNumber;
         }
 
@@ -250,7 +248,7 @@ public abstract class AbstractOpenSessionRespPars extends AbstractApduResponsePa
          *
          * @return the original data
          */
-        public ByteBuffer getOriginalData() {
+        public byte[] getOriginalData() {
             return originalData;
         }
 
@@ -259,7 +257,7 @@ public abstract class AbstractOpenSessionRespPars extends AbstractApduResponsePa
          *
          * @return the secure session data
          */
-        public ByteBuffer getSecureSessionData() {
+        public byte[] getSecureSessionData() {
             return secureSessionData;
         }
     }

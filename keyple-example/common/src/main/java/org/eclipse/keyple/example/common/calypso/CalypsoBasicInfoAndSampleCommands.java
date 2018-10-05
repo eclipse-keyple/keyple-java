@@ -14,7 +14,7 @@ import java.util.Set;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.AppendRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
  * Helper class to provide specific elements to handle Calypso cards.
@@ -71,7 +71,7 @@ public class CalypsoBasicInfoAndSampleCommands {
 
     /** Event Log append record */
     public static AppendRecordCmdBuild poAppendRecordCmd_EventLog = new AppendRecordCmdBuild(
-            PoRevision.REV3_1, SFI_EventLog, ByteBufferUtils.fromHex(eventLog_dataFill),
+            PoRevision.REV3_1, SFI_EventLog, ByteArrayUtils.fromHex(eventLog_dataFill),
             String.format("EventLog (SFI=%02X)", SFI_EventLog));
 
 }

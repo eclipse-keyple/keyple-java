@@ -154,14 +154,14 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * @throws KeypleIOReaderException if the transmission failed
      */
     @Override
-    protected final ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
+    protected final byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         ResponseAPDU apduResponseData;
         try {
             apduResponseData = channel.transmit(new CommandAPDU(apduIn));
         } catch (CardException e) {
             throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
         }
-        return ByteBuffer.wrap(apduResponseData.getBytes());
+        return apduResponseData.getBytes();
     }
 
     /**
@@ -353,8 +353,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
     }
 
     @Override
-    protected final ByteBuffer getATR() {
-        return ByteBuffer.wrap(card.getATR().getBytes());
+    protected final byte[] getATR() {
+        return card.getATR().getBytes();
     }
 
     /**

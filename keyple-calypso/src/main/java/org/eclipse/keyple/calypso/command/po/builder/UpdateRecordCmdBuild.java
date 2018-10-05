@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.po.builder;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.po.*;
 
 // TODO: Auto-generated Javadoc
@@ -35,7 +35,7 @@ public class UpdateRecordCmdBuild extends PoCommandBuilder
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public UpdateRecordCmdBuild(PoRevision revision, byte sfi, byte recordNumber,
-            ByteBuffer newRecordData, String extraInfo) throws IllegalArgumentException {
+            byte[] newRecordData, String extraInfo) throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;

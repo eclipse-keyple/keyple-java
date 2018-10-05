@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.po.builder.session;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 
@@ -24,7 +24,7 @@ public class OpenSession24CmdBuild extends AbstractOpenSessionCmdBuild {
      * @throws java.lang.IllegalArgumentException - if key index is 0 (rev 2.4)
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
-    public OpenSession24CmdBuild(byte keyIndex, ByteBuffer samChallenge, byte sfiToSelect,
+    public OpenSession24CmdBuild(byte keyIndex, byte[] samChallenge, byte sfiToSelect,
             byte recordNumberToRead, String extraInfo) throws IllegalArgumentException {
         super(PoRevision.REV2_4);
 

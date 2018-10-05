@@ -16,7 +16,7 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.seproxy.ApduRequest;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
  * Helper class to provide specific information to handle Hoplink cards.
@@ -53,7 +53,7 @@ public class HoplinkInfoAndSampleCommands {
     /** T2 Usage update record */
     public static UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
             new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
-                    ByteBufferUtils.fromHex(t2UsageRecord1_dataFill), "T2 Usage (SFI=1Ah)");
+                    ByteArrayUtils.fromHex(t2UsageRecord1_dataFill), "T2 Usage (SFI=1Ah)");
 
     /**
      * Build an ApduRequest list including:

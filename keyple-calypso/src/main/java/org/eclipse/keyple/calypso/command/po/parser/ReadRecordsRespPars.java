@@ -8,14 +8,10 @@
 
 package org.eclipse.keyple.calypso.command.po.parser;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
  * Read Records (00B2) response parser. See specs: Calypso / page 89 / 9.4.7 Read Records
@@ -68,19 +64,19 @@ public class ReadRecordsRespPars extends AbstractApduResponseParser {
      * @param apduResponse the apdu response
      * @return a Maps of Records
      */
-    private static List<Record> parseRecords(ByteBuffer apduResponse) {
+    private static List<Record> parseRecords(byte[] apduResponse) {
         List<Record> records = new ArrayList<Record>();
         int i = 0;
-        while (i < apduResponse.limit()) {
-            if (i + 2 + apduResponse.get(i + 1) > apduResponse.limit() - 1) {
-                records.add(new Record(apduResponse.get(i),
-                        ByteBufferUtils.subIndex(apduResponse, i + 2, apduResponse.limit() - 1)));
+        while (i < apduResponse.length) {
+            if (i + 2 + apduResponse[i + 1] > apduResponse.length - 1) {
+                records.add(new Record(apduResponse[i],
+                        Arrays.copyOfRange(apduResponse, i + 2, apduResponse.length - 1)));
             } else {
-                records.add(new Record(apduResponse.get(i), ByteBufferUtils.subIndex(apduResponse,
-                        i + 2, i + 2 + apduResponse.get(i + 1))));
+                records.add(new Record(apduResponse[i],
+                        Arrays.copyOfRange(apduResponse, i + 2, i + 2 + apduResponse[i + 1])));
             }
             // add data length to iterator
-            i += apduResponse.get(i + 1);
+            i += apduResponse[i + 1];
             // add byte of data length to iterator
             i++;
             // add byte of num record to iterator
@@ -91,13 +87,17 @@ public class ReadRecordsRespPars extends AbstractApduResponseParser {
 
     // fclairamb: I might be missing something. The doc says:
     // <Record Number:1 byte> < Length:1 byte> <Record data: Length bytes>
-    private static List<Record> parseRecordsV2(ByteBuffer apdu) {
+    private static List<Record> parseRecordsV2(byte[] apdu) {
         List<Record> records = new ArrayList<Record>();
 
-        while (apdu.hasRemaining()) {
-            byte recordNb = apdu.get();
-            byte len = apdu.get();
-            records.add(new Record(recordNb, ByteBufferUtils.subLen(apdu, 0, len)));
+        int apduLen = apdu.length;
+        int i = 0;
+        while (apduLen > 0) {
+            byte recordNb = apdu[i++];
+            byte len = apdu[i++];
+            records.add(new Record(recordNb, Arrays.copyOfRange(apdu, i, len)));
+            i = i + len;
+            apduLen = apduLen - 2 - len;
         }
 
         return records;
@@ -123,7 +123,7 @@ public class ReadRecordsRespPars extends AbstractApduResponseParser {
     public static class Record {
 
         /** The data. */
-        private final ByteBuffer data;
+        private final byte[] data;
 
         /** The record number. */
         private final int recordNumber;
@@ -134,7 +134,7 @@ public class ReadRecordsRespPars extends AbstractApduResponseParser {
          * @param recordNumber the record number
          * @param data the data
          */
-        Record(int recordNumber, ByteBuffer data) {
+        Record(int recordNumber, byte[] data) {
             super();
             this.data = data;
             this.recordNumber = recordNumber;
@@ -145,7 +145,7 @@ public class ReadRecordsRespPars extends AbstractApduResponseParser {
          *
          * @return the data
          */
-        public ByteBuffer getData() {
+        public byte[] getData() {
             return data;
         }
 
@@ -160,8 +160,7 @@ public class ReadRecordsRespPars extends AbstractApduResponseParser {
 
         @Override
         public String toString() {
-            return String.format("Record{nb=%d,data=%s}", recordNumber,
-                    ByteBufferUtils.toHex(data));
+            return String.format("Record{nb=%d,data=%s}", recordNumber, ByteArrayUtils.toHex(data));
         }
     }
 }

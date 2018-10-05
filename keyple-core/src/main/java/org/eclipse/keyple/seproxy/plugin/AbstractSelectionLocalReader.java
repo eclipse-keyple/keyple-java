@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.seproxy.plugin;
 
-import java.nio.ByteBuffer;
 import java.util.Set;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ApduResponse;
@@ -17,7 +16,7 @@ import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
 import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +41,7 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
      *
      * @return ATR returned by the SE or reconstructed by the reader (contactless)
      */
-    protected abstract ByteBuffer getATR();
+    protected abstract byte[] getATR();
 
     /**
      * Tells if the physical channel is open or not
@@ -69,10 +68,10 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
      * @throws KeypleIOReaderException - if an IO exception occurred
      * @throws KeypleApplicationSelectionException - if the application selection is not successful
      */
-    protected final ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
+    protected final byte[][] openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Short> successfulSelectionStatusCodes) throws KeypleChannelStateException,
             KeypleApplicationSelectionException, KeypleIOReaderException {
-        ByteBuffer[] atrAndFci = new ByteBuffer[2];
+        byte[][] atrAndFci = new byte[2][];
 
         if (!isLogicalChannelOpen()) {
             /*
@@ -91,31 +90,30 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
         atrAndFci[0] = getATR();
         if (logger.isTraceEnabled()) {
             logger.trace("[{}] openLogicalChannelAndSelect => ATR: {}", this.getName(),
-                    ByteBufferUtils.toHex(atrAndFci[0]));
+                    ByteArrayUtils.toHex(atrAndFci[0]));
         }
         /* selector may be null, in this case we consider the logical channel open */
         if (selector != null) {
             if (selector instanceof SeRequest.AidSelector) {
-                ByteBuffer aid = ((SeRequest.AidSelector) selector).getAidToSelect();
+                byte[] aid = ((SeRequest.AidSelector) selector).getAidToSelect();
                 if (aid != null) {
                     if (logger.isTraceEnabled()) {
                         logger.trace(
                                 "[{}] openLogicalChannelAndSelect => Select Application with AID = {}",
-                                this.getName(), ByteBufferUtils.toHex(aid));
+                                this.getName(), ByteArrayUtils.toHex(aid));
                     }
                     /*
                      * build a get response command the actual length expected by the SE in the get
                      * response command is handled in transmitApdu
                      */
-                    ByteBuffer selectApplicationCommand = ByteBuffer.allocate(6 + aid.limit());
-                    selectApplicationCommand.put((byte) 0x00); // CLA
-                    selectApplicationCommand.put((byte) 0xA4); // INS
-                    selectApplicationCommand.put((byte) 0x04); // P1
-                    selectApplicationCommand.put((byte) 0x00); // P2
-                    selectApplicationCommand.put((byte) (aid.limit())); // Lc
-                    selectApplicationCommand.put(aid); // data
-                    selectApplicationCommand.put((byte) 0x00); // Le
-                    selectApplicationCommand.position(0);
+                    byte[] selectApplicationCommand = new byte[6 + aid.length];
+                    selectApplicationCommand[0] = (byte) 0x00; // CLA
+                    selectApplicationCommand[1] = (byte) 0xA4; // INS
+                    selectApplicationCommand[2] = (byte) 0x04; // P1
+                    selectApplicationCommand[3] = (byte) 0x00; // P2
+                    selectApplicationCommand[4] = (byte) (aid.length); // Lc
+                    System.arraycopy(aid, 0, selectApplicationCommand, 5, aid.length); // data
+                    selectApplicationCommand[5 + aid.length] = (byte) 0x00; // Le
 
                     /*
                      * we use here processApduRequest to manage case 4 hack the successful status

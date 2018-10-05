@@ -9,12 +9,11 @@
 package org.eclipse.keyple.calypso.command.po.parser.session;
 
 
-import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
-import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
  * Close Secure Session (008E) response parser. See specs: Calypso / page 104 / 9.5.2 - Close Secure
@@ -42,10 +41,10 @@ public class CloseSessionRespPars extends AbstractApduResponseParser {
     }
 
     /** The signatureLo. */
-    private ByteBuffer signatureLo;
+    private byte[] signatureLo;
 
     /** The postponed data. */
-    private ByteBuffer postponedData;
+    private byte[] postponedData;
 
     /**
      * Instantiates a new CloseSessionRespPars from the response.
@@ -57,26 +56,26 @@ public class CloseSessionRespPars extends AbstractApduResponseParser {
         parse(response.getDataOut());
     }
 
-    private void parse(ByteBuffer response) {
-        if (response.limit() == 8) {
-            signatureLo = ByteBufferUtils.subIndex(response, 4, 8);
-            postponedData = ByteBufferUtils.subIndex(response, 0, 4);
-        } else if (response.limit() == 4) {
-            signatureLo = ByteBufferUtils.subIndex(response, 0, 4);
+    private void parse(byte[] response) {
+        if (response.length == 8) {
+            signatureLo = Arrays.copyOfRange(response, 4, 8);
+            postponedData = Arrays.copyOfRange(response, 0, 4);
+        } else if (response.length == 4) {
+            signatureLo = Arrays.copyOfRange(response, 0, 4);
         } else {
-            if (response.limit() != 0) {
+            if (response.length != 0) {
                 throw new IllegalArgumentException(
                         "Unexpected length in response to CloseSecureSession command: "
-                                + response.limit());
+                                + response.length);
             }
         }
     }
 
-    public ByteBuffer getSignatureLo() {
+    public byte[] getSignatureLo() {
         return signatureLo;
     }
 
-    public ByteBuffer getPostponedData() {
+    public byte[] getPostponedData() {
         return postponedData;
     }
 }

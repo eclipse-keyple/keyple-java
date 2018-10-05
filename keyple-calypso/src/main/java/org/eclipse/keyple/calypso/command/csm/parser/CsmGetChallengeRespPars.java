@@ -9,7 +9,7 @@
 package org.eclipse.keyple.calypso.command.csm.parser;
 
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 
@@ -31,7 +31,7 @@ public class CsmGetChallengeRespPars extends AbstractApduResponseParser {
      *
      * @return the challenge
      */
-    public ByteBuffer getChallenge() {
+    public byte[] getChallenge() {
         return isSuccessful() ? response.getDataOut() : null;
     }
 }

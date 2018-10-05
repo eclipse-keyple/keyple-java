@@ -8,12 +8,11 @@
 
 package org.eclipse.keyple.plugin.stub;
 
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 public abstract class StubSecureElement {
 
@@ -22,7 +21,7 @@ public abstract class StubSecureElement {
      * 
      * @return Secured Element ATR
      */
-    public abstract ByteBuffer getATR();
+    public abstract byte[] getATR();
 
 
     boolean isPhysicalChannelOpen = false;
@@ -77,18 +76,18 @@ public abstract class StubSecureElement {
      * @return APDU response
      * @throws KeypleIOReaderException if the transmission fails
      */
-    public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
+    public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
 
         if (apduIn == null) {
             return null;
         }
 
         // convert apduIn to hexa
-        String hexApdu = ByteBufferUtils.toHex(apduIn);
+        String hexApdu = ByteArrayUtils.toHex(apduIn);
 
         // return matching hexa response if found
         if (hexCommands.containsKey(hexApdu)) {
-            return ByteBufferUtils.fromHex(hexCommands.get(hexApdu));
+            return ByteArrayUtils.fromHex(hexCommands.get(hexApdu));
         }
 
         // throw a KeypleIOReaderException if not found

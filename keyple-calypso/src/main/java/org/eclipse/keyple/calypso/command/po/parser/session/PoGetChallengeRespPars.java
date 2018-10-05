@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.po.parser.session;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 
@@ -26,7 +26,7 @@ public class PoGetChallengeRespPars extends AbstractApduResponseParser {
         super(response);
     }
 
-    public ByteBuffer getPoChallenge() {
+    public byte[] getPoChallenge() {
         return getApduResponse().getDataOut();
     }
 }

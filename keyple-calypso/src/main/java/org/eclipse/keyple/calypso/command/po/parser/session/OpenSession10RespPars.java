@@ -8,10 +8,9 @@
 
 package org.eclipse.keyple.calypso.command.po.parser.session;
 
-import java.nio.ByteBuffer;
+import java.util.Arrays;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.seproxy.ApduResponse;
-import org.eclipse.keyple.util.ByteBufferUtils;
 
 public class OpenSession10RespPars extends AbstractOpenSessionRespPars {
 
@@ -20,11 +19,11 @@ public class OpenSession10RespPars extends AbstractOpenSessionRespPars {
     }
 
     @Override
-    SecureSession toSecureSession(ByteBuffer apduResponseData) {
+    SecureSession toSecureSession(byte[] apduResponseData) {
         return createSecureSession(apduResponseData);
     }
 
-    public static SecureSession createSecureSession(ByteBuffer apduResponseData) {
+    public static SecureSession createSecureSession(byte[] apduResponseData) {
         boolean previousSessionRatified = true;
 
         /**
@@ -40,15 +39,15 @@ public class OpenSession10RespPars extends AbstractOpenSessionRespPars {
          * </ul>
          *
          */
-        if (apduResponseData.limit() == 4 || apduResponseData.limit() == 33) {
+        if (apduResponseData.length == 4 || apduResponseData.length == 33) {
             previousSessionRatified = false;
         } else {
             previousSessionRatified = true;
         }
 
         /* KVC doesn't exist and is set to null for this type of PO */
-        return new SecureSession(ByteBufferUtils.subIndex(apduResponseData, 1, 4),
-                ByteBufferUtils.subIndex(apduResponseData, 4, 5), previousSessionRatified, false,
-                null, null, apduResponseData);
+        return new SecureSession(Arrays.copyOfRange(apduResponseData, 1, 4),
+                Arrays.copyOfRange(apduResponseData, 4, 5), previousSessionRatified, false, null,
+                null, apduResponseData);
     }
 }

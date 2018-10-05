@@ -14,7 +14,7 @@ import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
  * This code demonstrates the multi-protocols capability of the Keyple SeProxy:
@@ -86,7 +86,7 @@ public class Demo_SeProtocolDetectionEngine implements ObservableReader.ReaderOb
             Set<SeRequest> poRequests = new LinkedHashSet<SeRequest>();
 
             ApduRequest pcscContactlessReaderGetData =
-                    new ApduRequest(ByteBufferUtils.fromHex("FFCA000000"), false);
+                    new ApduRequest(ByteArrayUtils.fromHex("FFCA000000"), false);
             List<ApduRequest> pcscContactlessReaderGetDataList = new ArrayList<ApduRequest>();
             pcscContactlessReaderGetDataList.add(pcscContactlessReaderGetData);
 
@@ -106,7 +106,7 @@ public class Demo_SeProtocolDetectionEngine implements ObservableReader.ReaderOb
                         // list
                         poRequests.add(new SeRequest(
                                 new SeRequest.AidSelector(
-                                        ByteBufferUtils.fromHex(HoplinkInfoAndSampleCommands.AID)),
+                                        ByteArrayUtils.fromHex(HoplinkInfoAndSampleCommands.AID)),
                                 poApduRequestList, false, protocol));
                         break;
                     case PROTOCOL_ISO14443_3A:
@@ -149,9 +149,9 @@ public class Demo_SeProtocolDetectionEngine implements ObservableReader.ReaderOb
                     List<ApduResponse> poApduResponseList = seResponse.getApduResponses();
                     for (int i = 0; i < poApduResponseList.size(); i++) {
                         System.out.println(" CMD: "
-                                + ByteBufferUtils.toHex(poApduRequestList.get(i).getBytes()));
+                                + ByteArrayUtils.toHex(poApduRequestList.get(i).getBytes()));
                         System.out.println("RESP: "
-                                + ByteBufferUtils.toHex(poApduResponseList.get(i).getBytes()));
+                                + ByteArrayUtils.toHex(poApduResponseList.get(i).getBytes()));
                     }
                 }
                 requestIndex++;

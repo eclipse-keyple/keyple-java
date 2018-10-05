@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.calypso.command.po.parser;
 
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
@@ -63,10 +62,9 @@ public class DecreaseRespPars extends AbstractApduResponseParser {
      *         command response.
      */
     public int getNewValue() throws IllegalStateException {
-        ByteBuffer newValueBuffer = getApduResponse().getDataOut();
-        if (newValueBuffer.limit() == 3) {
-            return (newValueBuffer.get(0) << 16) + (newValueBuffer.get(1) << 8)
-                    + newValueBuffer.get(2);
+        byte[] newValueBuffer = getApduResponse().getDataOut();
+        if (newValueBuffer.length == 3) {
+            return (newValueBuffer[0] << 16) + (newValueBuffer[1] << 8) + newValueBuffer[2];
         } else {
             throw new IllegalStateException(
                     "No counter value available in response to the Decrease command.");

@@ -29,7 +29,7 @@ import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessi
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,10 +76,9 @@ public class PoSecureSession {
     private final static int OFFSET_DATA = 5;
 
     /** Ratification command APDU for rev <= 2.4 */
-    private final static ByteBuffer ratificationCmdApduLegacy =
-            ByteBufferUtils.fromHex("94B2000000");
+    private final static byte[] ratificationCmdApduLegacy = ByteArrayUtils.fromHex("94B2000000");
     /** Ratification command APDU for rev > 2.4 */
-    private final static ByteBuffer ratificationCmdApdu = ByteBufferUtils.fromHex("00B2000000");
+    private final static byte[] ratificationCmdApdu = ByteArrayUtils.fromHex("00B2000000");
 
     private static final Logger logger = LoggerFactory.getLogger(PoSecureSession.class);
 
@@ -93,11 +92,11 @@ public class PoSecureSession {
     private final EnumMap<CsmSettings, Byte> csmSetting =
             new EnumMap<CsmSettings, Byte>(CsmSettings.class);
     /** The PO serial number extracted from FCI */
-    private final ByteBuffer poCalypsoInstanceSerial;
+    private final byte[] poCalypsoInstanceSerial;
     /** the type of the notified event. */
     private SessionState currentState;
     /** Selected AID of the Calypso PO. */
-    private ByteBuffer poCalypsoInstanceAid;
+    private byte[] poCalypsoInstanceAid;
     /** The PO Calypso Revision. */
     private PoRevision poRevision = PoRevision.REV3_1;
     /** The PO Secure Session final status according to mutual authentication result */
@@ -109,7 +108,7 @@ public class PoSecureSession {
     /** The previous PO Secure Session ratification status */
     private boolean wasRatified;
     /** The data read at opening */
-    private ByteBuffer openRecordDataRead;
+    private byte[] openRecordDataRead;
 
     /**
      * Instantiates a new po plain secure session.
@@ -212,8 +211,8 @@ public class PoSecureSession {
 
         if (logger.isDebugEnabled()) {
             logger.debug("processOpening => Identification: DFNAME = {}, SERIALNUMBER = {}",
-                    ByteBufferUtils.toHex(poCalypsoInstanceAid),
-                    ByteBufferUtils.toHex(poCalypsoInstanceSerial));
+                    ByteArrayUtils.toHex(poCalypsoInstanceAid),
+                    ByteArrayUtils.toHex(poCalypsoInstanceSerial));
         }
 
         /* Build the CSM Select Diversifier command to provide the CSM with the PO S/N */
@@ -250,16 +249,16 @@ public class PoSecureSession {
         logger.debug("processOpening => identification: CSMSERESPONSE = {}", csmSeResponse);
 
         List<ApduResponse> csmApduResponseList = csmSeResponse.getApduResponses();
-        ByteBuffer sessionTerminalChallenge;
+        byte[] sessionTerminalChallenge;
 
         if (csmApduResponseList.size() == 2 && csmApduResponseList.get(1).isSuccessful()
-                && csmApduResponseList.get(1).getDataOut().limit() == challengeLength) {
+                && csmApduResponseList.get(1).getDataOut().length == challengeLength) {
             CsmGetChallengeRespPars csmChallengePars =
                     new CsmGetChallengeRespPars(csmApduResponseList.get(1));
             sessionTerminalChallenge = csmChallengePars.getChallenge();
             if (logger.isDebugEnabled()) {
                 logger.debug("processOpening => identification: TERMINALCHALLENGE = {}",
-                        ByteBufferUtils.toHex(sessionTerminalChallenge));
+                        ByteArrayUtils.toHex(sessionTerminalChallenge));
             }
         } else {
             throw new KeypleCalypsoSecureSessionException("Invalid message received",
@@ -327,7 +326,7 @@ public class PoSecureSession {
         /* Parse the response to Open Secure Session (the first item of poApduResponseList) */
         AbstractOpenSessionRespPars poOpenSessionPars =
                 AbstractOpenSessionRespPars.create(poApduResponseList.get(0), poRevision);
-        ByteBuffer sessionCardChallenge = poOpenSessionPars.getPoChallenge();
+        byte[] sessionCardChallenge = poOpenSessionPars.getPoChallenge();
 
         /* Build the Digest Init command from PO Open Session */
         poKif = poOpenSessionPars.getSelectedKif();
@@ -335,7 +334,7 @@ public class PoSecureSession {
 
         if (logger.isDebugEnabled()) {
             logger.debug("processOpening => opening: CARDCHALLENGE = {}, POKIF = {}, POKVC = {}",
-                    ByteBufferUtils.toHex(sessionCardChallenge), String.format("%02X", poKif),
+                    ByteArrayUtils.toHex(sessionCardChallenge), String.format("%02X", poKif),
                     String.format("%02X", poKvc));
         }
 
@@ -638,7 +637,7 @@ public class PoSecureSession {
         }
 
         /* Get Terminal Signature from the latest response */
-        ByteBuffer sessionTerminalSignature = null;
+        byte[] sessionTerminalSignature = null;
         // TODO Add length check according to Calypso REV (4 / 8)
         if (!csmApduResponseList.isEmpty()) {
             DigestCloseRespPars respPars = new DigestCloseRespPars(
@@ -649,7 +648,7 @@ public class PoSecureSession {
 
         if (logger.isDebugEnabled()) {
             logger.debug("processClosing => SIGNATURE = {}",
-                    ByteBufferUtils.toHex(sessionTerminalSignature));
+                    ByteArrayUtils.toHex(sessionTerminalSignature));
         }
 
         PoCustomCommandBuilder ratificationCommand;
@@ -898,7 +897,7 @@ public class PoSecureSession {
      * 
      * @return a ByteBuffer containing the data
      */
-    public ByteBuffer getOpenRecordDataRead() {
+    public byte[] getOpenRecordDataRead() {
         return openRecordDataRead;
     }
 
@@ -983,7 +982,7 @@ public class PoSecureSession {
          * 1st buffer is the data buffer to be provided with Digest Init. The following buffers are
          * PO command/response pairs
          */
-        private static final List<ByteBuffer> poDigestDataCache = new ArrayList<ByteBuffer>();
+        private static final List<byte[]> poDigestDataCache = new ArrayList<byte[]>();
         private static CsmRevision csmRevision;
         private static PoRevision poRevision;
         private static boolean encryption;
@@ -1008,7 +1007,7 @@ public class PoSecureSession {
          */
         static void initialize(PoRevision poRev, CsmRevision csmRev, boolean sessionEncryption,
                 boolean verificationMode, boolean rev3_2Mode, byte workKeyRecordNumber,
-                byte workKeyKif, byte workKeyKVC, ByteBuffer digestData) {
+                byte workKeyKif, byte workKeyKVC, byte[] digestData) {
             /* Store work context */
             poRevision = poRev;
             csmRevision = csmRev;
@@ -1028,7 +1027,7 @@ public class PoSecureSession {
                 logger.debug(
                         "PoSecureSession.DigestProcessor => initialize: KIF = {}, KVC {}, DIGESTDATA = {}",
                         String.format("%02X", workKeyKif), String.format("%02X", workKeyKVC),
-                        ByteBufferUtils.toHex(digestData));
+                        ByteArrayUtils.toHex(digestData));
             }
 
             /* Clear data cache */
@@ -1057,8 +1056,8 @@ public class PoSecureSession {
              * byte of the command buffer.
              */
             if (request.isCase4()) {
-                poDigestDataCache.add(ByteBufferUtils.subLen(request.getBytes(), 0,
-                        request.getBytes().limit() - 1));
+                poDigestDataCache.add(
+                        Arrays.copyOfRange(request.getBytes(), 0, request.getBytes().length - 1));
             } else {
                 poDigestDataCache.add(request.getBytes());
             }
@@ -1182,7 +1181,7 @@ public class PoSecureSession {
                 for (PoSendableInSession poSendableInSession : poSendableInSessions) {
                     if (poSendableInSession instanceof ReadRecordsCmdBuild) {
                         ApduRequest apduRequest = apduRequestIterator.next();
-                        byte sfi = (byte) ((apduRequest.getBytes().get(OFFSET_P2) >> 3) & 0x1F);
+                        byte sfi = (byte) ((apduRequest.getBytes()[OFFSET_P2] >> 3) & 0x1F);
                         sfiCommandResponseHashMap.put(sfi,
                                 new CommandResponse(apduRequest, apduResponseIterator.next()));
                     } else {
@@ -1216,18 +1215,13 @@ public class PoSecureSession {
             List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
             if (poModificationCommands != null) {
                 for (PoModificationCommand poModificationCommand : poModificationCommands) {
-                    if (poModificationCommand instanceof AppendRecordCmdBuild
-                            || poModificationCommand instanceof UpdateRecordCmdBuild) {
-                        /* Append/Update Record: response = 9000 */
-                        apduResponses.add(new ApduResponse(ByteBufferUtils.fromHex("9000"), null));
-                    } else if (poModificationCommand instanceof DecreaseCmdBuild
+                    if (poModificationCommand instanceof DecreaseCmdBuild
                             || poModificationCommand instanceof IncreaseCmdBuild) {
                         /* response = NNNNNN9000 */
-                        ByteBuffer modCounterApduRequest =
-                                ((PoCommandBuilder) poModificationCommand).getApduRequest()
-                                        .getBytes();
+                        byte[] modCounterApduRequest = ((PoCommandBuilder) poModificationCommand)
+                                .getApduRequest().getBytes();
                         /* Retrieve SFI from the current Decrease command */
-                        byte sfi = (byte) ((modCounterApduRequest.get(OFFSET_P2) >> 3) & 0x1F);
+                        byte sfi = (byte) ((modCounterApduRequest[OFFSET_P2] >> 3) & 0x1F);
                         /*
                          * Look for the counter value in the stored records. Only the first
                          * occurrence of the SFI is taken into account. We assume here that the
@@ -1235,31 +1229,33 @@ public class PoSecureSession {
                          */
                         CommandResponse commandResponse = sfiCommandResponseHashMap.get(sfi);
                         if (commandResponse != null) {
-                            byte counterNumber = modCounterApduRequest.get(OFFSET_P1);
+                            byte counterNumber = modCounterApduRequest[OFFSET_P1];
                             /*
                              * The record containing the counters is structured as follow:
                              * AAAAAAABBBBBBCCCCCC...XXXXXX each counter being a 3-byte unsigned
                              * number. Convert the 3-byte block indexed by the counter number to an
                              * int.
                              */
-                            int currentCounterValue = commandResponse.getApduResponse().getBytes()
-                                    .order(ByteOrder.BIG_ENDIAN)
-                                    .getInt((counterNumber - 1) * 3) >> 8;
+                            int currentCounterValue =
+                                    ByteBuffer.wrap(commandResponse.getApduResponse().getBytes())
+                                            .order(ByteOrder.BIG_ENDIAN)
+                                            .getInt((counterNumber - 1) * 3) >> 8;
                             /* Extract the add or subtract value from the modification request */
-                            int addSubtractValue = modCounterApduRequest.order(ByteOrder.BIG_ENDIAN)
-                                    .getInt(OFFSET_DATA) >> 8;
+                            int addSubtractValue = ByteBuffer.wrap(modCounterApduRequest)
+                                    .order(ByteOrder.BIG_ENDIAN).getInt(OFFSET_DATA) >> 8;
                             /* Build the response */
-                            ByteBuffer response = ByteBuffer.allocate(5);
+                            byte[] response = new byte[5];
                             int newCounterValue;
                             if (poModificationCommand instanceof DecreaseCmdBuild) {
                                 newCounterValue = currentCounterValue - addSubtractValue;
                             } else {
                                 newCounterValue = currentCounterValue + addSubtractValue;
                             }
-                            response.order(ByteOrder.BIG_ENDIAN).putInt((newCounterValue) << 8);
-                            response.put(3, (byte) 0x90);
-                            response.put(4, (byte) 0x00);
-                            response.position(0);
+                            response[0] = (byte) ((newCounterValue & 0x00FF0000) >> 16);
+                            response[1] = (byte) ((newCounterValue & 0x0000FF00) >> 8);
+                            response[2] = (byte) ((newCounterValue & 0x000000FF) >> 0);
+                            response[3] = (byte) 0x90;
+                            response[4] = (byte) 0x00;
                             apduResponses.add(new ApduResponse(response, null));
                             if (logger.isDebugEnabled()) {
                                 logger.debug(
@@ -1282,8 +1278,8 @@ public class PoSecureSession {
                                     null);
                         }
                     } else {
-                        throw new IllegalArgumentException("Unexpected modification command: "
-                                + poModificationCommand.toString());
+                        /* Append/Update/Write Record: response = 9000 */
+                        apduResponses.add(new ApduResponse(ByteArrayUtils.fromHex("9000"), null));
                     }
                 }
             }

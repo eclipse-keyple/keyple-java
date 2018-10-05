@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.po.builder;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.po.*;
 
 /**
@@ -55,10 +55,10 @@ public class DecreaseCmdBuild extends PoCommandBuilder
         }
 
         // convert the integer value into a 3-byte buffer
-        ByteBuffer decValueBuffer = ByteBuffer.allocate(3);
-        decValueBuffer.put(0, (byte) ((decValue >> 16) & 0xFF));
-        decValueBuffer.put(1, (byte) ((decValue >> 8) & 0xFF));
-        decValueBuffer.put(2, (byte) (decValue & 0xFF));
+        byte[] decValueBuffer = new byte[3];
+        decValueBuffer[0] = (byte) ((decValue >> 16) & 0xFF);
+        decValueBuffer[1] = (byte) ((decValue >> 8) & 0xFF);
+        decValueBuffer[2] = (byte) (decValue & 0xFF);
 
         byte cla = PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00;
         byte p1 = counterNumber;
