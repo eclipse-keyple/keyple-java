@@ -132,14 +132,14 @@ public class OMAPITestFragment extends Fragment {
                     + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
 
             ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                    (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "TestT2Env");
+                    (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
 
             ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                    (byte) 0x1A, (byte) 0x01, true, (byte) 0x30, "TestT2Env");
+                    (byte) 0x1A, (byte) 0x01, true, (byte) 0x30, "Hoplink EF T2Environment");
 
             UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
                     new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
-                            ByteBufferUtils.fromHex(t2UsageRecord1_dataFill), "TestT2Usage");
+                            ByteBufferUtils.fromHex(t2UsageRecord1_dataFill), "Hoplink EF T2Usage");
 
             List<ApduRequest> poApduRequestList;
 
