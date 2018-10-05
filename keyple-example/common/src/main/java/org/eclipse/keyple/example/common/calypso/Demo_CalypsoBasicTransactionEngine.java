@@ -44,7 +44,7 @@ import org.slf4j.profiler.Profiler;
  * <li>Display SeRequest/SeResponse data ({@link #printSelectAppResponseStatus
  * printSelectAppResponseStatus})
  * <li>If the Calypso selection succeeded, do a Calypso transaction
- * ({@link #doCalypsoReadWriteTransaction(PoSecureSession, ApduResponse, boolean)}
+ * ({doCalypsoReadWriteTransaction(PoSecureSession, ApduResponse, boolean)}
  * doCalypsoReadWriteTransaction}).
  * </ol>
  *

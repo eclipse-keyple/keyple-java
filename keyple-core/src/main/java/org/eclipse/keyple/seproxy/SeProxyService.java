@@ -73,8 +73,8 @@ public final class SeProxyService {
      * Gets the plugin whose name is provided as an argument.
      *
      * @param name the plugin name
-     * @return the plugin.
-     * @throws KeyplePluginNotFoundException: if the wanted plugin is not found
+     * @return the plugin
+     * @throws KeyplePluginNotFoundException if the wanted plugin is not found
      */
     public ReaderPlugin getPlugin(String name) throws KeyplePluginNotFoundException {
         for (ReaderPlugin plugin : plugins) {

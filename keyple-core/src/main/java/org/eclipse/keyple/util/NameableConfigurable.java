@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.util;
 
-import java.io.IOException;
 import java.util.Map;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
@@ -49,7 +48,7 @@ public interface NameableConfigurable {
      * protocols polling sequence, baud rate, … etc.).
      *
      * @param parameters Parameters to setup
-     * @throws IOException if the parameters or the values is not supported
+     * @throws IllegalArgumentException if the parameters or the values is not supported
      * @throws KeypleBaseException if the parameter fails to be set up
      */
     void setParameters(Map<String, String> parameters)

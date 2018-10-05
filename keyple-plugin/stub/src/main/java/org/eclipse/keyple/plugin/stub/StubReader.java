@@ -177,7 +177,7 @@ public class StubReader extends AbstractThreadedLocalReader {
      * 
      * @param timeout the delay in millisecond we wait for a card insertion
      * @return true if the SE is present
-     * @throws NoStackTraceThrowable
+     * @throws NoStackTraceThrowable in case of unplugging the reader
      */
     @Override
     protected boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable {
@@ -199,7 +199,7 @@ public class StubReader extends AbstractThreadedLocalReader {
      * 
      * @param timeout the delay in millisecond we wait for a card withdrawing
      * @return true if the SE is absent
-     * @throws NoStackTraceThrowable
+     * @throws NoStackTraceThrowable in case of unplugging the reader
      */
     @Override
     protected boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable {

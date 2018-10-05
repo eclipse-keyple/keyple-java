@@ -17,7 +17,6 @@ import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
 import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +54,7 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
     /**
      * Attempts to open the physical channel
      *
-     * @throws KeypleReaderException if the channel opening fails
+     * @throws KeypleChannelStateException if the channel opening fails
      */
     protected abstract void openPhysicalChannel() throws KeypleChannelStateException;
 
@@ -66,7 +65,8 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
      * @param successfulSelectionStatusCodes the list of successful status code for the select
      *        command
      * @return 2 ByteBuffers: ATR and FCI data
-     * @throws KeypleReaderException - if an IO exception occurred
+     * @throws KeypleChannelStateException - if a channel state exception occurred
+     * @throws KeypleIOReaderException - if an IO exception occurred
      * @throws KeypleApplicationSelectionException - if the application selection is not successful
      */
     protected final ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,

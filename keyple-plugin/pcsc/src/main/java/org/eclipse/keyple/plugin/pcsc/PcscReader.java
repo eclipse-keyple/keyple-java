@@ -151,7 +151,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
      *
      * @param apduIn APDU in buffer
      * @return apduOut buffer
-     * @throws KeypleReaderException if the transmission failed
+     * @throws KeypleIOReaderException if the transmission failed
      */
     @Override
     protected final ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
@@ -375,7 +375,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * In this case be aware that on some platforms (ex. Windows 8+), the exclusivity is granted for
      * a limited time (ex. 5 seconds). After this delay, the card is automatically resetted.
      * 
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleChannelStateException if a reader error occurs
      */
     @Override
     protected final void openPhysicalChannel() throws KeypleChannelStateException {

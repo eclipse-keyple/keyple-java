@@ -41,7 +41,7 @@ import org.slf4j.profiler.Profiler;
  * <li>Display SeRequest/SeResponse data ({@link #printSelectAppResponseStatus
  * printSelectAppResponseStatus})
  * <li>If the Hoplink selection succeeded, do an Hoplink transaction
- * ({@link #doHoplinkReadWriteTransaction(PoSecureSession, ApduResponse, boolean)}
+ * ({doHoplinkReadWriteTransaction(PoSecureSession, ApduResponse, boolean)}
  * doHoplinkReadWriteTransaction}).
  * </ol>
  *

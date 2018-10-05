@@ -39,7 +39,7 @@ public interface ReaderPlugin extends NameableConfigurable, Comparable<ReaderPlu
      * 
      * @param name of the reader
      * @return the ProxyReader object.
-     * @throws KeypleReaderException if the wanted reader is not found
+     * @throws KeypleReaderNotFoundException if the wanted reader is not found
      */
     ProxyReader getReader(String name) throws KeypleReaderNotFoundException;
 }

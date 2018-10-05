@@ -34,7 +34,8 @@ public class Demo_Hoplink_Pcsc {
      * main program entry
      *
      * @param args the program arguments
-     * @throws IllegalArgumentException,KeypleBaseException setParameter exception
+     * @throws IllegalArgumentException in case of a bad argument
+     * @throws KeypleBaseException setParameter exception
      * @throws InterruptedException thread exception
      */
     public static void main(String[] args)

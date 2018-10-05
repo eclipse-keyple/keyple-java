@@ -80,6 +80,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      *
      * @param protocolFlag the protocol flag
      * @return true if the current protocol matches the provided protocol flag
+     * @throws KeypleReaderException in case of a reader exception
      */
     protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag)
             throws KeypleReaderException;

@@ -9,7 +9,6 @@
 package org.eclipse.keyple.example.pc.generic;
 
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
@@ -25,8 +24,6 @@ import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
@@ -48,12 +45,10 @@ Demo_SeProtocolDetection_Stub {
      * Application entry
      *
      * @param args the program arguments
-     * @throws IOException if a IO error occurs
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws IllegalArgumentException in case of a bad argument
      * @throws InterruptedException if thread error occurs
      */
-    public static void main(String[] args)
-            throws IllegalArgumentException, KeypleBaseException, InterruptedException {
+    public static void main(String[] args) throws IllegalArgumentException, InterruptedException {
         /* get the SeProxyService instance */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
