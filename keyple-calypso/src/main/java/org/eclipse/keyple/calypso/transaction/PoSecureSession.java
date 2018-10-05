@@ -92,6 +92,8 @@ public class PoSecureSession {
     /** The CSM settings map. */
     private final EnumMap<CsmSettings, Byte> csmSetting =
             new EnumMap<CsmSettings, Byte>(CsmSettings.class);
+    /** The PO serial number extracted from FCI */
+    private final ByteBuffer poCalypsoInstanceSerial;
     /** the type of the notified event. */
     private SessionState currentState;
     /** Selected AID of the Calypso PO. */
@@ -121,9 +123,10 @@ public class PoSecureSession {
      * @param csmSetting a list of CSM related parameters. In the case this parameter is null,
      *        default parameters are applied. The available setting keys are defined in
      *        {@link CsmSettings}
+     * @param poFciData the po response to the application selection (FCI)
      */
     public PoSecureSession(ProxyReader poReader, ProxyReader csmReader,
-            EnumMap<CsmSettings, Byte> csmSetting) {
+            EnumMap<CsmSettings, Byte> csmSetting, ApduResponse poFciData) {
         this.poReader = poReader;
         this.csmReader = csmReader;
 
@@ -147,6 +150,14 @@ public class PoSecureSession {
         }
 
         logger.debug("Contructor => CSMSETTING = {}", this.csmSetting);
+
+        /* Parse PO FCI - to retrieve Calypso Revision, Serial Number, &amp; DF Name (AID) */
+        GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(poFciData);
+        poRevision = computePoRevision(poFciRespPars.getApplicationTypeByte());
+        poCalypsoInstanceAid = poFciRespPars.getDfName();
+
+        /* Serial Number of the selected Calypso instance. */
+        poCalypsoInstanceSerial = poFciRespPars.getApplicationSerialNumber();
 
         currentState = SessionState.SESSION_CLOSED;
     }
@@ -182,7 +193,8 @@ public class PoSecureSession {
      * poCommandsInsideSession).</li>
      * </ul>
      *
-     * @param poFciData the po response to the application selection (FCI)
+     * @param modificationMode the modification mode: ATOMIC or MULTIPLE (see
+     *        {@link ModificationMode})
      * @param accessLevel access level of the session (personalization, load or debit).
      * @param openingSfiToSelect SFI of the file to select (0 means no file to select)
      * @param openingRecordNumberToRead number of the record to read
@@ -191,20 +203,12 @@ public class PoSecureSession {
      *         Secure Session" command
      * @throws KeypleReaderException the IO reader exception
      */
-    public SeResponse processOpening(ApduResponse poFciData, SessionAccessLevel accessLevel,
-            byte openingSfiToSelect, byte openingRecordNumberToRead,
+    public SeResponse processOpening(ModificationMode modificationMode,
+            SessionAccessLevel accessLevel, byte openingSfiToSelect, byte openingRecordNumberToRead,
             List<PoSendableInSession> poCommandsInsideSession) throws KeypleReaderException {
 
         /* CSM ApduRequest List to hold Select Diversifier and Get Challenge commands */
         List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
-
-        /* Parse PO FCI - to retrieve Calypso Revision, Serial Number, &amp; DF Name (AID) */
-        GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(poFciData);
-        poRevision = computePoRevision(poFciRespPars.getApplicationTypeByte());
-        poCalypsoInstanceAid = poFciRespPars.getDfName();
-
-        /* Serial Number of the selected Calypso instance. */
-        ByteBuffer poCalypsoInstanceSerial = poFciRespPars.getApplicationSerialNumber();
 
         if (logger.isDebugEnabled()) {
             logger.debug("processOpening => Identification: DFNAME = {}, SERIALNUMBER = {}",
@@ -921,6 +925,24 @@ public class PoSecureSession {
         SESSION_LVL_LOAD,
         /** Session Access Level used for validating and debiting purposes. */
         SESSION_LVL_DEBIT
+    }
+
+    /**
+     * The modification mode indicates whether the secure session can be closed and reopened to
+     * manage the limitation of the PO buffer memory.
+     */
+    public enum ModificationMode {
+        /**
+         * The secure session is atomic. The consistency of the content of the resulting PO memory
+         * is guaranteed.
+         */
+        ATOMIC,
+        /**
+         * Several secure sessions can be chained (to manage the writing of large amounts of data).
+         * The resulting content of the PO's memory can be inconsistent if the PO is removed during
+         * the process.
+         */
+        MULTIPLE
     }
 
     /**

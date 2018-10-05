@@ -10,6 +10,7 @@ package org.eclipse.keyple.example.common.calypso;
 
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.*;
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CsmSettings.*;
+import static org.eclipse.keyple.calypso.transaction.PoSecureSession.ModificationMode.ATOMIC;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
@@ -201,12 +202,11 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
      * The PO logical channel is kept open or closed according to the closeSeChannel flag
      *
      * @param poTransaction PoSecureSession object
-     * @param fciData FCI data from the selection step
      * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
      * @throws KeypleReaderException reader exception (defined as public for purposes of javadoc)
      */
-    public void doHoplinkReadWriteTransaction(PoSecureSession poTransaction, ApduResponse fciData,
-            boolean closeSeChannel) throws KeypleReaderException {
+    public void doHoplinkReadWriteTransaction(PoSecureSession poTransaction, boolean closeSeChannel)
+            throws KeypleReaderException {
 
 
         List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
@@ -228,7 +228,7 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
          * Open Session for the debit key - with reading of the first record of the cyclic EF of SFI
          * 0Ah
          */
-        poTransaction.processOpening(fciData, accessLevel, (byte) 0x1A, (byte) 0x01,
+        poTransaction.processOpening(ATOMIC, accessLevel, (byte) 0x1A, (byte) 0x01,
                 filesToReadInSession);
 
         if (!poTransaction.wasRatified()) {
@@ -335,15 +335,15 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
                 }
             }
 
-            PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting);
             /*
              * If the Hoplink selection succeeded we should have 2 responses and the 2nd one not
              * null
              */
             if (seResponses.size() == 2 && seResponses.get(1) != null) {
-                ApduResponse fciData = seResponses.get(1).getFci();
+                PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting,
+                        seResponses.get(1).getFci());
                 profiler.start("Hoplink1");
-                doHoplinkReadWriteTransaction(poTransaction, fciData, true);
+                doHoplinkReadWriteTransaction(poTransaction, true);
             } else {
                 logger.error("No Hoplink transaction. SeResponse to Hoplink selection was null.");
             }

@@ -11,6 +11,7 @@ package org.eclipse.keyple.example.common.calypso;
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.*;
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CommunicationMode.*;
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CsmSettings.*;
+import static org.eclipse.keyple.calypso.transaction.PoSecureSession.ModificationMode.*;
 import static org.eclipse.keyple.example.common.calypso.CalypsoBasicInfoAndSampleCommands.*;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.PoModificationCommand;
@@ -204,12 +205,11 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
      * The PO logical channel is kept open or closed according to the closeSeChannel flag
      *
      * @param poTransaction PoSecureSession object
-     * @param fciData FCI data from the selection step
      * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
      * @throws KeypleReaderException reader exception (defined as public for purposes of javadoc)
      */
-    public void doCalypsoReadWriteTransaction(PoSecureSession poTransaction, ApduResponse fciData,
-            boolean closeSeChannel) throws KeypleReaderException {
+    public void doCalypsoReadWriteTransaction(PoSecureSession poTransaction, boolean closeSeChannel)
+            throws KeypleReaderException {
 
         /* SeResponse object to receive the results of PoSecureSession operations. */
         SeResponse seResponse;
@@ -233,7 +233,7 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
          * Open Session for the debit key - with reading of the first record of the cyclic EF of
          * Environment and Holder file
          */
-        seResponse = poTransaction.processOpening(fciData, accessLevel, SFI_EnvironmentAndHolder,
+        seResponse = poTransaction.processOpening(ATOMIC, accessLevel, SFI_EnvironmentAndHolder,
                 RECORD_NUMBER_1, eventLogContractListFilesReading);
 
         if (!poTransaction.wasRatified()) {
@@ -409,12 +409,10 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
 
                 profiler.start("Calypso1");
 
-                PoSecureSession poTransaction =
-                        new PoSecureSession(poReader, csmReader, csmSetting);
+                PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting,
+                        seResponses.get(1).getFci());
 
-                ApduResponse fciData = seResponses.get(1).getFci();
-
-                doCalypsoReadWriteTransaction(poTransaction, fciData, true);
+                doCalypsoReadWriteTransaction(poTransaction, true);
 
             } else {
                 logger.error("No Calypso transaction. SeResponse to Calypso selection was null.");
