@@ -20,6 +20,7 @@ import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractSelectionLocalReader;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import android.app.Activity;

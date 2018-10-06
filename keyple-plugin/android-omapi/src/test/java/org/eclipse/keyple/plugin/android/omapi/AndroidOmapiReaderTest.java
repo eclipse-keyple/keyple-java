@@ -28,6 +28,7 @@ import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

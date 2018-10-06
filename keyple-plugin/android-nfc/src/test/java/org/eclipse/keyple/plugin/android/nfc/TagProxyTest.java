@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Arrays;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

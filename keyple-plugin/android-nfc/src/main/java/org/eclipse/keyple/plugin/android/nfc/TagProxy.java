@@ -11,6 +11,7 @@ package org.eclipse.keyple.plugin.android.nfc;
 import java.io.IOException;
 import java.util.Arrays;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import android.nfc.Tag;

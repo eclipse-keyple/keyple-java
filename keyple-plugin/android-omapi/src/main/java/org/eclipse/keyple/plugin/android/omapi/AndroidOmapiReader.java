@@ -22,6 +22,7 @@ import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.plugin.AbstractStaticReader;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.simalliance.openmobileapi.Channel;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.Session;
