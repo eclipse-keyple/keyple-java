@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.seproxy.plugin;
 
-import java.nio.ByteBuffer;
 import java.util.*;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
@@ -16,7 +15,7 @@ import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,9 +28,9 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractLocalReader extends AbstractObservableReader {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractLocalReader.class);
-
+    private static final byte[] getResponseHackRequestBytes = ByteArrayUtils.fromHex("00C0000000");
     private boolean logicalChannelIsOpen = false;
-    private ByteBuffer aidCurrentlySelected;
+    private byte[] aidCurrentlySelected;
     private ApduResponse fciDataSelected;
     private ApduResponse atrData;
     private long before; // timestamp recorder
@@ -49,11 +48,11 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      *        selection regular expression
      * @param successfulSelectionStatusCodes the list of successful status code for the select
      *        command
-     * @return an array of 2 ByteBuffers: ByteBuffer[0] the SE ATR, ByteBuffer[1] the SE FCI
+     * @return an array of 2 byte arrays: byte[0][] the SE ATR, byte[1][] the SE FCI
      * @throws KeypleReaderException if a reader error occurs
      * @throws KeypleApplicationSelectionException if the application selection fails
      */
-    protected abstract ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
+    protected abstract byte[][] openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Short> successfulSelectionStatusCodes)
             throws KeypleApplicationSelectionException, KeypleReaderException;
 
@@ -73,13 +72,14 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return apduResponse byte buffer containing the outgoing data.
      * @throws KeypleIOReaderException if the transmission fails
      */
-    protected abstract ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleIOReaderException;
+    protected abstract byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException;
 
     /**
      * Test if the current protocol matches the flag
      *
      * @param protocolFlag the protocol flag
      * @return true if the current protocol matches the provided protocol flag
+     * @throws KeypleReaderException in case of a reader exception
      */
     protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag)
             throws KeypleReaderException;
@@ -101,17 +101,12 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             logger.trace("[{}] processApduRequest => {}, elapsed {} ms.", this.getName(),
                     apduRequest, elapsedMs);
         }
-        /*
-         * Fix buffer position before sending data We shouldn't have to re-use the buffer that was
-         * used to be sent but we have some code that does it.
-         */
-        ByteBuffer buffer = apduRequest.getBytes();
-        final int posBeforeRead = buffer.position();
+
+        byte[] buffer = apduRequest.getBytes();
         apduResponse =
                 new ApduResponse(transmitApdu(buffer), apduRequest.getSuccessfulStatusCodes());
-        buffer.position(posBeforeRead);
 
-        if (apduRequest.isCase4() && apduResponse.getDataOut().limit() == 0
+        if (apduRequest.isCase4() && apduResponse.getDataOut().length == 0
                 && apduResponse.isSuccessful()) {
             // do the get response command but keep the original status code
             apduResponse = case4HackGetResponse(apduResponse.getStatusCode());
@@ -142,17 +137,16 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
          * build a get response command the actual length expected by the SE in the get response
          * command is handled in transmitApdu
          */
-        ByteBuffer getResponseHackRequestBytes = ByteBufferUtils.fromHex("00C0000000");
         if (logger.isTraceEnabled()) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
             logger.trace(
                     "[{}] case4HackGetResponse => ApduRequest: NAME = \"Intrinsic Get Response\", RAWDATA = {}, elapsed = {}",
-                    this.getName(), ByteBufferUtils.toHex(getResponseHackRequestBytes), elapsedMs);
+                    this.getName(), ByteArrayUtils.toHex(getResponseHackRequestBytes), elapsedMs);
         }
 
-        ByteBuffer getResponseHackResponseBytes = transmitApdu(getResponseHackRequestBytes);
+        byte[] getResponseHackResponseBytes = transmitApdu(getResponseHackRequestBytes);
 
         /* we expect here a 0x9000 status code */
         ApduResponse getResponseHackResponse = new ApduResponse(getResponseHackResponseBytes, null);
@@ -167,13 +161,10 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
         if (getResponseHackResponse.isSuccessful()) {
             // replace the two last status word bytes by the original status word
-            final int posBeforeChange = getResponseHackResponseBytes.position();
-            int position = getResponseHackResponseBytes.limit();
-            getResponseHackResponseBytes.position(position - 2);
-            getResponseHackResponseBytes.put((byte) (originalStatusCode >> 8));
-            getResponseHackResponseBytes.position(position - 1);
-            getResponseHackResponseBytes.put((byte) (originalStatusCode & 0xFF));
-            getResponseHackResponseBytes.position(posBeforeChange);
+            getResponseHackResponseBytes[getResponseHackResponseBytes.length - 2] =
+                    (byte) (originalStatusCode >> 8);
+            getResponseHackResponseBytes[getResponseHackResponseBytes.length - 1] =
+                    (byte) (originalStatusCode & 0xFF);
         }
         return getResponseHackResponse;
     }
@@ -343,16 +334,16 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 if (aidCurrentlySelected == null) {
                     throw new IllegalStateException("AID currently selected shouldn't be null.");
                 }
-                if (((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect()
-                        .limit() >= aidCurrentlySelected.limit()
-                        && aidCurrentlySelected.equals(ByteBufferUtils.subLen(
+                if (((SeRequest.AidSelector) seRequest.getSelector())
+                        .getAidToSelect().length >= aidCurrentlySelected.length
+                        && aidCurrentlySelected.equals(Arrays.copyOfRange(
                                 ((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect(),
-                                0, aidCurrentlySelected.limit()))) {
+                                0, aidCurrentlySelected.length))) {
                     // the AID changed, close the logical channel
                     if (logger.isTraceEnabled()) {
                         logger.trace(
                                 "[{}] processSeRequest => The AID changed, close the logical channel. AID = {}, EXPECTEDAID = {}",
-                                this.getName(), ByteBufferUtils.toHex(aidCurrentlySelected),
+                                this.getName(), ByteArrayUtils.toHex(aidCurrentlySelected),
                                 seRequest.getSelector());
                     }
                     closeLogicalChannel();
@@ -362,7 +353,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             if (!isLogicalChannelOpen()) {
 
                 previouslyOpen = false;
-                ByteBuffer atrAndFciDataBytes[];
+                byte[] atrAndFciDataBytes[];
 
                 try {
                     atrAndFciDataBytes = openLogicalChannelAndSelect(seRequest.getSelector(),

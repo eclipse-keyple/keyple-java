@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.po.builder;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.ApduRequest;
@@ -22,20 +22,18 @@ public class GetDataCmdBuildTest {
 
     @Test
     public void getDataFCICmdBuild() {
-        ByteBuffer request =
-                ByteBuffer.wrap(new byte[] {(byte) 0x94, (byte) 0xCA, (byte) 0x00, 0x6F, 0x00});
+        byte[] request = new byte[] {(byte) 0x94, (byte) 0xCA, (byte) 0x00, 0x6F, 0x00};
         AbstractApduCommandBuilder apduCommandBuilder = new GetDataFciCmdBuild(PoRevision.REV2_4);
         ApduRequest apduReq = apduCommandBuilder.getApduRequest();
-        Assert.assertEquals(request, apduReq.getBytes());
+        Assert.assertArrayEquals(request, apduReq.getBytes());
     }
 
 
     @Test
     public void getDataFCICmdBuild2() {
-        ByteBuffer request2 =
-                ByteBuffer.wrap(new byte[] {(byte) 0x00, (byte) 0xCA, (byte) 0x00, 0x6F, 0x00});
+        byte[] request2 = new byte[] {(byte) 0x00, (byte) 0xCA, (byte) 0x00, 0x6F, 0x00};
         AbstractApduCommandBuilder apduCommandBuilder = new GetDataFciCmdBuild(PoRevision.REV3_1);
         ApduRequest apduReq = apduCommandBuilder.getApduRequest();
-        Assert.assertEquals(request2, apduReq.getBytes());
+        Assert.assertArrayEquals(request2, apduReq.getBytes());
     }
 }

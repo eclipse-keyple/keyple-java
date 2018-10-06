@@ -9,12 +9,11 @@
 package org.eclipse.keyple.seproxy;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
  * List of APDU requests that will result in a {@link SeResponse}
@@ -47,28 +46,28 @@ public final class SeRequest implements Serializable {
          * - Could be missing when operating SE which don’t support the Select Application command
          * (as it is the case for CSM).
          */
-        private ByteBuffer aidToSelect;
+        private byte[] aidToSelect;
 
         /**
          * AID based selector
          * 
-         * @param aidToSelect ByteBuffer
+         * @param aidToSelect byte array
          */
-        public AidSelector(ByteBuffer aidToSelect) {
-            if (aidToSelect.limit() < AID_MIN_LENGTH || aidToSelect.limit() > AID_MAX_LENGTH) {
+        public AidSelector(byte[] aidToSelect) {
+            if (aidToSelect.length < AID_MIN_LENGTH || aidToSelect.length > AID_MAX_LENGTH) {
                 throw new IllegalArgumentException(
-                        String.format("Bad AID length: %d", aidToSelect.limit()));
+                        String.format("Bad AID length: %d", aidToSelect.length));
             }
             this.aidToSelect = aidToSelect;
         }
 
-        public ByteBuffer getAidToSelect() {
+        public byte[] getAidToSelect() {
             return aidToSelect;
         }
 
         public String toString() {
             return String.format("AID:%s",
-                    aidToSelect == null ? "null" : ByteBufferUtils.toHex(aidToSelect));
+                    aidToSelect == null ? "null" : ByteArrayUtils.toHex(aidToSelect));
         }
     }
 
@@ -104,11 +103,11 @@ public final class SeRequest implements Serializable {
          * @param atr a buffer containing the ATR to be checked
          * @return a boolean true the ATR matches the current regex
          */
-        public boolean atrMatches(ByteBuffer atr) {
+        public boolean atrMatches(byte[] atr) {
             boolean m;
             if (atrRegex.length() != 0) {
                 Pattern p = Pattern.compile(atrRegex);
-                String atrString = ByteBufferUtils.toHex(atr);
+                String atrString = ByteArrayUtils.toHex(atr);
                 m = p.matcher(atrString).matches();
             } else {
                 m = true;
@@ -156,7 +155,7 @@ public final class SeRequest implements Serializable {
      * APDU commands to a SE application, or both of them.
      * <ul>
      * <li>For SE requiring an AID based selection, the Selector should be defined with a non null
-     * ByteBuffer value.</li>
+     * byte array.</li>
      * <li>For SE requiring an ATR based selection, the Selector should be defined with a non null
      * String regular expression.</li>
      * <li>For SE supporting neither AID selection nor ATR selection, the Selector should be defined

@@ -8,14 +8,13 @@
 
 package org.eclipse.keyple.calypso.command.csm.parser;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,14 +27,14 @@ public class DigestAuthenticateRespParsTest {
     public void digestAuthenticateResp() {
 
         List<ApduResponse> responses = new ArrayList<ApduResponse>();
-        ApduResponse apduResponse = new ApduResponse(ByteBuffer.wrap(new byte[] {90, 0}), null);
+        ApduResponse apduResponse = new ApduResponse(new byte[] {90, 0}, null);
         responses.add(apduResponse);
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
-                new ApduResponse(ByteBufferUtils.fromHex("9000"), null), responses));
+                new ApduResponse(ByteArrayUtils.fromHex("9000"), null), responses));
 
         AbstractApduResponseParser apduResponseParser = new DigestAuthenticateRespPars(
                 seResponse.getSingleResponse().getApduResponses().get(0));
-        ByteBuffer responseActual = apduResponseParser.getApduResponse().getBytes();
-        Assert.assertEquals(ByteBuffer.wrap(new byte[] {90, 0}), responseActual);
+        byte[] responseActual = apduResponseParser.getApduResponse().getBytes();
+        Assert.assertArrayEquals(new byte[] {90, 0}, responseActual);
     }
 }

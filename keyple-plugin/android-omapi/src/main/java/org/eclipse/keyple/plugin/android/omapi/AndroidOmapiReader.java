@@ -9,7 +9,6 @@
 package org.eclipse.keyple.plugin.android.omapi;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -23,7 +22,7 @@ import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.plugin.AbstractStaticReader;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.simalliance.openmobileapi.Channel;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.Session;
@@ -42,7 +41,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
 
     private Reader omapiReader;
     private Channel openChannel = null;
-    private ByteBuffer openApplication = null;
+    private byte[] openApplication = null;
     private Map<String, String> parameters = new HashMap<String, String>();
 
     protected AndroidOmapiReader(String pluginName, Reader omapiReader, String readerName) {
@@ -83,50 +82,48 @@ public class AndroidOmapiReader extends AbstractStaticReader {
      * @throws KeypleReaderException
      */
     @Override
-    protected ByteBuffer[] openLogicalChannelAndSelect(SeRequest.Selector selector,
+    protected byte[][] openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Short> successfulSelectionStatusCodes)
             throws KeypleChannelStateException, KeypleApplicationSelectionException {
-        ByteBuffer[] atrAndFci = new ByteBuffer[2];
-        ByteBuffer aid = ((SeRequest.AidSelector) selector).getAidToSelect();
+        byte[][] atrAndFci = new byte[2][];
+        byte[] aid = ((SeRequest.AidSelector) selector).getAidToSelect();
         try {
 
             if (openChannel != null && !openChannel.isClosed() && openApplication != null
                     && openApplication.equals(aid)) {
-                Log.i(TAG, "Channel is already open to aid : " + ByteBufferUtils.toHex(aid));
+                Log.i(TAG, "Channel is already open to aid : " + ByteArrayUtils.toHex(aid));
 
-                atrAndFci[0] = ByteBuffer.wrap(openChannel.getSession().getATR());
-                atrAndFci[1] = ByteBuffer.wrap(openChannel.getSelectResponse());
+                atrAndFci[0] = openChannel.getSession().getATR();
+                atrAndFci[1] = openChannel.getSelectResponse();
 
 
             } else {
 
-                Log.i(TAG, "Opening channel to aid : " + ByteBufferUtils.toHex(aid));
+                Log.i(TAG, "Opening channel to aid : " + ByteArrayUtils.toHex(aid));
 
                 // open physical channel
                 Session session = omapiReader.openSession();
 
                 // get ATR from session
                 Log.i(TAG, "Retrieveing ATR from session...");
-                atrAndFci[0] = session.getATR() != null ? ByteBuffer.wrap(session.getATR()) : null;
+                atrAndFci[0] = session.getATR();
 
                 Log.i(TAG, "Create logical openChannel within the session...");
-                openChannel = session.openLogicalChannel(ByteBufferUtils.toBytes(aid));
+                openChannel = session.openLogicalChannel(aid);
 
                 // get FCI
-                atrAndFci[1] = ByteBuffer.wrap(openChannel.getSelectResponse());
+                atrAndFci[1] = openChannel.getSelectResponse();
 
             }
         } catch (IOException e) {
             throw new KeypleChannelStateException(
-                    "Error while opening channel, aid :" + ByteBufferUtils.toBytes(aid),
-                    e.getCause());
+                    "Error while opening channel, aid :" + ByteArrayUtils.toHex(aid), e.getCause());
         } catch (SecurityException e) {
             throw new KeypleChannelStateException(
-                    "Error while opening channel, aid :" + ByteBufferUtils.toBytes(aid),
-                    e.getCause());
+                    "Error while opening channel, aid :" + ByteArrayUtils.toHex(aid), e.getCause());
         } catch (NoSuchElementException e) {
             throw new KeypleApplicationSelectionException(
-                    "Error while selecting application : " + ByteBufferUtils.toBytes(aid), e);
+                    "Error while selecting application : " + ByteArrayUtils.toHex(aid), e);
         }
 
         return atrAndFci;
@@ -155,11 +152,11 @@ public class AndroidOmapiReader extends AbstractStaticReader {
      * @throws KeypleReaderException
      */
     @Override
-    protected ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
+    protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         // Initialization
-        Log.d(TAG, "Data Length to be sent to tag : " + apduIn.limit());
-        Log.d(TAG, "Data in : " + ByteBufferUtils.toHex(apduIn));
-        byte[] data = ByteBufferUtils.toBytes(apduIn);
+        Log.d(TAG, "Data Length to be sent to tag : " + apduIn.length);
+        Log.d(TAG, "Data in : " + ByteArrayUtils.toHex(apduIn));
+        byte[] data = apduIn;
         byte[] dataOut = new byte[0];
         try {
             dataOut = openChannel.transmit(data);
@@ -167,8 +164,8 @@ public class AndroidOmapiReader extends AbstractStaticReader {
             e.printStackTrace();
             throw new KeypleIOReaderException("Error while transmitting APDU", e);
         }
-        ByteBuffer out = ByteBuffer.wrap(dataOut);
-        Log.d(TAG, "Data out : " + ByteBufferUtils.toHex(out));
+        byte[] out = dataOut;
+        Log.d(TAG, "Data out : " + ByteArrayUtils.toHex(out));
         return out;
     }
 

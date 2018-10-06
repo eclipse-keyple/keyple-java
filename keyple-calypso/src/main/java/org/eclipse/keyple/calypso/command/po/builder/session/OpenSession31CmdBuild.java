@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.po.builder.session;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 
@@ -23,7 +23,7 @@ public class OpenSession31CmdBuild extends AbstractOpenSessionCmdBuild {
      * @param extraInfo extra information included in the logs (can be null or empty)
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
-    public OpenSession31CmdBuild(byte keyIndex, ByteBuffer samChallenge, byte sfiToSelect,
+    public OpenSession31CmdBuild(byte keyIndex, byte[] samChallenge, byte sfiToSelect,
             byte recordNumberToRead, String extraInfo) throws IllegalArgumentException {
         super(PoRevision.REV3_1);
 

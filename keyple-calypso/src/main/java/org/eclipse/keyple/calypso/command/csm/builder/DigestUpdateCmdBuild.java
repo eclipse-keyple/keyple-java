@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.csm.builder;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
@@ -35,7 +35,7 @@ public class DigestUpdateCmdBuild extends CsmCommandBuilder {
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public DigestUpdateCmdBuild(org.eclipse.keyple.calypso.command.csm.CsmRevision revision,
-            boolean encryptedSession, ByteBuffer digestData) throws IllegalArgumentException {
+            boolean encryptedSession, byte[] digestData) throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -47,12 +47,11 @@ public class DigestUpdateCmdBuild extends CsmCommandBuilder {
             p2 = (byte) 0x80;
         }
 
-        if (digestData != null && digestData.limit() > 255) {
+        if (digestData != null && digestData.length > 255) {
             throw new IllegalArgumentException("Digest data null or too long!");
         }
 
         // CalypsoRequest calypsoRequest = new CalypsoRequest(cla, command, p1, p2, digestData);
-        request = setApduRequest(cla, command, p1, p2,
-                digestData != null ? digestData.asReadOnlyBuffer() : null, null);
+        request = setApduRequest(cla, command, p1, p2, digestData, null);
     }
 }

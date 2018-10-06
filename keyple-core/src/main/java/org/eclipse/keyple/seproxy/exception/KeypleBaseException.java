@@ -28,7 +28,7 @@ public class KeypleBaseException extends Exception {
     /**
      * Encapsulate a lower level exception (ie CardException, IOException, HostNotFoundException..)
      * 
-     * @param message
+     * @param message : message to identify the exception and the context
      * @param cause : lower level exception
      */
     public KeypleBaseException(String message, Throwable cause) {

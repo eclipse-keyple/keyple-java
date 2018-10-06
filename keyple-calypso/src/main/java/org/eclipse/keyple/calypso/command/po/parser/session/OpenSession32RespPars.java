@@ -8,10 +8,9 @@
 
 package org.eclipse.keyple.calypso.command.po.parser.session;
 
-import java.nio.ByteBuffer;
+import java.util.Arrays;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.seproxy.ApduResponse;
-import org.eclipse.keyple.util.ByteBufferUtils;
 
 public class OpenSession32RespPars extends AbstractOpenSessionRespPars {
 
@@ -22,28 +21,28 @@ public class OpenSession32RespPars extends AbstractOpenSessionRespPars {
     /**
      * Method to get a Secure Session from the response in revision 3.2 mode.
      *
-     * @param apduResponse the apdu response
+     * @param apduResponseData the apdu response data
      * @return a SecureSession
      */
-    SecureSession toSecureSession(ByteBuffer apduResponse) {
-        return createSecureSession(apduResponse);
+    SecureSession toSecureSession(byte[] apduResponseData) {
+        return createSecureSession(apduResponseData);
     }
 
-    public static SecureSession createSecureSession(ByteBuffer apduResponse) {
+    public static SecureSession createSecureSession(byte[] apduResponse) {
 
-        byte flag = apduResponse.get(8);
+        byte flag = apduResponse[8];
         // ratification: if the bit 0 of flag is set then the previous session has been ratified
         boolean previousSessionRatified = (flag & (1 << 0)) == (byte) 0x00;
         // secure session: if the bit 1 of flag is set then the secure session is authorized
         boolean manageSecureSessionAuthorized = (flag & (1 << 1)) == (byte) 0x02;
 
-        byte kif = apduResponse.get(9);
-        byte kvc = apduResponse.get(10);
-        int dataLength = apduResponse.get(11);
-        ByteBuffer data = ByteBufferUtils.subIndex(apduResponse, 12, 12 + dataLength);
+        byte kif = apduResponse[9];
+        byte kvc = apduResponse[10];
+        int dataLength = apduResponse[11];
+        byte[] data = Arrays.copyOfRange(apduResponse, 12, 12 + dataLength);
 
-        return new SecureSession(ByteBufferUtils.subIndex(apduResponse, 0, 3),
-                ByteBufferUtils.subIndex(apduResponse, 3, 8), previousSessionRatified,
+        return new SecureSession(Arrays.copyOfRange(apduResponse, 0, 3),
+                Arrays.copyOfRange(apduResponse, 3, 8), previousSessionRatified,
                 manageSecureSessionAuthorized, kif, kvc, data, apduResponse);
     }
 }

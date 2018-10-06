@@ -9,11 +9,11 @@
 package org.eclipse.keyple.calypso.command.po.builder.session;
 
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.ApduRequest;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,8 +22,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class OpenSessionCmdBuildTest {
 
-    private final ByteBuffer samChallenge =
-            ByteBuffer.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
+    private final byte[] samChallenge = new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E};
 
     private AbstractApduCommandBuilder apduCommandBuilder;
 
@@ -50,16 +49,16 @@ public class OpenSessionCmdBuildTest {
         byte p1 = (byte) (0x80 + (recordNumberToRead * 8) + keyIndex);
         byte p2 = (byte) (sfiToSelect * 8);
         byte cmd = (byte) 0x8A;
-        ByteBuffer dataIn = samChallenge;
+        byte[] dataIn = samChallenge;
         // revision 2.4
         byte le = 0; /* case 4 */
         byte[] request2_4 =
-                {cla, cmd, p1, p2, (byte) dataIn.limit(), (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, le};
+                {cla, cmd, p1, p2, (byte) dataIn.length, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, le};
 
         apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV2_4, keyIndex, dataIn,
                 sfiToSelect, recordNumberToRead, "");
         apduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertArrayEquals(request2_4, ByteBufferUtils.toBytes(apduRequest.getBytes()));
+        Assert.assertArrayEquals(request2_4, apduRequest.getBytes());
     }
 
     @Test
@@ -71,16 +70,16 @@ public class OpenSessionCmdBuildTest {
         byte p1 = (byte) ((recordNumberToRead * 8) + keyIndex);
         byte p2 = (byte) ((sfiToSelect * 8) + 1);
         byte cmd = (byte) 0x8A;
-        ByteBuffer dataIn = samChallenge;
+        byte[] dataIn = samChallenge;
         byte le = 0; /* case 4 */
 
         // revision 3.1
         byte[] request3_1 =
-                {cla, cmd, p1, p2, (byte) dataIn.limit(), (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, le};
+                {cla, cmd, p1, p2, (byte) dataIn.length, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, le};
         apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV3_1, keyIndex, dataIn,
                 sfiToSelect, recordNumberToRead, "");
         apduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertArrayEquals(request3_1, ByteBufferUtils.toBytes(apduRequest.getBytes()));
+        Assert.assertArrayEquals(request3_1, apduRequest.getBytes());
     }
 
     @Test
@@ -92,20 +91,16 @@ public class OpenSessionCmdBuildTest {
         byte p1 = (byte) ((recordNumberToRead * 8) + keyIndex);
         byte p2 = (byte) ((sfiToSelect * 8) + 2);
         byte cmd = (byte) 0x8A;
-        byte[] dataIn = new byte[samChallenge.limit() + 1];
-        System.arraycopy(ByteBufferUtils.toBytes(samChallenge), 0, dataIn, 1, samChallenge.limit());
+        byte[] dataIn = new byte[samChallenge.length + 1];
+        System.arraycopy(samChallenge, 0, dataIn, 1, samChallenge.length);
         byte le = 0; /* case 4 */
         // revision 3.2
-        ByteBuffer request3_2 =
-                ByteBuffer.wrap(new byte[] {cla, cmd, p1, p2, (byte) (samChallenge.limit() + 1),
-                        (byte) 0x00, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, le});
+        byte[] request3_2 = new byte[] {cla, cmd, p1, p2, (byte) (samChallenge.length + 1),
+                (byte) 0x00, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, le};
         apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV3_2, keyIndex,
                 samChallenge, sfiToSelect, recordNumberToRead, "");
         apduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertEquals(ByteBufferUtils.toHex(request3_2),
-                ByteBufferUtils.toHex(apduRequest.getBytes()));
+        Assert.assertEquals(ByteArrayUtils.toHex(request3_2),
+                ByteArrayUtils.toHex(apduRequest.getBytes()));
     }
-
-
-
 }

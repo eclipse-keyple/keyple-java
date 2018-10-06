@@ -89,10 +89,10 @@ public interface ProxyReader extends NameableConfigurable, Comparable<ProxyReade
      * exception (SE missing, IO error, wrong card state, timeout) have to be caught during the
      * processing of the SE request transmission. *
      * 
-     * @param seApplicationRequest
-     * @return
-     * @throws KeypleReaderException
-     * @throws IllegalArgumentException
+     * @param seApplicationRequest the SeRequest to transmit
+     * @return SeResponse the response to the SeRequest
+     * @throws KeypleReaderException in case of a reader exception
+     * @throws IllegalArgumentException if a bad argument is provided
      */
     SeResponse transmit(SeRequest seApplicationRequest)
             throws KeypleReaderException, IllegalArgumentException;

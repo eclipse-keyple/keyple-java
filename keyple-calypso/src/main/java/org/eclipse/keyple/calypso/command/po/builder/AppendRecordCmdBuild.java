@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.po.builder;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.po.*;
 
 // TODO: Auto-generated Javadoc
@@ -32,7 +32,7 @@ public class AppendRecordCmdBuild extends PoCommandBuilder
      * @param extraInfo extra information included in the logs (can be null or empty)
      * @throws java.lang.IllegalArgumentException - if the command is inconsistent
      */
-    public AppendRecordCmdBuild(PoRevision revision, byte sfi, ByteBuffer newRecordData,
+    public AppendRecordCmdBuild(PoRevision revision, byte sfi, byte[] newRecordData,
             String extraInfo) {
         super(command, null);
         if (revision != null) {

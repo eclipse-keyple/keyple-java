@@ -15,6 +15,11 @@ package org.eclipse.keyple.calypso.command.po;
 public enum PoRevision {
 
     /**
+     * Calypso Revision 1 (CLA 0x94)
+     */
+    REV1_0,
+
+    /**
      * Calypso Revision 2.4 (CLA 0x94)
      */
     REV2_4,

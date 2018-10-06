@@ -9,7 +9,7 @@
 package org.eclipse.keyple.calypso.command.csm.parser;
 
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 
@@ -31,7 +31,7 @@ public class DigestCloseRespPars extends AbstractApduResponseParser {
      *
      * @return the sam half session signature
      */
-    public ByteBuffer getSignature() {
+    public byte[] getSignature() {
         return isSuccessful() ? response.getDataOut() : null;
     }
 }

@@ -8,9 +8,9 @@
 
 package org.eclipse.keyple.example.pc.generic.stub.se;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
  * Simple contact stub SE (no command)
@@ -26,8 +26,8 @@ public class StubCalypsoBPrime extends StubSecureElement {
     }
 
     @Override
-    public ByteBuffer getATR() {
-        return ByteBufferUtils.fromHex(ATR_HEX);
+    public byte[] getATR() {
+        return ByteArrayUtils.fromHex(ATR_HEX);
     }
 
     @Override

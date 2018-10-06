@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.plugin.stub;
 
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -50,7 +49,7 @@ public class StubReader extends AbstractThreadedLocalReader {
     }
 
     @Override
-    protected ByteBuffer getATR() {
+    protected byte[] getATR() {
         return se.getATR();
     }
 
@@ -74,7 +73,7 @@ public class StubReader extends AbstractThreadedLocalReader {
     }
 
     @Override
-    public ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
+    public byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         return se.processApdu(apduIn);
     }
 
@@ -177,7 +176,7 @@ public class StubReader extends AbstractThreadedLocalReader {
      * 
      * @param timeout the delay in millisecond we wait for a card insertion
      * @return true if the SE is present
-     * @throws NoStackTraceThrowable
+     * @throws NoStackTraceThrowable in case of unplugging the reader
      */
     @Override
     protected boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable {
@@ -199,7 +198,7 @@ public class StubReader extends AbstractThreadedLocalReader {
      * 
      * @param timeout the delay in millisecond we wait for a card withdrawing
      * @return true if the SE is absent
-     * @throws NoStackTraceThrowable
+     * @throws NoStackTraceThrowable in case of unplugging the reader
      */
     @Override
     protected boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable {

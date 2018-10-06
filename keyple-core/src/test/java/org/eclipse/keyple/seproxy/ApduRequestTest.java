@@ -9,10 +9,9 @@
 package org.eclipse.keyple.seproxy;
 
 import static org.junit.Assert.*;
-import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +32,7 @@ public class ApduRequestTest {
         assertNotNull(request);
         assertEquals(null, request.getName());
         assertTrue(request.isCase4());
-        assertEquals(getACommand(), request.getBytes());
+        assertArrayEquals(getACommand(), request.getBytes());
         assertEquals(null, request.getSuccessfulStatusCodes());
         assertEquals("ApduRequest: NAME = \"null\", RAWDATA = FEDCBA989005, case4",
                 request.toString());
@@ -44,7 +43,7 @@ public class ApduRequestTest {
         ApduRequest request = getApduSample();
         assertNotNull(request);
         assertTrue(request.isCase4());
-        assertEquals(getACommand(), request.getBytes());
+        assertArrayEquals(getACommand(), request.getBytes());
         assertEquals(getAName(), request.getName());
         assertEquals(getASuccessFulStatusCode(), request.getSuccessfulStatusCodes());
         assertEquals("ApduRequest: NAME = \"" + getAName()
@@ -61,14 +60,14 @@ public class ApduRequestTest {
     public static ApduRequest getApduSample() {
         Set<Short> successfulStatusCodes = getASuccessFulStatusCode();
         Boolean case4 = true;
-        ByteBuffer command = getACommand();
+        byte[] command = getACommand();
         ApduRequest request = new ApduRequest(command, case4, successfulStatusCodes);
         request.setName(getAName());
         return request;
     }
 
-    static ByteBuffer getACommand() {
-        return ByteBufferUtils.fromHex("FEDCBA98 9005h");
+    static byte[] getACommand() {
+        return ByteArrayUtils.fromHex("FEDCBA98 9005h");
     }
 
     static Set<Short> getASuccessFulStatusCode() {

@@ -107,7 +107,8 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
     /**
      * Unplug a Stub Reader
      * 
-     * @param name
+     * @param name the name of the reader
+     * @throws KeypleReaderException in case of a reader exception
      */
     public void unplugReader(String name) throws KeypleReaderException {
 

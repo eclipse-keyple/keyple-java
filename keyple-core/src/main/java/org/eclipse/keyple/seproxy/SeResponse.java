@@ -10,7 +10,7 @@ package org.eclipse.keyple.seproxy;
 
 import java.io.Serializable;
 import java.util.List;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
  * Group of SE responses received in response to a {@link SeRequest}.
@@ -107,7 +107,7 @@ public final class SeResponse implements Serializable {
     @Override
     public String toString() {
         return String.format("SeResponse:{RESPONSES = %s, ATR = %s, FCI =%s, CHANNELWASOPEN = %s}",
-                getApduResponses(), ByteBufferUtils.toHex(getAtr().getBytes()), getFci(),
+                getApduResponses(), ByteArrayUtils.toHex(getAtr().getBytes()), getFci(),
                 wasChannelPreviouslyOpen());
     }
 

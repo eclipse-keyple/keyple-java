@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.csm.builder;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
@@ -32,7 +32,7 @@ public class DigestUpdateMultipleCmdBuild extends CsmCommandBuilder {
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public DigestUpdateMultipleCmdBuild(org.eclipse.keyple.calypso.command.csm.CsmRevision revision,
-            ByteBuffer digestData) throws IllegalArgumentException {
+            byte[] digestData) throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;

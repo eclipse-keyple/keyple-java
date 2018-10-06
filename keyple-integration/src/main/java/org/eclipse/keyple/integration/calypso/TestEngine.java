@@ -22,7 +22,7 @@ import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 public class TestEngine {
 
@@ -50,22 +50,20 @@ public class TestEngine {
         Set<SeRequest> selectionRequests = new LinkedHashSet<SeRequest>();
 
         // Add Audit C0 AID to the list
-        SeRequest seRequest =
-                new SeRequest(
-                        new SeRequest.AidSelector(
-                                ByteBufferUtils.fromHex(PoFileStructureInfo.poAuditC0Aid)),
-                        null, false);
+        SeRequest seRequest = new SeRequest(
+                new SeRequest.AidSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.poAuditC0Aid)),
+                null, false);
         selectionRequests.add(seRequest);
 
         // Add CLAP AID to the list
         seRequest = new SeRequest(
-                new SeRequest.AidSelector(ByteBufferUtils.fromHex(PoFileStructureInfo.clapAid)),
+                new SeRequest.AidSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.clapAid)),
                 null, false);
         selectionRequests.add(seRequest);
 
         // Add cdLight AID to the list
         seRequest = new SeRequest(
-                new SeRequest.AidSelector(ByteBufferUtils.fromHex(PoFileStructureInfo.cdLightAid)),
+                new SeRequest.AidSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.cdLightAid)),
                 null, false);
         selectionRequests.add(seRequest);
 

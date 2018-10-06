@@ -9,7 +9,7 @@
 package org.eclipse.keyple.calypso.command.po.builder.session;
 
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
@@ -34,8 +34,11 @@ public abstract class AbstractOpenSessionCmdBuild extends PoCommandBuilder {
     }
 
     public static AbstractOpenSessionCmdBuild create(PoRevision revision, byte debitKeyIndex,
-            ByteBuffer sessionTerminalChallenge, byte sfi, byte recordNb, String extraInfo) {
+            byte[] sessionTerminalChallenge, byte sfi, byte recordNb, String extraInfo) {
         switch (revision) {
+            case REV1_0:
+                return new OpenSession10CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
+                        recordNb, extraInfo);
             case REV2_4:
                 return new OpenSession24CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
                         recordNb, extraInfo);
