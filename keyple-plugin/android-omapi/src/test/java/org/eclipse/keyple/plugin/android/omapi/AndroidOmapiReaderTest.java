@@ -185,16 +185,15 @@ public class AndroidOmapiReaderTest {
 
         when(omapiReader.getName()).thenReturn("SIM1");
         when(omapiReader.isSecureElementPresent()).thenReturn(true);
-        when(session.openLogicalChannel(ByteArrayUtils.fromHex(poAid).array())).thenReturn(channel);
+        when(session.openLogicalChannel(ByteArrayUtils.fromHex(poAid))).thenReturn(channel);
         when(omapiReader.openSession()).thenReturn(session);
         when(session.getATR()).thenReturn(null);
-        when(channel.getSelectResponse()).thenReturn(ByteArrayUtils.fromHex(poAidResponse).array());
+        when(channel.getSelectResponse()).thenReturn(ByteArrayUtils.fromHex(poAidResponse));
         when(channel.getSession()).thenReturn(session);
 
-        when(channel.transmit(ByteArrayUtils.fromHex("00B201A420").array()))
-                .thenReturn(ByteArrayUtils.fromHex(
-                        "00000000000000000000000000000000000000000000000000000000000000009000")
-                        .array());
+        when(channel.transmit(ByteArrayUtils.fromHex("00B201A420"))).thenReturn(ByteArrayUtils
+                .fromHex("00000000000000000000000000000000000000000000000000000000000000009000")
+                .array());
 
         return omapiReader;
 
@@ -209,7 +208,7 @@ public class AndroidOmapiReaderTest {
         when(omapiReader.getName()).thenReturn("SIM1");
         when(omapiReader.isSecureElementPresent()).thenReturn(true);
         when(omapiReader.openSession()).thenReturn(session);
-        when(session.openLogicalChannel(ByteArrayUtils.fromHex(poAid).array()))
+        when(session.openLogicalChannel(ByteArrayUtils.fromHex(poAid)))
                 .thenThrow(new NoSuchElementException(""));
 
         return omapiReader;
