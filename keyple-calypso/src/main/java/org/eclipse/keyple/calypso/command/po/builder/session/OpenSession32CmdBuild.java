@@ -37,7 +37,7 @@ public class OpenSession32CmdBuild extends AbstractOpenSessionCmdBuild {
 
         byte[] dataIn = new byte[samChallenge.length + 1];
         dataIn[0] = (byte) 0x00;
-        System.arraycopy(samChallenge, 0, dataIn, 1, dataIn.length);
+        System.arraycopy(samChallenge, 0, dataIn, 1, samChallenge.length);
 
         this.request = setApduRequest((byte) 0x00,
                 CalypsoPoCommands.getOpenSessionForRev(defaultRevision), p1, p2, dataIn, le);

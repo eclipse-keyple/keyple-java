@@ -63,7 +63,7 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
      * @param selector the SE Selector: AID of the application to select or ATR regex
      * @param successfulSelectionStatusCodes the list of successful status code for the select
      *        command
-     * @return 2 ByteBuffers: ATR and FCI data
+     * @return 2 byte arrays: ATR and FCI data
      * @throws KeypleChannelStateException - if a channel state exception occurred
      * @throws KeypleIOReaderException - if an IO exception occurred
      * @throws KeypleApplicationSelectionException - if the application selection is not successful

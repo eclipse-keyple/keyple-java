@@ -895,7 +895,7 @@ public class PoSecureSession {
     /**
      * Get the data read at Session Opening
      * 
-     * @return a ByteBuffer containing the data
+     * @return a byte array containing the data
      */
     public byte[] getOpenRecordDataRead() {
         return openRecordDataRead;

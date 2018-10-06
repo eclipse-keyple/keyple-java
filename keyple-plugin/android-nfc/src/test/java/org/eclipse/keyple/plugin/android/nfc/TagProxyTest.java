@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Arrays;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -136,7 +135,7 @@ public class TagProxyTest {
         TagProxy tagProxy = TagProxy.getTagProxy(tagMifare);
 
         Assert.assertTrue(Arrays.equals(tagProxy.getATR(),
-                ByteBufferUtils.fromHex("3B8F8001804F0CA000000306030001000000006A").array()));
+                ByteArrayUtils.fromHex("3B8F8001804F0CA000000306030001000000006A").array()));
     }
 
     @Test(expected = Test.None.class /* no exception expected */)
@@ -152,7 +151,7 @@ public class TagProxyTest {
 
         TagProxy tagProxy = TagProxy.getTagProxy(tagMifareUL);
         Assert.assertTrue(Arrays.equals(tagProxy.getATR(),
-                ByteBufferUtils.fromHex("3B8F8001804F0CA0000003060300030000000068").array()));
+                ByteArrayUtils.fromHex("3B8F8001804F0CA0000003060300030000000068").array()));
     }
 
 

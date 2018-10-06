@@ -12,7 +12,6 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
@@ -27,7 +26,6 @@ import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -90,12 +88,12 @@ public class AndroidNfcReaderTest {
         SeRequestSet requests = getRequestIsoDepSetSample();
 
         // init Mock
-        when(tagProxy.transceive(ByteBufferUtils.fromHex("00A404000AA000000291A00000019100")
-                .array())).thenReturn(ByteBufferUtils.fromHex(
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100")
+                .array())).thenReturn(ByteArrayUtils.fromHex(
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000")
                         .array());
-        when(tagProxy.transceive(ByteBufferUtils.fromHex("00B201A420").array()))
-                .thenReturn(ByteBufferUtils.fromHex(
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420").array()))
+                .thenReturn(ByteArrayUtils.fromHex(
                         "00000000000000000000000000000000000000000000000000000000000000009000")
                         .array());
         when(tagProxy.getTech())
@@ -122,12 +120,12 @@ public class AndroidNfcReaderTest {
         SeRequestSet requests = getRequestIsoDepSetSample();
 
         // init Mock with Mifare Classic Smart card
-        when(tagProxy.transceive(ByteBufferUtils.fromHex("00A404000AA000000291A00000019100")
-                .array())).thenReturn(ByteBufferUtils.fromHex(
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100")
+                .array())).thenReturn(ByteArrayUtils.fromHex(
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000")
                         .array());
-        when(tagProxy.transceive(ByteBufferUtils.fromHex("00B201A420").array()))
-                .thenReturn(ByteBufferUtils.fromHex(
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420").array()))
+                .thenReturn(ByteArrayUtils.fromHex(
                         "00000000000000000000000000000000000000000000000000000000000000009000")
                         .array());
         when(tagProxy.getTech())
@@ -154,12 +152,12 @@ public class AndroidNfcReaderTest {
         SeRequestSet requests = getRequestIsoDepSetSample();
 
         // init Mock with Isodep Classic Smart card
-        when(tagProxy.transceive(ByteBufferUtils.fromHex("00A404000AA000000291A00000019100")
-                .array())).thenReturn(ByteBufferUtils.fromHex(
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100")
+                .array())).thenReturn(ByteArrayUtils.fromHex(
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000")
                         .array());
-        when(tagProxy.transceive(ByteBufferUtils.fromHex("00B201A420").array()))
-                .thenReturn(ByteBufferUtils.fromHex(
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420").array()))
+                .thenReturn(ByteArrayUtils.fromHex(
                         "00000000000000000000000000000000000000000000000000000000000000009000")
                         .array());
         when(tagProxy.getTech())
@@ -186,12 +184,12 @@ public class AndroidNfcReaderTest {
         SeRequestSet requests = getRequestIsoDepSetSample();
 
         // init Mock with Isodep Classic Smart card
-        when(tagProxy.transceive(ByteBufferUtils.fromHex("00A404000AA000000291A00000019100")
-                .array())).thenReturn(ByteBufferUtils.fromHex(
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100")
+                .array())).thenReturn(ByteArrayUtils.fromHex(
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000")
                         .array());
-        when(tagProxy.transceive(ByteBufferUtils.fromHex("00B201A420").array()))
-                .thenReturn(ByteBufferUtils.fromHex(
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420").array()))
+                .thenReturn(ByteArrayUtils.fromHex(
                         "00000000000000000000000000000000000000000000000000000000000000009000")
                         .array());
         when(tagProxy.getTech())
@@ -219,12 +217,12 @@ public class AndroidNfcReaderTest {
         SeRequestSet requests = getRequestIsoDepSetSample();
 
         // init Mock with Isodep Classic Smart card
-        when(tagProxy.transceive(ByteBufferUtils.fromHex("00A404000AA000000291A00000019100")
-                .array())).thenReturn(ByteBufferUtils.fromHex(
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100")
+                .array())).thenReturn(ByteArrayUtils.fromHex(
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000")
                         .array());
-        when(tagProxy.transceive(ByteBufferUtils.fromHex("00B201A420").array()))
-                .thenReturn(ByteBufferUtils.fromHex(
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420").array()))
+                .thenReturn(ByteArrayUtils.fromHex(
                         "00000000000000000000000000000000000000000000000000000000000000009000")
                         .array());
         when(tagProxy.isConnected()).thenReturn(false);
@@ -252,8 +250,8 @@ public class AndroidNfcReaderTest {
         SeRequestSet requests = getRequestIsoDepSetSample();
 
         // init Mock with Isodep Classic Smart card
-        when(tagProxy.transceive(ByteBufferUtils.fromHex("00B201A420").array()))
-                .thenReturn(ByteBufferUtils.fromHex(
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420").array()))
+                .thenReturn(ByteArrayUtils.fromHex(
                         "00000000000000000000000000000000000000000000000000000000000000009000")
                         .array());
         when(tagProxy.isConnected()).thenReturn(false);
@@ -261,8 +259,8 @@ public class AndroidNfcReaderTest {
 
         // unknown Application
         when(tagProxy
-                .transceive(ByteBufferUtils.fromHex("00A404000AA000000291A00000019100").array()))
-                        .thenReturn(ByteBufferUtils.fromHex("0000").array());
+                .transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100").array()))
+                        .thenReturn(ByteArrayUtils.fromHex("0000").array());
 
         // test
         insertSe();
@@ -436,10 +434,10 @@ public class AndroidNfcReaderTest {
         when(tagProxy.transceive(in)).thenReturn(out);
 
         // test
-        ByteBuffer outBB = reader.transmitApdu(ByteBuffer.wrap(in));
+        byte[] outBB = reader.transmitApdu(in);
 
         // assert
-        Assert.assertEquals(ByteBuffer.wrap(out), outBB);
+        Assert.assertArrayEquals(out, outBB);
 
     }
 
@@ -452,7 +450,7 @@ public class AndroidNfcReaderTest {
         when(tagProxy.transceive(in)).thenThrow(new IOException(""));
 
         // test
-        ByteBuffer outBB = reader.transmitApdu(ByteBuffer.wrap(in));
+        byte[] outBB = reader.transmitApdu(in);
 
         // throw exception
     }
@@ -525,7 +523,7 @@ public class AndroidNfcReaderTest {
         poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
         SeRequest seRequest =
-                new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
+                new SeRequest(new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid)),
                         poApduRequestList, false, ContactlessProtocols.PROTOCOL_ISO14443_4);
 
         return new SeRequestSet(seRequest);

@@ -12,7 +12,6 @@ import static org.eclipse.keyple.calypso.transaction.PoSecureSession.Communicati
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.ModificationMode.*;
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.SessionAccessLevel.*;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -35,7 +34,7 @@ import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 public class Demo_ValidationTransaction implements ObservableReader.ReaderObserver {
 
@@ -124,37 +123,37 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                 (byte) 0x01, filesToReadInSession);
 
         /*
-         * ByteBuffer sessionData =
-         * ByteBufferUtils.subLen(dataReadInSession.getApduResponses().get(0).getDataOut(), 0, 8);
-         * ByteBuffer environmentData =
-         * ByteBufferUtils.subIndex(dataReadInSession.getApduResponses().get(0).getDataOut(), 8,
+         * byte[] sessionData =
+         * ByteArrayUtils.subLen(dataReadInSession.getApduResponses().get(0).getDataOut(), 0, 8);
+         * byte[] environmentData =
+         * ByteArrayUtils.subIndex(dataReadInSession.getApduResponses().get(0).getDataOut(), 8,
          * 29+8);
          * 
-         * System.out.println("OpenSession#: " + ByteBufferUtils.toHex(sessionData) +
-         * ", Environment#:" + ByteBufferUtils.toHex(environmentData) +", SW1SW2: " +
+         * System.out.println("OpenSession#: " + ByteArrayUtils.toHex(sessionData) +
+         * ", Environment#:" + ByteArrayUtils.toHex(environmentData) +", SW1SW2: " +
          * Integer.toHexString(dataReadInSession.getApduResponses().get(0).getStatusCode() &
          * 0xFFFF));
          * 
          * System.out.println("Event#: " +
-         * ByteBufferUtils.toHex(dataReadInSession.getApduResponses().get(1).getDataOut()) +
+         * ByteArrayUtils.toHex(dataReadInSession.getApduResponses().get(1).getDataOut()) +
          * ", SW1SW2: " +
          * Integer.toHexString(dataReadInSession.getApduResponses().get(1).getStatusCode() &
          * 0xFFFF));
          * 
          * System.out.println("ContractList#: " +
-         * ByteBufferUtils.toHex(dataReadInSession.getApduResponses().get(2).getDataOut()) +
+         * ByteArrayUtils.toHex(dataReadInSession.getApduResponses().get(2).getDataOut()) +
          * ", SW1SW2: " +
          * Integer.toHexString(dataReadInSession.getApduResponses().get(2).getStatusCode() &
          * 0xFFFF));
          */
 
-        byte contractIndex = dataReadInSession.getApduResponses().get(2).getDataOut().get(0);
-        ByteBuffer eventTimestampData =
-                ByteBufferUtils.subLen(dataReadInSession.getApduResponses().get(1).getDataOut(), 1,
+        byte contractIndex = dataReadInSession.getApduResponses().get(2).getDataOut()[0];
+        byte[] eventTimestampData =
+                Arrays.copyOfRange(dataReadInSession.getApduResponses().get(1).getDataOut(), 1,
                         (Long.SIZE / Byte.SIZE));
 
         String timeStampString = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-                .format(new Date(bytesToLong(ByteBufferUtils.toBytes(eventTimestampData))));
+                .format(new Date(bytesToLong(eventTimestampData)));
 
         System.out.println(
                 "\t------------------------------------------------------------------------------");
@@ -180,7 +179,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         /*
          * System.out.println("Contract#" + (contractIndex+1) + ": " +
-         * ByteBufferUtils.toHex(dataReadInSession.getApduResponses().get(0).getDataOut()) +
+         * ByteArrayUtils.toHex(dataReadInSession.getApduResponses().get(0).getDataOut()) +
          * ", SW1SW2: " +
          * Integer.toHexString(dataReadInSession.getApduResponses().get(0).getStatusCode() &
          * 0xFFFF));
@@ -202,13 +201,13 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         System.arraycopy(dateToInsert, 0, newEventData, 1, (Long.SIZE / Byte.SIZE));
 
         ApduResponse expectedGenericOkResponse =
-                new ApduResponse(ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}), null);
+                new ApduResponse(new byte[] {(byte) 0x90, 0x00}, null);
 
         UpdateRecordCmdBuild poUpdateRecordCmd_ContractList =
                 new UpdateRecordCmdBuild(poTransaction.getRevision(), contractListSfi, (byte) 0x01,
-                        ByteBuffer.wrap(newContractListData), "ContractList");
+                        newContractListData, "ContractList");
         AppendRecordCmdBuild poAppendRecordCmd_Event = new AppendRecordCmdBuild(
-                poTransaction.getRevision(), eventSfi, ByteBuffer.wrap(newEventData), "Event");
+                poTransaction.getRevision(), eventSfi, newEventData, "Event");
 
         List<PoModificationCommand> filesToWriteInSession = new ArrayList<PoModificationCommand>();
         List<ApduResponse> expectedResponses = new ArrayList<ApduResponse>();
@@ -257,39 +256,38 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         dataReadInSession = poTransaction.processOpening(ATOMIC, SESSION_LVL_DEBIT, environmentSfi,
                 (byte) 0x01, filesToReadInSession);
         /*
-         * ByteBuffer sessionData =
-         * ByteBufferUtils.subLen(dataReadInSession.getApduResponses().get(0).getDataOut(), 0, 8);
-         * ByteBuffer environmentData =
-         * ByteBufferUtils.subIndex(dataReadInSession.getApduResponses().get(0).getDataOut(), 8,
+         * byte[] sessionData =
+         * ByteArrayUtils.subLen(dataReadInSession.getApduResponses().get(0).getDataOut(), 0, 8);
+         * byte[] environmentData =
+         * ByteArrayUtils.subIndex(dataReadInSession.getApduResponses().get(0).getDataOut(), 8,
          * 29+8);
          * 
-         * System.out.println("OpenSession#: " + ByteBufferUtils.toHex(sessionData) +
-         * ", Environment#:" + ByteBufferUtils.toHex(environmentData) +", SW1SW2: " +
+         * System.out.println("OpenSession#: " + ByteArrayUtils.toHex(sessionData) +
+         * ", Environment#:" + ByteArrayUtils.toHex(environmentData) +", SW1SW2: " +
          * Integer.toHexString(dataReadInSession.getApduResponses().get(0).getStatusCode() &
          * 0xFFFF));
          * 
          * System.out.println("Event#: " +
-         * ByteBufferUtils.toHex(dataReadInSession.getApduResponses().get(1).getDataOut()) +
+         * ByteArrayUtils.toHex(dataReadInSession.getApduResponses().get(1).getDataOut()) +
          * ", SW1SW2: " +
          * Integer.toHexString(dataReadInSession.getApduResponses().get(1).getStatusCode() &
          * 0xFFFF));
          * 
          * System.out.println("Counters#: " +
-         * ByteBufferUtils.toHex(dataReadInSession.getApduResponses().get(2).getDataOut()) +
+         * ByteArrayUtils.toHex(dataReadInSession.getApduResponses().get(2).getDataOut()) +
          * ", SW1SW2: " +
          * Integer.toHexString(dataReadInSession.getApduResponses().get(2).getStatusCode() &
          * 0xFFFF));
          */
-        ByteBuffer eventTimestampData =
-                ByteBufferUtils.subLen(dataReadInSession.getApduResponses().get(1).getDataOut(), 1,
+        byte[] eventTimestampData =
+                Arrays.copyOfRange(dataReadInSession.getApduResponses().get(1).getDataOut(), 1,
                         (Long.SIZE / Byte.SIZE));
 
         String timeStampString = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-                .format(new Date(bytesToLong(ByteBufferUtils.toBytes(eventTimestampData))));
+                .format(new Date(bytesToLong(eventTimestampData)));
 
         int counterValue = getCounterValueFromByteArray(
-                ByteBufferUtils.toBytes(dataReadInSession.getApduResponses().get(2).getDataOut()),
-                1);
+                dataReadInSession.getApduResponses().get(2).getDataOut(), 1);
 
         System.out.println(
                 "\t------------------------------------------------------------------------------");
@@ -307,7 +305,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         List<ApduResponse> expectedResponses = new ArrayList<ApduResponse>();
 
         ApduResponse expectedGenericOkResponse =
-                new ApduResponse(ByteBuffer.wrap(new byte[] {(byte) 0x90, 0x00}), null);
+                new ApduResponse(new byte[] {(byte) 0x90, 0x00}, null);
 
         // Perform automatic top-up when the value is 0 by closing the current session and opening a
         // new one with a
@@ -325,7 +323,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
             UpdateRecordCmdBuild poUpdateRecordCmd_Counter =
                     new UpdateRecordCmdBuild(poTransaction.getRevision(), countersSfi, (byte) 0x01,
-                            ByteBuffer.wrap(newCounterData), "Counter");
+                            newCounterData, "Counter");
 
             filesToWriteInSession.add(poUpdateRecordCmd_Counter);
             expectedResponses.add(expectedGenericOkResponse);
@@ -334,7 +332,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         /*
          * System.out.println("Contract#" + (contractIndex+1) + ": " +
-         * ByteBufferUtils.toHex(dataReadInSession.getApduResponses().get(0).getDataOut()) +
+         * ByteArrayUtils.toHex(dataReadInSession.getApduResponses().get(0).getDataOut()) +
          * ", SW1SW2: " +
          * Integer.toHexString(dataReadInSession.getApduResponses().get(0).getStatusCode() &
          * 0xFFFF));
@@ -348,7 +346,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         System.arraycopy(dateToInsert, 0, newEventData, 1, (Long.SIZE / Byte.SIZE));
 
         AppendRecordCmdBuild poAppendRecordCmd_Event = new AppendRecordCmdBuild(
-                poTransaction.getRevision(), eventSfi, ByteBuffer.wrap(newEventData), "Event");
+                poTransaction.getRevision(), eventSfi, newEventData, "Event");
 
         filesToWriteInSession.add(poAppendRecordCmd_Event);
         expectedResponses.add(expectedGenericOkResponse);
@@ -361,8 +359,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         byte[] updatedCounterValue = getByteArrayFromCounterValue(counterValue - 1);
 
         System.arraycopy(updatedCounterValue, 0, expectedCounterResponseBytes, 0, 3);
-        ApduResponse expectedCounterResponse =
-                new ApduResponse(ByteBuffer.wrap(expectedCounterResponseBytes), null);
+        ApduResponse expectedCounterResponse = new ApduResponse(expectedCounterResponseBytes, null);
 
         filesToWriteInSession.add(poDecreaseCmd_Counter);
         expectedResponses.add(expectedCounterResponse);
@@ -402,17 +399,17 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
             // Add Audit C0 AID to the list
             SeRequest seRequest = new SeRequest(
-                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAuditC0Aid)), null, false);
+                    new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAuditC0Aid)), null, false);
             selectionRequests.add(seRequest);
 
             // Add CLAP AID to the list
-            seRequest = new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(clapAid)),
+            seRequest = new SeRequest(new SeRequest.AidSelector(ByteArrayUtils.fromHex(clapAid)),
                     null, false);
             selectionRequests.add(seRequest);
 
             // Add CdLight AID to the list
-            seRequest = new SeRequest(
-                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(cdLightAid)), null, false);
+            seRequest = new SeRequest(new SeRequest.AidSelector(ByteArrayUtils.fromHex(cdLightAid)),
+                    null, false);
             selectionRequests.add(seRequest);
 
             List<SeResponse> seResponses =

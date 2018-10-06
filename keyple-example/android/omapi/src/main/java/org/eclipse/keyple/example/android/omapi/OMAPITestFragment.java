@@ -27,7 +27,7 @@ import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -139,7 +139,7 @@ public class OMAPITestFragment extends Fragment {
 
             UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
                     new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
-                            ByteBufferUtils.fromHex(t2UsageRecord1_dataFill), "Hoplink EF T2Usage");
+                            ByteArrayUtils.fromHex(t2UsageRecord1_dataFill), "Hoplink EF T2Usage");
 
             List<ApduRequest> poApduRequestList;
 
@@ -149,7 +149,7 @@ public class OMAPITestFragment extends Fragment {
 
 
             SeRequest seRequest =
-                    new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
+                    new SeRequest(new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid)),
                             poApduRequestList, false, ContactsProtocols.PROTOCOL_ISO7816_3);
 
 
@@ -163,7 +163,7 @@ public class OMAPITestFragment extends Fragment {
                         if (response != null) {
                             for (ApduResponse apdu : response.getApduResponses()) {
                                 mText.append("Response : " + apdu.getStatusCode() + " - "
-                                        + ByteBufferUtils.toHex(apdu.getDataOut()));
+                                        + ByteArrayUtils.toHex(apdu.getDataOut()));
                                 mText.append("\n");
                             }
                         } else {

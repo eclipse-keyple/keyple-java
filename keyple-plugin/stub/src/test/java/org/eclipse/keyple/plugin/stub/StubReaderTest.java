@@ -10,7 +10,6 @@ package org.eclipse.keyple.plugin.stub;
 
 
 
-import java.nio.ByteBuffer;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
@@ -23,7 +22,7 @@ import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.eclipse.keyple.util.Observable;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -419,7 +418,7 @@ public class StubReaderTest {
 
         poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
-        SeRequest.Selector selector = new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
+        SeRequest.Selector selector = new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid));
 
         SeRequest seRequest = new SeRequest(selector, poApduRequestList, false,
                 ContactlessProtocols.PROTOCOL_ISO14443_4);
@@ -443,7 +442,7 @@ public class StubReaderTest {
 
         poApduRequestList = Arrays.asList(poIncreaseCmdBuild.getApduRequest());
 
-        SeRequest.Selector selector = new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
+        SeRequest.Selector selector = new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid));
 
         SeRequest seRequest = new SeRequest(selector, poApduRequestList, false,
                 ContactlessProtocols.PROTOCOL_ISO14443_4);
@@ -485,7 +484,7 @@ public class StubReaderTest {
         poApduRequestList3.add(poReadRecord2CmdBuild.getApduRequest());
         poApduRequestList3.add(poReadRecord1CmdBuild.getApduRequest());
 
-        SeRequest.Selector selector = new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
+        SeRequest.Selector selector = new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid));
 
         SeRequest seRequest1 = new SeRequest(selector, poApduRequestList1, false,
                 ContactlessProtocols.PROTOCOL_ISO14443_4);
@@ -575,7 +574,7 @@ public class StubReaderTest {
                 break;
         }
 
-        SeRequest.Selector selector = new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
+        SeRequest.Selector selector = new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid));
 
         return new SeRequest(selector, poApduRequestList, false,
                 ContactlessProtocols.PROTOCOL_ISO14443_4);
@@ -587,7 +586,7 @@ public class StubReaderTest {
         return new StubSecureElement() {
 
             @Override
-            public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
 
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
@@ -598,8 +597,8 @@ public class StubReaderTest {
             }
 
             @Override
-            public ByteBuffer getATR() {
-                return ByteBufferUtils
+            public byte[] getATR() {
+                return ByteArrayUtils
                         .fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
             }
 
@@ -617,7 +616,7 @@ public class StubReaderTest {
         return new StubSecureElement() {
 
             @Override
-            public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
 
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
@@ -626,8 +625,8 @@ public class StubReaderTest {
             }
 
             @Override
-            public ByteBuffer getATR() {
-                return ByteBufferUtils
+            public byte[] getATR() {
+                return ByteArrayUtils
                         .fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
             }
 
@@ -644,7 +643,7 @@ public class StubReaderTest {
         return new StubSecureElement() {
 
             @Override
-            public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
 
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
@@ -655,8 +654,8 @@ public class StubReaderTest {
             }
 
             @Override
-            public ByteBuffer getATR() {
-                return ByteBufferUtils
+            public byte[] getATR() {
+                return ByteArrayUtils
                         .fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
             }
 
@@ -673,7 +672,7 @@ public class StubReaderTest {
     private StubSecureElement getSENoconnection() {
         return new StubSecureElement() {
             @Override
-            public ByteBuffer getATR() {
+            public byte[] getATR() {
                 return null;
             }
 
@@ -694,7 +693,7 @@ public class StubReaderTest {
             }
 
             @Override
-            public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
                 throw new KeypleIOReaderException("Error while transmitting apdu");
             }
 
@@ -706,11 +705,7 @@ public class StubReaderTest {
 
     }
 
-
     static ApduRequest getApduSample() {
-        return new ApduRequest(ByteBufferUtils.fromHex("FEDCBA98 9005h"), false);
+        return new ApduRequest(ByteArrayUtils.fromHex("FEDCBA98 9005h"), false);
     }
-
-
-
 }

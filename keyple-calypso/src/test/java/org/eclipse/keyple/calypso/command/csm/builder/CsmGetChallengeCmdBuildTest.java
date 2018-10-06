@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.csm.builder;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.ApduRequest;
@@ -22,13 +22,12 @@ public class CsmGetChallengeCmdBuildTest {
 
     @Test
     public void getChallengeCmdBuild() throws IllegalArgumentException {
-        ByteBuffer request =
-                ByteBuffer.wrap(new byte[] {(byte) 0x94, (byte) 0x84, 0x00, 0x00, 0x04});
+        byte[] request = new byte[] {(byte) 0x94, (byte) 0x84, 0x00, 0x00, 0x04};
 
         AbstractApduCommandBuilder apduCommandBuilder =
                 new CsmGetChallengeCmdBuild(CsmRevision.S1D, (byte) 0x04);// 94
         ApduRequest apduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertEquals(request, apduRequest.getBytes());
+        Assert.assertArrayEquals(request, apduRequest.getBytes());
     }
 }

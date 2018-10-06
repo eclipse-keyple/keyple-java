@@ -9,7 +9,7 @@
 package org.eclipse.keyple.calypso.command.po.builder.session;
 
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.ApduRequest;
@@ -23,22 +23,21 @@ public class CloseSessionCmdBuildTest {
 
     @Test
     public void closeSessionCmdBuild() throws IllegalArgumentException {
-        ByteBuffer request2_4 = ByteBuffer.wrap(new byte[] {(byte) 0x94, (byte) 0x8E, 0x00, 0x00,
-                (byte) 0x04, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, 0x00});
-        ByteBuffer request3_1 = ByteBuffer.wrap(new byte[] {(byte) 0x00, (byte) 0x8E, (byte) 0x80,
-                0x00, (byte) 0x04, (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, 0x00});
-        ByteBuffer terminalSessionSignature =
-                ByteBuffer.wrap(new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E});
+        byte[] request2_4 = new byte[] {(byte) 0x94, (byte) 0x8E, 0x00, 0x00, (byte) 0x04,
+                (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, 0x00};
+        byte[] request3_1 = new byte[] {(byte) 0x00, (byte) 0x8E, (byte) 0x80, 0x00, (byte) 0x04,
+                (byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, 0x00};
+        byte[] terminalSessionSignature = new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E};
         AbstractApduCommandBuilder apduCommandBuilder =
                 new CloseSessionCmdBuild(PoRevision.REV2_4, false, terminalSessionSignature);
         ApduRequest reqApdu = apduCommandBuilder.getApduRequest();
 
-        Assert.assertEquals(request2_4, reqApdu.getBytes());
+        Assert.assertArrayEquals(request2_4, reqApdu.getBytes());
 
         apduCommandBuilder =
                 new CloseSessionCmdBuild(PoRevision.REV3_1, true, terminalSessionSignature);
         reqApdu = apduCommandBuilder.getApduRequest();
 
-        Assert.assertEquals(request3_1, reqApdu.getBytes());
+        Assert.assertArrayEquals(request3_1, reqApdu.getBytes());
     }
 }

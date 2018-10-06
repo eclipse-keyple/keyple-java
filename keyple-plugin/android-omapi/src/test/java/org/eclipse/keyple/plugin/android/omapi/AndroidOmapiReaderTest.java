@@ -28,7 +28,6 @@ import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
-import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -143,7 +142,7 @@ public class AndroidOmapiReaderTest {
 
         // wrong protocol
         SeRequest seRequest =
-                new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
+                new SeRequest(new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid)),
                         poApduRequestList, false, ContactlessProtocols.PROTOCOL_MIFARE_UL);
 
         // test
@@ -185,16 +184,14 @@ public class AndroidOmapiReaderTest {
 
         when(omapiReader.getName()).thenReturn("SIM1");
         when(omapiReader.isSecureElementPresent()).thenReturn(true);
-        when(session.openLogicalChannel(ByteBufferUtils.fromHex(poAid).array()))
-                .thenReturn(channel);
+        when(session.openLogicalChannel(ByteArrayUtils.fromHex(poAid).array())).thenReturn(channel);
         when(omapiReader.openSession()).thenReturn(session);
         when(session.getATR()).thenReturn(null);
-        when(channel.getSelectResponse())
-                .thenReturn(ByteBufferUtils.fromHex(poAidResponse).array());
+        when(channel.getSelectResponse()).thenReturn(ByteArrayUtils.fromHex(poAidResponse).array());
         when(channel.getSession()).thenReturn(session);
 
-        when(channel.transmit(ByteBufferUtils.fromHex("00B201A420").array()))
-                .thenReturn(ByteBufferUtils.fromHex(
+        when(channel.transmit(ByteArrayUtils.fromHex("00B201A420").array()))
+                .thenReturn(ByteArrayUtils.fromHex(
                         "00000000000000000000000000000000000000000000000000000000000000009000")
                         .array());
 
@@ -211,7 +208,7 @@ public class AndroidOmapiReaderTest {
         when(omapiReader.getName()).thenReturn("SIM1");
         when(omapiReader.isSecureElementPresent()).thenReturn(true);
         when(omapiReader.openSession()).thenReturn(session);
-        when(session.openLogicalChannel(ByteBufferUtils.fromHex(poAid).array()))
+        when(session.openLogicalChannel(ByteArrayUtils.fromHex(poAid).array()))
                 .thenThrow(new NoSuchElementException(""));
 
         return omapiReader;
@@ -229,7 +226,7 @@ public class AndroidOmapiReaderTest {
         poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
         SeRequest seRequest =
-                new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
+                new SeRequest(new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid)),
                         poApduRequestList, false, ContactsProtocols.PROTOCOL_ISO7816_3);
 
         return new SeRequestSet(seRequest);

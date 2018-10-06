@@ -51,7 +51,7 @@ public final class SeRequest implements Serializable {
         /**
          * AID based selector
          * 
-         * @param aidToSelect ByteBuffer
+         * @param aidToSelect byte array
          */
         public AidSelector(byte[] aidToSelect) {
             if (aidToSelect.length < AID_MIN_LENGTH || aidToSelect.length > AID_MAX_LENGTH) {
@@ -155,7 +155,7 @@ public final class SeRequest implements Serializable {
      * APDU commands to a SE application, or both of them.
      * <ul>
      * <li>For SE requiring an AID based selection, the Selector should be defined with a non null
-     * ByteBuffer value.</li>
+     * byte array.</li>
      * <li>For SE requiring an ATR based selection, the Selector should be defined with a non null
      * String regular expression.</li>
      * <li>For SE supporting neither AID selection nor ATR selection, the Selector should be defined

@@ -35,7 +35,6 @@ import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import android.app.Fragment;
@@ -220,7 +219,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
             UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
                     new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
-                            ByteBufferUtils.fromHex(t2UsageRecord1_dataFill), "Hoplink EF T2Usage");
+                            ByteArrayUtils.fromHex(t2UsageRecord1_dataFill), "Hoplink EF T2Usage");
 
             List<ApduRequest> poApduRequestList;
 
@@ -230,7 +229,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
 
             SeRequest seRequest =
-                    new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
+                    new SeRequest(new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid)),
                             poApduRequestList, false, ContactlessProtocols.PROTOCOL_ISO14443_4);
 
 
@@ -244,7 +243,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                         if (response != null) {
                             for (ApduResponse apdu : response.getApduResponses()) {
                                 mText.append("Response : " + apdu.getStatusCode() + " - "
-                                        + ByteBufferUtils.toHex(apdu.getDataOut()));
+                                        + ByteArrayUtils.toHex(apdu.getDataOut()));
                                 mText.append("\n");
                             }
                         } else {

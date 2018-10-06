@@ -35,7 +35,7 @@ public final class ApduResponse implements Serializable {
 
 
     /**
-     * Create a new ApduResponse from the provided ByteBuffer
+     * Create a new ApduResponse from the provided byte array
      *
      * The internal successful status is determined by the current status code and the optional
      * successful status codes list.
@@ -119,15 +119,14 @@ public final class ApduResponse implements Serializable {
         }
 
         ApduResponse resp = (ApduResponse) o;
-        return (resp.getBytes() == null ? this.bytes == null : resp.getBytes().equals(this.bytes))
-                && resp.isSuccessful() == this.successful;
+        return Arrays.equals(resp.getBytes(), this.bytes) && resp.isSuccessful() == this.successful;
     }
 
     @Override
     public int hashCode() {
         int hash = 17;
         hash = 19 * hash + (this.successful ? 0 : 1);
-        hash = 31 * hash + (bytes == null ? 0 : bytes.hashCode());
+        hash = 31 * hash + (bytes == null ? 0 : Arrays.hashCode(bytes));
         return hash;
     }
 }

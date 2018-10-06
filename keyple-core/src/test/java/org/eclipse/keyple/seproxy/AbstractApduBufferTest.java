@@ -9,7 +9,7 @@
 package org.eclipse.keyple.seproxy;
 
 
-import java.nio.ByteBuffer;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,8 +19,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class AbstractApduBufferTest {
     @Test
     public void getBytes() {
-        ByteBuffer command = ByteBuffer.allocate(3);
-        command.put((byte) 0x01);
+        byte[] command = new byte[3];
+        command[0] = (byte) 0x01;
         ApduRequest request = new ApduRequest(command, true);
         Assert.assertEquals(command, request.getBytes());
     }

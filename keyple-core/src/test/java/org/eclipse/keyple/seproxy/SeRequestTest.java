@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -175,7 +175,7 @@ public class SeRequestTest {
     }
 
     static SeRequest.Selector getAidSelector() {
-        return new SeRequest.AidSelector(ByteBufferUtils.fromHex("A000000291A000000191"));
+        return new SeRequest.AidSelector(ByteArrayUtils.fromHex("A000000291A000000191"));
     }
 
 }

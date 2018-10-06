@@ -48,7 +48,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      *        selection regular expression
      * @param successfulSelectionStatusCodes the list of successful status code for the select
      *        command
-     * @return an array of 2 ByteBuffers: ByteBuffer[0] the SE ATR, ByteBuffer[1] the SE FCI
+     * @return an array of 2 byte arrays: byte[0][] the SE ATR, byte[1][] the SE FCI
      * @throws KeypleReaderException if a reader error occurs
      * @throws KeypleApplicationSelectionException if the application selection fails
      */
@@ -101,10 +101,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             logger.trace("[{}] processApduRequest => {}, elapsed {} ms.", this.getName(),
                     apduRequest, elapsedMs);
         }
-        /*
-         * Fix buffer position before sending data We shouldn't have to re-use the buffer that was
-         * used to be sent but we have some code that does it.
-         */
+
         byte[] buffer = apduRequest.getBytes();
         apduResponse =
                 new ApduResponse(transmitApdu(buffer), apduRequest.getSuccessfulStatusCodes());
@@ -164,7 +161,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
         if (getResponseHackResponse.isSuccessful()) {
             // replace the two last status word bytes by the original status word
-            int position = getResponseHackResponseBytes.length;
             getResponseHackResponseBytes[getResponseHackResponseBytes.length - 2] =
                     (byte) (originalStatusCode >> 8);
             getResponseHackResponseBytes[getResponseHackResponseBytes.length - 1] =

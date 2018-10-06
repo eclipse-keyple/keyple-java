@@ -12,7 +12,6 @@ import static org.eclipse.keyple.calypso.transaction.PoSecureSession.Communicati
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.ModificationMode.ATOMIC;
 import static org.eclipse.keyple.integration.calypso.TestEngine.selectPO;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
@@ -24,7 +23,6 @@ import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -74,13 +72,13 @@ public class CommandSetTestSuite {
         poTransaction.processClosing(null, null, CommunicationMode.CONTACTLESS_MODE, false);
         /*
          * System.out.println("DataRead#: " +
-         * ByteBufferUtils.toHex(dataReadInSession.getApduResponses().get(1).getDataOut()));
+         * ByteArrayUtils.toHex(dataReadInSession.getApduResponses().get(1).getDataOut()));
          * 
          * System.out.println("SW1SW2: " +
          * Integer.toHexString(dataReadInSession.getApduResponses().get(1).getStatusCode() &
          * 0xFFFF));
          */
-        return ByteBufferUtils.toBytes(dataReadInSession.getApduResponses().get(1).getDataOut());
+        return dataReadInSession.getApduResponses().get(1).getDataOut();
     }
 
 
@@ -90,9 +88,9 @@ public class CommandSetTestSuite {
         poTransaction.processOpening(ATOMIC, PoSecureSession.SessionAccessLevel.SESSION_LVL_LOAD,
                 (byte) 0x00, (byte) 0x00, null);
 
-        UpdateRecordCmdBuild poUpdateRecordCmd = new UpdateRecordCmdBuild(
-                poTransaction.getRevision(), sfi, recordNumber, ByteBuffer.wrap(dataToWrite),
-                String.format("SFI=%02X, recnbr=%d", sfi, recordNumber));
+        UpdateRecordCmdBuild poUpdateRecordCmd =
+                new UpdateRecordCmdBuild(poTransaction.getRevision(), sfi, recordNumber,
+                        dataToWrite, String.format("SFI=%02X, recnbr=%d", sfi, recordNumber));
 
         List<PoSendableInSession> filesToChangeInSession = new ArrayList<PoSendableInSession>();
         filesToChangeInSession.add((PoSendableInSession) poUpdateRecordCmd);
@@ -158,7 +156,7 @@ public class CommandSetTestSuite {
 
             byte[] counterData = new byte[poData.getCountersFileData().getRecSize()];
 
-            System.arraycopy(genericCounterData, 0, counterData, 0, counterData.length);
+            System.arraycopy(genericCounterData, 0, counterData, 0, genericCounterData.length);
 
             updateRecord(poTransaction, poData.getCountersFileData().getSfi(), (byte) 0x01,
                     counterData);

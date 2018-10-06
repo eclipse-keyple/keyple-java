@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.plugin.pcsc;
 
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -16,7 +15,7 @@ import javax.smartcardio.*;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.exception.*;
 import org.eclipse.keyple.seproxy.plugin.AbstractThreadedLocalReader;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -188,7 +187,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 throw new KeypleReaderException("Target selector mask not found!", null);
             }
             Pattern p = Pattern.compile(selectionMask);
-            String atr = ByteBufferUtils.toHex(ByteBuffer.wrap(card.getATR().getBytes()));
+            String atr = ByteArrayUtils.toHex(card.getATR().getBytes());
             if (!p.matcher(atr).matches()) {
                 if (logging) {
                     logger.trace("[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}",

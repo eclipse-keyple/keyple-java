@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,31 +32,31 @@ public class ApduResponseTest {
 
     @Test
     public void constructorSuccessFullResponse() {
-        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), null);
+        ApduResponse response = new ApduResponse(ByteArrayUtils.fromHex("FEDCBA98 9000h"), null);
         assertNotNull(response);
         assertEquals(0x9000, response.getStatusCode());
-        assertEquals("FEDCBA989000", ByteBufferUtils.toHex(response.getBytes()));
-        assertEquals(ByteBufferUtils.fromHex("FEDCBA98"), response.getDataOut());
+        assertEquals("FEDCBA989000", ByteArrayUtils.toHex(response.getBytes()));
+        assertArrayEquals(ByteArrayUtils.fromHex("FEDCBA98"), response.getDataOut());
         assertTrue(response.isSuccessful());
     }
 
     @Test
     public void constructorSuccessFullResponseWithCustomCode() {
         ApduResponse response =
-                new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9005h"), getA9005CustomCode());
+                new ApduResponse(ByteArrayUtils.fromHex("FEDCBA98 9005h"), getA9005CustomCode());
         assertNotNull(response);
         assertEquals(0x9005, response.getStatusCode());
-        assertEquals("FEDCBA989005", ByteBufferUtils.toHex(response.getBytes()));
-        assertEquals(ByteBufferUtils.fromHex("FEDCBA98"), response.getDataOut());
+        assertEquals("FEDCBA989005", ByteArrayUtils.toHex(response.getBytes()));
+        assertArrayEquals(ByteArrayUtils.fromHex("FEDCBA98"), response.getDataOut());
         assertTrue(response.isSuccessful());
     }
 
     @Test
     public void constructorFailResponse() {
-        ApduResponse response = new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9004h"), null);
+        ApduResponse response = new ApduResponse(ByteArrayUtils.fromHex("FEDCBA98 9004h"), null);
         assertNotNull(response);
-        assertEquals("FEDCBA989004", ByteBufferUtils.toHex(response.getBytes()));
-        assertEquals(ByteBufferUtils.fromHex("FEDCBA98"), response.getDataOut());
+        assertEquals("FEDCBA989004", ByteArrayUtils.toHex(response.getBytes()));
+        assertArrayEquals(ByteArrayUtils.fromHex("FEDCBA98"), response.getDataOut());
         assertEquals(0x9004, response.getStatusCode());
         assertFalse(response.isSuccessful());
     }
@@ -64,10 +64,10 @@ public class ApduResponseTest {
     @Test
     public void constructorFailResponseWithCustomCode() {
         ApduResponse response =
-                new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9004h"), getA9005CustomCode());
+                new ApduResponse(ByteArrayUtils.fromHex("FEDCBA98 9004h"), getA9005CustomCode());
         assertNotNull(response);
-        assertEquals("FEDCBA989004", ByteBufferUtils.toHex(response.getBytes()));
-        assertEquals(ByteBufferUtils.fromHex("FEDCBA98"), response.getDataOut());
+        assertEquals("FEDCBA989004", ByteArrayUtils.toHex(response.getBytes()));
+        assertArrayEquals(ByteArrayUtils.fromHex("FEDCBA98"), response.getDataOut());
         assertEquals(0x9004, response.getStatusCode());
         assertFalse(response.isSuccessful());
     }
@@ -128,16 +128,16 @@ public class ApduResponseTest {
     }
 
     static ApduResponse getAAtr() {
-        return new ApduResponse(ByteBufferUtils.fromHex("3B8F8001804F0CA000000306030001000000006A"),
+        return new ApduResponse(ByteArrayUtils.fromHex("3B8F8001804F0CA000000306030001000000006A"),
                 null);
     }
 
     static ApduResponse getAFCI() {
-        return new ApduResponse(ByteBufferUtils.fromHex("9000"), null);
+        return new ApduResponse(ByteArrayUtils.fromHex("9000"), null);
     }
 
     static ApduResponse getSuccessfullResponse() {
-        return new ApduResponse(ByteBufferUtils.fromHex("FEDCBA98 9000h"), null);
+        return new ApduResponse(ByteArrayUtils.fromHex("FEDCBA98 9000h"), null);
     }
 
     static List<ApduResponse> getAListOfAPDUs() {
