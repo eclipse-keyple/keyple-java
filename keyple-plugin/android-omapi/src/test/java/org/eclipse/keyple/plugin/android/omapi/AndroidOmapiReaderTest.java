@@ -192,8 +192,7 @@ public class AndroidOmapiReaderTest {
         when(channel.getSession()).thenReturn(session);
 
         when(channel.transmit(ByteArrayUtils.fromHex("00B201A420"))).thenReturn(ByteArrayUtils
-                .fromHex("00000000000000000000000000000000000000000000000000000000000000009000")
-                .array());
+                .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
 
         return omapiReader;
 
