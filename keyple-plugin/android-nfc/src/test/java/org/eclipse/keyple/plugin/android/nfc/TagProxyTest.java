@@ -136,7 +136,7 @@ public class TagProxyTest {
         TagProxy tagProxy = TagProxy.getTagProxy(tagMifare);
 
         Assert.assertTrue(Arrays.equals(tagProxy.getATR(),
-                ByteArrayUtils.fromHex("3B8F8001804F0CA000000306030001000000006A").array()));
+                ByteArrayUtils.fromHex("3B8F8001804F0CA000000306030001000000006A")));
     }
 
     @Test(expected = Test.None.class /* no exception expected */)
@@ -152,7 +152,7 @@ public class TagProxyTest {
 
         TagProxy tagProxy = TagProxy.getTagProxy(tagMifareUL);
         Assert.assertTrue(Arrays.equals(tagProxy.getATR(),
-                ByteArrayUtils.fromHex("3B8F8001804F0CA0000003060300030000000068").array()));
+                ByteArrayUtils.fromHex("3B8F8001804F0CA0000003060300030000000068")));
     }
 
 

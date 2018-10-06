@@ -9,6 +9,7 @@
 package org.eclipse.keyple.plugin.android.nfc;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
@@ -89,14 +90,11 @@ public class AndroidNfcReaderTest {
         SeRequestSet requests = getRequestIsoDepSetSample();
 
         // init Mock
-        when(tagProxy.transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100")
-                .array())).thenReturn(ByteArrayUtils.fromHex(
-                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000")
-                        .array());
-        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420").array()))
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100")))
                 .thenReturn(ByteArrayUtils.fromHex(
-                        "00000000000000000000000000000000000000000000000000000000000000009000")
-                        .array());
+                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"));
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420"))).thenReturn(ByteArrayUtils
+                .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
         when(tagProxy.getTech())
                 .thenReturn(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4.getValue());
         when(tagProxy.isConnected()).thenReturn(true);
@@ -121,14 +119,11 @@ public class AndroidNfcReaderTest {
         SeRequestSet requests = getRequestIsoDepSetSample();
 
         // init Mock with Mifare Classic Smart card
-        when(tagProxy.transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100")
-                .array())).thenReturn(ByteArrayUtils.fromHex(
-                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000")
-                        .array());
-        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420").array()))
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100")))
                 .thenReturn(ByteArrayUtils.fromHex(
-                        "00000000000000000000000000000000000000000000000000000000000000009000")
-                        .array());
+                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"));
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420"))).thenReturn(ByteArrayUtils
+                .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
         when(tagProxy.getTech())
                 .thenReturn(AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC.getValue());
         when(tagProxy.isConnected()).thenReturn(true);
@@ -153,14 +148,11 @@ public class AndroidNfcReaderTest {
         SeRequestSet requests = getRequestIsoDepSetSample();
 
         // init Mock with Isodep Classic Smart card
-        when(tagProxy.transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100")
-                .array())).thenReturn(ByteArrayUtils.fromHex(
-                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000")
-                        .array());
-        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420").array()))
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100")))
                 .thenReturn(ByteArrayUtils.fromHex(
-                        "00000000000000000000000000000000000000000000000000000000000000009000")
-                        .array());
+                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"));
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420"))).thenReturn(ByteArrayUtils
+                .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
         when(tagProxy.getTech())
                 .thenReturn(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4.getValue());
         when(tagProxy.isConnected()).thenReturn(true);
@@ -185,14 +177,11 @@ public class AndroidNfcReaderTest {
         SeRequestSet requests = getRequestIsoDepSetSample();
 
         // init Mock with Isodep Classic Smart card
-        when(tagProxy.transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100")
-                .array())).thenReturn(ByteArrayUtils.fromHex(
-                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000")
-                        .array());
-        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420").array()))
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100")))
                 .thenReturn(ByteArrayUtils.fromHex(
-                        "00000000000000000000000000000000000000000000000000000000000000009000")
-                        .array());
+                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"));
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420"))).thenReturn(ByteArrayUtils
+                .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
         when(tagProxy.getTech())
                 .thenReturn(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4.getValue());
 
@@ -218,14 +207,11 @@ public class AndroidNfcReaderTest {
         SeRequestSet requests = getRequestIsoDepSetSample();
 
         // init Mock with Isodep Classic Smart card
-        when(tagProxy.transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100")
-                .array())).thenReturn(ByteArrayUtils.fromHex(
-                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000")
-                        .array());
-        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420").array()))
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100")))
                 .thenReturn(ByteArrayUtils.fromHex(
-                        "00000000000000000000000000000000000000000000000000000000000000009000")
-                        .array());
+                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"));
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420"))).thenReturn(ByteArrayUtils
+                .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
         when(tagProxy.isConnected()).thenReturn(false);
 
         // unknown card
@@ -251,17 +237,14 @@ public class AndroidNfcReaderTest {
         SeRequestSet requests = getRequestIsoDepSetSample();
 
         // init Mock with Isodep Classic Smart card
-        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420").array()))
-                .thenReturn(ByteArrayUtils.fromHex(
-                        "00000000000000000000000000000000000000000000000000000000000000009000")
-                        .array());
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00B201A420"))).thenReturn(ByteArrayUtils
+                .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
         when(tagProxy.isConnected()).thenReturn(false);
         when(tagProxy.getTech()).thenReturn("Unknown card");
 
         // unknown Application
-        when(tagProxy
-                .transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100").array()))
-                        .thenReturn(ByteArrayUtils.fromHex("0000").array());
+        when(tagProxy.transceive(ByteArrayUtils.fromHex("00A404000AA000000291A00000019100")))
+                .thenReturn(ByteArrayUtils.fromHex("0000"));
 
         // test
         insertSe();
@@ -371,7 +354,7 @@ public class AndroidNfcReaderTest {
         insertSe();
         byte[] atr = new byte[] {(byte) 0x90, 0x00};
         when(tagProxy.getATR()).thenReturn(atr);
-        assertEquals(atr, reader.getATR().array());
+        assertEquals(atr, reader.getATR());
     }
 
     @Test
@@ -438,7 +421,7 @@ public class AndroidNfcReaderTest {
         byte[] outBB = reader.transmitApdu(in);
 
         // assert
-        Assert.assertArrayEquals(out, outBB);
+        assertArrayEquals(out, outBB);
 
     }
 

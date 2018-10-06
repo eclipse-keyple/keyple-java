@@ -109,9 +109,9 @@ class TagProxy implements TagTechnology {
     byte[] getATR() {
 
         if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC)) {
-            return ByteArrayUtils.fromHex("3B8F8001804F0CA000000306030001000000006A").array();
+            return ByteArrayUtils.fromHex("3B8F8001804F0CA000000306030001000000006A");
         } else if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL)) {
-            return ByteArrayUtils.fromHex("3B8F8001804F0CA0000003060300030000000068").array();
+            return ByteArrayUtils.fromHex("3B8F8001804F0CA0000003060300030000000068");
         } else if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_ISODEP)) {
             return ((IsoDep) tagTechnology).getHiLayerResponse() != null
                     ? ((IsoDep) tagTechnology).getHiLayerResponse()
