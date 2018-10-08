@@ -18,6 +18,7 @@ import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,15 +41,15 @@ public class CommandSample {
             String poAid = "A000000291A000000191";
 
             // build 1st seRequestSet with keep channel open to true
-            final ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(
-                    PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
+            ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                    (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
 
 
 
             List<ApduRequest> poApduRequestList;
             poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
             final SeRequest.Selector selector =
-                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
+                    new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid));
             SeRequest seRequest = new SeRequest(selector, poApduRequestList, true);
 
             // SYNC transmit seRequestSet to Reader With Callback function
@@ -58,10 +59,8 @@ public class CommandSample {
                     "Received SYNCHRONOUSLY a 1rt SeResponseSet - isSuccessful : {}",seResponseSet.getSingleResponse().getApduResponses().iterator().next().isSuccessful());
 
             // build 1st seRequestSet with keep channel open to true
-            final ReadRecordsCmdBuild poReadRecordCmd_T2Env2 = new ReadRecordsCmdBuild(
-                    PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
-
-
+            ReadRecordsCmdBuild poReadRecordCmd_T2Env2 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                    (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
 
             List<ApduRequest> poApduRequestList2;
             poApduRequestList2 = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
@@ -99,15 +98,15 @@ public class CommandSample {
             String poAid = "A000000291A000000191";
 
             // build 1st seRequestSet with keep channel open to true
-            final ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(
-                    PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
+            ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                    (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
 
 
 
             List<ApduRequest> poApduRequestList;
             poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
             final SeRequest.Selector selector =
-                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
+                    new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid));
             SeRequest seRequest = new SeRequest(selector, poApduRequestList, true);
 
             // ASYNC transmit seRequestSet to Reader With Callback function
@@ -120,8 +119,8 @@ public class CommandSample {
 
                     List<ApduRequest> poApduRequestList2;
 
-                    final ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(
-                            PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01, true, (byte) 0x30);
+                    ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                            (byte) 0x1A, (byte) 0x01, true, (byte) 0x30, "Hoplink EF T2Usage");
                     poApduRequestList2 = Arrays.asList(poReadRecordCmd_T2Usage.getApduRequest(),
                             poReadRecordCmd_T2Usage.getApduRequest());
 
@@ -173,15 +172,13 @@ public class CommandSample {
                     String poAid = "A000000291A000000191";
 
                     // build 1st seRequestSet with keep channel open to true
-                    final ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(
-                            PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
-
-
+                    ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                            (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
 
                     List<ApduRequest> poApduRequestList;
                     poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
                     final SeRequest.Selector selector =
-                            new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
+                            new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid));
                     SeRequest seRequest = new SeRequest(selector, poApduRequestList, true);
 
                     // SYNC transmit seRequestSet to Reader With Callback function
@@ -192,8 +189,8 @@ public class CommandSample {
                             seResponseSet.getResponses().get(0).wasChannelPreviouslyOpen(), seResponseSet);
 
                     // build 1st seRequestSet with keep channel open to true
-                    final ReadRecordsCmdBuild poReadRecordCmd_T2Env2 = new ReadRecordsCmdBuild(
-                            PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
+                    ReadRecordsCmdBuild poReadRecordCmd_T2Env2 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
+                            (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
 
 
 

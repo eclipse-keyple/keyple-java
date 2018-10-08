@@ -10,6 +10,7 @@ package org.eclipse.keyple.plugin.remote_se.transport.json;
 
 import java.lang.reflect.Type;
 import org.eclipse.keyple.seproxy.SeRequest;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import com.google.gson.*;
 
@@ -21,7 +22,7 @@ public class GsonSelectorTypeAdapter
             JsonSerializationContext context) {
         if (src instanceof SeRequest.AidSelector) {
             return new JsonPrimitive("aidselector::"
-                    + ByteBufferUtils.toHex(((SeRequest.AidSelector) src).getAidToSelect()));
+                    + ByteArrayUtils.toHex(((SeRequest.AidSelector) src).getAidToSelect()));
         } else {
             return new JsonPrimitive("atrselector::" + ((SeRequest.AtrSelector) src).getAtrRegex());
         }
@@ -37,7 +38,7 @@ public class GsonSelectorTypeAdapter
         } else {
             if (element.startsWith("aidselector::")) {
                 String aidToSelect = element.replace("aidselector::", "");
-                return new SeRequest.AidSelector(ByteBufferUtils.fromHex(aidToSelect));
+                return new SeRequest.AidSelector(ByteArrayUtils.fromHex(aidToSelect));
 
             } else {
                 throw new JsonParseException("SeRequest.Selector malformed");

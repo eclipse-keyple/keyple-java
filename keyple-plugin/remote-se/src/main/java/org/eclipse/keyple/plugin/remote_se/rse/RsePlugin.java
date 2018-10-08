@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import sun.plugin2.message.transport.Transport;
 
 public class RsePlugin extends Observable implements ObservablePlugin, DtoDispatcher {
 

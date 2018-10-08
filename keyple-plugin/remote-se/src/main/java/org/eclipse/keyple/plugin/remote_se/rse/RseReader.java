@@ -9,9 +9,8 @@
 package org.eclipse.keyple.plugin.remote_se.rse;
 
 import java.util.Map;
-import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.SeRequestSet;
-import org.eclipse.keyple.seproxy.SeResponseSet;
+
+import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
@@ -66,6 +65,12 @@ public class RseReader extends Observable implements ObservableReader {
     public SeResponseSet transmit(SeRequestSet seRequestSet)
             throws KeypleReaderException, IllegalArgumentException {
         return ((IReaderAsyncSession) session).transmit(seRequestSet);
+    }
+
+    @Override
+    public SeResponse transmit(SeRequest seApplicationRequest) throws KeypleReaderException, IllegalArgumentException {
+        return ((IReaderAsyncSession) session).transmit(new SeRequestSet(seApplicationRequest)).getSingleResponse();
+        //todo change this?
     }
 
     /**
