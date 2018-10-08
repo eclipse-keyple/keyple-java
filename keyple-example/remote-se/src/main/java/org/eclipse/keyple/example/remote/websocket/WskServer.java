@@ -24,15 +24,13 @@ public class WskServer extends WebSocketServer implements ServerNode {
 
     private static final Logger logger = LoggerFactory.getLogger(WskServer.class);
     private DtoDispatcher stubplugin;
-    private ConnectionCb connectionCb;
 
     // only for when server is slave
     private Boolean isSlave;
     private WebSocket masterWebSocket;
 
-    public WskServer(InetSocketAddress address, ConnectionCb connectionCb, Boolean isSlave) {
+    public WskServer(InetSocketAddress address, Boolean isSlave) {
         super(address);
-        this.connectionCb = connectionCb;
         this.isSlave = isSlave;
     }
 
@@ -43,9 +41,6 @@ public class WskServer extends WebSocketServer implements ServerNode {
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         logger.debug("Web socket onOpen {} {}", conn, handshake);
         masterWebSocket = conn;
-        if (connectionCb != null) {
-            connectionCb.onConnection(conn);
-        }
     }
 
     @Override

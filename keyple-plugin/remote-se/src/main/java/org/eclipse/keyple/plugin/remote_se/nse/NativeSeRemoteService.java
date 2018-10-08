@@ -25,7 +25,7 @@ import com.google.gson.JsonPrimitive;
 /**
  *
  */
-public class NativeSeRemoteService implements NseAPI, RseClient, DtoDispatcher {
+public class NativeSeRemoteService implements RseClient, DtoDispatcher {
 
     private static final Logger logger = LoggerFactory.getLogger(NativeSeRemoteService.class);
 
@@ -155,8 +155,7 @@ public class NativeSeRemoteService implements NseAPI, RseClient, DtoDispatcher {
 
 
     // NseAPI
-    @Override
-    public SeResponseSet onTransmit(String sessionId, SeRequestSet req)
+    private SeResponseSet onTransmit(String sessionId, SeRequestSet req)
             throws KeypleReaderException {
         try {
             ProxyReader reader =

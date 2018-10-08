@@ -11,14 +11,13 @@ package org.eclipse.keyple.example.remote;
 
 import java.io.IOException;
 import org.eclipse.keyple.example.remote.common.TransportFactory;
-import org.eclipse.keyple.example.remote.websocket.WskFactory;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Demo {
+public class ProtocolThreads {
 
-    private static final Logger logger = LoggerFactory.getLogger(Demo.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProtocolThreads.class);
 
 
     static public void startServer(final Boolean isTransmitAsync, final Boolean isMaster,
@@ -90,25 +89,5 @@ public class Demo {
         client.start();
     };
 
-    public static void main(String[] args) throws Exception {
 
-        Boolean isTransmitSync = false; // is Transmit API Blocking or Not Blocking
-
-        // TransportFactory factory = new WsPollingFactory(); // HTTP Web Polling
-        TransportFactory factory = new WskFactory(); // Web socket
-
-        Boolean isMasterServer = true; // Master is the server (and Slave the Client) or reverse
-
-
-
-        /**
-         * Demo
-         */
-
-        startServer(isTransmitSync, isMasterServer, factory);
-        Thread.sleep(1000);
-        startClient(isTransmitSync, !isMasterServer, factory);
-
-
-    }
 }

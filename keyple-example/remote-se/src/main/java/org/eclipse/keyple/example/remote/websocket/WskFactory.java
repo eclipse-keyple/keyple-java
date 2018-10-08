@@ -21,11 +21,8 @@ import org.slf4j.LoggerFactory;
 
 public class WskFactory extends TransportFactory {
 
-    Boolean localhost = true;
-    Integer port = 8002;
-    String pollingUrl = "/polling";
+    Integer port = 8001;
     String keypleUrl = "/keypleDTO";
-    String nodeId = "local1";
     String bindUrl = "0.0.0.0";
     String protocol = "http://";
 
@@ -56,7 +53,7 @@ public class WskFactory extends TransportFactory {
         logger.info("*** Create Websocket Server ***");
 
         InetSocketAddress inet = new InetSocketAddress(Inet4Address.getByName(bindUrl), port);
-        WskServer wskServer = new WskServer(inet, null, !isMaster);
+        WskServer wskServer = new WskServer(inet, !isMaster);
         return wskServer;
     }
 }

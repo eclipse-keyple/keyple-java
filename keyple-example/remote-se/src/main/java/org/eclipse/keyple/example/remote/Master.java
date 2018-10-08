@@ -10,7 +10,7 @@ package org.eclipse.keyple.example.remote;
 
 import java.io.IOException;
 import org.eclipse.keyple.example.remote.common.ClientNode;
-import org.eclipse.keyple.example.remote.common.CommandSample;
+import org.eclipse.keyple.example.remote.sample.CommandSample;
 import org.eclipse.keyple.example.remote.common.ServerNode;
 import org.eclipse.keyple.example.remote.common.TransportFactory;
 import org.eclipse.keyple.example.remote.common.TransportNode;

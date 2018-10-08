@@ -189,11 +189,11 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
 
     // called by node transport
     @Override
-    public TransportDto onDTO(TransportDto message) {
+    public TransportDto onDTO(TransportDto transportDto) {
 
-        KeypleDto msg = message.getKeypleDTO();
+        KeypleDto keypleDTO = transportDto.getKeypleDTO();
         TransportDto out = null;
-        logger.debug("onDTO {}", KeypleDtoHelper.toJson(message.getKeypleDTO()));
+        logger.debug("onDTO {}", KeypleDtoHelper.toJson(transportDto.getKeypleDTO()));
 
 
         // if (msg.getHash()!=null && !KeypleDtoHelper.verifyHash(msg, msg.getHash())) {
@@ -201,28 +201,22 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
         // }
 
         // READER EVENT : SE_INSERTED, SE_REMOVED etc..
-        if (msg.getAction().equals(KeypleDtoHelper.READER_EVENT)) {
+        if (keypleDTO.getAction().equals(KeypleDtoHelper.READER_EVENT)) {
             logger.info("**** ACTION - READER_EVENT ****");
 
-            ReaderEvent event = JsonParser.getGson().fromJson(msg.getBody(), ReaderEvent.class);
+            ReaderEvent event = JsonParser.getGson().fromJson(keypleDTO.getBody(), ReaderEvent.class);
 
-            this.onReaderEvent(event, msg.getSessionId());
+            //dispatch reader event
+            this.onReaderEvent(event, keypleDTO.getSessionId());
 
-            // check if there is SeRequest to send back
-            TransportDto response = sendBackSeRequest(message);
+            //chain response with a seRequest if needed
+            out = isSeRequestToSendBack(transportDto);
 
-            if (response == null) {
-                // if not send, no response
-                out = message.nextTransportDTO(KeypleDtoHelper.NoResponse());
-            } else {
-                out = response;
-            }
-
-        } else if (msg.getAction().equals(KeypleDtoHelper.READER_CONNECT)) {
+        } else if (keypleDTO.getAction().equals(KeypleDtoHelper.READER_CONNECT)) {
             logger.info("**** ACTION - READER_CONNECT ****");
 
             // parse msg
-            JsonObject body = JsonParser.getGson().fromJson(msg.getBody(), JsonObject.class);
+            JsonObject body = JsonParser.getGson().fromJson(keypleDTO.getBody(), JsonObject.class);
             String readerName = body.get("nativeReaderName").getAsString();
             Boolean isAsync = body.get("isAsync").getAsBoolean();
             String nodeId = body.get("nodeId").getAsString();
@@ -240,10 +234,8 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
                 rseSession = new ReaderAsyncSessionImpl(sessionId);
                 // add the web socket node as an observer for the session as the session will send
                 // KeypleDto
-                ((ReaderAsyncSessionImpl) rseSession).addObserver(message.getDtoSender());// todo
-                                                                                          // found
-                                                                                          // bugs
-                                                                                          // here
+                ((ReaderAsyncSessionImpl) rseSession).addObserver(transportDto.getDtoSender());
+
                 this.connectRemoteReader(readerName, rseSession);
             }
 
@@ -252,45 +244,39 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
             JsonObject respBody = new JsonObject();
             respBody.add("statusCode", new JsonPrimitive(0));
             respBody.add("nativeReaderName", new JsonPrimitive(readerName));
-            out = message.nextTransportDTO(new KeypleDto(KeypleDtoHelper.READER_CONNECT,
+            out = transportDto.nextTransportDTO(new KeypleDto(KeypleDtoHelper.READER_CONNECT,
                     respBody.toString(), false, sessionId));
 
-        } else if (msg.getAction().equals(KeypleDtoHelper.READER_DISCONNECT)) {
+        } else if (keypleDTO.getAction().equals(KeypleDtoHelper.READER_DISCONNECT)) {
             logger.info("**** ACTION - READER_DISCONNECT ****");
 
             // not implemented yet
-            out = message.nextTransportDTO(KeypleDtoHelper.NoResponse());
+            out = transportDto.nextTransportDTO(KeypleDtoHelper.NoResponse());
 
-        } else if (msg.getAction().equals(KeypleDtoHelper.READER_TRANSMIT) && !msg.isRequest()) {
+        } else if (keypleDTO.getAction().equals(KeypleDtoHelper.READER_TRANSMIT) && !keypleDTO.isRequest()) {
             logger.info("**** RESPONSE - READER_TRANSMIT ****");
 
             // parse msg
             SeResponseSet seResponseSet =
-                    JsonParser.getGson().fromJson(msg.getBody(), SeResponseSet.class);
+                    JsonParser.getGson().fromJson(keypleDTO.getBody(), SeResponseSet.class);
             logger.debug("Receive responseSet from transmit {}", seResponseSet);
             RseReader reader = null;
             try {
-                reader = this.getReaderBySessionId(msg.getSessionId());
+                reader = this.getReaderBySessionId(keypleDTO.getSessionId());
                 ((IReaderAsyncSession) reader.getSession()).asyncSetSeResponseSet(seResponseSet);
 
-                // check if there is SeRequest to send back
-                TransportDto response = sendBackSeRequest(message);
-                if (response == null) {
-                    // if not send, no response
-                    out = message.nextTransportDTO(KeypleDtoHelper.NoResponse());
-                } else {
-                    out = response;
-                }
+                //chain response with a seRequest if needed
+                out = isSeRequestToSendBack(transportDto);
 
             } catch (KeypleReaderNotFoundException e) {
                 e.printStackTrace();
-                out = message.nextTransportDTO(KeypleDtoHelper.ErrorDTO());
+                out = transportDto.nextTransportDTO(KeypleDtoHelper.ErrorDTO());
             }
         } else {
             logger.info("**** ERROR - UNRECOGNIZED ****");
-            logger.error("Receive unrecognized message action : {} {} {} {}", msg.getAction(),
-                    msg.getSessionId(), msg.getBody(), msg.isRequest());
-            out = message.nextTransportDTO(KeypleDtoHelper.NoResponse());
+            logger.error("Receive unrecognized message action : {} {} {} {}", keypleDTO.getAction(),
+                    keypleDTO.getSessionId(), keypleDTO.getBody(), keypleDTO.isRequest());
+            out = transportDto.nextTransportDTO(KeypleDtoHelper.NoResponse());
         }
 
         logger.debug("onDTO response {}", KeypleDtoHelper.toJson(out.getKeypleDTO()));
@@ -301,24 +287,31 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
 
 
 
-    private TransportDto sendBackSeRequest(TransportDto tdto) {
+    private TransportDto isSeRequestToSendBack(TransportDto tdto) {
+        TransportDto out = null;
         try {
+            //retrieve reader by session
             RseReader rseReader = this.getReaderBySessionId(tdto.getKeypleDTO().getSessionId());
 
             if (rseReader.getSession().isAsync()
                     && ((IReaderAsyncSession) rseReader.getSession()).hasSeRequestSet()) {
 
                 // send back seRequestSet
-                return tdto.nextTransportDTO(new KeypleDto(KeypleDtoHelper.READER_TRANSMIT,
+                out=  tdto.nextTransportDTO(new KeypleDto(KeypleDtoHelper.READER_TRANSMIT,
                         JsonParser.getGson().toJson(
                                 ((IReaderAsyncSession) rseReader.getSession()).getSeRequestSet()),
                         true, rseReader.getSession().getSessionId()));
+            }else{
+                //no response
+                out = tdto.nextTransportDTO(KeypleDtoHelper.NoResponse());
             }
 
         } catch (KeypleReaderNotFoundException e) {
             logger.debug("Reader was not found by session", e);
+            out = tdto.nextTransportDTO(KeypleDtoHelper.ErrorDTO());
         }
-        return null;
+
+        return out;
     }
 
 

@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.example.remote.common;
+package org.eclipse.keyple.example.remote.sample;
 
 import java.util.Arrays;
 import java.util.List;
@@ -51,7 +51,7 @@ public class CommandSample {
             SeRequest seRequest = new SeRequest(selector, poApduRequestList, true);
 
             // SYNC transmit seRequestSet to Reader With Callback function
-            SeResponseSet seResponseSet = reader.transmitNewThread(new SeRequestSet(seRequest));
+            SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
 
             logger.info("Received SYNCHRONOUSLY a 1rt SeResponseSet - isSuccessful : {}",
                     seResponseSet.getSingleResponse().getApduResponses().iterator().next()
@@ -67,7 +67,7 @@ public class CommandSample {
             SeRequest seRequest2 = new SeRequest(selector, poApduRequestList2, false);
 
             // SYNC transmit seRequestSet to Reader With Callback function
-            SeResponseSet seResponseSet2 = reader.transmitNewThread(new SeRequestSet(seRequest2));
+            SeResponseSet seResponseSet2 = reader.transmit(new SeRequestSet(seRequest2));
 
             logger.info("Received SYNCHRONOUSLY a 2nd SeResponseSet - isSuccessful : {}",
                     seResponseSet2.getSingleResponse().getApduResponses().iterator().next()
@@ -152,75 +152,6 @@ public class CommandSample {
             e.printStackTrace();
         }
 
-    }
-
-    @Deprecated
-    static public void transmitSyncCommand(final Logger logger, final String remoteReaderName) {
-
-        Thread thread = new Thread() {
-            public void run() {
-                try {
-
-
-                    logger.info("--- NEW THREAD FOR SYNC COMMAND RUNNING ---");
-
-                    // get the reader by its name
-                    final RseReader reader = (RseReader) ((RsePlugin) SeProxyService.getInstance()
-                            .getPlugins().first()).getReaderByRemoteName(remoteReaderName);
-
-                    String poAid = "A000000291A000000191";
-
-                    // build 1st seRequestSet with keep channel open to true
-                    ReadRecordsCmdBuild poReadRecordCmd_T2Env =
-                            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01,
-                                    true, (byte) 0x20, "Hoplink EF T2Environment");
-
-                    List<ApduRequest> poApduRequestList;
-                    poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
-                    final SeRequest.Selector selector =
-                            new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid));
-                    SeRequest seRequest = new SeRequest(selector, poApduRequestList, true);
-
-                    // SYNC transmit seRequestSet to Reader With Callback function
-                    SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
-
-                    logger.info(
-                            "Received SYNCHRONOUSLY a 1rt SeResponseSet with keep channel open {}, details : {}",
-                            seResponseSet.getResponses().get(0).wasChannelPreviouslyOpen(),
-                            seResponseSet);
-
-                    // build 1st seRequestSet with keep channel open to true
-                    ReadRecordsCmdBuild poReadRecordCmd_T2Env2 =
-                            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01,
-                                    true, (byte) 0x20, "Hoplink EF T2Environment");
-
-
-
-                    List<ApduRequest> poApduRequestList2;
-                    poApduRequestList2 = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
-
-                    SeRequest seRequest2 = new SeRequest(selector, poApduRequestList2, false);
-
-                    // SYNC transmit seRequestSet to Reader With Callback function
-                    SeResponseSet seResponseSet2 = reader.transmit(new SeRequestSet(seRequest2));
-
-                    logger.info(
-                            "Received SYNCHRONOUSLY a 2nd SeResponseSet with keep channel open {}, details : {}",
-                            seResponseSet2.getResponses().get(0).wasChannelPreviouslyOpen(),
-                            seResponseSet2);
-
-
-                } catch (KeypleReaderNotFoundException e) {
-                    e.printStackTrace();
-                } catch (KeypleReaderException e) {
-                    e.printStackTrace();
-                }
-
-
-            }
-        };
-
-        thread.start();
     }
 
 

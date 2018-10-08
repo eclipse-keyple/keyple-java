@@ -41,21 +41,22 @@ public class RseReader extends Observable implements ObservableReader {
         return remoteName;
     }
 
-    public IReaderSession getSession() {
+    IReaderSession getSession() {
         return session;
     }
 
     @Override
     public boolean isSePresent() {
+        logger.error("isSePresent is not implemented yet");
         return false;// not implemented
     }
 
     /**
-     * Transmit synchronously (works only with Sync Session)
-     * 
+     * Blocking Transmit
+     *
      * @param seRequestSet : SeRequestSe to be transmitted
      * @return seResponseSet : SeResponSet
-     * @throws KeypleReaderException, IllegalArgumentException
+     * @throws  IllegalArgumentException
      */
     @Override
     public SeResponseSet transmit(SeRequestSet seRequestSet) throws IllegalArgumentException {
@@ -66,25 +67,11 @@ public class RseReader extends Observable implements ObservableReader {
     public SeResponse transmit(SeRequest seApplicationRequest) throws IllegalArgumentException {
         return ((IReaderAsyncSession) session).transmit(new SeRequestSet(seApplicationRequest))
                 .getSingleResponse();
-        // todo change this?
-    }
-
-    /**
-     * Transmit synchronously (works only with Sync Session)
-     *
-     * @param seRequestSet : SeRequestSe to be transmitted
-     * @return seResponseSet : SeResponSet
-     * @throws KeypleReaderException, IllegalArgumentException
-     */
-
-    public SeResponseSet transmitNewThread(SeRequestSet seRequestSet)
-            throws IllegalArgumentException {
-        return ((IReaderAsyncSession) session).transmit(seRequestSet);
     }
 
 
     /**
-     * Transmit asynchronously (works only with ASync Session)
+     * Non blocking Transmit
      * 
      * @param seRequestSet : SeRequestSe to be transmitted
      * @param seResponseSetCallback : callback to get the seResponseSet
@@ -96,7 +83,8 @@ public class RseReader extends Observable implements ObservableReader {
 
     @Override
     public void addSeProtocolSetting(SeProtocolSetting seProtocolSetting) {
-        // not implemented
+        logger.error("addSeProtocolSetting is not implemented yet");
+
     }
 
     /**
@@ -126,16 +114,18 @@ public class RseReader extends Observable implements ObservableReader {
 
     @Override
     public Map<String, String> getParameters() {
+        logger.error("getParameters is not implemented yet");
         return null;
-    }// todo
+    }
 
     @Override
     public void setParameter(String key, String value) throws IllegalArgumentException {
-
+        logger.error("setParameter is not implemented yet");
     }
 
     @Override
     public void setParameters(Map<String, String> parameters) throws IllegalArgumentException {
+        logger.error("setParameters is not implemented yet");
 
     }
 

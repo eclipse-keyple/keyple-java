@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 public class WsPollingFactory extends TransportFactory {
 
     Boolean localhost = true;
-    Integer port = 8002;
+    Integer port = 8009;
     String pollingUrl = "/polling";
     String keypleUrl = "/keypleDTO";
     String nodeId = "local1";
