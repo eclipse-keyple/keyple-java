@@ -13,15 +13,17 @@ import org.eclipse.keyple.example.remote.common.ClientNode;
 import org.eclipse.keyple.example.remote.sample.CommandSample;
 import org.eclipse.keyple.example.remote.common.ServerNode;
 import org.eclipse.keyple.example.remote.common.TransportFactory;
-import org.eclipse.keyple.example.remote.common.TransportNode;
+import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
 import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
 import org.eclipse.keyple.plugin.remote_se.rse.VirtualSeRemoteService;
+import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.util.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,12 @@ public class Master implements org.eclipse.keyple.util.Observable.Observer {
     private Boolean transmitSync;
 
 
+    /**
+     * Constructor of the Master thread, will kickoff server or client
+     * @param transportFactory
+     * @param isServer
+     * @param transmitSync
+     */
     public Master(TransportFactory transportFactory, Boolean isServer, Boolean transmitSync) {
 
         this.transmitSync = transmitSync;
@@ -65,20 +73,14 @@ public class Master implements org.eclipse.keyple.util.Observable.Observer {
     public void boot() throws IOException {
 
 
-        logger.info("Create Remote PLugin Interface");
-
-
-        logger.info("Create SeRemotePLugin and register it to SeProxyService");
-        RsePlugin rsePlugin = new RsePlugin();
+        logger.info("Create VirtualSeRemoteService start plugin");
+        VirtualSeRemoteService vse = new VirtualSeRemoteService(SeProxyService.getInstance(), node);
+        ReaderPlugin rsePlugin = vse.getPlugin();
 
         logger.info("Observe SeRemotePLugin for Plugin Events and Reader Events");
-        VirtualSeRemoteService vse = new VirtualSeRemoteService();
-        vse.setDtoSender(node);
-        vse.registerRsePlugin(rsePlugin);
-        this.node.setDtoDispatcher(rsePlugin);
+        ((Observable)rsePlugin).addObserver(this);
 
-        rsePlugin.addObserver(this);
-
+        vse.bindDtoEndpoint(node);
 
 
     }

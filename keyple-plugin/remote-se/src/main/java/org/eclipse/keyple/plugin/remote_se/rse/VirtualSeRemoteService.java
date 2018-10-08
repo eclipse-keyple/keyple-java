@@ -9,7 +9,9 @@
 package org.eclipse.keyple.plugin.remote_se.rse;
 
 import java.util.SortedSet;
+
 import org.eclipse.keyple.plugin.remote_se.transport.DtoSender;
+import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 
@@ -18,36 +20,32 @@ import org.eclipse.keyple.seproxy.SeProxyService;
  */
 public class VirtualSeRemoteService {
 
-    private DtoSender node;
+    private DtoSender dtoSender;
     private final SeProxyService seProxyService;
+    private RsePlugin plugin;
 
-    public VirtualSeRemoteService() {
-        this.seProxyService = SeProxyService.getInstance();
+    public VirtualSeRemoteService(SeProxyService seProxyService, DtoSender dtoSender) {
+        this.seProxyService = seProxyService;
+        this.dtoSender = dtoSender;
+
+        //instanciate plugin
+        this.plugin = startPlugin();
     }
 
-    /**
-     * Bind TransportNode to VirtualSeRemoteService
-     * 
-     * @param node
-     */
-    public void setDtoSender(DtoSender node) {
-        this.node = node;
+    public void bindDtoEndpoint(TransportNode node) {
+        node.setDtoDispatcher(plugin);
     }
 
-    /**
-     * Bind plugin to VirtualSeRemoteService
-     * 
-     * @param plugin
-     */
-    public void registerRsePlugin(RsePlugin plugin) {
+    public RsePlugin getPlugin(){
+        return plugin;
+    }
+
+    private RsePlugin startPlugin(){
         SortedSet<ReaderPlugin> plugins = seProxyService.getPlugins();
-        plugins.add(plugin);
+        RsePlugin rsePlugin = new RsePlugin();
+        plugins.add(rsePlugin);
         seProxyService.setPlugins(plugins);
-        // this.node.setDtoDispatcher(plugin); done by Master class
+        return rsePlugin;
     }
-
-
-    // manage session
-
 
 }

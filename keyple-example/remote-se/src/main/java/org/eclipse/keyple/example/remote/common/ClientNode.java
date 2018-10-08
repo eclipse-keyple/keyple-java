@@ -9,6 +9,8 @@
 package org.eclipse.keyple.example.remote.common;
 
 
+import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
+
 /**
  * Client type of a TransportNode, connects to a ServerNode
  */

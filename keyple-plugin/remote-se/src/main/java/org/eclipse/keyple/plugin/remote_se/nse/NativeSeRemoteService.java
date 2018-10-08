@@ -33,18 +33,19 @@ public class NativeSeRemoteService implements RseClient, DtoDispatcher {
     private final SeProxyService seProxyService;
     private final NseSessionManager nseSessionManager;
 
-    public NativeSeRemoteService() {
+    /**
+     * Constructor
+     * @param dtoSender : Define which DTO sender will be called when a DTO needs to be sent.
+     */
+    public NativeSeRemoteService(DtoSender dtoSender) {
         this.seProxyService = SeProxyService.getInstance();
+        this.dtoSender = dtoSender;
         this.nseSessionManager = new NseSessionManager();
     }
 
-    /**
-     * Define which DTO sender will be called when a DTO needs to be sent.
-     *
-     * @param node
-     */
-    public void setDtoSender(DtoSender node) {
-        this.dtoSender = node;
+
+    public void bindDtoEndpoint(TransportNode node){
+        node.setDtoDispatcher(this);// incoming traffic
     }
 
     /**

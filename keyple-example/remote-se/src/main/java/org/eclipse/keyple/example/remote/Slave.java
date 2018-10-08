@@ -16,7 +16,8 @@ import org.eclipse.keyple.example.pc.calypso.stub.se.StubHoplink;
 import org.eclipse.keyple.example.remote.common.ClientNode;
 import org.eclipse.keyple.example.remote.common.ServerNode;
 import org.eclipse.keyple.example.remote.common.TransportFactory;
-import org.eclipse.keyple.example.remote.common.TransportNode;
+import org.eclipse.keyple.plugin.remote_se.transport.DtoSender;
+import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.plugin.remote_se.nse.NativeSeRemoteService;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
@@ -81,9 +82,8 @@ public class Slave {
         // get the created proxy reader
         localReader = (StubReader) stubPlugin.getReader("stubClientSlave");
 
-        NativeSeRemoteService seRemoteService = new NativeSeRemoteService();
-        seRemoteService.setDtoSender(node);// outgoing traffic
-        node.setDtoDispatcher(seRemoteService);// incoming traffic
+        NativeSeRemoteService seRemoteService = new NativeSeRemoteService(node);//ougoing traffic
+        seRemoteService.bindDtoEndpoint(node);//incoming traffic
 
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("isAsync", true);

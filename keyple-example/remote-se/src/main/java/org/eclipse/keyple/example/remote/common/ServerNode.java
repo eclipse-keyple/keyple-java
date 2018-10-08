@@ -8,6 +8,8 @@
 
 package org.eclipse.keyple.example.remote.common;
 
+import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
+
 /**
  * Server type of a TransportNode, start and waits for clients to connect
  */

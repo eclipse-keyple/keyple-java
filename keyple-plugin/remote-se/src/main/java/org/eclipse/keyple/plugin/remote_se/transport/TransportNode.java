@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.example.remote.common;
+package org.eclipse.keyple.plugin.remote_se.transport;
 
 import org.eclipse.keyple.plugin.remote_se.transport.DtoDispatcher;
 import org.eclipse.keyple.plugin.remote_se.transport.DtoSender;
