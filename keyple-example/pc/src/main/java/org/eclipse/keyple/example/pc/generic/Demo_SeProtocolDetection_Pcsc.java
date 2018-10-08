@@ -13,7 +13,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.example.common.generic.CustomProtocolSetting;
 import org.eclipse.keyple.example.common.generic.Demo_SeProtocolDetectionEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
@@ -22,7 +21,6 @@ import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 
@@ -39,22 +37,17 @@ public class Demo_SeProtocolDetection_Pcsc {
      * Application entry
      *
      * @param args the program arguments
-     * @throws IOException if a IO error occurs
-     * @throws KeypleReaderException if a reader error occurs
-     * @throws InterruptedException if thread error occurs
+     * @throws IllegalArgumentException in case of a bad argument
+     * @throws KeypleBaseException if a reader error occurs
      */
     public static void main(String[] args) throws IllegalArgumentException, KeypleBaseException {
         /* get the SeProxyService instance */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
         /* add the PcscPlugin to the SeProxyService */
-        SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
-
         PcscPlugin pcscPlugin = PcscPlugin.getInstance();
 
-        pluginsSet.add(pcscPlugin);
-
-        seProxyService.setPlugins(pluginsSet);
+        seProxyService.addPlugin(pcscPlugin);
 
         /* attempt to get the ProxyReader (the right reader should be ready here) */
         ProxyReader poReader =

@@ -9,9 +9,9 @@
 package org.eclipse.keyple.seproxy;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Set;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 
 /**
@@ -31,11 +31,11 @@ public final class ApduResponse implements Serializable {
     /**
      * apdu response data buffer (including sw1sw2)
      */
-    private final ByteBuffer bytes;
+    private final byte[] bytes;
 
 
     /**
-     * Create a new ApduResponse from the provided ByteBuffer
+     * Create a new ApduResponse from the provided byte array
      *
      * The internal successful status is determined by the current status code and the optional
      * successful status codes list.
@@ -46,16 +46,17 @@ public final class ApduResponse implements Serializable {
      * @param buffer apdu response data buffer (including sw1sw2)
      * @param successfulStatusCodes optional list of successful status codes other than 0x9000
      */
-    public ApduResponse(ByteBuffer buffer, Set<Short> successfulStatusCodes) {
+    public ApduResponse(byte[] buffer, Set<Short> successfulStatusCodes) {
 
         this.bytes = buffer;
         if (buffer == null) {
             this.successful = false;
         } else {
-            if (buffer.limit() < 2) {
-                throw new IllegalArgumentException("Bad buffer (length < 2): " + buffer.limit());
+            if (buffer.length < 2) {
+                throw new IllegalArgumentException("Bad buffer (length < 2): " + buffer.length);
             }
-            int statusCode = buffer.getShort(buffer.limit() - 2);
+            int statusCode = ((buffer[buffer.length - 2] & 0x000000FF) << 8)
+                    + (buffer[buffer.length - 1] & 0x000000FF);
             // java is signed only
             if (statusCode < 0) {
                 statusCode += -2 * Short.MIN_VALUE;
@@ -79,7 +80,8 @@ public final class ApduResponse implements Serializable {
     }
 
     public int getStatusCode() {
-        int s = bytes.getShort(bytes.limit() - 2);
+        int s = ((bytes[bytes.length - 2] & 0x000000FF) << 8)
+                + (bytes[bytes.length - 1] & 0x000000FF);
 
         // java is signed only
         if (s < 0) {
@@ -88,7 +90,7 @@ public final class ApduResponse implements Serializable {
         return s;
     }
 
-    public ByteBuffer getBytes() {
+    public byte[] getBytes() {
         return this.bytes;
     }
 
@@ -97,14 +99,14 @@ public final class ApduResponse implements Serializable {
      * 
      * @return slice of the buffer before the status code
      */
-    public ByteBuffer getDataOut() {
-        return ByteBufferUtils.subLen(bytes, 0, bytes.limit() - 2);
+    public byte[] getDataOut() {
+        return Arrays.copyOfRange(this.bytes, 0, this.bytes.length - 2);
     }
 
     @Override
     public String toString() {
         return "ApduResponse: " + (isSuccessful() ? "SUCCESS" : "FAILURE") + ", RAWDATA = "
-                + ByteBufferUtils.toHex(this.bytes);
+                + ByteArrayUtils.toHex(this.bytes);
     }
 
     @Override
@@ -117,15 +119,14 @@ public final class ApduResponse implements Serializable {
         }
 
         ApduResponse resp = (ApduResponse) o;
-        return (resp.getBytes() == null ? this.bytes == null : resp.getBytes().equals(this.bytes))
-                && resp.isSuccessful() == this.successful;
+        return Arrays.equals(resp.getBytes(), this.bytes) && resp.isSuccessful() == this.successful;
     }
 
     @Override
     public int hashCode() {
         int hash = 17;
         hash = 19 * hash + (this.successful ? 0 : 1);
-        hash = 31 * hash + (bytes == null ? 0 : bytes.hashCode());
+        hash = 31 * hash + (bytes == null ? 0 : Arrays.hashCode(bytes));
         return hash;
     }
 }

@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.csm.builder;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.ApduRequest;
@@ -23,19 +23,17 @@ public class DigestCloseCmdBuildTest {
     @Test
     public void digestCloseCmdBuild() throws IllegalArgumentException {
 
-        ByteBuffer request =
-                ByteBuffer.wrap(new byte[] {(byte) 0x94, (byte) 0x8E, 0x00, 0x00, (byte) 0x04});
+        byte[] request = new byte[] {(byte) 0x94, (byte) 0x8E, 0x00, 0x00, (byte) 0x04};
         AbstractApduCommandBuilder apduCommandBuilder =
                 new DigestCloseCmdBuild(CsmRevision.S1D, (byte) 0x04);// 94
         ApduRequest apduReq = apduCommandBuilder.getApduRequest();
 
-        Assert.assertEquals(request, apduReq.getBytes());
+        Assert.assertArrayEquals(request, apduReq.getBytes());
 
-        ByteBuffer request1 =
-                ByteBuffer.wrap(new byte[] {(byte) 0x80, (byte) 0x8E, 0x00, 0x00, (byte) 0x04});
+        byte[] request1 = new byte[] {(byte) 0x80, (byte) 0x8E, 0x00, 0x00, (byte) 0x04};
         apduCommandBuilder = new DigestCloseCmdBuild(CsmRevision.C1, (byte) 0x04);// 94
         apduReq = apduCommandBuilder.getApduRequest();
 
-        Assert.assertEquals(request1, apduReq.getBytes());
+        Assert.assertArrayEquals(request1, apduReq.getBytes());
     }
 }

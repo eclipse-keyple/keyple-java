@@ -10,12 +10,9 @@ package org.eclipse.keyple.plugin.stub;
 
 
 
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
+import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
@@ -25,7 +22,7 @@ import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.eclipse.keyple.util.Observable;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -56,16 +53,20 @@ public class StubReaderTest {
         logger.info("Stubplugin observers size {}", stubPlugin.countObservers());
         Assert.assertEquals(0, stubPlugin.countObservers());
 
-        reader = StubPlugin.getInstance().plugStubReader("StubReaderTest");
-        Thread.sleep(500);
+        StubPlugin.getInstance().plugStubReader("StubReaderTest");
 
+        Thread.sleep(100);
+
+        reader = (StubReader) StubPlugin.getInstance().getReader("StubReaderTest");
+
+        Thread.sleep(100);
     }
 
     @After
     public void tearDown() throws InterruptedException, KeypleReaderException {
         StubPlugin.getInstance().clearObservers();
         StubPlugin.getInstance().unplugReader("StubReaderTest");
-        Thread.sleep(500);
+        Thread.sleep(100);
 
     }
 
@@ -169,6 +170,199 @@ public class StubReaderTest {
     // }
 
 
+    @Test(expected = KeypleReaderException.class)
+    public void transmit_no_response() throws KeypleReaderException {
+        // init Request
+        SeRequestSet requests = getNoResponseRequest();
+
+        // init SE
+        reader.insertSe(noApduResponseSE());
+
+        // add Protocol flag
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        // test
+        SeResponseSet seResponse = reader.transmit(requests);
+    }
+
+    @Test
+    public void transmit_partial_response_set_0() {
+        // init Request
+        SeRequestSet seRequestSet = getPartialRequestSet(0);
+
+        // init SE
+        reader.insertSe(partialSE());
+
+        // add Protocol flag
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        // test
+        try {
+            SeResponseSet seResponseSet = reader.transmit(seRequestSet);
+        } catch (KeypleReaderException ex) {
+            Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 1);
+            Assert.assertEquals(
+                    ex.getSeResponseSet().getResponses().get(0).getApduResponses().size(), 2);
+        }
+    }
+
+    @Test
+    public void transmit_partial_response_set_1() {
+        // init Request
+        SeRequestSet seRequestSet = getPartialRequestSet(1);
+
+        // init SE
+        reader.insertSe(partialSE());
+
+        // add Protocol flag
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+
+        // test
+        try {
+            SeResponseSet seResponseSet = reader.transmit(seRequestSet);
+        } catch (KeypleReaderException ex) {
+            Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 2);
+            Assert.assertEquals(
+                    ex.getSeResponseSet().getResponses().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(
+                    ex.getSeResponseSet().getResponses().get(1).getApduResponses().size(), 2);
+            Assert.assertEquals(
+                    ex.getSeResponseSet().getResponses().get(1).getApduResponses().size(), 2);
+        }
+    }
+
+
+    @Test
+    public void transmit_partial_response_set_2() {
+        // init Request
+        SeRequestSet seRequestSet = getPartialRequestSet(2);
+
+        // init SE
+        reader.insertSe(partialSE());
+
+        // add Protocol flag
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+
+        // test
+        try {
+            SeResponseSet seResponseSet = reader.transmit(seRequestSet);
+        } catch (KeypleReaderException ex) {
+            Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 3);
+            Assert.assertEquals(
+                    ex.getSeResponseSet().getResponses().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(
+                    ex.getSeResponseSet().getResponses().get(1).getApduResponses().size(), 4);
+            Assert.assertEquals(
+                    ex.getSeResponseSet().getResponses().get(2).getApduResponses().size(), 2);
+        }
+    }
+
+    @Test
+    public void transmit_partial_response_set_3() {
+        // init Request
+        SeRequestSet seRequestSet = getPartialRequestSet(3);
+
+        // init SE
+        reader.insertSe(partialSE());
+
+        // add Protocol flag
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+
+        // test
+        try {
+            SeResponseSet seResponseSet = reader.transmit(seRequestSet);
+        } catch (KeypleReaderException ex) {
+            Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 3);
+            Assert.assertEquals(
+                    ex.getSeResponseSet().getResponses().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(
+                    ex.getSeResponseSet().getResponses().get(1).getApduResponses().size(), 4);
+            Assert.assertEquals(
+                    ex.getSeResponseSet().getResponses().get(2).getApduResponses().size(), 4);
+        }
+    }
+
+    @Test
+    public void transmit_partial_response_0() {
+        // init Request
+        SeRequest seRequest = getPartialRequest(0);
+
+        // init SE
+        reader.insertSe(partialSE());
+
+        // add Protocol flag
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        // test
+        try {
+            SeResponse seResponse = reader.transmit(seRequest);
+        } catch (KeypleReaderException ex) {
+            Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 0);
+        }
+    }
+
+
+    @Test
+    public void transmit_partial_response_1() {
+        // init Request
+        SeRequest seRequest = getPartialRequest(1);
+
+        // init SE
+        reader.insertSe(partialSE());
+
+        // add Protocol flag
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        // test
+        try {
+            SeResponse seResponse = reader.transmit(seRequest);
+        } catch (KeypleReaderException ex) {
+            Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 1);
+        }
+    }
+
+    @Test
+    public void transmit_partial_response_2() {
+        // init Request
+        SeRequest seRequest = getPartialRequest(2);
+
+        // init SE
+        reader.insertSe(partialSE());
+
+        // add Protocol flag
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        // test
+        try {
+            SeResponse seResponse = reader.transmit(seRequest);
+        } catch (KeypleReaderException ex) {
+            Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 2);
+        }
+    }
+
+    @Test
+    public void transmit_partial_response_3() {
+        // init Request
+        SeRequest seRequest = getPartialRequest(3);
+
+        // init SE
+        reader.insertSe(partialSE());
+
+        // add Protocol flag
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        // test
+        try {
+            SeResponse seResponse = reader.transmit(seRequest);
+        } catch (KeypleReaderException ex) {
+            Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 3);
+        }
+    }
+
+
     /*
      * NAME and PARAMETERS
      */
@@ -193,7 +387,7 @@ public class StubReaderTest {
         reader.setParameters(parameters);
     }
 
-    // Set correct paramaters
+    // Set correct parameters
     @Test
     public void testSetParameters() throws Exception {
         Map<String, String> p1 = new HashMap<String, String>();
@@ -218,13 +412,13 @@ public class StubReaderTest {
         String poAid = "A000000291A000000191";
 
         ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
+                (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "");
 
         List<ApduRequest> poApduRequestList;
 
         poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
-        SeRequest.Selector selector = new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid));
+        SeRequest.Selector selector = new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid));
 
         SeRequest seRequest = new SeRequest(selector, poApduRequestList, false,
                 ContactlessProtocols.PROTOCOL_ISO14443_4);
@@ -233,13 +427,166 @@ public class StubReaderTest {
 
     }
 
+    /*
+     * No Response: increase command is not defined in the StubSE
+     *
+     * An Exception will be thrown.
+     */
+    private SeRequestSet getNoResponseRequest() {
+        String poAid = "A000000291A000000191";
+
+        IncreaseCmdBuild poIncreaseCmdBuild =
+                new IncreaseCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, 0, "");
+
+        List<ApduRequest> poApduRequestList;
+
+        poApduRequestList = Arrays.asList(poIncreaseCmdBuild.getApduRequest());
+
+        SeRequest.Selector selector = new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid));
+
+        SeRequest seRequest = new SeRequest(selector, poApduRequestList, false,
+                ContactlessProtocols.PROTOCOL_ISO14443_4);
+
+        return new SeRequestSet(seRequest);
+
+    }
+
+    /*
+     * Partial response set: multiple read records commands, one is not defined in the StubSE
+     *
+     * An Exception will be thrown.
+     */
+    private SeRequestSet getPartialRequestSet(int scenario) {
+        String poAid = "A000000291A000000191";
+
+        ReadRecordsCmdBuild poReadRecord1CmdBuild =
+                new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, "");
+
+        /* this command doesn't in the PartialSE */
+        ReadRecordsCmdBuild poReadRecord2CmdBuild =
+                new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1E, (byte) 0x01, true, "");
+
+        List<ApduRequest> poApduRequestList1 = new ArrayList<ApduRequest>();
+        poApduRequestList1.add(poReadRecord1CmdBuild.getApduRequest());
+        poApduRequestList1.add(poReadRecord1CmdBuild.getApduRequest());
+        poApduRequestList1.add(poReadRecord1CmdBuild.getApduRequest());
+        poApduRequestList1.add(poReadRecord1CmdBuild.getApduRequest());
+
+        List<ApduRequest> poApduRequestList2 = new ArrayList<ApduRequest>();
+        poApduRequestList2.add(poReadRecord1CmdBuild.getApduRequest());
+        poApduRequestList2.add(poReadRecord1CmdBuild.getApduRequest());
+        poApduRequestList2.add(poReadRecord1CmdBuild.getApduRequest());
+        poApduRequestList2.add(poReadRecord1CmdBuild.getApduRequest());
+
+        List<ApduRequest> poApduRequestList3 = new ArrayList<ApduRequest>();
+        poApduRequestList3.add(poReadRecord1CmdBuild.getApduRequest());
+        poApduRequestList3.add(poReadRecord1CmdBuild.getApduRequest());
+        poApduRequestList3.add(poReadRecord2CmdBuild.getApduRequest());
+        poApduRequestList3.add(poReadRecord1CmdBuild.getApduRequest());
+
+        SeRequest.Selector selector = new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid));
+
+        SeRequest seRequest1 = new SeRequest(selector, poApduRequestList1, false,
+                ContactlessProtocols.PROTOCOL_ISO14443_4);
+
+        SeRequest seRequest2 = new SeRequest(selector, poApduRequestList2, false,
+                ContactlessProtocols.PROTOCOL_ISO14443_4);
+
+        /* This SeRequest fails at step 3 */
+        SeRequest seRequest3 = new SeRequest(selector, poApduRequestList3, false,
+                ContactlessProtocols.PROTOCOL_ISO14443_4);
+
+        SeRequest seRequest4 = new SeRequest(selector, poApduRequestList1, false,
+                ContactlessProtocols.PROTOCOL_ISO14443_4);
+
+        Set<SeRequest> seRequestSets = new LinkedHashSet<SeRequest>();
+
+        switch (scenario) {
+            case 0:
+                /* 0 response Set */
+                seRequestSets.add(seRequest3); // fails
+                seRequestSets.add(seRequest1); // succeeds
+                seRequestSets.add(seRequest2); // succeeds
+                break;
+            case 1:
+                /* 1 response Set */
+                seRequestSets.add(seRequest1); // succeeds
+                seRequestSets.add(seRequest3); // fails
+                seRequestSets.add(seRequest2); // succeeds
+                break;
+            case 2:
+                /* 2 responses Set */
+                seRequestSets.add(seRequest1); // succeeds
+                seRequestSets.add(seRequest2); // succeeds
+                seRequestSets.add(seRequest3); // fails
+                break;
+            case 3:
+                /* 3 responses Set */
+                seRequestSets.add(seRequest1); // succeeds
+                seRequestSets.add(seRequest2); // succeeds
+                seRequestSets.add(seRequest4); // succeeds
+                break;
+            default:
+        }
+
+        return new SeRequestSet(seRequestSets);
+    }
+
+    /*
+     * Partial response: multiple read records commands, one is not defined in the StubSE
+     *
+     * An Exception will be thrown.
+     */
+    private SeRequest getPartialRequest(int scenario) {
+        String poAid = "A000000291A000000191";
+
+        ReadRecordsCmdBuild poReadRecord1CmdBuild =
+                new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, "");
+
+        /* this command doesn't in the PartialSE */
+        ReadRecordsCmdBuild poReadRecord2CmdBuild =
+                new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1E, (byte) 0x01, true, "");
+
+        List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
+
+        switch (scenario) {
+            case 0:
+                poApduRequestList.add(poReadRecord2CmdBuild.getApduRequest()); // fails
+                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                break;
+            case 1:
+                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                poApduRequestList.add(poReadRecord2CmdBuild.getApduRequest()); // fails
+                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                break;
+            case 2:
+                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                poApduRequestList.add(poReadRecord2CmdBuild.getApduRequest()); // fails
+                break;
+            case 3:
+                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                poApduRequestList.add(poReadRecord1CmdBuild.getApduRequest()); // succeeds
+                break;
+            default:
+                break;
+        }
+
+        SeRequest.Selector selector = new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid));
+
+        return new SeRequest(selector, poApduRequestList, false,
+                ContactlessProtocols.PROTOCOL_ISO14443_4);
+    }
+
     private StubSecureElement hoplinkSE() {
 
 
         return new StubSecureElement() {
 
             @Override
-            public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
 
                 addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
                         "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
@@ -250,8 +597,65 @@ public class StubReaderTest {
             }
 
             @Override
-            public ByteBuffer getATR() {
-                return ByteBufferUtils
+            public byte[] getATR() {
+                return ByteArrayUtils
+                        .fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
+            }
+
+            @Override
+            public String getSeProcotol() {
+                return "PROTOCOL_ISO14443_4";
+            }
+        };
+
+
+
+    }
+
+    private StubSecureElement noApduResponseSE() {
+        return new StubSecureElement() {
+
+            @Override
+            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
+
+                addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
+                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
+
+                return super.processApdu(apduIn);
+            }
+
+            @Override
+            public byte[] getATR() {
+                return ByteArrayUtils
+                        .fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
+            }
+
+            @Override
+            public String getSeProcotol() {
+                return "PROTOCOL_ISO14443_4";
+            }
+        };
+    }
+
+    private StubSecureElement partialSE() {
+
+
+        return new StubSecureElement() {
+
+            @Override
+            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
+
+                addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
+                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
+                addHexCommand("00 B2 01 A4 00",
+                        "00000000000000000000000000000000000000000000000000000000009000");
+
+                return super.processApdu(apduIn);
+            }
+
+            @Override
+            public byte[] getATR() {
+                return ByteArrayUtils
                         .fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
             }
 
@@ -268,7 +672,7 @@ public class StubReaderTest {
     private StubSecureElement getSENoconnection() {
         return new StubSecureElement() {
             @Override
-            public ByteBuffer getATR() {
+            public byte[] getATR() {
                 return null;
             }
 
@@ -289,7 +693,7 @@ public class StubReaderTest {
             }
 
             @Override
-            public ByteBuffer processApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
+            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
                 throw new KeypleIOReaderException("Error while transmitting apdu");
             }
 
@@ -301,11 +705,7 @@ public class StubReaderTest {
 
     }
 
-
     static ApduRequest getApduSample() {
-        return new ApduRequest(ByteBufferUtils.fromHex("FEDCBA98 9005h"), false);
+        return new ApduRequest(ByteArrayUtils.fromHex("FEDCBA98 9005h"), false);
     }
-
-
-
 }

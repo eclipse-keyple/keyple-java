@@ -10,6 +10,7 @@ package org.eclipse.keyple.example.common.calypso;
 
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.*;
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CsmSettings.*;
+import static org.eclipse.keyple.calypso.transaction.PoSecureSession.ModificationMode.ATOMIC;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
@@ -17,7 +18,7 @@ import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.Profiler;
@@ -40,7 +41,7 @@ import org.slf4j.profiler.Profiler;
  * <li>Display SeRequest/SeResponse data ({@link #printSelectAppResponseStatus
  * printSelectAppResponseStatus})
  * <li>If the Hoplink selection succeeded, do an Hoplink transaction
- * ({@link #doHoplinkReadWriteTransaction(PoSecureSession, ApduResponse, boolean)}
+ * ({doHoplinkReadWriteTransaction(PoSecureSession, ApduResponse, boolean)}
  * doHoplinkReadWriteTransaction}).
  * </ol>
  *
@@ -149,14 +150,14 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
         int i;
         logger.info("===== " + message);
         logger.info("* Request: AID = {}, keepChannelOpenFlag = {}, protocolFlag = {}",
-                ByteBufferUtils
+                ByteArrayUtils
                         .toHex(((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect()),
                 seRequest.isKeepChannelOpen(), seRequest.getProtocolFlag());
         List<ApduRequest> apduRequests = seRequest.getApduRequests();
         i = 0;
         if (apduRequests != null && apduRequests.size() > 0) {
             for (ApduRequest apduRequest : apduRequests) {
-                logger.info("COMMAND#" + i + ": " + ByteBufferUtils.toHex(apduRequest.getBytes()));
+                logger.info("COMMAND#" + i + ": " + ByteArrayUtils.toHex(apduRequest.getBytes()));
                 i++;
             }
         } else {
@@ -172,13 +173,13 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
             fci = seResponse.getFci();
             List<ApduResponse> apduResponses = seResponse.getApduResponses();
             logger.info("Atr = {}, Fci = {}",
-                    atr == null ? "null" : ByteBufferUtils.toHex(atr.getBytes()),
-                    fci == null ? "null" : ByteBufferUtils.toHex(fci.getBytes()));
+                    atr == null ? "null" : ByteArrayUtils.toHex(atr.getBytes()),
+                    fci == null ? "null" : ByteArrayUtils.toHex(fci.getBytes()));
             if (apduResponses.size() > 0) {
                 i = 0;
                 for (ApduResponse apduResponse : apduResponses) {
                     logger.info("RESPONSE#" + i + ": "
-                            + ByteBufferUtils.toHex(apduResponse.getDataOut()) + ", SW1SW2: "
+                            + ByteArrayUtils.toHex(apduResponse.getDataOut()) + ", SW1SW2: "
                             + Integer.toHexString(apduResponse.getStatusCode() & 0xFFFF));
                     i++;
                 }
@@ -201,12 +202,11 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
      * The PO logical channel is kept open or closed according to the closeSeChannel flag
      *
      * @param poTransaction PoSecureSession object
-     * @param fciData FCI data from the selection step
      * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
      * @throws KeypleReaderException reader exception (defined as public for purposes of javadoc)
      */
-    public void doHoplinkReadWriteTransaction(PoSecureSession poTransaction, ApduResponse fciData,
-            boolean closeSeChannel) throws KeypleReaderException {
+    public void doHoplinkReadWriteTransaction(PoSecureSession poTransaction, boolean closeSeChannel)
+            throws KeypleReaderException {
 
 
         List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
@@ -217,13 +217,6 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
          * the modification command sent sent on closing is disabled for the moment due to CAAD
          * configuration of the current Hoplink test PO
          */
-        // List<PoModificationCommand> poModificationCommands = new
-        // ArrayList<PoModificationCommand>();
-        // poModificationCommands.add(HoplinkInfoAndSampleCommands.poUpdateRecordCmd_T2UsageFill);
-
-        List<ApduResponse> poAnticipatedResponses = new ArrayList<ApduResponse>();
-        poAnticipatedResponses.add(new ApduResponse(ByteBufferUtils.fromHex("9000"), null));
-
         if (logger.isInfoEnabled()) {
             logger.info(
                     "========= PO Hoplink session ======= Opening ============================");
@@ -235,8 +228,12 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
          * Open Session for the debit key - with reading of the first record of the cyclic EF of SFI
          * 0Ah
          */
-        poTransaction.processOpening(fciData, accessLevel, (byte) 0x1A, (byte) 0x01,
+        poTransaction.processOpening(ATOMIC, accessLevel, (byte) 0x1A, (byte) 0x01,
                 filesToReadInSession);
+
+        if (!poTransaction.wasRatified()) {
+            logger.info("### Previous Secure Session was not ratified. ###");
+        }
 
         if (logger.isInfoEnabled()) {
             logger.info(
@@ -248,10 +245,7 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
             logger.info(
                     "========= PO Hoplink session ======= Closing ============================");
         }
-        poTransaction.processClosing(null, null, HoplinkInfoAndSampleCommands.poRatificationCommand,
-                false);
-        // poTransaction.processClosing(poModificationCommands, poAnticipatedResponses,
-        // HoplinkInfoAndSampleCommands.poRatificationCommand, false);
+        poTransaction.processClosing(null, CommunicationMode.CONTACTLESS_MODE, false);
 
         if (poTransaction.isSuccessful()) {
             if (logger.isInfoEnabled()) {
@@ -290,7 +284,7 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
 
             /* fake application seRequest preparation, addition to the list */
             SeRequest seRequest = new SeRequest(
-                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(poFakeAid1)), null, true);
+                    new SeRequest.AidSelector(ByteArrayUtils.fromHex(poFakeAid1)), null, true);
             selectionRequests.add(seRequest);
 
             /*
@@ -303,15 +297,15 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
 
             /* AID based selection */
             seRequest =
-                    new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poHoplinkAid)),
+                    new SeRequest(new SeRequest.AidSelector(ByteArrayUtils.fromHex(poHoplinkAid)),
                             requestToExecuteBeforeSession, true,
                             HoplinkInfoAndSampleCommands.selectApplicationSuccessfulStatusCodes);
 
             selectionRequests.add(seRequest);
 
             /* fake application seRequest preparation, addition to the list */
-            seRequest = new SeRequest(
-                    new SeRequest.AidSelector(ByteBufferUtils.fromHex(poFakeAid2)), null, true);
+            seRequest = new SeRequest(new SeRequest.AidSelector(ByteArrayUtils.fromHex(poFakeAid2)),
+                    null, true);
             selectionRequests.add(seRequest);
 
 
@@ -341,15 +335,15 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
                 }
             }
 
-            PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting);
             /*
              * If the Hoplink selection succeeded we should have 2 responses and the 2nd one not
              * null
              */
             if (seResponses.size() == 2 && seResponses.get(1) != null) {
-                ApduResponse fciData = seResponses.get(1).getFci();
+                PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting,
+                        seResponses.get(1).getFci());
                 profiler.start("Hoplink1");
-                doHoplinkReadWriteTransaction(poTransaction, fciData, true);
+                doHoplinkReadWriteTransaction(poTransaction, true);
             } else {
                 logger.error("No Hoplink transaction. SeResponse to Hoplink selection was null.");
             }

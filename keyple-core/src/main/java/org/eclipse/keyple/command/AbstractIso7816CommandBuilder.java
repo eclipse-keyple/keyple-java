@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.command;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.seproxy.ApduRequest;
 
 /**
@@ -27,13 +27,23 @@ import org.eclipse.keyple.seproxy.ApduRequest;
 public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandBuilder {
 
     /**
-     * Abstract constructor to build an APDU request with a command reference and a byte array.
+     * Abstract constructor to build a command with a command reference and an {@link ApduRequest}.
      *
      * @param commandReference command reference
-     * @param request request
+     * @param request ApduRequest
      */
     public AbstractIso7816CommandBuilder(CommandsTable commandReference, ApduRequest request) {
         super(commandReference, request);
+    }
+
+    /**
+     * Abstract constructor to build a command with a command name and an {@link ApduRequest}
+     * 
+     * @param name name of command
+     * @param request ApduRequest
+     */
+    public AbstractIso7816CommandBuilder(String name, ApduRequest request) {
+        super(name, request);
     }
 
     /**
@@ -66,7 +76,7 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
      * @return an ApduRequest
      */
     protected ApduRequest setApduRequest(byte cla, CommandsTable command, byte p1, byte p2,
-            ByteBuffer dataIn, Byte le) {
+            byte[] dataIn, Byte le) {
         boolean case4;
         /* sanity check */
         if (dataIn != null && le != null && le != 0) {
@@ -74,29 +84,34 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
                     "Le must be equal to 0 when not null and ingoing data are present.");
         }
 
-        /* Buffer allocation for all APDUs */
-        ByteBuffer apdu = ByteBuffer.allocate(261);
+        /* Buffer allocation */
+        int length = 4; // header
+        if (dataIn != null) {
+            length += dataIn.length + 1; // Lc + data
+        }
+        if (le != null) {
+            length += 1; // Le
+        }
+        byte[] apdu = new byte[length];
 
         /* Build APDU buffer from provided arguments */
-        apdu.put(cla);
-        apdu.put(command.getInstructionByte());
-        apdu.put(p1);
-        apdu.put(p2);
+        apdu[0] = cla;
+        apdu[1] = command.getInstructionByte();
+        apdu[2] = p1;
+        apdu[3] = p2;
 
         /* ISO7618 case determination and Le management */
         if (dataIn != null) {
-            /* set ByteBuffer index at the beginning */
-            dataIn.position(0);
             /* append Lc and ingoing data */
-            apdu.put((byte) dataIn.limit());
-            apdu.put(dataIn);
+            apdu[4] = (byte) dataIn.length;
+            System.arraycopy(dataIn, 0, apdu, 5, dataIn.length);
             if (le != null) {
                 /*
                  * case4: ingoing and outgoing data, Le is always set to 0 (see Calypso Reader
                  * Recommendations - T84)
                  */
                 case4 = true;
-                apdu.put((byte) 0x00);
+                apdu[length - 1] = le;
             } else {
                 /* case3: ingoing data only, no Le */
                 case4 = false;
@@ -104,17 +119,13 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
         } else {
             if (le != null) {
                 /* case2: outgoing data only */
-                apdu.put(le);
+                apdu[4] = le;
             } else {
                 /* case1: no ingoing, no outgoing data, P3/Le = 0 */
-                apdu.put((byte) 0x00);
+                apdu[4] = (byte) 0x00;
             }
             case4 = false;
         }
-
-        /* Reset ByteBuffer indexes */
-        apdu.limit(apdu.position());
-        apdu.position(0);
 
         return new ApduRequest(apdu, case4).setName(command.getName());
     }

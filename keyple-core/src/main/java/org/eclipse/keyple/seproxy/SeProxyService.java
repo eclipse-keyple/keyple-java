@@ -8,6 +8,9 @@
 
 package org.eclipse.keyple.seproxy;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.seproxy.exception.KeyplePluginNotFoundException;
@@ -21,9 +24,6 @@ public final class SeProxyService {
 
     /** singleton instance of SeProxyService */
     private static SeProxyService uniqueInstance = new SeProxyService();
-
-    /** version number of the SE Proxy Service API */
-    private Integer version = 1;
 
     /** the list of readers’ plugins interfaced with the SE Proxy Service */
     private SortedSet<ReaderPlugin> plugins = new ConcurrentSkipListSet<ReaderPlugin>();
@@ -52,6 +52,15 @@ public final class SeProxyService {
     }
 
     /**
+     * Adds a single plugin to the plugin list.
+     * 
+     * @param plugin the plugin to add.
+     */
+    public void addPlugin(ReaderPlugin plugin) {
+        this.plugins.add(plugin);
+    }
+
+    /**
      * Gets the plugins.
      *
      * @return the plugins the list of interfaced reader’s plugins.
@@ -64,8 +73,8 @@ public final class SeProxyService {
      * Gets the plugin whose name is provided as an argument.
      *
      * @param name the plugin name
-     * @return the plugin.
-     * @throws KeyplePluginException: if the wanted plugin is not found
+     * @return the plugin
+     * @throws KeyplePluginNotFoundException if the wanted plugin is not found
      */
     public ReaderPlugin getPlugin(String name) throws KeyplePluginNotFoundException {
         for (ReaderPlugin plugin : plugins) {
@@ -77,12 +86,25 @@ public final class SeProxyService {
     }
 
     /**
-     * Gets the version.
+     * Gets the version API, (the version of the sdk).
      *
      * @return the version
      */
-    public Integer getVersion() {
-        // TODO improve version management
-        return version;
+    public String getVersion() {
+        try {
+            // load keyple core property file
+            InputStream propertiesIs = this.getClass().getClassLoader()
+                    .getResourceAsStream("META-INF/keyple.properties");
+            Properties prop = new Properties();
+            prop.load(propertiesIs);
+            String version = prop.getProperty("version");
+            if (version != null) {
+                return version;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return "no-version-found";
     }
 }

@@ -8,10 +8,9 @@
 
 package org.eclipse.keyple.calypso.command.po.parser.session;
 
-import java.nio.ByteBuffer;
+import java.util.Arrays;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.seproxy.ApduResponse;
-import org.eclipse.keyple.util.ByteBufferUtils;
 
 public class OpenSession24RespPars extends AbstractOpenSessionRespPars {
 
@@ -20,21 +19,37 @@ public class OpenSession24RespPars extends AbstractOpenSessionRespPars {
     }
 
     @Override
-    SecureSession toSecureSession(ByteBuffer apduResponse) {
-        return createSecureSession(apduResponse);
+    SecureSession toSecureSession(byte[] apduResponseData) {
+        return createSecureSession(apduResponseData);
     }
 
-    public static SecureSession createSecureSession(ByteBuffer apduResponse) {
-        boolean previousSessionRatified = true;
+    public static SecureSession createSecureSession(byte[] apduResponseData) {
+        boolean previousSessionRatified;
 
-        byte kvc = toKVCRev2(apduResponse);
+        /**
+         * In rev 2.4 mode, the response to the Open Secure Session command is as follows:
+         * <p>
+         * <code>KK CC CC CC CC CC [RR RR] [NN..NN]</code>
+         * <p>
+         * Where:
+         * <ul>
+         * <li><code>KK</code> = KVC byte CC</li>
+         * <li><code>CC CC CC CC</code> = PO challenge</li>
+         * <li><code>RR RR</code> = ratification bytes (may be absent)</li>
+         * <li><code>NN..NN</code> = record data (29 bytes)</li>
+         * </ul>
+         *
+         */
+        byte kvc = apduResponseData[0];
 
-        if (apduResponse.limit() < 6) {
+        if (apduResponseData.length == 6 || apduResponseData.length == 34) {
             previousSessionRatified = false;
+        } else {
+            previousSessionRatified = true;
         }
 
-        return new SecureSession(ByteBufferUtils.subIndex(apduResponse, 1, 4),
-                ByteBufferUtils.subIndex(apduResponse, 4, 5), previousSessionRatified, false, kvc,
-                null, apduResponse);
+        return new SecureSession(Arrays.copyOfRange(apduResponseData, 1, 4),
+                Arrays.copyOfRange(apduResponseData, 4, 5), previousSessionRatified, false, kvc,
+                null, apduResponseData);
     }
 }

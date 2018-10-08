@@ -16,7 +16,7 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.seproxy.ApduRequest;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
  * Helper class to provide specific information to handle Hoplink cards.
@@ -45,20 +45,15 @@ public class HoplinkInfoAndSampleCommands {
             + "1112131415161718191A1B1C1D1E1F20" + "2122232425262728292A2B2C2D2E2F30";
     /** T2 Environment read record */
     public static ReadRecordsCmdBuild poReadRecordCmd_T2Env =
-            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
+            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x20,
+                    "T2 Environment (SFI=14h)");
     /** T2 Usage read record */
-    public static ReadRecordsCmdBuild poReadRecordCmd_T2Usage =
-            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01, true, (byte) 0x30);
+    public static ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(
+            PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01, true, (byte) 0x30, "T2 Usage (SFI=1Ah)");
     /** T2 Usage update record */
     public static UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
             new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
-                    ByteBufferUtils.fromHex(t2UsageRecord1_dataFill));
-    /**
-     * Ratification command. The chosen ratification command is a simple read record of 1 byte
-     * (short execution time)
-     */
-    public static ReadRecordsCmdBuild poRatificationCommand =
-            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x01);
+                    ByteArrayUtils.fromHex(t2UsageRecord1_dataFill), "T2 Usage (SFI=1Ah)");
 
     /**
      * Build an ApduRequest list including:

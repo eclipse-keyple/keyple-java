@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.csm.builder;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
@@ -28,7 +28,7 @@ public class DigestAuthenticateCmdBuild extends CsmCommandBuilder {
      * @param signature the signature
      * @throws java.lang.IllegalArgumentException - if the signature is null or has a wrong length.
      */
-    public DigestAuthenticateCmdBuild(CsmRevision revision, ByteBuffer signature)
+    public DigestAuthenticateCmdBuild(CsmRevision revision, byte[] signature)
             throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
@@ -37,9 +37,9 @@ public class DigestAuthenticateCmdBuild extends CsmCommandBuilder {
         if (signature == null) {
             throw new IllegalArgumentException("Signature can't be null");
         }
-        if (signature.limit() != 4 && signature.limit() != 8 && signature.limit() != 16) {
+        if (signature.length != 4 && signature.length != 8 && signature.length != 16) {
             throw new IllegalArgumentException(
-                    "Signature is not the right length : length is " + signature.limit());
+                    "Signature is not the right length : length is " + signature.length);
         }
         byte cla = CsmRevision.S1D.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x80;
         byte p1 = 0x00;

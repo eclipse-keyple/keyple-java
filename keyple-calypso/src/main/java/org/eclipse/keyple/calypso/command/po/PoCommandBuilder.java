@@ -20,6 +20,12 @@ public class PoCommandBuilder extends AbstractIso7816CommandBuilder {
 
     protected PoRevision defaultRevision = PoRevision.REV3_1;
 
+    /**
+     * Constructor dedicated for the building of referenced Calypso commands
+     * 
+     * @param reference a command reference from the Calypso command table
+     * @param request the ApduRequest (the instruction byte will be overwritten)
+     */
     public PoCommandBuilder(CalypsoPoCommands reference, ApduRequest request) {
         super(reference, request);
     }

@@ -31,11 +31,13 @@ public class ReadRecordsCmdBuild extends PoCommandBuilder implements PoSendableI
      *        several records)
      * @param readJustOneRecord the read just one record
      * @param expectedLength the expected length of the record(s)
+     * @param extraInfo extra information included in the logs (can be null or empty)
      * @throws java.lang.IllegalArgumentException - if record number &lt; 1
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public ReadRecordsCmdBuild(PoRevision revision, byte sfi, byte firstRecordNumber,
-            boolean readJustOneRecord, byte expectedLength) throws IllegalArgumentException {
+            boolean readJustOneRecord, byte expectedLength, String extraInfo)
+            throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
@@ -51,8 +53,10 @@ public class ReadRecordsCmdBuild extends PoCommandBuilder implements PoSendableI
         if (readJustOneRecord) {
             p2 = (byte) (p2 - (byte) 0x01);
         }
-
         this.request = setApduRequest(cla, command, p1, p2, null, expectedLength);
+        if (extraInfo != null) {
+            this.addSubName(extraInfo);
+        }
     }
 
     /**
@@ -64,11 +68,12 @@ public class ReadRecordsCmdBuild extends PoCommandBuilder implements PoSendableI
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
      * @param readJustOneRecord the read just one record
+     * @param extraInfo extra information included in the logs (can be null or empty)
      * @throws java.lang.IllegalArgumentException - if record number &lt; 1
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public ReadRecordsCmdBuild(PoRevision revision, byte sfi, byte firstRecordNumber,
-            boolean readJustOneRecord) throws IllegalArgumentException {
-        this(revision, sfi, firstRecordNumber, readJustOneRecord, (byte) 0x00);
+            boolean readJustOneRecord, String extraInfo) throws IllegalArgumentException {
+        this(revision, sfi, firstRecordNumber, readJustOneRecord, (byte) 0x00, extraInfo);
     }
 }

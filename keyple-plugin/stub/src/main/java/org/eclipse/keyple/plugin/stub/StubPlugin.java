@@ -93,8 +93,7 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
      * 
      * @param name : name of the reader
      */
-    public StubReader plugStubReader(String name) {
-
+    public void plugStubReader(String name) {
         if (!nativeStubReadersNames.contains(name)) {
             logger.info("Plugging a new reader with name " + name);
             nativeStubReadersNames.add(name);
@@ -103,13 +102,13 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
         } else {
             logger.error("Reader with name " + name + " was already plugged");
         }
-        return (StubReader) getNativeReader(name);
     }
 
     /**
      * Unplug a Stub Reader
      * 
-     * @param name
+     * @param name the name of the reader
+     * @throws KeypleReaderException in case of a reader exception
      */
     public void unplugReader(String name) throws KeypleReaderException {
 

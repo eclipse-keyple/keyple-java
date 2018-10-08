@@ -12,7 +12,6 @@ package org.eclipse.keyple.calypso.command.po.builder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.ApduRequest;
-import org.eclipse.keyple.util.ByteBufferUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,9 +42,9 @@ public class ReadRecordsCmdBuildTest {
         // revision 2.4
         byte[] request2_4 = {cla, cmd, record_number, p2, 0x00};
         apduCommandBuilder = new ReadRecordsCmdBuild(PoRevision.REV2_4, sfi, record_number,
-                readJustOneRecord, expectedLength);
+                readJustOneRecord, expectedLength, "TestRev2_4");
         apduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertArrayEquals(request2_4, ByteBufferUtils.toBytes(apduRequest.getBytes()));
+        Assert.assertArrayEquals(request2_4, apduRequest.getBytes());
     }
 
     @Test
@@ -61,9 +60,9 @@ public class ReadRecordsCmdBuildTest {
         // revision 3.1
         byte[] request3_1 = {cla, cmd, record_number, p2, 0x00};
         apduCommandBuilder = new ReadRecordsCmdBuild(PoRevision.REV3_1, sfi, record_number,
-                readJustOneRecord, expectedLength);
+                readJustOneRecord, expectedLength, "TestRev3_1");
         apduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertArrayEquals(request3_1, ByteBufferUtils.toBytes(apduRequest.getBytes()));
+        Assert.assertArrayEquals(request3_1, apduRequest.getBytes());
     }
 
     @Test
@@ -77,9 +76,9 @@ public class ReadRecordsCmdBuildTest {
         // revision 3.2
         byte[] request3_2 = {cla, cmd, record_number, p2, 0x00};
         apduCommandBuilder = new ReadRecordsCmdBuild(PoRevision.REV3_2, sfi, record_number,
-                readJustOneRecord, expectedLength);
+                readJustOneRecord, expectedLength, "TestRev3_2");
         apduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertArrayEquals(request3_2, ByteBufferUtils.toBytes(apduRequest.getBytes()));
+        Assert.assertArrayEquals(request3_2, apduRequest.getBytes());
     }
 
 }

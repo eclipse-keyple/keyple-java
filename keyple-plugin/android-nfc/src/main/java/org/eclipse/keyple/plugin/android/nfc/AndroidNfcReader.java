@@ -10,7 +10,6 @@ package org.eclipse.keyple.plugin.android.nfc;
 
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +20,7 @@ import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.plugin.AbstractSelectionLocalReader;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import android.app.Activity;
@@ -159,10 +158,10 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
     }
 
     @Override
-    protected ByteBuffer getATR() {
+    protected byte[] getATR() {
         byte[] atr = tagProxy.getATR();
         LOG.debug("ATR : " + Arrays.toString(atr));
-        return atr != null && atr.length > 0 ? ByteBuffer.wrap(atr) : null;
+        return atr != null && atr.length > 0 ? atr : null;
     }
 
     @Override
@@ -207,11 +206,11 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
 
 
     @Override
-    protected ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
+    protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         // Initialization
-        LOG.debug("Data Length to be sent to tag : " + apduIn.limit());
-        LOG.debug("Data in : " + ByteBufferUtils.toHex(apduIn));
-        byte[] data = ByteBufferUtils.toBytes(apduIn);
+        LOG.debug("Data Length to be sent to tag : " + apduIn.length);
+        LOG.debug("Data in : " + ByteArrayUtils.toHex(apduIn));
+        byte[] data = apduIn;
         byte[] dataOut;
         try {
             dataOut = tagProxy.transceive(data);
@@ -219,8 +218,8 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
             e.printStackTrace();
             throw new KeypleIOReaderException("Error while transmitting APDU", e);
         }
-        LOG.debug("Data out : " + Arrays.toString(dataOut));
-        return ByteBuffer.wrap(dataOut);
+        LOG.debug("Data out : " + ByteArrayUtils.toHex(dataOut));
+        return dataOut;
     }
 
 

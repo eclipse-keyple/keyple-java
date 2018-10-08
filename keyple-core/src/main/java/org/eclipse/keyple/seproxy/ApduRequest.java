@@ -9,10 +9,9 @@
 package org.eclipse.keyple.seproxy;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.Set;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 
 /**
@@ -26,7 +25,7 @@ public final class ApduRequest implements Serializable {
     /**
      * Buffer of the APDU Request
      */
-    private ByteBuffer bytes;
+    private byte[] bytes;
 
     /**
      * a ‘case 4’ flag in order to explicitly specify, if it’s expected that the APDU command
@@ -58,7 +57,7 @@ public final class ApduRequest implements Serializable {
      * @param successfulStatusCodes the list of status codes to be considered as successful although
      *        different from 9000
      */
-    public ApduRequest(ByteBuffer buffer, boolean case4, Set<Short> successfulStatusCodes) {
+    public ApduRequest(byte[] buffer, boolean case4, Set<Short> successfulStatusCodes) {
         this.bytes = buffer;
         this.case4 = case4;
         this.successfulStatusCodes = successfulStatusCodes;
@@ -70,7 +69,7 @@ public final class ApduRequest implements Serializable {
      * @param buffer data buffer
      * @param case4 case 4 flag (true if case 4)
      */
-    public ApduRequest(ByteBuffer buffer, boolean case4) {
+    public ApduRequest(byte[] buffer, boolean case4) {
         this(buffer, case4, null);
     }
 
@@ -118,7 +117,7 @@ public final class ApduRequest implements Serializable {
      *
      * @return Name of the APDU request
      */
-    public ByteBuffer getBytes() {
+    public byte[] getBytes() {
         return this.bytes;
     }
 
@@ -126,7 +125,7 @@ public final class ApduRequest implements Serializable {
     public String toString() {
         StringBuilder string;
         string = new StringBuilder("ApduRequest: NAME = \"" + this.getName() + "\", RAWDATA = "
-                + ByteBufferUtils.toHex(bytes));
+                + ByteArrayUtils.toHex(bytes));
         if (isCase4()) {
             string.append(", case4");
         }

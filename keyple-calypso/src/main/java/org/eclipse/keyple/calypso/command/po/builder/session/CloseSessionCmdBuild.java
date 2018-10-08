@@ -8,11 +8,11 @@
 
 package org.eclipse.keyple.calypso.command.po.builder.session;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -33,17 +33,17 @@ public class CloseSessionCmdBuild extends PoCommandBuilder {
      * @throws java.lang.IllegalArgumentException - if the command is inconsistent
      */
     public CloseSessionCmdBuild(PoRevision revision, boolean ratificationAsked,
-            ByteBuffer terminalSessionSignature) throws IllegalArgumentException {
+            byte[] terminalSessionSignature) throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
         }
         // The optional parameter terminalSessionSignature could contain 4 or 8
         // bytes.
-        if (terminalSessionSignature != null && terminalSessionSignature.limit() != 4
-                && terminalSessionSignature.limit() != 8) {
+        if (terminalSessionSignature != null && terminalSessionSignature.length != 4
+                && terminalSessionSignature.length != 8) {
             throw new IllegalArgumentException("Invalid terminal sessionSignature: "
-                    + ByteBufferUtils.toHex(terminalSessionSignature));
+                    + ByteArrayUtils.toHex(terminalSessionSignature));
         }
 
         byte cla = PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00;

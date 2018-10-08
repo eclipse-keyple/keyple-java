@@ -1,9 +1,13 @@
-group 'org.eclipse.keyple'
-version '1.0-SNAPSHOT'
-
 apply plugin: 'java'
 
 sourceCompatibility = 1.6
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Keyple Plugin Pcsc',
+                'Implementation-Version': project.version
+    }
+}
 
 dependencies {
     compile project(':keyple-core')

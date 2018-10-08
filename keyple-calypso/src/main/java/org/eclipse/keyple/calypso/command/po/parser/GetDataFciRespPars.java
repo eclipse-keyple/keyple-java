@@ -8,12 +8,11 @@
 
 package org.eclipse.keyple.calypso.command.po.parser;
 
-import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
-import org.eclipse.keyple.util.ByteBufferUtils;
 
 /**
  * This class provides status code properties and the getters to access to the structured fields of
@@ -54,11 +53,11 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
         fci = isSuccessful() ? toFCI(response.getBytes()) : null;
     }
 
-    public ByteBuffer getDfName() {
+    public byte[] getDfName() {
         return fci != null ? fci.getDfName() : null;
     }
 
-    public ByteBuffer getApplicationSerialNumber() {
+    public byte[] getApplicationSerialNumber() {
         return fci != null ? fci.getApplicationSN() : null;
     }
 
@@ -124,16 +123,16 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
     public static class FCI {
 
         /** The DF Name. */
-        private final ByteBuffer dfName;
+        private final byte[] dfName;
 
         /** The fci proprietary template. */
-        private final ByteBuffer fciProprietaryTemplate;
+        private final byte[] fciProprietaryTemplate;
 
         /** The fci issuer discretionary data. */
-        private final ByteBuffer fciIssuerDiscretionaryData;
+        private final byte[] fciIssuerDiscretionaryData;
 
         /** The application SN. */
-        private final ByteBuffer applicationSN;
+        private final byte[] applicationSN;
 
         /** The startup information. */
         private final StartupInformation startupInformation;
@@ -147,9 +146,8 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
          * @param applicationSN the application SN
          * @param startupInformation the startup information
          */
-        public FCI(ByteBuffer dfName, ByteBuffer fciProprietaryTemplate,
-                ByteBuffer fciIssuerDiscretionaryData, ByteBuffer applicationSN,
-                StartupInformation startupInformation) {
+        public FCI(byte[] dfName, byte[] fciProprietaryTemplate, byte[] fciIssuerDiscretionaryData,
+                byte[] applicationSN, StartupInformation startupInformation) {
             this.dfName = dfName;
             this.fciProprietaryTemplate = fciProprietaryTemplate;
             this.fciIssuerDiscretionaryData = fciIssuerDiscretionaryData;
@@ -162,7 +160,7 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
          *
          * @return the fci proprietary template
          */
-        public ByteBuffer getFciProprietaryTemplate() {
+        public byte[] getFciProprietaryTemplate() {
             return fciProprietaryTemplate;
         }
 
@@ -171,7 +169,7 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
          *
          * @return the fci issuer discretionary data
          */
-        public ByteBuffer getFciIssuerDiscretionaryData() {
+        public byte[] getFciIssuerDiscretionaryData() {
             return fciIssuerDiscretionaryData;
         }
 
@@ -180,7 +178,7 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
          *
          * @return the application SN
          */
-        public ByteBuffer getApplicationSN() {
+        public byte[] getApplicationSN() {
             return applicationSN;
         }
 
@@ -198,7 +196,7 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
          *
          * @return the DF name
          */
-        public ByteBuffer getDfName() {
+        public byte[] getDfName() {
             return dfName;
         }
 
@@ -255,14 +253,14 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
             this.softwareRevision = softwareRevision;
         }
 
-        public StartupInformation(ByteBuffer buffer) {
-            this.bufferSize = buffer.get();
-            this.platform = buffer.get();
-            this.applicationType = buffer.get();
-            this.applicationSubtype = buffer.get();
-            this.softwareIssuer = buffer.get();
-            this.softwareVersion = buffer.get();
-            this.softwareRevision = buffer.get();
+        public StartupInformation(byte[] buffer) {
+            this.bufferSize = buffer[0];
+            this.platform = buffer[1];
+            this.applicationType = buffer[2];
+            this.applicationSubtype = buffer[3];
+            this.softwareIssuer = buffer[4];
+            this.softwareVersion = buffer[5];
+            this.softwareRevision = buffer[6];
         }
 
         public static StartupInformation empty() {
@@ -404,53 +402,52 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
      * @return the FCI template TODO we should check here if the provided FCI data matches an
      *         Calypso PO FCI and return null if not
      */
-    public static FCI toFCI(ByteBuffer apduResponse) {
+    public static FCI toFCI(byte[] apduResponse) {
         StartupInformation startupInformation = StartupInformation.empty();
-        byte firstResponseApdubyte = apduResponse.get(0);
-        ByteBuffer dfName = null;
-        ByteBuffer fciProprietaryTemplate = null;
-        ByteBuffer fciIssuerDiscretionaryData = null;
-        ByteBuffer applicationSN = null;
-        ByteBuffer discretionaryData;
+        byte firstResponseApdubyte = apduResponse[0];
+        byte[] dfName = null;
+        byte[] fciProprietaryTemplate = null;
+        byte[] fciIssuerDiscretionaryData = null;
+        byte[] applicationSN = null;
+        byte[] discretionaryData;
 
         if ((byte) 0x6F == firstResponseApdubyte) {
-            int aidLength = apduResponse.get(3);
-            int fciTemplateLength = apduResponse.get(5 + aidLength);
+            int aidLength = apduResponse[3];
+            int fciTemplateLength = apduResponse[5 + aidLength];
             int fixedPartOfFciTemplate = fciTemplateLength - 22;
             int firstbyteAid = 6 + aidLength + fixedPartOfFciTemplate;
             int fciIssuerDiscretionaryDataLength =
-                    apduResponse.get(8 + aidLength + fixedPartOfFciTemplate);
+                    apduResponse[8 + aidLength + fixedPartOfFciTemplate];
             int firstbyteFciIssuerDiscretionaryData = 9 + aidLength + fixedPartOfFciTemplate;
-            int applicationSNLength = apduResponse.get(10 + aidLength + fixedPartOfFciTemplate);
+            int applicationSNLength = apduResponse[10 + aidLength + fixedPartOfFciTemplate];
             int firstbyteApplicationSN = 11 + aidLength + fixedPartOfFciTemplate;
-            int discretionaryDataLength = apduResponse.get(20 + aidLength + fixedPartOfFciTemplate);
+            int discretionaryDataLength = apduResponse[20 + aidLength + fixedPartOfFciTemplate];
             int firstbyteDiscretionaryData = 21 + aidLength + fixedPartOfFciTemplate;
 
-            if ((byte) 0x84 == apduResponse.get(2)) {
-                dfName = ByteBufferUtils.subIndex(apduResponse, 4, 4 + aidLength);
+            if ((byte) 0x84 == apduResponse[2]) {
+                dfName = Arrays.copyOfRange(apduResponse, 4, 4 + aidLength);
             }
 
-            if ((byte) 0xA5 == apduResponse.get(4 + aidLength)) {
-                fciProprietaryTemplate = ByteBufferUtils.subIndex(apduResponse, firstbyteAid,
+            if ((byte) 0xA5 == apduResponse[4 + aidLength]) {
+                fciProprietaryTemplate = Arrays.copyOfRange(apduResponse, firstbyteAid,
                         firstbyteAid + fciTemplateLength);
             }
 
-            if ((byte) 0xBF == apduResponse.get(6 + aidLength + fixedPartOfFciTemplate)
-                    && ((byte) 0x0C == apduResponse.get(7 + aidLength + fixedPartOfFciTemplate))) {
-                fciIssuerDiscretionaryData = ByteBufferUtils.subIndex(apduResponse,
+            if ((byte) 0xBF == apduResponse[6 + aidLength + fixedPartOfFciTemplate]
+                    && ((byte) 0x0C == apduResponse[7 + aidLength + fixedPartOfFciTemplate])) {
+                fciIssuerDiscretionaryData = Arrays.copyOfRange(apduResponse,
                         firstbyteFciIssuerDiscretionaryData,
                         firstbyteFciIssuerDiscretionaryData + fciIssuerDiscretionaryDataLength);
             }
 
-            if ((byte) 0xC7 == apduResponse.get(9 + aidLength + fixedPartOfFciTemplate)) {
-                applicationSN = ByteBufferUtils.subIndex(apduResponse, firstbyteApplicationSN,
+            if ((byte) 0xC7 == apduResponse[9 + aidLength + fixedPartOfFciTemplate]) {
+                applicationSN = Arrays.copyOfRange(apduResponse, firstbyteApplicationSN,
                         firstbyteApplicationSN + applicationSNLength);
             }
 
-            if ((byte) 0x53 == apduResponse.get(19 + aidLength + fixedPartOfFciTemplate)) {
-                discretionaryData =
-                        ByteBufferUtils.subIndex(apduResponse, firstbyteDiscretionaryData,
-                                firstbyteDiscretionaryData + discretionaryDataLength);
+            if ((byte) 0x53 == apduResponse[19 + aidLength + fixedPartOfFciTemplate]) {
+                discretionaryData = Arrays.copyOfRange(apduResponse, firstbyteDiscretionaryData,
+                        firstbyteDiscretionaryData + discretionaryDataLength);
                 startupInformation = new StartupInformation(discretionaryData);
                 /*
                  * startupInformation = new StartupInformation(discretionaryData.get(0),

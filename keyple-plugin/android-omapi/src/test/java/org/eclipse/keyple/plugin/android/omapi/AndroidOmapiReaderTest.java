@@ -28,7 +28,7 @@ import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -138,12 +138,12 @@ public class AndroidOmapiReaderTest {
         // init
         String poAid = "A000000291A000000191";
         ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
+                (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
         List<ApduRequest> poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
         // wrong protocol
         SeRequest seRequest =
-                new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
+                new SeRequest(new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid)),
                         poApduRequestList, false, ContactlessProtocols.PROTOCOL_MIFARE_UL);
 
         // test
@@ -185,18 +185,14 @@ public class AndroidOmapiReaderTest {
 
         when(omapiReader.getName()).thenReturn("SIM1");
         when(omapiReader.isSecureElementPresent()).thenReturn(true);
-        when(session.openLogicalChannel(ByteBufferUtils.fromHex(poAid).array()))
-                .thenReturn(channel);
+        when(session.openLogicalChannel(ByteArrayUtils.fromHex(poAid))).thenReturn(channel);
         when(omapiReader.openSession()).thenReturn(session);
         when(session.getATR()).thenReturn(null);
-        when(channel.getSelectResponse())
-                .thenReturn(ByteBufferUtils.fromHex(poAidResponse).array());
+        when(channel.getSelectResponse()).thenReturn(ByteArrayUtils.fromHex(poAidResponse));
         when(channel.getSession()).thenReturn(session);
 
-        when(channel.transmit(ByteBufferUtils.fromHex("00B201A420").array()))
-                .thenReturn(ByteBufferUtils.fromHex(
-                        "00000000000000000000000000000000000000000000000000000000000000009000")
-                        .array());
+        when(channel.transmit(ByteArrayUtils.fromHex("00B201A420"))).thenReturn(ByteArrayUtils
+                .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
 
         return omapiReader;
 
@@ -211,7 +207,7 @@ public class AndroidOmapiReaderTest {
         when(omapiReader.getName()).thenReturn("SIM1");
         when(omapiReader.isSecureElementPresent()).thenReturn(true);
         when(omapiReader.openSession()).thenReturn(session);
-        when(session.openLogicalChannel(ByteBufferUtils.fromHex(poAid).array()))
+        when(session.openLogicalChannel(ByteArrayUtils.fromHex(poAid)))
                 .thenThrow(new NoSuchElementException(""));
 
         return omapiReader;
@@ -222,14 +218,14 @@ public class AndroidOmapiReaderTest {
         String poAid = "A000000291A000000191";
 
         ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                (byte) 0x14, (byte) 0x01, true, (byte) 0x20);
+                (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
 
         List<ApduRequest> poApduRequestList;
 
         poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
         SeRequest seRequest =
-                new SeRequest(new SeRequest.AidSelector(ByteBufferUtils.fromHex(poAid)),
+                new SeRequest(new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid)),
                         poApduRequestList, false, ContactsProtocols.PROTOCOL_ISO7816_3);
 
         return new SeRequestSet(seRequest);

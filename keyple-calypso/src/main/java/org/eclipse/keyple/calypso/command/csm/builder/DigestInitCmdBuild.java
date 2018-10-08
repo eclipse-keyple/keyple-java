@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.csm.builder;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
@@ -38,7 +38,7 @@ public class DigestInitCmdBuild extends CsmCommandBuilder {
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public DigestInitCmdBuild(CsmRevision revision, boolean verificationMode, boolean rev3_2Mode,
-            byte workKeyRecordNumber, byte workKeyKif, byte workKeyKVC, ByteBuffer digestData)
+            byte workKeyRecordNumber, byte workKeyKif, byte workKeyKVC, byte[] digestData)
             throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
@@ -65,13 +65,13 @@ public class DigestInitCmdBuild extends CsmCommandBuilder {
             p2 = workKeyRecordNumber;
         }
 
-        ByteBuffer dataIn;
+        byte[] dataIn;
 
         if (p2 == (byte) 0xFF) {
-            dataIn = ByteBuffer.allocate(2 + digestData.limit());
-            dataIn.put(workKeyKif);
-            dataIn.put(workKeyKVC);
-            dataIn.put(digestData);
+            dataIn = new byte[2 + digestData.length];
+            dataIn[0] = workKeyKif;
+            dataIn[1] = workKeyKVC;
+            System.arraycopy(digestData, 0, dataIn, 2, digestData.length);
         } else {
             dataIn = null;
         }

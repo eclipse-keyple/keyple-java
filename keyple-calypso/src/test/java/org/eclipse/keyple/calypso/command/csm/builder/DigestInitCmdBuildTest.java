@@ -8,8 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.csm.builder;
 
-import static org.junit.Assert.assertEquals;
-import java.nio.ByteBuffer;
+import static org.junit.Assert.assertArrayEquals;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.junit.Test;
@@ -22,8 +21,7 @@ public class DigestInitCmdBuildTest {
     @Test(expected = IllegalArgumentException.class)
     public void digestInitCmd_inconsistent() throws IllegalArgumentException {
 
-        ByteBuffer digestData =
-                ByteBuffer.wrap(new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07});
+        byte[] digestData = new byte[] {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
 
         boolean verificationMode = false;
         boolean rev3_2Mode = false;
@@ -40,7 +38,7 @@ public class DigestInitCmdBuildTest {
     @Test(expected = IllegalArgumentException.class)
     public void digestInitCmd_inconsistent_digestNull() throws IllegalArgumentException {
 
-        ByteBuffer digestData = null;
+        byte[] digestData = null;
 
         boolean verificationMode = false;
         boolean rev3_2Mode = false;
@@ -57,7 +55,7 @@ public class DigestInitCmdBuildTest {
     @Test
     public void digestInitCmd() throws IllegalArgumentException {
 
-        ByteBuffer digestData = ByteBuffer.wrap(new byte[] {(byte) 0x80, (byte) 0x8A, 0x00});
+        byte[] digestData = new byte[] {(byte) 0x80, (byte) 0x8A, 0x00};
         byte cla = (byte) 0x94;
         byte zero = (byte) 0x00;
         byte p1 = (byte) (zero + 1);
@@ -71,14 +69,14 @@ public class DigestInitCmdBuildTest {
         byte workKeyKVC = (byte) 0x7E;
         CsmRevision revision = CsmRevision.S1D;
 
-        int size = digestData.limit() + 2;
-        ByteBuffer request = ByteBuffer.wrap(new byte[] {cla, (byte) 0x8A, p1_2, p2, (byte) size,
-                workKeyKif, workKeyKVC, (byte) 0x80, (byte) 0x8A, 0x00});
+        int size = digestData.length + 2;
+        byte[] request = new byte[] {cla, (byte) 0x8A, p1_2, p2, (byte) size, workKeyKif,
+                workKeyKVC, (byte) 0x80, (byte) 0x8A, 0x00};
 
         AbstractApduCommandBuilder apduCommandBuilder =
                 new DigestInitCmdBuild(revision, verificationMode, rev3_2Mode, workKeyRecordNumber,
                         workKeyKif, workKeyKVC, digestData);
 
-        assertEquals(request, apduCommandBuilder.getApduRequest().getBytes());
+        assertArrayEquals(request, apduCommandBuilder.getApduRequest().getBytes());
     }
 }

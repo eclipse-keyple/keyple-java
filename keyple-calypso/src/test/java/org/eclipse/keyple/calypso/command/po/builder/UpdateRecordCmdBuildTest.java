@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.po.builder;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.ApduRequest;
@@ -22,8 +22,7 @@ public class UpdateRecordCmdBuildTest {
 
     private final byte record_number = 0x01;
 
-    private final ByteBuffer newRecordData =
-            ByteBuffer.wrap(new byte[] {0x00, 0x01, 0x02, 0x03, 0x04});
+    private final byte[] newRecordData = new byte[] {0x00, 0x01, 0x02, 0x03, 0x04};
 
     private AbstractApduCommandBuilder apduCommandBuilder;
 
@@ -33,34 +32,34 @@ public class UpdateRecordCmdBuildTest {
     public void updateRecordCmdBuild_rev2_4() throws IllegalArgumentException {
 
         // revision 2.4
-        ByteBuffer request2_4 = ByteBuffer.wrap(new byte[] {(byte) 0x94, (byte) 0xDC, (byte) 0x01,
-                0x44, (byte) 0x05, 0x00, 0x01, 0x02, 0x03, 0x04});
+        byte[] request2_4 = new byte[] {(byte) 0x94, (byte) 0xDC, (byte) 0x01, 0x44, (byte) 0x05,
+                0x00, 0x01, 0x02, 0x03, 0x04};
         apduCommandBuilder = new UpdateRecordCmdBuild(PoRevision.REV2_4, (byte) 0x08, record_number,
-                newRecordData);
+                newRecordData, "TestRev2_4");
         ApduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertEquals(request2_4, ApduRequest.getBytes());
+        Assert.assertArrayEquals(request2_4, ApduRequest.getBytes());
     }
 
     @Test
     public void updateRecordCmdBuild_rev3_1() throws IllegalArgumentException {
         // revision 3.1
-        ByteBuffer request3_1 = ByteBuffer.wrap(new byte[] {(byte) 0x00, (byte) 0xDC, (byte) 0x01,
-                0x44, (byte) 0x05, 0x00, 0x01, 0x02, 0x03, 0x04});
+        byte[] request3_1 = new byte[] {(byte) 0x00, (byte) 0xDC, (byte) 0x01, 0x44, (byte) 0x05,
+                0x00, 0x01, 0x02, 0x03, 0x04};
         apduCommandBuilder = new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x08, record_number,
-                newRecordData);
+                newRecordData, "TestRev3_1");
         ApduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertEquals(request3_1, ApduRequest.getBytes());
+        Assert.assertArrayEquals(request3_1, ApduRequest.getBytes());
     }
 
     @Test
     public void updateRecordCmdBuild_rev3_2() throws IllegalArgumentException {
         // revision 3.2
-        ByteBuffer request3_2 = ByteBuffer.wrap(new byte[] {(byte) 0x00, (byte) 0xDC, (byte) 0x01,
-                0x44, (byte) 0x05, 0x00, 0x01, 0x02, 0x03, 0x04});
+        byte[] request3_2 = new byte[] {(byte) 0x00, (byte) 0xDC, (byte) 0x01, 0x44, (byte) 0x05,
+                0x00, 0x01, 0x02, 0x03, 0x04};
         apduCommandBuilder = new UpdateRecordCmdBuild(PoRevision.REV3_2, (byte) 0x08, record_number,
-                newRecordData);
+                newRecordData, "TestRev3_2");
         ApduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertEquals(request3_2, ApduRequest.getBytes());
+        Assert.assertArrayEquals(request3_2, ApduRequest.getBytes());
     }
 
 }

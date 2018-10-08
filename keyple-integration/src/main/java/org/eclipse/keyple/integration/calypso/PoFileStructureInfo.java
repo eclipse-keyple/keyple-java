@@ -8,10 +8,10 @@
 
 package org.eclipse.keyple.integration.calypso;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.seproxy.ApduResponse;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 public class PoFileStructureInfo {
 
@@ -74,23 +74,23 @@ public class PoFileStructureInfo {
     public PoFileStructureInfo(ApduResponse poFciData) {
 
         GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(poFciData);
-        ByteBuffer poCalypsoInstanceAid = poFciRespPars.getDfName();
+        byte[] poCalypsoInstanceAid = poFciRespPars.getDfName();
 
-        if (poCalypsoInstanceAid.equals((ByteBufferUtils.fromHex(poAuditC0Aid)))) {
+        if (poCalypsoInstanceAid.equals((ByteArrayUtils.fromHex(poAuditC0Aid)))) {
 
             setFileStructureForAuditC0();
 
-        } else if (poCalypsoInstanceAid.equals((ByteBufferUtils.fromHex(clapAid)))) {
+        } else if (poCalypsoInstanceAid.equals((ByteArrayUtils.fromHex(clapAid)))) {
 
             setFileStructureForClap();
 
-        } else if (poCalypsoInstanceAid.equals((ByteBufferUtils.fromHex(cdLightAid)))) {
+        } else if (poCalypsoInstanceAid.equals((ByteArrayUtils.fromHex(cdLightAid)))) {
 
             setFileStructureForCdLight();
 
         } else {
             throw new IllegalArgumentException(
-                    "The file structure for AID " + ByteBufferUtils.toHex(poCalypsoInstanceAid)
+                    "The file structure for AID " + ByteArrayUtils.toHex(poCalypsoInstanceAid)
                             + " is not registered for testing.");
         }
 

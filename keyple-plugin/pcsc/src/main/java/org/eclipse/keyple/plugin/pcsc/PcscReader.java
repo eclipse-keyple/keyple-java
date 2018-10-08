@@ -8,7 +8,6 @@
 
 package org.eclipse.keyple.plugin.pcsc;
 
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -16,7 +15,7 @@ import javax.smartcardio.*;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.exception.*;
 import org.eclipse.keyple.seproxy.plugin.AbstractThreadedLocalReader;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,17 +150,17 @@ public class PcscReader extends AbstractThreadedLocalReader {
      *
      * @param apduIn APDU in buffer
      * @return apduOut buffer
-     * @throws KeypleReaderException if the transmission failed
+     * @throws KeypleIOReaderException if the transmission failed
      */
     @Override
-    protected final ByteBuffer transmitApdu(ByteBuffer apduIn) throws KeypleIOReaderException {
+    protected final byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         ResponseAPDU apduResponseData;
         try {
             apduResponseData = channel.transmit(new CommandAPDU(apduIn));
         } catch (CardException e) {
             throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
         }
-        return ByteBuffer.wrap(apduResponseData.getBytes());
+        return apduResponseData.getBytes();
     }
 
     /**
@@ -188,7 +187,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
                 throw new KeypleReaderException("Target selector mask not found!", null);
             }
             Pattern p = Pattern.compile(selectionMask);
-            String atr = ByteBufferUtils.toHex(ByteBuffer.wrap(card.getATR().getBytes()));
+            String atr = ByteArrayUtils.toHex(card.getATR().getBytes());
             if (!p.matcher(atr).matches()) {
                 if (logging) {
                     logger.trace("[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}",
@@ -353,8 +352,8 @@ public class PcscReader extends AbstractThreadedLocalReader {
     }
 
     @Override
-    protected final ByteBuffer getATR() {
-        return ByteBuffer.wrap(card.getATR().getBytes());
+    protected final byte[] getATR() {
+        return card.getATR().getBytes();
     }
 
     /**
@@ -375,7 +374,7 @@ public class PcscReader extends AbstractThreadedLocalReader {
      * In this case be aware that on some platforms (ex. Windows 8+), the exclusivity is granted for
      * a limited time (ex. 5 seconds). After this delay, the card is automatically resetted.
      * 
-     * @throws KeypleReaderException if a reader error occurs
+     * @throws KeypleChannelStateException if a reader error occurs
      */
     @Override
     protected final void openPhysicalChannel() throws KeypleChannelStateException {

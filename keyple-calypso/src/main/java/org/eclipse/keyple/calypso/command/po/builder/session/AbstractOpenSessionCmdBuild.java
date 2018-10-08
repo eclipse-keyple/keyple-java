@@ -9,7 +9,7 @@
 package org.eclipse.keyple.calypso.command.po.builder.session;
 
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
@@ -34,17 +34,20 @@ public abstract class AbstractOpenSessionCmdBuild extends PoCommandBuilder {
     }
 
     public static AbstractOpenSessionCmdBuild create(PoRevision revision, byte debitKeyIndex,
-            ByteBuffer sessionTerminalChallenge, byte sfi, byte recordNb) {
+            byte[] sessionTerminalChallenge, byte sfi, byte recordNb, String extraInfo) {
         switch (revision) {
+            case REV1_0:
+                return new OpenSession10CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
+                        recordNb, extraInfo);
             case REV2_4:
                 return new OpenSession24CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
-                        recordNb);
+                        recordNb, extraInfo);
             case REV3_1:
                 return new OpenSession31CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
-                        recordNb);
+                        recordNb, extraInfo);
             case REV3_2:
                 return new OpenSession32CmdBuild(debitKeyIndex, sessionTerminalChallenge, sfi,
-                        recordNb);
+                        recordNb, extraInfo);
             default:
                 throw new IllegalArgumentException("Revision " + revision + " isn't supported");
         }

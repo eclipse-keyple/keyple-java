@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -24,14 +22,11 @@ import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 public class TestEngine {
 
     public static ProxyReader poReader, csmReader;
-
-    public static ReadRecordsCmdBuild poRatificationCommand =
-            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01, true, (byte) 0x01);
 
     public static PoFileStructureInfo selectPO()
             throws IllegalArgumentException, KeypleReaderException {
@@ -55,22 +50,20 @@ public class TestEngine {
         Set<SeRequest> selectionRequests = new LinkedHashSet<SeRequest>();
 
         // Add Audit C0 AID to the list
-        SeRequest seRequest =
-                new SeRequest(
-                        new SeRequest.AidSelector(
-                                ByteBufferUtils.fromHex(PoFileStructureInfo.poAuditC0Aid)),
-                        null, false);
+        SeRequest seRequest = new SeRequest(
+                new SeRequest.AidSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.poAuditC0Aid)),
+                null, false);
         selectionRequests.add(seRequest);
 
         // Add CLAP AID to the list
         seRequest = new SeRequest(
-                new SeRequest.AidSelector(ByteBufferUtils.fromHex(PoFileStructureInfo.clapAid)),
+                new SeRequest.AidSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.clapAid)),
                 null, false);
         selectionRequests.add(seRequest);
 
         // Add cdLight AID to the list
         seRequest = new SeRequest(
-                new SeRequest.AidSelector(ByteBufferUtils.fromHex(PoFileStructureInfo.cdLightAid)),
+                new SeRequest.AidSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.cdLightAid)),
                 null, false);
         selectionRequests.add(seRequest);
 

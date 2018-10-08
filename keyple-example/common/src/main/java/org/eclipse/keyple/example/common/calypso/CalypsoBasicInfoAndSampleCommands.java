@@ -14,8 +14,7 @@ import java.util.Set;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.AppendRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.calypso.command.po.builder.session.PoGetChallengeCmdBuild;
-import org.eclipse.keyple.util.ByteBufferUtils;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
  * Helper class to provide specific elements to handle Calypso cards.
@@ -57,26 +56,22 @@ public class CalypsoBasicInfoAndSampleCommands {
 
     /** Event Log read record */
     public static ReadRecordsCmdBuild poReadRecordCmd_EventLog = new ReadRecordsCmdBuild(
-            PoRevision.REV3_1, SFI_EventLog, RECORD_NUMBER_1, true, (byte) 0x00);
+            PoRevision.REV3_1, SFI_EventLog, RECORD_NUMBER_1, true, (byte) 0x00,
+            String.format("EventLog (SFI=%02X, recnbr=%d))", SFI_EventLog, RECORD_NUMBER_1));
 
     /** Contract List read record */
-    public static ReadRecordsCmdBuild poReadRecordCmd_ContractList = new ReadRecordsCmdBuild(
-            PoRevision.REV3_1, SFI_ContractList, RECORD_NUMBER_1, true, (byte) 0x00);
+    public static ReadRecordsCmdBuild poReadRecordCmd_ContractList =
+            new ReadRecordsCmdBuild(PoRevision.REV3_1, SFI_ContractList, RECORD_NUMBER_1, true,
+                    (byte) 0x00, String.format("ContractList (SFI=%02X)", SFI_ContractList));
 
     /** Contract #1 read record */
     public static ReadRecordsCmdBuild poReadRecordCmd_Contract = new ReadRecordsCmdBuild(
-            PoRevision.REV3_1, SFI_Contracts, RECORD_NUMBER_1, true, (byte) 0x00);
+            PoRevision.REV3_1, SFI_Contracts, RECORD_NUMBER_1, true, (byte) 0x00,
+            String.format("Contracts (SFI=%02X, recnbr=%d)", SFI_Contracts, RECORD_NUMBER_1));
 
     /** Event Log append record */
     public static AppendRecordCmdBuild poAppendRecordCmd_EventLog = new AppendRecordCmdBuild(
-            PoRevision.REV3_1, SFI_EventLog, ByteBufferUtils.fromHex(eventLog_dataFill));
-
-    /**
-     * Ratification command. The chosen ratification command is a simple read record of 1 byte
-     * (short execution time)
-     */
-    public static PoGetChallengeCmdBuild poRatificationCommand =
-            new PoGetChallengeCmdBuild(PoRevision.REV3_1);
-    // new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x00, (byte) 0x00, true, (byte) 0x00);
+            PoRevision.REV3_1, SFI_EventLog, ByteArrayUtils.fromHex(eventLog_dataFill),
+            String.format("EventLog (SFI=%02X)", SFI_EventLog));
 
 }

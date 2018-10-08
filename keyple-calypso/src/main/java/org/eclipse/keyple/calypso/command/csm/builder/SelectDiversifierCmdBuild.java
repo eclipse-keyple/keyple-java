@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.csm.builder;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.csm.CalypsoSmCommands;
 import org.eclipse.keyple.calypso.command.csm.CsmCommandBuilder;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
@@ -32,12 +32,12 @@ public class SelectDiversifierCmdBuild extends CsmCommandBuilder {
      * @throws java.lang.IllegalArgumentException - if the request is inconsistent
      */
     public SelectDiversifierCmdBuild(org.eclipse.keyple.calypso.command.csm.CsmRevision revision,
-            ByteBuffer diversifier) throws IllegalArgumentException {
+            byte[] diversifier) throws IllegalArgumentException {
         super(command, null);
         if (revision != null) {
             this.defaultRevision = revision;
         }
-        if (diversifier == null || (diversifier.limit() != 4 && diversifier.limit() != 8)) {
+        if (diversifier == null || (diversifier.length != 4 && diversifier.length != 8)) {
             throw new IllegalArgumentException("Bad diversifier value!");
         }
         byte cla = CsmRevision.S1D.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x80;

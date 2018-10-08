@@ -8,7 +8,7 @@
 
 package org.eclipse.keyple.calypso.command.po.builder;
 
-import java.nio.ByteBuffer;
+
 import org.eclipse.keyple.calypso.command.po.*;
 
 /**
@@ -31,16 +31,22 @@ public class DecreaseCmdBuild extends PoCommandBuilder
      *        file.
      * @param decValue Value to subtract to the counter (defined as a positive int &lt;= 16777215
      *        [FFFFFFh])
+     * @param extraInfo extra information included in the logs (can be null or empty)
      * @throws java.lang.IllegalArgumentException - if the decrement value is out of range
      * @throws java.lang.IllegalArgumentException - if the command is inconsistent
      */
 
-    public DecreaseCmdBuild(PoRevision revision, byte sfi, byte counterNumber, int decValue)
-            throws IllegalArgumentException {
+    public DecreaseCmdBuild(PoRevision revision, byte sfi, byte counterNumber, int decValue,
+            String extraInfo) throws IllegalArgumentException {
         super(command, null);
 
         if (revision != null) {
             this.defaultRevision = revision;
+        }
+
+        // only counter number >= 1 are allowed
+        if (counterNumber < 1) {
+            throw new IllegalArgumentException("Counter number out of range!");
         }
 
         // check if the incValue is in the allowed interval
@@ -49,10 +55,10 @@ public class DecreaseCmdBuild extends PoCommandBuilder
         }
 
         // convert the integer value into a 3-byte buffer
-        ByteBuffer decValueBuffer = ByteBuffer.allocate(3);
-        decValueBuffer.put(0, (byte) ((decValue >> 16) & 0xFF));
-        decValueBuffer.put(1, (byte) ((decValue >> 8) & 0xFF));
-        decValueBuffer.put(2, (byte) (decValue & 0xFF));
+        byte[] decValueBuffer = new byte[3];
+        decValueBuffer[0] = (byte) ((decValue >> 16) & 0xFF);
+        decValueBuffer[1] = (byte) ((decValue >> 8) & 0xFF);
+        decValueBuffer[2] = (byte) (decValue & 0xFF);
 
         byte cla = PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00;
         byte p1 = counterNumber;
@@ -60,5 +66,8 @@ public class DecreaseCmdBuild extends PoCommandBuilder
 
         /* this is a case4 command, we set Le = 0 */
         this.request = setApduRequest(cla, command, p1, p2, decValueBuffer, (byte) 0);
+        if (extraInfo != null) {
+            this.addSubName(extraInfo);
+        }
     }
 }
