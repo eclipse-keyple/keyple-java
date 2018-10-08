@@ -28,7 +28,6 @@ import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
 import org.eclipse.keyple.util.ByteArrayUtils;
-import org.eclipse.keyple.util.ByteBufferUtils;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -143,15 +142,17 @@ public class OMAPITestFragment extends Fragment {
                     mText.append("\n");
 
 
-                    ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                            (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
+                    ReadRecordsCmdBuild poReadRecordCmd_T2Env =
+                            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01,
+                                    true, (byte) 0x20, "Hoplink EF T2Environment");
 
-                    ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                            (byte) 0x1A, (byte) 0x01, true, (byte) 0x30, "Hoplink EF T2Usage");
+                    ReadRecordsCmdBuild poReadRecordCmd_T2Usage =
+                            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
+                                    true, (byte) 0x30, "Hoplink EF T2Usage");
 
-                    UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
-                            new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
-                                    ByteArrayUtils.fromHex(t2UsageRecord1_dataFill), "Hoplink EF T2Usage");
+                    UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill = new UpdateRecordCmdBuild(
+                            PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
+                            ByteArrayUtils.fromHex(t2UsageRecord1_dataFill), "Hoplink EF T2Usage");
 
 
                     Boolean keepChannelOpen = false;

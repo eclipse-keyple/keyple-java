@@ -35,7 +35,6 @@ import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.ByteArrayUtils;
-import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import android.app.Fragment;
@@ -221,15 +220,17 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                                     + "2122232425262728292A2B2C2D2E2F30";
 
 
-                    ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                            (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
+                    ReadRecordsCmdBuild poReadRecordCmd_T2Env =
+                            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01,
+                                    true, (byte) 0x20, "Hoplink EF T2Environment");
 
-                    ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                            (byte) 0x1A, (byte) 0x01, true, (byte) 0x30, "Hoplink EF T2Usage");
+                    ReadRecordsCmdBuild poReadRecordCmd_T2Usage =
+                            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
+                                    true, (byte) 0x30, "Hoplink EF T2Usage");
 
-                    UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill =
-                            new UpdateRecordCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
-                                    ByteArrayUtils.fromHex(t2UsageRecord1_dataFill), "Hoplink EF T2Usage");
+                    UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill = new UpdateRecordCmdBuild(
+                            PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
+                            ByteArrayUtils.fromHex(t2UsageRecord1_dataFill), "Hoplink EF T2Usage");
 
                     List<ApduRequest> poApduRequestList;
 
