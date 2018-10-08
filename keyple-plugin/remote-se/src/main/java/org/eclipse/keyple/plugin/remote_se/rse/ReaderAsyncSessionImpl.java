@@ -26,12 +26,12 @@ public class ReaderAsyncSessionImpl extends Observable<KeypleDTO> implements IRe
 
     private static final Logger logger = LoggerFactory.getLogger(ReaderAsyncSessionImpl.class);
 
-    String sessionId;
-    SeRequestSet seRequestSet;
-    ISeResponseSetCallback seResponseSetCallback;
+    private final String sessionId;
+    private SeRequestSet seRequestSet;
+    private ISeResponseSetCallback seResponseSetCallback;
     // DtoSender dtoSender;
-    CountDownLatch lock;
-    SeResponseSet seResponseSet;
+    private CountDownLatch lock;
+    private SeResponseSet seResponseSet;
 
     // constructor
     public ReaderAsyncSessionImpl(String sessionId) {
@@ -94,11 +94,6 @@ public class ReaderAsyncSessionImpl extends Observable<KeypleDTO> implements IRe
         return seRequestSet != null;
     }
 
-
-    @Override
-    public String getTransmitUrl() {
-        return null;
-    }
 
     @Override
     public SeResponseSet transmit(final SeRequestSet seApplicationRequest) {

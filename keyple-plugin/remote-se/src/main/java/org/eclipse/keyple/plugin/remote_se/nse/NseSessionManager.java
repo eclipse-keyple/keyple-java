@@ -16,9 +16,9 @@ import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 /**
  * Manages binding between readerName and a Master SessionId
  */
-public class NseSessionManager {
+class NseSessionManager {
 
-    private Map<String, String> readerName_sessionId;
+    private final Map<String, String> readerName_sessionId;
 
     public NseSessionManager() {
         readerName_sessionId = new HashMap<String, String>();

@@ -15,7 +15,7 @@ import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
 import com.google.gson.*;
 
-public class GsonSeProtocolTypeAdapter
+class GsonSeProtocolTypeAdapter
         implements JsonDeserializer<SeProtocol>, JsonSerializer<SeProtocol> {
 
     @Override

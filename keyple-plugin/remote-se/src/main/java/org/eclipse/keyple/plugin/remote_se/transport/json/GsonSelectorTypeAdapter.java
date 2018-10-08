@@ -14,7 +14,7 @@ import org.eclipse.keyple.util.ByteArrayUtils;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import com.google.gson.*;
 
-public class GsonSelectorTypeAdapter
+class GsonSelectorTypeAdapter
         implements JsonDeserializer<SeRequest.Selector>, JsonSerializer<SeRequest.Selector> {
 
     @Override

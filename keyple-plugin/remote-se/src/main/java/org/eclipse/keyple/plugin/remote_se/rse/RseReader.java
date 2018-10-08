@@ -24,9 +24,9 @@ import org.slf4j.LoggerFactory;
 
 public class RseReader extends Observable implements ObservableReader {
 
-    IReaderSession session;// can be sync or async
-    String remoteName;
-    String name;
+    private final IReaderSession session;// can be sync or async
+    private final String remoteName;
+    private final String name;
 
     private static final Logger logger = LoggerFactory.getLogger(RseReader.class);
 

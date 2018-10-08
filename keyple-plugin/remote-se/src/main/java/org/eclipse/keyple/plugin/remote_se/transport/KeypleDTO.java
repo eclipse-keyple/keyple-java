@@ -15,15 +15,14 @@ package org.eclipse.keyple.plugin.remote_se.transport;
 public class KeypleDTO {
 
     // Master reader session
-    String sessionId;
+    private String sessionId;
     // API method to be called
-    String action;
+    private final String action;
     // Arguments of the API (json)
-    String body;
+    private final String body;
     // Is a request or a response
-    Boolean isRequest;
-    // Integrity hash (not used yet)
-    Integer hash;
+    private final Boolean isRequest;
+
 
     /**
      * Basic Constructor
@@ -69,19 +68,8 @@ public class KeypleDTO {
         return body;
     }
 
-    public Integer getHash() {
-        return hash;
-    }
-
     public String getSessionId() {
         return sessionId;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public void setHash(Integer hash) {
-        this.hash = hash;
-    }
 }

@@ -20,7 +20,7 @@ import org.eclipse.keyple.seproxy.SeProxyService;
 public class VirtualSeRemoteService {
 
     private TransportNode node;
-    private SeProxyService seProxyService;
+    private final SeProxyService seProxyService;
 
     public VirtualSeRemoteService() {
         this.seProxyService = SeProxyService.getInstance();

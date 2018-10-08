@@ -24,9 +24,7 @@ public interface IReaderAsyncSession extends IReaderSession {
 
     SeRequestSet getSeRequestSet();
 
-    String getTransmitUrl();
-
-    public SeResponseSet transmit(SeRequestSet seApplicationRequest);
+    SeResponseSet transmit(SeRequestSet seApplicationRequest);
 
 
 }

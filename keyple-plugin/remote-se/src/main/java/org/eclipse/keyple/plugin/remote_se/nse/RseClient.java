@@ -24,8 +24,4 @@ public interface RseClient extends ObservableReader.ReaderObserver {
             throws KeypleReaderException;
 
 
-    void disconnectReader(ProxyReader localReader) throws KeypleReaderException;
-
-
-
 }

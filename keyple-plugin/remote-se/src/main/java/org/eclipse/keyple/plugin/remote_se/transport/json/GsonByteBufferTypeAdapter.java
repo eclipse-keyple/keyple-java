@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
 import org.eclipse.keyple.util.ByteBufferUtils;
 import com.google.gson.*;
 
-public class GsonByteBufferTypeAdapter
+class GsonByteBufferTypeAdapter
         implements JsonDeserializer<ByteBuffer>, JsonSerializer<ByteBuffer> {
 
     @Override

@@ -32,7 +32,7 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
     private static final Logger logger = LoggerFactory.getLogger(RsePlugin.class);
 
     // virtal readers
-    SortedSet<RseReader> rseReaders = new TreeSet<RseReader>();
+    private final SortedSet<RseReader> rseReaders = new TreeSet<RseReader>();
 
     public RsePlugin() {
         logger.info("RemoteSePlugin");
@@ -91,7 +91,7 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
      * @param session
      * @return
      */
-    private String connectRemoteReader(String name, IReaderSession session) {
+    private void connectRemoteReader(String name, IReaderSession session) {
         logger.debug("connectRemoteReader {}", name);
 
         // check if reader is not already connected (by name)
@@ -107,10 +107,8 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
             logger.info(" CONNECTED {} ", rseReader.getName());
             logger.info("*****************************");
 
-            return session.getSessionId();
         } else {
             logger.warn("RemoteSeReader with name {} is already connected", name);
-            return session.getSessionId();
         }
         // todo errors
     }
@@ -232,16 +230,18 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
             IReaderSession rseSession;// reader session
 
             if (!isAsync) {
-                rseSession = new ReaderSyncClientImpl(sessionId);
+                //todo
+                logger.error("Rse Plugin needs a Async Session to work");
+                throw new IllegalArgumentException("Rse Plugin needs a Async Session to work");
             } else {
                 // rseSession = new ReaderAsyncSessionImpl(sessionId, message.getDtoSender());
                 rseSession = new ReaderAsyncSessionImpl(sessionId);
                 // add the web socket node as an observer for the session as the session will send
                 // KeypleDTO
                 ((ReaderAsyncSessionImpl) rseSession).addObserver(message.getDtoSender());//todo found bugs here
+                this.connectRemoteReader(readerName, rseSession);
             }
 
-            this.connectRemoteReader(readerName, rseSession);
 
             // response
             JsonObject respBody = new JsonObject();

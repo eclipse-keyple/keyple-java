@@ -16,10 +16,10 @@ import com.google.gson.JsonObject;
  */
 public class KeypleDTOHelper {
 
-    public static String READER_TRANSMIT = "reader_transmit";
-    public static String READER_CONNECT = "reader_connect";
-    public static String READER_DISCONNECT = "reader_disconnect";
-    public static String READER_EVENT = "reader_event";
+    public final static String READER_TRANSMIT = "reader_transmit";
+    public final static String READER_CONNECT = "reader_connect";
+    public final static String READER_DISCONNECT = "reader_disconnect";
+    public final static String READER_EVENT = "reader_event";
 
     static public int generateHash(KeypleDTO keypleDTO) {
         return keypleDTO.hashCode();

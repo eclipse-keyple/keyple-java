@@ -27,8 +27,8 @@ public class NativeSeRemoteService implements NseAPI, RseClient, DtoDispatcher {
     private static final Logger logger = LoggerFactory.getLogger(NativeSeRemoteService.class);
 
     private TransportNode transportNode;
-    private SeProxyService seProxyService;
-    private NseSessionManager nseSessionManager;
+    private final SeProxyService seProxyService;
+    private final NseSessionManager nseSessionManager;
 
     public NativeSeRemoteService() {
         this.seProxyService = SeProxyService.getInstance();
@@ -143,13 +143,6 @@ public class NativeSeRemoteService implements NseAPI, RseClient, DtoDispatcher {
         transportNode.sendDTO(new KeypleDTO(KeypleDTOHelper.READER_CONNECT, data, true));
 
     }
-
-    // RseClient
-    @Override
-    public void disconnectReader(ProxyReader localReader) {
-        // todo
-    }
-
 
 
     // NseAPI
