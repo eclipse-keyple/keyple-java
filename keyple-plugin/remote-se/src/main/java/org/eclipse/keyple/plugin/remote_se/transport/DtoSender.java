@@ -11,22 +11,22 @@ package org.eclipse.keyple.plugin.remote_se.transport;
 import org.eclipse.keyple.util.Observable;
 
 /**
- * Components that sends a DTO
+ * Components that sends a DTO over the network It can be an observer for KeypleDTOs
  */
-public interface DtoSender extends Observable.Observer<KeypleDTO> {
+public interface DtoSender extends Observable.Observer<KeypleDto> {
 
     /**
      * Send DTO with transport information
      * 
      * @param message to be sent
      */
-    void sendDTO(TransportDTO message);
+    void sendDTO(TransportDto message);
 
     /**
      * Send DTO with no transport information (usually a new message)
      * 
      * @param message to be sent
      */
-    void sendDTO(KeypleDTO message);
+    void sendDTO(KeypleDto message);
 
 }

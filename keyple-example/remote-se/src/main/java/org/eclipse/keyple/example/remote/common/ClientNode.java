@@ -8,13 +8,12 @@
 
 package org.eclipse.keyple.example.remote.common;
 
-import java.io.IOException;
 
-public abstract class TransportFactory {
+/**
+ * Client type of a TransportNode, connects to a ServerNode
+ */
+public interface ClientNode extends TransportNode {
 
-    abstract public ClientNode getClient(Boolean isMaster);
-
-    abstract public ServerNode getServer(Boolean isMaster) throws IOException;
-
+    void connect();
 
 }

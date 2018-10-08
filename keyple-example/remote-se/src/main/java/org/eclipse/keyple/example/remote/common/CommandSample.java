@@ -19,12 +19,9 @@ import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.util.ByteArrayUtils;
-import org.eclipse.keyple.util.ByteBufferUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CommandSample {
-
 
 
 
@@ -35,8 +32,9 @@ public class CommandSample {
             logger.info("--- PURE SYNC COMMAND RUNNING ---");
 
             // get the reader by its name
-            final RseReader reader = (RseReader) ((RsePlugin) SeProxyService.getInstance()
-                    .getPlugins().first()).getReaderByRemoteName(remoteReaderName);
+            final RseReader reader =
+                    (RseReader) ((RsePlugin) SeProxyService.getInstance().getPlugins().first())
+                            .getReaderByRemoteName(remoteReaderName);
 
             String poAid = "A000000291A000000191";
 
@@ -55,8 +53,9 @@ public class CommandSample {
             // SYNC transmit seRequestSet to Reader With Callback function
             SeResponseSet seResponseSet = reader.transmitNewThread(new SeRequestSet(seRequest));
 
-            logger.info(
-                    "Received SYNCHRONOUSLY a 1rt SeResponseSet - isSuccessful : {}",seResponseSet.getSingleResponse().getApduResponses().iterator().next().isSuccessful());
+            logger.info("Received SYNCHRONOUSLY a 1rt SeResponseSet - isSuccessful : {}",
+                    seResponseSet.getSingleResponse().getApduResponses().iterator().next()
+                            .isSuccessful());
 
             // build 1st seRequestSet with keep channel open to true
             ReadRecordsCmdBuild poReadRecordCmd_T2Env2 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
@@ -70,8 +69,9 @@ public class CommandSample {
             // SYNC transmit seRequestSet to Reader With Callback function
             SeResponseSet seResponseSet2 = reader.transmitNewThread(new SeRequestSet(seRequest2));
 
-            logger.info(
-                    "Received SYNCHRONOUSLY a 2nd SeResponseSet - isSuccessful : {}",seResponseSet2.getSingleResponse().getApduResponses().iterator().next().isSuccessful());
+            logger.info("Received SYNCHRONOUSLY a 2nd SeResponseSet - isSuccessful : {}",
+                    seResponseSet2.getSingleResponse().getApduResponses().iterator().next()
+                            .isSuccessful());
 
 
         } catch (KeypleReaderNotFoundException e) {
@@ -119,30 +119,28 @@ public class CommandSample {
 
                     List<ApduRequest> poApduRequestList2;
 
-                    ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                            (byte) 0x1A, (byte) 0x01, true, (byte) 0x30, "Hoplink EF T2Usage");
+                    ReadRecordsCmdBuild poReadRecordCmd_T2Usage =
+                            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
+                                    true, (byte) 0x30, "Hoplink EF T2Usage");
                     poApduRequestList2 = Arrays.asList(poReadRecordCmd_T2Usage.getApduRequest(),
                             poReadRecordCmd_T2Usage.getApduRequest());
 
                     SeRequest seRequest2 = new SeRequest(selector, poApduRequestList2, false);
 
                     // ASYNC transmit seRequestSet to Reader
-                    try {
-                        ((RseReader) reader).asyncTransmit(new SeRequestSet(seRequest2),
-                                new ISeResponseSetCallback() {
-                                    @Override
-                                    public void getResponseSet(SeResponseSet seResponseSet) {
-                                        logger.info(
-                                                "Received asynchronously a SeResponseSet with Webservice RemoteSE : {}",
-                                                seResponseSet);
+                    ((RseReader) reader).asyncTransmit(new SeRequestSet(seRequest2),
+                            new ISeResponseSetCallback() {
+                                @Override
+                                public void getResponseSet(SeResponseSet seResponseSet) {
+                                    logger.info(
+                                            "Received asynchronously a SeResponseSet with Webservice RemoteSE : {}",
+                                            seResponseSet);
 
-                                        //continue here
+                                    // continue here
 
-                                    }
-                                });
-                    } catch (KeypleReaderException e) {
-                        e.printStackTrace();
-                    }
+                                }
+                            });
+
                 }
             });
 
@@ -155,6 +153,7 @@ public class CommandSample {
         }
 
     }
+
     @Deprecated
     static public void transmitSyncCommand(final Logger logger, final String remoteReaderName) {
 
@@ -172,8 +171,9 @@ public class CommandSample {
                     String poAid = "A000000291A000000191";
 
                     // build 1st seRequestSet with keep channel open to true
-                    ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                            (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
+                    ReadRecordsCmdBuild poReadRecordCmd_T2Env =
+                            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01,
+                                    true, (byte) 0x20, "Hoplink EF T2Environment");
 
                     List<ApduRequest> poApduRequestList;
                     poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
@@ -186,11 +186,13 @@ public class CommandSample {
 
                     logger.info(
                             "Received SYNCHRONOUSLY a 1rt SeResponseSet with keep channel open {}, details : {}",
-                            seResponseSet.getResponses().get(0).wasChannelPreviouslyOpen(), seResponseSet);
+                            seResponseSet.getResponses().get(0).wasChannelPreviouslyOpen(),
+                            seResponseSet);
 
                     // build 1st seRequestSet with keep channel open to true
-                    ReadRecordsCmdBuild poReadRecordCmd_T2Env2 = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                            (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
+                    ReadRecordsCmdBuild poReadRecordCmd_T2Env2 =
+                            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x14, (byte) 0x01,
+                                    true, (byte) 0x20, "Hoplink EF T2Environment");
 
 
 
@@ -204,7 +206,8 @@ public class CommandSample {
 
                     logger.info(
                             "Received SYNCHRONOUSLY a 2nd SeResponseSet with keep channel open {}, details : {}",
-                            seResponseSet2.getResponses().get(0).wasChannelPreviouslyOpen(), seResponseSet2);
+                            seResponseSet2.getResponses().get(0).wasChannelPreviouslyOpen(),
+                            seResponseSet2);
 
 
                 } catch (KeypleReaderNotFoundException e) {

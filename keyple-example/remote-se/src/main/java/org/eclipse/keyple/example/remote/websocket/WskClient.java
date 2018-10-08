@@ -9,7 +9,9 @@
 package org.eclipse.keyple.example.remote.websocket;
 
 import java.net.URI;
+import org.eclipse.keyple.example.remote.common.ClientNode;
 import org.eclipse.keyple.plugin.remote_se.transport.*;
+import org.eclipse.keyple.plugin.remote_se.transport.TransportDto;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
@@ -33,14 +35,14 @@ public class WskClient extends WebSocketClient implements ClientNode {
     @Override
     public void onMessage(String message) {
         logger.trace("Web socket onMessage {}", message);
-        KeypleDTO dto = KeypleDTOHelper.fromJson(message);
+        KeypleDto dto = KeypleDtoHelper.fromJson(message);
 
         // process dto
-        TransportDTO transportDTO = dtoDispatcher.onDTO(new WskTransportDTO(dto, null, this));
+        TransportDto transportDto = dtoDispatcher.onDTO(new WskTransportDTO(dto, null, this));
 
         // there is a response/request to send back
-        if (!KeypleDTOHelper.isNoResponse(transportDTO.getKeypleDTO())) {
-            this.sendDTO(transportDTO);
+        if (!KeypleDtoHelper.isNoResponse(transportDto.getKeypleDTO())) {
+            this.sendDTO(transportDto);
         }
     }
 
@@ -57,16 +59,16 @@ public class WskClient extends WebSocketClient implements ClientNode {
     }
 
     @Override
-    public void sendDTO(TransportDTO transportDTO) {
-        this.sendDTO(transportDTO.getKeypleDTO());
+    public void sendDTO(TransportDto transportDto) {
+        this.sendDTO(transportDto.getKeypleDTO());
     }
 
     @Override
-    public void sendDTO(KeypleDTO keypleDTO) {
+    public void sendDTO(KeypleDto keypleDto) {
         // if keypkeDTO is no empty
-        if (!KeypleDTOHelper.isNoResponse(keypleDTO)) {
-            logger.trace("send DTO {}", KeypleDTOHelper.toJson(keypleDTO));
-            this.send(KeypleDTOHelper.toJson(keypleDTO));
+        if (!KeypleDtoHelper.isNoResponse(keypleDto)) {
+            logger.trace("send DTO {}", KeypleDtoHelper.toJson(keypleDto));
+            this.send(KeypleDtoHelper.toJson(keypleDto));
         } else {
             logger.debug("No message to send back");
         }
@@ -80,7 +82,7 @@ public class WskClient extends WebSocketClient implements ClientNode {
 
     // observer of keypleDTOSenders
     @Override
-    public void update(KeypleDTO event) {
+    public void update(KeypleDto event) {
         this.sendDTO(event);
     }
 }

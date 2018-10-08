@@ -6,10 +6,13 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.plugin.remote_se.transport;
+package org.eclipse.keyple.example.remote.common;
+
+import org.eclipse.keyple.plugin.remote_se.transport.DtoDispatcher;
+import org.eclipse.keyple.plugin.remote_se.transport.DtoSender;
 
 /**
- * TransportNode is a gateway for incoming and outgoing TransportDTO
+ * TransportNode is a gateway for incoming and outgoing TransportDto
  */
 public interface TransportNode extends DtoSender {
 

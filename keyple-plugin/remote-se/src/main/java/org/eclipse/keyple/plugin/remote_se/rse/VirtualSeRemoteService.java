@@ -9,17 +9,16 @@
 package org.eclipse.keyple.plugin.remote_se.rse;
 
 import java.util.SortedSet;
-import java.util.TreeSet;
-import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
+import org.eclipse.keyple.plugin.remote_se.transport.DtoSender;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 
 /**
- * Service to bind a RSE Plugin to a Transport Node
+ * Service to setDtoSender a RSE Plugin to a Transport Node
  */
 public class VirtualSeRemoteService {
 
-    private TransportNode node;
+    private DtoSender node;
     private final SeProxyService seProxyService;
 
     public VirtualSeRemoteService() {
@@ -31,7 +30,7 @@ public class VirtualSeRemoteService {
      * 
      * @param node
      */
-    public void bindTransportNode(TransportNode node) {
+    public void setDtoSender(DtoSender node) {
         this.node = node;
     }
 
@@ -41,10 +40,10 @@ public class VirtualSeRemoteService {
      * @param plugin
      */
     public void registerRsePlugin(RsePlugin plugin) {
-        SortedSet<ReaderPlugin> plugins  = seProxyService.getPlugins();
+        SortedSet<ReaderPlugin> plugins = seProxyService.getPlugins();
         plugins.add(plugin);
         seProxyService.setPlugins(plugins);
-        this.node.setDtoDispatcher(plugin);
+        // this.node.setDtoDispatcher(plugin); done by Master class
     }
 
 

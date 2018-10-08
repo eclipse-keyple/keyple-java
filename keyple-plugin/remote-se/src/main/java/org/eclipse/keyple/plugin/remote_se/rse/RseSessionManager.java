@@ -6,15 +6,16 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.example.remote.common;
+package org.eclipse.keyple.plugin.remote_se.rse;
 
-import java.io.IOException;
 
-public abstract class TransportFactory {
+public class RseSessionManager {
 
-    abstract public ClientNode getClient(Boolean isMaster);
 
-    abstract public ServerNode getServer(Boolean isMaster) throws IOException;
+    public String generateSessionId(String localreaderNode, String nodeId) {
+        return localreaderNode + nodeId + String.valueOf(System.currentTimeMillis());
+    }
+
 
 
 }

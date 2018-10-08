@@ -9,40 +9,40 @@
 package org.eclipse.keyple.example.remote.websocket;
 
 import org.eclipse.keyple.plugin.remote_se.transport.DtoSender;
-import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTO;
-import org.eclipse.keyple.plugin.remote_se.transport.TransportDTO;
+import org.eclipse.keyple.plugin.remote_se.transport.KeypleDto;
+import org.eclipse.keyple.plugin.remote_se.transport.TransportDto;
 import org.java_websocket.WebSocket;
 
-public class WskTransportDTO implements TransportDTO {
+public class WskTransportDTO implements TransportDto {
 
-    public KeypleDTO getDto() {
+    public KeypleDto getDto() {
         return dto;
     }
 
 
-    KeypleDTO dto;
+    KeypleDto dto;
     WebSocket socketWeb;
     DtoSender wskNode;
 
 
-    public WskTransportDTO(KeypleDTO dto, WebSocket socketWeb) {
+    public WskTransportDTO(KeypleDto dto, WebSocket socketWeb) {
         this.dto = dto;
         this.socketWeb = socketWeb;
     }
 
-    public WskTransportDTO(KeypleDTO dto, WebSocket socketWeb, DtoSender wskNode) {
+    public WskTransportDTO(KeypleDto dto, WebSocket socketWeb, DtoSender wskNode) {
         this.dto = dto;
         this.socketWeb = socketWeb;
         this.wskNode = wskNode;
     }
 
     @Override
-    public KeypleDTO getKeypleDTO() {
+    public KeypleDto getKeypleDTO() {
         return dto;
     }
 
     @Override
-    public TransportDTO nextTransportDTO(KeypleDTO keypleDto) {
+    public TransportDto nextTransportDTO(KeypleDto keypleDto) {
 
         return new WskTransportDTO(keypleDto, this.socketWeb);
     }

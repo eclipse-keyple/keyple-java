@@ -19,6 +19,6 @@ public interface DtoDispatcher {
      * @param message to be processed
      * @return response can be a NO_RESPONSE DTO, can not be null
      */
-    TransportDTO onDTO(TransportDTO message);
+    TransportDto onDTO(TransportDto message);
 
 }

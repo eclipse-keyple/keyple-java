@@ -9,8 +9,8 @@
 package org.eclipse.keyple.plugin.remote_se.rse;
 
 import java.util.concurrent.CountDownLatch;
-import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTO;
-import org.eclipse.keyple.plugin.remote_se.transport.KeypleDTOHelper;
+import org.eclipse.keyple.plugin.remote_se.transport.KeypleDto;
+import org.eclipse.keyple.plugin.remote_se.transport.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * Manage RSE Reader Session Manage SeRequestSet to transmit and receive SeResponseSet in an
  * asynchronous way
  */
-public class ReaderAsyncSessionImpl extends Observable<KeypleDTO> implements IReaderAsyncSession {
+public class ReaderAsyncSessionImpl extends Observable<KeypleDto> implements IReaderAsyncSession {
 
     private static final Logger logger = LoggerFactory.getLogger(ReaderAsyncSessionImpl.class);
 
@@ -57,7 +57,7 @@ public class ReaderAsyncSessionImpl extends Observable<KeypleDTO> implements IRe
             this.seResponseSetCallback = seResponseSetCallback;
 
             // used for 2way communications
-            notifyObservers(new KeypleDTO(KeypleDTOHelper.READER_TRANSMIT,
+            notifyObservers(new KeypleDto(KeypleDtoHelper.READER_TRANSMIT,
                     JsonParser.getGson().toJson(this.seRequestSet, SeRequestSet.class), true,
                     sessionId));
 
@@ -100,7 +100,7 @@ public class ReaderAsyncSessionImpl extends Observable<KeypleDTO> implements IRe
         logger.debug("Session {} sync transmit {}", sessionId, seApplicationRequest);
 
 
-        Thread asyncTransmit = new Thread(){
+        Thread asyncTransmit = new Thread() {
             public void run() {
                 asyncTransmit(seApplicationRequest, new ISeResponseSetCallback() {
                     @Override

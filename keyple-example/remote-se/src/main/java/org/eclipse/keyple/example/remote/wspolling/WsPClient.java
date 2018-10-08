@@ -1,13 +1,20 @@
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
+
 package org.eclipse.keyple.example.remote.wspolling;
 
-import com.google.gson.JsonObject;
+import java.io.IOException;
+import org.eclipse.keyple.example.remote.common.ClientNode;
 import org.eclipse.keyple.plugin.remote_se.transport.*;
-import org.eclipse.keyple.example.remote.ws.HttpHelper;
-import org.eclipse.keyple.example.remote.ws.WsTransportDTO;
+import org.eclipse.keyple.plugin.remote_se.transport.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
+import com.google.gson.JsonObject;
 
 public class WsPClient implements ClientNode {
 
@@ -20,72 +27,60 @@ public class WsPClient implements ClientNode {
 
     private DtoDispatcher dtoDispatcher;
 
-    public WsPClient(String url, String pollingEndpoint,String nodeId) {
+    public WsPClient(String url, String pollingEndpoint, String nodeId) {
         this.endoint = url;
         this.pollingEndpoint = pollingEndpoint;
         this.nodeId = nodeId;
     }
 
 
-    public void startPollingWorker(final String nodeId){
-/*
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask()
-            {
-                public void run()
-                {
-
-                    try {
-                        JsonObject httpResponse = HttpHelper.httpPOSTJson(HttpHelper.getConnection(pollingEndpoint+"/"+nodeId), "wait");
-                        processHttpResponseDTO(httpResponse);
-                        startPollingWorker(nodeId);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        startPollingWorker(nodeId);
-                    }
-
-                    //get response as String or what ever way you need
-
-                }
-            }, 0, 30000);
-*/
+    public void startPollingWorker(final String nodeId) {
+        /*
+         * Timer timer = new Timer(); timer.schedule(new TimerTask() { public void run() {
+         * 
+         * try { JsonObject httpResponse =
+         * HttpHelper.httpPOSTJson(HttpHelper.getConnection(pollingEndpoint+"/"+nodeId), "wait");
+         * processHttpResponseDTO(httpResponse); startPollingWorker(nodeId); } catch (IOException e)
+         * { e.printStackTrace(); startPollingWorker(nodeId); }
+         * 
+         * //get response as String or what ever way you need
+         * 
+         * } }, 0, 30000);
+         */
 
 
 
-        //recursive
-       /*
-        Thread pollThead =   new Thread() {
+        // recursive
+        /*
+         * Thread pollThead = new Thread() { public void run() {
+         * 
+         * try { logger.debug("Polling nodeId {}", nodeId); JsonObject httpResponse =
+         * HttpHelper.httpPoll(HttpHelper.getConnection(pollingEndpoint + "?nodeId=" + nodeId),
+         * "{}"); logger.debug("Polling for nodeId {} receive a httpResonse {}", nodeId,
+         * httpResponse); processHttpResponseDTO(httpResponse); startPollingWorker(nodeId); } catch
+         * (IOException e) {
+         * logger.debug("Polling for nodeId {} didn't receive any response, send it again ");
+         * //e.printStackTrace(); startPollingWorker(nodeId); } }
+         * 
+         * ; };
+         * 
+         */
+        Thread pollThead = new Thread() {
             public void run() {
-
-                try {
-                    logger.debug("Polling nodeId {}", nodeId);
-                    JsonObject httpResponse = HttpHelper.httpPoll(HttpHelper.getConnection(pollingEndpoint + "?nodeId=" + nodeId), "{}");
-                    logger.debug("Polling for nodeId {} receive a httpResonse {}", nodeId, httpResponse);
-                    processHttpResponseDTO(httpResponse);
-                    startPollingWorker(nodeId);
-                } catch (IOException e) {
-                    logger.debug("Polling for nodeId {} didn't receive any response, send it again ");
-                    //e.printStackTrace();
-                    startPollingWorker(nodeId);
-                }
-            }
-
-            ;
-        };
-
-        */
-        Thread pollThead =   new Thread() {
-            public void run() {
-                //Boolean exit = false;
-                while(true){
+                // Boolean exit = false;
+                while (true) {
                     try {
                         logger.trace("Polling nodeId {}", nodeId);
-                        JsonObject httpResponse = HttpHelper.httpPoll(HttpHelper.getConnection(pollingEndpoint + "?nodeId=" + nodeId), "{}");
-                        logger.trace("Polling for nodeId {} receive a httpResonse {}", nodeId, httpResponse);
+                        JsonObject httpResponse = HttpHelper.httpPoll(
+                                HttpHelper.getConnection(pollingEndpoint + "?nodeId=" + nodeId),
+                                "{}");
+                        logger.trace("Polling for nodeId {} receive a httpResonse {}", nodeId,
+                                httpResponse);
                         processHttpResponseDTO(httpResponse);
                     } catch (IOException e) {
-                        logger.trace("Polling for nodeId {} didn't receive any response, send it again ");
-                        //e.printStackTrace();
+                        logger.trace(
+                                "Polling for nodeId {} didn't receive any response, send it again ");
+                        // e.printStackTrace();
                     }
                 }
             }
@@ -96,19 +91,19 @@ public class WsPClient implements ClientNode {
     }
 
 
-    private void processHttpResponseDTO(JsonObject httpResponse){
+    private void processHttpResponseDTO(JsonObject httpResponse) {
 
         // is response DTO ?
-        if (KeypleDTOHelper.isKeypleDTO(httpResponse)) {
+        if (KeypleDtoHelper.isKeypleDTO(httpResponse)) {
 
-            KeypleDTO responseDTO = KeypleDTOHelper.fromJsonObject(httpResponse);
-            TransportDTO transportDTO = new WsPTransportDTO(responseDTO, this);
+            KeypleDto responseDTO = KeypleDtoHelper.fromJsonObject(httpResponse);
+            TransportDto transportDto = new WsPTransportDTO(responseDTO, this);
             // connection
-            final TransportDTO sendback = this.dtoDispatcher.onDTO(transportDTO);
+            final TransportDto sendback = this.dtoDispatcher.onDTO(transportDto);
 
             // if sendBack is not a noresponse (can be a keyple request or keyple response)
-            if (!KeypleDTOHelper.isNoResponse(sendback.getKeypleDTO())) {
-                //send the keyple object in a new thread to avoid blocking the polling
+            if (!KeypleDtoHelper.isNoResponse(sendback.getKeypleDTO())) {
+                // send the keyple object in a new thread to avoid blocking the polling
                 new Thread() {
                     @Override
                     public void run() {
@@ -122,14 +117,14 @@ public class WsPClient implements ClientNode {
 
 
     @Override
-    public void sendDTO(TransportDTO tdto) {
-        KeypleDTO ktdo = tdto.getKeypleDTO();
-        logger.debug("Ws Client send DTO {}", KeypleDTOHelper.toJson(ktdo));
-        if (!KeypleDTOHelper.isNoResponse(tdto.getKeypleDTO())) {
+    public void sendDTO(TransportDto tdto) {
+        KeypleDto ktdo = tdto.getKeypleDTO();
+        logger.debug("Ws Client send DTO {}", KeypleDtoHelper.toJson(ktdo));
+        if (!KeypleDtoHelper.isNoResponse(tdto.getKeypleDTO())) {
             try {
                 // send keyple dto
                 JsonObject httpResponse = HttpHelper.httpPOSTJson(HttpHelper.getConnection(endoint),
-                        KeypleDTOHelper.toJson(ktdo));
+                        KeypleDtoHelper.toJson(ktdo));
 
                 processHttpResponseDTO(httpResponse);
 
@@ -141,12 +136,12 @@ public class WsPClient implements ClientNode {
     }
 
     @Override
-    public void sendDTO(KeypleDTO message) {
-        sendDTO(new WsTransportDTO(message, null));
+    public void sendDTO(KeypleDto message) {
+        sendDTO(new WsPTransportDTO(message, null));
     }
 
     @Override
-    public void update(KeypleDTO event) {
+    public void update(KeypleDto event) {
         this.sendDTO(event);
     }
 

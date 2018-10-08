@@ -1,23 +1,30 @@
-package org.eclipse.keyple.example.remote;
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
 
-import org.eclipse.keyple.example.pc.calypso.stub.se.StubHoplink;
-import org.eclipse.keyple.plugin.remote_se.nse.NativeSeRemoteService;
-import org.eclipse.keyple.plugin.remote_se.transport.ClientNode;
-import org.eclipse.keyple.plugin.remote_se.transport.ServerNode;
-import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
-import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.seproxy.ReaderPlugin;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.example.remote.common.TransportFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package org.eclipse.keyple.example.remote;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
+import org.eclipse.keyple.example.pc.calypso.stub.se.StubHoplink;
+import org.eclipse.keyple.example.remote.common.ClientNode;
+import org.eclipse.keyple.example.remote.common.ServerNode;
+import org.eclipse.keyple.example.remote.common.TransportFactory;
+import org.eclipse.keyple.example.remote.common.TransportNode;
+import org.eclipse.keyple.plugin.remote_se.nse.NativeSeRemoteService;
+import org.eclipse.keyple.plugin.stub.StubPlugin;
+import org.eclipse.keyple.plugin.stub.StubReader;
+import org.eclipse.keyple.seproxy.ReaderPlugin;
+import org.eclipse.keyple.seproxy.SeProxyService;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Slave {
 
@@ -32,14 +39,14 @@ public class Slave {
         logger.info("Create Slave    ");
         logger.info("*******************");
 
-        if(isServer){
+        if (isServer) {
             try {
                 node = transportFactory.getServer(false);
-                //start server in a new thread
-                new Thread(){
+                // start server in a new thread
+                new Thread() {
                     @Override
                     public void run() {
-                        ((ServerNode)node).start();
+                        ((ServerNode) node).start();
                         logger.info("Waits for remote connections");
                     }
                 }.start();
@@ -47,9 +54,9 @@ public class Slave {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }else{
+        } else {
             node = transportFactory.getClient(false);
-            ((ClientNode)node).connect();
+            ((ClientNode) node).connect();
         }
     }
 
@@ -57,6 +64,7 @@ public class Slave {
 
 
         logger.info("Boot Slave LocalReader ");
+        String nodeId = "node1";
 
         // get seProxyService
         SeProxyService seProxyService = SeProxyService.getInstance();
@@ -74,11 +82,12 @@ public class Slave {
         localReader = (StubReader) stubPlugin.getReader("stubClientSlave");
 
         NativeSeRemoteService seRemoteService = new NativeSeRemoteService();
-        seRemoteService.bind(node);
+        seRemoteService.setDtoSender(node);// outgoing traffic
+        node.setDtoDispatcher(seRemoteService);// incoming traffic
 
         Map<String, Object> options = new HashMap<String, Object>();
         options.put("isAsync", true);
-        seRemoteService.connectReader(localReader, options);
+        seRemoteService.connectReader(nodeId, localReader, options);
 
         logger.info("Connect remotely the StubPlugin ");
     }
@@ -100,7 +109,6 @@ public class Slave {
         // localReader.removeSe();
 
     }
-
 
 
 

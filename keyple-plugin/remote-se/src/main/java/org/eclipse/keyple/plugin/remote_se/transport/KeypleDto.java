@@ -12,7 +12,7 @@ package org.eclipse.keyple.plugin.remote_se.transport;
  * Data Transfer Tbject used to tranport a API call from a Master reader to a Slave Reader (or
  * reverse) POJO
  */
-public class KeypleDTO {
+public class KeypleDto {
 
     // Master reader session
     private String sessionId;
@@ -31,7 +31,7 @@ public class KeypleDTO {
      * @param body
      * @param isRequest
      */
-    public KeypleDTO(String action, String body, Boolean isRequest) {
+    public KeypleDto(String action, String body, Boolean isRequest) {
         this.action = action;
         this.body = body;
         this.isRequest = isRequest;
@@ -45,7 +45,7 @@ public class KeypleDTO {
      * @param isRequest
      * @param sessionId : Session Id of current Virtual Reader Session Id
      */
-    public KeypleDTO(String action, String body, Boolean isRequest, String sessionId) {
+    public KeypleDto(String action, String body, Boolean isRequest, String sessionId) {
         this.sessionId = sessionId;
         this.action = action;
         this.body = body;

@@ -12,48 +12,40 @@ import org.eclipse.keyple.plugin.remote_se.transport.json.JsonParser;
 import com.google.gson.JsonObject;
 
 /**
- * Utility class to manipulate KeypleDTO
+ * Utility class to manipulate KeypleDto
  */
-public class KeypleDTOHelper {
+public class KeypleDtoHelper {
 
     public final static String READER_TRANSMIT = "reader_transmit";
     public final static String READER_CONNECT = "reader_connect";
     public final static String READER_DISCONNECT = "reader_disconnect";
     public final static String READER_EVENT = "reader_event";
 
-    static public int generateHash(KeypleDTO keypleDTO) {
-        return keypleDTO.hashCode();
+    static public String toJson(KeypleDto keypleDto) {
+        return JsonParser.getGson().toJson(keypleDto);
     }
 
-    static public Boolean verifyHash(KeypleDTO keypleDTO, int hash) {
-        return keypleDTO.hashCode() == hash;
+    static public KeypleDto fromJson(String json) {
+        return JsonParser.getGson().fromJson(json, KeypleDto.class);
     }
 
-    static public String toJson(KeypleDTO keypleDTO) {
-        return JsonParser.getGson().toJson(keypleDTO);
+    static public KeypleDto fromJsonObject(JsonObject jsonObj) {
+        return JsonParser.getGson().fromJson(jsonObj, KeypleDto.class);
     }
 
-    static public KeypleDTO fromJson(String json) {
-        return JsonParser.getGson().fromJson(json, KeypleDTO.class);
+    static public KeypleDto NoResponse() {
+        return new KeypleDto("", "", false);
     }
 
-    static public KeypleDTO fromJsonObject(JsonObject jsonObj) {
-        return JsonParser.getGson().fromJson(jsonObj, KeypleDTO.class);
+    static public KeypleDto ErrorDTO() {
+        return new KeypleDto("ERROR", "", false);// todo statuscode
     }
 
-    static public KeypleDTO NoResponse() {
-        return new KeypleDTO("", "", false);
+    static public KeypleDto ACK() {
+        return new KeypleDto("ACK", "", false);// todo statuscode
     }
 
-    static public KeypleDTO ErrorDTO() {
-        return new KeypleDTO("ERROR", "", false);// todo statuscode
-    }
-
-    static public KeypleDTO ACK() {
-        return new KeypleDTO("ACK", "", false);// todo statuscode
-    }
-
-    static public Boolean isNoResponse(KeypleDTO dto) {
+    static public Boolean isNoResponse(KeypleDto dto) {
         return dto.getAction().isEmpty();
     }
 

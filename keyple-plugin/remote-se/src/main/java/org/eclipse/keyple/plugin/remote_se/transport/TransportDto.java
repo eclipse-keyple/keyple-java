@@ -12,7 +12,7 @@ package org.eclipse.keyple.plugin.remote_se.transport;
 /**
  * Message with layer transport information
  */
-public interface TransportDTO {
+public interface TransportDto {
 
 
     /**
@@ -20,20 +20,21 @@ public interface TransportDTO {
      * 
      * @return embedded Keyple DTO
      */
-    KeypleDTO getKeypleDTO();
+    KeypleDto getKeypleDTO();
 
     /**
-     * Embed a Keyple DTO into a new TransportDTO with transport information
+     * Embed a Keyple DTO into a new TransportDto with transport information
      * 
      * @param kdto : keyple DTO to be embedded
      * @return Transport DTO with embedded keyple DTO
      */
-    TransportDTO nextTransportDTO(KeypleDTO kdto);
+    TransportDto nextTransportDTO(KeypleDto kdto);
 
 
     /**
      * Get the sender Object to send back a response if needed
-      * @return
+     * 
+     * @return
      */
     DtoSender getDtoSender();
 

@@ -8,13 +8,11 @@
 
 package org.eclipse.keyple.example.remote.common;
 
-import java.io.IOException;
+/**
+ * Server type of a TransportNode, start and waits for clients to connect
+ */
+public interface ServerNode extends TransportNode {
 
-public abstract class TransportFactory {
-
-    abstract public ClientNode getClient(Boolean isMaster);
-
-    abstract public ServerNode getServer(Boolean isMaster) throws IOException;
-
+    void start();
 
 }

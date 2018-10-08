@@ -9,13 +9,9 @@
 package org.eclipse.keyple.plugin.remote_se.rse;
 
 import java.util.Map;
-
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.util.Observable;
 import org.slf4j.Logger;
@@ -50,7 +46,7 @@ public class RseReader extends Observable implements ObservableReader {
     }
 
     @Override
-    public boolean isSePresent() throws NoStackTraceThrowable {
+    public boolean isSePresent() {
         return false;// not implemented
     }
 
@@ -62,15 +58,15 @@ public class RseReader extends Observable implements ObservableReader {
      * @throws KeypleReaderException, IllegalArgumentException
      */
     @Override
-    public SeResponseSet transmit(SeRequestSet seRequestSet)
-            throws KeypleReaderException, IllegalArgumentException {
+    public SeResponseSet transmit(SeRequestSet seRequestSet) throws IllegalArgumentException {
         return ((IReaderAsyncSession) session).transmit(seRequestSet);
     }
 
     @Override
-    public SeResponse transmit(SeRequest seApplicationRequest) throws KeypleReaderException, IllegalArgumentException {
-        return ((IReaderAsyncSession) session).transmit(new SeRequestSet(seApplicationRequest)).getSingleResponse();
-        //todo change this?
+    public SeResponse transmit(SeRequest seApplicationRequest) throws IllegalArgumentException {
+        return ((IReaderAsyncSession) session).transmit(new SeRequestSet(seApplicationRequest))
+                .getSingleResponse();
+        // todo change this?
     }
 
     /**
@@ -82,7 +78,7 @@ public class RseReader extends Observable implements ObservableReader {
      */
 
     public SeResponseSet transmitNewThread(SeRequestSet seRequestSet)
-            throws KeypleReaderException, IllegalArgumentException {
+            throws IllegalArgumentException {
         return ((IReaderAsyncSession) session).transmit(seRequestSet);
     }
 
@@ -94,8 +90,7 @@ public class RseReader extends Observable implements ObservableReader {
      * @param seResponseSetCallback : callback to get the seResponseSet
      */
     public void asyncTransmit(SeRequestSet seRequestSet,
-            ISeResponseSetCallback seResponseSetCallback)
-            throws KeypleReaderException, IllegalArgumentException {
+            ISeResponseSetCallback seResponseSetCallback) throws IllegalArgumentException {
         ((IReaderAsyncSession) session).asyncTransmit(seRequestSet, seResponseSetCallback);
     }
 
@@ -135,14 +130,12 @@ public class RseReader extends Observable implements ObservableReader {
     }// todo
 
     @Override
-    public void setParameter(String key, String value)
-            throws IllegalArgumentException, KeypleBaseException {
+    public void setParameter(String key, String value) throws IllegalArgumentException {
 
     }
 
     @Override
-    public void setParameters(Map<String, String> parameters)
-            throws IllegalArgumentException, KeypleBaseException {
+    public void setParameters(Map<String, String> parameters) throws IllegalArgumentException {
 
     }
 

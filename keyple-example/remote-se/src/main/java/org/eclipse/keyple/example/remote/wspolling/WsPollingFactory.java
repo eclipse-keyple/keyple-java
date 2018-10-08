@@ -1,12 +1,19 @@
+/*
+ * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * All rights reserved. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
+ * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ */
+
 package org.eclipse.keyple.example.remote.wspolling;
 
+import java.io.IOException;
+import org.eclipse.keyple.example.remote.common.ClientNode;
+import org.eclipse.keyple.example.remote.common.ServerNode;
 import org.eclipse.keyple.example.remote.common.TransportFactory;
-import org.eclipse.keyple.plugin.remote_se.transport.ClientNode;
-import org.eclipse.keyple.plugin.remote_se.transport.ServerNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 public class WsPollingFactory extends TransportFactory {
 
@@ -15,7 +22,7 @@ public class WsPollingFactory extends TransportFactory {
     String pollingUrl = "/polling";
     String keypleUrl = "/keypleDTO";
     String nodeId = "local1";
-    String bindUrl="0.0.0.0";
+    String bindUrl = "0.0.0.0";
     String protocol = "http://";
 
     private static final Logger logger = LoggerFactory.getLogger(WsPollingFactory.class);
@@ -26,20 +33,21 @@ public class WsPollingFactory extends TransportFactory {
 
         logger.info("*** Create Ws Polling Client ***");
 
-        WsPClient client = new WsPClient(protocol+ "localhost:"+port+keypleUrl, protocol+ "localhost:"+port+pollingUrl, nodeId);
-        //client.startPollingWorker(nodeId);
+        WsPClient client = new WsPClient(protocol + "localhost:" + port + keypleUrl,
+                protocol + "localhost:" + port + pollingUrl, nodeId);
+        // client.startPollingWorker(nodeId);
         return client;
     }
 
     @Override
     public ServerNode getServer(Boolean isMaster) throws IOException {
-        if(localhost){
+        if (localhost) {
             bindUrl = "0.0.0.0";
         }
 
         logger.info("*** Create Ws Polling Server ***");
 
-        return new WsPServer(bindUrl, port, keypleUrl,pollingUrl);
+        return new WsPServer(bindUrl, port, keypleUrl, pollingUrl);
 
     }
 }
