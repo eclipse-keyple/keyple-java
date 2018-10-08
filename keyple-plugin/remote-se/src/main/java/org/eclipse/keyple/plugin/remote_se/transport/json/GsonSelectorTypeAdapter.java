@@ -11,7 +11,6 @@ package org.eclipse.keyple.plugin.remote_se.transport.json;
 import java.lang.reflect.Type;
 import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.util.ByteArrayUtils;
-import org.eclipse.keyple.util.ByteBufferUtils;
 import com.google.gson.*;
 
 class GsonSelectorTypeAdapter

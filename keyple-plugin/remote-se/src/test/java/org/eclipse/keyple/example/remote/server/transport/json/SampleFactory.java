@@ -16,7 +16,6 @@ import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
 import org.eclipse.keyple.util.ByteArrayUtils;
-import org.eclipse.keyple.util.ByteBufferUtils;
 
 public class SampleFactory {
 
