@@ -1,6 +1,7 @@
 package org.eclise.keyple.example.remote.wspolling;
 
 import com.google.gson.JsonObject;
+import com.sun.deploy.util.SessionState;
 import org.eclipse.keyple.plugin.remote_se.transport.*;
 import org.eclise.keyple.example.remote.ws.HttpHelper;
 import org.eclise.keyple.example.remote.ws.WsTransportDTO;
@@ -9,19 +10,21 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class WsPClient implements TransportNode {
+public class WsPClient implements ClientNode {
 
 
     private static final Logger logger = LoggerFactory.getLogger(WsPClient.class);
 
     private String endoint;
     private String pollingEndpoint;
+    private String nodeId;
 
     private DtoDispatcher dtoDispatcher;
 
-    public WsPClient(String url, String pollingEndpoint) {
+    public WsPClient(String url, String pollingEndpoint,String nodeId) {
         this.endoint = url;
         this.pollingEndpoint = pollingEndpoint;
+        this.nodeId = nodeId;
     }
 
 
@@ -100,7 +103,7 @@ public class WsPClient implements TransportNode {
         if (KeypleDTOHelper.isKeypleDTO(httpResponse)) {
 
             KeypleDTO responseDTO = KeypleDTOHelper.fromJsonObject(httpResponse);
-            TransportDTO transportDTO = new WsPTransportDTO(responseDTO, null);
+            TransportDTO transportDTO = new WsPTransportDTO(responseDTO, this);
             // connection
             final TransportDTO sendback = this.dtoDispatcher.onDTO(transportDTO);
 
@@ -122,7 +125,7 @@ public class WsPClient implements TransportNode {
     @Override
     public void sendDTO(TransportDTO tdto) {
         KeypleDTO ktdo = tdto.getKeypleDTO();
-        logger.debug("Ws Slave send DTO {}", KeypleDTOHelper.toJson(ktdo));
+        logger.debug("Ws Client send DTO {}", KeypleDTOHelper.toJson(ktdo));
         if (!KeypleDTOHelper.isNoResponse(tdto.getKeypleDTO())) {
             try {
                 // send keyple dto
@@ -158,4 +161,8 @@ public class WsPClient implements TransportNode {
     }
 
 
+    @Override
+    public void connect() {
+        this.startPollingWorker(nodeId);
+    }
 }

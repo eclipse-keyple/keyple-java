@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.websocket.demoCSM;
+package org.eclise.keyple.example.remote.websocket.old.demoCSM;
 
 import java.io.IOException;
 import java.net.URI;
@@ -96,7 +96,7 @@ public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.
                             event.getReaderName());
 
                     CommandSample.transmitSyncCommand(logger, event.getReaderName());
-                    // CommandSample.transmitASyncCommand(logger, event.getReaderName());
+                    // CommandSample.asyncTransmit(logger, event.getReaderName());
 
 
 

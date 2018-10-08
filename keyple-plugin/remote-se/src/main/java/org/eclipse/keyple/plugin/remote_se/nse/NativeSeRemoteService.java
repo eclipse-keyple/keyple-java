@@ -39,6 +39,8 @@ public class NativeSeRemoteService implements NseAPI, RseClient, DtoDispatcher {
     public TransportDTO onDTO(TransportDTO message) {
 
         KeypleDTO msg = message.getKeypleDTO();
+        TransportDTO out = null;
+
 
         logger.debug("onDto {}", KeypleDTOHelper.toJson(msg));
 
@@ -73,7 +75,7 @@ public class NativeSeRemoteService implements NseAPI, RseClient, DtoDispatcher {
                         KeypleDTOHelper.toJson(msg));
             }
 
-            return message.nextTransportDTO(KeypleDTOHelper.NoResponse());
+            out =  message.nextTransportDTO(KeypleDTOHelper.NoResponse());
 
         } else if (msg.getAction().equals(KeypleDTOHelper.READER_TRANSMIT)) {
             logger.info("**** ACTION - READER_TRANSMIT ****");
@@ -90,15 +92,20 @@ public class NativeSeRemoteService implements NseAPI, RseClient, DtoDispatcher {
             }
             // prepare response
             String parseBody = JsonParser.getGson().toJson(seResponseSet, SeResponseSet.class);
-            return message.nextTransportDTO(
+            out=  message.nextTransportDTO(
                     new KeypleDTO(msg.getAction(), parseBody, false, msg.getSessionId()));
 
 
         } else {
             logger.warn("**** ACTION - UNRECOGNIZED ****");
             logger.warn("Receive uncoregnized message action", msg.getAction());
-            return message.nextTransportDTO(KeypleDTOHelper.NoResponse());
+            out = message.nextTransportDTO(KeypleDTOHelper.NoResponse());
         }
+
+        logger.debug("onDto response to be sent {}", KeypleDTOHelper.toJson(out.getKeypleDTO()));
+        return out;
+
+
     }
 
     // RseClient
@@ -119,7 +126,7 @@ public class NativeSeRemoteService implements NseAPI, RseClient, DtoDispatcher {
     // RseClient
     @Override
     public void connectReader(ProxyReader localReader, Map<String, Object> options) {
-        logger.info("connectReader {} {}", localReader, options);
+        logger.info("connectReader {} {}", localReader.getName(), options);
 
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("nativeReaderName", new JsonPrimitive(localReader.getName()));

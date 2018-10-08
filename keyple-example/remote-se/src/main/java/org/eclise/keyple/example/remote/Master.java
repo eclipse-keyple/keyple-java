@@ -3,6 +3,7 @@ package org.eclise.keyple.example.remote;
 import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
 import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
 import org.eclipse.keyple.plugin.remote_se.rse.VirtualSeRemoteService;
+import org.eclipse.keyple.plugin.remote_se.transport.ClientNode;
 import org.eclipse.keyple.plugin.remote_se.transport.ServerNode;
 import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.seproxy.SeProxyService;
@@ -21,29 +22,40 @@ public class Master implements org.eclipse.keyple.util.Observable.Observer {
 
     private static final Logger logger = LoggerFactory.getLogger(Master.class);
 
-    private TransportFactory transportFactory;
-    private Boolean isServer;
     private TransportNode node;
+    private Boolean transmitSync;
 
-    public Master(TransportFactory transportFactory, Boolean isServer) {
+
+    public Master(TransportFactory transportFactory, Boolean isServer, Boolean transmitSync) {
+
+        this.transmitSync = transmitSync;
+
         logger.info("*******************");
         logger.info("Create Master    ");
         logger.info("*******************");
 
+        if(isServer){
+            try {
+                node = transportFactory.getServer(true);
+                    //start server in a new thread
+                    new Thread(){
+                        @Override
+                        public void run() {
+                            ((ServerNode)node).start();
+                            logger.info("Waits for remote connections");
+                        }
 
-        this.transportFactory = transportFactory;
-        this.isServer = isServer;
+                    }.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            node = transportFactory.getClient(true);
+            ((ClientNode)node).connect();
+        }
     }
 
     public void boot() throws IOException {
-
-
-        if(isServer){
-            node = transportFactory.getServer(true);
-        }else{
-            node = transportFactory.getClient(true);
-        }
-
 
 
         logger.info("Create Remote PLugin Interface");
@@ -59,10 +71,7 @@ public class Master implements org.eclipse.keyple.util.Observable.Observer {
 
         rsePlugin.addObserver(this);
 
-        if(isServer){
-            ((ServerNode)node).start();
-            logger.info("Waits for remote connections");
-        }
+
 
     }
 
@@ -82,60 +91,78 @@ public class Master implements org.eclipse.keyple.util.Observable.Observer {
      * @param o : can be a ReaderEvent or PluginEvent
      */
     @Override
-    public void update(Object o) {
+    public void update(final Object o) {
 
         logger.debug("UPDATE {}", o);
+        logger.debug("CREATING A NEW THREAD TO PROCESS THE EVENT");
 
-        // PluginEvent
-        if (o instanceof PluginEvent) {
-            PluginEvent event = (PluginEvent) o;
-            switch (event.getEventType()) {
-                case READER_CONNECTED:
-                    logger.info("READER_CONNECTED {} {}", event.getPluginName(),
-                            event.getReaderName());
-                    try {
-                        RsePlugin rsePlugin =
-                                (RsePlugin) SeProxyService.getInstance().getPlugin("RemoteSePlugin");
-                        RseReader rseReader =
-                                (RseReader) rsePlugin.getReader(event.getReaderName());
+        final Master master = this;
 
-                        logger.info("Add ServerTicketingApp as a Observer of RSE reader");
-                        rseReader.addObserver(this);
+        new Thread(){
 
-                    } catch (KeypleReaderNotFoundException e) {
-                        logger.error(e.getMessage());
-                        e.printStackTrace();
-                    }catch (KeyplePluginNotFoundException e) {
-                        logger.error(e.getMessage());
-                        e.printStackTrace();
+            public void run(){
+                // PluginEvent
+                if (o instanceof PluginEvent) {
+                    PluginEvent event = (PluginEvent) o;
+                    switch (event.getEventType()) {
+                        case READER_CONNECTED:
+                            logger.info("READER_CONNECTED {} {}", event.getPluginName(),
+                                    event.getReaderName());
+                            try {
+                                RsePlugin rsePlugin =
+                                        (RsePlugin) SeProxyService.getInstance().getPlugin("RemoteSePlugin");
+                                RseReader rseReader =
+                                        (RseReader) rsePlugin.getReader(event.getReaderName());
+
+                                logger.info("Add ServerTicketingApp as a Observer of RSE reader");
+                                rseReader.addObserver(master);
+
+                            } catch (KeypleReaderNotFoundException e) {
+                                logger.error(e.getMessage());
+                                e.printStackTrace();
+                            }catch (KeyplePluginNotFoundException e) {
+                                logger.error(e.getMessage());
+                                e.printStackTrace();
+                            }
+
+
+                            break;
+                        case READER_DISCONNECTED:
+                            logger.info("READER_DISCONNECTED {} {}", event.getPluginName(),
+                                    event.getReaderName());
+                            break;
                     }
+                }
+                // ReaderEvent
+                else if (o instanceof ReaderEvent) {
+                    ReaderEvent event = (ReaderEvent) o;
+                    switch (event.getEventType()) {
+                        case SE_INSERTED:
+                            logger.info("SE_INSERTED {} {}", event.getPluginName(), event.getReaderName());
+                            //CommandSample.asyncTransmit(logger, event.getReaderName());
+                            //CommandSample.transmitSyncCommand(logger, event.getReaderName());
+                            if(transmitSync){
+                                CommandSample.transmit(logger, event.getReaderName());
+                            }else{
+                                CommandSample.asyncTransmit(logger, event.getReaderName());
+                            }
+                            break;
+                        case SE_REMOVAL:
+                            logger.info("SE_REMOVAL {} {}", event.getPluginName(), event.getReaderName());
+                            break;
+                        case IO_ERROR:
+                            logger.info("IO_ERROR {} {}", event.getPluginName(), event.getReaderName());
+                            break;
 
+                    }
+                }
 
-                    break;
-                case READER_DISCONNECTED:
-                    logger.info("READER_DISCONNECTED {} {}", event.getPluginName(),
-                            event.getReaderName());
-                    break;
             }
-        }
-        // ReaderEvent
-        else if (o instanceof ReaderEvent) {
-            ReaderEvent event = (ReaderEvent) o;
-            switch (event.getEventType()) {
-                case SE_INSERTED:
-                    logger.info("SE_INSERTED {} {}", event.getPluginName(), event.getReaderName());
-                    CommandSample.transmitASyncCommand(logger, event.getReaderName());
-                    //CommandSample.transmitSyncCommand(logger, event.getReaderName());
-                    break;
-                case SE_REMOVAL:
-                    logger.info("SE_REMOVAL {} {}", event.getPluginName(), event.getReaderName());
-                    break;
-                case IO_ERROR:
-                    logger.info("IO_ERROR {} {}", event.getPluginName(), event.getReaderName());
-                    break;
 
-            }
-        }
+
+        }.start();
+
+
     }
 
 }

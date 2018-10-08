@@ -20,7 +20,7 @@ public class Client {
     void boot(){
 
 
-        WsPClient client = new WsPClient(ENDPOINT_URL, POLLING_URL);
+        WsPClient client = new WsPClient(ENDPOINT_URL, POLLING_URL,"test1");
         client.startPollingWorker("node1");
         client.setDtoDispatcher(new DtoDispatcher() {
             @Override

@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import sun.plugin2.message.transport.Transport;
 
 public class RsePlugin extends Observable implements ObservablePlugin, DtoDispatcher {
 
@@ -97,7 +98,7 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
         // check if reader is not already connected (by name)
         if (!isReaderConnected(name)) {
             logger.info("Connecting a new RemoteSeReader with name {} with session {}", name,
-                    session);
+                    session.getSessionId());
 
             RseReader rseReader = new RseReader(session, name);
             rseReaders.add(rseReader);
@@ -194,7 +195,10 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
     public TransportDTO onDTO(TransportDTO message) {
 
         KeypleDTO msg = message.getKeypleDTO();
-        logger.debug("RsePlugin onDTO {}", message.getKeypleDTO());
+        TransportDTO out = null;
+        logger.debug("onDTO {}", KeypleDTOHelper.toJson(message.getKeypleDTO()));
+
+
         // if (msg.getHash()!=null && !KeypleDTOHelper.verifyHash(msg, msg.getHash())) {
         // return exception, msg is signed but has is invalid
         // }
@@ -212,9 +216,9 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
 
             if (response == null) {
                 // if not send, no response
-                return message.nextTransportDTO(KeypleDTOHelper.NoResponse());
+                out = message.nextTransportDTO(KeypleDTOHelper.NoResponse());
             } else {
-                return response;
+                out = response;
             }
 
         } else if (msg.getAction().equals(KeypleDTOHelper.READER_CONNECT)) {
@@ -235,7 +239,7 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
                 rseSession = new ReaderAsyncSessionImpl(sessionId);
                 // add the web socket node as an observer for the session as the session will send
                 // KeypleDTO
-                ((ReaderAsyncSessionImpl) rseSession).addObserver(message.getDtoSender());
+                ((ReaderAsyncSessionImpl) rseSession).addObserver(message.getDtoSender());//todo found bugs here
             }
 
             this.connectRemoteReader(readerName, rseSession);
@@ -244,14 +248,14 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
             JsonObject respBody = new JsonObject();
             respBody.add("statusCode", new JsonPrimitive(0));
             respBody.add("nativeReaderName", new JsonPrimitive(readerName));
-            return message.nextTransportDTO(new KeypleDTO(KeypleDTOHelper.READER_CONNECT,
+            out = message.nextTransportDTO(new KeypleDTO(KeypleDTOHelper.READER_CONNECT,
                     respBody.toString(), false, sessionId));
 
         } else if (msg.getAction().equals(KeypleDTOHelper.READER_DISCONNECT)) {
             logger.info("**** ACTION - READER_DISCONNECT ****");
 
             // not implemented yet
-            return message.nextTransportDTO(KeypleDTOHelper.NoResponse());
+            out = message.nextTransportDTO(KeypleDTOHelper.NoResponse());
 
         } else if (msg.getAction().equals(KeypleDTOHelper.READER_TRANSMIT) && !msg.isRequest()) {
             logger.info("**** RESPONSE - READER_TRANSMIT ****");
@@ -269,21 +273,25 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
                 TransportDTO response = sendBackSeRequest(message);
                 if (response == null) {
                     // if not send, no response
-                    return message.nextTransportDTO(KeypleDTOHelper.NoResponse());
+                    out = message.nextTransportDTO(KeypleDTOHelper.NoResponse());
                 } else {
-                    return response;
+                    out = response;
                 }
 
             } catch (KeypleReaderNotFoundException e) {
                 e.printStackTrace();
-                return message.nextTransportDTO(KeypleDTOHelper.ErrorDTO());
+                out = message.nextTransportDTO(KeypleDTOHelper.ErrorDTO());
             }
         } else {
             logger.info("**** ERROR - UNRECOGNIZED ****");
             logger.error("Receive unrecognized message action : {} {} {} {}", msg.getAction(),
                     msg.getSessionId(), msg.getBody(), msg.isRequest());
-            return message.nextTransportDTO(KeypleDTOHelper.NoResponse());
+            out =  message.nextTransportDTO(KeypleDTOHelper.NoResponse());
         }
+
+        logger.debug("onDTO response {}", KeypleDTOHelper.toJson(out.getKeypleDTO()));
+        return out;
+
 
     }
 

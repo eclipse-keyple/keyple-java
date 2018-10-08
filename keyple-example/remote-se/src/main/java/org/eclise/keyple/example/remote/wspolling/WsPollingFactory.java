@@ -1,5 +1,6 @@
 package org.eclise.keyple.example.remote.wspolling;
 
+import org.eclipse.keyple.plugin.remote_se.transport.ClientNode;
 import org.eclipse.keyple.plugin.remote_se.transport.ServerNode;
 import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclise.keyple.example.remote.common.TransportFactory;
@@ -11,7 +12,7 @@ import java.io.IOException;
 public class WsPollingFactory extends TransportFactory {
 
     Boolean localhost = true;
-    Integer port = 8007;
+    Integer port = 8002;
     String pollingUrl = "/polling";
     String keypleUrl = "/keypleDTO";
     String nodeId = "local1";
@@ -22,12 +23,12 @@ public class WsPollingFactory extends TransportFactory {
 
 
     @Override
-    public TransportNode getClient(Boolean isMaster) {
+    public ClientNode getClient(Boolean isMaster) {
 
         logger.info("*** Create Ws Polling Client ***");
 
-        WsPClient client = new WsPClient(protocol+ "localhost:"+port+keypleUrl, protocol+ "localhost:"+port+pollingUrl);
-        client.startPollingWorker(nodeId);
+        WsPClient client = new WsPClient(protocol+ "localhost:"+port+keypleUrl, protocol+ "localhost:"+port+pollingUrl, nodeId);
+        //client.startPollingWorker(nodeId);
         return client;
     }
 

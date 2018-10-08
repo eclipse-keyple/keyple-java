@@ -134,7 +134,7 @@ public class WskServer extends WebSocketServer implements ServerNode {
                         logger.trace("Retrieve socketweb from sessionId");
                         // retrieve connection object from the transport
                         Object conn = getConnection(tdto.getKeypleDTO().getSessionId());
-                        logger.debug("send DTO {} {}", KeypleDTOHelper.toJson(tdto.getKeypleDTO()),
+                        logger.trace("send DTO {} {}", KeypleDTOHelper.toJson(tdto.getKeypleDTO()),
                                 conn);
                         ((WebSocket) conn).send(KeypleDTOHelper.toJson(tdto.getKeypleDTO()));
                     }

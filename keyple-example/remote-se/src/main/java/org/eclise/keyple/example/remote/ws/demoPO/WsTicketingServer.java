@@ -116,8 +116,8 @@ public class WsTicketingServer implements org.eclipse.keyple.util.Observable.Obs
             switch (event.getEventType()) {
                 case SE_INSERTED:
                     logger.info("SE_INSERTED {} {}", event.getPluginName(), event.getReaderName());
-                    CommandSample.transmitASyncCommand(logger, event.getReaderName());
-                    // CommandSample.transmitSyncCommand(logger, event.getReaderName());
+                    //CommandSample.asyncTransmit(logger, event.getReaderName());
+                    CommandSample.transmit(logger, event.getReaderName());
                     break;
                 case SE_REMOVAL:
                     logger.info("SE_REMOVAL {} {}", event.getPluginName(), event.getReaderName());

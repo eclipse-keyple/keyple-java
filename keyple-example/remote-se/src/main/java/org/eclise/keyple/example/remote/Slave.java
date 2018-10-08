@@ -2,6 +2,8 @@ package org.eclise.keyple.example.remote;
 
 import org.eclipse.keyple.example.pc.calypso.stub.se.StubHoplink;
 import org.eclipse.keyple.plugin.remote_se.nse.NativeSeRemoteService;
+import org.eclipse.keyple.plugin.remote_se.transport.ClientNode;
+import org.eclipse.keyple.plugin.remote_se.transport.ServerNode;
 import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
@@ -23,8 +25,6 @@ public class Slave {
 
     // physical reader
     StubReader localReader;
-    private TransportFactory transportFactory;
-    private Boolean isServer;
     private TransportNode node;
 
     public Slave(TransportFactory transportFactory, Boolean isServer) {
@@ -32,24 +32,31 @@ public class Slave {
         logger.info("Create Slave    ");
         logger.info("*******************");
 
-        this.transportFactory = transportFactory;
-        this.isServer = isServer;
+        if(isServer){
+            try {
+                node = transportFactory.getServer(false);
+                //start server in a new thread
+                new Thread(){
+                    @Override
+                    public void run() {
+                        ((ServerNode)node).start();
+                        logger.info("Waits for remote connections");
+                    }
+                }.start();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            node = transportFactory.getClient(false);
+            ((ClientNode)node).connect();
+        }
     }
 
     public void connect() throws KeypleReaderNotFoundException, InterruptedException, IOException {
 
 
-        if(isServer){
-            node = transportFactory.getServer(false);
-        }else{
-            node = transportFactory.getClient(false);
-        }
-
-
-
         logger.info("Boot Slave LocalReader ");
-
-
 
         // get seProxyService
         SeProxyService seProxyService = SeProxyService.getInstance();

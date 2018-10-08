@@ -31,7 +31,10 @@ public interface TransportDTO {
     TransportDTO nextTransportDTO(KeypleDTO kdto);
 
 
-    @Deprecated
+    /**
+     * Get the sender Object to send back a response if needed
+      * @return
+     */
     DtoSender getDtoSender();
 
 

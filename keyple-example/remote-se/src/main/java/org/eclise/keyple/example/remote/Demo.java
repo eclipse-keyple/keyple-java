@@ -3,6 +3,7 @@ package org.eclise.keyple.example.remote;
 
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclise.keyple.example.remote.common.TransportFactory;
+import org.eclise.keyple.example.remote.websocket.WskFactory;
 import org.eclise.keyple.example.remote.wspolling.WsPollingFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ public class Demo {
     private static final Logger logger = LoggerFactory.getLogger(Demo.class);
 
 
-    static public void startServer(final Boolean isMaster, final TransportFactory factory){
+    static public void startServer(final Boolean isTransmitAsync, final Boolean isMaster, final TransportFactory factory){
         Thread server = new Thread(){
             @Override
             public void run() {
@@ -23,13 +24,16 @@ public class Demo {
                     logger.info("**** Starting Server Thread ****");
 
                     if(isMaster){
-                        Master master = new Master(factory, true);
+                        Master master = new Master(factory, true,isTransmitAsync);
                         master.boot();
+
                     }else{
                         Slave slave = new Slave(factory, true);
-                        Thread.sleep(10000);
                         logger.info("Wait for 10 seconds, then connect to master");
+                        Thread.sleep(10000);
                         slave.connect();
+                        logger.info("Wait for 10 seconds, then insert SE");
+                        Thread.sleep(10000);
                         slave.insertSe();
                     }
 
@@ -47,7 +51,7 @@ public class Demo {
         server.start();
     };
 
-    static public void startClient(final Boolean isMaster, final TransportFactory factory){
+    static public void startClient(final Boolean isTransmitAsync,final Boolean isMaster, final TransportFactory factory){
         Thread client = new Thread(){
             @Override
             public void run() {
@@ -55,13 +59,13 @@ public class Demo {
 
                 try {
                     if(isMaster){
-                        Master master = new Master(factory, false);
+                        Master master = new Master(factory, false,isTransmitAsync);
                         master.boot();
                     }else{
                         Slave slave = new Slave(factory, false);
                         slave.connect();
                         logger.info("Wait for 10 seconds, then insert SE");
-                        Thread.sleep(10000);
+                        Thread.sleep(15000);
                         slave.insertSe();
                     }
 
@@ -80,25 +84,22 @@ public class Demo {
 
     public static void main(String[] args) throws Exception {
 
-        TransportFactory factory  = new WsPollingFactory();
-        //TransportFactory factory = new WskFactory();
+        Boolean isTransmitSync = false; // is Transmit API Blocking or Not Blocking
+
+        //TransportFactory factory  = new WsPollingFactory(); // HTTP Web Polling
+        TransportFactory factory = new WskFactory(); // Web socket
+
+        Boolean isMasterServer = true; // Master is the server (and Slave the Client) or reverse
+
+
 
         /**
-         * Demo Client is Slave
+         * Demo
          */
 
-        startServer(true, factory);
+        startServer(isTransmitSync,isMasterServer, factory);
         Thread.sleep(1000);
-        startClient(false, factory);
-
-        /**
-         * Demo Client is Master
-
-        startServer(false, factory);
-        Thread.sleep(1000);
-        startClient(true, factory);
-         */
-
+        startClient(isTransmitSync,!isMasterServer, factory);
 
 
     }

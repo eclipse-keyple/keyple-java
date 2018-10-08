@@ -47,6 +47,7 @@ public class ReaderAsyncSessionImpl extends Observable<KeypleDTO> implements IRe
      */
     public void asyncTransmit(SeRequestSet seRequestSet,
             ISeResponseSetCallback seResponseSetCallback) {
+
         logger.debug("Session {} asyncTransmit {}", sessionId, seRequestSet);
         if (this.seRequestSet == null) {
             logger.debug("Set a new seRequestSet in Session {}", sessionId);
@@ -100,17 +101,27 @@ public class ReaderAsyncSessionImpl extends Observable<KeypleDTO> implements IRe
     }
 
     @Override
-    public SeResponseSet transmit(SeRequestSet seApplicationRequest) {
+    public SeResponseSet transmit(final SeRequestSet seApplicationRequest) {
         logger.debug("Session {} sync transmit {}", sessionId, seApplicationRequest);
-        asyncTransmit(seApplicationRequest, new ISeResponseSetCallback() {
-            @Override
-            public void getResponseSet(SeResponseSet seResponseSet) {
-                logger.debug("Receive SeResponseSetCallback, release lock ");
-                lock.countDown();
+
+
+        Thread asyncTransmit = new Thread(){
+            public void run() {
+                asyncTransmit(seApplicationRequest, new ISeResponseSetCallback() {
+                    @Override
+                    public void getResponseSet(SeResponseSet seResponseSet) {
+                        logger.debug("Receive SeResponseSetCallback, release lock ");
+                        lock.countDown();
+                    }
+                });
             }
-        });
+        };
+
+        asyncTransmit.start();
+
+
         try {
-            logger.debug("Send SeRequestSet, set lock on thread");
+            logger.debug("Set lock on thread");
             lock = new CountDownLatch(1);
             lock.await();
             logger.debug("Send SeRequestSet, thread unlock");

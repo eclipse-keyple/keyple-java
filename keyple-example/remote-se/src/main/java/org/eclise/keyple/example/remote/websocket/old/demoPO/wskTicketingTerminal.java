@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclise.keyple.example.remote.websocket.demoPO;
+package org.eclise.keyple.example.remote.websocket.old.demoPO;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -134,8 +134,8 @@ public class wskTicketingTerminal implements org.eclipse.keyple.util.Observable.
             switch (event.getEventType()) {
                 case SE_INSERTED:
                     logger.info("SE_INSERTED {} {}", event.getPluginName(), event.getReaderName());
-                    // CommandSample.transmitASyncCommand(logger, event.getReaderName());
-                    CommandSample.transmitSyncCommand(logger, event.getReaderName());
+                    // CommandSample.asyncTransmit(logger, event.getReaderName());
+                    CommandSample.transmit(logger, event.getReaderName());
                     break;
                 case SE_REMOVAL:
                     logger.info("SE_REMOVAL {} {}", event.getPluginName(), event.getReaderName());

@@ -26,13 +26,13 @@ public class WskClient extends WebSocketClient implements ClientNode {
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
-        logger.debug("Web socket onOpen {}", handshakedata);
+        logger.trace("Web socket onOpen {}", handshakedata);
 
     }
 
     @Override
     public void onMessage(String message) {
-        logger.debug("Web socket onMessage {}", message);
+        logger.trace("Web socket onMessage {}", message);
         KeypleDTO dto = KeypleDTOHelper.fromJson(message);
 
         // process dto
@@ -46,13 +46,13 @@ public class WskClient extends WebSocketClient implements ClientNode {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        logger.debug("Web socket onClose {} {}", code, reason);
+        logger.trace("Web socket onClose {} {}", code, reason);
 
     }
 
     @Override
     public void onError(Exception ex) {
-        logger.debug("Web socket onError {}", ex);
+        logger.trace("Web socket onError {}", ex);
 
     }
 

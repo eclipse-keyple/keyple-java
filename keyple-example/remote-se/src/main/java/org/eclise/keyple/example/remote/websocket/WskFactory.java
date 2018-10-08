@@ -19,7 +19,7 @@ import java.net.URISyntaxException;
 public class WskFactory extends TransportFactory {
 
     Boolean localhost = true;
-    Integer port = 8007;
+    Integer port = 8002;
     String pollingUrl = "/polling";
     String keypleUrl = "/keypleDTO";
     String nodeId = "local1";
@@ -30,7 +30,7 @@ public class WskFactory extends TransportFactory {
 
 
     @Override
-    public TransportNode getClient(Boolean isMaster) {
+    public ClientNode getClient(Boolean isMaster) {
 
         logger.info("*** Create Websocket Client ***");
 
@@ -38,7 +38,7 @@ public class WskFactory extends TransportFactory {
         ClientNode wskClient = null;
         try {
             wskClient = new WskClient(new URI(protocol+ "localhost:"+port+keypleUrl));
-            wskClient.connect();
+            //wskClient.connect();
             return  wskClient;
         } catch (URISyntaxException e) {
             e.printStackTrace();

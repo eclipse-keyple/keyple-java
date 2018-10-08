@@ -65,14 +65,22 @@ public class RseReader extends Observable implements ObservableReader {
     @Override
     public SeResponseSet transmit(SeRequestSet seRequestSet)
             throws KeypleReaderException, IllegalArgumentException {
-
-
         return ((IReaderAsyncSession) session).transmit(seRequestSet);
-
-
-
-
     }
+
+    /**
+     * Transmit synchronously (works only with Sync Session)
+     *
+     * @param seRequestSet : SeRequestSe to be transmitted
+     * @return seResponseSet : SeResponSet
+     * @throws KeypleReaderException, IllegalArgumentException
+     */
+
+    public SeResponseSet transmitNewThread(SeRequestSet seRequestSet)
+            throws KeypleReaderException, IllegalArgumentException {
+        return ((IReaderAsyncSession) session).transmit(seRequestSet);
+    }
+
 
     /**
      * Transmit asynchronously (works only with ASync Session)
