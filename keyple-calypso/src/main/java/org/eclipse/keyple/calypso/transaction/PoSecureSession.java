@@ -368,7 +368,7 @@ public class PoSecureSession {
         DigestProcessor.initialize(poRevision, csmRevision, false, false,
                 poRevision.equals(PoRevision.REV3_2),
                 csmSetting.get(CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER), kif, poKvc,
-                openRecordDataRead);
+                poApduResponseList.get(0).getDataOut());
 
         /*
          * Add all commands data to the digest computation. The first command in the list is the
