@@ -60,8 +60,8 @@ public class ResponseUtilsTest {
                 fciTested.getStartupInformation().getApplicationSubtype());
         Assert.assertEquals(fciExpected.getStartupInformation().getApplicationType(),
                 fciTested.getStartupInformation().getApplicationType());
-        Assert.assertEquals(fciExpected.getStartupInformation().getBufferSize(),
-                fciTested.getStartupInformation().getBufferSize());
+        Assert.assertEquals(fciExpected.getStartupInformation().getBufferSizeIndicator(),
+                fciTested.getStartupInformation().getBufferSizeIndicator());
         Assert.assertEquals(fciExpected.getStartupInformation().getPlatform(),
                 fciTested.getStartupInformation().getPlatform());
         Assert.assertEquals(fciExpected.getStartupInformation().getSoftwareIssuer(),
