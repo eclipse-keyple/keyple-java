@@ -2,6 +2,9 @@ apply plugin: 'java'
 
 sourceCompatibility = 1.6
 
+version = '0.10.0-RELEASE'
+
+
 jar {
     manifest {
         attributes 'Implementation-Title': 'Keyple Example Common',
@@ -9,8 +12,13 @@ jar {
     }
 }
 
+build.finalizedBy install
+
 dependencies {
-    compile project(':keyple-calypso')
+
+    implementation project(':keyple-calypso')
+    implementation project(':keyple-core')
+    //implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
 
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
     implementation group: 'org.slf4j', name: 'slf4j-ext', version: '1.7.25'

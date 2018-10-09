@@ -2,6 +2,8 @@ apply plugin: 'java'
 
 sourceCompatibility = 1.6
 
+project.version = '0.10.0-SNAPSHOT'
+
 
 task preBuild {
     //generate properties file META-INF/keyple.properties with version number
@@ -26,6 +28,7 @@ jar {
 
 
 build.dependsOn preBuild
+build.finalizedBy install
 
 pmd {
     ruleSets = [

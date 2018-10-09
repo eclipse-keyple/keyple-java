@@ -1,17 +1,21 @@
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+}
+
 plugins {
     id "com.diffplug.gradle.spotless" version "3.14.0"
+    id 'maven-publish'
 }
 
 subprojects {
     group 'org.eclipse.keyple'
-    version = '0.9.2-RELEASE'
 }
-
-
-
 
 allprojects {
     repositories {
+        mavenLocal()
         mavenCentral()
         jcenter()
     }
@@ -48,16 +52,10 @@ allprojects {
 
     apply plugin: 'maven'
 
-    task createPom {
-        pom {
-            project {
-                groupId project.group
-                version project.version
-            }
-        }.writeTo("pom.xml")
-    }
+    apply plugin: 'maven-publish'
 
 }
+
 
 
 spotless {

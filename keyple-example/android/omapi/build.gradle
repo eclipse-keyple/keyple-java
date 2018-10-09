@@ -33,7 +33,7 @@ allprojects {
 }
 
 group 'org.eclipse.keyple'
-version = '0.9.2-RELEASE'
+version = '0.10.0-SNAPSHOT'
 
 
 

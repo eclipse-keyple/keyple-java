@@ -2,18 +2,32 @@ apply plugin: 'java'
 
 sourceCompatibility = 1.6
 
+version = '0.10.0-RELEASE'
+
+
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Keyple Example Common',
+        attributes 'Implementation-Title': 'Keyple Example Pc',
                 'Implementation-Version': project.version
     }
 }
 
+
+build.finalizedBy install
+
+
 dependencies {
-    compile project(':keyple-example-common')
-    compile project(':keyple-calypso')
-    compile project(':keyple-plugin-pcsc')
-    compile project(':keyple-plugin-stub')
+    implementation project(':keyple-example:keyple-example-common')
+    implementation project(':keyple-calypso')
+    implementation project(':keyple-core')
+    implementation project(':keyple-plugin:keyple-plugin-pcsc')
+    implementation project(':keyple-plugin:keyple-plugin-stub')
+
+    //implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
+    //implementation group: 'org.eclipse.keyple', name: 'keyple-example-common', version: '0.+'
+    //implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-stub', version: '0.+'
+    //implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc', version: '0.+'
+
 
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
 
