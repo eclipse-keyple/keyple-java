@@ -11,6 +11,7 @@ package org.eclipse.keyple.calypso.command.po.parser;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 
@@ -57,6 +58,36 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
     public GetDataFciRespPars(ApduResponse response) {
         super(response);
         fci = isSuccessful() ? toFCI(response.getBytes()) : null;
+    }
+
+
+    /**
+     * Determine the PO revision from the application type byte:
+     *
+     * <ul>
+     * <li>if
+     * <code>%1-------</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;CLAP&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.1</li>
+     * <li>if <code>%00101---</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.2</li>
+     * <li>if <code>%00100---</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.1</li>
+     * <li>otherwise&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV2.4</li>
+     * </ul>
+     *
+     * @return the PO revision
+     */
+    public PoRevision getPoRevision() {
+        byte applicationTypeByte = getApplicationTypeByte();
+        PoRevision rev;
+        if ((applicationTypeByte & (1 << 7)) != 0) {
+            /* CLAP */
+            rev = PoRevision.REV3_1;
+        } else if ((applicationTypeByte >> 3) == (byte) (0x05)) {
+            rev = PoRevision.REV3_2;
+        } else if ((applicationTypeByte >> 3) == (byte) (0x04)) {
+            rev = PoRevision.REV3_1;
+        } else {
+            rev = PoRevision.REV2_4;
+        }
+        return rev;
     }
 
     public byte[] getDfName() {

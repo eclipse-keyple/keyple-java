@@ -152,7 +152,7 @@ public class PoSecureSession {
 
         /* Parse PO FCI - to retrieve Calypso Revision, Serial Number, &amp; DF Name (AID) */
         GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(poFciData);
-        poRevision = computePoRevision(poFciRespPars.getApplicationTypeByte());
+        poRevision = poFciRespPars.getPoRevision();
         poCalypsoInstanceAid = poFciRespPars.getDfName();
 
         /* Serial Number of the selected Calypso instance. */
@@ -813,35 +813,6 @@ public class PoSecureSession {
                 AnticipatedResponseBuilder.getResponses(poModificationCommands);
         return processClosing(poModificationCommands, poAnticipatedResponses, communicationMode,
                 closeSeChannel);
-    }
-
-    /**
-     * Determine the PO revision from the application type byte:
-     *
-     * <ul>
-     * <li>if
-     * <code>%1-------</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;CLAP&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.1</li>
-     * <li>if <code>%00101---</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.2</li>
-     * <li>if <code>%00100---</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.1</li>
-     * <li>otherwise&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV2.4</li>
-     * </ul>
-     *
-     * @param applicationTypeByte the application type byte from FCI
-     * @return the PO revision
-     */
-    public static PoRevision computePoRevision(byte applicationTypeByte) {
-        PoRevision rev;
-        if ((applicationTypeByte & (1 << 7)) != 0) {
-            /* CLAP */
-            rev = PoRevision.REV3_1;
-        } else if ((applicationTypeByte >> 3) == (byte) (0x05)) {
-            rev = PoRevision.REV3_2;
-        } else if ((applicationTypeByte >> 3) == (byte) (0x04)) {
-            rev = PoRevision.REV3_1;
-        } else {
-            rev = PoRevision.REV2_4;
-        }
-        return rev;
     }
 
     /**
