@@ -27,27 +27,27 @@ import org.eclipse.keyple.util.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Master implements org.eclipse.keyple.util.Observable.Observer {
+public class DemoMaster implements org.eclipse.keyple.util.Observable.Observer {
 
-    private static final Logger logger = LoggerFactory.getLogger(Master.class);
+    private static final Logger logger = LoggerFactory.getLogger(DemoMaster.class);
 
     private TransportNode node;
     private Boolean transmitSync;
 
 
     /**
-     * Constructor of the Master thread, will kickoff server or client
+     * Constructor of the DemoMaster thread, will kickoff server or client
      * 
      * @param transportFactory
      * @param isServer
      * @param transmitSync
      */
-    public Master(TransportFactory transportFactory, Boolean isServer, Boolean transmitSync) {
+    public DemoMaster(TransportFactory transportFactory, Boolean isServer, Boolean transmitSync) {
 
         this.transmitSync = transmitSync;
 
         logger.info("*******************");
-        logger.info("Create Master    ");
+        logger.info("Create DemoMaster    ");
         logger.info("*******************");
 
         if (isServer) {
@@ -106,7 +106,7 @@ public class Master implements org.eclipse.keyple.util.Observable.Observer {
         logger.debug("UPDATE {}", o);
         logger.debug("CREATING A NEW THREAD TO PROCESS THE EVENT");
 
-        final Master master = this;
+        final DemoMaster master = this;
 
         new Thread() {
 

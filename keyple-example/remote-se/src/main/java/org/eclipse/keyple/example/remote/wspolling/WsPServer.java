@@ -49,7 +49,7 @@ public class WsPServer implements ServerNode {
      */
     public WsPServer(String url, Integer port, String apiUrl, String pollingUrl)
             throws IOException {
-        logger.info("Init Web Service Master on url : {}:{}", url, port);
+        logger.info("Init Web Service DemoMaster on url : {}:{}", url, port);
 
         this.apiUrl = apiUrl;
         this.pollingUrl = pollingUrl;

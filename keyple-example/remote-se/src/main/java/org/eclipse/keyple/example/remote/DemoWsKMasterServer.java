@@ -11,7 +11,7 @@ package org.eclipse.keyple.example.remote;
 import org.eclipse.keyple.example.remote.common.TransportFactory;
 import org.eclipse.keyple.example.remote.websocket.WskFactory;
 
-public class WsKMasterServer {
+public class DemoWsKMasterServer {
 
 
     public static void main(String[] args) throws Exception {
@@ -20,14 +20,14 @@ public class WsKMasterServer {
 
         TransportFactory factory = new WskFactory(); // Web socket
 
-        Boolean isMasterServer = true; // Master is the server (and Slave the Client)
+        Boolean isMasterServer = true; // DemoMaster is the server (and DemoSlave the Client)
 
         /**
-         * ProtocolThreads
+         * DemoThreads
          */
 
-        ProtocolThreads.startServer(isTransmitSync, isMasterServer, factory);
+        DemoThreads.startServer(isTransmitSync, isMasterServer, factory);
         Thread.sleep(1000);
-        ProtocolThreads.startClient(isTransmitSync, !isMasterServer, factory);
+        DemoThreads.startClient(isTransmitSync, !isMasterServer, factory);
     }
 }

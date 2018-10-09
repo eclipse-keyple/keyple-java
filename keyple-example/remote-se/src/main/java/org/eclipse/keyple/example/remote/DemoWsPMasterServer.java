@@ -11,7 +11,7 @@ package org.eclipse.keyple.example.remote;
 import org.eclipse.keyple.example.remote.common.TransportFactory;
 import org.eclipse.keyple.example.remote.wspolling.WsPollingFactory;
 
-public class WsPMasterClient {
+public class DemoWsPMasterServer {
 
 
     public static void main(String[] args) throws Exception {
@@ -20,14 +20,14 @@ public class WsPMasterClient {
 
         TransportFactory factory = new WsPollingFactory(); // HTTP Web Polling
 
-        Boolean isMasterServer = false; // Master is the Client (and Slave the server)
+        Boolean isMasterServer = true; // DemoMaster is the server (and DemoSlave the Client)
 
         /**
-         * ProtocolThreads
+         * DemoThreads
          */
 
-        ProtocolThreads.startServer(isTransmitSync, isMasterServer, factory);
+        DemoThreads.startServer(isTransmitSync, isMasterServer, factory);
         Thread.sleep(1000);
-        ProtocolThreads.startClient(isTransmitSync, !isMasterServer, factory);
+        DemoThreads.startClient(isTransmitSync, !isMasterServer, factory);
     }
 }

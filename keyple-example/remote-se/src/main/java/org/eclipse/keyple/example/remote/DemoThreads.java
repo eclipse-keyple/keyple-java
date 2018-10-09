@@ -15,9 +15,9 @@ import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProtocolThreads {
+public class DemoThreads {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProtocolThreads.class);
+    private static final Logger logger = LoggerFactory.getLogger(DemoThreads.class);
 
 
     static public void startServer(final Boolean isTransmitAsync, final Boolean isMaster,
@@ -30,11 +30,11 @@ public class ProtocolThreads {
                     logger.info("**** Starting Server Thread ****");
 
                     if (isMaster) {
-                        Master master = new Master(factory, true, isTransmitAsync);
+                        DemoMaster master = new DemoMaster(factory, true, isTransmitAsync);
                         master.boot();
 
                     } else {
-                        Slave slave = new Slave(factory, true);
+                        DemoSlave slave = new DemoSlave(factory, true);
                         logger.info("Wait for 10 seconds, then connect to master");
                         Thread.sleep(10000);
                         slave.connect();
@@ -66,10 +66,10 @@ public class ProtocolThreads {
 
                 try {
                     if (isMaster) {
-                        Master master = new Master(factory, false, isTransmitAsync);
+                        DemoMaster master = new DemoMaster(factory, false, isTransmitAsync);
                         master.boot();
                     } else {
-                        Slave slave = new Slave(factory, false);
+                        DemoSlave slave = new DemoSlave(factory, false);
                         slave.connect();
                         logger.info("Wait for 10 seconds, then insert SE");
                         Thread.sleep(15000);

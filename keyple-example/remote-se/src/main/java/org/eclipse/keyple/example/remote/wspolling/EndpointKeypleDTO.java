@@ -62,13 +62,13 @@ public class EndpointKeypleDTO implements HttpHandler, TransportNode {
 
     @Override
     public void sendDTO(TransportDto message) {
-        logger.warn("Send DTO can not be used in Web Service Master");
+        logger.warn("Send DTO can not be used in Web Service DemoMaster");
         // not in use, oneway communication, server do not send message
     }
 
     @Override
     public void sendDTO(KeypleDto message) {
-        logger.warn("Send DTO can not be used in Web Service Master");
+        logger.warn("Send DTO can not be used in Web Service DemoMaster");
     }
 
 

@@ -26,17 +26,17 @@ import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Slave {
+public class DemoSlave {
 
-    private static final Logger logger = LoggerFactory.getLogger(Slave.class);
+    private static final Logger logger = LoggerFactory.getLogger(DemoSlave.class);
 
     // physical reader
     StubReader localReader;
     private TransportNode node;
 
-    public Slave(TransportFactory transportFactory, Boolean isServer) {
+    public DemoSlave(TransportFactory transportFactory, Boolean isServer) {
         logger.info("*******************");
-        logger.info("Create Slave    ");
+        logger.info("Create DemoSlave    ");
         logger.info("*******************");
 
         if (isServer) {
@@ -63,7 +63,7 @@ public class Slave {
     public void connect() throws KeypleReaderNotFoundException, InterruptedException, IOException {
 
 
-        logger.info("Boot Slave LocalReader ");
+        logger.info("Boot DemoSlave LocalReader ");
         String nodeId = "node1";
 
         // get seProxyService
