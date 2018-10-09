@@ -10,6 +10,7 @@ package org.eclipse.keyple.calypso.util;
 
 import java.io.ByteArrayOutputStream;
 import org.eclipse.keyple.seproxy.ApduResponse;
+import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
  * @author f.razakarivony
@@ -40,10 +41,8 @@ public class TestsUtilsResponseTabByteGenerator {
     }
 
     private static byte[] generateResponseOkTabByteRev2_4() {
-        return new byte[] {0x6F, 0x22, (byte) 0x84, 0x08, 0x33, 0x4D, 0x54, 0x52, 0x2E, 0x49, 0x43,
-                0x41, (byte) 0xA5, 0x16, (byte) 0xBF, 0x0C, 0x13, (byte) 0xC7, 0x08, 0x00, 0x00,
-                0x00, 0x00, 0x27, 0x4A, (byte) 0x9A, (byte) 0xB9, 0x53, 0x07, 0x0A, 0x3C, 0x11,
-                0x32, 0x14, 0x10, 0x01, (byte) 0x90, 0x00};
+        return ByteArrayUtils.fromHex(
+                "CC 11223344 00112233445566778899AABBCCDDEEFF 00112233445566778899AABBCC 9000");
     }
 
     private static byte[] generateDataOpenTabByte() {
