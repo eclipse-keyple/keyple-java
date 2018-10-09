@@ -421,21 +421,21 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
                 ApduResponse fciData = seResponses.get(0).getFci();
                 PoSecureSession poTransaction =
-                        new PoSecureSession(poReader, csmReader, null, fciData);
+                        new PoSecureSession(poReader, csmReader, null, seResponses.get(0));
                 validateAuditC0(poTransaction, fciData);
 
             } else if (seResponses.get(1) != null) {
 
                 ApduResponse fciData = seResponses.get(1).getFci();
                 PoSecureSession poTransaction =
-                        new PoSecureSession(poReader, csmReader, null, fciData);
+                        new PoSecureSession(poReader, csmReader, null, seResponses.get(1));
                 validateClap(poTransaction, fciData);
 
             } else if (seResponses.get(2) != null) {
 
                 ApduResponse fciData = seResponses.get(2).getFci();
                 PoSecureSession poTransaction =
-                        new PoSecureSession(poReader, csmReader, null, fciData);
+                        new PoSecureSession(poReader, csmReader, null, seResponses.get(2));
                 validateAuditC0(poTransaction, fciData);
 
             } else {

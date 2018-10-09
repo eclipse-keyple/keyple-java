@@ -11,6 +11,7 @@ package org.eclipse.keyple.calypso.transaction;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.*;
+import org.eclipse.keyple.calypso.PortableObject;
 import org.eclipse.keyple.calypso.command.SendableInSession;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 import org.eclipse.keyple.calypso.command.csm.CsmSendableInSession;
@@ -22,7 +23,6 @@ import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.command.po.builder.session.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.session.CloseSessionCmdBuild;
-import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.session.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.session.CloseSessionRespPars;
 import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
@@ -93,6 +93,8 @@ public class PoSecureSession {
             new EnumMap<CsmSettings, Byte>(CsmSettings.class);
     /** The PO serial number extracted from FCI */
     private final byte[] poCalypsoInstanceSerial;
+    /** The current PO */
+    private final PortableObject portableObject;
     /** the type of the notified event. */
     private SessionState currentState;
     /** Selected AID of the Calypso PO. */
@@ -122,10 +124,10 @@ public class PoSecureSession {
      * @param csmSetting a list of CSM related parameters. In the case this parameter is null,
      *        default parameters are applied. The available setting keys are defined in
      *        {@link CsmSettings}
-     * @param poFciData the po response to the application selection (FCI)
+     * @param poSelectionResponse the po SeResponse to the application selection (FCI/ATR)
      */
     public PoSecureSession(ProxyReader poReader, ProxyReader csmReader,
-            EnumMap<CsmSettings, Byte> csmSetting, ApduResponse poFciData) {
+            EnumMap<CsmSettings, Byte> csmSetting, SeResponse poSelectionResponse) {
         this.poReader = poReader;
         this.csmReader = csmReader;
 
@@ -150,13 +152,16 @@ public class PoSecureSession {
 
         logger.debug("Contructor => CSMSETTING = {}", this.csmSetting);
 
-        /* Parse PO FCI - to retrieve Calypso Revision, Serial Number, &amp; DF Name (AID) */
-        GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(poFciData);
-        poRevision = poFciRespPars.getPoRevision();
-        poCalypsoInstanceAid = poFciRespPars.getDfName();
+        portableObject = PortableObject.getInstance();
+
+        portableObject.intialize(poSelectionResponse);
+
+        poRevision = portableObject.getRevision();
+
+        poCalypsoInstanceAid = portableObject.getDfName();
 
         /* Serial Number of the selected Calypso instance. */
-        poCalypsoInstanceSerial = poFciRespPars.getApplicationSerialNumber();
+        poCalypsoInstanceSerial = portableObject.getApplicationSerialNumber();
 
         currentState = SessionState.SESSION_CLOSED;
     }

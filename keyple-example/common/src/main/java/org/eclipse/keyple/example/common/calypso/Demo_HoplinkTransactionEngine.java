@@ -340,8 +340,8 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
              * null
              */
             if (seResponses.size() == 2 && seResponses.get(1) != null) {
-                PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting,
-                        seResponses.get(1).getFci());
+                PoSecureSession poTransaction =
+                        new PoSecureSession(poReader, csmReader, csmSetting, seResponses.get(1));
                 profiler.start("Hoplink1");
                 doHoplinkReadWriteTransaction(poTransaction, true);
             } else {

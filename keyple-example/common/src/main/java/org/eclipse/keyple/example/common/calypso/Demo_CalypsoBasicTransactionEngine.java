@@ -409,8 +409,8 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
 
                 profiler.start("Calypso1");
 
-                PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting,
-                        seResponses.get(1).getFci());
+                PoSecureSession poTransaction =
+                        new PoSecureSession(poReader, csmReader, csmSetting, seResponses.get(1));
 
                 doCalypsoReadWriteTransaction(poTransaction, true);
 
