@@ -204,12 +204,13 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
         if (keypleDTO.getAction().equals(KeypleDtoHelper.READER_EVENT)) {
             logger.info("**** ACTION - READER_EVENT ****");
 
-            ReaderEvent event = JsonParser.getGson().fromJson(keypleDTO.getBody(), ReaderEvent.class);
+            ReaderEvent event =
+                    JsonParser.getGson().fromJson(keypleDTO.getBody(), ReaderEvent.class);
 
-            //dispatch reader event
+            // dispatch reader event
             this.onReaderEvent(event, keypleDTO.getSessionId());
 
-            //chain response with a seRequest if needed
+            // chain response with a seRequest if needed
             out = isSeRequestToSendBack(transportDto);
 
         } else if (keypleDTO.getAction().equals(KeypleDtoHelper.READER_CONNECT)) {
@@ -253,7 +254,8 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
             // not implemented yet
             out = transportDto.nextTransportDTO(KeypleDtoHelper.NoResponse());
 
-        } else if (keypleDTO.getAction().equals(KeypleDtoHelper.READER_TRANSMIT) && !keypleDTO.isRequest()) {
+        } else if (keypleDTO.getAction().equals(KeypleDtoHelper.READER_TRANSMIT)
+                && !keypleDTO.isRequest()) {
             logger.info("**** RESPONSE - READER_TRANSMIT ****");
 
             // parse msg
@@ -265,7 +267,7 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
                 reader = this.getReaderBySessionId(keypleDTO.getSessionId());
                 ((IReaderAsyncSession) reader.getSession()).asyncSetSeResponseSet(seResponseSet);
 
-                //chain response with a seRequest if needed
+                // chain response with a seRequest if needed
                 out = isSeRequestToSendBack(transportDto);
 
             } catch (KeypleReaderNotFoundException e) {
@@ -290,19 +292,19 @@ public class RsePlugin extends Observable implements ObservablePlugin, DtoDispat
     private TransportDto isSeRequestToSendBack(TransportDto tdto) {
         TransportDto out = null;
         try {
-            //retrieve reader by session
+            // retrieve reader by session
             RseReader rseReader = this.getReaderBySessionId(tdto.getKeypleDTO().getSessionId());
 
             if (rseReader.getSession().isAsync()
                     && ((IReaderAsyncSession) rseReader.getSession()).hasSeRequestSet()) {
 
                 // send back seRequestSet
-                out=  tdto.nextTransportDTO(new KeypleDto(KeypleDtoHelper.READER_TRANSMIT,
+                out = tdto.nextTransportDTO(new KeypleDto(KeypleDtoHelper.READER_TRANSMIT,
                         JsonParser.getGson().toJson(
                                 ((IReaderAsyncSession) rseReader.getSession()).getSeRequestSet()),
                         true, rseReader.getSession().getSessionId()));
-            }else{
-                //no response
+            } else {
+                // no response
                 out = tdto.nextTransportDTO(KeypleDtoHelper.NoResponse());
             }
 

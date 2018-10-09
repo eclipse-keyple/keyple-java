@@ -10,9 +10,9 @@ package org.eclipse.keyple.example.remote.wspolling;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.plugin.remote_se.transport.*;
 import org.eclipse.keyple.plugin.remote_se.transport.TransportDto;
+import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.sun.net.httpserver.HttpExchange;

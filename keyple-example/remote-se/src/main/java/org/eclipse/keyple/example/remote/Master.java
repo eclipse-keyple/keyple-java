@@ -10,13 +10,13 @@ package org.eclipse.keyple.example.remote;
 
 import java.io.IOException;
 import org.eclipse.keyple.example.remote.common.ClientNode;
-import org.eclipse.keyple.example.remote.sample.CommandSample;
 import org.eclipse.keyple.example.remote.common.ServerNode;
 import org.eclipse.keyple.example.remote.common.TransportFactory;
-import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
+import org.eclipse.keyple.example.remote.sample.CommandSample;
 import org.eclipse.keyple.plugin.remote_se.rse.RsePlugin;
 import org.eclipse.keyple.plugin.remote_se.rse.RseReader;
 import org.eclipse.keyple.plugin.remote_se.rse.VirtualSeRemoteService;
+import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.event.PluginEvent;
@@ -37,6 +37,7 @@ public class Master implements org.eclipse.keyple.util.Observable.Observer {
 
     /**
      * Constructor of the Master thread, will kickoff server or client
+     * 
      * @param transportFactory
      * @param isServer
      * @param transmitSync
@@ -78,7 +79,7 @@ public class Master implements org.eclipse.keyple.util.Observable.Observer {
         ReaderPlugin rsePlugin = vse.getPlugin();
 
         logger.info("Observe SeRemotePLugin for Plugin Events and Reader Events");
-        ((Observable)rsePlugin).addObserver(this);
+        ((Observable) rsePlugin).addObserver(this);
 
         vse.bindDtoEndpoint(node);
 

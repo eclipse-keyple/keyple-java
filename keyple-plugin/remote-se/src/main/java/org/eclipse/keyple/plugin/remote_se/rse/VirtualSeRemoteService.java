@@ -9,7 +9,6 @@
 package org.eclipse.keyple.plugin.remote_se.rse;
 
 import java.util.SortedSet;
-
 import org.eclipse.keyple.plugin.remote_se.transport.DtoSender;
 import org.eclipse.keyple.plugin.remote_se.transport.TransportNode;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
@@ -28,7 +27,7 @@ public class VirtualSeRemoteService {
         this.seProxyService = seProxyService;
         this.dtoSender = dtoSender;
 
-        //instanciate plugin
+        // instanciate plugin
         this.plugin = startPlugin();
     }
 
@@ -36,11 +35,11 @@ public class VirtualSeRemoteService {
         node.setDtoDispatcher(plugin);
     }
 
-    public RsePlugin getPlugin(){
+    public RsePlugin getPlugin() {
         return plugin;
     }
 
-    private RsePlugin startPlugin(){
+    private RsePlugin startPlugin() {
         SortedSet<ReaderPlugin> plugins = seProxyService.getPlugins();
         RsePlugin rsePlugin = new RsePlugin();
         plugins.add(rsePlugin);

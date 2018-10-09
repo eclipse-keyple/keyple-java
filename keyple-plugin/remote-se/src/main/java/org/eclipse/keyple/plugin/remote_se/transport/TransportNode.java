@@ -8,8 +8,6 @@
 
 package org.eclipse.keyple.plugin.remote_se.transport;
 
-import org.eclipse.keyple.plugin.remote_se.transport.DtoDispatcher;
-import org.eclipse.keyple.plugin.remote_se.transport.DtoSender;
 
 /**
  * TransportNode is a gateway for incoming and outgoing TransportDto

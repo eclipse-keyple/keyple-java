@@ -35,6 +35,7 @@ public class NativeSeRemoteService implements RseClient, DtoDispatcher {
 
     /**
      * Constructor
+     * 
      * @param dtoSender : Define which DTO sender will be called when a DTO needs to be sent.
      */
     public NativeSeRemoteService(DtoSender dtoSender) {
@@ -44,7 +45,7 @@ public class NativeSeRemoteService implements RseClient, DtoDispatcher {
     }
 
 
-    public void bindDtoEndpoint(TransportNode node){
+    public void bindDtoEndpoint(TransportNode node) {
         node.setDtoDispatcher(this);// incoming traffic
     }
 

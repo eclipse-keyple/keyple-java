@@ -56,7 +56,7 @@ public class RseReader extends Observable implements ObservableReader {
      *
      * @param seRequestSet : SeRequestSe to be transmitted
      * @return seResponseSet : SeResponSet
-     * @throws  IllegalArgumentException
+     * @throws IllegalArgumentException
      */
     @Override
     public SeResponseSet transmit(SeRequestSet seRequestSet) throws IllegalArgumentException {
