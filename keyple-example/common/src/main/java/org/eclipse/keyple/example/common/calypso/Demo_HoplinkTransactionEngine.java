@@ -342,7 +342,7 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
              */
             if (seResponses.size() == 2 && seResponses.get(1) != null) {
                 PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting,
-                        CalypsoPO.initialize(seResponses.get(1)));
+                        new CalypsoPO(seResponses.get(1)));
                 profiler.start("Hoplink1");
                 doHoplinkReadWriteTransaction(poTransaction, true);
             } else {

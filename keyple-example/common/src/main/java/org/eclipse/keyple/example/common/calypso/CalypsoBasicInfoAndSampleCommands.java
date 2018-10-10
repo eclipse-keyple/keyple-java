@@ -12,9 +12,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.builder.AppendRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
  * Helper class to provide specific elements to handle Calypso cards.
@@ -55,23 +53,7 @@ public class CalypsoBasicInfoAndSampleCommands {
             "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC";
 
     /** Event Log read record */
-    public static ReadRecordsCmdBuild poReadRecordCmd_EventLog = new ReadRecordsCmdBuild(
+    public static ReadRecordsCmdBuild poReadRecordCmd_EventLog_Rev3 = new ReadRecordsCmdBuild(
             PoRevision.REV3_1, SFI_EventLog, RECORD_NUMBER_1, true, (byte) 0x00,
             String.format("EventLog (SFI=%02X, recnbr=%d))", SFI_EventLog, RECORD_NUMBER_1));
-
-    /** Contract List read record */
-    public static ReadRecordsCmdBuild poReadRecordCmd_ContractList =
-            new ReadRecordsCmdBuild(PoRevision.REV3_1, SFI_ContractList, RECORD_NUMBER_1, true,
-                    (byte) 0x00, String.format("ContractList (SFI=%02X)", SFI_ContractList));
-
-    /** Contract #1 read record */
-    public static ReadRecordsCmdBuild poReadRecordCmd_Contract = new ReadRecordsCmdBuild(
-            PoRevision.REV3_1, SFI_Contracts, RECORD_NUMBER_1, true, (byte) 0x00,
-            String.format("Contracts (SFI=%02X, recnbr=%d)", SFI_Contracts, RECORD_NUMBER_1));
-
-    /** Event Log append record */
-    public static AppendRecordCmdBuild poAppendRecordCmd_EventLog = new AppendRecordCmdBuild(
-            PoRevision.REV3_1, SFI_EventLog, ByteArrayUtils.fromHex(eventLog_dataFill),
-            String.format("EventLog (SFI=%02X)", SFI_EventLog));
-
 }

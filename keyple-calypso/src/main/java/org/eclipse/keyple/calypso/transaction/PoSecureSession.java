@@ -92,6 +92,8 @@ public class PoSecureSession {
             new EnumMap<CsmSettings, Byte>(CsmSettings.class);
     /** The PO serial number extracted from FCI */
     private final byte[] poCalypsoInstanceSerial;
+    /** The current CalypsoPO */
+    protected final CalypsoPO calypsoPo;
     /** the type of the notified event. */
     private SessionState currentState;
     /** Selected AID of the Calypso PO. */
@@ -149,6 +151,8 @@ public class PoSecureSession {
 
         logger.debug("Contructor => CSMSETTING = {}", this.csmSetting);
 
+        this.calypsoPo = calypsoPO;
+
         poRevision = calypsoPO.getRevision();
 
         poCalypsoInstanceAid = calypsoPO.getDfName();
@@ -186,8 +190,7 @@ public class PoSecureSession {
      * <li>According to the PO responses of Open Session and the PO commands sent inside the
      * session, a "cache" of CSM commands is filled with the corresponding Digest Init &amp; Digest
      * Update commands.</li>
-     * <li>Returns the corresponding PO SeResponse (for openCommand and
-     * poCommandsInsideSession).</li>
+     * <li>Returns the corresponding PO SeResponse (responses to poCommandsInsideSession).</li>
      * </ul>
      *
      * @param modificationMode the modification mode: ATOMIC or MULTIPLE (see
