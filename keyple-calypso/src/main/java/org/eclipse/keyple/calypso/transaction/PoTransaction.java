@@ -22,7 +22,6 @@ import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.command.po.builder.session.AbstractOpenSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.session.CloseSessionCmdBuild;
-import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.session.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.session.CloseSessionRespPars;
 import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
@@ -42,7 +41,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Calypso Networks Association
  */
-public class PoSecureSession {
+public class PoTransaction {
 
     /* public constants */
     /** The key index for personalization operations (issuer key needed) */
@@ -80,7 +79,7 @@ public class PoSecureSession {
     /** Ratification command APDU for rev > 2.4 */
     private final static byte[] ratificationCmdApdu = ByteArrayUtils.fromHex("00B2000000");
 
-    private static final Logger logger = LoggerFactory.getLogger(PoSecureSession.class);
+    private static final Logger logger = LoggerFactory.getLogger(PoTransaction.class);
 
     /** The reader for PO. */
     private final ProxyReader poReader;
@@ -93,6 +92,8 @@ public class PoSecureSession {
             new EnumMap<CsmSettings, Byte>(CsmSettings.class);
     /** The PO serial number extracted from FCI */
     private final byte[] poCalypsoInstanceSerial;
+    /** The current CalypsoPO */
+    protected final CalypsoPO calypsoPo;
     /** the type of the notified event. */
     private SessionState currentState;
     /** Selected AID of the Calypso PO. */
@@ -101,6 +102,8 @@ public class PoSecureSession {
     private PoRevision poRevision = PoRevision.REV3_1;
     /** The PO Secure Session final status according to mutual authentication result */
     private boolean transactionResult;
+    /** The diversification status */
+    private boolean isDiversificationDone;
     /** The PO KIF */
     private byte poKif;
     /** The PO KVC */
@@ -109,6 +112,8 @@ public class PoSecureSession {
     private boolean wasRatified;
     /** The data read at opening */
     private byte[] openRecordDataRead;
+    /** The list to contain the prepared commands */
+    private List<PoSendableInSession> poCommandBuilderList = new ArrayList<PoSendableInSession>();
 
     /**
      * Instantiates a new po plain secure session.
@@ -122,10 +127,10 @@ public class PoSecureSession {
      * @param csmSetting a list of CSM related parameters. In the case this parameter is null,
      *        default parameters are applied. The available setting keys are defined in
      *        {@link CsmSettings}
-     * @param poFciData the po response to the application selection (FCI)
+     * @param calypsoPO the CalypsoPO object obtained at the end of the selection step
      */
-    public PoSecureSession(ProxyReader poReader, ProxyReader csmReader,
-            EnumMap<CsmSettings, Byte> csmSetting, ApduResponse poFciData) {
+    public PoTransaction(ProxyReader poReader, ProxyReader csmReader,
+            EnumMap<CsmSettings, Byte> csmSetting, CalypsoPO calypsoPO) {
         this.poReader = poReader;
         this.csmReader = csmReader;
 
@@ -150,13 +155,16 @@ public class PoSecureSession {
 
         logger.debug("Contructor => CSMSETTING = {}", this.csmSetting);
 
-        /* Parse PO FCI - to retrieve Calypso Revision, Serial Number, &amp; DF Name (AID) */
-        GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(poFciData);
-        poRevision = computePoRevision(poFciRespPars.getApplicationTypeByte());
-        poCalypsoInstanceAid = poFciRespPars.getDfName();
+        this.calypsoPo = calypsoPO;
+
+        poRevision = calypsoPO.getRevision();
+
+        poCalypsoInstanceAid = calypsoPO.getDfName();
 
         /* Serial Number of the selected Calypso instance. */
-        poCalypsoInstanceSerial = poFciRespPars.getApplicationSerialNumber();
+        poCalypsoInstanceSerial = calypsoPO.getApplicationSerialNumber();
+
+        isDiversificationDone = false;
 
         currentState = SessionState.SESSION_CLOSED;
     }
@@ -188,12 +196,9 @@ public class PoSecureSession {
      * <li>According to the PO responses of Open Session and the PO commands sent inside the
      * session, a "cache" of CSM commands is filled with the corresponding Digest Init &amp; Digest
      * Update commands.</li>
-     * <li>Returns the corresponding PO SeResponse (for openCommand and
-     * poCommandsInsideSession).</li>
+     * <li>Returns the corresponding PO SeResponse (responses to poCommandsInsideSession).</li>
      * </ul>
      *
-     * @param modificationMode the modification mode: ATOMIC or MULTIPLE (see
-     *        {@link ModificationMode})
      * @param accessLevel access level of the session (personalization, load or debit).
      * @param openingSfiToSelect SFI of the file to select (0 means no file to select)
      * @param openingRecordNumberToRead number of the record to read
@@ -202,25 +207,39 @@ public class PoSecureSession {
      *         Secure Session" command
      * @throws KeypleReaderException the IO reader exception
      */
-    public SeResponse processOpening(ModificationMode modificationMode,
-            SessionAccessLevel accessLevel, byte openingSfiToSelect, byte openingRecordNumberToRead,
-            List<PoSendableInSession> poCommandsInsideSession) throws KeypleReaderException {
+    @Deprecated
+    public SeResponse processAtomicOpening(SessionAccessLevel accessLevel, byte openingSfiToSelect,
+            byte openingRecordNumberToRead, List<PoSendableInSession> poCommandsInsideSession)
+            throws KeypleReaderException {
+
+        /*
+         * counts 'select diversifier' and 'get challenge' commands. At least get challenge is
+         * present
+         */
+        int numberOfCsmCmd = 1;
 
         /* CSM ApduRequest List to hold Select Diversifier and Get Challenge commands */
         List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
 
         if (logger.isDebugEnabled()) {
-            logger.debug("processOpening => Identification: DFNAME = {}, SERIALNUMBER = {}",
+            logger.debug("processAtomicOpening => Identification: DFNAME = {}, SERIALNUMBER = {}",
                     ByteArrayUtils.toHex(poCalypsoInstanceAid),
                     ByteArrayUtils.toHex(poCalypsoInstanceSerial));
         }
+        /* diversify only if this has not already been done. */
+        if (!isDiversificationDone) {
+            /* Build the CSM Select Diversifier command to provide the CSM with the PO S/N */
+            AbstractApduCommandBuilder selectDiversifier =
+                    new SelectDiversifierCmdBuild(this.csmRevision, poCalypsoInstanceSerial);
 
-        /* Build the CSM Select Diversifier command to provide the CSM with the PO S/N */
-        AbstractApduCommandBuilder selectDiversifier =
-                new SelectDiversifierCmdBuild(this.csmRevision, poCalypsoInstanceSerial);
+            csmApduRequestList.add(selectDiversifier.getApduRequest());
 
-        csmApduRequestList.add(selectDiversifier.getApduRequest());
+            /* increment command number */
+            numberOfCsmCmd++;
 
+            /* change the diversification status */
+            isDiversificationDone = true;
+        }
         /* Build the CSM Get Challenge command */
         byte challengeLength = poRevision.equals(PoRevision.REV3_2) ? CHALLENGE_LENGTH_REV32
                 : CHALLENGE_LENGTH_REV_INF_32;
@@ -233,7 +252,7 @@ public class PoSecureSession {
         /* Build a CSM SeRequest */
         SeRequest csmSeRequest = new SeRequest(null, csmApduRequestList, true);
 
-        logger.debug("processOpening => identification: CSMSEREQUEST = {}", csmSeRequest);
+        logger.debug("processAtomicOpening => identification: CSMSEREQUEST = {}", csmSeRequest);
 
         /*
          * Transmit the SeRequest to the CSM and get back the SeResponse (list of ApduResponse)
@@ -246,18 +265,19 @@ public class PoSecureSession {
                     null);
         }
 
-        logger.debug("processOpening => identification: CSMSERESPONSE = {}", csmSeResponse);
+        logger.debug("processAtomicOpening => identification: CSMSERESPONSE = {}", csmSeResponse);
 
         List<ApduResponse> csmApduResponseList = csmSeResponse.getApduResponses();
         byte[] sessionTerminalChallenge;
 
-        if (csmApduResponseList.size() == 2 && csmApduResponseList.get(1).isSuccessful()
-                && csmApduResponseList.get(1).getDataOut().length == challengeLength) {
+        if (csmApduResponseList.size() == numberOfCsmCmd
+                && csmApduResponseList.get(numberOfCsmCmd - 1).isSuccessful() && csmApduResponseList
+                        .get(numberOfCsmCmd - 1).getDataOut().length == challengeLength) {
             CsmGetChallengeRespPars csmChallengePars =
-                    new CsmGetChallengeRespPars(csmApduResponseList.get(1));
+                    new CsmGetChallengeRespPars(csmApduResponseList.get(numberOfCsmCmd - 1));
             sessionTerminalChallenge = csmChallengePars.getChallenge();
             if (logger.isDebugEnabled()) {
-                logger.debug("processOpening => identification: TERMINALCHALLENGE = {}",
+                logger.debug("processAtomicOpening => identification: TERMINALCHALLENGE = {}",
                         ByteArrayUtils.toHex(sessionTerminalChallenge));
             }
         } else {
@@ -288,12 +308,12 @@ public class PoSecureSession {
         SeRequest poSeRequest = new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
                 poApduRequestList, true);
 
-        logger.debug("processOpening => opening:  POSEREQUEST = {}", poSeRequest);
+        logger.debug("processAtomicOpening => opening:  POSEREQUEST = {}", poSeRequest);
 
         /* Transmit the commands to the PO */
         SeResponse poSeResponse = poReader.transmit(poSeRequest);
 
-        logger.debug("processOpening => opening:  POSERESPONSE = {}", poSeResponse);
+        logger.debug("processAtomicOpening => opening:  POSERESPONSE = {}", poSeResponse);
 
         if (poSeResponse == null) {
             throw new KeypleCalypsoSecureSessionException("Null response received",
@@ -333,7 +353,8 @@ public class PoSecureSession {
         poKvc = poOpenSessionPars.getSelectedKvc();
 
         if (logger.isDebugEnabled()) {
-            logger.debug("processOpening => opening: CARDCHALLENGE = {}, POKIF = {}, POKVC = {}",
+            logger.debug(
+                    "processAtomicOpening => opening: CARDCHALLENGE = {}, POKIF = {}, POKVC = {}",
                     ByteArrayUtils.toHex(sessionCardChallenge), String.format("%02X", poKif),
                     String.format("%02X", poKvc));
         }
@@ -368,7 +389,7 @@ public class PoSecureSession {
         DigestProcessor.initialize(poRevision, csmRevision, false, false,
                 poRevision.equals(PoRevision.REV3_2),
                 csmSetting.get(CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER), kif, poKvc,
-                openRecordDataRead);
+                poApduResponseList.get(0).getDataOut());
 
         /*
          * Add all commands data to the digest computation. The first command in the list is the
@@ -427,7 +448,8 @@ public class PoSecureSession {
      *
      * @throws KeypleReaderException IO Reader exception
      */
-    public SeResponse processPoCommands(List<PoSendableInSession> poCommands)
+    @Deprecated
+    public SeResponse processAtomicPoCommands(List<PoSendableInSession> poCommands)
             throws KeypleReaderException {
 
         // Get PO ApduRequest List from PoSendableInSession List
@@ -438,12 +460,12 @@ public class PoSecureSession {
         SeRequest poSeRequest = new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
                 poApduRequestList, true);
 
-        logger.debug("processPoCommands => POREQUEST = {}", poSeRequest);
+        logger.debug("processAtomicPoCommands => POREQUEST = {}", poSeRequest);
 
         /* Transmit the commands to the PO */
         SeResponse poSeResponse = poReader.transmit(poSeRequest);
 
-        logger.debug("processPoCommands => PORESPONSE = {}", poSeResponse);
+        logger.debug("processAtomicPoCommands => PORESPONSE = {}", poSeResponse);
 
         if (poSeResponse == null) {
             throw new KeypleCalypsoSecureSessionException("Null response received",
@@ -578,7 +600,7 @@ public class PoSecureSession {
      *         </ul>
      */
     @Deprecated
-    public SeResponse processClosing(List<PoModificationCommand> poModificationCommands,
+    public SeResponse processAtomicClosing(List<PoModificationCommand> poModificationCommands,
             List<ApduResponse> poAnticipatedResponses, CommunicationMode communicationMode,
             boolean closeSeChannel) throws KeypleReaderException {
 
@@ -617,19 +639,19 @@ public class PoSecureSession {
         /* Get the CSM Digest request from the cache manager */
         SeRequest csmSeRequest = DigestProcessor.getCsmDigestRequest();
 
-        logger.debug("processClosing => CSMREQUEST = {}", csmSeRequest);
+        logger.debug("processAtomicClosing => CSMREQUEST = {}", csmSeRequest);
 
         /* Transmit SeRequest and get SeResponse */
         SeResponse csmSeResponse = csmReader.transmit(csmSeRequest);
 
-        logger.debug("processClosing => CSMRESPONSE = {}", csmSeResponse);
+        logger.debug("processAtomicClosing => CSMRESPONSE = {}", csmSeResponse);
 
         List<ApduResponse> csmApduResponseList = csmSeResponse.getApduResponses();
 
         for (int i = 0; i < csmApduResponseList.size(); i++) {
             if (!csmApduResponseList.get(i).isSuccessful()) {
 
-                logger.debug("processClosing => command failure REQUEST = {}, RESPONSE = {}",
+                logger.debug("processAtomicClosing => command failure REQUEST = {}, RESPONSE = {}",
                         csmSeRequest.getApduRequests().get(i), csmApduResponseList.get(i));
                 throw new IllegalStateException(
                         "ProcessClosing command failure during digest computation process.");
@@ -647,7 +669,7 @@ public class PoSecureSession {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("processClosing => SIGNATURE = {}",
+            logger.debug("processAtomicClosing => SIGNATURE = {}",
                     ByteArrayUtils.toHex(sessionTerminalSignature));
         }
 
@@ -695,7 +717,7 @@ public class PoSecureSession {
         SeRequest poSeRequest = new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
                 poApduRequestList, !closeSeChannel);
 
-        logger.debug("processClosing => POSEREQUEST = {}", poSeRequest);
+        logger.debug("processAtomicClosing => POSEREQUEST = {}", poSeRequest);
 
         SeResponse poSeResponse;
         try {
@@ -720,7 +742,7 @@ public class PoSecureSession {
             }
         }
 
-        logger.debug("processClosing => POSERESPONSE = {}", poSeResponse);
+        logger.debug("processAtomicClosing => POSERESPONSE = {}", poSeResponse);
 
         List<ApduResponse> poApduResponseList = poSeResponse.getApduResponses();
 
@@ -744,12 +766,12 @@ public class PoSecureSession {
 
         csmSeRequest = new SeRequest(null, csmApduRequestList, true);
 
-        logger.debug("PoSecureSession.DigestProcessor => checkPoSignature: CSMREQUEST = {}",
+        logger.debug("PoTransaction.DigestProcessor => checkPoSignature: CSMREQUEST = {}",
                 csmSeRequest);
 
         csmSeResponse = csmReader.transmit(csmSeRequest);
 
-        logger.debug("PoSecureSession.DigestProcessor => checkPoSignature: CSMRESPONSE = {}",
+        logger.debug("PoTransaction.DigestProcessor => checkPoSignature: CSMRESPONSE = {}",
                 csmSeResponse);
 
         /* Get transaction result parsing the response */
@@ -762,10 +784,10 @@ public class PoSecureSession {
             transactionResult = respPars.isSuccessful();
             if (transactionResult) {
                 logger.debug(
-                        "PoSecureSession.DigestProcessor => checkPoSignature: mutual authentication successful.");
+                        "PoTransaction.DigestProcessor => checkPoSignature: mutual authentication successful.");
             } else {
                 logger.debug(
-                        "PoSecureSession.DigestProcessor => checkPoSignature: mutual authentication failure.");
+                        "PoTransaction.DigestProcessor => checkPoSignature: mutual authentication failure.");
             }
         } else {
             logger.debug(
@@ -787,8 +809,8 @@ public class PoSecureSession {
     }
 
     /**
-     * Advanced variant of processClosing in which the list of expected responses is determined from
-     * previous reading operations.
+     * Advanced variant of processAtomicClosing in which the list of expected responses is
+     * determined from previous reading operations.
      *
      * @param poModificationCommands a list of commands that can modify the PO memory content
      * @param communicationMode the communication mode. If the communication mode is
@@ -806,42 +828,14 @@ public class PoSecureSession {
      *         communication mode.</li>
      *         </ul>
      */
-    public SeResponse processClosing(List<PoModificationCommand> poModificationCommands,
+    @Deprecated
+    public SeResponse processAtomicClosing(List<PoModificationCommand> poModificationCommands,
             CommunicationMode communicationMode, boolean closeSeChannel)
             throws KeypleReaderException {
         List<ApduResponse> poAnticipatedResponses =
                 AnticipatedResponseBuilder.getResponses(poModificationCommands);
-        return processClosing(poModificationCommands, poAnticipatedResponses, communicationMode,
-                closeSeChannel);
-    }
-
-    /**
-     * Determine the PO revision from the application type byte:
-     *
-     * <ul>
-     * <li>if
-     * <code>%1-------</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;CLAP&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.1</li>
-     * <li>if <code>%00101---</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.2</li>
-     * <li>if <code>%00100---</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.1</li>
-     * <li>otherwise&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV2.4</li>
-     * </ul>
-     *
-     * @param applicationTypeByte the application type byte from FCI
-     * @return the PO revision
-     */
-    public static PoRevision computePoRevision(byte applicationTypeByte) {
-        PoRevision rev;
-        if ((applicationTypeByte & (1 << 7)) != 0) {
-            /* CLAP */
-            rev = PoRevision.REV3_1;
-        } else if ((applicationTypeByte >> 3) == (byte) (0x05)) {
-            rev = PoRevision.REV3_2;
-        } else if ((applicationTypeByte >> 3) == (byte) (0x04)) {
-            rev = PoRevision.REV3_1;
-        } else {
-            rev = PoRevision.REV2_4;
-        }
-        return rev;
+        return processAtomicClosing(poModificationCommands, poAnticipatedResponses,
+                communicationMode, closeSeChannel);
     }
 
     /**
@@ -861,7 +855,7 @@ public class PoSecureSession {
      * Authenticate is successful.</li>
      * </ul>
      *
-     * @return the {@link PoSecureSession}.transactionResult
+     * @return the {@link PoTransaction}.transactionResult
      */
     public boolean isSuccessful() {
 
@@ -1019,13 +1013,13 @@ public class PoSecureSession {
             keyKVC = workKeyKVC;
             if (logger.isDebugEnabled()) {
                 logger.debug(
-                        "PoSecureSession.DigestProcessor => initialize: POREVISION = {}, CSMREVISION = {}, SESSIONENCRYPTION = {}",
+                        "PoTransaction.DigestProcessor => initialize: POREVISION = {}, CSMREVISION = {}, SESSIONENCRYPTION = {}",
                         poRev, csmRev, sessionEncryption, verificationMode);
                 logger.debug(
-                        "PoSecureSession.DigestProcessor => initialize: VERIFICATIONMODE = {}, REV32MODE = {} KEYRECNUMBER = {}",
+                        "PoTransaction.DigestProcessor => initialize: VERIFICATIONMODE = {}, REV32MODE = {} KEYRECNUMBER = {}",
                         verificationMode, rev3_2Mode, workKeyRecordNumber);
                 logger.debug(
-                        "PoSecureSession.DigestProcessor => initialize: KIF = {}, KVC {}, DIGESTDATA = {}",
+                        "PoTransaction.DigestProcessor => initialize: KIF = {}, KVC {}, DIGESTDATA = {}",
                         String.format("%02X", workKeyKif), String.format("%02X", workKeyKVC),
                         ByteArrayUtils.toHex(digestData));
             }
@@ -1047,7 +1041,7 @@ public class PoSecureSession {
          */
         static void pushPoExchangeData(ApduRequest request, ApduResponse response) {
 
-            logger.debug("PoSecureSession.DigestProcessor => pushPoExchangeData: REQUEST = {}",
+            logger.debug("PoTransaction.DigestProcessor => pushPoExchangeData: REQUEST = {}",
                     request);
 
             /*
@@ -1062,7 +1056,7 @@ public class PoSecureSession {
                 poDigestDataCache.add(request.getBytes());
             }
 
-            logger.debug("PoSecureSession.DigestProcessor => pushPoExchangeData: RESPONSE = {}",
+            logger.debug("PoTransaction.DigestProcessor => pushPoExchangeData: RESPONSE = {}",
                     response);
 
             /* Add an ApduResponse to the digest computation */
@@ -1081,13 +1075,13 @@ public class PoSecureSession {
 
             if (poDigestDataCache.size() == 0) {
                 logger.debug(
-                        "PoSecureSession.DigestProcessor => getCsmDigestRequest: no data in cache.");
+                        "PoTransaction.DigestProcessor => getCsmDigestRequest: no data in cache.");
                 throw new IllegalStateException("Digest data cache is empty.");
             }
             if (poDigestDataCache.size() % 2 == 0) {
                 /* the number of buffers should be 2*n + 1 */
                 logger.debug(
-                        "PoSecureSession.DigestProcessor => getCsmDigestRequest: wrong number of buffer in cache NBR = {}.",
+                        "PoTransaction.DigestProcessor => getCsmDigestRequest: wrong number of buffer in cache NBR = {}.",
                         poDigestDataCache.size());
                 throw new IllegalStateException("Digest data cache is inconsistent.");
             }
@@ -1173,7 +1167,7 @@ public class PoSecureSession {
                 Iterator<ApduRequest> apduRequestIterator = apduRequests.iterator();
                 Iterator<ApduResponse> apduResponseIterator = apduResponses.iterator();
                 if (skipFirstItem) {
-                    /* case of processOpening */
+                    /* case of processAtomicOpening */
                     apduRequestIterator.next();
                     apduResponseIterator.next();
                 }
@@ -1285,5 +1279,193 @@ public class PoSecureSession {
             }
             return apduResponses;
         }
+    }
+
+    /**
+     * Open a Secure Session.
+     * <ul>
+     * <li>The PO must have been previously selected, so a logical channel with the PO application
+     * must be already active.</li>
+     * <li>The PO serial &amp; revision are identified from FCI data.</li>
+     * <li>A first request is sent to the CSM session reader.
+     * <ul>
+     * <li>In case not logical channel is active with the CSM, a channel is open.</li>
+     * <li>Then a Select Diversifier (with the PO serial) &amp; a Get Challenge are automatically
+     * operated. The CSM challenge is recovered.</li>
+     * </ul>
+     * </li>
+     * <li>The PO Open Session command is built according to the PO revision, the CSM challenge, the
+     * keyIndex, and openingSfiToSelect / openingRecordNumberToRead.</li>
+     * <li>Next the PO reader is requested:
+     * <ul>
+     * <li>for the current selected PO AID, with keepChannelOpen set at true,</li>
+     * <li>and some PO Apdu Requests including at least the Open Session command and all prepared PO
+     * command to operate inside the session.</li>
+     * </ul>
+     * </li>
+     * <li>The session PO keyset reference is identified from the PO Open Session response, the PO
+     * challenge is recovered too.</li>
+     * <li>According to the PO responses of Open Session and the PO commands sent inside the
+     * session, a "cache" of CSM commands is filled with the corresponding Digest Init &amp; Digest
+     * Update commands.</li>
+     * <li>Returns the corresponding PO SeResponse (for all commands prepared before calling this
+     * method).</li>
+     * </ul>
+     *
+     * @param modificationMode the modification mode: ATOMIC or MULTIPLE (see
+     *        {@link ModificationMode})
+     * @param accessLevel access level of the session (personalization, load or debit).
+     * @param openingSfiToSelect SFI of the file to select (0 means no file to select)
+     * @param openingRecordNumberToRead number of the record to read
+     * @return SeResponse response to all executed commands including the self generated "Open
+     *         Secure Session" command
+     * @throws KeypleReaderException the IO reader exception
+     */
+    public SeResponse processOpening(ModificationMode modificationMode,
+            SessionAccessLevel accessLevel, byte openingSfiToSelect, byte openingRecordNumberToRead)
+            throws KeypleReaderException {
+        SeResponse seResponse = processAtomicOpening(accessLevel, openingSfiToSelect,
+                openingRecordNumberToRead, poCommandBuilderList);
+        poCommandBuilderList.clear();
+        return seResponse;
+    }
+
+    /**
+     * Process all prepared PO commands in a Secure Session.
+     * <ul>
+     * <li>On the PO reader, generates a SeRequest for the current selected AID, with
+     * keepChannelOpen set at true, and ApduRequests with the PO commands.</li>
+     * <li>In case the secure session is active, the "cache" of CSM commands is completed with the
+     * corresponding Digest Update commands.</li>
+     * <li>Returns the corresponding PO SeResponse.</li>
+     * </ul>
+     *
+     * @return SeResponse all responses to the provided commands
+     *
+     * @throws KeypleReaderException IO Reader exception
+     */
+    public SeResponse processPoCommands() throws KeypleReaderException {
+        SeResponse seResponse = processAtomicPoCommands(poCommandBuilderList);
+        poCommandBuilderList.clear();
+        return seResponse;
+    }
+
+    /**
+     * processAtomicClosing in which the list of prepared commands is sent
+     *
+     * The list of expected responses is determined from previous reading operations.
+     *
+     * @param communicationMode the communication mode. If the communication mode is
+     *        CONTACTLESS_MODE, a ratification command will be generated and sent to the PO after
+     *        the Close Session command; the ratification will not be requested in the Close Session
+     *        command. On the contrary, if the communication mode is CONTACTS_MODE, no ratification
+     *        command will be sent to the PO and ratification will be requested in the Close Session
+     *        command
+     * @param closeSeChannel if true the SE channel of the PO reader must be closed after the last
+     *        command
+     * @return SeResponse close session response
+     * @throws KeypleReaderException the IO reader exception This method is deprecated.
+     *         <ul>
+     *         <li>The argument of the ratification command is replaced by an indication of the PO
+     *         communication mode.</li>
+     *         </ul>
+     */
+    public SeResponse processClosing(CommunicationMode communicationMode, boolean closeSeChannel)
+            throws KeypleReaderException {
+        List<PoModificationCommand> poModificationCommandList =
+                new ArrayList<PoModificationCommand>();
+        for (PoSendableInSession command : poCommandBuilderList) {
+            poModificationCommandList.add((PoModificationCommand) command);
+        }
+        SeResponse seResponse =
+                processAtomicClosing(poModificationCommandList, communicationMode, closeSeChannel);
+        poCommandBuilderList.clear();
+        return null;
+    }
+
+    /**
+     * Build a ReadRecords command and add it to the list of commands to be sent with the next
+     * process command
+     *
+     * @param sfi the sfi top select
+     * @param firstRecordNumber the record number to read (or first record to read in case of
+     *        several records)
+     * @param readJustOneRecord the read just one record
+     * @param expectedLength the expected length of the record(s)
+     * @param extraInfo extra information included in the logs (can be null or empty)
+     * @throws java.lang.IllegalArgumentException - if record number &lt; 1
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
+     */
+    public void prepareReadRecordsCmd(byte sfi, byte firstRecordNumber, boolean readJustOneRecord,
+            byte expectedLength, String extraInfo) {
+        poCommandBuilderList.add(new ReadRecordsCmdBuild(calypsoPo.getRevision(), sfi,
+                firstRecordNumber, readJustOneRecord, expectedLength, extraInfo));
+    }
+
+    /**
+     * Build an AppendRecord command and add it to the list of commands to be sent with the next
+     * process command
+     *
+     * @param sfi the sfi to select
+     * @param newRecordData the new record data to write
+     * @param extraInfo extra information included in the logs (can be null or empty)
+     * @throws java.lang.IllegalArgumentException - if the command is inconsistent
+     */
+    public void prepareAppendRecordCmd(byte sfi, byte[] newRecordData, String extraInfo) {
+        poCommandBuilderList.add(
+                new AppendRecordCmdBuild(calypsoPo.getRevision(), sfi, newRecordData, extraInfo));
+    }
+
+    /**
+     * Build an UpdateRecord command and add it to the list of commands to be sent with the next
+     * process command
+     *
+     * @param sfi the sfi to select
+     * @param recordNumber the record number to update
+     * @param newRecordData the new record data to write
+     * @param extraInfo extra information included in the logs (can be null or empty)
+     * @throws java.lang.IllegalArgumentException - if record number is &lt; 1
+     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
+     */
+    public void prepareUpdateRecordCmd(byte sfi, byte recordNumber, byte[] newRecordData,
+            String extraInfo) {
+        poCommandBuilderList.add(new UpdateRecordCmdBuild(calypsoPo.getRevision(), sfi,
+                recordNumber, newRecordData, extraInfo));
+    }
+
+    /**
+     * Build a Increase command and add it to the list of commands to be sent with the next process
+     * command
+     *
+     * @param counterNumber &gt;= 01h: Counters file, number of the counter. 00h: Simulated Counter
+     *        file.
+     * @param sfi SFI of the file to select or 00h for current EF
+     * @param incValue Value to add to the counter (defined as a positive int &lt;= 16777215
+     *        [FFFFFFh])
+     * @param extraInfo extra information included in the logs (can be null or empty)
+     * @throws java.lang.IllegalArgumentException - if the decrement value is out of range
+     * @throws java.lang.IllegalArgumentException - if the command is inconsistent
+     */
+    public void prepareIncreaseCmd(byte sfi, byte counterNumber, int incValue, String extraInfo) {
+        poCommandBuilderList.add(new IncreaseCmdBuild(calypsoPo.getRevision(), sfi, counterNumber,
+                incValue, extraInfo));
+    }
+
+    /**
+     * Build a Decrease command and add it to the list of commands to be sent with the next process
+     * command
+     *
+     * @param counterNumber &gt;= 01h: Counters file, number of the counter. 00h: Simulated Counter
+     *        file.
+     * @param sfi SFI of the file to select or 00h for current EF
+     * @param decValue Value to subtract to the counter (defined as a positive int &lt;= 16777215
+     *        [FFFFFFh])
+     * @param extraInfo extra information included in the logs (can be null or empty)
+     * @throws java.lang.IllegalArgumentException - if the decrement value is out of range
+     * @throws java.lang.IllegalArgumentException - if the command is inconsistent
+     */
+    public void prepareDecreaseCmd(byte sfi, byte counterNumber, int decValue, String extraInfo) {
+        poCommandBuilderList.add(new DecreaseCmdBuild(calypsoPo.getRevision(), sfi, counterNumber,
+                decValue, extraInfo));
     }
 }

@@ -13,6 +13,7 @@ import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.session.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.session.OpenSession24RespPars;
 import org.eclipse.keyple.calypso.command.po.parser.session.OpenSession32RespPars;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,8 +60,8 @@ public class ResponseUtilsTest {
                 fciTested.getStartupInformation().getApplicationSubtype());
         Assert.assertEquals(fciExpected.getStartupInformation().getApplicationType(),
                 fciTested.getStartupInformation().getApplicationType());
-        Assert.assertEquals(fciExpected.getStartupInformation().getBufferSize(),
-                fciTested.getStartupInformation().getBufferSize());
+        Assert.assertEquals(fciExpected.getStartupInformation().getBufferSizeIndicator(),
+                fciTested.getStartupInformation().getBufferSizeIndicator());
         Assert.assertEquals(fciExpected.getStartupInformation().getPlatform(),
                 fciTested.getStartupInformation().getPlatform());
         Assert.assertEquals(fciExpected.getStartupInformation().getSoftwareIssuer(),
@@ -228,10 +229,16 @@ public class ResponseUtilsTest {
                 SecureSessionTested.getChallengeTransactionCounter());
 
         // Case If Else
-        byte[] apduResponseCaseTwo = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14,
-                (byte) 0x53, (byte) 0x30, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
-        byte[] originalDataCaseTwo = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte) 0x14,
-                (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
+        // byte[] apduResponseCaseTwo = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte)
+        // 0x14,
+        // (byte) 0x53, (byte) 0x30, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
+        // byte[] originalDataCaseTwo = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte)
+        // 0x14,
+        // (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
+        byte[] apduResponseCaseTwo = ByteArrayUtils.fromHex(
+                "7E 030D1453 9999 00112233445566778899AABBCCDDEEFF 00112233445566778899AABBCC");
+        byte[] originalDataCaseTwo = ByteArrayUtils.fromHex(
+                "7E 030D1453 9999 00112233445566778899AABBCCDDEEFF 00112233445566778899AABBCC");
 
         AbstractOpenSessionRespPars.SecureSession SecureSessionExpectedCaseTwo =
                 new AbstractOpenSessionRespPars.SecureSession(transactionCounter, randomNumber,
@@ -250,10 +257,15 @@ public class ResponseUtilsTest {
                 SecureSessionTestedCaseTwo.getChallengeTransactionCounter());
 
         // Case If If
-        byte[] apduResponseCaseThree = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D,
-                (byte) 0x14, (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
-        byte[] originalDataCaseThree = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D,
-                (byte) 0x14, (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
+        // byte[] apduResponseCaseThree = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D,
+        // (byte) 0x14, (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
+        // byte[] originalDataCaseThree = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D,
+        // (byte) 0x14, (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
+
+        byte[] apduResponseCaseThree = ByteArrayUtils.fromHex(
+                "7E 030D1453 9999 00112233445566778899AABBCCDDEEFF 00112233445566778899AABBCC");
+        byte[] originalDataCaseThree = ByteArrayUtils.fromHex(
+                "7E 030D1453 9999 00112233445566778899AABBCCDDEEFF 00112233445566778899AABBCC");
 
         AbstractOpenSessionRespPars.SecureSession SecureSessionExpectedCaseThree =
                 new AbstractOpenSessionRespPars.SecureSession(transactionCounter, randomNumber,

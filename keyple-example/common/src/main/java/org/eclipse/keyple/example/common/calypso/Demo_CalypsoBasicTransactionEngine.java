@@ -8,15 +8,15 @@
 
 package org.eclipse.keyple.example.common.calypso;
 
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.*;
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CommunicationMode.*;
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CsmSettings.*;
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.ModificationMode.*;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.*;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.CommunicationMode.*;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.CsmSettings.*;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.ModificationMode.*;
 import static org.eclipse.keyple.example.common.calypso.CalypsoBasicInfoAndSampleCommands.*;
 import java.util.*;
-import org.eclipse.keyple.calypso.command.po.PoModificationCommand;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
-import org.eclipse.keyple.calypso.transaction.PoSecureSession;
+import org.eclipse.keyple.calypso.transaction.CalypsoPO;
+import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
@@ -44,7 +44,7 @@ import org.slf4j.profiler.Profiler;
  * <li>Display SeRequest/SeResponse data ({@link #printSelectAppResponseStatus
  * printSelectAppResponseStatus})
  * <li>If the Calypso selection succeeded, do a Calypso transaction
- * ({doCalypsoReadWriteTransaction(PoSecureSession, ApduResponse, boolean)}
+ * ({doCalypsoReadWriteTransaction(PoTransaction, ApduResponse, boolean)}
  * doCalypsoReadWriteTransaction}).
  * </ol>
  *
@@ -59,7 +59,7 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
     private final static Logger logger =
             LoggerFactory.getLogger(Demo_CalypsoBasicTransactionEngine.class);
 
-    /* define the CSM parameters to provide when creating PoSecureSession */
+    /* define the CSM parameters to provide when creating PoTransaction */
     final static EnumMap<CsmSettings, Byte> csmSetting =
             new EnumMap<CsmSettings, Byte>(CsmSettings.class) {
                 {
@@ -204,14 +204,14 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
      * <p>
      * The PO logical channel is kept open or closed according to the closeSeChannel flag
      *
-     * @param poTransaction PoSecureSession object
+     * @param poTransaction PoTransaction object
      * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
      * @throws KeypleReaderException reader exception (defined as public for purposes of javadoc)
      */
-    public void doCalypsoReadWriteTransaction(PoSecureSession poTransaction, boolean closeSeChannel)
+    public void doCalypsoReadWriteTransaction(PoTransaction poTransaction, boolean closeSeChannel)
             throws KeypleReaderException {
 
-        /* SeResponse object to receive the results of PoSecureSession operations. */
+        /* SeResponse object to receive the results of PoTransaction operations. */
         SeResponse seResponse;
 
         /*
@@ -220,8 +220,14 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
         List<PoSendableInSession> eventLogContractListFilesReading =
                 new ArrayList<PoSendableInSession>();
 
-        eventLogContractListFilesReading.add(poReadRecordCmd_EventLog);
-        eventLogContractListFilesReading.add(poReadRecordCmd_ContractList);
+        /* prepare Event Log read record */
+        poTransaction.prepareReadRecordsCmd(SFI_EventLog, RECORD_NUMBER_1, true, (byte) 0x00,
+                String.format("EventLog (SFI=%02X, recnbr=%d))", SFI_EventLog, RECORD_NUMBER_1));
+
+
+        /* prepare Contract List read record */
+        poTransaction.prepareReadRecordsCmd(SFI_ContractList, RECORD_NUMBER_1, true, (byte) 0x00,
+                String.format("ContractList (SFI=%02X))", SFI_ContractList));
 
         if (logger.isInfoEnabled()) {
             logger.info(
@@ -234,7 +240,7 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
          * Environment and Holder file
          */
         seResponse = poTransaction.processOpening(ATOMIC, accessLevel, SFI_EnvironmentAndHolder,
-                RECORD_NUMBER_1, eventLogContractListFilesReading);
+                RECORD_NUMBER_1);
 
         if (!poTransaction.wasRatified()) {
             logger.info(
@@ -259,7 +265,7 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            seResponse = poTransaction.processClosing(null, CONTACTLESS_MODE, false);
+            seResponse = poTransaction.processAtomicClosing(null, CONTACTLESS_MODE, false);
 
         } else {
             /*
@@ -279,10 +285,12 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
             }
 
             /* Read contract command (we assume we have determine Contract #1 to be read. */
-            List<PoSendableInSession> contractFileReading = new ArrayList<PoSendableInSession>();
-            contractFileReading.add(poReadRecordCmd_Contract);
+            /* prepare Contract #1 read record */
+            poTransaction.prepareReadRecordsCmd(SFI_Contracts, RECORD_NUMBER_1, true, (byte) 0x00,
+                    String.format("Contracts (SFI=%02X, recnbr=%d)", SFI_Contracts,
+                            RECORD_NUMBER_1));
 
-            seResponse = poTransaction.processPoCommands(contractFileReading);
+            seResponse = poTransaction.processPoCommands();
 
             if (logger.isInfoEnabled()) {
                 logger.info(
@@ -301,14 +309,15 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
              * [------------------------------------]
              */
 
-            /* Create an modification command list (a single command here) */
-            List<PoModificationCommand> eventLogAppend = new ArrayList<PoModificationCommand>();
-            eventLogAppend.add(poAppendRecordCmd_EventLog);
+            /** prepare Event Log append record */
+            poTransaction.prepareAppendRecordCmd(SFI_EventLog,
+                    ByteArrayUtils.fromHex(eventLog_dataFill),
+                    String.format("EventLog (SFI=%02X)", SFI_EventLog));
 
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            seResponse = poTransaction.processClosing(eventLogAppend, CONTACTLESS_MODE, false);
+            seResponse = poTransaction.processClosing(CONTACTLESS_MODE, false);
         }
 
         if (poTransaction.isSuccessful()) {
@@ -358,8 +367,9 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
              * session
              */
             List<ApduRequest> requestToExecuteBeforeSession = new ArrayList<ApduRequest>();
-            requestToExecuteBeforeSession.add(
-                    CalypsoBasicInfoAndSampleCommands.poReadRecordCmd_EventLog.getApduRequest());
+            requestToExecuteBeforeSession
+                    .add(CalypsoBasicInfoAndSampleCommands.poReadRecordCmd_EventLog_Rev3
+                            .getApduRequest());
 
             /* AID based selection */
             seRequest = new SeRequest(
@@ -409,8 +419,8 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
 
                 profiler.start("Calypso1");
 
-                PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting,
-                        seResponses.get(1).getFci());
+                PoTransaction poTransaction = new PoTransaction(poReader, csmReader, csmSetting,
+                        new CalypsoPO(seResponses.get(1)));
 
                 doCalypsoReadWriteTransaction(poTransaction, true);
 

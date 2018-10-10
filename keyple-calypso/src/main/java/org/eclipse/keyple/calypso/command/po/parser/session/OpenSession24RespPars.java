@@ -29,7 +29,7 @@ public class OpenSession24RespPars extends AbstractOpenSessionRespPars {
         /**
          * In rev 2.4 mode, the response to the Open Secure Session command is as follows:
          * <p>
-         * <code>KK CC CC CC CC CC [RR RR] [NN..NN]</code>
+         * <code>KK CC CC CC CC [RR RR] [NN..NN]</code>
          * <p>
          * Where:
          * <ul>
@@ -38,15 +38,31 @@ public class OpenSession24RespPars extends AbstractOpenSessionRespPars {
          * <li><code>RR RR</code> = ratification bytes (may be absent)</li>
          * <li><code>NN..NN</code> = record data (29 bytes)</li>
          * </ul>
-         *
+         * Legal length values are:
+         * <ul>
+         * <li>5: ratified, 1-byte KCV, 4-byte challenge, no data</li>
+         * <li>34: ratified, 1-byte KCV, 4-byte challenge, 29 bytes of data</li>
+         * <li>7: not ratified (2 ratification bytes), 1-byte KCV, 4-byte challenge, no data</li>
+         * <li>35 not ratified (2 ratification bytes), 1-byte KCV, 4-byte challenge, 29 bytes of
+         * data</li>
+         * </ul>
          */
-        byte kvc = apduResponseData[0];
 
-        if (apduResponseData.length == 6 || apduResponseData.length == 34) {
-            previousSessionRatified = false;
-        } else {
-            previousSessionRatified = true;
+        switch (apduResponseData.length) {
+            case 5:
+            case 34:
+                previousSessionRatified = true;
+                break;
+            case 7:
+            case 36:
+                previousSessionRatified = false;
+                break;
+            default:
+                throw new IllegalStateException(
+                        "Bad response length to Open Secure Session: " + apduResponseData.length);
         }
+
+        byte kvc = apduResponseData[0];
 
         return new SecureSession(Arrays.copyOfRange(apduResponseData, 1, 4),
                 Arrays.copyOfRange(apduResponseData, 4, 5), previousSessionRatified, false, kvc,

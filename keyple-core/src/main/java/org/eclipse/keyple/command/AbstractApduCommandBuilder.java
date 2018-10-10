@@ -69,9 +69,11 @@ public abstract class AbstractApduCommandBuilder {
      * @param subName the string to append
      */
     public final void addSubName(String subName) {
-        this.name = this.name + " - " + subName;
-        if (request != null) {
-            this.request.setName(this.name);
+        if (subName.length() != 0) {
+            this.name = this.name + " - " + subName;
+            if (request != null) {
+                this.request.setName(this.name);
+            }
         }
     }
 

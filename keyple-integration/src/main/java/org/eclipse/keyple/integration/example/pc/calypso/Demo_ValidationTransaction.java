@@ -8,9 +8,9 @@
 
 package org.eclipse.keyple.integration.example.pc.calypso;
 
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CommunicationMode;
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.ModificationMode.*;
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.SessionAccessLevel.*;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.CommunicationMode;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.ModificationMode.*;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionAccessLevel.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -23,7 +23,8 @@ import org.eclipse.keyple.calypso.command.po.builder.AppendRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.DecreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
-import org.eclipse.keyple.calypso.transaction.PoSecureSession;
+import org.eclipse.keyple.calypso.transaction.CalypsoPO;
+import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.pc.generic.PcscReadersSettings;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
@@ -99,7 +100,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
     }
 
     // Not optimized for online/remote operation
-    private void validateAuditC0(PoSecureSession poTransaction, ApduResponse fciData)
+    private void validateAuditC0(PoTransaction poTransaction, ApduResponse fciData)
             throws KeypleReaderException {
 
         byte eventSfi = 0x08;
@@ -119,7 +120,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         // Open Session with debit key #3 and reading the Environment at SFI 07h
         // Files to read during the beginning of the session: Event (SFI 0x08) and ContractList (SFI
         // 0x1E)
-        dataReadInSession = poTransaction.processOpening(ATOMIC, SESSION_LVL_DEBIT, environmentSfi,
+        dataReadInSession = poTransaction.processAtomicOpening(SESSION_LVL_DEBIT, environmentSfi,
                 (byte) 0x01, filesToReadInSession);
 
         /*
@@ -172,7 +173,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         filesToReadInSession = new ArrayList<PoSendableInSession>();
         filesToReadInSession.add(poReadRecordCmd_Contract);
 
-        dataReadInSession = poTransaction.processPoCommands(filesToReadInSession);
+        dataReadInSession = poTransaction.processAtomicPoCommands(filesToReadInSession);
 
         System.out
                 .println("Reading contract #" + (contractIndex + 1) + " for current validation...");
@@ -218,7 +219,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         filesToWriteInSession.add(poAppendRecordCmd_Event);
         expectedResponses.add(expectedGenericOkResponse);
 
-        poTransaction.processClosing(filesToWriteInSession, expectedResponses,
+        poTransaction.processAtomicClosing(filesToWriteInSession, expectedResponses,
                 CommunicationMode.CONTACTLESS_MODE, false);
 
         System.out.println("\nValidation Successful!");
@@ -228,7 +229,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
 
     // Optimised for online/remote operation
-    private void validateClap(PoSecureSession poTransaction, ApduResponse fciData)
+    private void validateClap(PoTransaction poTransaction, ApduResponse fciData)
             throws KeypleReaderException {
 
         byte eventSfi = 0x08;
@@ -253,7 +254,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         // Open Session with debit key #3 and reading the Environment at SFI 07h
         // Files to read during the beginning of the session: Event (SFI 0x08), Counters (SFI 0x1B)
         // and all records of the Contracts (SFI 0x29)
-        dataReadInSession = poTransaction.processOpening(ATOMIC, SESSION_LVL_DEBIT, environmentSfi,
+        dataReadInSession = poTransaction.processAtomicOpening(SESSION_LVL_DEBIT, environmentSfi,
                 (byte) 0x01, filesToReadInSession);
         /*
          * byte[] sessionData =
@@ -314,10 +315,10 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
             System.out.println("No value present in the card. Initiating auto top-up...");
 
-            poTransaction.processClosing(null, null,
-                    PoSecureSession.CommunicationMode.CONTACTLESS_MODE, false);
+            poTransaction.processAtomicClosing(null, null,
+                    PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
 
-            poTransaction.processOpening(ATOMIC, SESSION_LVL_LOAD, (byte) 0x00, (byte) 0x00, null);
+            poTransaction.processAtomicOpening(SESSION_LVL_LOAD, (byte) 0x00, (byte) 0x00, null);
 
             byte[] newCounterData = new byte[] {0x00, 0x00, 0x05, 0x00, 0x00, 0x00};
 
@@ -364,7 +365,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         filesToWriteInSession.add(poDecreaseCmd_Counter);
         expectedResponses.add(expectedCounterResponse);
 
-        poTransaction.processClosing(filesToWriteInSession, expectedResponses,
+        poTransaction.processAtomicClosing(filesToWriteInSession, expectedResponses,
                 CommunicationMode.CONTACTLESS_MODE, false);
 
         System.out.println("\nValidation Successful!");
@@ -420,22 +421,22 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
             if (seResponses.get(0) != null) {
 
                 ApduResponse fciData = seResponses.get(0).getFci();
-                PoSecureSession poTransaction =
-                        new PoSecureSession(poReader, csmReader, null, fciData);
+                PoTransaction poTransaction = new PoTransaction(poReader, csmReader, null,
+                        new CalypsoPO(seResponses.get(0)));
                 validateAuditC0(poTransaction, fciData);
 
             } else if (seResponses.get(1) != null) {
 
                 ApduResponse fciData = seResponses.get(1).getFci();
-                PoSecureSession poTransaction =
-                        new PoSecureSession(poReader, csmReader, null, fciData);
+                PoTransaction poTransaction = new PoTransaction(poReader, csmReader, null,
+                        new CalypsoPO(seResponses.get(1)));
                 validateClap(poTransaction, fciData);
 
             } else if (seResponses.get(2) != null) {
 
                 ApduResponse fciData = seResponses.get(2).getFci();
-                PoSecureSession poTransaction =
-                        new PoSecureSession(poReader, csmReader, null, fciData);
+                PoTransaction poTransaction = new PoTransaction(poReader, csmReader, null,
+                        new CalypsoPO(seResponses.get(2)));
                 validateAuditC0(poTransaction, fciData);
 
             } else {
