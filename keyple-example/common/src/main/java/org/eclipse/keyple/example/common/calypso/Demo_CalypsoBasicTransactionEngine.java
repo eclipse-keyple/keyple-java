@@ -8,10 +8,10 @@
 
 package org.eclipse.keyple.example.common.calypso;
 
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.*;
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CommunicationMode.*;
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CsmSettings.*;
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.ModificationMode.*;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.*;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.CommunicationMode.*;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.CsmSettings.*;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.ModificationMode.*;
 import static org.eclipse.keyple.example.common.calypso.CalypsoBasicInfoAndSampleCommands.*;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
@@ -44,7 +44,7 @@ import org.slf4j.profiler.Profiler;
  * <li>Display SeRequest/SeResponse data ({@link #printSelectAppResponseStatus
  * printSelectAppResponseStatus})
  * <li>If the Calypso selection succeeded, do a Calypso transaction
- * ({doCalypsoReadWriteTransaction(PoSecureSession, ApduResponse, boolean)}
+ * ({doCalypsoReadWriteTransaction(PoTransaction, ApduResponse, boolean)}
  * doCalypsoReadWriteTransaction}).
  * </ol>
  *
@@ -59,7 +59,7 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
     private final static Logger logger =
             LoggerFactory.getLogger(Demo_CalypsoBasicTransactionEngine.class);
 
-    /* define the CSM parameters to provide when creating PoSecureSession */
+    /* define the CSM parameters to provide when creating PoTransaction */
     final static EnumMap<CsmSettings, Byte> csmSetting =
             new EnumMap<CsmSettings, Byte>(CsmSettings.class) {
                 {
@@ -204,14 +204,14 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
      * <p>
      * The PO logical channel is kept open or closed according to the closeSeChannel flag
      *
-     * @param poTransaction PoSecureSession object
+     * @param poTransaction PoTransaction object
      * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
      * @throws KeypleReaderException reader exception (defined as public for purposes of javadoc)
      */
     public void doCalypsoReadWriteTransaction(PoTransaction poTransaction, boolean closeSeChannel)
             throws KeypleReaderException {
 
-        /* SeResponse object to receive the results of PoSecureSession operations. */
+        /* SeResponse object to receive the results of PoTransaction operations. */
         SeResponse seResponse;
 
         /*
@@ -265,7 +265,7 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            seResponse = poTransaction.processClosing(null, CONTACTLESS_MODE, false);
+            seResponse = poTransaction.processAtomicClosing(null, CONTACTLESS_MODE, false);
 
         } else {
             /*

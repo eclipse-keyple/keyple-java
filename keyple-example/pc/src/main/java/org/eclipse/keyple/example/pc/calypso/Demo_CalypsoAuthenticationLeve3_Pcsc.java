@@ -8,16 +8,15 @@
 
 package org.eclipse.keyple.example.pc.calypso;
 
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.*;
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CommunicationMode.CONTACTLESS_MODE;
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CsmSettings.*;
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.ModificationMode.ATOMIC;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.*;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.CommunicationMode.CONTACTLESS_MODE;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.CsmSettings.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import org.eclipse.keyple.calypso.transaction.CalypsoPO;
-import org.eclipse.keyple.calypso.transaction.PoSecureSession;
+import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.common.calypso.CalypsoBasicInfoAndSampleCommands;
 import org.eclipse.keyple.example.common.generic.DemoHelpers;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
@@ -45,9 +44,9 @@ public class Demo_CalypsoAuthenticationLeve3_Pcsc {
         private final ProxyReader poReader, csmReader;
         private boolean csmChannelOpen;
 
-        /* define the CSM parameters to provide when creating PoSecureSession */
-        final EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
-                new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class) {
+        /* define the CSM parameters to provide when creating PoTransaction */
+        final EnumMap<PoTransaction.CsmSettings, Byte> csmSetting =
+                new EnumMap<PoTransaction.CsmSettings, Byte>(PoTransaction.CsmSettings.class) {
                     {
                         put(CS_DEFAULT_KIF_PERSO, DEFAULT_KIF_PERSO);
                         put(CS_DEFAULT_KIF_LOAD, DEFAULT_KIF_LOAD);
@@ -107,8 +106,8 @@ public class Demo_CalypsoAuthenticationLeve3_Pcsc {
         }
 
         private void operatePoTransactions() {
-            PoSecureSession.SessionAccessLevel accessLevel =
-                    PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT;
+            PoTransaction.SessionAccessLevel accessLevel =
+                    PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT;
 
             Profiler profiler;
             try {
@@ -152,12 +151,12 @@ public class Demo_CalypsoAuthenticationLeve3_Pcsc {
 
                     profiler.start("Calypso1");
 
-                    PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader,
-                            csmSetting, new CalypsoPO(seResponses.get(0)));
+                    PoTransaction poTransaction = new PoTransaction(poReader, csmReader, csmSetting,
+                            new CalypsoPO(seResponses.get(0)));
                     /*
                      * Open Session for the debit key
                      */
-                    SeResponse seResponse = poTransaction.processOpening(ATOMIC, accessLevel,
+                    SeResponse seResponse = poTransaction.processAtomicOpening(accessLevel,
                             (byte) 0, (byte) 0, null);
                     if (!poTransaction.wasRatified()) {
                         logger.info(
@@ -175,7 +174,7 @@ public class Demo_CalypsoAuthenticationLeve3_Pcsc {
                     /*
                      * A ratification command will be sent (CONTACTLESS_MODE).
                      */
-                    seResponse = poTransaction.processClosing(null, CONTACTLESS_MODE, false);
+                    seResponse = poTransaction.processAtomicClosing(null, CONTACTLESS_MODE, false);
                 } else {
                     logger.error(
                             "No Calypso transaction. SeResponse to Calypso selection was null.");

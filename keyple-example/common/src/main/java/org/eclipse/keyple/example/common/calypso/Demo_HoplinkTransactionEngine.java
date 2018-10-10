@@ -8,13 +8,12 @@
 
 package org.eclipse.keyple.example.common.calypso;
 
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.*;
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CsmSettings.*;
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.ModificationMode.ATOMIC;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.*;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.CsmSettings.*;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.transaction.CalypsoPO;
-import org.eclipse.keyple.calypso.transaction.PoSecureSession;
+import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
@@ -42,7 +41,7 @@ import org.slf4j.profiler.Profiler;
  * <li>Display SeRequest/SeResponse data ({@link #printSelectAppResponseStatus
  * printSelectAppResponseStatus})
  * <li>If the Hoplink selection succeeded, do an Hoplink transaction
- * ({doHoplinkReadWriteTransaction(PoSecureSession, ApduResponse, boolean)}
+ * ({doHoplinkReadWriteTransaction(PoTransaction, ApduResponse, boolean)}
  * doHoplinkReadWriteTransaction}).
  * </ol>
  *
@@ -57,9 +56,9 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
     private final static Logger logger =
             LoggerFactory.getLogger(Demo_HoplinkTransactionEngine.class);
 
-    /* define the CSM parameters to provide when creating PoSecureSession */
-    final static EnumMap<PoSecureSession.CsmSettings, Byte> csmSetting =
-            new EnumMap<PoSecureSession.CsmSettings, Byte>(PoSecureSession.CsmSettings.class) {
+    /* define the CSM parameters to provide when creating PoTransaction */
+    final static EnumMap<PoTransaction.CsmSettings, Byte> csmSetting =
+            new EnumMap<PoTransaction.CsmSettings, Byte>(PoTransaction.CsmSettings.class) {
                 {
                     put(CS_DEFAULT_KIF_PERSO, DEFAULT_KIF_PERSO);
                     put(CS_DEFAULT_KIF_LOAD, DEFAULT_KIF_LOAD);
@@ -202,11 +201,11 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
      * <p>
      * The PO logical channel is kept open or closed according to the closeSeChannel flag
      *
-     * @param poTransaction PoSecureSession object
+     * @param poTransaction PoTransaction object
      * @param closeSeChannel flag to ask or not the channel closing at the end of the transaction
      * @throws KeypleReaderException reader exception (defined as public for purposes of javadoc)
      */
-    public void doHoplinkReadWriteTransaction(PoSecureSession poTransaction, boolean closeSeChannel)
+    public void doHoplinkReadWriteTransaction(PoTransaction poTransaction, boolean closeSeChannel)
             throws KeypleReaderException {
 
 
@@ -222,14 +221,14 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
             logger.info(
                     "========= PO Hoplink session ======= Opening ============================");
         }
-        PoSecureSession.SessionAccessLevel accessLevel =
-                PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT;
+        PoTransaction.SessionAccessLevel accessLevel =
+                PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT;
 
         /*
          * Open Session for the debit key - with reading of the first record of the cyclic EF of SFI
          * 0Ah
          */
-        poTransaction.processOpening(ATOMIC, accessLevel, (byte) 0x1A, (byte) 0x01,
+        poTransaction.processAtomicOpening(accessLevel, (byte) 0x1A, (byte) 0x01,
                 filesToReadInSession);
 
         if (!poTransaction.wasRatified()) {
@@ -240,13 +239,13 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
             logger.info(
                     "========= PO Hoplink session ======= Processing of PO commands =======================");
         }
-        poTransaction.processPoCommands(filesToReadInSession);
+        poTransaction.processAtomicPoCommands(filesToReadInSession);
 
         if (logger.isInfoEnabled()) {
             logger.info(
                     "========= PO Hoplink session ======= Closing ============================");
         }
-        poTransaction.processClosing(null, CommunicationMode.CONTACTLESS_MODE, false);
+        poTransaction.processAtomicClosing(null, CommunicationMode.CONTACTLESS_MODE, false);
 
         if (poTransaction.isSuccessful()) {
             if (logger.isInfoEnabled()) {
@@ -341,7 +340,7 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
              * null
              */
             if (seResponses.size() == 2 && seResponses.get(1) != null) {
-                PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting,
+                PoTransaction poTransaction = new PoTransaction(poReader, csmReader, csmSetting,
                         new CalypsoPO(seResponses.get(1)));
                 profiler.start("Hoplink1");
                 doHoplinkReadWriteTransaction(poTransaction, true);
