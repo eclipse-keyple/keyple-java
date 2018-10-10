@@ -13,6 +13,7 @@ println '** ' + rootProject.name + ' initialization phase.'
 
 include 'keyple-core'
 include 'keyple-calypso'
+include 'keyple-integration'
 
 include 'keyple-plugin:pcsc'
 project(':keyple-plugin:pcsc').name = "keyple-plugin-pcsc"

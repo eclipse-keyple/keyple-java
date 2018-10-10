@@ -10,19 +10,15 @@ jar {
 }
 
 dependencies {
-    //compile project(':keyple-core')
-    //compile project(':keyple-calypso')
-    //compile project(':keyple-plugin-pcsc')
-    //compile project(':keyple-example-pc')
-
 
     implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'
     implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
     implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc', version: '0.+'
     implementation group: 'org.eclipse.keyple', name: 'keyple-example-pc', version: '0.+'
 
-
-
+    //https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+
+    //https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
     compile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.1.0'
 }
