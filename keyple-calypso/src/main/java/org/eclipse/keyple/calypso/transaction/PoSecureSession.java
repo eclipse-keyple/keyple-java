@@ -11,7 +11,6 @@ package org.eclipse.keyple.calypso.transaction;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.*;
-import org.eclipse.keyple.calypso.PortableObject;
 import org.eclipse.keyple.calypso.command.SendableInSession;
 import org.eclipse.keyple.calypso.command.csm.CsmRevision;
 import org.eclipse.keyple.calypso.command.csm.CsmSendableInSession;
@@ -93,8 +92,6 @@ public class PoSecureSession {
             new EnumMap<CsmSettings, Byte>(CsmSettings.class);
     /** The PO serial number extracted from FCI */
     private final byte[] poCalypsoInstanceSerial;
-    /** The current PO */
-    private final PortableObject portableObject;
     /** the type of the notified event. */
     private SessionState currentState;
     /** Selected AID of the Calypso PO. */
@@ -124,10 +121,10 @@ public class PoSecureSession {
      * @param csmSetting a list of CSM related parameters. In the case this parameter is null,
      *        default parameters are applied. The available setting keys are defined in
      *        {@link CsmSettings}
-     * @param poSelectionResponse the po SeResponse to the application selection (FCI/ATR)
+     * @param calypsoPO the CalypsoPO object obtained at the end of the selection step
      */
     public PoSecureSession(ProxyReader poReader, ProxyReader csmReader,
-            EnumMap<CsmSettings, Byte> csmSetting, SeResponse poSelectionResponse) {
+            EnumMap<CsmSettings, Byte> csmSetting, CalypsoPO calypsoPO) {
         this.poReader = poReader;
         this.csmReader = csmReader;
 
@@ -152,16 +149,12 @@ public class PoSecureSession {
 
         logger.debug("Contructor => CSMSETTING = {}", this.csmSetting);
 
-        portableObject = PortableObject.getInstance();
+        poRevision = calypsoPO.getRevision();
 
-        portableObject.intialize(poSelectionResponse);
-
-        poRevision = portableObject.getRevision();
-
-        poCalypsoInstanceAid = portableObject.getDfName();
+        poCalypsoInstanceAid = calypsoPO.getDfName();
 
         /* Serial Number of the selected Calypso instance. */
-        poCalypsoInstanceSerial = portableObject.getApplicationSerialNumber();
+        poCalypsoInstanceSerial = calypsoPO.getApplicationSerialNumber();
 
         currentState = SessionState.SESSION_CLOSED;
     }

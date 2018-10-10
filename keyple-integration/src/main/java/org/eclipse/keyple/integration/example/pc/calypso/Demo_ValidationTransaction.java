@@ -23,6 +23,7 @@ import org.eclipse.keyple.calypso.command.po.builder.AppendRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.DecreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
+import org.eclipse.keyple.calypso.transaction.CalypsoPO;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.example.pc.generic.PcscReadersSettings;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
@@ -420,22 +421,22 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
             if (seResponses.get(0) != null) {
 
                 ApduResponse fciData = seResponses.get(0).getFci();
-                PoSecureSession poTransaction =
-                        new PoSecureSession(poReader, csmReader, null, seResponses.get(0));
+                PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, null,
+                        CalypsoPO.initialize(seResponses.get(0)));
                 validateAuditC0(poTransaction, fciData);
 
             } else if (seResponses.get(1) != null) {
 
                 ApduResponse fciData = seResponses.get(1).getFci();
-                PoSecureSession poTransaction =
-                        new PoSecureSession(poReader, csmReader, null, seResponses.get(1));
+                PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, null,
+                        CalypsoPO.initialize(seResponses.get(1)));
                 validateClap(poTransaction, fciData);
 
             } else if (seResponses.get(2) != null) {
 
                 ApduResponse fciData = seResponses.get(2).getFci();
-                PoSecureSession poTransaction =
-                        new PoSecureSession(poReader, csmReader, null, seResponses.get(2));
+                PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, null,
+                        CalypsoPO.initialize(seResponses.get(2)));
                 validateAuditC0(poTransaction, fciData);
 
             } else {

@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import org.eclipse.keyple.calypso.transaction.CalypsoPO;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.example.common.calypso.CalypsoBasicInfoAndSampleCommands;
 import org.eclipse.keyple.example.common.generic.DemoHelpers;
@@ -152,7 +153,7 @@ public class Demo_CalypsoAuthenticationLeve3_Pcsc {
                     profiler.start("Calypso1");
 
                     PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader,
-                            csmSetting, seResponses.get(0));
+                            csmSetting, CalypsoPO.initialize(seResponses.get(0)));
                     /*
                      * Open Session for the debit key
                      */

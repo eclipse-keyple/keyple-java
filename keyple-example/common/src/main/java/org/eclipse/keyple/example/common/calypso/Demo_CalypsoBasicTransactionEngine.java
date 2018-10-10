@@ -16,6 +16,7 @@ import static org.eclipse.keyple.example.common.calypso.CalypsoBasicInfoAndSampl
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.PoModificationCommand;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
+import org.eclipse.keyple.calypso.transaction.CalypsoPO;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
@@ -409,8 +410,8 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
 
                 profiler.start("Calypso1");
 
-                PoSecureSession poTransaction =
-                        new PoSecureSession(poReader, csmReader, csmSetting, seResponses.get(1));
+                PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting,
+                        CalypsoPO.initialize(seResponses.get(1)));
 
                 doCalypsoReadWriteTransaction(poTransaction, true);
 

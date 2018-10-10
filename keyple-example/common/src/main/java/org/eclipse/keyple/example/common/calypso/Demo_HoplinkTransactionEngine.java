@@ -13,6 +13,7 @@ import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CsmSettings
 import static org.eclipse.keyple.calypso.transaction.PoSecureSession.ModificationMode.ATOMIC;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
+import org.eclipse.keyple.calypso.transaction.CalypsoPO;
 import org.eclipse.keyple.calypso.transaction.PoSecureSession;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
@@ -340,8 +341,8 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
              * null
              */
             if (seResponses.size() == 2 && seResponses.get(1) != null) {
-                PoSecureSession poTransaction =
-                        new PoSecureSession(poReader, csmReader, csmSetting, seResponses.get(1));
+                PoSecureSession poTransaction = new PoSecureSession(poReader, csmReader, csmSetting,
+                        CalypsoPO.initialize(seResponses.get(1)));
                 profiler.start("Hoplink1");
                 doHoplinkReadWriteTransaction(poTransaction, true);
             } else {

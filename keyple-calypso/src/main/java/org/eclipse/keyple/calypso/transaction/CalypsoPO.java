@@ -6,7 +6,7 @@
  * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
  */
 
-package org.eclipse.keyple.calypso;
+package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
@@ -20,39 +20,54 @@ import org.eclipse.keyple.seproxy.SeResponse;
  * <li>session buffer limit</li>
  * </ul>
  */
-public final class PortableObject {
-    /** singleton instance of PortableObject */
-    private static PortableObject uniqueInstance = new PortableObject();
+public final class CalypsoPO {
+    /** singleton instance of CalypsoPO */
+    private static CalypsoPO uniqueInstance = new CalypsoPO();
 
-    private PoRevision revision;
-    private GetDataFciRespPars poFciRespPars;
+    private static PoRevision revision;
+    private static GetDataFciRespPars poFciRespPars;
 
     /**
-     * Instantiates a new {@link PortableObject}.
+     * Instantiates a new {@link CalypsoPO}.
      */
-    private PortableObject() {}
+    private CalypsoPO() {}
 
     /**
      * Gets the single instance of SeProxyService.
      *
      * @return single instance of SeProxyService
      */
-    public static PortableObject getInstance() {
+    public static CalypsoPO getInstance() {
         return uniqueInstance;
     }
 
     /**
-     * Instantiates a new PortableObject.
+     * Initialize a new CalypsoPO.
      *
      * When FCI data is not available, the AnswerToReset is interpreted to retrieve the PO profile.
      *
      * @param selectionSeResponse contains FCI data retrieved during application selection and/or
      *        the Answer To Reset
+     * @return the singleton unique instance
      */
-    public void intialize(SeResponse selectionSeResponse) {
+    public static CalypsoPO initialize(SeResponse selectionSeResponse) {
         /* Parse PO FCI - to retrieve Calypso Revision, Serial Number, &amp; DF Name (AID) */
-        this.poFciRespPars = new GetDataFciRespPars(selectionSeResponse.getFci());
-        setRevision(this.poFciRespPars.getApplicationTypeByte());
+        poFciRespPars = new GetDataFciRespPars(selectionSeResponse.getFci());
+        setRevision(poFciRespPars.getApplicationTypeByte());
+        return uniqueInstance;
+    }
+
+
+    public PoRevision getRevision() {
+        return revision;
+    }
+
+    public byte[] getDfName() {
+        return poFciRespPars.getDfName();
+    }
+
+    public byte[] getApplicationSerialNumber() {
+        return poFciRespPars.getApplicationSerialNumber();
     }
 
     /**
@@ -68,34 +83,17 @@ public final class PortableObject {
      *
      * @return the PO revision
      */
-    public PoRevision getRevision() {
-        return revision;
-    }
-
-    public byte[] getDfName() {
-        return this.poFciRespPars.getDfName();
-    }
-
-    public byte[] getApplicationSerialNumber() {
-        return this.poFciRespPars.getApplicationSerialNumber();
-    }
-
-    public boolean isExceedingBufferLimit(int commandLength) {
-        // TODO buffer limit check according to PO revision and modification buffer indicator
-        return true;
-    }
-
-    // TODO identify PO rev1
-    private void setRevision(byte applicationTypeByte) {
+    // TODO Improve this code by taking into account the startup information and the atr
+    private static void setRevision(byte applicationTypeByte) {
         if ((applicationTypeByte & (1 << 7)) != 0) {
             /* CLAP */
-            this.revision = PoRevision.REV3_1;
+            revision = PoRevision.REV3_1;
         } else if ((applicationTypeByte >> 3) == (byte) (0x05)) {
-            this.revision = PoRevision.REV3_2;
+            revision = PoRevision.REV3_2;
         } else if ((applicationTypeByte >> 3) == (byte) (0x04)) {
-            this.revision = PoRevision.REV3_1;
+            revision = PoRevision.REV3_1;
         } else {
-            this.revision = PoRevision.REV2_4;
+            revision = PoRevision.REV2_4;
         }
     }
 }
