@@ -1,8 +1,9 @@
 apply plugin: 'java'
 
+project.version = '0.10.0-SNAPSHOT'
 sourceCompatibility = 1.6
 
-project.version = '0.10.0-SNAPSHOT'
+apply plugin: 'java-library'
 
 
 task preBuild {
@@ -64,15 +65,13 @@ task fatJar(type: Jar) {
 }
 
 dependencies {
-    // fclairamb(2017-03-06): #37: Structured logging
-    //compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    api group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 
-    // https://mvnrepository.com/artifact/commons-codec/commons-codec
-    // compile group: 'commons-codec', name: 'commons-codec', version: '1.11'
-
+    // https://mvnrepository.com/artifact/org.mockito/mockito-core
     testCompile group: 'junit', name: 'junit', version: '4.12'
+
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.13.0'
 
