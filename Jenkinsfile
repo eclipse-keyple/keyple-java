@@ -12,4 +12,10 @@ node {
     }
 */
 
+    stage ('gradle') {
+        echo "Gradle build"
+        sh './gradlew build'
+
+    }
+
 }
