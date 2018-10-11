@@ -20,7 +20,7 @@ import org.eclipse.keyple.transaction.SeSelector;
 /**
  * Specialized selector to manage the specific characteristics of Calypso POs
  */
-public class CalypsoPoSelector extends SeSelector {
+public class PoSelector extends SeSelector {
     private final RevTarget revTarget;
 
     /**
@@ -38,7 +38,7 @@ public class CalypsoPoSelector extends SeSelector {
      * @param keepChannelOpen indicates whether the logical channel should remain open
      * @param protocolFlag the protocol flag to filter POs according to their communication protocol
      */
-    public CalypsoPoSelector(String atrRegex, short dfLid, boolean keepChannelOpen,
+    public PoSelector(String atrRegex, short dfLid, boolean keepChannelOpen,
             SeProtocol protocolFlag) {
         super(atrRegex, keepChannelOpen, protocolFlag);
         revTarget = RevTarget.TARGET_REV1;
@@ -53,7 +53,7 @@ public class CalypsoPoSelector extends SeSelector {
      * @param revTarget the targeted revisions. The following possible ReadRecords commands will be
      *        built taking this value into account
      */
-    public CalypsoPoSelector(byte[] poAid, boolean keepChannelOpen, SeProtocol protocolFlag,
+    public PoSelector(byte[] poAid, boolean keepChannelOpen, SeProtocol protocolFlag,
             RevTarget revTarget) {
         super(poAid, keepChannelOpen, protocolFlag);
         if (revTarget == RevTarget.TARGET_REV1) {

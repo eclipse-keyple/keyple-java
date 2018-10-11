@@ -17,7 +17,7 @@ import static org.eclipse.keyple.seproxy.protocol.ContactlessProtocols.*;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.transaction.CalypsoPO;
-import org.eclipse.keyple.calypso.transaction.CalypsoPoSelector;
+import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
@@ -355,36 +355,35 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
              */
             SeSelection seSelection = new SeSelection(poReader);
 
-            CalypsoPoSelector calypsoPoSelector;
+            PoSelector poSelector;
 
             /*
              * Add selection case 1: Fake AID1, protocol ISO, target rev 3
              */
-            calypsoPoSelector = new CalypsoPoSelector(ByteArrayUtils.fromHex(poFakeAid1), true,
-                    ContactlessProtocols.PROTOCOL_ISO14443_4,
-                    CalypsoPoSelector.RevTarget.TARGET_REV3);
+            poSelector = new PoSelector(ByteArrayUtils.fromHex(poFakeAid1), true,
+                    ContactlessProtocols.PROTOCOL_ISO14443_4, PoSelector.RevTarget.TARGET_REV3);
 
-            seSelection.addSelector(calypsoPoSelector);
+            seSelection.addSelector(poSelector);
 
             /*
              * Add selection case 2: Calypso application, protocol ISO, target rev 2 or 3
              *
              * addition of read commands to execute following the selection
              */
-            calypsoPoSelector = new CalypsoPoSelector(
-                    ByteArrayUtils.fromHex(CalypsoBasicInfoAndSampleCommands.AID), true,
-                    PROTOCOL_ISO14443_4, CalypsoPoSelector.RevTarget.TARGET_REV2_REV3);
+            poSelector =
+                    new PoSelector(ByteArrayUtils.fromHex(CalypsoBasicInfoAndSampleCommands.AID),
+                            true, PROTOCOL_ISO14443_4, PoSelector.RevTarget.TARGET_REV2_REV3);
 
-            calypsoPoSelector.prepareReadRecordsCmd(SFI_EventLog, RECORD_NUMBER_1, true,
-                    (byte) 0x00, "EventLog (selection step)");
+            poSelector.prepareReadRecordsCmd(SFI_EventLog, RECORD_NUMBER_1, true, (byte) 0x00,
+                    "EventLog (selection step)");
 
-            seSelection.addSelector(calypsoPoSelector);
+            seSelection.addSelector(poSelector);
 
             /* Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3 */
-            calypsoPoSelector = new CalypsoPoSelector(ByteArrayUtils.fromHex(poFakeAid2), true,
-                    null, CalypsoPoSelector.RevTarget.TARGET_REV2_REV3);
+            poSelector = new PoSelector(ByteArrayUtils.fromHex(poFakeAid2), true, null,
+                    PoSelector.RevTarget.TARGET_REV2_REV3);
 
-            seSelection.addSelector(calypsoPoSelector);
+            seSelection.addSelector(poSelector);
 
             /* Time measurement */
             profiler.start("Initial selection");
