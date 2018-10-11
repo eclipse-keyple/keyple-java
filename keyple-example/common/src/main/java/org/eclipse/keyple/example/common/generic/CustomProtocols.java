@@ -13,9 +13,10 @@ import org.eclipse.keyple.seproxy.SeProtocol;
 /**
  * Custom protocol definitions to illustrate the extension of the Keyple SDK definitions
  */
-enum CustomProtocols implements SeProtocol {
-    CUSTOM_PROTOCOL_B_PRIME("Custom Old Calypso B prime"), CUSTOM_PROTOCOL_MIFARE_DESFIRE(
-            "Custom Mifare DESFire");
+public enum CustomProtocols implements SeProtocol {
+    CUSTOM_PROTOCOL_B_PRIME("Custom Old Calypso B prime"),
+
+    CUSTOM_PROTOCOL_MIFARE_DESFIRE("Custom Mifare DESFire");
 
     /** The protocol name. */
     private String name;

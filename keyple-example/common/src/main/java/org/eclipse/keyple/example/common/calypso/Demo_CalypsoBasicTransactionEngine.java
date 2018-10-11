@@ -13,14 +13,18 @@ import static org.eclipse.keyple.calypso.transaction.PoTransaction.Communication
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.CsmSettings.*;
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.ModificationMode.*;
 import static org.eclipse.keyple.example.common.calypso.CalypsoBasicInfoAndSampleCommands.*;
+import static org.eclipse.keyple.seproxy.protocol.ContactlessProtocols.*;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.transaction.CalypsoPO;
+import org.eclipse.keyple.calypso.transaction.CalypsoPoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +64,7 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
             LoggerFactory.getLogger(Demo_CalypsoBasicTransactionEngine.class);
 
     /* define the CSM parameters to provide when creating PoTransaction */
-    final static EnumMap<CsmSettings, Byte> csmSetting =
+    private final static EnumMap<CsmSettings, Byte> csmSetting =
             new EnumMap<CsmSettings, Byte>(CsmSettings.class) {
                 {
                     put(CS_DEFAULT_KIF_PERSO, DEFAULT_KIF_PERSO);
@@ -68,13 +72,13 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
                     put(CS_DEFAULT_KIF_DEBIT, DEFAULT_KIF_DEBIT);
                     put(CS_DEFAULT_KEY_RECORD_NUMBER, DEFAULT_KEY_RECORD_NUMER);
                 }
-            };;
+            };
 
     private ProxyReader poReader, csmReader;
 
-    Profiler profiler;
+    private Profiler profiler;
 
-    boolean csmChannelOpen;
+    private boolean csmChannelOpen;
 
     /* Constructor */
     public Demo_CalypsoBasicTransactionEngine() {
@@ -98,14 +102,11 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
          * check the availability of the CSM, open its physical and logical channels and keep it
          * open
          */
-        String csmC1ATRregex = CalypsoBasicInfoAndSampleCommands.CSM_C1_ATR_REGEX; // csm identifier
-
-        /* open CSM logical channel */
-        SeRequest csmCheckRequest =
-                new SeRequest(new SeRequest.AtrSelector(csmC1ATRregex), null, true);
-        SeResponse csmCheckResponse = null;
+        SeRequest csmCheckRequest = new SeRequest(
+                new SeRequest.AtrSelector(CalypsoBasicInfoAndSampleCommands.CSM_C1_ATR_REGEX), null,
+                true);
         try {
-            csmCheckResponse =
+            SeResponse csmCheckResponse =
                     csmReader.transmit(new SeRequestSet(csmCheckRequest)).getSingleResponse();
             if (csmCheckResponse == null) {
                 throw new IllegalStateException("Unable to open a logical channel for CSM!");
@@ -309,7 +310,7 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
              * [------------------------------------]
              */
 
-            /** prepare Event Log append record */
+            /* prepare Event Log append record */
             poTransaction.prepareAppendRecordCmd(SFI_EventLog,
                     ByteArrayUtils.fromHex(eventLog_dataFill),
                     String.format("EventLog (SFI=%02X)", SFI_EventLog));
@@ -348,64 +349,66 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
             /* operate multiple PO selections */
             String poFakeAid1 = "AABBCCDDEE"; // fake AID 1
             String poFakeAid2 = "EEDDCCBBAA"; // fake AID 2
-            String poCalypsoAid = CalypsoBasicInfoAndSampleCommands.AID; // Calypso AID
 
             /*
-             * Prepare the PO selection SeRequestSet
+             * Prepare the selection SeRequest using the SeSelection class
+             */
+            SeSelection seSelection = new SeSelection(poReader);
+
+            CalypsoPoSelector calypsoPoSelector;
+
+            /*
+             * Add selection case 1: Fake AID1, protocol ISO, target rev 3
+             */
+            calypsoPoSelector = new CalypsoPoSelector(ByteArrayUtils.fromHex(poFakeAid1), true,
+                    ContactlessProtocols.PROTOCOL_ISO14443_4,
+                    CalypsoPoSelector.RevTarget.TARGET_REV3);
+
+            seSelection.addSelector(calypsoPoSelector);
+
+            /*
+             * Add selection case 2: Calypso application, protocol ISO, target rev 2 or 3
              *
-             * Create a SeRequest list with various selection cases.
+             * addition of read commands to execute following the selection
              */
-            Set<SeRequest> selectionRequests = new LinkedHashSet<SeRequest>();
+            calypsoPoSelector = new CalypsoPoSelector(
+                    ByteArrayUtils.fromHex(CalypsoBasicInfoAndSampleCommands.AID), true,
+                    PROTOCOL_ISO14443_4, CalypsoPoSelector.RevTarget.TARGET_REV2_REV3);
 
-            /* fake application seRequest preparation, addition to the list */
-            SeRequest seRequest = new SeRequest(
-                    new SeRequest.AidSelector(ByteArrayUtils.fromHex(poFakeAid1)), null, true);
-            selectionRequests.add(seRequest);
+            calypsoPoSelector.prepareReadRecordsCmd(SFI_EventLog, RECORD_NUMBER_1, true,
+                    (byte) 0x00, "EventLog (selection step)");
 
-            /*
-             * Calypso application seRequest preparation, addition to the list read commands before
-             * session
-             */
-            List<ApduRequest> requestToExecuteBeforeSession = new ArrayList<ApduRequest>();
-            requestToExecuteBeforeSession
-                    .add(CalypsoBasicInfoAndSampleCommands.poReadRecordCmd_EventLog_Rev3
-                            .getApduRequest());
+            seSelection.addSelector(calypsoPoSelector);
 
-            /* AID based selection */
-            seRequest = new SeRequest(
-                    new SeRequest.AidSelector(ByteArrayUtils.fromHex(poCalypsoAid)),
-                    requestToExecuteBeforeSession, true,
-                    CalypsoBasicInfoAndSampleCommands.selectApplicationSuccessfulStatusCodes);
+            /* Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3 */
+            calypsoPoSelector = new CalypsoPoSelector(ByteArrayUtils.fromHex(poFakeAid2), true,
+                    null, CalypsoPoSelector.RevTarget.TARGET_REV2_REV3);
 
-            selectionRequests.add(seRequest);
-
-            /* fake application seRequest preparation, addition to the list */
-            seRequest = new SeRequest(new SeRequest.AidSelector(ByteArrayUtils.fromHex(poFakeAid2)),
-                    null, true);
-            selectionRequests.add(seRequest);
-
+            seSelection.addSelector(calypsoPoSelector);
 
             /* Time measurement */
             profiler.start("Initial selection");
 
-            List<SeResponse> seResponses =
-                    poReader.transmit(new SeRequestSet(selectionRequests)).getResponses();
-
-            Iterator<SeRequest> seReqIterator = selectionRequests.iterator();
+            /*
+             * Execute the selection process
+             */
+            List<SeResponse> seResponses = seSelection.processSelection().getResponses();
 
             int responseIndex = 0;
+
             /*
              * we expect up to 3 responses, only one should be not null since the selection process
              * stops at the first successful selection
+             *
+             * TODO improve the response analysis
              */
             if (logger.isInfoEnabled()) {
                 for (Iterator<SeResponse> seRespIterator = seResponses.iterator(); seRespIterator
                         .hasNext();) {
                     SeResponse seResponse = seRespIterator.next();
                     if (seResponse != null) {
-                        printSelectAppResponseStatus(
-                                String.format("Selection case #%d", responseIndex),
-                                seReqIterator.next(), seResponse);
+                        logger.info("Selection case #{}, RESPONSE = {}", responseIndex,
+                                seResponse.getApduResponses());
                     }
                     responseIndex++;
                 }

@@ -103,7 +103,8 @@ public class Demo_CalypsoBasic_Pcsc {
         /* Set the PO reader protocol flag */
         poReader.addSeProtocolSetting(
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
-
+        poReader.addSeProtocolSetting(
+                new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_B_PRIME));
         /* Assign readers to Calypso transaction engine */
         transactionEngine.setReaders(poReader, csmReader);
 
