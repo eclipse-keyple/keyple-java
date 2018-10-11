@@ -340,8 +340,8 @@ public class Demo_HoplinkTransactionEngine implements ObservableReader.ReaderObs
              * null
              */
             if (seResponses.size() == 2 && seResponses.get(1) != null) {
-                PoTransaction poTransaction = new PoTransaction(poReader, csmReader, csmSetting,
-                        new CalypsoPO(seResponses.get(1)));
+                PoTransaction poTransaction = new PoTransaction(poReader,
+                        new CalypsoPO(seResponses.get(1)), csmReader, csmSetting);
                 profiler.start("Hoplink1");
                 doHoplinkReadWriteTransaction(poTransaction, true);
             } else {

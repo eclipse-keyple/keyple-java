@@ -13,14 +13,18 @@ import static org.eclipse.keyple.calypso.transaction.PoTransaction.Communication
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.CsmSettings.*;
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.ModificationMode.*;
 import static org.eclipse.keyple.example.common.calypso.CalypsoBasicInfoAndSampleCommands.*;
+import static org.eclipse.keyple.seproxy.protocol.ContactlessProtocols.*;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
 import org.eclipse.keyple.calypso.transaction.CalypsoPO;
+import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.transaction.SeSelection;
+import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,12 +41,11 @@ import org.slf4j.profiler.Profiler;
  * ({@link CalypsoBasicInfoAndSampleCommands#CSM_C1_ATR_REGEX CSM_C1_ATR_REGEX})
  * <li>Attempting to open a logical channel with the PO with 3 options:
  * <ul>
- * <li>Selection with a fake AID
+ * <li>Selection with a fake AID (1)
  * <li>Selection with a Navigo AID
- * <li>Selection with a Hoplink AID
+ * <li>Selection with a fake AID (2)
  * </ul>
- * <li>Display SeRequest/SeResponse data ({@link #printSelectAppResponseStatus
- * printSelectAppResponseStatus})
+ * <li>Display SeResponse data
  * <li>If the Calypso selection succeeded, do a Calypso transaction
  * ({doCalypsoReadWriteTransaction(PoTransaction, ApduResponse, boolean)}
  * doCalypsoReadWriteTransaction}).
@@ -60,7 +63,7 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
             LoggerFactory.getLogger(Demo_CalypsoBasicTransactionEngine.class);
 
     /* define the CSM parameters to provide when creating PoTransaction */
-    final static EnumMap<CsmSettings, Byte> csmSetting =
+    private final static EnumMap<CsmSettings, Byte> csmSetting =
             new EnumMap<CsmSettings, Byte>(CsmSettings.class) {
                 {
                     put(CS_DEFAULT_KIF_PERSO, DEFAULT_KIF_PERSO);
@@ -68,13 +71,13 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
                     put(CS_DEFAULT_KIF_DEBIT, DEFAULT_KIF_DEBIT);
                     put(CS_DEFAULT_KEY_RECORD_NUMBER, DEFAULT_KEY_RECORD_NUMER);
                 }
-            };;
+            };
 
     private ProxyReader poReader, csmReader;
 
-    Profiler profiler;
+    private Profiler profiler;
 
-    boolean csmChannelOpen;
+    private boolean csmChannelOpen;
 
     /* Constructor */
     public Demo_CalypsoBasicTransactionEngine() {
@@ -95,18 +98,18 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
      */
     private void checkCsmAndOpenChannel() {
         /*
-         * check the availability of the CSM, open its physical and logical channels and keep it
-         * open
+         * check the availability of the CSM doing a ATR based selection, open its physical and
+         * logical channels and keep it open
          */
-        String csmC1ATRregex = CalypsoBasicInfoAndSampleCommands.CSM_C1_ATR_REGEX; // csm identifier
+        SeSelection samSelection = new SeSelection(csmReader);
 
-        /* open CSM logical channel */
-        SeRequest csmCheckRequest =
-                new SeRequest(new SeRequest.AtrSelector(csmC1ATRregex), null, true);
-        SeResponse csmCheckResponse = null;
+        SeSelector samSelector =
+                new SeSelector(CalypsoBasicInfoAndSampleCommands.CSM_C1_ATR_REGEX, true, null);
+
+        samSelection.addSelector(samSelector);
+
         try {
-            csmCheckResponse =
-                    csmReader.transmit(new SeRequestSet(csmCheckRequest)).getSingleResponse();
+            SeResponse csmCheckResponse = samSelection.processSelection().getSingleResponse();
             if (csmCheckResponse == null) {
                 throw new IllegalStateException("Unable to open a logical channel for CSM!");
             } else {
@@ -138,55 +141,6 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
                 break;
             default:
                 logger.error("IO Error");
-        }
-    }
-
-    /**
-     * Output SeRequest and SeResponse details in the log flow
-     *
-     * @param message user message
-     * @param seRequest current SeRequest
-     * @param seResponse current SeResponse (defined as public for purposes of javadoc)
-     */
-    public void printSelectAppResponseStatus(String message, SeRequest seRequest,
-            SeResponse seResponse) {
-        int i;
-        logger.info("===== " + message);
-        logger.info("* Request: AID = {}, keepChannelOpenFlag = {}, protocolFlag = {}",
-                ByteArrayUtils
-                        .toHex(((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect()),
-                seRequest.isKeepChannelOpen(), seRequest.getProtocolFlag());
-        List<ApduRequest> apduRequests = seRequest.getApduRequests();
-        i = 0;
-        if (apduRequests != null && apduRequests.size() > 0) {
-            for (ApduRequest apduRequest : apduRequests) {
-                logger.info("COMMAND#" + i + ": " + ByteArrayUtils.toHex(apduRequest.getBytes()));
-                i++;
-            }
-        } else {
-            logger.info("No APDU request");
-        }
-
-        logger.info("* Response:");
-        if (seResponse == null) {
-            logger.info("SeResponse is null");
-        } else {
-            ApduResponse atr, fci;
-            atr = seResponse.getAtr();
-            fci = seResponse.getFci();
-            List<ApduResponse> apduResponses = seResponse.getApduResponses();
-            logger.info("Atr = {}, Fci = {}",
-                    atr == null ? "null" : ByteArrayUtils.toHex(atr.getBytes()),
-                    fci == null ? "null" : ByteArrayUtils.toHex(fci.getBytes()));
-            if (apduResponses.size() > 0) {
-                i = 0;
-                for (ApduResponse apduResponse : apduResponses) {
-                    logger.info("RESPONSE#" + i + ": "
-                            + ByteArrayUtils.toHex(apduResponse.getDataOut()) + ", SW1SW2: "
-                            + Integer.toHexString(apduResponse.getStatusCode() & 0xFFFF));
-                    i++;
-                }
-            }
         }
     }
 
@@ -309,7 +263,7 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
              * [------------------------------------]
              */
 
-            /** prepare Event Log append record */
+            /* prepare Event Log append record */
             poTransaction.prepareAppendRecordCmd(SFI_EventLog,
                     ByteArrayUtils.fromHex(eventLog_dataFill),
                     String.format("EventLog (SFI=%02X)", SFI_EventLog));
@@ -348,64 +302,63 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
             /* operate multiple PO selections */
             String poFakeAid1 = "AABBCCDDEE"; // fake AID 1
             String poFakeAid2 = "EEDDCCBBAA"; // fake AID 2
-            String poCalypsoAid = CalypsoBasicInfoAndSampleCommands.AID; // Calypso AID
 
             /*
-             * Prepare the PO selection SeRequestSet
+             * Prepare the selection SeRequest using the SeSelection class
+             */
+            SeSelection seSelection = new SeSelection(poReader);
+
+            /*
+             * Add selection case 1: Fake AID1, protocol ISO, target rev 3
+             */
+            PoSelector poSelectorFakeAid1 = new PoSelector(ByteArrayUtils.fromHex(poFakeAid1), true,
+                    PROTOCOL_ISO14443_4, PoSelector.RevisionTarget.TARGET_REV3);
+
+            seSelection.addSelector(poSelectorFakeAid1);
+
+            /*
+             * Add selection case 2: Calypso application, protocol ISO, target rev 2 or 3
              *
-             * Create a SeRequest list with various selection cases.
+             * addition of read commands to execute following the selection
              */
-            Set<SeRequest> selectionRequests = new LinkedHashSet<SeRequest>();
+            PoSelector poSelectorCalypsoAid =
+                    new PoSelector(ByteArrayUtils.fromHex(CalypsoBasicInfoAndSampleCommands.AID),
+                            true, PROTOCOL_ISO14443_4, PoSelector.RevisionTarget.TARGET_REV2_REV3);
 
-            /* fake application seRequest preparation, addition to the list */
-            SeRequest seRequest = new SeRequest(
-                    new SeRequest.AidSelector(ByteArrayUtils.fromHex(poFakeAid1)), null, true);
-            selectionRequests.add(seRequest);
+            poSelectorCalypsoAid.prepareReadRecordsCmd(SFI_EventLog, RECORD_NUMBER_1, true,
+                    (byte) 0x00, "EventLog (selection step)");
 
-            /*
-             * Calypso application seRequest preparation, addition to the list read commands before
-             * session
-             */
-            List<ApduRequest> requestToExecuteBeforeSession = new ArrayList<ApduRequest>();
-            requestToExecuteBeforeSession
-                    .add(CalypsoBasicInfoAndSampleCommands.poReadRecordCmd_EventLog_Rev3
-                            .getApduRequest());
+            seSelection.addSelector(poSelectorCalypsoAid);
 
-            /* AID based selection */
-            seRequest = new SeRequest(
-                    new SeRequest.AidSelector(ByteArrayUtils.fromHex(poCalypsoAid)),
-                    requestToExecuteBeforeSession, true,
-                    CalypsoBasicInfoAndSampleCommands.selectApplicationSuccessfulStatusCodes);
+            /* Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3 */
+            PoSelector poSelectorFakeAid2 = new PoSelector(ByteArrayUtils.fromHex(poFakeAid2), true,
+                    PROTOCOL_ISO14443_4, PoSelector.RevisionTarget.TARGET_REV2_REV3);
 
-            selectionRequests.add(seRequest);
-
-            /* fake application seRequest preparation, addition to the list */
-            seRequest = new SeRequest(new SeRequest.AidSelector(ByteArrayUtils.fromHex(poFakeAid2)),
-                    null, true);
-            selectionRequests.add(seRequest);
-
+            seSelection.addSelector(poSelectorFakeAid2);
 
             /* Time measurement */
             profiler.start("Initial selection");
 
-            List<SeResponse> seResponses =
-                    poReader.transmit(new SeRequestSet(selectionRequests)).getResponses();
-
-            Iterator<SeRequest> seReqIterator = selectionRequests.iterator();
+            /*
+             * Execute the selection process
+             */
+            List<SeResponse> seResponses = seSelection.processSelection().getResponses();
 
             int responseIndex = 0;
+
             /*
              * we expect up to 3 responses, only one should be not null since the selection process
              * stops at the first successful selection
+             *
+             * TODO improve the response analysis
              */
             if (logger.isInfoEnabled()) {
                 for (Iterator<SeResponse> seRespIterator = seResponses.iterator(); seRespIterator
                         .hasNext();) {
                     SeResponse seResponse = seRespIterator.next();
                     if (seResponse != null) {
-                        printSelectAppResponseStatus(
-                                String.format("Selection case #%d", responseIndex),
-                                seReqIterator.next(), seResponse);
+                        logger.info("Selection case #{}, RESPONSE = {}", responseIndex,
+                                seResponse.getApduResponses());
                     }
                     responseIndex++;
                 }
@@ -419,8 +372,8 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
 
                 profiler.start("Calypso1");
 
-                PoTransaction poTransaction = new PoTransaction(poReader, csmReader, csmSetting,
-                        new CalypsoPO(seResponses.get(1)));
+                PoTransaction poTransaction = new PoTransaction(poReader,
+                        new CalypsoPO(seResponses.get(1)), csmReader, csmSetting);
 
                 doCalypsoReadWriteTransaction(poTransaction, true);
 

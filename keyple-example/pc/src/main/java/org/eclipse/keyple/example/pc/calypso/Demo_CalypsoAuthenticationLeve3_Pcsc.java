@@ -151,8 +151,8 @@ public class Demo_CalypsoAuthenticationLeve3_Pcsc {
 
                     profiler.start("Calypso1");
 
-                    PoTransaction poTransaction = new PoTransaction(poReader, csmReader, csmSetting,
-                            new CalypsoPO(seResponses.get(0)));
+                    PoTransaction poTransaction = new PoTransaction(poReader,
+                            new CalypsoPO(seResponses.get(0)), csmReader, csmSetting);
                     /*
                      * Open Session for the debit key
                      */

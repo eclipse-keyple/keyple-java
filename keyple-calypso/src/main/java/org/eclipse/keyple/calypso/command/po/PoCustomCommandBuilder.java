@@ -22,8 +22,15 @@ public class PoCustomCommandBuilder extends AbstractIso7816CommandBuilder
     /**
      * Constructor dedicated to the construction of user-defined commands.
      *
-     * Caveat: the caller has to provide all the command data.
-     *
+     * Caveat:
+     * <ul>
+     * <li>the caller has to provide all the command data.</li>
+     * <li>Using this method bypasses the security and functional verification mechanisms of the
+     * PoTransaction API.
+     * <p>
+     * It is done at the user's risk.</li>
+     * </ul>
+     * 
      * @param name the name of the command (will appear in the ApduRequest log)
      * @param request the ApduRequest (the correct instruction byte must be provided)
      */
