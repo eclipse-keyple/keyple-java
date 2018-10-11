@@ -18,6 +18,7 @@ plugins {
 allprojects {
 
     repositories {
+        mavenLocal()
         mavenCentral()
         jcenter()
     }
@@ -32,14 +33,6 @@ allprojects {
     }
     apply plugin: 'maven'
 
-    task createPom {
-        pom {
-            project {
-                groupId project.version
-                version project.version
-            }
-        }.writeTo("pom.xml")
-    }
 }
 
 group 'org.eclipse.keyple'
@@ -143,7 +136,10 @@ dependencies {
     implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
     implementation 'com.android.support:support-v4:26.1.0'
     implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation project(':keyple-calypso')
+    //implementation project(':keyple-calypso')
+    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
+
     //compile with OMAPI jar but do not include it
     compileOnly files('libs/org.simalliance.openmobileapi.jar')
 
