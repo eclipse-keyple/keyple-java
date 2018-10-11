@@ -421,22 +421,22 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
             if (seResponses.get(0) != null) {
 
                 ApduResponse fciData = seResponses.get(0).getFci();
-                PoTransaction poTransaction = new PoTransaction(poReader, csmReader, null,
-                        new CalypsoPO(seResponses.get(0)));
+                PoTransaction poTransaction = new PoTransaction(poReader,
+                        new CalypsoPO(seResponses.get(0)), csmReader, null);
                 validateAuditC0(poTransaction, fciData);
 
             } else if (seResponses.get(1) != null) {
 
                 ApduResponse fciData = seResponses.get(1).getFci();
-                PoTransaction poTransaction = new PoTransaction(poReader, csmReader, null,
-                        new CalypsoPO(seResponses.get(1)));
+                PoTransaction poTransaction = new PoTransaction(poReader,
+                        new CalypsoPO(seResponses.get(1)), csmReader, null);
                 validateClap(poTransaction, fciData);
 
             } else if (seResponses.get(2) != null) {
 
                 ApduResponse fciData = seResponses.get(2).getFci();
-                PoTransaction poTransaction = new PoTransaction(poReader, csmReader, null,
-                        new CalypsoPO(seResponses.get(2)));
+                PoTransaction poTransaction = new PoTransaction(poReader,
+                        new CalypsoPO(seResponses.get(2)), csmReader, null);
                 validateAuditC0(poTransaction, fciData);
 
             } else {

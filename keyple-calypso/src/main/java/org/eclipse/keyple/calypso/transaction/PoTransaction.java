@@ -24,7 +24,7 @@ import org.eclipse.keyple.calypso.command.po.builder.session.AbstractOpenSession
 import org.eclipse.keyple.calypso.command.po.builder.session.CloseSessionCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.session.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.session.CloseSessionRespPars;
-import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
+import org.eclipse.keyple.calypso.transaction.exception.*;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
@@ -108,8 +108,6 @@ public class PoTransaction {
     private boolean isDiversificationDone;
     /** The PO KIF */
     private byte poKif;
-    /** The PO KVC */
-    private byte poKvc;
     /** The previous PO Secure Session ratification status */
     private boolean wasRatified;
     /** The data read at opening */
@@ -118,6 +116,8 @@ public class PoTransaction {
     private List<PoSendableInSession> poCommandBuilderList = new ArrayList<PoSendableInSession>();
     /** The SAM settings status */
     private boolean csmSettingsDefined;
+    /** List of authorized KVCs */
+    private List<Byte> authorizedKvcList;
 
     /**
      * PoTransaction with PO and SAM readers.
@@ -127,14 +127,14 @@ public class PoTransaction {
      * </ul>
      *
      * @param poReader the PO reader
+     * @param calypsoPO the CalypsoPO object obtained at the end of the selection step
      * @param csmReader the SAM reader
      * @param csmSetting a list of CSM related parameters. In the case this parameter is null,
      *        default parameters are applied. The available setting keys are defined in
      *        {@link CsmSettings}
-     * @param calypsoPO the CalypsoPO object obtained at the end of the selection step
      */
-    public PoTransaction(ProxyReader poReader, ProxyReader csmReader,
-            EnumMap<CsmSettings, Byte> csmSetting, CalypsoPO calypsoPO) {
+    public PoTransaction(ProxyReader poReader, CalypsoPO calypsoPO, ProxyReader csmReader,
+            EnumMap<CsmSettings, Byte> csmSetting) {
 
         this(poReader, calypsoPO);
 
@@ -203,6 +203,20 @@ public class PoTransaction {
         logger.debug("Contructor => CSMSETTING = {}", this.csmSetting);
 
         csmSettingsDefined = true;
+    }
+
+    /**
+     * Provides a list of authorized KVC
+     *
+     * If this method is not called, the list will remain empty and all KVCs will be accepted.
+     *
+     * If a list is provided and a PO with a KVC not belonging to this list is presented, a
+     * {@link KeypleCalypsoSecureSessionUnauthorizedKvcException} will be raised.
+     * 
+     * @param authorizedKvcList the list of authorized KVCs
+     */
+    public void setAuthorizedKvcList(List<Byte> authorizedKvcList) {
+        this.authorizedKvcList = authorizedKvcList;
     }
 
     /**
@@ -394,13 +408,20 @@ public class PoTransaction {
 
         /* Build the Digest Init command from PO Open Session */
         poKif = poOpenSessionPars.getSelectedKif();
-        poKvc = poOpenSessionPars.getSelectedKvc();
+        /** The PO KVC */
+        // TODO handle rev 1 KVC (provided in the response to select DF. CalypsoPO?)
+        byte poKvc = poOpenSessionPars.getSelectedKvc();
 
         if (logger.isDebugEnabled()) {
             logger.debug(
                     "processAtomicOpening => opening: CARDCHALLENGE = {}, POKIF = {}, POKVC = {}",
                     ByteArrayUtils.toHex(sessionCardChallenge), String.format("%02X", poKif),
                     String.format("%02X", poKvc));
+        }
+
+        if (authorizedKvcList != null && !authorizedKvcList.contains(poKvc)) {
+            throw new KeypleCalypsoSecureSessionUnauthorizedKvcException(
+                    String.format("PO KVC = %02X", poKvc));
         }
 
         byte kif;

@@ -16,17 +16,21 @@ import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.transaction.SeSelector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Specialized selector to manage the specific characteristics of Calypso POs
  */
 public class PoSelector extends SeSelector {
-    private final RevTarget revTarget;
+    private static final Logger logger = LoggerFactory.getLogger(PoSelector.class);
+
+    private final RevisionTarget revisionTarget;
 
     /**
      * Selection targets definition
      */
-    public enum RevTarget {
+    public enum RevisionTarget {
         TARGET_REV1, TARGET_REV2, TARGET_REV3, TARGET_REV2_REV3
     }
 
@@ -41,7 +45,10 @@ public class PoSelector extends SeSelector {
     public PoSelector(String atrRegex, short dfLid, boolean keepChannelOpen,
             SeProtocol protocolFlag) {
         super(atrRegex, keepChannelOpen, protocolFlag);
-        revTarget = RevTarget.TARGET_REV1;
+        revisionTarget = RevisionTarget.TARGET_REV1;
+        if (logger.isTraceEnabled()) {
+            logger.trace("Calypso {} selector", revisionTarget);
+        }
     }
 
     /**
@@ -50,16 +57,26 @@ public class PoSelector extends SeSelector {
      * @param poAid the AID of the targeted PO
      * @param keepChannelOpen indicates whether the logical channel should remain open
      * @param protocolFlag the protocol flag to filter POs according to their communication protocol
-     * @param revTarget the targeted revisions. The following possible ReadRecords commands will be
-     *        built taking this value into account
+     * @param revisionTarget the targeted revisions. The following possible ReadRecords commands
+     *        will be built taking this value into account
      */
     public PoSelector(byte[] poAid, boolean keepChannelOpen, SeProtocol protocolFlag,
-            RevTarget revTarget) {
+            RevisionTarget revisionTarget) {
         super(poAid, keepChannelOpen, protocolFlag);
-        if (revTarget == RevTarget.TARGET_REV1) {
+
+        if (revisionTarget == RevisionTarget.TARGET_REV1) {
             throw new IllegalArgumentException("Calypso PO Rev1 cannot be selected with AID.");
         }
-        this.revTarget = revTarget;
+        this.revisionTarget = revisionTarget;
+
+        // TODO check if the following affirmation is true for rev2
+        /*
+         * with Rev2 and 3. SW=6283 in response to a selection (application invalidated) is
+         * considered as successful
+         */
+        selectApplicationSuccessfulStatusCodes.add((short) 0x6283);
+        logger.trace("Calypso rev {} selector, SUCCESSFULSTATUSCODES = {}", this.revisionTarget,
+                selectApplicationSuccessfulStatusCodes);
     }
 
     /**
@@ -78,7 +95,7 @@ public class PoSelector extends SeSelector {
      */
     public void prepareReadRecordsCmd(byte sfi, byte firstRecordNumber, boolean readJustOneRecord,
             byte expectedLength, String extraInfo) {
-        switch (this.revTarget) {
+        switch (this.revisionTarget) {
             case TARGET_REV1:
                 seSelectionApduRequestList
                         .add(new ReadRecordsCmdBuild(PoRevision.REV1_0, sfi, firstRecordNumber,
@@ -103,6 +120,10 @@ public class PoSelector extends SeSelector {
                                 readJustOneRecord, expectedLength, extraInfo).getApduRequest());
                 break;
         }
+        if (logger.isTraceEnabled()) {
+            logger.trace("ReadRecords: SFI = {}, RECNUMBER = {}, JUSTONE = {}, EXPECTEDLENGTH = {}",
+                    sfi, firstRecordNumber, readJustOneRecord, expectedLength);
+        }
     }
 
     /**
@@ -114,5 +135,8 @@ public class PoSelector extends SeSelector {
     public void preparePoCustomCmd(String name, ApduRequest apduRequest) {
         seSelectionApduRequestList
                 .add(new PoCustomCommandBuilder(name, apduRequest).getApduRequest());
+        if (logger.isTraceEnabled()) {
+            logger.trace("CustomCommand: APDUREQUEST = {}", apduRequest);
+        }
     }
 }

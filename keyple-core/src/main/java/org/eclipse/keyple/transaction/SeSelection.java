@@ -15,11 +15,15 @@ import org.eclipse.keyple.seproxy.SeRequest;
 import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handled the SE selection process
  */
 public class SeSelection {
+    private static final Logger logger = LoggerFactory.getLogger(SeSelection.class);
+
     private final ProxyReader proxyReader;
     private Set<SeRequest> selectionRequestSet = new LinkedHashSet<SeRequest>();
 
@@ -38,6 +42,9 @@ public class SeSelection {
      * @param seSelector
      */
     public void addSelector(SeSelector seSelector) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("SELECTORREQUEST = {}", seSelector.getSelectorRequest());
+        }
         selectionRequestSet.add(seSelector.getSelectorRequest());
     }
 
@@ -61,6 +68,9 @@ public class SeSelection {
      * @throws KeypleReaderException
      */
     public SeResponseSet processSelection() throws KeypleReaderException {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Transmit SELECTIONREQUEST ({} request(s))", selectionRequestSet.size());
+        }
         return proxyReader.transmit(new SeRequestSet(selectionRequestSet));
     }
 }

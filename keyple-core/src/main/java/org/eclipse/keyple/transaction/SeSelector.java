@@ -12,8 +12,12 @@ import java.util.*;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.SeRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SeSelector {
+    private static final Logger logger = LoggerFactory.getLogger(SeSelector.class);
+
     protected List<ApduRequest> seSelectionApduRequestList = new ArrayList<ApduRequest>();
     protected final static Set<Short> selectApplicationSuccessfulStatusCodes = new HashSet<Short>();
     protected final String atrRegex;
@@ -31,6 +35,11 @@ public class SeSelector {
         seAid = null;
         selectionByAid = false;
         this.protocolFlag = protocolFlag;
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                    "ATR based selection: ATRREGEX = {}, KEEPCHANNELOPEN = {}, PROTOCOLFLAG = {}",
+                    atrRegex, keepChannelOpen, protocolFlag);
+        }
     }
 
     public SeSelector(byte[] seAid, boolean keepChannelOpen, SeProtocol protocolFlag) {
@@ -42,12 +51,10 @@ public class SeSelector {
         this.seAid = seAid;
         selectionByAid = true;
         this.protocolFlag = protocolFlag;
-        // TODO check if the following affirmation is true for rev2
-        /**
-         * with Rev2 and 3. SW=6283 in response to a selection (application invalidated) is
-         * considered as successful
-         */
-        selectApplicationSuccessfulStatusCodes.add((short) 0x6283);
+        if (logger.isTraceEnabled()) {
+            logger.trace("AID based selection: AID = {}, KEEPCHANNELOPEN = {}, PROTOCOLFLAG = {}",
+                    atrRegex, keepChannelOpen, protocolFlag);
+        }
     }
 
     /**
@@ -58,7 +65,7 @@ public class SeSelector {
     }
 
     /**
-     * Sets the list of ApduRequest to be executed following the selection operation
+     * Sets the list of ApduRequest to be executed following the selection operation at once
      * 
      * @param seSelectionApduRequestList
      */

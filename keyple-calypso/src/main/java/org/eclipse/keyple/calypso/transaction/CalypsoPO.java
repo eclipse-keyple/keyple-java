@@ -13,6 +13,8 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.util.ByteArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles the PO characteristics such as:
@@ -24,9 +26,11 @@ import org.eclipse.keyple.util.ByteArrayUtils;
  * TODO Complete with other PO features from the FCI and/or ATR
  */
 public final class CalypsoPO {
-    private final byte[] applicationSerialNumber;
-    private final PoRevision revision;
-    private final byte[] dfName;
+    private static final Logger logger = LoggerFactory.getLogger(CalypsoPO.class);
+
+    private byte[] applicationSerialNumber;
+    private PoRevision revision;
+    private byte[] dfName;
     private final static int PO_REV1_ATR_LENGTH = 20;
     private byte[] poAtr;
 
@@ -84,6 +88,10 @@ public final class CalypsoPO {
              * the array is initialized with 0 (cf. default value for primitive types)
              */
             System.arraycopy(poAtr, 12, this.applicationSerialNumber, 4, 4);
+        }
+        if (logger.isTraceEnabled()) {
+            logger.trace("REVISION = {}, SERIALNUMBER = {}, DFNAME = {}", this.revision,
+                    this.applicationSerialNumber, this.dfName);
         }
     }
 
