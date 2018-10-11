@@ -2,10 +2,9 @@ node {
 
     stage ('hello') {
         echo "Hello"
-        //checkout scm
+
     }
-/*
-*/
+
     stage ('Clone') {
         echo "stage Clone"
         checkout scm
