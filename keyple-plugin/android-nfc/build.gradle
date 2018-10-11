@@ -18,6 +18,7 @@ plugins {
 allprojects {
 
     repositories {
+        mavenLocal()
         mavenCentral()
         jcenter()
     }
@@ -33,14 +34,6 @@ allprojects {
 
     apply plugin: 'maven'
 
-    task createPom {
-        pom {
-            project {
-                groupId project.group
-                version project.version
-            }
-        }.writeTo("pom.xml")
-    }
 
 }
 
@@ -144,6 +137,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'
 
 
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -159,5 +153,5 @@ dependencies {
     testCompile 'org.powermock:powermock-module-junit4:1.6.6'
 
     /**End of power mock **/
-    implementation project(':keyple-calypso')
+
 }
