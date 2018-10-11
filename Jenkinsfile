@@ -14,7 +14,7 @@ node {
 
     stage ('gradle') {
         echo "Gradle build"
-        sh 'gradle build'
+        sh './gradlew build'
 
     }
 
