@@ -2,7 +2,7 @@ node {
 
     stage ('hello') {
         echo "Hello"
-        checkout scm
+        //checkout scm
     }
 /*
 */
@@ -14,7 +14,7 @@ node {
 
     stage ('gradle') {
         echo "Gradle build"
-        sh './gradlew build'
+        sh 'gradle build'
 
     }
 
