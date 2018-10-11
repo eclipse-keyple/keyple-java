@@ -84,7 +84,7 @@ public class PoTransaction {
     /** The reader for PO. */
     private final ProxyReader poReader;
     /** The reader for session CSM. */
-    private final ProxyReader csmReader;
+    private ProxyReader csmReader;
     /** The CSM default revision. */
     private final CsmRevision csmRevision = CsmRevision.C1;
     /** The CSM settings map. */
@@ -94,6 +94,8 @@ public class PoTransaction {
     private final byte[] poCalypsoInstanceSerial;
     /** The current CalypsoPO */
     protected final CalypsoPO calypsoPo;
+    /** The PO selector from the selection result */
+    private SeRequest.Selector selector;
     /** the type of the notified event. */
     private SessionState currentState;
     /** Selected AID of the Calypso PO. */
@@ -114,9 +116,11 @@ public class PoTransaction {
     private byte[] openRecordDataRead;
     /** The list to contain the prepared commands */
     private List<PoSendableInSession> poCommandBuilderList = new ArrayList<PoSendableInSession>();
+    /** The SAM settings status */
+    private boolean csmSettingsDefined;
 
     /**
-     * Instantiates a new po plain secure session.
+     * PoTransaction with PO and SAM readers.
      * <ul>
      * <li>Logical channels with PO &amp; CSM could already be established or not.</li>
      * <li>A list of CSM parameters is provided as en EnumMap.</li>
@@ -131,7 +135,50 @@ public class PoTransaction {
      */
     public PoTransaction(ProxyReader poReader, ProxyReader csmReader,
             EnumMap<CsmSettings, Byte> csmSetting, CalypsoPO calypsoPO) {
+
+        this(poReader, calypsoPO);
+
+        setCsmSettings(csmReader, csmSetting);
+    }
+
+    /**
+     * PoTransaction with PO reader and without SAM reader.
+     * <ul>
+     * <li>Logical channels with PO could already be established or not.</li>
+     * </ul>
+     *
+     * @param poReader the PO reader
+     * @param calypsoPO the CalypsoPO object obtained at the end of the selection step
+     */
+    public PoTransaction(ProxyReader poReader, CalypsoPO calypsoPO) {
         this.poReader = poReader;
+
+        this.calypsoPo = calypsoPO;
+
+        poRevision = calypsoPO.getRevision();
+
+        poCalypsoInstanceAid = calypsoPO.getDfName();
+
+        /* Configure an Aid or Atr selector depending on whether the DF name is available or not. */
+        if (poCalypsoInstanceAid != null) {
+            selector = new SeRequest.AidSelector(poCalypsoInstanceAid);
+        } else {
+            selector = new SeRequest.AtrSelector(ByteArrayUtils.toHex(calypsoPO.getAtr()));
+        }
+
+        /* Serial Number of the selected Calypso instance. */
+        poCalypsoInstanceSerial = calypsoPO.getApplicationSerialNumber();
+
+        currentState = SessionState.SESSION_CLOSED;
+    }
+
+    /**
+     * Sets the SAM parameters for Secure Session management
+     * 
+     * @param csmReader
+     * @param csmSetting
+     */
+    public void setCsmSettings(ProxyReader csmReader, EnumMap<CsmSettings, Byte> csmSetting) {
         this.csmReader = csmReader;
 
         /* Initialize csmSetting with provided settings */
@@ -155,18 +202,16 @@ public class PoTransaction {
 
         logger.debug("Contructor => CSMSETTING = {}", this.csmSetting);
 
-        this.calypsoPo = calypsoPO;
+        csmSettingsDefined = true;
+    }
 
-        poRevision = calypsoPO.getRevision();
-
-        poCalypsoInstanceAid = calypsoPO.getDfName();
-
-        /* Serial Number of the selected Calypso instance. */
-        poCalypsoInstanceSerial = calypsoPO.getApplicationSerialNumber();
-
-        isDiversificationDone = false;
-
-        currentState = SessionState.SESSION_CLOSED;
+    /**
+     * Indicates whether or not the SAM settings have been defined
+     * 
+     * @return true if the SAM settings have been defined.
+     */
+    public boolean isCsmSettingsDefined() {
+        return csmSettingsDefined;
     }
 
     /**
@@ -305,8 +350,7 @@ public class PoTransaction {
         }
 
         /* Create a SeRequest from the ApduRequest list, PO AID as Selector, keepChannelOpen true */
-        SeRequest poSeRequest = new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
-                poApduRequestList, true);
+        SeRequest poSeRequest = new SeRequest(selector, poApduRequestList, true);
 
         logger.debug("processAtomicOpening => opening:  POSEREQUEST = {}", poSeRequest);
 
@@ -457,8 +501,7 @@ public class PoTransaction {
                 this.getApduRequestsToSendInSession((List<SendableInSession>) (List<?>) poCommands);
 
         /* Create a SeRequest from the ApduRequest list, PO AID as Selector, keepChannelOpen true */
-        SeRequest poSeRequest = new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
-                poApduRequestList, true);
+        SeRequest poSeRequest = new SeRequest(selector, poApduRequestList, true);
 
         logger.debug("processAtomicPoCommands => POREQUEST = {}", poSeRequest);
 
@@ -714,8 +757,7 @@ public class PoTransaction {
         /*
          * Transfer PO commands
          */
-        SeRequest poSeRequest = new SeRequest(new SeRequest.AidSelector(poCalypsoInstanceAid),
-                poApduRequestList, !closeSeChannel);
+        SeRequest poSeRequest = new SeRequest(selector, poApduRequestList, !closeSeChannel);
 
         logger.debug("processAtomicClosing => POSEREQUEST = {}", poSeRequest);
 
