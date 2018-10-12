@@ -9,13 +9,22 @@
 package org.eclipse.keyple.example.common.generic;
 
 import java.util.regex.Pattern;
+import org.eclipse.keyple.example.common.calypso.CalypsoBasicInfo;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
+import org.eclipse.keyple.seproxy.SeResponse;
+import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.transaction.SeSelection;
+import org.eclipse.keyple.transaction.SeSelector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class DemoHelpers {
+public abstract class DemoHelpers {
+    private static Logger logger = LoggerFactory.getLogger(DemoHelpers.class);;
+
     /**
      * Get the terminal which names match the expected pattern
      *
@@ -36,4 +45,60 @@ public class DemoHelpers {
         }
         throw new KeypleReaderNotFoundException("Reader name pattern: " + pattern);
     }
+
+    /**
+     * Check CSM presence and consistency
+     *
+     * Throw an exception if the expected CSM is not available
+     * 
+     * @param csmReader the SAM reader
+     */
+    public static void checkCsmAndOpenChannel(ProxyReader csmReader) {
+        /*
+         * check the availability of the CSM doing a ATR based selection, open its physical and
+         * logical channels and keep it open
+         */
+        SeSelection samSelection = new SeSelection(csmReader);
+
+        SeSelector samSelector = new SeSelector(CalypsoBasicInfo.CSM_C1_ATR_REGEX, true, null);
+
+        samSelection.addSelector(samSelector);
+
+        try {
+            SeResponse csmCheckResponse = samSelection.processSelection().getSingleResponse();
+            if (csmCheckResponse == null) {
+                throw new IllegalStateException("Unable to open a logical channel for CSM!");
+            } else {
+            }
+        } catch (KeypleReaderException e) {
+            throw new IllegalStateException("Reader exception: " + e.getMessage());
+
+        }
+    }
+
+    public abstract void operatePoTransactions();
+
+    /*
+     * This method is called when an reader event occurs according to the Observer pattern
+     */
+    public void update(ReaderEvent event) {
+        switch (event.getEventType()) {
+            case SE_INSERTED:
+                if (logger.isInfoEnabled()) {
+                    logger.info("SE INSERTED");
+                    logger.info("Start processing of a Calypso PO");
+                }
+                operatePoTransactions();
+                break;
+            case SE_REMOVAL:
+                if (logger.isInfoEnabled()) {
+                    logger.info("SE REMOVED");
+                    logger.info("Wait for Calypso PO");
+                }
+                break;
+            default:
+                logger.error("IO Error");
+        }
+    }
+
 }

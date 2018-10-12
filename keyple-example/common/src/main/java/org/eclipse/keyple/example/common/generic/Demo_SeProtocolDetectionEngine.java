@@ -9,11 +9,14 @@
 package org.eclipse.keyple.example.common.generic;
 
 import java.util.*;
-import org.eclipse.keyple.example.common.calypso.HoplinkInfoAndSampleCommands;
+import org.eclipse.keyple.calypso.transaction.PoSelector;
+import org.eclipse.keyple.example.common.calypso.HoplinkInfo;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.transaction.SeSelection;
+import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
@@ -78,12 +81,7 @@ public class Demo_SeProtocolDetectionEngine implements ObservableReader.ReaderOb
     public void operatePoTransaction() {
 
         try {
-            // create a request set:
-            // * getting the SE UID for all SE protocols except ISO14443-4
-            // * executing a Hoplink simple read scenario for ISO14443-4
-
-            // create a list of requests
-            Set<SeRequest> poRequests = new LinkedHashSet<SeRequest>();
+            SeSelection seSelection = new SeSelection(poReader);
 
             ApduRequest pcscContactlessReaderGetData =
                     new ApduRequest(ByteArrayUtils.fromHex("FFCA000000"), false);
@@ -94,20 +92,21 @@ public class Demo_SeProtocolDetectionEngine implements ObservableReader.ReaderOb
             for (ContactlessProtocols protocol : ContactlessProtocols.values()) {
                 switch (protocol) {
                     case PROTOCOL_ISO14443_4:
-                        // get Apdu list from HoplinkInfoAndSampleCommands class
-                        // List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
-                        List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
-                        // add common get UID command
-                        poApduRequestList.addAll(pcscContactlessReaderGetDataList);
-                        // add Hoplink specific commands
-                        poApduRequestList.addAll(HoplinkInfoAndSampleCommands.getApduList());
-                        // add a SeRequest with the AID from HoplinkInfoAndSampleCommands and the
-                        // requests
-                        // list
-                        poRequests.add(new SeRequest(
-                                new SeRequest.AidSelector(
-                                        ByteArrayUtils.fromHex(HoplinkInfoAndSampleCommands.AID)),
-                                poApduRequestList, false, protocol));
+                        /* Add a Calypso selector */
+                        PoSelector poSelector =
+                                new PoSelector(ByteArrayUtils.fromHex(HoplinkInfo.AID), false,
+                                        ContactlessProtocols.PROTOCOL_ISO14443_4,
+                                        PoSelector.RevisionTarget.TARGET_REV3);
+
+                        poSelector.preparePoCustomCmd("Standard Get Data",
+                                new ApduRequest(ByteArrayUtils.fromHex("FFCA000000"), false));
+
+                        poSelector.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Environment,
+                                HoplinkInfo.RECORD_NUMBER_1, true, (byte) 0x00,
+                                HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
+
+                        seSelection.addSelector(poSelector);
+
                         break;
                     case PROTOCOL_ISO14443_3A:
                     case PROTOCOL_ISO14443_3B:
@@ -118,38 +117,23 @@ public class Demo_SeProtocolDetectionEngine implements ObservableReader.ReaderOb
                         // intentionally ignored for demo purpose
                         break;
                     default:
-                        poRequests.add(new SeRequest(new SeRequest.AtrSelector(".*"),
-                                pcscContactlessReaderGetDataList, false, protocol));
+                        /* Add a generic selector */
+                        seSelection.addSelector(new SeSelector(".*", false,
+                                ContactlessProtocols.PROTOCOL_ISO14443_4));
                         break;
                 }
             }
 
-            // process application specific protocols
-            for (CustomProtocols protocol : CustomProtocols.values()) {
-                poRequests.add(new SeRequest(new SeRequest.AtrSelector(".*"),
-                        pcscContactlessReaderGetDataList, false, protocol));
-            }
+            List<SeResponse> seResponses = seSelection.processSelection().getResponses();
 
-            // create a SeRequestSet from the SeRequest list
-            SeRequestSet poRequest = new SeRequestSet(poRequests);
-
-            // execute request and get response
-            SeResponseSet poResponse = poReader.transmit(poRequest);
-
-            // output results
-            Iterator<SeRequest> seReqIterator = poRequests.iterator();
             int requestIndex = 0;
-            for (SeResponse seResponse : poResponse.getResponses()) {
-                SeRequest seRequest = seReqIterator.next();
+            for (SeResponse seResponse : seResponses) {
 
                 if (seResponse != null) {
-                    System.out.println("Protocol \"" + seRequest.getProtocolFlag().getName()
-                            + "\" matched for request number " + String.valueOf(requestIndex));
-                    List<ApduRequest> poApduRequestList = seRequest.getApduRequests();
+                    System.out.println(
+                            "Protocol matched for request number " + String.valueOf(requestIndex));
                     List<ApduResponse> poApduResponseList = seResponse.getApduResponses();
                     for (int i = 0; i < poApduResponseList.size(); i++) {
-                        System.out.println(" CMD: "
-                                + ByteArrayUtils.toHex(poApduRequestList.get(i).getBytes()));
                         System.out.println("RESP: "
                                 + ByteArrayUtils.toHex(poApduResponseList.get(i).getBytes()));
                     }
@@ -157,7 +141,6 @@ public class Demo_SeProtocolDetectionEngine implements ObservableReader.ReaderOb
                 requestIndex++;
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
