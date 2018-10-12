@@ -40,18 +40,24 @@ node {
    */
 
 
-   stage('Build android OMAPI') {
+   stage('Build android OMAPI Plugin') {
         sh '/opt/bitnami/gradle4.10/gradle-4.10.2/bin/gradle -b ./keyple-plugin/android-omapi/build.gradle build test assembleDebug generateDebugJavadoc --info'
+   }
+
+    stage('Build android OMAPI example') {
         sh '/opt/bitnami/gradle4.10/gradle-4.10.2/bin/gradle -b ./keyple-example/android/omapi/build.gradle assembleDebug --info'
    }
 
    /*
-   stage('Build android NFC') {
+   */
+   stage('Build android NFC Plugin') {
        //error='Cannot allocate memory' (errno=12)
         sh '/opt/bitnami/gradle4.10/gradle-4.10.2/bin/gradle -b ./keyple-plugin/android-nfc/build.gradle build test assembleDebug generateDebugJavadoc --info'
+   }
+
+   stage('Build android NFC Example') {
         sh '/opt/bitnami/gradle4.10/gradle-4.10.2/bin/gradle -b ./keyple-example/android/nfc/build.gradle assembleDebug --info'
    }
-   */
 
    /*
    work
