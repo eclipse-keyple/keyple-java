@@ -266,8 +266,7 @@ public class PoTransaction {
      *         Secure Session" command
      * @throws KeypleReaderException the IO reader exception
      */
-    @Deprecated
-    public SeResponse processAtomicOpening(SessionAccessLevel accessLevel, byte openingSfiToSelect,
+    private SeResponse processAtomicOpening(SessionAccessLevel accessLevel, byte openingSfiToSelect,
             byte openingRecordNumberToRead, List<PoSendableInSession> poCommandsInsideSession)
             throws KeypleReaderException {
 
@@ -513,8 +512,7 @@ public class PoTransaction {
      *
      * @throws KeypleReaderException IO Reader exception
      */
-    @Deprecated
-    public SeResponse processAtomicPoCommands(List<PoSendableInSession> poCommands)
+    private SeResponse processAtomicPoCommands(List<PoSendableInSession> poCommands)
             throws KeypleReaderException {
 
         // Get PO ApduRequest List from PoSendableInSession List
@@ -663,8 +661,7 @@ public class PoTransaction {
      *         communication mode.</li>
      *         </ul>
      */
-    @Deprecated
-    public SeResponse processAtomicClosing(List<PoModificationCommand> poModificationCommands,
+    private SeResponse processAtomicClosing(List<PoModificationCommand> poModificationCommands,
             List<ApduResponse> poAnticipatedResponses, CommunicationMode communicationMode,
             boolean closeSeChannel) throws KeypleReaderException {
 
@@ -891,8 +888,7 @@ public class PoTransaction {
      *         communication mode.</li>
      *         </ul>
      */
-    @Deprecated
-    public SeResponse processAtomicClosing(List<PoModificationCommand> poModificationCommands,
+    private SeResponse processAtomicClosing(List<PoModificationCommand> poModificationCommands,
             CommunicationMode communicationMode, boolean closeSeChannel)
             throws KeypleReaderException {
         List<ApduResponse> poAnticipatedResponses =

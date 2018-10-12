@@ -16,13 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.calypso.command.po.PoModificationCommand;
-import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
-import org.eclipse.keyple.calypso.command.po.builder.AppendRecordCmdBuild;
-import org.eclipse.keyple.calypso.command.po.builder.DecreaseCmdBuild;
-import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.calypso.transaction.CalypsoPO;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.pc.generic.PcscReadersSettings;
@@ -108,20 +101,16 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         byte environmentSfi = 0x07;
 
         SeResponse dataReadInSession;
-        ReadRecordsCmdBuild poReadRecordCmd_Event = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                eventSfi, (byte) 0x01, true, (byte) 0x00, "Event");
-        ReadRecordsCmdBuild poReadRecordCmd_ContractList = new ReadRecordsCmdBuild(
-                PoRevision.REV3_1, contractListSfi, (byte) 0x01, true, (byte) 0x00, "ContractList");
 
-        List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
-        filesToReadInSession.add(poReadRecordCmd_Event);
-        filesToReadInSession.add(poReadRecordCmd_ContractList);
+        poTransaction.prepareReadRecordsCmd(eventSfi, (byte) 0x01, true, (byte) 0x00, "Event");
+        poTransaction.prepareReadRecordsCmd(contractListSfi, (byte) 0x01, true, (byte) 0x00,
+                "ContractList");
 
         // Open Session with debit key #3 and reading the Environment at SFI 07h
         // Files to read during the beginning of the session: Event (SFI 0x08) and ContractList (SFI
         // 0x1E)
-        dataReadInSession = poTransaction.processAtomicOpening(SESSION_LVL_DEBIT, environmentSfi,
-                (byte) 0x01, filesToReadInSession);
+        dataReadInSession = poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
+                SESSION_LVL_DEBIT, environmentSfi, (byte) 0x01);
 
         /*
          * byte[] sessionData =
@@ -166,14 +155,10 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         System.out.println(
                 "\t------------------------------------------------------------------------------\n");
 
-        ReadRecordsCmdBuild poReadRecordCmd_Contract = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                (byte) 0x29, (byte) (contractIndex + 1), true, (byte) 0x1D, "Contract");
+        poTransaction.prepareReadRecordsCmd((byte) 0x29, (byte) (contractIndex + 1), true,
+                (byte) 0x1D, "Contract");
 
-        // Based on the event file data read the correct contract to validate (season pass)
-        filesToReadInSession = new ArrayList<PoSendableInSession>();
-        filesToReadInSession.add(poReadRecordCmd_Contract);
-
-        dataReadInSession = poTransaction.processAtomicPoCommands(filesToReadInSession);
+        dataReadInSession = poTransaction.processPoCommands();
 
         System.out
                 .println("Reading contract #" + (contractIndex + 1) + " for current validation...");
@@ -201,26 +186,11 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         byte[] dateToInsert = longToBytes(new Date().getTime());
         System.arraycopy(dateToInsert, 0, newEventData, 1, (Long.SIZE / Byte.SIZE));
 
-        ApduResponse expectedGenericOkResponse =
-                new ApduResponse(new byte[] {(byte) 0x90, 0x00}, null);
+        poTransaction.prepareUpdateRecordCmd(contractListSfi, (byte) 0x01, newContractListData,
+                "ContractList");
+        poTransaction.prepareAppendRecordCmd(eventSfi, newEventData, "Event");
 
-        UpdateRecordCmdBuild poUpdateRecordCmd_ContractList =
-                new UpdateRecordCmdBuild(poTransaction.getRevision(), contractListSfi, (byte) 0x01,
-                        newContractListData, "ContractList");
-        AppendRecordCmdBuild poAppendRecordCmd_Event = new AppendRecordCmdBuild(
-                poTransaction.getRevision(), eventSfi, newEventData, "Event");
-
-        List<PoModificationCommand> filesToWriteInSession = new ArrayList<PoModificationCommand>();
-        List<ApduResponse> expectedResponses = new ArrayList<ApduResponse>();
-
-        filesToWriteInSession.add(poUpdateRecordCmd_ContractList);
-        expectedResponses.add(expectedGenericOkResponse);
-
-        filesToWriteInSession.add(poAppendRecordCmd_Event);
-        expectedResponses.add(expectedGenericOkResponse);
-
-        poTransaction.processAtomicClosing(filesToWriteInSession, expectedResponses,
-                CommunicationMode.CONTACTLESS_MODE, false);
+        poTransaction.processClosing(CommunicationMode.CONTACTLESS_MODE, false);
 
         System.out.println("\nValidation Successful!");
         System.out.println(
@@ -238,24 +208,18 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         byte contractsSfi = 0x29;
 
         SeResponse dataReadInSession;
-        ReadRecordsCmdBuild poReadRecordCmd_Event = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                eventSfi, (byte) 0x01, true, (byte) 0x00, "Event");
-        ReadRecordsCmdBuild poReadRecordCmd_Counters = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                countersSfi, (byte) 0x01, true, (byte) 0x00, "Counters");
-        ReadRecordsCmdBuild poReadRecordCmd_Contracts = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                contractsSfi, (byte) 0x01, false, (byte) 0x00, "Contracts");
 
-
-        List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
-        filesToReadInSession.add(poReadRecordCmd_Event);
-        filesToReadInSession.add(poReadRecordCmd_Counters);
-        filesToReadInSession.add(poReadRecordCmd_Contracts);
+        poTransaction.prepareReadRecordsCmd(eventSfi, (byte) 0x01, true, (byte) 0x00, "Event");
+        poTransaction.prepareReadRecordsCmd(countersSfi, (byte) 0x01, true, (byte) 0x00,
+                "Counters");
+        poTransaction.prepareReadRecordsCmd(contractsSfi, (byte) 0x01, false, (byte) 0x00,
+                "Contracts");
 
         // Open Session with debit key #3 and reading the Environment at SFI 07h
         // Files to read during the beginning of the session: Event (SFI 0x08), Counters (SFI 0x1B)
         // and all records of the Contracts (SFI 0x29)
-        dataReadInSession = poTransaction.processAtomicOpening(SESSION_LVL_DEBIT, environmentSfi,
-                (byte) 0x01, filesToReadInSession);
+        dataReadInSession = poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
+                SESSION_LVL_DEBIT, environmentSfi, (byte) 0x01);
         /*
          * byte[] sessionData =
          * ByteArrayUtils.subLen(dataReadInSession.getApduResponses().get(0).getDataOut(), 0, 8);
@@ -302,12 +266,6 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         System.out.println("All contracts read during the beginning of the current transaction...");
 
-        List<PoModificationCommand> filesToWriteInSession = new ArrayList<PoModificationCommand>();
-        List<ApduResponse> expectedResponses = new ArrayList<ApduResponse>();
-
-        ApduResponse expectedGenericOkResponse =
-                new ApduResponse(new byte[] {(byte) 0x90, 0x00}, null);
-
         // Perform automatic top-up when the value is 0 by closing the current session and opening a
         // new one with a
         // loading key
@@ -315,19 +273,15 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
             System.out.println("No value present in the card. Initiating auto top-up...");
 
-            poTransaction.processAtomicClosing(null, null,
-                    PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
+            poTransaction.processClosing(PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
 
-            poTransaction.processAtomicOpening(SESSION_LVL_LOAD, (byte) 0x00, (byte) 0x00, null);
+            poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC, SESSION_LVL_LOAD,
+                    (byte) 0x00, (byte) 0x00);
 
             byte[] newCounterData = new byte[] {0x00, 0x00, 0x05, 0x00, 0x00, 0x00};
 
-            UpdateRecordCmdBuild poUpdateRecordCmd_Counter =
-                    new UpdateRecordCmdBuild(poTransaction.getRevision(), countersSfi, (byte) 0x01,
-                            newCounterData, "Counter");
-
-            filesToWriteInSession.add(poUpdateRecordCmd_Counter);
-            expectedResponses.add(expectedGenericOkResponse);
+            poTransaction.prepareUpdateRecordCmd(countersSfi, (byte) 0x01, newCounterData,
+                    "Counter");
             counterValue = 5;
         }
 
@@ -346,27 +300,13 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         byte[] dateToInsert = longToBytes(new Date().getTime());
         System.arraycopy(dateToInsert, 0, newEventData, 1, (Long.SIZE / Byte.SIZE));
 
-        AppendRecordCmdBuild poAppendRecordCmd_Event = new AppendRecordCmdBuild(
-                poTransaction.getRevision(), eventSfi, newEventData, "Event");
+        poTransaction.prepareAppendRecordCmd(eventSfi, newEventData, "Event");
 
-        filesToWriteInSession.add(poAppendRecordCmd_Event);
-        expectedResponses.add(expectedGenericOkResponse);
-
-        DecreaseCmdBuild poDecreaseCmd_Counter = new DecreaseCmdBuild(poTransaction.getRevision(),
-                countersSfi, (byte) 0x01, 1, "Counter decval=1");
-
-        byte[] expectedCounterResponseBytes = new byte[] {0x00, 0x00, 0x00, (byte) 0x90, 0x00};
+        poTransaction.prepareDecreaseCmd(countersSfi, (byte) 0x01, 1, "Counter decval=1");
 
         byte[] updatedCounterValue = getByteArrayFromCounterValue(counterValue - 1);
 
-        System.arraycopy(updatedCounterValue, 0, expectedCounterResponseBytes, 0, 3);
-        ApduResponse expectedCounterResponse = new ApduResponse(expectedCounterResponseBytes, null);
-
-        filesToWriteInSession.add(poDecreaseCmd_Counter);
-        expectedResponses.add(expectedCounterResponse);
-
-        poTransaction.processAtomicClosing(filesToWriteInSession, expectedResponses,
-                CommunicationMode.CONTACTLESS_MODE, false);
+        poTransaction.processClosing(CommunicationMode.CONTACTLESS_MODE, false);
 
         System.out.println("\nValidation Successful!");
         System.out.println(

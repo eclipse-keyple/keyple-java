@@ -15,14 +15,13 @@ import java.util.List;
 import org.eclipse.keyple.calypso.transaction.CalypsoPO;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.example.common.generic.DemoHelpers;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.transaction.SeSelection;
-import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +55,9 @@ import org.slf4j.profiler.Profiler;
  * <p>
  * Read the doc of each methods for further details.
  */
-public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.ReaderObserver {
-    private final static Logger logger =
+public class Demo_CalypsoBasicTransactionEngine extends DemoHelpers
+        implements ObservableReader.ReaderObserver {
+    private static Logger logger =
             LoggerFactory.getLogger(Demo_CalypsoBasicTransactionEngine.class);
 
     /* define the CSM parameters to provide when creating PoTransaction */
@@ -89,58 +89,6 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
     public void setReaders(ProxyReader poReader, ProxyReader csmReader) {
         this.poReader = poReader;
         this.csmReader = csmReader;
-    }
-
-    /**
-     * Check CSM presence and consistency
-     *
-     * Throw an exception if the expected CSM is not available
-     */
-    private void checkCsmAndOpenChannel() {
-        /*
-         * check the availability of the CSM doing a ATR based selection, open its physical and
-         * logical channels and keep it open
-         */
-        SeSelection samSelection = new SeSelection(csmReader);
-
-        SeSelector samSelector = new SeSelector(CalypsoBasicInfo.CSM_C1_ATR_REGEX, true, null);
-
-        samSelection.addSelector(samSelector);
-
-        try {
-            SeResponse csmCheckResponse = samSelection.processSelection().getSingleResponse();
-            if (csmCheckResponse == null) {
-                throw new IllegalStateException("Unable to open a logical channel for CSM!");
-            } else {
-            }
-        } catch (KeypleReaderException e) {
-            throw new IllegalStateException("Reader exception: " + e.getMessage());
-
-        }
-    }
-
-    @Override
-    /*
-     * This method is called when an reader event occurs according to the Observer pattern
-     */
-    public void update(ReaderEvent event) {
-        switch (event.getEventType()) {
-            case SE_INSERTED:
-                if (logger.isInfoEnabled()) {
-                    logger.info("SE INSERTED");
-                    logger.info("Start processing of a Calypso PO");
-                }
-                operatePoTransactions();
-                break;
-            case SE_REMOVAL:
-                if (logger.isInfoEnabled()) {
-                    logger.info("SE REMOVED");
-                    logger.info("Wait for Calypso PO");
-                }
-                break;
-            default:
-                logger.error("IO Error");
-        }
     }
 
     /**
@@ -292,7 +240,7 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
             /* first time: check CSM */
             if (!this.csmChannelOpen) {
                 /* the following method will throw an exception if the CSM is not available. */
-                checkCsmAndOpenChannel();
+                checkCsmAndOpenChannel(csmReader);
                 this.csmChannelOpen = true;
             }
 
@@ -303,7 +251,7 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
             String poFakeAid2 = "EEDDCCBBAA"; // fake AID 2
 
             /*
-             * Prepare the selection SeRequest using the SeSelection class
+             * Prepare the selection using the SeSelection class
              */
             SeSelection seSelection = new SeSelection(poReader);
 

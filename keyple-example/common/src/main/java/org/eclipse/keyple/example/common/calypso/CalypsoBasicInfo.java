@@ -13,16 +13,16 @@ package org.eclipse.keyple.example.common.calypso;
 /**
  * Helper class to provide specific elements to handle Calypso cards.
  * <ul>
- * <li>AID application selection ("1TIC.ICA")</li>
+ * <li>AID application selection (default Calypso AID)</li>
  * <li>CSM_C1_ATR_REGEX regular expression matching the expected C1 CSM ATR</li>
- * <li>selectApplicationSuccessfulStatusCodes valid status word for selection command in addition to
- * 9000</li>
- * <li>poReadRecordCmd_EventLog Command to read the Event Log file</li>
- * <li>poReadRecordCmd_ContractList Command to read the Contract List file</li>
- * <li>poReadRecordCmd_Contract Command to reader the Contract file</li>
- * <li>eventLog_dataFill Data to write in the Event Log file</li>
- * <li>poAppendRecordCmd_EventLog Command to add a record to the Event Log file</li>
- * <li>poRatificationCommand ratification command (shorten read record)</li>
+ * <li>Files infos (SFI, rec number, etc) for
+ * <ul>
+ * <li>Environment and Holder</li>
+ * <li>Event Log</li>
+ * <li>Contract List</li>
+ * <li>Contracts</li>
+ * </ul>
+ * </li>
  * </ul>
  */
 public class CalypsoBasicInfo {
