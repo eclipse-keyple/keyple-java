@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.util.*;
 import org.eclipse.keyple.calypso.transaction.CalypsoPO;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.example.common.calypso.CalypsoBasicInfoAndSampleCommands;
 import org.eclipse.keyple.example.common.generic.DemoHelpers;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
@@ -132,8 +131,7 @@ public class Demo_CalypsoAuthenticationLeve3_Pcsc {
 
                 /* AID based selection */
                 SeRequest seRequest = new SeRequest(
-                        new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid)), null, true,
-                        CalypsoBasicInfoAndSampleCommands.selectApplicationSuccessfulStatusCodes);
+                        new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid)), null, true);
 
                 selectionRequests.add(seRequest);
 

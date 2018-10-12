@@ -8,11 +8,7 @@
 
 package org.eclipse.keyple.example.common.calypso;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
+
 
 /**
  * Helper class to provide specific elements to handle Calypso cards.
@@ -29,15 +25,14 @@ import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
  * <li>poRatificationCommand ratification command (shorten read record)</li>
  * </ul>
  */
-public class CalypsoBasicInfoAndSampleCommands {
-    /** 1TIC.ICA (Calypso default AID) */
-    public final static String AID = "A0000004040125090101"; // "315449432E494341";
+public class CalypsoBasicInfo {
+    /** Calypso default AID */
+    public final static String AID = "A0000004040125090101";
+    /// ** 1TIC.ICA AID */
+    // public final static String AID = "315449432E494341";
     /** CSM C1 regular expression: platform, version and serial number values are ignored */
     public final static String CSM_C1_ATR_REGEX =
             "3B3F9600805A[0-9a-fA-F]{2}80C1[0-9a-fA-F]{14}829000";
-    /** SW=6283 (application invalidated) is considered as successful */
-    public final static Set<Short> selectApplicationSuccessfulStatusCodes =
-            new HashSet<Short>(Arrays.asList((short) 0x6283));
 
     public final static byte RECORD_NUMBER_1 = 1;
     public final static byte RECORD_NUMBER_2 = 2;
@@ -51,9 +46,4 @@ public class CalypsoBasicInfoAndSampleCommands {
 
     public final static String eventLog_dataFill =
             "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCC";
-
-    /** Event Log read record */
-    public static ReadRecordsCmdBuild poReadRecordCmd_EventLog_Rev3 = new ReadRecordsCmdBuild(
-            PoRevision.REV3_1, SFI_EventLog, RECORD_NUMBER_1, true, (byte) 0x00,
-            String.format("EventLog (SFI=%02X, recnbr=%d))", SFI_EventLog, RECORD_NUMBER_1));
 }

@@ -8,21 +8,19 @@
 
 package org.eclipse.keyple.example.common.calypso;
 
-import static org.eclipse.keyple.calypso.transaction.PoTransaction.*;
-import static org.eclipse.keyple.calypso.transaction.PoTransaction.CommunicationMode.*;
-import static org.eclipse.keyple.calypso.transaction.PoTransaction.CsmSettings.*;
-import static org.eclipse.keyple.calypso.transaction.PoTransaction.ModificationMode.*;
-import static org.eclipse.keyple.example.common.calypso.CalypsoBasicInfoAndSampleCommands.*;
-import static org.eclipse.keyple.seproxy.protocol.ContactlessProtocols.*;
-import java.util.*;
-import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
+import static org.eclipse.keyple.example.common.calypso.CalypsoBasicInfo.*;
+import java.util.EnumMap;
+import java.util.Iterator;
+import java.util.List;
 import org.eclipse.keyple.calypso.transaction.CalypsoPO;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.seproxy.*;
+import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
@@ -38,7 +36,7 @@ import org.slf4j.profiler.Profiler;
  * <li>Starting a card operation when a PO presence is notified ({@link #operatePoTransactions
  * operatePoTransactions})
  * <li>Opening a logical channel with the CSM (C1 CSM is expected) see
- * ({@link CalypsoBasicInfoAndSampleCommands#CSM_C1_ATR_REGEX CSM_C1_ATR_REGEX})
+ * ({@link CalypsoBasicInfo#CSM_C1_ATR_REGEX CSM_C1_ATR_REGEX})
  * <li>Attempting to open a logical channel with the PO with 3 options:
  * <ul>
  * <li>Selection with a fake AID (1)
@@ -63,19 +61,21 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
             LoggerFactory.getLogger(Demo_CalypsoBasicTransactionEngine.class);
 
     /* define the CSM parameters to provide when creating PoTransaction */
-    private final static EnumMap<CsmSettings, Byte> csmSetting =
-            new EnumMap<CsmSettings, Byte>(CsmSettings.class) {
+    private final static EnumMap<PoTransaction.CsmSettings, Byte> csmSetting =
+            new EnumMap<PoTransaction.CsmSettings, Byte>(PoTransaction.CsmSettings.class) {
                 {
-                    put(CS_DEFAULT_KIF_PERSO, DEFAULT_KIF_PERSO);
-                    put(CS_DEFAULT_KIF_LOAD, DEFAULT_KIF_LOAD);
-                    put(CS_DEFAULT_KIF_DEBIT, DEFAULT_KIF_DEBIT);
-                    put(CS_DEFAULT_KEY_RECORD_NUMBER, DEFAULT_KEY_RECORD_NUMER);
+                    put(PoTransaction.CsmSettings.CS_DEFAULT_KIF_PERSO,
+                            PoTransaction.DEFAULT_KIF_PERSO);
+                    put(PoTransaction.CsmSettings.CS_DEFAULT_KIF_LOAD,
+                            PoTransaction.DEFAULT_KIF_LOAD);
+                    put(PoTransaction.CsmSettings.CS_DEFAULT_KIF_DEBIT,
+                            PoTransaction.DEFAULT_KIF_DEBIT);
+                    put(PoTransaction.CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER,
+                            PoTransaction.DEFAULT_KEY_RECORD_NUMER);
                 }
             };
 
     private ProxyReader poReader, csmReader;
-
-    private Profiler profiler;
 
     private boolean csmChannelOpen;
 
@@ -103,8 +103,7 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
          */
         SeSelection samSelection = new SeSelection(csmReader);
 
-        SeSelector samSelector =
-                new SeSelector(CalypsoBasicInfoAndSampleCommands.CSM_C1_ATR_REGEX, true, null);
+        SeSelector samSelector = new SeSelector(CalypsoBasicInfo.CSM_C1_ATR_REGEX, true, null);
 
         samSelection.addSelector(samSelector);
 
@@ -171,8 +170,6 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
         /*
          * Read commands to execute during the opening step: EventLog, ContractList
          */
-        List<PoSendableInSession> eventLogContractListFilesReading =
-                new ArrayList<PoSendableInSession>();
 
         /* prepare Event Log read record */
         poTransaction.prepareReadRecordsCmd(SFI_EventLog, RECORD_NUMBER_1, true, (byte) 0x00,
@@ -187,13 +184,13 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
             logger.info(
                     "========= PO Calypso session ======= Opening ============================");
         }
-        SessionAccessLevel accessLevel = SessionAccessLevel.SESSION_LVL_DEBIT;
 
         /*
          * Open Session for the debit key - with reading of the first record of the cyclic EF of
          * Environment and Holder file
          */
-        seResponse = poTransaction.processOpening(ATOMIC, accessLevel, SFI_EnvironmentAndHolder,
+        seResponse = poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
+                PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, SFI_EnvironmentAndHolder,
                 RECORD_NUMBER_1);
 
         if (!poTransaction.wasRatified()) {
@@ -219,7 +216,8 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            seResponse = poTransaction.processAtomicClosing(null, CONTACTLESS_MODE, false);
+            seResponse = poTransaction
+                    .processClosing(PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
 
         } else {
             /*
@@ -271,7 +269,8 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            seResponse = poTransaction.processClosing(CONTACTLESS_MODE, false);
+            seResponse = poTransaction
+                    .processClosing(PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
         }
 
         if (poTransaction.isSuccessful()) {
@@ -297,7 +296,7 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
                 this.csmChannelOpen = true;
             }
 
-            profiler = new Profiler("Entire transaction");
+            Profiler profiler = new Profiler("Entire transaction");
 
             /* operate multiple PO selections */
             String poFakeAid1 = "AABBCCDDEE"; // fake AID 1
@@ -311,10 +310,10 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
             /*
              * Add selection case 1: Fake AID1, protocol ISO, target rev 3
              */
-            PoSelector poSelectorFakeAid1 = new PoSelector(ByteArrayUtils.fromHex(poFakeAid1), true,
-                    PROTOCOL_ISO14443_4, PoSelector.RevisionTarget.TARGET_REV3);
 
-            seSelection.addSelector(poSelectorFakeAid1);
+            seSelection.addSelector(new PoSelector(ByteArrayUtils.fromHex(poFakeAid1), true,
+                    ContactlessProtocols.PROTOCOL_ISO14443_4,
+                    PoSelector.RevisionTarget.TARGET_REV3));
 
             /*
              * Add selection case 2: Calypso application, protocol ISO, target rev 2 or 3
@@ -322,19 +321,22 @@ public class Demo_CalypsoBasicTransactionEngine implements ObservableReader.Read
              * addition of read commands to execute following the selection
              */
             PoSelector poSelectorCalypsoAid =
-                    new PoSelector(ByteArrayUtils.fromHex(CalypsoBasicInfoAndSampleCommands.AID),
-                            true, PROTOCOL_ISO14443_4, PoSelector.RevisionTarget.TARGET_REV2_REV3);
+                    new PoSelector(ByteArrayUtils.fromHex(CalypsoBasicInfo.AID), true,
+                            ContactlessProtocols.PROTOCOL_ISO14443_4,
+                            PoSelector.RevisionTarget.TARGET_REV2_REV3);
 
             poSelectorCalypsoAid.prepareReadRecordsCmd(SFI_EventLog, RECORD_NUMBER_1, true,
                     (byte) 0x00, "EventLog (selection step)");
 
             seSelection.addSelector(poSelectorCalypsoAid);
 
-            /* Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3 */
-            PoSelector poSelectorFakeAid2 = new PoSelector(ByteArrayUtils.fromHex(poFakeAid2), true,
-                    PROTOCOL_ISO14443_4, PoSelector.RevisionTarget.TARGET_REV2_REV3);
+            /*
+             * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
+             */
 
-            seSelection.addSelector(poSelectorFakeAid2);
+            seSelection.addSelector(new PoSelector(ByteArrayUtils.fromHex(poFakeAid2), true,
+                    ContactlessProtocols.PROTOCOL_ISO14443_4,
+                    PoSelector.RevisionTarget.TARGET_REV2_REV3));
 
             /* Time measurement */
             profiler.start("Initial selection");
