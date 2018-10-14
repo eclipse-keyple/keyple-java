@@ -16,6 +16,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
+import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
+import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars;
 import org.eclipse.keyple.calypso.transaction.CalypsoPO;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.pc.generic.PcscReadersSettings;
@@ -102,15 +106,18 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         SeResponse dataReadInSession;
 
-        poTransaction.prepareReadRecordsCmd(eventSfi, (byte) 0x01, true, (byte) 0x00, "Event");
-        poTransaction.prepareReadRecordsCmd(contractListSfi, (byte) 0x01, true, (byte) 0x00,
+        ReadRecordsRespPars readEventParser = poTransaction.prepareReadRecordsCmd(eventSfi,
+                ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, (byte) 0x00, "Event");
+        ReadRecordsRespPars readContractListParser = poTransaction.prepareReadRecordsCmd(
+                contractListSfi, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, (byte) 0x00,
                 "ContractList");
 
         // Open Session with debit key #3 and reading the Environment at SFI 07h
         // Files to read during the beginning of the session: Event (SFI 0x08) and ContractList (SFI
         // 0x1E)
-        dataReadInSession = poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
-                SESSION_LVL_DEBIT, environmentSfi, (byte) 0x01);
+        boolean poProcessStatus =
+                poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
+                        SESSION_LVL_DEBIT, environmentSfi, (byte) 0x01);
 
         /*
          * byte[] sessionData =
@@ -137,10 +144,9 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
          * 0xFFFF));
          */
 
-        byte contractIndex = dataReadInSession.getApduResponses().get(2).getDataOut()[0];
+        byte contractIndex = readContractListParser.getRecords().get(1)[0];
         byte[] eventTimestampData =
-                Arrays.copyOfRange(dataReadInSession.getApduResponses().get(1).getDataOut(), 1,
-                        (Long.SIZE / Byte.SIZE));
+                Arrays.copyOfRange(readEventParser.getRecords().get(1), 1, (Long.SIZE / Byte.SIZE));
 
         String timeStampString = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                 .format(new Date(bytesToLong(eventTimestampData)));
@@ -155,10 +161,11 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         System.out.println(
                 "\t------------------------------------------------------------------------------\n");
 
-        poTransaction.prepareReadRecordsCmd((byte) 0x29, (byte) (contractIndex + 1), true,
-                (byte) 0x1D, "Contract");
+        ReadRecordsRespPars readContractParser = poTransaction.prepareReadRecordsCmd((byte) 0x29,
+                ReadDataStructure.SINGLE_RECORD_DATA, (byte) (contractIndex + 1), (byte) 0x1D,
+                "Contract");
 
-        dataReadInSession = poTransaction.processPoCommands();
+        poProcessStatus = poTransaction.processPoCommands();
 
         System.out
                 .println("Reading contract #" + (contractIndex + 1) + " for current validation...");
@@ -186,11 +193,12 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         byte[] dateToInsert = longToBytes(new Date().getTime());
         System.arraycopy(dateToInsert, 0, newEventData, 1, (Long.SIZE / Byte.SIZE));
 
-        poTransaction.prepareUpdateRecordCmd(contractListSfi, (byte) 0x01, newContractListData,
-                "ContractList");
-        poTransaction.prepareAppendRecordCmd(eventSfi, newEventData, "Event");
+        UpdateRecordRespPars updateContractListParser = poTransaction.prepareUpdateRecordCmd(
+                contractListSfi, (byte) 0x01, newContractListData, "ContractList");
+        AppendRecordRespPars appendEventPars =
+                poTransaction.prepareAppendRecordCmd(eventSfi, newEventData, "Event");
 
-        poTransaction.processClosing(CommunicationMode.CONTACTLESS_MODE, false);
+        poProcessStatus = poTransaction.processClosing(CommunicationMode.CONTACTLESS_MODE, false);
 
         System.out.println("\nValidation Successful!");
         System.out.println(
@@ -209,17 +217,19 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         SeResponse dataReadInSession;
 
-        poTransaction.prepareReadRecordsCmd(eventSfi, (byte) 0x01, true, (byte) 0x00, "Event");
-        poTransaction.prepareReadRecordsCmd(countersSfi, (byte) 0x01, true, (byte) 0x00,
-                "Counters");
-        poTransaction.prepareReadRecordsCmd(contractsSfi, (byte) 0x01, false, (byte) 0x00,
-                "Contracts");
+        ReadRecordsRespPars readEventParser = poTransaction.prepareReadRecordsCmd(eventSfi,
+                ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, (byte) 0x00, "Event");
+        ReadRecordsRespPars readCountersParser = poTransaction.prepareReadRecordsCmd(countersSfi,
+                ReadDataStructure.SINGLE_COUNTER, (byte) 0x01, (byte) 0x00, "Counters");
+        poTransaction.prepareReadRecordsCmd(contractsSfi, ReadDataStructure.MULTIPLE_RECORD_DATA,
+                (byte) 0x01, (byte) 0x00, "Contracts");
 
         // Open Session with debit key #3 and reading the Environment at SFI 07h
         // Files to read during the beginning of the session: Event (SFI 0x08), Counters (SFI 0x1B)
         // and all records of the Contracts (SFI 0x29)
-        dataReadInSession = poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
-                SESSION_LVL_DEBIT, environmentSfi, (byte) 0x01);
+        boolean poProcessStatus =
+                poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
+                        SESSION_LVL_DEBIT, environmentSfi, (byte) 0x01);
         /*
          * byte[] sessionData =
          * ByteArrayUtils.subLen(dataReadInSession.getApduResponses().get(0).getDataOut(), 0, 8);
@@ -245,14 +255,12 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
          * 0xFFFF));
          */
         byte[] eventTimestampData =
-                Arrays.copyOfRange(dataReadInSession.getApduResponses().get(1).getDataOut(), 1,
-                        (Long.SIZE / Byte.SIZE));
+                Arrays.copyOfRange(readEventParser.getRecords().get(1), 1, (Long.SIZE / Byte.SIZE));
 
         String timeStampString = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                 .format(new Date(bytesToLong(eventTimestampData)));
 
-        int counterValue = getCounterValueFromByteArray(
-                dataReadInSession.getApduResponses().get(2).getDataOut(), 1);
+        int counterValue = readCountersParser.getCounters().get(1);
 
         System.out.println(
                 "\t------------------------------------------------------------------------------");

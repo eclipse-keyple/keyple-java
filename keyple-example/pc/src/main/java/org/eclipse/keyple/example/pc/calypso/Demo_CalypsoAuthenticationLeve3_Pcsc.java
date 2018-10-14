@@ -111,7 +111,7 @@ public class Demo_CalypsoAuthenticationLeve3_Pcsc extends DemoHelpers {
                     /*
                      * Open Session for the debit key
                      */
-                    SeResponse seResponse = poTransaction.processOpening(
+                    boolean poProcessStatus = poTransaction.processOpening(
                             PoTransaction.ModificationMode.ATOMIC,
                             PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
                     if (!poTransaction.wasRatified()) {
@@ -130,7 +130,7 @@ public class Demo_CalypsoAuthenticationLeve3_Pcsc extends DemoHelpers {
                     /*
                      * A ratification command will be sent (CONTACTLESS_MODE).
                      */
-                    seResponse = poTransaction.processClosing(
+                    poProcessStatus = poTransaction.processClosing(
                             PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
                 } else {
                     logger.error(

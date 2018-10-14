@@ -19,6 +19,8 @@ public class PoCustomCommandBuilder extends AbstractIso7816CommandBuilder
 
     protected PoRevision defaultRevision = PoRevision.REV3_1;
 
+    private int bufferBytesUsage = 0;
+
     /**
      * Constructor dedicated to the construction of user-defined commands.
      *
@@ -36,5 +38,19 @@ public class PoCustomCommandBuilder extends AbstractIso7816CommandBuilder
      */
     public PoCustomCommandBuilder(String name, ApduRequest request) {
         super("PO Custom Command: " + name, request);
+    }
+
+    /**
+     * Sets the PO modifications buffer requirements for the current command
+     * 
+     * @param bufferBytesUsage modifications buffer usage in bytes
+     */
+    public void setModificationsBufferBytesUsage(int bufferBytesUsage) {
+        this.bufferBytesUsage = bufferBytesUsage;
+    }
+
+    @Override
+    public int getModificationsBufferBytesUsage() {
+        return 0;
     }
 }

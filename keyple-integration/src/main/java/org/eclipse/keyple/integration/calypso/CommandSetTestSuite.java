@@ -11,13 +11,10 @@ package org.eclipse.keyple.integration.calypso;
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.CommunicationMode;
 import static org.eclipse.keyple.integration.calypso.TestEngine.selectPO;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
-import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
+import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
+import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.CalypsoPO;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.junit.jupiter.api.Assertions;
@@ -55,14 +52,13 @@ public class CommandSetTestSuite {
     private static byte[] readRecords(PoTransaction poTransaction, Byte fileSfi, Byte recordNumber,
             boolean readOneRecordFlag) throws KeypleReaderException {
 
-        ReadRecordsCmdBuild poReadRecordCmd = new ReadRecordsCmdBuild(poTransaction.getRevision(),
-                fileSfi, (byte) recordNumber, readOneRecordFlag, (byte) 0x00,
+        ReadRecordsRespPars readRecordsRespPars = poTransaction.prepareReadRecordsCmd(fileSfi,
+                readOneRecordFlag ? ReadDataStructure.SINGLE_RECORD_DATA
+                        : ReadDataStructure.MULTIPLE_RECORD_DATA,
+                (byte) recordNumber, (byte) 0x00,
                 String.format("SFI=%02X, recnbr=%d", fileSfi, recordNumber));
 
-        List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
-        filesToReadInSession.add(poReadRecordCmd);
-
-        SeResponse dataReadInSession = poTransaction.processOpening(
+        boolean poProcessStatus = poTransaction.processOpening(
                 PoTransaction.ModificationMode.ATOMIC,
                 PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0x00, (byte) 0x00);
 
@@ -75,7 +71,7 @@ public class CommandSetTestSuite {
          * Integer.toHexString(dataReadInSession.getApduResponses().get(1).getStatusCode() &
          * 0xFFFF));
          */
-        return dataReadInSession.getApduResponses().get(1).getDataOut();
+        return readRecordsRespPars.getRecords().get(recordNumber);
     }
 
 

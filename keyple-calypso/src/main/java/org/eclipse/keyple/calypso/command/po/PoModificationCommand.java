@@ -13,4 +13,11 @@ package org.eclipse.keyple.calypso.command.po;
  * Interface for commands that can modify the PO memory content
  */
 public interface PoModificationCommand {
+    /**
+     * Gets the number of bytes in the session modifications buffer required to execute this
+     * command.
+     * 
+     * @return a number in bytes.
+     */
+    int getModificationsBufferBytesUsage();
 }

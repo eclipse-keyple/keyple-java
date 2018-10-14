@@ -23,6 +23,8 @@ public class UpdateRecordCmdBuild extends PoCommandBuilder
     /** The command. */
     private static final CalypsoPoCommands command = CalypsoPoCommands.UPDATE_RECORD;
 
+    private int modificationsBufferUsage;
+
     /**
      * Instantiates a new UpdateRecordCmdBuild.
      *
@@ -47,9 +49,16 @@ public class UpdateRecordCmdBuild extends PoCommandBuilder
         byte p1 = recordNumber;
         byte p2 = (sfi == 0) ? (byte) 0x04 : (byte) ((byte) (sfi * 8) + 4);
 
+        modificationsBufferUsage = newRecordData.length + 6;
+
         this.request = setApduRequest(cla, command, p1, p2, newRecordData, null);
         if (extraInfo != null) {
             this.addSubName(extraInfo);
         }
+    }
+
+    @Override
+    public int getModificationsBufferBytesUsage() {
+        return modificationsBufferUsage;
     }
 }
