@@ -51,6 +51,6 @@ public class PoCustomCommandBuilder extends AbstractIso7816CommandBuilder
 
     @Override
     public int getModificationsBufferBytesUsage() {
-        return 0;
+        return this.bufferBytesUsage;
     }
 }
