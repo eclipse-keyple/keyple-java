@@ -43,7 +43,7 @@ public class Demo_CalypsoBasic_Pcsc {
      * @throws InterruptedException thread exception
      */
     public static void main(String[] args) throws KeypleBaseException, InterruptedException {
-        final Logger logger = LoggerFactory.getLogger(Demo_CalypsoBasic_Pcsc.class);
+        Logger logger = LoggerFactory.getLogger(Demo_CalypsoBasic_Pcsc.class);
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
@@ -106,7 +106,8 @@ public class Demo_CalypsoBasic_Pcsc {
         /* Set the PO reader protocol flag */
         poReader.addSeProtocolSetting(
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
-
+        poReader.addSeProtocolSetting(
+                new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_B_PRIME));
         /* Assign readers to Calypso transaction engine */
         transactionEngine.setReaders(poReader, csmReader);
 

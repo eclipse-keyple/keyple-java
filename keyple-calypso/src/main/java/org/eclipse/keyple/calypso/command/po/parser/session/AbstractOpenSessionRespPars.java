@@ -12,7 +12,6 @@
 package org.eclipse.keyple.calypso.command.po.parser.session;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
@@ -116,8 +115,7 @@ public abstract class AbstractOpenSessionRespPars extends AbstractApduResponsePa
     }
 
     public byte[] getRecordDataRead() {
-        byte[] secureSessionData = secureSession.getSecureSessionData();
-        return Arrays.copyOfRange(secureSessionData, 0, secureSessionData.length);
+        return secureSession.getOriginalData();
     }
 
     /**

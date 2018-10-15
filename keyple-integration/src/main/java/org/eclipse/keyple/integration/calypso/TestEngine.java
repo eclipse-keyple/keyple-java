@@ -77,7 +77,7 @@ public class TestEngine {
 
             if (responses.get(i) != null) {
 
-                return new PoFileStructureInfo(responses.get(i).getFci());
+                return new PoFileStructureInfo(responses.get(i));
             }
         }
 

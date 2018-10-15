@@ -13,7 +13,7 @@ package org.eclipse.keyple.integration.calypso;
 
 
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.seproxy.ApduResponse;
+import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.util.ByteArrayUtils;
 
 public class PoFileStructureInfo {
@@ -37,7 +37,7 @@ public class PoFileStructureInfo {
 
     private EfData simulatedCountersFileData;
 
-    private ApduResponse fciData;
+    private SeResponse selectionData;
 
     private void setFileStructureForAuditC0() {
 
@@ -74,9 +74,11 @@ public class PoFileStructureInfo {
 
     }
 
-    public PoFileStructureInfo(ApduResponse poFciData) {
+    public PoFileStructureInfo(SeResponse poSelectionData) {
 
-        GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(poFciData);
+        selectionData = poSelectionData;
+
+        GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(selectionData.getFci());
         byte[] poCalypsoInstanceAid = poFciRespPars.getDfName();
 
         if (poCalypsoInstanceAid.equals((ByteArrayUtils.fromHex(poAuditC0Aid)))) {
@@ -96,8 +98,6 @@ public class PoFileStructureInfo {
                     "The file structure for AID " + ByteArrayUtils.toHex(poCalypsoInstanceAid)
                             + " is not registered for testing.");
         }
-
-        fciData = poFciData;
     }
 
     public EfData getEnvironmentFileData() {
@@ -124,7 +124,7 @@ public class PoFileStructureInfo {
         return simulatedCountersFileData;
     }
 
-    public ApduResponse getFciData() {
-        return fciData;
+    public SeResponse getSelectionData() {
+        return selectionData;
     }
 }

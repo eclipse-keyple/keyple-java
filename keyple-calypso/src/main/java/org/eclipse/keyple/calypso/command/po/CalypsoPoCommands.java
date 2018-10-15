@@ -27,6 +27,10 @@ public enum CalypsoPoCommands implements CommandsTable {
             org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars.class),
 
     /** The po open session. */
+    OPEN_SESSION_10("Open Secure Session V1", (byte) 0x8A, OpenSession10CmdBuild.class,
+            OpenSession10RespPars.class),
+
+    /** The po open session. */
     OPEN_SESSION_24("Open Secure Session V2.4", (byte) 0x8A, OpenSession24CmdBuild.class,
             OpenSession24RespPars.class),
 
@@ -144,6 +148,8 @@ public enum CalypsoPoCommands implements CommandsTable {
      */
     public static CalypsoPoCommands getOpenSessionForRev(PoRevision rev) {
         switch (rev) {
+            case REV1_0:
+                return OPEN_SESSION_10;
             case REV2_4:
                 return OPEN_SESSION_24;
             case REV3_1:

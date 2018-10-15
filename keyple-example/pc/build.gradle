@@ -26,6 +26,7 @@ dependencies {
 
     //https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+    implementation group: 'org.slf4j', name: 'slf4j-ext', version: '1.7.25'
 
 }
 

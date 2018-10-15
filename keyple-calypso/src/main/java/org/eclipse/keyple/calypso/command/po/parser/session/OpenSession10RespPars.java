@@ -32,7 +32,7 @@ public class OpenSession10RespPars extends AbstractOpenSessionRespPars {
         /**
          * In rev 1.0 mode, the response to the Open Secure Session command is as follows:
          * <p>
-         * <code>CC CC CC CC CC [RR RR] [NN..NN]</code>
+         * <code>CC CC CC CC [RR RR] [NN..NN]</code>
          * <p>
          * Where:
          * <ul>
@@ -40,12 +40,26 @@ public class OpenSession10RespPars extends AbstractOpenSessionRespPars {
          * <li><code>RR RR</code> = ratification bytes (may be absent)</li>
          * <li><code>NN..NN</code> = record data (29 bytes)</li>
          * </ul>
-         *
+         * Legal length values are:
+         * <ul>
+         * <li>4: ratified, 4-byte challenge, no data</li>
+         * <li>33: ratified, 4-byte challenge, 29 bytes of data</li>
+         * <li>6: not ratified (2 ratification bytes), 4-byte challenge, no data</li>
+         * <li>35 not ratified (2 ratification bytes), 4-byte challenge, 29 bytes of data</li>
+         * </ul>
          */
-        if (apduResponseData.length == 4 || apduResponseData.length == 33) {
-            previousSessionRatified = false;
-        } else {
-            previousSessionRatified = true;
+        switch (apduResponseData.length) {
+            case 4:
+            case 33:
+                previousSessionRatified = true;
+                break;
+            case 6:
+            case 35:
+                previousSessionRatified = false;
+                break;
+            default:
+                throw new IllegalStateException(
+                        "Bad response length to Open Secure Session: " + apduResponseData.length);
         }
 
         /* KVC doesn't exist and is set to null for this type of PO */

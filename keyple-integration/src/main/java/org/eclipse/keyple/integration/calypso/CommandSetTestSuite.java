@@ -11,18 +11,15 @@
 
 package org.eclipse.keyple.integration.calypso;
 
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.CommunicationMode;
-import static org.eclipse.keyple.calypso.transaction.PoSecureSession.ModificationMode.ATOMIC;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.CommunicationMode;
 import static org.eclipse.keyple.integration.calypso.TestEngine.selectPO;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoSendableInSession;
-import org.eclipse.keyple.calypso.command.po.builder.DecreaseCmdBuild;
-import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
-import org.eclipse.keyple.calypso.transaction.PoSecureSession;
+import org.eclipse.keyple.calypso.transaction.CalypsoPO;
+import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
@@ -58,8 +55,8 @@ public class CommandSetTestSuite {
     }
 
 
-    private static byte[] readRecords(PoSecureSession poTransaction, Byte fileSfi,
-            Byte recordNumber, boolean readOneRecordFlag) throws KeypleReaderException {
+    private static byte[] readRecords(PoTransaction poTransaction, Byte fileSfi, Byte recordNumber,
+            boolean readOneRecordFlag) throws KeypleReaderException {
 
         ReadRecordsCmdBuild poReadRecordCmd = new ReadRecordsCmdBuild(poTransaction.getRevision(),
                 fileSfi, (byte) recordNumber, readOneRecordFlag, (byte) 0x00,
@@ -68,11 +65,11 @@ public class CommandSetTestSuite {
         List<PoSendableInSession> filesToReadInSession = new ArrayList<PoSendableInSession>();
         filesToReadInSession.add(poReadRecordCmd);
 
-        SeResponse dataReadInSession = poTransaction.processOpening(ATOMIC,
-                PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0x00, (byte) 0x00,
-                filesToReadInSession);
+        SeResponse dataReadInSession = poTransaction.processOpening(
+                PoTransaction.ModificationMode.ATOMIC,
+                PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0x00, (byte) 0x00);
 
-        poTransaction.processClosing(null, null, CommunicationMode.CONTACTLESS_MODE, false);
+        poTransaction.processClosing(CommunicationMode.CONTACTLESS_MODE, false);
         /*
          * System.out.println("DataRead#: " +
          * ByteArrayUtils.toHex(dataReadInSession.getApduResponses().get(1).getDataOut()));
@@ -85,62 +82,47 @@ public class CommandSetTestSuite {
     }
 
 
-    private static void updateRecord(PoSecureSession poTransaction, Byte sfi, Byte recordNumber,
+    private static void updateRecord(PoTransaction poTransaction, Byte sfi, Byte recordNumber,
             byte[] dataToWrite) throws KeypleReaderException {
 
-        poTransaction.processOpening(ATOMIC, PoSecureSession.SessionAccessLevel.SESSION_LVL_LOAD,
-                (byte) 0x00, (byte) 0x00, null);
+        poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
+                PoTransaction.SessionAccessLevel.SESSION_LVL_LOAD, (byte) 0x00, (byte) 0x00);
 
-        UpdateRecordCmdBuild poUpdateRecordCmd =
-                new UpdateRecordCmdBuild(poTransaction.getRevision(), sfi, recordNumber,
-                        dataToWrite, String.format("SFI=%02X, recnbr=%d", sfi, recordNumber));
+        poTransaction.prepareUpdateRecordCmd(sfi, recordNumber, dataToWrite,
+                String.format("SFI=%02X, recnbr=%d", sfi, recordNumber));
+        poTransaction.processPoCommands();
 
-        List<PoSendableInSession> filesToChangeInSession = new ArrayList<PoSendableInSession>();
-        filesToChangeInSession.add((PoSendableInSession) poUpdateRecordCmd);
-
-        poTransaction.processPoCommands(filesToChangeInSession);
-
-        poTransaction.processClosing(null, null, CommunicationMode.CONTACTLESS_MODE, false);
+        poTransaction.processClosing(CommunicationMode.CONTACTLESS_MODE, false);
     }
 
 
-    private static void decreaseCounter(PoSecureSession poTransaction, Byte countersSfi,
+    private static void decreaseCounter(PoTransaction poTransaction, Byte countersSfi,
             Byte counterIndex, int valueToDecrement) throws KeypleReaderException {
 
-        poTransaction.processOpening(ATOMIC, PoSecureSession.SessionAccessLevel.SESSION_LVL_DEBIT,
-                (byte) 0x00, (byte) 0x00, null);
+        poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
+                PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0x00, (byte) 0x00);
 
-        DecreaseCmdBuild poDecreaseCmd_Counter =
-                new DecreaseCmdBuild(poTransaction.getRevision(), countersSfi, counterIndex,
-                        valueToDecrement, String.format("SFI=%02X, index=%d, decvalue=%d",
-                                countersSfi, counterIndex, valueToDecrement));
+        poTransaction.prepareDecreaseCmd(countersSfi, counterIndex, valueToDecrement, String.format(
+                "SFI=%02X, index=%d, decvalue=%d", countersSfi, counterIndex, valueToDecrement));
 
-        List<PoSendableInSession> filesToChangeInSession = new ArrayList<PoSendableInSession>();
-        filesToChangeInSession.add((PoSendableInSession) poDecreaseCmd_Counter);
+        poTransaction.processPoCommands();
 
-        poTransaction.processPoCommands(filesToChangeInSession);
-
-        poTransaction.processClosing(null, null, CommunicationMode.CONTACTLESS_MODE, false);
+        poTransaction.processClosing(CommunicationMode.CONTACTLESS_MODE, false);
     }
 
 
-    private static void increaseCounter(PoSecureSession poTransaction, Byte countersSfi,
+    private static void increaseCounter(PoTransaction poTransaction, Byte countersSfi,
             Byte counterIndex, int valueToIncrement) throws KeypleReaderException {
 
-        poTransaction.processOpening(ATOMIC, PoSecureSession.SessionAccessLevel.SESSION_LVL_LOAD,
-                (byte) 0x00, (byte) 0x00, null);
+        poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
+                PoTransaction.SessionAccessLevel.SESSION_LVL_LOAD, (byte) 0x00, (byte) 0x00);
 
-        IncreaseCmdBuild poIncreaseCmd_Counter =
-                new IncreaseCmdBuild(poTransaction.getRevision(), countersSfi, counterIndex,
-                        valueToIncrement, String.format("SFI=%02X, index=%d, decvalue=%d",
-                                countersSfi, counterIndex, valueToIncrement));
+        poTransaction.prepareIncreaseCmd(countersSfi, counterIndex, valueToIncrement, String.format(
+                "SFI=%02X, index=%d, decvalue=%d", countersSfi, counterIndex, valueToIncrement));
 
-        List<PoSendableInSession> filesToChangeInSession = new ArrayList<PoSendableInSession>();
-        filesToChangeInSession.add((PoSendableInSession) poIncreaseCmd_Counter);
+        poTransaction.processPoCommands();
 
-        poTransaction.processPoCommands(filesToChangeInSession);
-
-        poTransaction.processClosing(null, null, CommunicationMode.CONTACTLESS_MODE, false);
+        poTransaction.processClosing(CommunicationMode.CONTACTLESS_MODE, false);
     }
 
     @Test
@@ -150,8 +132,8 @@ public class CommandSetTestSuite {
 
             PoFileStructureInfo poData = selectPO();
 
-            PoSecureSession poTransaction = new PoSecureSession(TestEngine.poReader,
-                    TestEngine.csmReader, null, poData.getFciData());
+            PoTransaction poTransaction = new PoTransaction(TestEngine.poReader,
+                    new CalypsoPO(poData.getSelectionData()), TestEngine.csmReader, null);
 
             byte[] genericCounterData = new byte[] {0x00, 0x00, 0x0A, 0x00, 0x01, 0x00, 0x00, 0x0B,
                     0x00, 0x01, 0x00, 0x00, 0x0C, 0x00, 0x00, 0x00, 0x00, (byte) 0xB0, 0x00,
@@ -202,8 +184,8 @@ public class CommandSetTestSuite {
 
             PoFileStructureInfo poData = selectPO();
 
-            PoSecureSession poTransaction = new PoSecureSession(TestEngine.poReader,
-                    TestEngine.csmReader, null, poData.getFciData());
+            PoTransaction poTransaction = new PoTransaction(TestEngine.poReader,
+                    new CalypsoPO(poData.getSelectionData()), TestEngine.csmReader, null);
 
             byte[] initialCounterData = readRecords(poTransaction,
                     poData.getCountersFileData().getSfi(), (byte) 0x01, true);
@@ -251,8 +233,8 @@ public class CommandSetTestSuite {
 
             PoFileStructureInfo poData = selectPO();
 
-            PoSecureSession poTransaction = new PoSecureSession(TestEngine.poReader,
-                    TestEngine.csmReader, null, poData.getFciData());
+            PoTransaction poTransaction = new PoTransaction(TestEngine.poReader,
+                    new CalypsoPO(poData.getSelectionData()), TestEngine.csmReader, null);
 
             byte[] initialCounterData = readRecords(poTransaction,
                     poData.getCountersFileData().getSfi(), (byte) 0x01, true);
@@ -302,8 +284,8 @@ public class CommandSetTestSuite {
 
             PoFileStructureInfo poData = selectPO();
 
-            PoSecureSession poTransaction = new PoSecureSession(TestEngine.poReader,
-                    TestEngine.csmReader, null, poData.getFciData());
+            PoTransaction poTransaction = new PoTransaction(TestEngine.poReader,
+                    new CalypsoPO(poData.getSelectionData()), TestEngine.csmReader, null);
 
             byte[] firstRecordData = new byte[] {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
                     0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,

@@ -38,6 +38,12 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
         STATUS_TABLE = m;
     }
 
+    private static final int[] bufferSizeIndicatorToBufferSize = new int[] {0, 0, 0, 0, 0, 0, 215,
+            256, 304, 362, 430, 512, 608, 724, 861, 1024, 1217, 1448, 1722, 2048, 2435, 2896, 3444,
+            4096, 4870, 5792, 6888, 8192, 9741, 11585, 13777, 16384, 19483, 23170, 27554, 32768,
+            38967, 46340, 55108, 65536, 77935, 92681, 110217, 131072, 155871, 185363, 220435,
+            262144, 311743, 370727, 440871, 524288, 623487, 741455, 881743, 1048576};
+
     @Override
     protected Map<Integer, StatusProperties> getStatusTable() {
         return STATUS_TABLE;
@@ -64,12 +70,15 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
         return fci != null ? fci.getApplicationSN() : null;
     }
 
-    public byte getBufferSizeByte() {
-        return fci != null ? fci.getStartupInformation().getBufferSize() : 0x00;
+    public byte getBufferSizeIndicator() {
+        return fci != null ? fci.getStartupInformation().getBufferSizeIndicator() : 0x00;
     }
 
     public int getBufferSizeValue() {
-        return fci != null ? (int) fci.getStartupInformation().getBufferSize() : 0;
+        return fci != null
+                ? bufferSizeIndicatorToBufferSize[(int) fci.getStartupInformation()
+                        .getBufferSizeIndicator()]
+                : 0;
     }
 
     public byte getPlatformByte() {
@@ -213,7 +222,7 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
     public static class StartupInformation {
 
         /** The buffer size. */
-        final byte bufferSize;
+        final byte bufferSizeIndicator;
 
         /** The platform. */
         final byte platform;
@@ -236,7 +245,7 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
         /**
          * Instantiates a new StartupInformation.
          *
-         * @param bufferSize the buffer size
+         * @param bufferSizeIndicator the buffer size indicator
          * @param platform the platform
          * @param applicationType the application type
          * @param applicationSubtype the application subtype
@@ -244,10 +253,10 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
          * @param softwareVersion the software version
          * @param softwareRevision the software revision
          */
-        public StartupInformation(byte bufferSize, byte platform, byte applicationType,
+        public StartupInformation(byte bufferSizeIndicator, byte platform, byte applicationType,
                 byte applicationSubtype, byte softwareIssuer, byte softwareVersion,
                 byte softwareRevision) {
-            this.bufferSize = bufferSize;
+            this.bufferSizeIndicator = bufferSizeIndicator;
             this.platform = platform;
             this.applicationType = applicationType;
             this.applicationSubtype = applicationSubtype;
@@ -257,7 +266,7 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
         }
 
         public StartupInformation(byte[] buffer) {
-            this.bufferSize = buffer[0];
+            this.bufferSizeIndicator = buffer[0];
             this.platform = buffer[1];
             this.applicationType = buffer[2];
             this.applicationSubtype = buffer[3];
@@ -277,7 +286,7 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
             int result = 1;
             result = prime * result + applicationSubtype;
             result = prime * result + applicationType;
-            result = prime * result + bufferSize;
+            result = prime * result + bufferSizeIndicator;
             result = prime * result + platform;
             result = prime * result + softwareIssuer;
             result = prime * result + softwareRevision;
@@ -300,7 +309,8 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
                     other = (StartupInformation) obj;
                     if ((applicationSubtype != other.applicationSubtype)
                             || (applicationType != other.applicationType)
-                            || (bufferSize != other.bufferSize) || (platform != other.platform)
+                            || (bufferSizeIndicator != other.bufferSizeIndicator)
+                            || (platform != other.platform)
                             || (softwareIssuer != other.softwareIssuer)
                             || (softwareRevision != other.softwareRevision)
                             || (softwareVersion != other.softwareVersion)) {
@@ -322,8 +332,8 @@ public class GetDataFciRespPars extends AbstractApduResponseParser {
          *
          * @return the buffer size
          */
-        public byte getBufferSize() {
-            return bufferSize;
+        public byte getBufferSizeIndicator() {
+            return bufferSizeIndicator;
         }
 
         /**
