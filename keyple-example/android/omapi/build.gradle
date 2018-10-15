@@ -10,34 +10,20 @@ buildscript {
     }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.1'
-}
 
-allprojects {
-
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-
-    apply plugin: 'pmd'
-
-    pmd {
-        ruleSets = [
-                "java-basic",
-                "java-braces",
-        ]
-    }
-
-}
-
-group 'org.eclipse.keyple'
-version = '0.10.0-SNAPSHOT'
-
+project.group 'org.eclipse.keyple'
+project.version = '0.10.0-SNAPSHOT'
 
 
 apply plugin: 'com.android.application'
+apply plugin: 'pmd'
+
+pmd {
+    ruleSets = [
+            "java-basic",
+            "java-braces",
+    ]
+}
 
 
 android {
@@ -87,7 +73,9 @@ android {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
+    jcenter()
     google()
 }
 
@@ -100,8 +88,14 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation project(':keyple-calypso')
-    implementation project(path: ':keyple-plugin-android-omapi')
+
+
+    //use keyple library : keyple core
+    implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
+
+    //implementation project(path: ':keyple-plugin-android-omapi')
+    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-android-omapi', version: '0.+'
+
     compileOnly files('libs/org.simalliance.openmobileapi.jar')
 }
 

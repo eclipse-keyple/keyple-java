@@ -1,3 +1,7 @@
+plugins {
+    id 'maven-publish'
+}
+
 apply plugin: 'java'
 apply plugin: 'java-library'
 
@@ -12,8 +16,20 @@ jar {
     }
 }
 
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+
+            from components.java
+        }
+    }
+}
+
 build.dependsOn ":keyple-core:build" //refresh keyple-core if needed
-build.finalizedBy install //install artifact in local repo
+build.finalizedBy publishToMavenLocal //install artifact in local repo
 
 dependencies {
 

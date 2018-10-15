@@ -10,33 +10,19 @@ buildscript {
     }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.1'
-}
+apply plugin: 'pmd'
+apply plugin: 'com.android.application'
 
-allprojects {
-
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-
-    apply plugin: 'pmd'
-
-    pmd {
-        ruleSets = [
-                "java-basic",
-                "java-braces",
-        ]
-    }
-
-
+pmd {
+    ruleSets = [
+            "java-basic",
+            "java-braces",
+    ]
 }
 
 project.group 'org.eclipse.keyple'
-version = '0.10.0-SNAPSHOT'
+project.version = '0.10.0-SNAPSHOT'
 
-apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
@@ -61,7 +47,7 @@ android {
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
-        targetCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_6
     }
     buildToolsVersion '26.0.2'
     lintOptions {
@@ -72,6 +58,7 @@ android {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     google()
 }
@@ -90,6 +77,11 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation project(':keyple-plugin-android-nfc')
-    implementation project(':keyple-calypso')
+
+    //implementation project(':keyple-calypso')
+
+    implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-android-nfc', version: '0.+'
+    //implementation project(':keyple-plugin-android-nfc')
+
 }

@@ -1,3 +1,7 @@
+plugins {
+    id 'maven-publish'
+}
+
 apply plugin: 'java'
 
 project.version = '0.10.0-SNAPSHOT'
@@ -27,9 +31,20 @@ jar {
     }
 }
 
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+
+            from components.java
+        }
+    }
+}
 
 build.dependsOn preBuild
-build.finalizedBy install
+build.finalizedBy publishToMavenLocal
 
 pmd {
     ruleSets = [

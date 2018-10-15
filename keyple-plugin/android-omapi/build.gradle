@@ -8,39 +8,26 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'digital.wup:android-maven-publish:3.0.0'
     }
 }
 
-plugins {
-    id "com.diffplug.gradle.spotless" version "3.14.0"
-}
 
-allprojects {
-
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        jcenter()
-    }
-
-    apply plugin: 'pmd'
-
-    pmd {
-        ruleSets = [
-                "java-basic",
-                "java-braces",
-        ]
-    }
-    apply plugin: 'maven'
-
-}
 
 group 'org.eclipse.keyple'
 project.version = '0.10.0-SNAPSHOT'
 
 apply plugin: 'com.android.library'
+apply plugin: 'pmd'
+apply plugin: 'digital.wup.android-maven-publish'
 
-sourceCompatibility = 1.6
+pmd {
+    ruleSets = [
+            "java-basic",
+            "java-braces",
+    ]
+}
+
 
 
 android {
@@ -123,12 +110,22 @@ android {
     }
 
 }
-/*
-*/
+
+assemble.finalizedBy publishToMavenLocal
+
+publishing {
+    publications {
+        mavenAar(MavenPublication) {
+            from components.android
+        }
+    }
+}
 
 
 repositories {
+    mavenLocal()
     mavenCentral()
+    jcenter()
     google()
 }
 
@@ -138,7 +135,6 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:26.1.0'
     //implementation project(':keyple-calypso')
     implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'
-    implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
 
     //compile with OMAPI jar but do not include it
     compileOnly files('libs/org.simalliance.openmobileapi.jar')
@@ -146,6 +142,7 @@ dependencies {
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 
     /** Test **/
+    testImplementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
     testImplementation files('libs/org.simalliance.openmobileapi.jar')
 
     /**Power mock**/

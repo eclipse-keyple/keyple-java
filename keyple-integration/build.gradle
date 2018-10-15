@@ -14,7 +14,8 @@ dependencies {
     implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'
     implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
     implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc', version: '0.+'
-    implementation group: 'org.eclipse.keyple', name: 'keyple-example-pc', version: '0.+'
+
+    implementation project(':keyple-example:keyple-example-pc')
 
     //https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'

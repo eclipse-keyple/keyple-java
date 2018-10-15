@@ -8,11 +8,12 @@ buildscript {
 
 plugins {
     id "com.diffplug.gradle.spotless" version "3.14.0"
-    id 'maven-publish'
 }
 
 subprojects {
     group 'org.eclipse.keyple'
+
+
 }
 
 allprojects {
@@ -52,9 +53,10 @@ allprojects {
         ]
     }
 
-    apply plugin: 'maven'
+    //apply plugin: 'maven'
 
-    apply plugin: 'maven-publish'
+    //apply plugin: 'maven-publish'
+
 
 }
 
