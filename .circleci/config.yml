@@ -76,9 +76,7 @@ jobs:
         #assemble keyple core and calypso
         - run: gradle :keyple-core:build --info # run tests with stacktrace
         - run: gradle :keyple-calypso:build --info # run tests with stacktrace
-        - run: gradle :keyple-plugin:build --info # run tests with stacktrace
-        #- run: gradle test --stacktrace # run tests with stacktrace
-        - run: gradle :keyple-plugin:example javadoc fatjar
+
 
         #Download NFC project dependencies
         - run:
