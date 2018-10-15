@@ -78,21 +78,21 @@ jobs:
         - run: gradle :keyple-calypso:build --info # run tests with stacktrace
 
 
-        #Download NFC project dependencies
-        - run:
-            name: Download Dependencies for Example Android NFC
-            command: gradle -b ./keyple-example/android/nfc/build.gradle androidDependencies
+        ##Download NFC project dependencies
+        #- run:
+        #    name: Download Dependencies for Example Android NFC
+        #    command: gradle -b ./keyple-example/android/nfc/build.gradle androidDependencies
 
-        #Download OMAPI project dependencies
-        - run:
-            name: Download Dependencies for Example Android OMAPI
-            command: gradle -b ./keyple-example/android/omapi/build.gradle androidDependencies
+        ##Download OMAPI project dependencies
+        #- run:
+        #    name: Download Dependencies for Example Android OMAPI
+        #    command: gradle -b ./keyple-example/android/omapi/build.gradle androidDependencies
 
-        #Save dependencies in cache
-        - save_cache:
-            paths:
-              - ~/.gradle
-            key: v1-dependencies-{{ checksum "./keyple-example/android/nfc/build.gradle" }}
+        ##Save dependencies in cache
+        #- save_cache:
+        #    paths:
+        #      - ~/.gradle
+        #    key: v1-dependencies-{{ checksum "./keyple-example/android/nfc/build.gradle" }}
 
 
         ############################
