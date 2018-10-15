@@ -25,8 +25,12 @@ jobs:
           #(disabled) fallback to using the latest cache if no exact match is found
           #- v1-dependencies-
 
-      - run: gradle test --stacktrace --debug # run tests with stacktrace
-      - run: gradle build javadoc fatjar
+      - run: gradle :keyple-core:build --info # run tests with stacktrace
+      - run: gradle :keyple-calypso:build --info # run tests with stacktrace
+      - run: gradle :keyple-plugin:build --info # run tests with stacktrace
+      #- run: gradle test --stacktrace # run tests with stacktrace
+      - run: gradle :keyple-plugin:example javadoc fatjar
+      - run: gradle javadoc fatjar
       - run: .circleci/save_artifacts.sh Android build takes care of it
       #- run: .circleci/push_gh_pages.sh Android build takes care of it
 
@@ -66,12 +70,14 @@ jobs:
             keys:
             - v1-dependencies-{{ checksum "./keyple-example/android/nfc/build.gradle" }}
 
-        - run: gradle test --stacktrace --debug # run tests with stacktrace
+        #- run: gradle test --stacktrace --debug # run tests with stacktrace
 
         #assemble keyple core and calypso
-        - run:
-            name: Assemble Keyple
-            command:  gradle build javadoc fatjar
+        - run: gradle :keyple-core:build --info # run tests with stacktrace
+        - run: gradle :keyple-calypso:build --info # run tests with stacktrace
+        - run: gradle :keyple-plugin:build --info # run tests with stacktrace
+        #- run: gradle test --stacktrace # run tests with stacktrace
+        - run: gradle :keyple-plugin:example javadoc fatjar
 
         #Download NFC project dependencies
         - run:
