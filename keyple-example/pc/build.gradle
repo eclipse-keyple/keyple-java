@@ -4,6 +4,7 @@ sourceCompatibility = 1.6
 
 version = '0.10.0-RELEASE'
 
+jar.dependsOn copyLICENSE, copyNOTICE
 
 jar {
     manifest {

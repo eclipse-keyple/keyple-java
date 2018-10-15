@@ -53,10 +53,17 @@ allprojects {
         ]
     }
 
-    //apply plugin: 'maven'
+    task copyLICENSE(type: Copy) {
+        print 'copy LICENSE file from path ' + "${rootDir}/LICENSE"
+        from file("${rootDir}/LICENSE")
+        into file("${buildDir}/resources/main/META-INF/")
+    }
 
-    //apply plugin: 'maven-publish'
-
+    task copyNOTICE(type: Copy) {
+        print 'copy NOTICE file from path ' + "${rootDir}/NOTICE"
+        from file("${rootDir}/NOTICE")
+        into file("${buildDir}/resources/main/META-INF/")
+    }
 
 }
 

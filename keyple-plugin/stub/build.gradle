@@ -10,6 +10,8 @@ project.version = '0.10.0-SNAPSHOT'
 
 apply plugin: 'java-library'
 
+jar.dependsOn copyLICENSE, copyNOTICE
+
 jar {
     manifest {
         attributes 'Implementation-Title': 'Keyple Plugin Stub',

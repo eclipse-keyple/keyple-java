@@ -9,6 +9,8 @@ sourceCompatibility = 1.6
 
 project.version = '0.10.0-SNAPSHOT'
 
+jar.dependsOn copyLICENSE, copyNOTICE
+
 jar {
     manifest {
         attributes 'Implementation-Title': 'Keyple Calypso',

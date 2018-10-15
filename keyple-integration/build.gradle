@@ -9,6 +9,10 @@ jar {
     }
 }
 
+jar.dependsOn copyLICENSE, copyNOTICE
+
+
+
 dependencies {
 
     implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'

@@ -24,6 +24,8 @@ task preBuild {
     }
 }
 
+jar.dependsOn copyLICENSE, copyNOTICE
+
 jar {
     manifest {
         attributes 'Implementation-Title': 'Keyple Core',
