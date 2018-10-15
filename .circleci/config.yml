@@ -29,7 +29,7 @@ jobs:
       - run: gradle :keyple-calypso:build --info # run tests with stacktrace
       - run: gradle :keyple-plugin:build --info # run tests with stacktrace
       #- run: gradle test --stacktrace # run tests with stacktrace
-      - run: gradle :keyple-plugin:example javadoc fatjar
+      - run: gradle :keyple-example:build javadoc fatjar
       - run: gradle javadoc fatjar
       - run: .circleci/save_artifacts.sh Android build takes care of it
       #- run: .circleci/push_gh_pages.sh Android build takes care of it
