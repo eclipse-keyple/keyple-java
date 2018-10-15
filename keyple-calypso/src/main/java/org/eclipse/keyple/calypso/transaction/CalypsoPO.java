@@ -110,4 +110,12 @@ public final class CalypsoPO {
     public byte[] getAtr() {
         return poAtr;
     }
+
+    public boolean isModificationsCounterInBytes() {
+        return true;
+    }
+
+    public int getModificationsCounter() {
+        return 0;
+    }
 }

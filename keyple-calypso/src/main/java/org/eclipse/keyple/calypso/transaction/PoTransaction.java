@@ -127,6 +127,10 @@ public class PoTransaction {
     private ModificationMode currentModificationMode;
     /** The current secure session access level: PERSO, RELOAD, DEBIT */
     private SessionAccessLevel currentAccessLevel;
+    /* modifications counter management */
+    private boolean modificationsCounterIsInBytes;
+    private int modificationsCounterMax;
+    private int modificationsCounter;
 
     /**
      * PoTransaction with PO and SAM readers.
@@ -167,6 +171,10 @@ public class PoTransaction {
         poRevision = calypsoPO.getRevision();
 
         poCalypsoInstanceAid = calypsoPO.getDfName();
+
+        modificationsCounterIsInBytes = calypsoPO.isModificationsCounterInBytes();
+
+        modificationsCounterMax = modificationsCounter = calypsoPO.getModificationsCounter();
 
         /* Configure an Aid or Atr selector depending on whether the DF name is available or not. */
         if (poCalypsoInstanceAid != null) {
@@ -1566,12 +1574,39 @@ public class PoTransaction {
         return allSuccessfulCommands;
     }
 
+    /**
+     * Checks whether the requirement for the modifications buffer is compatible with the current
+     * usage level of the buffer.
+     * <p>
+     * If it is compatible, the requirement is subtracted from the current level and the method
+     * returns false. If this is not the case, the method returns true.
+     * 
+     * @param bufferByteRequirement the buffer requirement for the current command
+     * @return true or false
+     */
     private boolean willOverflowBuffer(int bufferByteRequirement) {
-        return true;
+        boolean willOverflow = false;
+        if (modificationsCounterIsInBytes) {
+            if (modificationsCounter - bufferByteRequirement > 0) {
+                modificationsCounter = modificationsCounter - bufferByteRequirement;
+            } else {
+                willOverflow = true;
+            }
+        } else {
+            if (modificationsCounter > 0) {
+                modificationsCounter--;
+            } else {
+                willOverflow = true;
+            }
+        }
+        return willOverflow;
     }
 
+    /**
+     * Initialized the modifications buffer counter to its maximum value for the current PO
+     */
     private void resetModificationsBufferCounter() {
-
+        modificationsCounter = modificationsCounterMax;
     }
 
     /**
