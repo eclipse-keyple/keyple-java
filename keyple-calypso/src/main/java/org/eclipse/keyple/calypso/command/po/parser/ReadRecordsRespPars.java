@@ -135,8 +135,8 @@ public class ReadRecordsRespPars extends AbstractApduResponseParser {
                 /*
                  * convert the 3-byte unsigned value of the counter into an integer (up to 2^24 -1)
                  */
-                int counterValue = ((int) (apdu[index + 0] & 0xFF) * 65536)
-                        + ((int) (apdu[index + 1] & 0xFF) * 256) + (int) (apdu[index + 0] & 0xFF);
+                int counterValue = ((apdu[index + 0] & 0xFF) * 65536)
+                        + ((apdu[index + 1] & 0xFF) * 256) + (apdu[index + 0] & 0xFF);
                 counters.put(key++, counterValue);
                 index = index + 3;
             }

@@ -751,15 +751,15 @@ public class PoTransaction {
                     ByteArrayUtils.toHex(sessionTerminalSignature));
         }
 
-        PoCustomCommandBuilder ratificationCommand;
+        PoCustomReadCommandBuilder ratificationCommand;
         boolean ratificationAsked;
 
         if (communicationMode == CommunicationMode.CONTACTLESS_MODE) {
             if (poRevision == PoRevision.REV2_4) {
-                ratificationCommand = new PoCustomCommandBuilder("Ratification command",
+                ratificationCommand = new PoCustomReadCommandBuilder("Ratification command",
                         new ApduRequest(ratificationCmdApduLegacy, false));
             } else {
-                ratificationCommand = new PoCustomCommandBuilder("Ratification command",
+                ratificationCommand = new PoCustomReadCommandBuilder("Ratification command",
                         new ApduRequest(ratificationCmdApdu, false));
             }
             /*
@@ -1414,8 +1414,7 @@ public class PoTransaction {
                 poAtomicCommandBuilderList.add(poCommandBuilderElement);
             } else {
                 /* This command affects the PO modifications buffer */
-                if (willOverflowBuffer(((PoModificationCommand) poCommandBuilderElement)
-                        .getModificationsBufferBytesUsage())) {
+                if (willOverflowBuffer((PoModificationCommand) poCommandBuilderElement)) {
                     if (currentModificationMode == ModificationMode.ATOMIC) {
                         throw new IllegalStateException(
                                 "ATOMIC mode error! This command would overflow the PO modifications buffer: "
@@ -1449,8 +1448,7 @@ public class PoTransaction {
                     /*
                      * just update modifications buffer usage counter, ignore result (always false)
                      */
-                    willOverflowBuffer(((PoModificationCommand) poCommandBuilderElement)
-                            .getModificationsBufferBytesUsage());
+                    willOverflowBuffer((PoModificationCommand) poCommandBuilderElement);
                 } else {
                     /*
                      * The command fits in the PO modifications buffer, just add it to the list
@@ -1459,13 +1457,13 @@ public class PoTransaction {
                 }
             }
         }
-        if (!poAtomicCommandBuilderList.isEmpty()) {
-            SeResponse seResponseOpening = processAtomicOpening(currentAccessLevel,
-                    openingSfiToSelect, localOpeningRecordNumberToRead, poAtomicCommandBuilderList);
-            if (!updateParsersWithResponses(seResponseOpening, apduResponseParserIterator)) {
-                poProcessSuccess = false;
-            }
+
+        SeResponse seResponseOpening = processAtomicOpening(currentAccessLevel, openingSfiToSelect,
+                localOpeningRecordNumberToRead, poAtomicCommandBuilderList);
+        if (!updateParsersWithResponses(seResponseOpening, apduResponseParserIterator)) {
+            poProcessSuccess = false;
         }
+
         poCommandBuilderList.clear();
         poResponseParserList.clear();
         return poProcessSuccess;
@@ -1512,8 +1510,7 @@ public class PoTransaction {
                     poAtomicCommandBuilderList.add(poCommandBuilderElement);
                 } else {
                     /* This command affects the PO modifications buffer */
-                    if (willOverflowBuffer(((PoModificationCommand) poCommandBuilderElement)
-                            .getModificationsBufferBytesUsage())) {
+                    if (willOverflowBuffer(((PoModificationCommand) poCommandBuilderElement))) {
                         if (currentModificationMode == ModificationMode.ATOMIC) {
                             throw new IllegalStateException(
                                     "ATOMIC mode error! This command would overflow the PO modifications buffer: "
@@ -1550,8 +1547,7 @@ public class PoTransaction {
                          * just update modifications buffer usage counter, ignore result (always
                          * false)
                          */
-                        willOverflowBuffer(((PoModificationCommand) poCommandBuilderElement)
-                                .getModificationsBufferBytesUsage());
+                        willOverflowBuffer((PoModificationCommand) poCommandBuilderElement);
                     } else {
                         /*
                          * The command fits in the PO modifications buffer, just add it to the list
@@ -1621,8 +1617,7 @@ public class PoTransaction {
                 atLeastOneReadCommand = true;
             } else {
                 /* This command affects the PO modifications buffer */
-                if (willOverflowBuffer(((PoModificationCommand) poCommandBuilderElement)
-                        .getModificationsBufferBytesUsage())) {
+                if (willOverflowBuffer((PoModificationCommand) poCommandBuilderElement)) {
                     if (currentModificationMode == ModificationMode.ATOMIC) {
                         throw new IllegalStateException(
                                 "ATOMIC mode error! This command would overflow the PO modifications buffer: "
@@ -1671,8 +1666,7 @@ public class PoTransaction {
                     /*
                      * just update modifications buffer usage counter, ignore result (always false)
                      */
-                    willOverflowBuffer(((PoModificationCommand) poCommandBuilderElement)
-                            .getModificationsBufferBytesUsage());
+                    willOverflowBuffer((PoModificationCommand) poCommandBuilderElement);
                 } else {
                     /*
                      * The command fits in the PO modifications buffer, just add it to the list
@@ -1728,25 +1722,28 @@ public class PoTransaction {
     }
 
     /**
-     * Checks whether the requirement for the modifications buffer is compatible with the current
-     * usage level of the buffer.
+     * Checks whether the requirement for the modifications buffer of the command provided in
+     * argument is compatible with the current usage level of the buffer.
      * <p>
      * If it is compatible, the requirement is subtracted from the current level and the method
      * returns false. If this is not the case, the method returns true.
      * 
-     * @param bufferByteRequirement the buffer requirement for the current command
+     * @param modificationCommand the modification command
      * @return true or false
      */
-    private boolean willOverflowBuffer(int bufferByteRequirement) {
+    private boolean willOverflowBuffer(PoModificationCommand modificationCommand) {
         boolean willOverflow = false;
         if (modificationsCounterIsInBytes) {
-            if (modificationsCounter - bufferByteRequirement > 0) {
-                modificationsCounter = modificationsCounter - bufferByteRequirement;
+            int bufferRequirement = ((AbstractApduCommandBuilder) modificationCommand)
+                    .getApduRequest().getBytes()[OFFSET_Lc] + 6;
+
+            if (modificationsCounter - bufferRequirement > 0) {
+                modificationsCounter = modificationsCounter - bufferRequirement;
             } else {
                 if (logger.isTraceEnabled()) {
                     logger.trace(
                             "Modifications buffer overflow! BYTESMODE, CURRENTCOUNTER = {}, REQUIREMENT = {}",
-                            modificationsCounter, bufferByteRequirement);
+                            modificationsCounter, bufferRequirement);
                 }
                 willOverflow = true;
             }
