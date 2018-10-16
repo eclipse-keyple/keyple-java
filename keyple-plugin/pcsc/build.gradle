@@ -31,7 +31,7 @@ publishing {
     }
 }
 
-build.dependsOn ":keyple-core:build" //refresh keyple-core if needed
+build.dependsOn ":keyple-core:build" // build and install keyple-core if needed
 build.finalizedBy publishToMavenLocal
 
 dependencies {

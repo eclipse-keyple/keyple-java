@@ -13,6 +13,10 @@ jar {
     }
 }
 
+build.dependsOn ":keyple-calypso:build" // build and install keyple-calypso if needed
+build.dependsOn ":keyple-plugin:keyple-plugin-stub:build" // build and install keyple-plugin-stub if needed
+build.dependsOn ":keyple-plugin:keyple-plugin-pcsc:build" // build and install keyple-plugin-pcsc if needed
+
 
 dependencies {
     //imports keyple example common projects and its dependencies

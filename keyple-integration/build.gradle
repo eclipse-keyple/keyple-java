@@ -11,7 +11,9 @@ jar {
 
 jar.dependsOn copyLICENSE, copyNOTICE
 
-
+build.dependsOn ":keyple-core:build" // build and install keyple-core if needed
+build.dependsOn ":keyple-calypso:build" // build and install keyple-calypso if needed
+build.dependsOn ":keyple-plugin:keyple-plugin-pcsc:build" // build and install keyple-keyple-plugin-pcsc if needed
 
 dependencies {
 

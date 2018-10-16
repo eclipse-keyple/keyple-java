@@ -14,6 +14,10 @@ jar {
 }
 
 
+build.dependsOn ":keyple-calypso:build" // build and install keyple-calypso if needed
+build.dependsOn ":keyple-core:build" // build and install keyple-core if needed
+
+
 dependencies {
 
     //use keyple library : keyple core

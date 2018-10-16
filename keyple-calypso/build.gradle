@@ -30,6 +30,7 @@ publishing {
     }
 }
 
+build.dependsOn ":keyple-core:build" // build and install keyple-core if needed
 build.finalizedBy publishToMavenLocal //install artifact in local repo
 
 dependencies {
