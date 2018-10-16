@@ -54,7 +54,7 @@ public class Demo_SeProtocolDetection_Pcsc {
                 getReaderByName(seProxyService, PcscReadersSettings.PO_READER_NAME_REGEX);
 
         if (poReader == null) {
-            throw new IllegalStateException("Bad PO/CSM setup");
+            throw new IllegalStateException("Bad PO/SAM setup");
         }
 
         System.out.println("PO Reader  : " + poReader.getName());

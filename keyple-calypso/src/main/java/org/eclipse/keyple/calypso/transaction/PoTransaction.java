@@ -12,12 +12,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.SendableInSession;
-import org.eclipse.keyple.calypso.command.csm.CsmRevision;
-import org.eclipse.keyple.calypso.command.csm.CsmSendableInSession;
-import org.eclipse.keyple.calypso.command.csm.builder.*;
-import org.eclipse.keyple.calypso.command.csm.parser.CsmGetChallengeRespPars;
-import org.eclipse.keyple.calypso.command.csm.parser.DigestAuthenticateRespPars;
-import org.eclipse.keyple.calypso.command.csm.parser.DigestCloseRespPars;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.builder.*;
 import org.eclipse.keyple.calypso.command.po.builder.session.AbstractOpenSessionCmdBuild;
@@ -25,6 +19,12 @@ import org.eclipse.keyple.calypso.command.po.builder.session.CloseSessionCmdBuil
 import org.eclipse.keyple.calypso.command.po.parser.*;
 import org.eclipse.keyple.calypso.command.po.parser.session.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.session.CloseSessionRespPars;
+import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.command.sam.SamSendableInSession;
+import org.eclipse.keyple.calypso.command.sam.builder.*;
+import org.eclipse.keyple.calypso.command.sam.parser.DigestAuthenticateRespPars;
+import org.eclipse.keyple.calypso.command.sam.parser.DigestCloseRespPars;
+import org.eclipse.keyple.calypso.command.sam.parser.SamGetChallengeRespPars;
 import org.eclipse.keyple.calypso.transaction.exception.*;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * Portable Object Secure Session.
  *
  * A non-encrypted secure session with a Calypso PO requires the management of two
- * {@link ProxyReader} in order to communicate with both a Calypso PO and a CSM
+ * {@link ProxyReader} in order to communicate with both a Calypso PO and a SAM
  *
  * @author Calypso Networks Association
  */
@@ -85,13 +85,13 @@ public class PoTransaction {
 
     /** The reader for PO. */
     private final ProxyReader poReader;
-    /** The reader for session CSM. */
-    private ProxyReader csmReader;
-    /** The CSM default revision. */
-    private final CsmRevision csmRevision = CsmRevision.C1;
-    /** The CSM settings map. */
-    private final EnumMap<CsmSettings, Byte> csmSetting =
-            new EnumMap<CsmSettings, Byte>(CsmSettings.class);
+    /** The reader for session SAM. */
+    private ProxyReader samReader;
+    /** The SAM default revision. */
+    private final SamRevision samRevision = SamRevision.C1;
+    /** The SAM settings map. */
+    private final EnumMap<SamSettings, Byte> samSetting =
+            new EnumMap<SamSettings, Byte>(SamSettings.class);
     /** The PO serial number extracted from FCI */
     private final byte[] poCalypsoInstanceSerial;
     /** The current CalypsoPO */
@@ -120,7 +120,7 @@ public class PoTransaction {
     private List<AbstractApduResponseParser> poResponseParserList =
             new ArrayList<AbstractApduResponseParser>();
     /** The SAM settings status */
-    private boolean csmSettingsDefined;
+    private boolean samSettingsDefined;
     /** List of authorized KVCs */
     private List<Byte> authorizedKvcList;
     /** The current secure session modification mode: ATOMIC or MULTIPLE */
@@ -135,23 +135,23 @@ public class PoTransaction {
     /**
      * PoTransaction with PO and SAM readers.
      * <ul>
-     * <li>Logical channels with PO &amp; CSM could already be established or not.</li>
-     * <li>A list of CSM parameters is provided as en EnumMap.</li>
+     * <li>Logical channels with PO &amp; SAM could already be established or not.</li>
+     * <li>A list of SAM parameters is provided as en EnumMap.</li>
      * </ul>
      *
      * @param poReader the PO reader
      * @param calypsoPO the CalypsoPO object obtained at the end of the selection step
-     * @param csmReader the SAM reader
-     * @param csmSetting a list of CSM related parameters. In the case this parameter is null,
+     * @param samReader the SAM reader
+     * @param samSetting a list of SAM related parameters. In the case this parameter is null,
      *        default parameters are applied. The available setting keys are defined in
-     *        {@link CsmSettings}
+     *        {@link SamSettings}
      */
-    public PoTransaction(ProxyReader poReader, CalypsoPO calypsoPO, ProxyReader csmReader,
-            EnumMap<CsmSettings, Byte> csmSetting) {
+    public PoTransaction(ProxyReader poReader, CalypsoPO calypsoPO, ProxyReader samReader,
+            EnumMap<SamSettings, Byte> samSetting) {
 
         this(poReader, calypsoPO);
 
-        setCsmSettings(csmReader, csmSetting);
+        setSamSettings(samReader, samSetting);
     }
 
     /**
@@ -192,34 +192,35 @@ public class PoTransaction {
     /**
      * Sets the SAM parameters for Secure Session management
      * 
-     * @param csmReader
-     * @param csmSetting
+     * @param samReader
+     * @param samSetting
      */
-    public void setCsmSettings(ProxyReader csmReader, EnumMap<CsmSettings, Byte> csmSetting) {
-        this.csmReader = csmReader;
+    public void setSamSettings(ProxyReader samReader, EnumMap<SamSettings, Byte> samSetting) {
+        this.samReader = samReader;
 
-        /* Initialize csmSetting with provided settings */
-        if (csmSetting != null) {
-            this.csmSetting.putAll(csmSetting);
+        /* Initialize samSetting with provided settings */
+        if (samSetting != null) {
+            this.samSetting.putAll(samSetting);
         }
 
         /* Just work mode: we make sure that all the necessary parameters exist at least. */
-        if (!this.csmSetting.containsKey(CsmSettings.CS_DEFAULT_KIF_PERSO)) {
-            this.csmSetting.put(CsmSettings.CS_DEFAULT_KIF_PERSO, DEFAULT_KIF_PERSO);
+        if (!this.samSetting.containsKey(SamSettings.SAM_DEFAULT_KIF_PERSO)) {
+            this.samSetting.put(SamSettings.SAM_DEFAULT_KIF_PERSO, DEFAULT_KIF_PERSO);
         }
-        if (!this.csmSetting.containsKey(CsmSettings.CS_DEFAULT_KIF_LOAD)) {
-            this.csmSetting.put(CsmSettings.CS_DEFAULT_KIF_LOAD, DEFAULT_KIF_LOAD);
+        if (!this.samSetting.containsKey(SamSettings.SAM_DEFAULT_KIF_LOAD)) {
+            this.samSetting.put(SamSettings.SAM_DEFAULT_KIF_LOAD, DEFAULT_KIF_LOAD);
         }
-        if (!this.csmSetting.containsKey(CsmSettings.CS_DEFAULT_KIF_DEBIT)) {
-            this.csmSetting.put(CsmSettings.CS_DEFAULT_KIF_DEBIT, DEFAULT_KIF_DEBIT);
+        if (!this.samSetting.containsKey(SamSettings.SAM_DEFAULT_KIF_DEBIT)) {
+            this.samSetting.put(SamSettings.SAM_DEFAULT_KIF_DEBIT, DEFAULT_KIF_DEBIT);
         }
-        if (!this.csmSetting.containsKey(CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER)) {
-            this.csmSetting.put(CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER, DEFAULT_KEY_RECORD_NUMER);
+        if (!this.samSetting.containsKey(SamSettings.SAM_DEFAULT_KEY_RECORD_NUMBER)) {
+            this.samSetting.put(SamSettings.SAM_DEFAULT_KEY_RECORD_NUMBER,
+                    DEFAULT_KEY_RECORD_NUMER);
         }
 
-        logger.debug("Contructor => CSMSETTING = {}", this.csmSetting);
+        logger.debug("Contructor => SAMSETTING = {}", this.samSetting);
 
-        csmSettingsDefined = true;
+        samSettingsDefined = true;
     }
 
     /**
@@ -241,8 +242,8 @@ public class PoTransaction {
      * 
      * @return true if the SAM settings have been defined.
      */
-    public boolean isCsmSettingsDefined() {
-        return csmSettingsDefined;
+    public boolean isSamSettingsDefined() {
+        return samSettingsDefined;
     }
 
     /**
@@ -251,14 +252,14 @@ public class PoTransaction {
      * <li>The PO must have been previously selected, so a logical channel with the PO application
      * must be already active.</li>
      * <li>The PO serial &amp; revision are identified from FCI data.</li>
-     * <li>A first request is sent to the CSM session reader.
+     * <li>A first request is sent to the SAM session reader.
      * <ul>
-     * <li>In case not logical channel is active with the CSM, a channel is open.</li>
+     * <li>In case not logical channel is active with the SAM, a channel is open.</li>
      * <li>Then a Select Diversifier (with the PO serial) &amp; a Get Challenge are automatically
-     * operated. The CSM challenge is recovered.</li>
+     * operated. The SAM challenge is recovered.</li>
      * </ul>
      * </li>
-     * <li>The PO Open Session command is built according to the PO revision, the CSM challenge, the
+     * <li>The PO Open Session command is built according to the PO revision, the SAM challenge, the
      * keyIndex, and openingSfiToSelect / openingRecordNumberToRead.</li>
      * <li>Next the PO reader is requested:
      * <ul>
@@ -270,7 +271,7 @@ public class PoTransaction {
      * <li>The session PO keyset reference is identified from the PO Open Session response, the PO
      * challenge is recovered too.</li>
      * <li>According to the PO responses of Open Session and the PO commands sent inside the
-     * session, a "cache" of CSM commands is filled with the corresponding Digest Init &amp; Digest
+     * session, a "cache" of SAM commands is filled with the corresponding Digest Init &amp; Digest
      * Update commands.</li>
      * <li>Returns the corresponding PO SeResponse (responses to poCommandsInsideSession).</li>
      * </ul>
@@ -291,10 +292,10 @@ public class PoTransaction {
          * counts 'select diversifier' and 'get challenge' commands. At least get challenge is
          * present
          */
-        int numberOfCsmCmd = 1;
+        int numberOfSamCmd = 1;
 
-        /* CSM ApduRequest List to hold Select Diversifier and Get Challenge commands */
-        List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
+        /* SAM ApduRequest List to hold Select Diversifier and Get Challenge commands */
+        List<ApduRequest> samApduRequestList = new ArrayList<ApduRequest>();
 
         if (logger.isDebugEnabled()) {
             logger.debug("processAtomicOpening => Identification: DFNAME = {}, SERIALNUMBER = {}",
@@ -303,62 +304,62 @@ public class PoTransaction {
         }
         /* diversify only if this has not already been done. */
         if (!isDiversificationDone) {
-            /* Build the CSM Select Diversifier command to provide the CSM with the PO S/N */
+            /* Build the SAM Select Diversifier command to provide the SAM with the PO S/N */
             AbstractApduCommandBuilder selectDiversifier =
-                    new SelectDiversifierCmdBuild(this.csmRevision, poCalypsoInstanceSerial);
+                    new SelectDiversifierCmdBuild(this.samRevision, poCalypsoInstanceSerial);
 
-            csmApduRequestList.add(selectDiversifier.getApduRequest());
+            samApduRequestList.add(selectDiversifier.getApduRequest());
 
             /* increment command number */
-            numberOfCsmCmd++;
+            numberOfSamCmd++;
 
             /* change the diversification status */
             isDiversificationDone = true;
         }
-        /* Build the CSM Get Challenge command */
+        /* Build the SAM Get Challenge command */
         byte challengeLength = poRevision.equals(PoRevision.REV3_2) ? CHALLENGE_LENGTH_REV32
                 : CHALLENGE_LENGTH_REV_INF_32;
 
-        AbstractApduCommandBuilder csmGetChallenge =
-                new CsmGetChallengeCmdBuild(this.csmRevision, challengeLength);
+        AbstractApduCommandBuilder samGetChallenge =
+                new SamGetChallengeCmdBuild(this.samRevision, challengeLength);
 
-        csmApduRequestList.add(csmGetChallenge.getApduRequest());
+        samApduRequestList.add(samGetChallenge.getApduRequest());
 
-        /* Build a CSM SeRequest */
-        SeRequest csmSeRequest = new SeRequest(null, csmApduRequestList, true);
+        /* Build a SAM SeRequest */
+        SeRequest samSeRequest = new SeRequest(null, samApduRequestList, true);
 
-        logger.debug("processAtomicOpening => identification: CSMSEREQUEST = {}", csmSeRequest);
+        logger.debug("processAtomicOpening => identification: SAMSEREQUEST = {}", samSeRequest);
 
         /*
-         * Transmit the SeRequest to the CSM and get back the SeResponse (list of ApduResponse)
+         * Transmit the SeRequest to the SAM and get back the SeResponse (list of ApduResponse)
          */
-        SeResponse csmSeResponse = csmReader.transmit(csmSeRequest);
+        SeResponse samSeResponse = samReader.transmit(samSeRequest);
 
-        if (csmSeResponse == null) {
+        if (samSeResponse == null) {
             throw new KeypleCalypsoSecureSessionException("Null response received",
-                    KeypleCalypsoSecureSessionException.Type.CSM, csmSeRequest.getApduRequests(),
+                    KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
                     null);
         }
 
-        logger.debug("processAtomicOpening => identification: CSMSERESPONSE = {}", csmSeResponse);
+        logger.debug("processAtomicOpening => identification: SAMSERESPONSE = {}", samSeResponse);
 
-        List<ApduResponse> csmApduResponseList = csmSeResponse.getApduResponses();
+        List<ApduResponse> samApduResponseList = samSeResponse.getApduResponses();
         byte[] sessionTerminalChallenge;
 
-        if (csmApduResponseList.size() == numberOfCsmCmd
-                && csmApduResponseList.get(numberOfCsmCmd - 1).isSuccessful() && csmApduResponseList
-                        .get(numberOfCsmCmd - 1).getDataOut().length == challengeLength) {
-            CsmGetChallengeRespPars csmChallengePars =
-                    new CsmGetChallengeRespPars(csmApduResponseList.get(numberOfCsmCmd - 1));
-            sessionTerminalChallenge = csmChallengePars.getChallenge();
+        if (samApduResponseList.size() == numberOfSamCmd
+                && samApduResponseList.get(numberOfSamCmd - 1).isSuccessful() && samApduResponseList
+                        .get(numberOfSamCmd - 1).getDataOut().length == challengeLength) {
+            SamGetChallengeRespPars samChallengePars =
+                    new SamGetChallengeRespPars(samApduResponseList.get(numberOfSamCmd - 1));
+            sessionTerminalChallenge = samChallengePars.getChallenge();
             if (logger.isDebugEnabled()) {
                 logger.debug("processAtomicOpening => identification: TERMINALCHALLENGE = {}",
                         ByteArrayUtils.toHex(sessionTerminalChallenge));
             }
         } else {
             throw new KeypleCalypsoSecureSessionException("Invalid message received",
-                    KeypleCalypsoSecureSessionException.Type.CSM, csmApduRequestList,
-                    csmApduResponseList);
+                    KeypleCalypsoSecureSessionException.Type.SAM, samApduRequestList,
+                    samApduResponseList);
         }
 
         /* PO ApduRequest List to hold Open Secure Session and other optional commands */
@@ -444,14 +445,14 @@ public class PoTransaction {
         if (poKif == KIF_UNDEFINED) {
             switch (accessLevel) {
                 case SESSION_LVL_PERSO:
-                    kif = csmSetting.get(CsmSettings.CS_DEFAULT_KIF_PERSO);
+                    kif = samSetting.get(SamSettings.SAM_DEFAULT_KIF_PERSO);
                     break;
                 case SESSION_LVL_LOAD:
-                    kif = csmSetting.get(CsmSettings.CS_DEFAULT_KIF_LOAD);
+                    kif = samSetting.get(SamSettings.SAM_DEFAULT_KIF_LOAD);
                     break;
                 case SESSION_LVL_DEBIT:
                 default:
-                    kif = csmSetting.get(CsmSettings.CS_DEFAULT_KIF_DEBIT);
+                    kif = samSetting.get(SamSettings.SAM_DEFAULT_KIF_DEBIT);
                     break;
             }
         } else {
@@ -464,12 +465,12 @@ public class PoTransaction {
 
         /*
          * Initialize the DigestProcessor. It will store all digest operations (Digest Init, Digest
-         * Update) until the session closing. AT this moment, all CSM Apdu will be processed at
+         * Update) until the session closing. AT this moment, all SAM Apdu will be processed at
          * once.
          */
-        DigestProcessor.initialize(poRevision, csmRevision, false, false,
+        DigestProcessor.initialize(poRevision, samRevision, false, false,
                 poRevision.equals(PoRevision.REV3_2),
-                csmSetting.get(CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER), kif, poKvc,
+                samSetting.get(SamSettings.SAM_DEFAULT_KEY_RECORD_NUMBER), kif, poKvc,
                 poApduResponseList.get(0).getDataOut());
 
         /*
@@ -500,14 +501,14 @@ public class PoTransaction {
     /**
      * Change SendableInSession List to ApduRequest List .
      *
-     * @param poOrCsmCommandsInsideSession a po or csm commands list to be sent in session
+     * @param poOrSamCommandsInsideSession a po or sam commands list to be sent in session
      * @return the ApduRequest list
      */
     private List<ApduRequest> getApduRequestsToSendInSession(
-            List<SendableInSession> poOrCsmCommandsInsideSession) {
+            List<SendableInSession> poOrSamCommandsInsideSession) {
         List<ApduRequest> apduRequestList = new ArrayList<ApduRequest>();
-        if (poOrCsmCommandsInsideSession != null) {
-            for (SendableInSession cmd : poOrCsmCommandsInsideSession) {
+        if (poOrSamCommandsInsideSession != null) {
+            for (SendableInSession cmd : poOrSamCommandsInsideSession) {
                 apduRequestList.add(((AbstractApduCommandBuilder) cmd).getApduRequest());
             }
         }
@@ -519,7 +520,7 @@ public class PoTransaction {
      * <ul>
      * <li>On the PO reader, generates a SeRequest for the current selected AID, with
      * keepChannelOpen set at true, and ApduRequests with the PO commands.</li>
-     * <li>In case the secure session is active, the "cache" of CSM commands is completed with the
+     * <li>In case the secure session is active, the "cache" of SAM commands is completed with the
      * corresponding Digest Update commands.</li>
      * <li>Returns the corresponding PO SeResponse.</li>
      * </ul>
@@ -591,49 +592,49 @@ public class PoTransaction {
     }
 
     /**
-     * Process CSM commands.
+     * Process SAM commands.
      * <ul>
-     * <li>On the CSM reader, transmission of a SeRequest with keepChannelOpen set at true.</li>
-     * <li>Returns the corresponding CSM SeResponse.</li>
+     * <li>On the SAM reader, transmission of a SeRequest with keepChannelOpen set at true.</li>
+     * <li>Returns the corresponding SAM SeResponse.</li>
      * </ul>
      *
-     * @param csmCommands a list of commands to sent to the CSM
-     * @return SeResponse all csm responses
+     * @param samCommands a list of commands to sent to the SAM
+     * @return SeResponse all sam responses
      * @throws KeypleReaderException if a reader error occurs
      */
-    public SeResponse processCsmCommands(List<CsmSendableInSession> csmCommands)
+    public SeResponse processSamCommands(List<SamSendableInSession> samCommands)
             throws KeypleReaderException {
 
-        /* Init CSM ApduRequest List - for the first CSM exchange */
-        List<ApduRequest> csmApduRequestList = this
-                .getApduRequestsToSendInSession((List<SendableInSession>) (List<?>) csmCommands);
+        /* Init SAM ApduRequest List - for the first SAM exchange */
+        List<ApduRequest> samApduRequestList = this
+                .getApduRequestsToSendInSession((List<SendableInSession>) (List<?>) samCommands);
 
         /* SeRequest from the command list */
-        SeRequest csmSeRequest = new SeRequest(null, csmApduRequestList, true);
+        SeRequest samSeRequest = new SeRequest(null, samApduRequestList, true);
 
-        logger.debug("processCsmCommands => CSMSEREQUEST = {}", csmSeRequest);
+        logger.debug("processSamCommands => SAMSEREQUEST = {}", samSeRequest);
 
         /* Transmit SeRequest and get SeResponse */
-        SeResponse csmSeResponse = csmReader.transmit(csmSeRequest);
+        SeResponse samSeResponse = samReader.transmit(samSeRequest);
 
-        logger.debug("processCsmCommands => CSMSERESPONSE = {}", csmSeResponse);
+        logger.debug("processSamCommands => SAMSERESPONSE = {}", samSeResponse);
 
-        return csmSeResponse;
+        return samSeResponse;
     }
 
     /**
      * Close the Secure Session.
      * <ul>
-     * <li>The CSM cache is completed with the Digest Update commands related to the new PO commands
-     * to send and their anticipated responses. A Digest Close command is also added to the CSM
+     * <li>The SAM cache is completed with the Digest Update commands related to the new PO commands
+     * to send and their anticipated responses. A Digest Close command is also added to the SAM
      * cache.</li>
-     * <li>On the CSM session reader, a SeRequest is transmitted with CSM commands of the cache. The
-     * CSM cache is emptied.</li>
-     * <li>The CSM certificate is recovered from the Digest Close response. The terminal signature
+     * <li>On the SAM session reader, a SeRequest is transmitted with SAM commands of the cache. The
+     * SAM cache is emptied.</li>
+     * <li>The SAM certificate is recovered from the Digest Close response. The terminal signature
      * is identified.</li>
      * <li>Next on the PO reader, a SeRequest is transmitted for the current selected AID, with
      * keepChannelOpen set at the reverse value of closeSeChannel, and apduRequests including the
-     * new PO commands to send in the session, a Close Session command (defined with the CSM
+     * new PO commands to send in the session, a Close Session command (defined with the SAM
      * certificate), and optionally a ratificationCommand.
      * <ul>
      * <li>The management of ratification is conditioned by the mode of communication.
@@ -653,7 +654,7 @@ public class PoTransaction {
      * response.</li>
      * <li>The PO certificate is recovered from the Close Session response. The card signature is
      * identified.</li>
-     * <li>Finally, on the CSM session reader, a Digest Authenticate is automatically operated in
+     * <li>Finally, on the SAM session reader, a Digest Authenticate is automatically operated in
      * order to verify the PO signature.</li>
      * <li>Returns the corresponding PO SeResponse.</li>
      * </ul>
@@ -713,24 +714,24 @@ public class PoTransaction {
             }
         }
 
-        /* All CSM digest operations will now run at once. */
-        /* Get the CSM Digest request from the cache manager */
-        SeRequest csmSeRequest = DigestProcessor.getCsmDigestRequest();
+        /* All SAM digest operations will now run at once. */
+        /* Get the SAM Digest request from the cache manager */
+        SeRequest samSeRequest = DigestProcessor.getSamDigestRequest();
 
-        logger.debug("processAtomicClosing => CSMREQUEST = {}", csmSeRequest);
+        logger.debug("processAtomicClosing => SAMREQUEST = {}", samSeRequest);
 
         /* Transmit SeRequest and get SeResponse */
-        SeResponse csmSeResponse = csmReader.transmit(csmSeRequest);
+        SeResponse samSeResponse = samReader.transmit(samSeRequest);
 
-        logger.debug("processAtomicClosing => CSMRESPONSE = {}", csmSeResponse);
+        logger.debug("processAtomicClosing => SAMRESPONSE = {}", samSeResponse);
 
-        List<ApduResponse> csmApduResponseList = csmSeResponse.getApduResponses();
+        List<ApduResponse> samApduResponseList = samSeResponse.getApduResponses();
 
-        for (int i = 0; i < csmApduResponseList.size(); i++) {
-            if (!csmApduResponseList.get(i).isSuccessful()) {
+        for (int i = 0; i < samApduResponseList.size(); i++) {
+            if (!samApduResponseList.get(i).isSuccessful()) {
 
                 logger.debug("processAtomicClosing => command failure REQUEST = {}, RESPONSE = {}",
-                        csmSeRequest.getApduRequests().get(i), csmApduResponseList.get(i));
+                        samSeRequest.getApduRequests().get(i), samApduResponseList.get(i));
                 throw new IllegalStateException(
                         "ProcessClosing command failure during digest computation process.");
             }
@@ -739,9 +740,9 @@ public class PoTransaction {
         /* Get Terminal Signature from the latest response */
         byte[] sessionTerminalSignature = null;
         // TODO Add length check according to Calypso REV (4 / 8)
-        if (!csmApduResponseList.isEmpty()) {
+        if (!samApduResponseList.isEmpty()) {
             DigestCloseRespPars respPars = new DigestCloseRespPars(
-                    csmApduResponseList.get(csmApduResponseList.size() - 1));
+                    samApduResponseList.get(samApduResponseList.size() - 1));
 
             sessionTerminalSignature = respPars.getSignature();
         }
@@ -833,31 +834,31 @@ public class PoTransaction {
                     poApduResponseList);
         }
 
-        /* Check the PO signature part with the CSM */
-        /* Build and send CSM Digest Authenticate command */
+        /* Check the PO signature part with the SAM */
+        /* Build and send SAM Digest Authenticate command */
         AbstractApduCommandBuilder digestAuth =
-                new DigestAuthenticateCmdBuild(csmRevision, poCloseSessionPars.getSignatureLo());
+                new DigestAuthenticateCmdBuild(samRevision, poCloseSessionPars.getSignatureLo());
 
-        List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
-        csmApduRequestList.add(digestAuth.getApduRequest());
+        List<ApduRequest> samApduRequestList = new ArrayList<ApduRequest>();
+        samApduRequestList.add(digestAuth.getApduRequest());
 
-        csmSeRequest = new SeRequest(null, csmApduRequestList, true);
+        samSeRequest = new SeRequest(null, samApduRequestList, true);
 
-        logger.debug("PoTransaction.DigestProcessor => checkPoSignature: CSMREQUEST = {}",
-                csmSeRequest);
+        logger.debug("PoTransaction.DigestProcessor => checkPoSignature: SAMREQUEST = {}",
+                samSeRequest);
 
-        csmSeResponse = csmReader.transmit(csmSeRequest);
+        samSeResponse = samReader.transmit(samSeRequest);
 
-        logger.debug("PoTransaction.DigestProcessor => checkPoSignature: CSMRESPONSE = {}",
-                csmSeResponse);
+        logger.debug("PoTransaction.DigestProcessor => checkPoSignature: SAMRESPONSE = {}",
+                samSeResponse);
 
         /* Get transaction result parsing the response */
-        csmApduResponseList = csmSeResponse.getApduResponses();
+        samApduResponseList = samSeResponse.getApduResponses();
 
         transactionResult = false;
-        if ((csmApduResponseList != null) && !csmApduResponseList.isEmpty()) {
+        if ((samApduResponseList != null) && !samApduResponseList.isEmpty()) {
             DigestAuthenticateRespPars respPars =
-                    new DigestAuthenticateRespPars(csmApduResponseList.get(0));
+                    new DigestAuthenticateRespPars(samApduResponseList.get(0));
             transactionResult = respPars.isSuccessful();
             if (transactionResult) {
                 logger.debug(
@@ -927,7 +928,7 @@ public class PoTransaction {
     /**
      * Get the Secure Session Status.
      * <ul>
-     * <li>To check the result of a closed secure session, returns true if the CSM Digest
+     * <li>To check the result of a closed secure session, returns true if the SAM Digest
      * Authenticate is successful.</li>
      * </ul>
      *
@@ -981,17 +982,17 @@ public class PoTransaction {
     }
 
     /**
-     * List of CSM settings keys that can be provided when the secure session is created.
+     * List of SAM settings keys that can be provided when the secure session is created.
      */
-    public enum CsmSettings {
+    public enum SamSettings {
         /** KIF for personalization used when not provided by the PO */
-        CS_DEFAULT_KIF_PERSO,
+        SAM_DEFAULT_KIF_PERSO,
         /** KIF for load used when not provided by the PO */
-        CS_DEFAULT_KIF_LOAD,
+        SAM_DEFAULT_KIF_LOAD,
         /** KIF for debit used when not provided by the PO */
-        CS_DEFAULT_KIF_DEBIT,
+        SAM_DEFAULT_KIF_DEBIT,
         /** Key record number to use when KIF/KVC is unavailable */
-        CS_DEFAULT_KEY_RECORD_NUMBER
+        SAM_DEFAULT_KEY_RECORD_NUMBER
     }
 
     /**
@@ -1048,12 +1049,12 @@ public class PoTransaction {
      */
     private static class DigestProcessor {
         /*
-         * The digest data cache stores all PO data to be send to CSM during a Secure Session. The
+         * The digest data cache stores all PO data to be send to SAM during a Secure Session. The
          * 1st buffer is the data buffer to be provided with Digest Init. The following buffers are
          * PO command/response pairs
          */
         private static final List<byte[]> poDigestDataCache = new ArrayList<byte[]>();
-        private static CsmRevision csmRevision;
+        private static SamRevision samRevision;
         private static PoRevision poRevision;
         private static boolean encryption;
         private static boolean verification;
@@ -1066,7 +1067,7 @@ public class PoTransaction {
          * Initializes the digest computation process
          *
          * @param poRev the PO revision
-         * @param csmRev the CSM revision
+         * @param samRev the SAM revision
          * @param sessionEncryption true if the session is encrypted
          * @param verificationMode true if the verification mode is active
          * @param rev3_2Mode true if the REV3.2 mode is active
@@ -1075,12 +1076,12 @@ public class PoTransaction {
          * @param workKeyKVC the PO KVC
          * @param digestData a first bunch of data to digest.
          */
-        static void initialize(PoRevision poRev, CsmRevision csmRev, boolean sessionEncryption,
+        static void initialize(PoRevision poRev, SamRevision samRev, boolean sessionEncryption,
                 boolean verificationMode, boolean rev3_2Mode, byte workKeyRecordNumber,
                 byte workKeyKif, byte workKeyKVC, byte[] digestData) {
             /* Store work context */
             poRevision = poRev;
-            csmRevision = csmRev;
+            samRevision = samRev;
             encryption = sessionEncryption;
             verification = verificationMode;
             revMode = rev3_2Mode;
@@ -1089,8 +1090,8 @@ public class PoTransaction {
             keyKVC = workKeyKVC;
             if (logger.isDebugEnabled()) {
                 logger.debug(
-                        "PoTransaction.DigestProcessor => initialize: POREVISION = {}, CSMREVISION = {}, SESSIONENCRYPTION = {}",
-                        poRev, csmRev, sessionEncryption, verificationMode);
+                        "PoTransaction.DigestProcessor => initialize: POREVISION = {}, SAMREVISION = {}, SESSIONENCRYPTION = {}",
+                        poRev, samRev, sessionEncryption, verificationMode);
                 logger.debug(
                         "PoTransaction.DigestProcessor => initialize: VERIFICATIONMODE = {}, REV32MODE = {} KEYRECNUMBER = {}",
                         verificationMode, rev3_2Mode, workKeyRecordNumber);
@@ -1140,24 +1141,24 @@ public class PoTransaction {
         }
 
         /**
-         * Get a unique CSM request for the whole digest computation process.
+         * Get a unique SAM request for the whole digest computation process.
          * 
-         * @return SeRequest all the ApduRequest to send to the CSM in order to get the terminal
+         * @return SeRequest all the ApduRequest to send to the SAM in order to get the terminal
          *         signature
          */
         // TODO optimization with the use of Digest Update Multiple whenever possible.
-        static SeRequest getCsmDigestRequest() {
-            List<ApduRequest> csmApduRequestList = new ArrayList<ApduRequest>();
+        static SeRequest getSamDigestRequest() {
+            List<ApduRequest> samApduRequestList = new ArrayList<ApduRequest>();
 
             if (poDigestDataCache.size() == 0) {
                 logger.debug(
-                        "PoTransaction.DigestProcessor => getCsmDigestRequest: no data in cache.");
+                        "PoTransaction.DigestProcessor => getSamDigestRequest: no data in cache.");
                 throw new IllegalStateException("Digest data cache is empty.");
             }
             if (poDigestDataCache.size() % 2 == 0) {
                 /* the number of buffers should be 2*n + 1 */
                 logger.debug(
-                        "PoTransaction.DigestProcessor => getCsmDigestRequest: wrong number of buffer in cache NBR = {}.",
+                        "PoTransaction.DigestProcessor => getSamDigestRequest: wrong number of buffer in cache NBR = {}.",
                         poDigestDataCache.size());
                 throw new IllegalStateException("Digest data cache is inconsistent.");
             }
@@ -1166,7 +1167,7 @@ public class PoTransaction {
              * Build and append Digest Init command as first ApduRequest of the digest computation
              * process
              */
-            csmApduRequestList.add(new DigestInitCmdBuild(csmRevision, verification, revMode,
+            samApduRequestList.add(new DigestInitCmdBuild(samRevision, verification, revMode,
                     keyRecordNumber, keyKIF, keyKVC, poDigestDataCache.get(0)).getApduRequest());
 
             /*
@@ -1175,20 +1176,20 @@ public class PoTransaction {
              * The first command is at index 1.
              */
             for (int i = 1; i < poDigestDataCache.size(); i++) {
-                csmApduRequestList.add(
-                        new DigestUpdateCmdBuild(csmRevision, encryption, poDigestDataCache.get(i))
+                samApduRequestList.add(
+                        new DigestUpdateCmdBuild(samRevision, encryption, poDigestDataCache.get(i))
                                 .getApduRequest());
             }
 
             /*
              * Build and append Digest Close command
              */
-            csmApduRequestList.add((new DigestCloseCmdBuild(csmRevision,
+            samApduRequestList.add((new DigestCloseCmdBuild(samRevision,
                     poRevision.equals(PoRevision.REV3_2) ? SIGNATURE_LENGTH_REV32
                             : SIGNATURE_LENGTH_REV_INF_32).getApduRequest()));
 
 
-            return new SeRequest(null, csmApduRequestList, true);
+            return new SeRequest(null, samApduRequestList, true);
         }
     }
 
@@ -1363,14 +1364,14 @@ public class PoTransaction {
      * <li>The PO must have been previously selected, so a logical channel with the PO application
      * must be already active.</li>
      * <li>The PO serial &amp; revision are identified from FCI data.</li>
-     * <li>A first request is sent to the CSM session reader.
+     * <li>A first request is sent to the SAM session reader.
      * <ul>
-     * <li>In case not logical channel is active with the CSM, a channel is open.</li>
+     * <li>In case not logical channel is active with the SAM, a channel is open.</li>
      * <li>Then a Select Diversifier (with the PO serial) &amp; a Get Challenge are automatically
-     * operated. The CSM challenge is recovered.</li>
+     * operated. The SAM challenge is recovered.</li>
      * </ul>
      * </li>
-     * <li>The PO Open Session command is built according to the PO revision, the CSM challenge, the
+     * <li>The PO Open Session command is built according to the PO revision, the SAM challenge, the
      * keyIndex, and openingSfiToSelect / openingRecordNumberToRead.</li>
      * <li>Next the PO reader is requested:
      * <ul>
@@ -1382,7 +1383,7 @@ public class PoTransaction {
      * <li>The session PO keyset reference is identified from the PO Open Session response, the PO
      * challenge is recovered too.</li>
      * <li>According to the PO responses of Open Session and the PO commands sent inside the
-     * session, a "cache" of CSM commands is filled with the corresponding Digest Init &amp; Digest
+     * session, a "cache" of SAM commands is filled with the corresponding Digest Init &amp; Digest
      * Update commands.</li>
      * <li>All parsers returned by the prepare command methods are updated with the Apdu responses
      * from the PO.</li>
@@ -1474,7 +1475,7 @@ public class PoTransaction {
      * <ul>
      * <li>On the PO reader, generates a SeRequest for the current selected AID, with
      * keepChannelOpen set at true, and ApduRequests with the PO commands.</li>
-     * <li>In case the secure session is active, the "cache" of CSM commands is completed with the
+     * <li>In case the secure session is active, the "cache" of SAM commands is completed with the
      * corresponding Digest Update commands.</li>
      * <li>All parsers returned by the prepare command methods are updated with the Apdu responses
      * from the PO.</li>

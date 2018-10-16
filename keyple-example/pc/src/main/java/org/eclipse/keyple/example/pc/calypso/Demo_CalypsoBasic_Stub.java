@@ -50,43 +50,43 @@ public class Demo_CalypsoBasic_Stub {
                 new Demo_CalypsoBasicTransactionEngine();
 
         /*
-         * Plug PO and CSM stub readers.
+         * Plug PO and SAM stub readers.
          */
         stubPlugin.plugStubReader("poReader");
-        stubPlugin.plugStubReader("csmReader");
+        stubPlugin.plugStubReader("samReader");
 
         Thread.sleep(200);
 
-        StubReader poReader = null, csmReader = null;
+        StubReader poReader = null, samReader = null;
         try {
             poReader = (StubReader) (stubPlugin.getReader("poReader"));
-            csmReader = (StubReader) (stubPlugin.getReader("csmReader"));
+            samReader = (StubReader) (stubPlugin.getReader("samReader"));
         } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
         }
 
         /* Both readers are expected not null */
-        if (poReader == csmReader || poReader == null || csmReader == null) {
-            throw new IllegalStateException("Bad PO/CSM setup");
+        if (poReader == samReader || poReader == null || samReader == null) {
+            throw new IllegalStateException("Bad PO/SAM setup");
         }
 
         logger.info("PO Reader  NAME = {}", poReader.getName());
-        logger.info("CSM Reader  NAME = {}", csmReader.getName());
+        logger.info("SAM Reader  NAME = {}", samReader.getName());
 
         /* Set the PO reader protocol flag */
         poReader.addSeProtocolSetting(
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
 
         /* Assign readers to the Hoplink transaction engine */
-        transactionEngine.setReaders(poReader, csmReader);
+        transactionEngine.setReaders(poReader, samReader);
 
-        /* Create 'virtual' Hoplink and CSM SE */
+        /* Create 'virtual' Hoplink and SAM SE */
         StubSecureElement calypsoStubSe = new StubCalypsoBasic();
-        StubSecureElement csmSE = new StubCsmCalypsoBasic();
+        StubSecureElement samSE = new StubSamCalypsoBasic();
 
-        /* Insert the CSM into the CSM reader */
-        logger.info("Insert stub CSM SE.");
-        csmReader.insertSe(csmSE);
+        /* Insert the SAM into the SAM reader */
+        logger.info("Insert stub SAM SE.");
+        samReader.insertSe(samSE);
 
         /* Set the transactionEngine as Observer of the PO reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);
@@ -101,10 +101,10 @@ public class Demo_CalypsoBasic_Stub {
         Thread.sleep(1000);
 
         /* Remove SE */
-        logger.info("Remove stub CSM and PO SE.");
+        logger.info("Remove stub SAM and PO SE.");
 
         poReader.removeSe();
-        csmReader.removeSe();
+        samReader.removeSe();
 
         logger.info("END.");
 
