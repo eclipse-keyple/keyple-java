@@ -31,7 +31,7 @@ import org.slf4j.profiler.Profiler;
 
 
 
-public class Demo_CalypsoAuthenticationLeve3_Pcsc extends DemoHelpers {
+public class UseCase_CalypsoAuthenticationLevel3_Pcsc extends DemoHelpers {
     private static Properties properties;
 
     @Override
@@ -155,7 +155,7 @@ public class Demo_CalypsoAuthenticationLeve3_Pcsc extends DemoHelpers {
 
         String propertiesFileName = "config.properties";
 
-        InputStream inputStream = Demo_CalypsoAuthenticationLeve3_Pcsc.class.getClassLoader()
+        InputStream inputStream = UseCase_CalypsoAuthenticationLevel3_Pcsc.class.getClassLoader()
                 .getResourceAsStream(propertiesFileName);
 
         if (inputStream != null) {
