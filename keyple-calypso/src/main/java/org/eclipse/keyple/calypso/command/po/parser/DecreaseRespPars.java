@@ -11,7 +11,6 @@ package org.eclipse.keyple.calypso.command.po.parser;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.seproxy.ApduResponse;
 
 /**
  * Decrease (0030) response parser. See specs: Calypso / page 83 / 9.4.2 Decrease
@@ -47,11 +46,9 @@ public class DecreaseRespPars extends AbstractApduResponseParser {
 
     /**
      * Instantiates a new DecreaseRespPars.
-     *
-     * @param response the response from the Decrease APDU command
      */
-    public DecreaseRespPars(ApduResponse response) {
-        super(response);
+    public DecreaseRespPars() {
+
     }
 
     /**

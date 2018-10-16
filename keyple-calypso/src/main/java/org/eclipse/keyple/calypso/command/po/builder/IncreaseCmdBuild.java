@@ -60,11 +60,10 @@ public class IncreaseCmdBuild extends PoCommandBuilder
         incValueBuffer[2] = (byte) (incValue & 0xFF);
 
         byte cla = PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00;
-        byte p1 = counterNumber;
         byte p2 = (byte) (sfi * 8);
 
         /* this is a case4 command, we set Le = 0 */
-        this.request = setApduRequest(cla, command, p1, p2, incValueBuffer, (byte) 0x00);
+        this.request = setApduRequest(cla, command, counterNumber, p2, incValueBuffer, (byte) 0x00);
         if (extraInfo != null) {
             this.addSubName(extraInfo);
         }

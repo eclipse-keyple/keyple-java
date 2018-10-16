@@ -10,7 +10,6 @@ package org.eclipse.keyple.calypso.command.po.parser;
 
 import java.util.*;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
@@ -43,124 +42,167 @@ public class ReadRecordsRespPars extends AbstractApduResponseParser {
         return STATUS_TABLE;
     }
 
-    /** The records. */
-    private List<Record> records;
+    /** Type of data to parse: record data or counter, single or multiple */
+    private ReadDataStructure readDataStructure;
+    /** Number of the first record read */
+    private byte recordNumber;
 
     /**
      * Instantiates a new ReadRecordsRespPars.
      *
-     * @param response the response from read records APDU command
+     * @param recordNumber the record number
+     * @param readDataStructure the type of content in the response to parse
      */
-    public ReadRecordsRespPars(ApduResponse response) {
-        super(response);
-        if (isSuccessful()) {
-            records = parseRecords(response.getDataOut());
-        }
+    public ReadRecordsRespPars(byte recordNumber, ReadDataStructure readDataStructure) {
+        this.recordNumber = recordNumber;
+        this.readDataStructure = readDataStructure;
     }
 
     /**
-     * Method to get the Records from the response.
-     *
-     * @param apduResponse the apdu response
-     * @return a Maps of Records
+     * Indicates whether the parser is associated with a counter file.
+     * 
+     * @return true or false
      */
-    private static List<Record> parseRecords(byte[] apduResponse) {
-        List<Record> records = new ArrayList<Record>();
-        int i = 0;
-        while (i < apduResponse.length) {
-            if (i + 2 + apduResponse[i + 1] > apduResponse.length - 1) {
-                records.add(new Record(apduResponse[i],
-                        Arrays.copyOfRange(apduResponse, i + 2, apduResponse.length - 1)));
-            } else {
-                records.add(new Record(apduResponse[i],
-                        Arrays.copyOfRange(apduResponse, i + 2, i + 2 + apduResponse[i + 1])));
+    public boolean isCounterFile() {
+        return readDataStructure == ReadDataStructure.SINGLE_COUNTER
+                || readDataStructure == ReadDataStructure.MULTIPLE_COUNTER;
+    }
+
+    /**
+     * Parses the Apdu response as a data record (single or multiple), retrieves the records and
+     * place it in an map.
+     * <p>
+     * An empty map is returned if no data is available.
+     * 
+     * @return a map of records
+     * @exception IllegalStateException if the parser has not been initialized
+     */
+    public SortedMap<Integer, byte[]> getRecords() {
+        if (!isInitialized()) {
+            throw new IllegalStateException("Parser not initialized.");
+        }
+        SortedMap<Integer, byte[]> records = new TreeMap<Integer, byte[]>();
+        if (!response.isSuccessful()) {
+            /* return an empty map */
+            // TODO should we raise an exception?
+            return records;
+        }
+        if (readDataStructure == ReadDataStructure.SINGLE_RECORD_DATA) {
+            records.put((int) recordNumber, response.getDataOut());
+        } else if (readDataStructure == ReadDataStructure.MULTIPLE_RECORD_DATA) {
+            byte[] apdu = response.getDataOut();
+            int apduLen = apdu.length;
+            int index = 0;
+            while (apduLen > 0) {
+                byte recordNb = apdu[index++];
+                byte len = apdu[index++];
+                records.put((int) recordNb, Arrays.copyOfRange(apdu, index, index + len));
+                index = index + len;
+                apduLen = apduLen - 2 - len;
             }
-            // add data length to iterator
-            i += apduResponse[i + 1];
-            // add byte of data length to iterator
-            i++;
-            // add byte of num record to iterator
-            i++;
+        } else {
+            throw new IllegalStateException("The file is a counter file.");
         }
-        return records;
-    }
-
-    // fclairamb: I might be missing something. The doc says:
-    // <Record Number:1 byte> < Length:1 byte> <Record data: Length bytes>
-    private static List<Record> parseRecordsV2(byte[] apdu) {
-        List<Record> records = new ArrayList<Record>();
-
-        int apduLen = apdu.length;
-        int i = 0;
-        while (apduLen > 0) {
-            byte recordNb = apdu[i++];
-            byte len = apdu[i++];
-            records.add(new Record(recordNb, Arrays.copyOfRange(apdu, i, len)));
-            i = i + len;
-            apduLen = apduLen - 2 - len;
-        }
-
         return records;
     }
 
     /**
-     * Gets the records number.
+     * Parses the Apdu response as a counter record (single or multiple), retrieves the counters
+     * values and place it in an map indexed with the counter number.
+     * <p>
+     * An empty map is returned if no data is available.
      *
-     * @return the records number
+     * @return a map of counters
+     * @exception IllegalStateException if the parser has not been initialized
      */
-    public int getRecordsNumber() {
-        return records.size();
+    public SortedMap<Integer, Integer> getCounters() {
+        if (!isInitialized()) {
+            throw new IllegalStateException("Parser not initialized.");
+        }
+        SortedMap<Integer, Integer> counters = new TreeMap<Integer, Integer>();
+        if (!response.isSuccessful()) {
+            /* return an empty map */
+            // TODO should we raise an exception?
+            return counters;
+        }
+        if (readDataStructure == ReadDataStructure.SINGLE_COUNTER
+                || readDataStructure == ReadDataStructure.MULTIPLE_COUNTER) {
+            byte[] apdu = response.getDataOut();
+            int numberOfCounters = apdu.length / 3;
+            int index = 0;
+            int key = 0;
+            for (int i = 0; i < numberOfCounters; i++) {
+                /*
+                 * convert the 3-byte unsigned value of the counter into an integer (up to 2^24 -1)
+                 */
+                int counterValue = ((apdu[index + 0] & 0xFF) * 65536)
+                        + ((apdu[index + 1] & 0xFF) * 256) + (apdu[index + 0] & 0xFF);
+                counters.put(key++, counterValue);
+                index = index + 3;
+            }
+
+        } else {
+            throw new IllegalStateException("The file is a data file.");
+        }
+        return counters;
     }
 
-
-    public List<Record> getRecords() {
-        return records;
-    }
-
-    /**
-     * The Class Record. The data in the files are organized in records of equal size.
-     */
-    public static class Record {
-
-        /** The data. */
-        private final byte[] data;
-
-        /** The record number. */
-        private final int recordNumber;
-
-        /**
-         * Instantiates a new Record.
-         *
-         * @param recordNumber the record number
-         * @param data the data
-         */
-        Record(int recordNumber, byte[] data) {
-            super();
-            this.data = data;
-            this.recordNumber = recordNumber;
+    @Override
+    public String toString() {
+        String string;
+        if (isInitialized()) {
+            switch (readDataStructure) {
+                case SINGLE_RECORD_DATA: {
+                    SortedMap<Integer, byte[]> recordMap = getRecords();
+                    string = String.format("Single record data: {RECORD = %d, DATA = %s}",
+                            recordMap.firstKey(),
+                            ByteArrayUtils.toHex(recordMap.get(recordMap.firstKey())));
+                }
+                    break;
+                case MULTIPLE_RECORD_DATA: {
+                    SortedMap<Integer, byte[]> recordMap = getRecords();
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Multiple record data: ");
+                    Set records = recordMap.keySet();
+                    for (Iterator it = records.iterator(); it.hasNext();) {
+                        Integer record = (Integer) it.next();
+                        sb.append(String.format("{RECORD = %d, DATA = %s}", record,
+                                ByteArrayUtils.toHex(recordMap.get(record))));
+                        if (it.hasNext()) {
+                            sb.append(", ");
+                        }
+                    }
+                    string = sb.toString();
+                }
+                    break;
+                case SINGLE_COUNTER: {
+                    SortedMap<Integer, Integer> counterMap = getCounters();
+                    string = String.format("Single counter: {COUNTER = %d, VALUE = %d}",
+                            counterMap.firstKey(), counterMap.get(counterMap.firstKey()));
+                }
+                    break;
+                case MULTIPLE_COUNTER: {
+                    SortedMap<Integer, Integer> counterMap = getCounters();
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Multiple counter: ");
+                    Set counters = counterMap.keySet();
+                    for (Iterator it = counters.iterator(); it.hasNext();) {
+                        Integer counter = (Integer) it.next();
+                        sb.append(String.format("{COUNTER = %d, VALUE = %d}", counter,
+                                counterMap.get(counter)));
+                        if (it.hasNext()) {
+                            sb.append(", ");
+                        }
+                    }
+                    string = sb.toString();
+                }
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected data structure");
+            }
+        } else {
+            string = "Not initialized.";
         }
-
-        /**
-         * Gets the data.
-         *
-         * @return the data
-         */
-        public byte[] getData() {
-            return data;
-        }
-
-        /**
-         * Gets the record number.
-         *
-         * @return the record number
-         */
-        public int getRecordNumber() {
-            return recordNumber;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("Record{nb=%d,data=%s}", recordNumber, ByteArrayUtils.toHex(data));
-        }
+        return string;
     }
 }

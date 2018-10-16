@@ -44,10 +44,9 @@ public class UpdateRecordCmdBuild extends PoCommandBuilder
             throw new IllegalArgumentException("Bad record number (< 1)");
         }
         byte cla = PoRevision.REV2_4.equals(this.defaultRevision) ? (byte) 0x94 : (byte) 0x00;
-        byte p1 = recordNumber;
         byte p2 = (sfi == 0) ? (byte) 0x04 : (byte) ((byte) (sfi * 8) + 4);
 
-        this.request = setApduRequest(cla, command, p1, p2, newRecordData, null);
+        this.request = setApduRequest(cla, command, recordNumber, p2, newRecordData, null);
         if (extraInfo != null) {
             this.addSubName(extraInfo);
         }

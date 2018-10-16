@@ -8,10 +8,15 @@
 
 package org.eclipse.keyple.example.pc.calypso;
 
+import static org.eclipse.keyple.example.common.calypso.CalypsoBasicInfo.SFI_EventLog;
+import static org.eclipse.keyple.example.common.calypso.CalypsoBasicInfo.eventLog_dataFill;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Properties;
+import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.transaction.CalypsoPO;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
@@ -19,7 +24,9 @@ import org.eclipse.keyple.example.common.generic.DemoHelpers;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
-import org.eclipse.keyple.seproxy.*;
+import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.SeProxyService;
+import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
@@ -30,8 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.Profiler;
 
 
-
-public class Demo_CalypsoAuthenticationLeve3_Pcsc extends DemoHelpers {
+public class UseCase_MultipleSession_Pcsc extends DemoHelpers {
     private static Properties properties;
 
     @Override
@@ -40,10 +46,10 @@ public class Demo_CalypsoAuthenticationLeve3_Pcsc extends DemoHelpers {
     }
 
     @SuppressWarnings("unused")
-    static class CalypsoAuthenticationLeve3TransactionEngine extends DemoHelpers
+    static class MultipleSessionLeve3TransactionEngine extends DemoHelpers
             implements ObservableReader.ReaderObserver {
         private final Logger logger =
-                LoggerFactory.getLogger(CalypsoAuthenticationLeve3TransactionEngine.class);
+                LoggerFactory.getLogger(MultipleSessionLeve3TransactionEngine.class);
 
         private final ProxyReader poReader, csmReader;
         private boolean csmChannelOpen;
@@ -63,8 +69,7 @@ public class Demo_CalypsoAuthenticationLeve3_Pcsc extends DemoHelpers {
                     }
                 };
 
-        public CalypsoAuthenticationLeve3TransactionEngine(ProxyReader poReader,
-                ProxyReader csmReader) {
+        public MultipleSessionLeve3TransactionEngine(ProxyReader poReader, ProxyReader csmReader) {
             this.poReader = poReader;
             this.csmReader = csmReader;
         }
@@ -106,18 +111,56 @@ public class Demo_CalypsoAuthenticationLeve3_Pcsc extends DemoHelpers {
 
                     profiler.start("Calypso1");
 
-                    PoTransaction poTransaction = new PoTransaction(poReader,
-                            new CalypsoPO(seResponses.get(0)), csmReader, csmSetting);
+                    CalypsoPO calypsoPO = new CalypsoPO(seResponses.get(0));
+
+                    PoTransaction poTransaction =
+                            new PoTransaction(poReader, calypsoPO, csmReader, csmSetting);
                     /*
-                     * Open Session for the debit key
+                     * Open Session for the debit key in MULTIPLE mode
                      */
-                    SeResponse seResponse = poTransaction.processOpening(
-                            PoTransaction.ModificationMode.ATOMIC,
+                    boolean poProcessStatus = poTransaction.processOpening(
+                            PoTransaction.ModificationMode.MULTIPLE,
                             PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
                     if (!poTransaction.wasRatified()) {
                         logger.info(
                                 "========= Previous Secure Session was not ratified. =====================");
                     }
+
+                    /*
+                     * Compute the number of append records (29 bytes) commands that will overflow
+                     * the PO modifications buffer. Each append records will consume 35 (29 + 6)
+                     * bytes in the buffer.
+                     *
+                     * We'll send one more command to demonstrate the MULTIPLE mode
+                     */
+                    int modificationsBufferSize = calypsoPO.getModificationsCounter();
+
+                    int nbCommands = (modificationsBufferSize / 35) + 1;
+
+                    AppendRecordRespPars appendRecordParsers[] =
+                            new AppendRecordRespPars[nbCommands];
+
+                    logger.info(
+                            "==== Send {} Append Record commands. Modifications buffer capacity = {} bytes i.e. {} 29-byte commands ====",
+                            nbCommands, modificationsBufferSize, modificationsBufferSize / 35);
+
+                    for (int i = 0; i < nbCommands; i++) {
+                        appendRecordParsers[i] = poTransaction.prepareAppendRecordCmd(SFI_EventLog,
+                                ByteArrayUtils.fromHex(eventLog_dataFill),
+                                String.format("EventLog (SFI=%02X) #%d", SFI_EventLog, i));
+                    }
+
+                    poProcessStatus = poTransaction.processPoCommands();
+
+                    if (poProcessStatus != true) {
+                        for (int i = 0; i < nbCommands; i++) {
+                            if (!appendRecordParsers[i].isSuccessful()) {
+                                logger.error("Append record #%d failed with errror %s.", i,
+                                        appendRecordParsers[i].getStatusInformation());
+                            }
+                        }
+                    }
+
                     /*
                      * Close the Secure Session.
                      */
@@ -130,7 +173,7 @@ public class Demo_CalypsoAuthenticationLeve3_Pcsc extends DemoHelpers {
                     /*
                      * A ratification command will be sent (CONTACTLESS_MODE).
                      */
-                    seResponse = poTransaction.processClosing(
+                    poProcessStatus = poTransaction.processClosing(
                             PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
                 } else {
                     logger.error(
@@ -155,7 +198,7 @@ public class Demo_CalypsoAuthenticationLeve3_Pcsc extends DemoHelpers {
 
         String propertiesFileName = "config.properties";
 
-        InputStream inputStream = Demo_CalypsoAuthenticationLeve3_Pcsc.class.getClassLoader()
+        InputStream inputStream = UseCase_MultipleSession_Pcsc.class.getClassLoader()
                 .getResourceAsStream(propertiesFileName);
 
         if (inputStream != null) {
@@ -216,8 +259,8 @@ public class Demo_CalypsoAuthenticationLeve3_Pcsc extends DemoHelpers {
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
 
         /* Setting up the transaction engine (implements Observer) */
-        CalypsoAuthenticationLeve3TransactionEngine transactionEngine =
-                new CalypsoAuthenticationLeve3TransactionEngine(poReader, csmReader);
+        MultipleSessionLeve3TransactionEngine transactionEngine =
+                new MultipleSessionLeve3TransactionEngine(poReader, csmReader);
 
         /* Set terminal as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);

@@ -9,6 +9,8 @@
 package org.eclipse.keyple.example.common.calypso;
 
 import java.util.*;
+import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
+import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.CalypsoPO;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
@@ -109,6 +111,7 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
      */
     public void doHoplinkReadWriteTransaction(PoTransaction poTransaction, boolean closeSeChannel)
             throws KeypleReaderException {
+        boolean poProcessStatus;
 
         /*
          * the modification command sent sent on closing is disabled for the moment due to CAAD
@@ -123,7 +126,7 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
          * Open Session for the debit key - with reading of the first record of the T2 Environment
          * file (read twice in this demo!)
          */
-        poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
+        poProcessStatus = poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
                 PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, HoplinkInfo.SFI_T2Environment,
                 HoplinkInfo.RECORD_NUMBER_1);
 
@@ -136,21 +139,25 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
                     "========= PO Hoplink session ======= Processing of PO commands =======================");
         }
         /* prepare T2 Environment read record */
-        poTransaction.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Environment,
-                HoplinkInfo.RECORD_NUMBER_1, true, (byte) 0x00,
-                HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
+        ReadRecordsRespPars readT2EnvironmentParser =
+                poTransaction.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Environment,
+                        ReadDataStructure.SINGLE_RECORD_DATA, HoplinkInfo.RECORD_NUMBER_1,
+                        (byte) 0x00, HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
 
         /* prepare T2 Usage read record */
-        poTransaction.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Usage, HoplinkInfo.RECORD_NUMBER_1,
-                true, (byte) 0x00, HoplinkInfo.EXTRAINFO_ReadRecord_T2UsageRec1);
+        ReadRecordsRespPars readT2UsageParser =
+                poTransaction.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Usage,
+                        ReadDataStructure.SINGLE_RECORD_DATA, HoplinkInfo.RECORD_NUMBER_1,
+                        (byte) 0x00, HoplinkInfo.EXTRAINFO_ReadRecord_T2UsageRec1);
 
-        poTransaction.processPoCommands();
+        poProcessStatus = poTransaction.processPoCommands();
 
         if (logger.isInfoEnabled()) {
             logger.info(
                     "========= PO Hoplink session ======= Closing ============================");
         }
-        poTransaction.processClosing(PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
+        poProcessStatus = poTransaction
+                .processClosing(PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
 
         if (poTransaction.isSuccessful()) {
             if (logger.isInfoEnabled()) {
