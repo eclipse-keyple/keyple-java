@@ -50,7 +50,8 @@
 |`Demo_CalypsoBasic_Pcsc.java`|Contains the main class for the Calypso PC/SC demo|
 |`Demo_CalypsoBasic_Stub.java`|Contains the main class for the Calypso basic without the need of hardware readers|
 |`Demo_Hoplink_Pcsc.java`|Contains the main class for the Hoplink PC/SC demo|
-|`Demo_Hoplink_Stub.java`|Contains the main class for the Hoplink basic without the need of hardware readers|
+|`UseCase_CalypsoAuthenticationLevel3_Pcsc.java`|Contains the main class of an example of code focusing on session opening/closing|
+|`UseCase_MultipleSession_Pcsc.java`|Contains the main class of an example of code focusing on the multiple session mode (for handling large amount of data transferred to a PO)|
 
 * Package `org.eclipse.keyple.example.pc.calypso.stub.se`
 
