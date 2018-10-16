@@ -33,6 +33,7 @@ public final class CalypsoPO {
     private byte[] dfName;
     private final static int PO_REV1_ATR_LENGTH = 20;
     private byte[] poAtr;
+    private int modificationsCounterMax;
 
     public CalypsoPO(SeResponse selectionSeResponse) {
         /* The selectionSeResponse may not include a FCI field (e.g. old PO Calypso Rev 1) */
@@ -68,6 +69,8 @@ public final class CalypsoPO {
             this.dfName = poFciRespPars.getDfName();
 
             this.applicationSerialNumber = poFciRespPars.getApplicationSerialNumber();
+
+            this.modificationsCounterMax = poFciRespPars.getBufferSizeValue();
         } else {
             /*
              * FCI is not provided: we consider it is Calypso PO rev 1, it's serial number is
@@ -116,6 +119,6 @@ public final class CalypsoPO {
     }
 
     public int getModificationsCounter() {
-        return 0;
+        return modificationsCounterMax;
     }
 }

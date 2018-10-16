@@ -1400,17 +1400,70 @@ public class PoTransaction {
             byte openingSfiToSelect, byte openingRecordNumberToRead) throws KeypleReaderException {
         currentModificationMode = modificationMode;
         currentAccessLevel = accessLevel;
+        byte localOpeningRecordNumberToRead = openingRecordNumberToRead;
         boolean poProcessSuccess = true;
-        SeResponse seResponseOpening = processAtomicOpening(accessLevel, openingSfiToSelect,
-                openingRecordNumberToRead, poCommandBuilderList);
-        Iterator<AbstractApduResponseParser> apduResponseParserIterator =
+        Iterator<AbstractApduResponseParser> abstractApduResponseParserIterator =
                 poResponseParserList.iterator();
-        if (!updateParsersWithResponses(seResponseOpening, apduResponseParserIterator)) {
-            poProcessSuccess = false;
+        List<PoSendableInSession> poAtomicCommandBuilderList = new ArrayList<PoSendableInSession>();
+        for (PoSendableInSession poCommandBuilderElement : poCommandBuilderList) {
+            if (!(poCommandBuilderElement instanceof PoModificationCommand)) {
+                /* This command does not affect the PO modifications buffer */
+                poAtomicCommandBuilderList.add(poCommandBuilderElement);
+            } else {
+                /* This command affects the PO modifications buffer */
+                if (willOverflowBuffer(((PoModificationCommand) poCommandBuilderElement)
+                        .getModificationsBufferBytesUsage())) {
+                    if (currentModificationMode == ModificationMode.ATOMIC) {
+                        throw new IllegalStateException(
+                                "ATOMIC mode error! This command would overflow the PO modifications buffer: "
+                                        + poCommandBuilderElement.toString());
+                    }
+                    SeResponse seResponseOpening =
+                            processAtomicOpening(currentAccessLevel, openingSfiToSelect,
+                                    localOpeningRecordNumberToRead, poAtomicCommandBuilderList);
+
+                    /* inhibit record reading for next round */
+                    localOpeningRecordNumberToRead = (byte) 0x00;
+
+                    Iterator<AbstractApduResponseParser> apduResponseParserIterator =
+                            poResponseParserList.iterator();
+                    if (!updateParsersWithResponses(seResponseOpening,
+                            apduResponseParserIterator)) {
+                        poProcessSuccess = false;
+                    }
+                    /*
+                     * Closes the session, resets the modifications buffer counters for the next
+                     * round
+                     */
+                    processAtomicClosing(null, CommunicationMode.CONTACTS_MODE, false);
+                    resetModificationsBufferCounter();
+                    /*
+                     * Clear the list and add the command that did not fit in the PO modifications
+                     * buffer. We also update the usage counter without checking the result.
+                     */
+                    poAtomicCommandBuilderList.clear();
+                    poAtomicCommandBuilderList.add(poCommandBuilderElement);
+                    /* just update counters, ignore result (always false) */
+                    willOverflowBuffer(((PoModificationCommand) poCommandBuilderElement)
+                            .getModificationsBufferBytesUsage());
+                } else {
+                    /*
+                     * The command fits in the PO modifications buffer, just add it to the list
+                     */
+                    poAtomicCommandBuilderList.add(poCommandBuilderElement);
+                }
+            }
+        }
+        if (!poAtomicCommandBuilderList.isEmpty()) {
+            SeResponse seResponseOpening = processAtomicOpening(currentAccessLevel,
+                    openingSfiToSelect, localOpeningRecordNumberToRead, poAtomicCommandBuilderList);
+            if (!updateParsersWithResponses(seResponseOpening,
+                    abstractApduResponseParserIterator)) {
+                poProcessSuccess = false;
+            }
         }
         poCommandBuilderList.clear();
         poResponseParserList.clear();
-        // TODO manage multiple mode
         return poProcessSuccess;
     }
 
@@ -1447,10 +1500,10 @@ public class PoTransaction {
 
             for (PoSendableInSession poCommandBuilderElement : poCommandBuilderList) {
                 if (!(poCommandBuilderElement instanceof PoModificationCommand)) {
-                    /* This command does not affect the PO modification buffer */
+                    /* This command does not affect the PO modifications buffer */
                     poAtomicCommandBuilderList.add(poCommandBuilderElement);
                 } else {
-                    /* This command affects the PO modification buffer */
+                    /* This command affects the PO modifications buffer */
                     if (willOverflowBuffer(((PoModificationCommand) poCommandBuilderElement)
                             .getModificationsBufferBytesUsage())) {
                         if (currentModificationMode == ModificationMode.ATOMIC) {
@@ -1480,10 +1533,14 @@ public class PoTransaction {
                                 (byte) 0x00, (byte) 0x00, null);
                         /*
                          * Clear the list and add the command that did not fit in the PO
-                         * modifications buffer
+                         * modifications buffer. We also update the usage counter without checking
+                         * the result.
                          */
                         poAtomicCommandBuilderList.clear();
                         poAtomicCommandBuilderList.add(poCommandBuilderElement);
+                        /* just update counters, ignore result (always false) */
+                        willOverflowBuffer(((PoModificationCommand) poCommandBuilderElement)
+                                .getModificationsBufferBytesUsage());
                     } else {
                         /*
                          * The command fits in the PO modifications buffer, just add it to the list
@@ -1533,21 +1590,88 @@ public class PoTransaction {
     public boolean processClosing(CommunicationMode communicationMode, boolean closeSeChannel)
             throws KeypleReaderException {
         boolean poProcessSuccess = true;
+        boolean atLeastOneReadCommand = false;
+        boolean sessionPreviouslyClosed = false;
         List<PoModificationCommand> poModificationCommandList =
                 new ArrayList<PoModificationCommand>();
-        for (PoSendableInSession command : poCommandBuilderList) {
-            poModificationCommandList.add((PoModificationCommand) command);
-        }
-        SeResponse seResponseClosing =
-                processAtomicClosing(poModificationCommandList, communicationMode, closeSeChannel);
-        Iterator<AbstractApduResponseParser> apduResponseParserIterator =
+        Iterator<AbstractApduResponseParser> abstractApduResponseParserIterator =
                 poResponseParserList.iterator();
-        if (!updateParsersWithResponses(seResponseClosing, apduResponseParserIterator)) {
+        List<PoModificationCommand> poAtomicCommandBuilderList =
+                new ArrayList<PoModificationCommand>();
+        SeResponse seResponseClosing;
+        for (PoSendableInSession poCommandBuilderElement : poCommandBuilderList) {
+            if (!(poCommandBuilderElement instanceof PoModificationCommand)) {
+                /*
+                 * This command does not affect the PO modifications buffer. We will call
+                 * processPoCommands first
+                 */
+                poAtomicCommandBuilderList.add((PoModificationCommand) poCommandBuilderElement);
+                atLeastOneReadCommand = true;
+            } else {
+                /* This command affects the PO modifications buffer */
+                if (willOverflowBuffer(((PoModificationCommand) poCommandBuilderElement)
+                        .getModificationsBufferBytesUsage())) {
+                    if (currentModificationMode == ModificationMode.ATOMIC) {
+                        throw new IllegalStateException(
+                                "ATOMIC mode error! This command would overflow the PO modifications buffer: "
+                                        + poCommandBuilderElement.toString());
+                    }
+                    if (sessionPreviouslyClosed) {
+                        processAtomicOpening(currentAccessLevel, (byte) 0x00, (byte) 0x00, null);
+                    }
+
+                    if (atLeastOneReadCommand) {
+                        List<PoSendableInSession> poSendableInSessionList =
+                                new ArrayList<PoSendableInSession>();
+                        for (PoModificationCommand command : poAtomicCommandBuilderList) {
+                            poSendableInSessionList.add((PoSendableInSession) command);
+                        }
+                        seResponseClosing = processAtomicPoCommands(poSendableInSessionList);
+                        atLeastOneReadCommand = false;
+                    } else {
+                        seResponseClosing = processAtomicClosing(poAtomicCommandBuilderList,
+                                CommunicationMode.CONTACTS_MODE, false);
+                        resetModificationsBufferCounter();
+                        sessionPreviouslyClosed = true;
+                    }
+
+                    Iterator<AbstractApduResponseParser> apduResponseParserIterator =
+                            poResponseParserList.iterator();
+                    if (!updateParsersWithResponses(seResponseClosing,
+                            apduResponseParserIterator)) {
+                        poProcessSuccess = false;
+                    }
+                    /*
+                     * Clear the list and add the command that did not fit in the PO modifications
+                     * buffer. We also update the usage counter without checking the result.
+                     */
+                    poAtomicCommandBuilderList.clear();
+                    poAtomicCommandBuilderList.add((PoModificationCommand) poCommandBuilderElement);
+                    /* just update counters, ignore result (always false) */
+                    willOverflowBuffer(((PoModificationCommand) poCommandBuilderElement)
+                            .getModificationsBufferBytesUsage());
+                } else {
+                    /*
+                     * The command fits in the PO modifications buffer, just add it to the list
+                     */
+                    poAtomicCommandBuilderList.add((PoModificationCommand) poCommandBuilderElement);
+                }
+            }
+        }
+        if (sessionPreviouslyClosed) {
+            /*
+             * Reopen if needed, to close the session with the requested conditions
+             * (CommunicationMode and keepChannelOpen)
+             */
+            processAtomicOpening(currentAccessLevel, (byte) 0x00, (byte) 0x00, null);
+        }
+        seResponseClosing =
+                processAtomicClosing(poAtomicCommandBuilderList, communicationMode, closeSeChannel);
+        if (!updateParsersWithResponses(seResponseClosing, abstractApduResponseParserIterator)) {
             poProcessSuccess = false;
         }
         poCommandBuilderList.clear();
         poResponseParserList.clear();
-        // TODO manage multiple mode
         return poProcessSuccess;
     }
 
@@ -1590,12 +1714,22 @@ public class PoTransaction {
             if (modificationsCounter - bufferByteRequirement > 0) {
                 modificationsCounter = modificationsCounter - bufferByteRequirement;
             } else {
+                if (logger.isTraceEnabled()) {
+                    logger.trace(
+                            "Modifications buffer overflow! BYTESMODE, CURRENTCOUNTER = {}, REQUIREMENT = {}",
+                            modificationsCounter, bufferByteRequirement);
+                }
                 willOverflow = true;
             }
         } else {
             if (modificationsCounter > 0) {
                 modificationsCounter--;
             } else {
+                if (logger.isTraceEnabled()) {
+                    logger.trace(
+                            "Modifications buffer overflow! COMMANDSMODE, CURRENTCOUNTER = {}, REQUIREMENT = {}",
+                            modificationsCounter, 1);
+                }
                 willOverflow = true;
             }
         }
@@ -1606,6 +1740,10 @@ public class PoTransaction {
      * Initialized the modifications buffer counter to its maximum value for the current PO
      */
     private void resetModificationsBufferCounter() {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Modifications buffer counter reset: PREVIOUSVALUE = {}, NEWVALUE = {}",
+                    modificationsCounter, modificationsCounterMax);
+        }
         modificationsCounter = modificationsCounterMax;
     }
 
