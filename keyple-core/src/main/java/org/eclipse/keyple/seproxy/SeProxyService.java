@@ -96,7 +96,7 @@ public final class SeProxyService {
         try {
             // load keyple core property file
             InputStream propertiesIs = this.getClass().getClassLoader()
-                    .getResourceAsStream("META-INF/keyple.properties");
+                    .getResourceAsStream("META-INF/keyple-core.properties");
             Properties prop = new Properties();
             prop.load(propertiesIs);
             String version = prop.getProperty("version");

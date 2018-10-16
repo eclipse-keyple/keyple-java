@@ -10,6 +10,8 @@ plugins {
     id "com.diffplug.gradle.spotless" version "3.14.0"
 }
 
+
+
 subprojects {
     group 'org.eclipse.keyple'
 
@@ -17,6 +19,12 @@ subprojects {
 }
 
 allprojects {
+
+    configurations.all {
+        // check for updates every build
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+
     repositories {
         mavenLocal()
         mavenCentral()
