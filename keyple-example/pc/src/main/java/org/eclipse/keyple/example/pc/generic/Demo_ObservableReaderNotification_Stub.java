@@ -56,7 +56,7 @@ public class Demo_ObservableReaderNotification_Stub {
 
         StubReader reader2 = (StubReader) (stubPlugin.getReader("Reader2"));
 
-        /* Create 'virtual' Hoplink and CSM SE */
+        /* Create 'virtual' Hoplink and SAM SE */
         StubSecureElement se1 = new StubSe1();
         StubSecureElement se2 = new StubSe2();
 

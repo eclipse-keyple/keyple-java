@@ -14,15 +14,15 @@ package org.eclipse.keyple.example.common.calypso;
  * Helper class to provide specific information to handle Hoplink cards.
  * <ul>
  * <li>AID application selection</li>
- * <li>CSM_C1_ATR_REGEX regular expresion matching the expected C1 CSM ATR</li>
+ * <li>SAM_C1_ATR_REGEX regular expresion matching the expected C1 SAM ATR</li>
  * <li>Files infos (SFI, rec number, etc) for T2 Environment and T2 Usage</li>
  * </ul>
  */
 public class HoplinkInfo {
     /** Hoplink card AID */
     public final static String AID = "A000000291A000000191";
-    /** CSM C1 regular expression: platform, version and serial number values are ignored */
-    public final static String CSM_C1_ATR_REGEX =
+    /** SAM C1 regular expression: platform, version and serial number values are ignored */
+    public final static String SAM_C1_ATR_REGEX =
             "3B3F9600805A[0-9a-fA-F]{2}80C1[0-9a-fA-F]{14}829000";
     /** Sample data for T2 usage update */
     public final static String t2UsageRecord1_dataFill = "0102030405060708090A0B0C0D0E0F10"

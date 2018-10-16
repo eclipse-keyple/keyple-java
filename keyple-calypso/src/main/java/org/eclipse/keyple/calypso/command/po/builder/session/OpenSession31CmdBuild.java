@@ -17,7 +17,7 @@ public class OpenSession31CmdBuild extends AbstractOpenSessionCmdBuild {
      * Instantiates a new AbstractOpenSessionCmdBuild.
      *
      * @param keyIndex the key index
-     * @param samChallenge the sam challenge returned by the CSM Get Challenge APDU command
+     * @param samChallenge the sam challenge returned by the SAM Get Challenge APDU command
      * @param sfiToSelect the sfi to select
      * @param recordNumberToRead the record number to read
      * @param extraInfo extra information included in the logs (can be null or empty)

@@ -28,7 +28,7 @@
 |`Demo_ObservableReaderNotification_Stub.java`|Main class for the plugin/reader observability example (stub)|
 |`Demo_SeProtocolDetection_Pcsc.java`|Main class for the protocol detection example (PC/SC)|
 |`Demo_SeProtocolDetection_Stub.java`|Main class for the protocol detection example (stub)|
-|`PcscReadersSettings.java`|Interface defining PC/SC readers identifiers (for PO / CSM reader role assignment)|
+|`PcscReadersSettings.java`|Interface defining PC/SC readers identifiers (for PO / SAM reader role assignment)|
 
 * Package `org.eclipse.keyple.example.pc.generic.stub.se`
 
@@ -57,7 +57,7 @@
 |File|Description|
 |:---|---|
 |`StubCalypsoBasic.java`|Calypso PO stub SE (`StubSecureElement`)|
-|`StubCsm.java`|Calypso CSM stub SE (`StubSecureElement`)|
+|`StubSam.java`|Calypso SAM stub SE (`StubSecureElement`)|
 |`StubHoplink.java`|Hoplink PO stub SE (`StubSecureElement`)|
 
 **Build configuration**

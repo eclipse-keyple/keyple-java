@@ -14,7 +14,7 @@ package org.eclipse.keyple.example.common.calypso;
  * Helper class to provide specific elements to handle Calypso cards.
  * <ul>
  * <li>AID application selection (default Calypso AID)</li>
- * <li>CSM_C1_ATR_REGEX regular expression matching the expected C1 CSM ATR</li>
+ * <li>SAM_C1_ATR_REGEX regular expression matching the expected C1 SAM ATR</li>
  * <li>Files infos (SFI, rec number, etc) for
  * <ul>
  * <li>Environment and Holder</li>
@@ -30,8 +30,8 @@ public class CalypsoBasicInfo {
     public final static String AID = "A0000004040125090101";
     /// ** 1TIC.ICA AID */
     // public final static String AID = "315449432E494341";
-    /** CSM C1 regular expression: platform, version and serial number values are ignored */
-    public final static String CSM_C1_ATR_REGEX =
+    /** SAM C1 regular expression: platform, version and serial number values are ignored */
+    public final static String SAM_C1_ATR_REGEX =
             "3B3F9600805A[0-9a-fA-F]{2}80C1[0-9a-fA-F]{14}829000";
 
     public final static byte RECORD_NUMBER_1 = 1;

@@ -51,37 +51,37 @@ public class UseCase_MultipleSession_Pcsc extends DemoHelpers {
         private final Logger logger =
                 LoggerFactory.getLogger(MultipleSessionLeve3TransactionEngine.class);
 
-        private final ProxyReader poReader, csmReader;
-        private boolean csmChannelOpen;
+        private final ProxyReader poReader, samReader;
+        private boolean samChannelOpen;
 
-        /* define the CSM parameters to provide when creating PoTransaction */
-        final EnumMap<PoTransaction.CsmSettings, Byte> csmSetting =
-                new EnumMap<PoTransaction.CsmSettings, Byte>(PoTransaction.CsmSettings.class) {
+        /* define the SAM parameters to provide when creating PoTransaction */
+        final EnumMap<PoTransaction.SamSettings, Byte> samSetting =
+                new EnumMap<PoTransaction.SamSettings, Byte>(PoTransaction.SamSettings.class) {
                     {
-                        put(PoTransaction.CsmSettings.CS_DEFAULT_KIF_PERSO,
+                        put(PoTransaction.SamSettings.SAM_DEFAULT_KIF_PERSO,
                                 PoTransaction.DEFAULT_KIF_PERSO);
-                        put(PoTransaction.CsmSettings.CS_DEFAULT_KIF_LOAD,
+                        put(PoTransaction.SamSettings.SAM_DEFAULT_KIF_LOAD,
                                 PoTransaction.DEFAULT_KIF_LOAD);
-                        put(PoTransaction.CsmSettings.CS_DEFAULT_KIF_DEBIT,
+                        put(PoTransaction.SamSettings.SAM_DEFAULT_KIF_DEBIT,
                                 PoTransaction.DEFAULT_KIF_DEBIT);
-                        put(PoTransaction.CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER,
+                        put(PoTransaction.SamSettings.SAM_DEFAULT_KEY_RECORD_NUMBER,
                                 PoTransaction.DEFAULT_KEY_RECORD_NUMER);
                     }
                 };
 
-        public MultipleSessionLeve3TransactionEngine(ProxyReader poReader, ProxyReader csmReader) {
+        public MultipleSessionLeve3TransactionEngine(ProxyReader poReader, ProxyReader samReader) {
             this.poReader = poReader;
-            this.csmReader = csmReader;
+            this.samReader = samReader;
         }
 
         public void operatePoTransactions() {
             Profiler profiler;
             try {
-                /* first time: check CSM */
-                if (!this.csmChannelOpen) {
-                    /* the following method will throw an exception if the CSM is not available. */
-                    checkCsmAndOpenChannel(csmReader);
-                    this.csmChannelOpen = true;
+                /* first time: check SAM */
+                if (!this.samChannelOpen) {
+                    /* the following method will throw an exception if the SAM is not available. */
+                    checkSamAndOpenChannel(samReader);
+                    this.samChannelOpen = true;
                 }
 
                 profiler = new Profiler("Entire transaction");
@@ -114,7 +114,7 @@ public class UseCase_MultipleSession_Pcsc extends DemoHelpers {
                     CalypsoPO calypsoPO = new CalypsoPO(seResponses.get(0));
 
                     PoTransaction poTransaction =
-                            new PoTransaction(poReader, calypsoPO, csmReader, csmSetting);
+                            new PoTransaction(poReader, calypsoPO, samReader, samSetting);
                     /*
                      * Open Session for the debit key in MULTIPLE mode
                      */
@@ -192,7 +192,7 @@ public class UseCase_MultipleSession_Pcsc extends DemoHelpers {
     public static void main(String[] args)
             throws KeypleBaseException, InterruptedException, IOException {
 
-        final Logger logger = LoggerFactory.getLogger(Demo_CalypsoBasic_Pcsc.class);
+        final Logger logger = LoggerFactory.getLogger(UseCase_MultipleSession_Pcsc.class);
 
         properties = new Properties();
 
@@ -218,32 +218,32 @@ public class UseCase_MultipleSession_Pcsc extends DemoHelpers {
         seProxyService.addPlugin(pcscPlugin);
 
         /*
-         * Get PO and CSM readers. Apply regulars expressions to reader names to select PO / CSM
+         * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
          * readers. Use the getReader helper method from the transaction engine.
          */
         ProxyReader poReader =
                 getReaderByName(seProxyService, properties.getProperty("po.reader.regex"));
-        ProxyReader csmReader =
-                getReaderByName(seProxyService, properties.getProperty("csm.reader.regex"));
+        ProxyReader samReader =
+                getReaderByName(seProxyService, properties.getProperty("sam.reader.regex"));
 
         /* Both readers are expected not null */
-        if (poReader == csmReader || poReader == null || csmReader == null) {
-            throw new IllegalStateException("Bad PO/CSM setup");
+        if (poReader == samReader || poReader == null || samReader == null) {
+            throw new IllegalStateException("Bad PO/SAM setup");
         }
 
         logger.info("PO Reader  NAME = {}", poReader.getName());
-        logger.info("CSM Reader  NAME = {}", csmReader.getName());
+        logger.info("SAM Reader  NAME = {}", samReader.getName());
 
         /* Set PcSc settings per reader */
         poReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
         poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
-        csmReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
-        csmReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
+        samReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
+        samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
         /*
          * PC/SC card access mode:
          *
-         * The CSM is left in the SHARED mode (by default) to avoid automatic resets due to the
+         * The SAM is left in the SHARED mode (by default) to avoid automatic resets due to the
          * limited time between two consecutive exchanges granted by Windows.
          *
          * The PO reader is set to EXCLUSIVE mode to avoid side effects during the selection step
@@ -251,7 +251,7 @@ public class UseCase_MultipleSession_Pcsc extends DemoHelpers {
          *
          * These two points will be addressed in a coming release of the Keyple PcSc reader plugin.
          */
-        csmReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
+        samReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
         poReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
 
         /* Set the PO reader protocol flag */
@@ -260,7 +260,7 @@ public class UseCase_MultipleSession_Pcsc extends DemoHelpers {
 
         /* Setting up the transaction engine (implements Observer) */
         MultipleSessionLeve3TransactionEngine transactionEngine =
-                new MultipleSessionLeve3TransactionEngine(poReader, csmReader);
+                new MultipleSessionLeve3TransactionEngine(poReader, samReader);
 
         /* Set terminal as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);

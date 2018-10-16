@@ -17,7 +17,7 @@ import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 public class KeypleCalypsoSecureSessionException extends KeypleReaderException {
 
     public enum Type {
-        PO, CSM
+        PO, SAM
     }
 
     private final Type type;
