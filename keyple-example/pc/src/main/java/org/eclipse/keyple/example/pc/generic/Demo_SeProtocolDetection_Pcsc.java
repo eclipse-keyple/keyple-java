@@ -8,7 +8,6 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  */
-
 package org.eclipse.keyple.example.pc.generic;
 
 import static org.eclipse.keyple.example.common.generic.DemoHelpers.getReaderByName;

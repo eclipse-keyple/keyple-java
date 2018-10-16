@@ -8,7 +8,6 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  */
-
 package org.eclipse.keyple.calypso.command.csm;
 
 import org.eclipse.keyple.calypso.command.csm.builder.SelectDiversifierCmdBuild;

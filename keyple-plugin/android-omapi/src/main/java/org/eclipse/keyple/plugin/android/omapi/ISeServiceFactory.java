@@ -8,7 +8,6 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  */
-
 package org.eclipse.keyple.plugin.android.omapi;
 
 import org.simalliance.openmobileapi.SEService;

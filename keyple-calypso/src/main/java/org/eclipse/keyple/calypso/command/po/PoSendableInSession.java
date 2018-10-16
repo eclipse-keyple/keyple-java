@@ -8,7 +8,6 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  */
-
 package org.eclipse.keyple.calypso.command.po;
 
 import org.eclipse.keyple.calypso.command.SendableInSession;

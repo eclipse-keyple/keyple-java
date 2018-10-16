@@ -8,7 +8,6 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  */
-
 package org.eclipse.keyple.calypso.command.csm.builder;
 
 import static org.junit.Assert.assertArrayEquals;

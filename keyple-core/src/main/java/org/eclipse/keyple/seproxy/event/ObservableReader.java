@@ -8,7 +8,6 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  */
-
 package org.eclipse.keyple.seproxy.event;
 
 import org.eclipse.keyple.seproxy.ProxyReader;
