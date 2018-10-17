@@ -7,20 +7,34 @@
  * in the user guide at https://docs.gradle.org/4.5.1/userguide/multi_project_builds.html
  */
 
+
 rootProject.name = 'keyple-java'
+println '** ' + rootProject.name + ' initialization phase.'
 
 include 'keyple-core'
 include 'keyple-calypso'
-include 'keyple-plugin-pcsc'
-include 'keyple-plugin-stub'
-include 'keyple-example-common'
-include 'keyple-example-pc'
 include 'keyple-integration'
 
-project(':keyple-plugin-pcsc').projectDir = file('./keyple-plugin/pcsc')
-project(':keyple-plugin-stub').projectDir = file('./keyple-plugin/stub')
+include 'keyple-plugin:pcsc'
+project(':keyple-plugin:pcsc').name = "keyple-plugin-pcsc"
 
-project(':keyple-example-pc').projectDir = file('./keyple-example/pc')
-project(':keyple-example-common').projectDir = file('./keyple-example/common')
+include 'keyple-plugin:stub'
+project(':keyple-plugin:stub').name = "keyple-plugin-stub"
 
-project(':keyple-integration').projectDir = file('./keyple-integration')
+include 'keyple-example:common'
+project(':keyple-example:common').name = "keyple-example-common"
+
+include 'keyple-example:pc'
+project(':keyple-example:pc').name = "keyple-example-pc"
+
+
+/*
+ Android
+ */
+
+include 'keyple-plugin:android-nfc'
+project(':keyple-plugin:android-nfc').name = "keyple-plugin-android-nfc"
+
+include 'keyple-plugin:android-omapi'
+project(':keyple-plugin:android-omapi').name = "keyple-plugin-android-omapi"
+

@@ -1,0 +1,2 @@
+rootProject.name = 'keyple-calypso'
+println '** ' + rootProject.name + ' initialization phase.'

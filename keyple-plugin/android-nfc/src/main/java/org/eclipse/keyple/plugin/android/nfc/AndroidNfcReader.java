@@ -1,11 +1,13 @@
 /*
  * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * All rights reserved. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
- * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License version 2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
  */
-
 package org.eclipse.keyple.plugin.android.nfc;
 
 
@@ -123,7 +125,6 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
             LOG.warn("Adding parameter : " + key + " - " + value);
             parameters.put(key, value);
         } else {
-
             LOG.warn("Unrecognized parameter : " + key);
             throw new IllegalArgumentException("Unrecognized parameter " + key + " : " + value);
         }
@@ -242,11 +243,36 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
         this.onTagDiscovered(tag);
     }
 
-    String printTagId() {
-        return tagProxy != null && tagProxy.getTag() != null
-                ? Arrays.toString(tagProxy.getTag().getId()) + tagProxy.getTag().toString()
-                : "null";
+    public String printTagId() {
+
+        if (tagProxy != null && tagProxy.getTag() != null) {
+            StringBuilder techList = new StringBuilder();
+
+            // build a user friendly TechList
+            String[] techs = tagProxy.getTag().getTechList();
+            for (int i = 0; i < techs.length; i++) {
+                // append a userfriendly Tech
+                techList.append(techs[i].replace("android.nfc.tech.", ""));
+                // if not last tech, append separator
+                if (i + 1 < techs.length)
+                    techList.append(", ");
+            }
+
+
+
+            // build a hexa TechId
+            StringBuilder tagId = new StringBuilder();
+            for (byte b : tagProxy.getTag().getId()) {
+                tagId.append(String.format("%02X ", b));
+            }
+
+            return tagId + " - " + techList;
+        } else {
+            return "no-tag";
+        }
     }
+
+
 
     /**
      * Build Reader Mode flags Integer from parameters

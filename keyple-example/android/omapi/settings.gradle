@@ -1,12 +1,2 @@
 rootProject.name = 'keyple-example-android-omapi'
 
-/*
-*/
-include 'keyple-plugin-android-omapi'
-include 'keyple-calypso'
-include 'keyple-core'
-
-
-project(':keyple-plugin-android-omapi').projectDir = file('../../../keyple-plugin/android-omapi')
-project(':keyple-calypso').projectDir = file('../../../keyple-calypso')
-project(':keyple-core').projectDir = file('../../../keyple-core')

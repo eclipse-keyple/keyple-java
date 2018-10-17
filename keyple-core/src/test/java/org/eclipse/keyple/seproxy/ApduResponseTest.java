@@ -1,11 +1,13 @@
 /*
  * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
  *
- * All rights reserved. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License version 2.0 which accompanies this distribution, and is
- * available at https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.html
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License version 2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
  */
-
 package org.eclipse.keyple.seproxy;
 
 import static org.junit.Assert.*;
@@ -121,7 +123,7 @@ public class ApduResponseTest {
      */
 
 
-    static Set<Short> getA9005CustomCode() {
+    public static Set<Short> getA9005CustomCode() {
         Set<Short> successfulStatusCodes = new HashSet<Short>();
         successfulStatusCodes.add((short) 0x9005);
         return successfulStatusCodes;
@@ -140,7 +142,7 @@ public class ApduResponseTest {
         return new ApduResponse(ByteArrayUtils.fromHex("FEDCBA98 9000h"), null);
     }
 
-    static List<ApduResponse> getAListOfAPDUs() {
+    public static List<ApduResponse> getAListOfAPDUs() {
         List<ApduResponse> apdus = new ArrayList<ApduResponse>();
         apdus.add(getSuccessfullResponse());
         return apdus;

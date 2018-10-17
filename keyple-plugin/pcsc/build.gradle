@@ -1,6 +1,16 @@
+plugins {
+    id 'maven-publish'
+}
+
 apply plugin: 'java'
 
 sourceCompatibility = 1.6
+
+project.version = '0.10.0-SNAPSHOT'
+
+apply plugin: 'java-library'
+
+jar.dependsOn copyLICENSE, copyNOTICE
 
 jar {
     manifest {
@@ -9,17 +19,37 @@ jar {
     }
 }
 
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+
+            from components.java
+        }
+    }
+}
+
+build.dependsOn ":keyple-core:build" // build and install keyple-core if needed
+build.finalizedBy publishToMavenLocal
+
 dependencies {
-    compile project(':keyple-core')
 
-    // DONE: Drop log4j
-    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
-    // compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.10.0'
+    //use keyple library : keyple core
+    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'
 
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    api group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+
+    /*
+    Test
+     */
+
 
     // https://mvnrepository.com/artifact/junit/junit
     testCompile group: 'junit', name: 'junit', version: '4.12'
+
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.13.0'
 }

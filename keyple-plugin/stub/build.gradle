@@ -1,6 +1,16 @@
+plugins {
+    id 'maven-publish'
+}
+
 apply plugin: 'java'
 
 sourceCompatibility = 1.6
+
+project.version = '0.10.0-SNAPSHOT'
+
+apply plugin: 'java-library'
+
+jar.dependsOn copyLICENSE, copyNOTICE
 
 jar {
     manifest {
@@ -9,18 +19,42 @@ jar {
     }
 }
 
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+
+            from components.java
+        }
+    }
+}
+
+build.dependsOn ":keyple-core:build" //refresh keyple-core if needed
+build.finalizedBy publishToMavenLocal
 
 dependencies {
-    implementation project(':keyple-core')
 
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    //use java library : keyple core
+    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    api group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+
+
+    /*
+    Test
+     */
+
+    //use java library : keyple calypso
+    testImplementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
 
     // https://mvnrepository.com/artifact/junit/junit
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
 
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.13.0'
-    compile project(path: ':keyple-calypso')
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.13.0'
 
     testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
 

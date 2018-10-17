@@ -8,71 +8,43 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'digital.wup:android-maven-publish:3.4.0'
     }
 }
 
-plugins {
-    id "com.diffplug.gradle.spotless" version "3.14.0"
-}
 
-allprojects {
-
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-
-    apply plugin: 'pmd'
-
-    pmd {
-        ruleSets = [
-                "java-basic",
-                "java-braces",
-        ]
-    }
-    apply plugin: 'maven'
-
-    task createPom {
-        pom {
-            project {
-                groupId project.version
-                version project.version
-            }
-        }.writeTo("pom.xml")
-    }
-}
 
 group 'org.eclipse.keyple'
-project.version = '0.9.2-RELEASE'
+project.version = '0.10.0-SNAPSHOT'
 
+apply plugin: 'pmd'
 apply plugin: 'com.android.library'
 
-sourceCompatibility = 1.6
+pmd {
+    ruleSets = [
+            "java-basic",
+            "java-braces",
+    ]
+}
+
 
 
 android {
     compileSdkVersion 26
+
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 21
         versionName project.version
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
+
     buildTypes {
-        debug {
-            debuggable true
-            minifyEnabled false
-        }
         release {
             minifyEnabled false
         }
-        circle_ci {
-            debuggable false
-            minifyEnabled true
-        }
     }
+    
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
         targetCompatibility JavaVersion.VERSION_1_6
@@ -124,32 +96,54 @@ android {
             destinationDir = file("${project.docsDir}/javadoc")
             //destinationDir = file(System.getProperty("user.home") +"/pages")
 
-            println 'destinationDir : ' + destinationDir
         }
 
     }
 
 }
-/*
-*/
+
+apply plugin: 'digital.wup.android-maven-publish'
+
+assemble.finalizedBy publishToMavenLocal
+
+publishing {
+    publications {
+        mavenAar(MavenPublication) {
+            from components.android
+        }
+    }
+}
 
 
 repositories {
+    mavenLocal()
     mavenCentral()
+    jcenter()
     google()
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
+
+
     implementation 'com.android.support:support-v4:26.1.0'
     implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation project(':keyple-calypso')
-    //compile with OMAPI jar but do not include it
-    compileOnly files('libs/org.simalliance.openmobileapi.jar')
 
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 
+    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'
+
+    compileOnly files('libs/org.simalliance.openmobileapi.jar')
+    /*
+    Tests
+     *
+
+    //compile with OMAPI jar but do not include it
+
+
+
     /** Test **/
+    testImplementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
     testImplementation files('libs/org.simalliance.openmobileapi.jar')
 
     /**Power mock**/

@@ -9,33 +9,13 @@
     tools:layout_editor_absoluteY="81dp">
 
 
-
-    <RadioGroup
-        android:id="@+id/radioGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        tools:layout_editor_absoluteX="8dp"
-        tools:ignore="MissingConstraints">
-
-        <RadioButton
-            android:id="@+id/hoplinkSimpleRead"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:checked="true"
-            android:text="Launch one set of HopLink Simple read commands" />
-
-
-    </RadioGroup>
-
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:layout_weight="1"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -46,8 +26,9 @@
                 android:id="@+id/text"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical|center_horizontal"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:gravity="top|left"
+                android:textAlignment="textStart"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
 
         </LinearLayout>
     </ScrollView>
