@@ -8,7 +8,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
-        classpath 'digital.wup:android-maven-publish:3.3.0'
+        classpath 'digital.wup:android-maven-publish:3.4.0'
     }
 }
 
@@ -19,7 +19,6 @@ project.version = '0.10.0-SNAPSHOT'
 
 apply plugin: 'com.android.library'
 apply plugin: 'pmd'
-apply plugin: 'digital.wup.android-maven-publish'
 
 pmd {
     ruleSets = [
@@ -46,12 +45,9 @@ android {
             minifyEnabled false
         }
         release {
-            minifyEnabled false
-        }
-        circle_ci {
-            debuggable false
             minifyEnabled true
         }
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
@@ -111,7 +107,9 @@ android {
 
 }
 
-assemble.finalizedBy publishToMavenLocal
+apply plugin: 'digital.wup.android-maven-publish'
+
+build.finalizedBy publishToMavenLocal
 
 publishing {
     publications {

@@ -55,10 +55,7 @@ android {
             debuggable true
             minifyEnabled false
         }
-        circle_ci {
-            minifyEnabled false
-            debuggable true
-        }
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -90,13 +87,16 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
 
-    //use keyple library : keyple core
+    //use keyple library : keyple calypso
     implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
 
     //implementation project(path: ':keyple-plugin-android-omapi')
     implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-android-omapi', version: '0.+'
 
     compileOnly files('libs/org.simalliance.openmobileapi.jar')
+
+    testImplementation group: 'org.eclipse.keyple', name: 'keyple-plugin-android-omapi', version: '0.+'
+
 }
 
 //Override signing properties from local file
