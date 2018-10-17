@@ -1,11 +1,1 @@
 rootProject.name = 'keyple-example-android-nfc'
-
-/*
-*/
-//include 'keyple-plugin-android-nfc'
-//include 'keyple-calypso'
-//include 'keyple-core'
-
-//project(':keyple-plugin-android-nfc').projectDir = file('../../../keyple-plugin/android-nfc')
-//project(':keyple-calypso').projectDir = file('../../../keyple-calypso')
-//project(':keyple-core').projectDir = file('../../../keyple-core')
