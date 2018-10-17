@@ -17,8 +17,8 @@ buildscript {
 group 'org.eclipse.keyple'
 project.version = '0.10.0-SNAPSHOT'
 
-apply plugin: 'com.android.library'
 apply plugin: 'pmd'
+apply plugin: 'com.android.library'
 
 pmd {
     ruleSets = [
@@ -31,24 +31,20 @@ pmd {
 
 android {
     compileSdkVersion 26
+
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 21
         versionName project.version
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
+
     buildTypes {
-        debug {
-            debuggable true
+        release {
             minifyEnabled false
         }
-        release {
-            minifyEnabled true
-        }
-
     }
+    
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
         targetCompatibility JavaVersion.VERSION_1_6
@@ -100,7 +96,6 @@ android {
             destinationDir = file("${project.docsDir}/javadoc")
             //destinationDir = file(System.getProperty("user.home") +"/pages")
 
-            println 'destinationDir : ' + destinationDir
         }
 
     }
@@ -109,7 +104,7 @@ android {
 
 apply plugin: 'digital.wup.android-maven-publish'
 
-build.finalizedBy publishToMavenLocal
+assemble.finalizedBy publishToMavenLocal
 
 publishing {
     publications {
@@ -129,15 +124,23 @@ repositories {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
+
+
     implementation 'com.android.support:support-v4:26.1.0'
     implementation 'com.android.support:appcompat-v7:26.1.0'
-    //implementation project(':keyple-calypso')
-    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'
-
-    //compile with OMAPI jar but do not include it
-    compileOnly files('libs/org.simalliance.openmobileapi.jar')
 
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+
+    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'
+
+    compileOnly files('libs/org.simalliance.openmobileapi.jar')
+    /*
+    Tests
+     *
+
+    //compile with OMAPI jar but do not include it
+
+
 
     /** Test **/
     testImplementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'

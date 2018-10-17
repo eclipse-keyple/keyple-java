@@ -7,7 +7,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
-        classpath 'digital.wup:android-maven-publish:3.0.0'
+        classpath 'digital.wup:android-maven-publish:3.4.0'
 
     }
 }
@@ -30,22 +30,25 @@ pmd {
 
 android {
     compileSdkVersion 26
+
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 26
         versionName project.version
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
+
     buildTypes {
         release {
             minifyEnabled false
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
         targetCompatibility JavaVersion.VERSION_1_6
     }
+
     testOptions {
         unitTests.returnDefaultValues = true//mock Log Android object
     }
@@ -97,15 +100,6 @@ android {
     }
 
 }
-/*
-    task javadoc(type: Javadoc) {
-        source = android.sourceSets.main.java.srcDirs
-        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-        destinationDir = file("${project.docsDir}/javadoc")
-
-        failOnError false
-    }
-*/
 
 apply plugin: 'digital.wup.android-maven-publish'
 
@@ -127,11 +121,14 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.android.support:support-v4:26.1.0'
-    implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
+
+    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+
     implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'
 
     /*

@@ -32,9 +32,9 @@ project(':keyple-example:pc').name = "keyple-example-pc"
  Android
  */
 
-//include 'keyple-plugin:android-nfc'
-//project(':keyple-plugin:android-nfc').name = "keyple-plugin-android-nfc"
-//
-//include 'keyple-plugin:android-omapi'
-//project(':keyple-plugin:android-omapi').name = "keyple-plugin-android-omapi"
-//
+include 'keyple-plugin:android-nfc'
+project(':keyple-plugin:android-nfc').name = "keyple-plugin-android-nfc"
+
+include 'keyple-plugin:android-omapi'
+project(':keyple-plugin:android-omapi').name = "keyple-plugin-android-omapi"
+
