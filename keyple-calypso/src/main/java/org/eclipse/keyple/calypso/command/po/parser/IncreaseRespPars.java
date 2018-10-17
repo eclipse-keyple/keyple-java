@@ -13,7 +13,6 @@ package org.eclipse.keyple.calypso.command.po.parser;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.seproxy.ApduResponse;
 
 /**
  * Increase (0032) response parser. See specs: Calypso / page 85 / 9.4.4 Increase
@@ -50,12 +49,8 @@ public class IncreaseRespPars extends AbstractApduResponseParser {
 
     /**
      * Instantiates a new IncreaseRespPars.
-     *
-     * @param response the response from the Increase APDU command
      */
-    public IncreaseRespPars(ApduResponse response) {
-        super(response);
-    }
+    public IncreaseRespPars() {}
 
     /**
      * Returns the new counter value as an int between 0

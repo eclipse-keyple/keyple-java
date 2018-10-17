@@ -12,7 +12,8 @@ package org.eclipse.keyple.calypso.transaction;
 
 
 
-import org.eclipse.keyple.calypso.command.po.PoCustomCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.PoCustomModificationCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.PoCustomReadCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.seproxy.ApduRequest;
@@ -129,16 +130,30 @@ public class PoSelector extends SeSelector {
     }
 
     /**
-     * Prepare a custom ApduRequest to be executed following the selection.
+     * Prepare a custom read ApduRequest to be executed following the selection.
      * 
      * @param name the name of the command (will appear in the ApduRequest log)
      * @param apduRequest the ApduRequest (the correct instruction byte must be provided)
      */
-    public void preparePoCustomCmd(String name, ApduRequest apduRequest) {
+    public void preparePoCustomReadCmd(String name, ApduRequest apduRequest) {
         seSelectionApduRequestList
-                .add(new PoCustomCommandBuilder(name, apduRequest).getApduRequest());
+                .add(new PoCustomReadCommandBuilder(name, apduRequest).getApduRequest());
         if (logger.isTraceEnabled()) {
-            logger.trace("CustomCommand: APDUREQUEST = {}", apduRequest);
+            logger.trace("CustomReadCommand: APDUREQUEST = {}", apduRequest);
+        }
+    }
+
+    /**
+     * Prepare a custom modification ApduRequest to be executed following the selection.
+     *
+     * @param name the name of the command (will appear in the ApduRequest log)
+     * @param apduRequest the ApduRequest (the correct instruction byte must be provided)
+     */
+    public void preparePoCustomModificationCmd(String name, ApduRequest apduRequest) {
+        seSelectionApduRequestList
+                .add(new PoCustomModificationCommandBuilder(name, apduRequest).getApduRequest());
+        if (logger.isTraceEnabled()) {
+            logger.trace("CustomModificationCommand: APDUREQUEST = {}", apduRequest);
         }
     }
 }

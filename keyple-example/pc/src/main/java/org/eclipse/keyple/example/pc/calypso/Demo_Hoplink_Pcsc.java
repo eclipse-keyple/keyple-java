@@ -57,32 +57,32 @@ public class Demo_Hoplink_Pcsc {
         Demo_HoplinkTransactionEngine transactionEngine = new Demo_HoplinkTransactionEngine();
 
         /*
-         * Get PO and CSM readers. Apply regulars expressions to reader names to select PO / CSM
+         * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
          * readers. Use the getReader helper method from the transaction engine.
          */
         ProxyReader poReader = DemoHelpers.getReaderByName(seProxyService,
                 PcscReadersSettings.PO_READER_NAME_REGEX);
-        ProxyReader csmReader = DemoHelpers.getReaderByName(seProxyService,
-                PcscReadersSettings.CSM_READER_NAME_REGEX);
+        ProxyReader samReader = DemoHelpers.getReaderByName(seProxyService,
+                PcscReadersSettings.SAM_READER_NAME_REGEX);
 
         /* Both readers are expected not null */
-        if (poReader == csmReader || poReader == null || csmReader == null) {
-            throw new IllegalStateException("Bad PO/CSM setup");
+        if (poReader == samReader || poReader == null || samReader == null) {
+            throw new IllegalStateException("Bad PO/SAM setup");
         }
 
         logger.info("PO Reader  NAME = {}", poReader.getName());
-        logger.info("CSM Reader  NAME = {}", csmReader.getName());
+        logger.info("SAM Reader  NAME = {}", samReader.getName());
 
         /* Set PcSc settings per reader */
         poReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
         poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
-        csmReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
-        csmReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
+        samReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
+        samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
         /*
          * PC/SC card access mode:
          *
-         * The CSM is left in the SHARED mode (by default) to avoid automatic resets due to the
+         * The SAM is left in the SHARED mode (by default) to avoid automatic resets due to the
          * limited time between two consecutive exchanges granted by Windows.
          *
          * The PO reader is set to EXCLUSIVE mode to avoid side effects during the selection step
@@ -90,7 +90,7 @@ public class Demo_Hoplink_Pcsc {
          *
          * These two points will be addressed in a coming release of the Keyple PcSc reader plugin.
          */
-        csmReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
+        samReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
         poReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
 
         /* Set the PO reader protocol flag */
@@ -98,7 +98,7 @@ public class Demo_Hoplink_Pcsc {
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
 
         /* Assign readers to Hoplink transaction engine */
-        transactionEngine.setReaders(poReader, csmReader);
+        transactionEngine.setReaders(poReader, samReader);
 
         /* Set terminal as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);

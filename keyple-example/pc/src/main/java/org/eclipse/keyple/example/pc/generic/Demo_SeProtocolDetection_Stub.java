@@ -37,7 +37,7 @@ public class
 
 Demo_SeProtocolDetection_Stub {
 
-    private ProxyReader poReader, csmReader;
+    private ProxyReader poReader, samReader;
 
     public Demo_SeProtocolDetection_Stub() {
         super();
@@ -73,7 +73,7 @@ Demo_SeProtocolDetection_Stub {
 
         Thread.sleep(200);
 
-        StubReader poReader = null, csmReader = null;
+        StubReader poReader = null, samReader = null;
         try {
             poReader = (StubReader) (stubPlugin.getReader("poReader"));
         } catch (KeypleReaderNotFoundException e) {

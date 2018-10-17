@@ -16,7 +16,7 @@ import org.eclipse.keyple.seproxy.ApduRequest;
 /**
  * Iso7816 APDU command builder.
  * <p>
- * It has to be extended by all PO and CSM command builder classes.
+ * It has to be extended by all PO and SAM command builder classes.
  * <p>
  * It provides, through the AbstractApduCommandBuilder superclass, the generic getters to retrieve:
  * <ul>

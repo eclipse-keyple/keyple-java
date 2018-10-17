@@ -46,7 +46,7 @@ public final class SeRequest implements Serializable {
          * selected by the SE reader, otherwise keep the current channel.
          *
          * - Could be missing when operating SE which don’t support the Select Application command
-         * (as it is the case for CSM).
+         * (as it is the case for SAM).
          */
         private byte[] aidToSelect;
 

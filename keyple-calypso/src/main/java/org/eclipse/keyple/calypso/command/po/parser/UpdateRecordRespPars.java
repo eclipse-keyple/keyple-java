@@ -13,7 +13,6 @@ package org.eclipse.keyple.calypso.command.po.parser;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.seproxy.ApduResponse;
 
 /**
  * Update Record response parser. See specs: Calypso / page 96 / 9.4.11 - Update Record
@@ -49,10 +48,6 @@ public class UpdateRecordRespPars extends AbstractApduResponseParser {
 
     /**
      * Instantiates a new UpdateRecordRespPars.
-     *
-     * @param response the response from the Update Records APDU command
      */
-    public UpdateRecordRespPars(ApduResponse response) {
-        super(response);
-    }
+    public UpdateRecordRespPars() {}
 }

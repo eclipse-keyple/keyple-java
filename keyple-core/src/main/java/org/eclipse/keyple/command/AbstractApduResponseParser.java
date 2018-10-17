@@ -20,7 +20,7 @@ import org.eclipse.keyple.seproxy.ApduResponse;
 public abstract class AbstractApduResponseParser {
 
     /** the byte array APDU response. */
-    protected final ApduResponse response;
+    protected ApduResponse response;
 
     protected static final Map<Integer, StatusProperties> STATUS_TABLE;
     static {
@@ -28,6 +28,9 @@ public abstract class AbstractApduResponseParser {
         m.put(0x9000, new StatusProperties(true, "Success"));
         STATUS_TABLE = m;
     }
+
+    /** Indicates whether the ApduResponse has been provided or not */
+    private boolean initialized;
 
     // Note: The conversion of all commands was done with:
     // Input regex: new byte\[\] \{\(byte\) 0x([0-9A-Za-z]{2})\, \(byte\) 0x([0-9A-Za-z]{2})\}
@@ -47,8 +50,31 @@ public abstract class AbstractApduResponseParser {
      *
      * @param response response to parse
      */
+    @Deprecated
     public AbstractApduResponseParser(ApduResponse response) {
         this.response = response;
+        initialized = true;
+    }
+
+    /**
+     * Default constructor
+     */
+    public AbstractApduResponseParser() {
+        initialized = false;
+    }
+
+    /**
+     * Sets the Apdu response to parse
+     * 
+     * @param response the apdu response
+     */
+    public final void setApduResponse(ApduResponse response) {
+        this.response = response;
+        initialized = true;
+    }
+
+    public final boolean isInitialized() {
+        return initialized;
     }
 
     /**
@@ -57,6 +83,9 @@ public abstract class AbstractApduResponseParser {
      * @return the ApduResponse instance.
      */
     public final ApduResponse getApduResponse() {
+        if (!initialized) {
+            throw new IllegalStateException("The parser has not been initialized.");
+        }
         return response;
     }
 
@@ -75,6 +104,9 @@ public abstract class AbstractApduResponseParser {
      *         code.
      */
     public boolean isSuccessful() {
+        if (!initialized) {
+            throw new IllegalStateException("The parser has not been initialized.");
+        }
         StatusProperties props = getPropertiesForStatusCode();
         return props != null && props.isSuccessful();
     }

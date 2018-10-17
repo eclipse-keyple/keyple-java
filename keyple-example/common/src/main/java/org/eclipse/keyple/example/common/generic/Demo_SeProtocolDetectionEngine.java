@@ -100,7 +100,7 @@ public class Demo_SeProtocolDetectionEngine implements ObservableReader.ReaderOb
                                         ContactlessProtocols.PROTOCOL_ISO14443_4,
                                         PoSelector.RevisionTarget.TARGET_REV3);
 
-                        poSelector.preparePoCustomCmd("Standard Get Data",
+                        poSelector.preparePoCustomReadCmd("Standard Get Data",
                                 new ApduRequest(ByteArrayUtils.fromHex("FFCA000000"), false));
 
                         poSelector.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Environment,

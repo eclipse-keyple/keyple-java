@@ -18,6 +18,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
+import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
+import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars;
 import org.eclipse.keyple.calypso.transaction.CalypsoPO;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.pc.generic.PcscReadersSettings;
@@ -34,7 +38,7 @@ import org.eclipse.keyple.util.ByteArrayUtils;
 
 public class Demo_ValidationTransaction implements ObservableReader.ReaderObserver {
 
-    private ProxyReader poReader, csmReader;
+    private ProxyReader poReader, samReader;
 
     @Override
     public void update(ReaderEvent event) {
@@ -104,15 +108,18 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         SeResponse dataReadInSession;
 
-        poTransaction.prepareReadRecordsCmd(eventSfi, (byte) 0x01, true, (byte) 0x00, "Event");
-        poTransaction.prepareReadRecordsCmd(contractListSfi, (byte) 0x01, true, (byte) 0x00,
+        ReadRecordsRespPars readEventParser = poTransaction.prepareReadRecordsCmd(eventSfi,
+                ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, (byte) 0x00, "Event");
+        ReadRecordsRespPars readContractListParser = poTransaction.prepareReadRecordsCmd(
+                contractListSfi, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, (byte) 0x00,
                 "ContractList");
 
         // Open Session with debit key #3 and reading the Environment at SFI 07h
         // Files to read during the beginning of the session: Event (SFI 0x08) and ContractList (SFI
         // 0x1E)
-        dataReadInSession = poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
-                SESSION_LVL_DEBIT, environmentSfi, (byte) 0x01);
+        boolean poProcessStatus =
+                poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
+                        SESSION_LVL_DEBIT, environmentSfi, (byte) 0x01);
 
         /*
          * byte[] sessionData =
@@ -139,10 +146,9 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
          * 0xFFFF));
          */
 
-        byte contractIndex = dataReadInSession.getApduResponses().get(2).getDataOut()[0];
+        byte contractIndex = readContractListParser.getRecords().get(1)[0];
         byte[] eventTimestampData =
-                Arrays.copyOfRange(dataReadInSession.getApduResponses().get(1).getDataOut(), 1,
-                        (Long.SIZE / Byte.SIZE));
+                Arrays.copyOfRange(readEventParser.getRecords().get(1), 1, (Long.SIZE / Byte.SIZE));
 
         String timeStampString = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                 .format(new Date(bytesToLong(eventTimestampData)));
@@ -157,10 +163,11 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         System.out.println(
                 "\t------------------------------------------------------------------------------\n");
 
-        poTransaction.prepareReadRecordsCmd((byte) 0x29, (byte) (contractIndex + 1), true,
-                (byte) 0x1D, "Contract");
+        ReadRecordsRespPars readContractParser = poTransaction.prepareReadRecordsCmd((byte) 0x29,
+                ReadDataStructure.SINGLE_RECORD_DATA, (byte) (contractIndex + 1), (byte) 0x1D,
+                "Contract");
 
-        dataReadInSession = poTransaction.processPoCommands();
+        poProcessStatus = poTransaction.processPoCommands();
 
         System.out
                 .println("Reading contract #" + (contractIndex + 1) + " for current validation...");
@@ -188,11 +195,12 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         byte[] dateToInsert = longToBytes(new Date().getTime());
         System.arraycopy(dateToInsert, 0, newEventData, 1, (Long.SIZE / Byte.SIZE));
 
-        poTransaction.prepareUpdateRecordCmd(contractListSfi, (byte) 0x01, newContractListData,
-                "ContractList");
-        poTransaction.prepareAppendRecordCmd(eventSfi, newEventData, "Event");
+        UpdateRecordRespPars updateContractListParser = poTransaction.prepareUpdateRecordCmd(
+                contractListSfi, (byte) 0x01, newContractListData, "ContractList");
+        AppendRecordRespPars appendEventPars =
+                poTransaction.prepareAppendRecordCmd(eventSfi, newEventData, "Event");
 
-        poTransaction.processClosing(CommunicationMode.CONTACTLESS_MODE, false);
+        poProcessStatus = poTransaction.processClosing(CommunicationMode.CONTACTLESS_MODE, false);
 
         System.out.println("\nValidation Successful!");
         System.out.println(
@@ -211,17 +219,19 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         SeResponse dataReadInSession;
 
-        poTransaction.prepareReadRecordsCmd(eventSfi, (byte) 0x01, true, (byte) 0x00, "Event");
-        poTransaction.prepareReadRecordsCmd(countersSfi, (byte) 0x01, true, (byte) 0x00,
-                "Counters");
-        poTransaction.prepareReadRecordsCmd(contractsSfi, (byte) 0x01, false, (byte) 0x00,
-                "Contracts");
+        ReadRecordsRespPars readEventParser = poTransaction.prepareReadRecordsCmd(eventSfi,
+                ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, (byte) 0x00, "Event");
+        ReadRecordsRespPars readCountersParser = poTransaction.prepareReadRecordsCmd(countersSfi,
+                ReadDataStructure.SINGLE_COUNTER, (byte) 0x01, (byte) 0x00, "Counters");
+        poTransaction.prepareReadRecordsCmd(contractsSfi, ReadDataStructure.MULTIPLE_RECORD_DATA,
+                (byte) 0x01, (byte) 0x00, "Contracts");
 
         // Open Session with debit key #3 and reading the Environment at SFI 07h
         // Files to read during the beginning of the session: Event (SFI 0x08), Counters (SFI 0x1B)
         // and all records of the Contracts (SFI 0x29)
-        dataReadInSession = poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
-                SESSION_LVL_DEBIT, environmentSfi, (byte) 0x01);
+        boolean poProcessStatus =
+                poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
+                        SESSION_LVL_DEBIT, environmentSfi, (byte) 0x01);
         /*
          * byte[] sessionData =
          * ByteArrayUtils.subLen(dataReadInSession.getApduResponses().get(0).getDataOut(), 0, 8);
@@ -247,14 +257,12 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
          * 0xFFFF));
          */
         byte[] eventTimestampData =
-                Arrays.copyOfRange(dataReadInSession.getApduResponses().get(1).getDataOut(), 1,
-                        (Long.SIZE / Byte.SIZE));
+                Arrays.copyOfRange(readEventParser.getRecords().get(1), 1, (Long.SIZE / Byte.SIZE));
 
         String timeStampString = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                 .format(new Date(bytesToLong(eventTimestampData)));
 
-        int counterValue = getCounterValueFromByteArray(
-                dataReadInSession.getApduResponses().get(2).getDataOut(), 1);
+        int counterValue = readCountersParser.getCounters().get(1);
 
         System.out.println(
                 "\t------------------------------------------------------------------------------");
@@ -322,19 +330,19 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
             // operate PO multiselection
             String poAuditC0Aid = "315449432E4943414C54"; // AID of the PO with Audit C0 profile
             String clapAid = "315449432E494341D62010029101"; // AID of the CLAP product being tested
-            String CSM_ATR_REGEX = "3B3F9600805A[0-9a-fA-F]{2}80[0-9a-fA-F]{16}829000";
+            String SAM_ATR_REGEX = "3B3F9600805A[0-9a-fA-F]{2}80[0-9a-fA-F]{16}829000";
             String cdLightAid = "315449432E494341"; // AID of the Rev2.4 PO emulating CDLight
 
-            // check the availability of the CSM, open its physical and logical channels and keep it
+            // check the availability of the SAM, open its physical and logical channels and keep it
             // open
-            SeRequest csmCheckRequest =
-                    new SeRequest(new SeRequest.AtrSelector(CSM_ATR_REGEX), null, true);
-            SeResponse csmCheckResponse =
-                    csmReader.transmit(new SeRequestSet(csmCheckRequest)).getSingleResponse();
+            SeRequest samCheckRequest =
+                    new SeRequest(new SeRequest.AtrSelector(SAM_ATR_REGEX), null, true);
+            SeResponse samCheckResponse =
+                    samReader.transmit(new SeRequestSet(samCheckRequest)).getSingleResponse();
 
-            if (csmCheckResponse == null) {
-                System.out.println("Unable to open a logical channel for CSM!");
-                throw new IllegalStateException("CSM channel opening failure");
+            if (samCheckResponse == null) {
+                System.out.println("Unable to open a logical channel for SAM!");
+                throw new IllegalStateException("SAM channel opening failure");
             }
 
             // Create a SeRequest list
@@ -364,21 +372,21 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
                 ApduResponse fciData = seResponses.get(0).getFci();
                 PoTransaction poTransaction = new PoTransaction(poReader,
-                        new CalypsoPO(seResponses.get(0)), csmReader, null);
+                        new CalypsoPO(seResponses.get(0)), samReader, null);
                 validateAuditC0(poTransaction, fciData);
 
             } else if (seResponses.get(1) != null) {
 
                 ApduResponse fciData = seResponses.get(1).getFci();
                 PoTransaction poTransaction = new PoTransaction(poReader,
-                        new CalypsoPO(seResponses.get(1)), csmReader, null);
+                        new CalypsoPO(seResponses.get(1)), samReader, null);
                 validateClap(poTransaction, fciData);
 
             } else if (seResponses.get(2) != null) {
 
                 ApduResponse fciData = seResponses.get(2).getFci();
                 PoTransaction poTransaction = new PoTransaction(poReader,
-                        new CalypsoPO(seResponses.get(2)), csmReader, null);
+                        new CalypsoPO(seResponses.get(2)), samReader, null);
                 validateAuditC0(poTransaction, fciData);
 
             } else {
@@ -423,23 +431,23 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         seProxyService.setPlugins(pluginsSet);
 
         ProxyReader poReader = getReader(seProxyService, PcscReadersSettings.PO_READER_NAME_REGEX);
-        ProxyReader csmReader =
-                getReader(seProxyService, PcscReadersSettings.CSM_READER_NAME_REGEX);
+        ProxyReader samReader =
+                getReader(seProxyService, PcscReadersSettings.SAM_READER_NAME_REGEX);
 
 
-        if (poReader == csmReader || poReader == null || csmReader == null) {
-            throw new IllegalStateException("Bad PO/CSM setup");
+        if (poReader == samReader || poReader == null || samReader == null) {
+            throw new IllegalStateException("Bad PO/SAM setup");
         }
 
         System.out.println(
                 "\n==================================================================================");
         System.out.println("PO Reader  : " + poReader.getName());
-        System.out.println("CSM Reader : " + csmReader.getName());
+        System.out.println("SAM Reader : " + samReader.getName());
         System.out.println(
                 "==================================================================================");
 
         poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
-        csmReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
+        samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
         // provide the reader with the map
         poReader.addSeProtocolSetting(
@@ -448,7 +456,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         // Setting up ourselves as an observer
         Demo_ValidationTransaction observer = new Demo_ValidationTransaction();
         observer.poReader = poReader;
-        observer.csmReader = csmReader;
+        observer.samReader = samReader;
 
         System.out.println("\nReady for PO presentation!");
 

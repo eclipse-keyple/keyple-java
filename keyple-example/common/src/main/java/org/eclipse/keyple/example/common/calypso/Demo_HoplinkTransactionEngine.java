@@ -11,6 +11,8 @@
 package org.eclipse.keyple.example.common.calypso;
 
 import java.util.*;
+import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
+import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.CalypsoPO;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
@@ -32,8 +34,8 @@ import org.slf4j.profiler.Profiler;
  * <li>Setting up a two-reader configuration and adding an observer method ({@link #update update})
  * <li>Starting a card operation when a PO presence is notified ({@link #operatePoTransactions
  * operatePoTransactions})
- * <li>Opening a logical channel with the CSM (C1 CSM is expected) see
- * ({@link HoplinkInfo#CSM_C1_ATR_REGEX CSM_C1_ATR_REGEX})
+ * <li>Opening a logical channel with the SAM (C1 SAM is expected) see
+ * ({@link HoplinkInfo#SAM_C1_ATR_REGEX SAM_C1_ATR_REGEX})
  * <li>Attempting to open a logical channel with the PO with 3 options:
  * <ul>
  * <li>Selection with a fake AID
@@ -47,7 +49,7 @@ import org.slf4j.profiler.Profiler;
  *
  * <p>
  * The Hoplink transactions demonstrated here shows the Keyple API in use with Hoplink SE (PO and
- * CSM).
+ * SAM).
  *
  * <p>
  * Read the doc of each methods for further details.
@@ -57,38 +59,38 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
     private final static Logger logger =
             LoggerFactory.getLogger(Demo_HoplinkTransactionEngine.class);
 
-    /* define the CSM parameters to provide when creating PoTransaction */
-    private final static EnumMap<PoTransaction.CsmSettings, Byte> csmSetting =
-            new EnumMap<PoTransaction.CsmSettings, Byte>(PoTransaction.CsmSettings.class) {
+    /* define the SAM parameters to provide when creating PoTransaction */
+    private final static EnumMap<PoTransaction.SamSettings, Byte> samSetting =
+            new EnumMap<PoTransaction.SamSettings, Byte>(PoTransaction.SamSettings.class) {
                 {
-                    put(PoTransaction.CsmSettings.CS_DEFAULT_KIF_PERSO,
+                    put(PoTransaction.SamSettings.SAM_DEFAULT_KIF_PERSO,
                             PoTransaction.DEFAULT_KIF_PERSO);
-                    put(PoTransaction.CsmSettings.CS_DEFAULT_KIF_LOAD,
+                    put(PoTransaction.SamSettings.SAM_DEFAULT_KIF_LOAD,
                             PoTransaction.DEFAULT_KIF_LOAD);
-                    put(PoTransaction.CsmSettings.CS_DEFAULT_KIF_DEBIT,
+                    put(PoTransaction.SamSettings.SAM_DEFAULT_KIF_DEBIT,
                             PoTransaction.DEFAULT_KIF_DEBIT);
-                    put(PoTransaction.CsmSettings.CS_DEFAULT_KEY_RECORD_NUMBER,
+                    put(PoTransaction.SamSettings.SAM_DEFAULT_KEY_RECORD_NUMBER,
                             PoTransaction.DEFAULT_KEY_RECORD_NUMER);
                 }
             };;
 
     private ProxyReader poReader;
-    private ProxyReader csmReader;
+    private ProxyReader samReader;
 
     private Profiler profiler;
 
-    private boolean csmChannelOpen;
+    private boolean samChannelOpen;
 
     /* Constructor */
     public Demo_HoplinkTransactionEngine() {
         super();
-        this.csmChannelOpen = false;
+        this.samChannelOpen = false;
     }
 
     /* Assign readers to the transaction engine */
-    public void setReaders(ProxyReader poReader, ProxyReader csmReader) {
+    public void setReaders(ProxyReader poReader, ProxyReader samReader) {
         this.poReader = poReader;
-        this.csmReader = csmReader;
+        this.samReader = samReader;
     }
 
     /**
@@ -111,6 +113,7 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
      */
     public void doHoplinkReadWriteTransaction(PoTransaction poTransaction, boolean closeSeChannel)
             throws KeypleReaderException {
+        boolean poProcessStatus;
 
         /*
          * the modification command sent sent on closing is disabled for the moment due to CAAD
@@ -125,7 +128,7 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
          * Open Session for the debit key - with reading of the first record of the T2 Environment
          * file (read twice in this demo!)
          */
-        poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
+        poProcessStatus = poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
                 PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, HoplinkInfo.SFI_T2Environment,
                 HoplinkInfo.RECORD_NUMBER_1);
 
@@ -138,21 +141,25 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
                     "========= PO Hoplink session ======= Processing of PO commands =======================");
         }
         /* prepare T2 Environment read record */
-        poTransaction.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Environment,
-                HoplinkInfo.RECORD_NUMBER_1, true, (byte) 0x00,
-                HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
+        ReadRecordsRespPars readT2EnvironmentParser =
+                poTransaction.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Environment,
+                        ReadDataStructure.SINGLE_RECORD_DATA, HoplinkInfo.RECORD_NUMBER_1,
+                        (byte) 0x00, HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
 
         /* prepare T2 Usage read record */
-        poTransaction.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Usage, HoplinkInfo.RECORD_NUMBER_1,
-                true, (byte) 0x00, HoplinkInfo.EXTRAINFO_ReadRecord_T2UsageRec1);
+        ReadRecordsRespPars readT2UsageParser =
+                poTransaction.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Usage,
+                        ReadDataStructure.SINGLE_RECORD_DATA, HoplinkInfo.RECORD_NUMBER_1,
+                        (byte) 0x00, HoplinkInfo.EXTRAINFO_ReadRecord_T2UsageRec1);
 
-        poTransaction.processPoCommands();
+        poProcessStatus = poTransaction.processPoCommands();
 
         if (logger.isInfoEnabled()) {
             logger.info(
                     "========= PO Hoplink session ======= Closing ============================");
         }
-        poTransaction.processClosing(PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
+        poProcessStatus = poTransaction
+                .processClosing(PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
 
         if (poTransaction.isSuccessful()) {
             if (logger.isInfoEnabled()) {
@@ -170,11 +177,11 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
      */
     public void operatePoTransactions() {
         try {
-            /* first time: check CSM */
-            if (!this.csmChannelOpen) {
-                /* the following method will throw an exception if the CSM is not available. */
-                checkCsmAndOpenChannel(csmReader);
-                this.csmChannelOpen = true;
+            /* first time: check SAM */
+            if (!this.samChannelOpen) {
+                /* the following method will throw an exception if the SAM is not available. */
+                checkSamAndOpenChannel(samReader);
+                this.samChannelOpen = true;
             }
 
             profiler = new Profiler("Entire transaction");
@@ -246,7 +253,7 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
              */
             if (seResponses.size() == 2 && seResponses.get(1) != null) {
                 PoTransaction poTransaction = new PoTransaction(poReader,
-                        new CalypsoPO(seResponses.get(1)), csmReader, csmSetting);
+                        new CalypsoPO(seResponses.get(1)), samReader, samSetting);
                 profiler.start("Hoplink1");
                 doHoplinkReadWriteTransaction(poTransaction, true);
             } else {

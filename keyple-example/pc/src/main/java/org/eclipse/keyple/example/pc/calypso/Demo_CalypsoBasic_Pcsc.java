@@ -58,37 +58,37 @@ public class Demo_CalypsoBasic_Pcsc {
                 new Demo_CalypsoBasicTransactionEngine();
 
         /*
-         * Get PO and CSM readers. Apply regulars expressions to reader names to select PO / CSM
+         * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
          * readers. Use the getReader helper method from the transaction engine.
          */
-        ProxyReader poReader = null, csmReader = null;
+        ProxyReader poReader = null, samReader = null;
         try {
             poReader = DemoHelpers.getReaderByName(seProxyService,
                     PcscReadersSettings.PO_READER_NAME_REGEX);
-            csmReader = DemoHelpers.getReaderByName(seProxyService,
-                    PcscReadersSettings.CSM_READER_NAME_REGEX);
+            samReader = DemoHelpers.getReaderByName(seProxyService,
+                    PcscReadersSettings.SAM_READER_NAME_REGEX);
         } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
         }
 
         /* Both readers are expected not null */
-        if (poReader == csmReader || poReader == null || csmReader == null) {
-            throw new IllegalStateException("Bad PO/CSM setup");
+        if (poReader == samReader || poReader == null || samReader == null) {
+            throw new IllegalStateException("Bad PO/SAM setup");
         }
 
         logger.info("PO Reader  NAME = {}", poReader.getName());
-        logger.info("CSM Reader  NAME = {}", csmReader.getName());
+        logger.info("SAM Reader  NAME = {}", samReader.getName());
 
         /* Set PcSc settings per reader */
         poReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
         poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
-        csmReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
-        csmReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
+        samReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
+        samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
         /*
          * PC/SC card access mode:
          *
-         * The CSM is left in the SHARED mode (by default) to avoid automatic resets due to the
+         * The SAM is left in the SHARED mode (by default) to avoid automatic resets due to the
          * limited time between two consecutive exchanges granted by Windows.
          *
          * This point will be addressed in a coming release of the Keyple PcSc reader plugin.
@@ -99,7 +99,7 @@ public class Demo_CalypsoBasic_Pcsc {
          * See KEYPLE-CORE.PC.md file to learn more about this point.
          *
          */
-        csmReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
+        samReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
         poReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
 
         /* Set the PO reader protocol flag */
@@ -108,7 +108,7 @@ public class Demo_CalypsoBasic_Pcsc {
         poReader.addSeProtocolSetting(
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_B_PRIME));
         /* Assign readers to Calypso transaction engine */
-        transactionEngine.setReaders(poReader, csmReader);
+        transactionEngine.setReaders(poReader, samReader);
 
         /* Set terminal as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);

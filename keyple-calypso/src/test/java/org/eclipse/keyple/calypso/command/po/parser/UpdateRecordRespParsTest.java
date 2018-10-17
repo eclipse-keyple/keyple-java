@@ -34,8 +34,9 @@ public class UpdateRecordRespParsTest {
         SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
                 new ApduResponse(ByteArrayUtils.fromHex("9000"), null), responses));
 
-        AbstractApduResponseParser apduResponseParser =
-                new UpdateRecordRespPars(seResponse.getSingleResponse().getApduResponses().get(0));
+        AbstractApduResponseParser apduResponseParser = new UpdateRecordRespPars();
+        apduResponseParser
+                .setApduResponse(seResponse.getSingleResponse().getApduResponses().get(0));
         Assert.assertArrayEquals(new byte[] {90, 0},
                 apduResponseParser.getApduResponse().getBytes());
     }
