@@ -92,24 +92,18 @@ public class UseCase_CalypsoAuthenticationLevel3_Pcsc extends DemoHelpers {
                 SeSelection seSelection = new SeSelection(poReader);
 
                 /* AID based selection */
-                seSelection.addSelector(new PoSelector(ByteArrayUtils.fromHex(poAid), true, null,
-                        PoSelector.RevisionTarget.TARGET_REV3));
+                seSelection.prepareSelector(new PoSelector(ByteArrayUtils.fromHex(poAid), true,
+                        null, PoSelector.RevisionTarget.TARGET_REV3, "Calypso selection"));
 
                 /* Time measurement */
                 profiler.start("Initial selection");
 
-                List<SeResponse> seResponses = seSelection.processSelection().getResponses();
-
-                /*
-                 * If the Calypso selection succeeded we should have 2 responses and the 2nd one not
-                 * null
-                 */
-                if (seResponses.size() == 1 && seResponses.get(0) != null) {
+                if (seSelection.processSelection()) {
 
                     profiler.start("Calypso1");
 
                     PoTransaction poTransaction = new PoTransaction(poReader,
-                            new CalypsoPO(seResponses.get(0)), samReader, samSetting);
+                            new CalypsoPO(seSelection.getSelectedSe()), samReader, samSetting);
                     /*
                      * Open Session for the debit key
                      */

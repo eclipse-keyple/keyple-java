@@ -44,10 +44,11 @@ public class PoSelector extends SeSelector {
      * @param dfLid long ID of the DF to be selected
      * @param keepChannelOpen indicates whether the logical channel should remain open
      * @param protocolFlag the protocol flag to filter POs according to their communication protocol
+     * @param extraInfo information string
      */
     public PoSelector(String atrRegex, short dfLid, boolean keepChannelOpen,
-            SeProtocol protocolFlag) {
-        super(atrRegex, keepChannelOpen, protocolFlag);
+            SeProtocol protocolFlag, String extraInfo) {
+        super(atrRegex, keepChannelOpen, protocolFlag, extraInfo);
         revisionTarget = RevisionTarget.TARGET_REV1;
         if (logger.isTraceEnabled()) {
             logger.trace("Calypso {} selector", revisionTarget);
@@ -62,10 +63,11 @@ public class PoSelector extends SeSelector {
      * @param protocolFlag the protocol flag to filter POs according to their communication protocol
      * @param revisionTarget the targeted revisions. The following possible ReadRecords commands
      *        will be built taking this value into account
+     * @param extraInfo information string
      */
     public PoSelector(byte[] poAid, boolean keepChannelOpen, SeProtocol protocolFlag,
-            RevisionTarget revisionTarget) {
-        super(poAid, keepChannelOpen, protocolFlag);
+            RevisionTarget revisionTarget, String extraInfo) {
+        super(poAid, keepChannelOpen, protocolFlag, extraInfo);
 
         if (revisionTarget == RevisionTarget.TARGET_REV1) {
             throw new IllegalArgumentException("Calypso PO Rev1 cannot be selected with AID.");

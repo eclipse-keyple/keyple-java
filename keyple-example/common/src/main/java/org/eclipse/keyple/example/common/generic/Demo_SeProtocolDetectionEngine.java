@@ -16,7 +16,9 @@ import org.eclipse.keyple.example.common.calypso.HoplinkInfo;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.transaction.MatchingSe;
 import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
@@ -98,7 +100,7 @@ public class Demo_SeProtocolDetectionEngine implements ObservableReader.ReaderOb
                         PoSelector poSelector =
                                 new PoSelector(ByteArrayUtils.fromHex(HoplinkInfo.AID), false,
                                         ContactlessProtocols.PROTOCOL_ISO14443_4,
-                                        PoSelector.RevisionTarget.TARGET_REV3);
+                                        PoSelector.RevisionTarget.TARGET_REV3, "Calypso selector");
 
                         poSelector.preparePoCustomReadCmd("Standard Get Data",
                                 new ApduRequest(ByteArrayUtils.fromHex("FFCA000000"), false));
@@ -107,7 +109,7 @@ public class Demo_SeProtocolDetectionEngine implements ObservableReader.ReaderOb
                                 HoplinkInfo.RECORD_NUMBER_1, true, (byte) 0x00,
                                 HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
 
-                        seSelection.addSelector(poSelector);
+                        seSelection.prepareSelector(poSelector);
 
                         break;
                     case PROTOCOL_ISO14443_3A:
@@ -120,30 +122,21 @@ public class Demo_SeProtocolDetectionEngine implements ObservableReader.ReaderOb
                         break;
                     default:
                         /* Add a generic selector */
-                        seSelection.addSelector(new SeSelector(".*", false,
-                                ContactlessProtocols.PROTOCOL_ISO14443_4));
+                        seSelection.prepareSelector(new SeSelector(".*", false,
+                                ContactlessProtocols.PROTOCOL_ISO14443_4, "Default selector"));
                         break;
                 }
             }
 
-            List<SeResponse> seResponses = seSelection.processSelection().getResponses();
+            seSelection.processSelection();
 
-            int requestIndex = 0;
-            for (SeResponse seResponse : seResponses) {
-
-                if (seResponse != null) {
-                    System.out.println(
-                            "Protocol matched for request number " + String.valueOf(requestIndex));
-                    List<ApduResponse> poApduResponseList = seResponse.getApduResponses();
-                    for (int i = 0; i < poApduResponseList.size(); i++) {
-                        System.out.println("RESP: "
-                                + ByteArrayUtils.toHex(poApduResponseList.get(i).getBytes()));
-                    }
-                }
-                requestIndex++;
+            for (MatchingSe matchingSe : seSelection.getMatchingSeList()) {
+                System.out.println("Selector: " + matchingSe.getExtraInfo()
+                        + ", selection status = " + matchingSe.isSelected());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        } catch (KeypleReaderException ex) {
+            System.out.println("Selection exception: " + ex.getCause());
         }
     }
 }

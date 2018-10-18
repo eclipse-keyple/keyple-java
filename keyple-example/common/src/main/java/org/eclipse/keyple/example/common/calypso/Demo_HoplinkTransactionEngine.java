@@ -196,9 +196,9 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
              * Add selection case 1: Fake AID1, protocol ISO, target rev 3
              */
 
-            seSelection.addSelector(new PoSelector(ByteArrayUtils.fromHex("AABBCCDDEE"), true,
-                    ContactlessProtocols.PROTOCOL_ISO14443_4,
-                    PoSelector.RevisionTarget.TARGET_REV3));
+            seSelection.prepareSelector(new PoSelector(ByteArrayUtils.fromHex("AABBCCDDEE"), true,
+                    ContactlessProtocols.PROTOCOL_ISO14443_4, PoSelector.RevisionTarget.TARGET_REV3,
+                    "Selector with fake AID1"));
             /*
              * Add selection case 2: Hoplink application, protocol ISO, target rev 3
              *
@@ -206,21 +206,21 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
              */
             PoSelector poSelectorHoplink = new PoSelector(ByteArrayUtils.fromHex(HoplinkInfo.AID),
                     true, ContactlessProtocols.PROTOCOL_ISO14443_4,
-                    PoSelector.RevisionTarget.TARGET_REV3);
+                    PoSelector.RevisionTarget.TARGET_REV3, "Hoplink selector");
 
             poSelectorHoplink.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Environment,
                     HoplinkInfo.RECORD_NUMBER_1, true, (byte) 0x00,
                     HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
 
-            seSelection.addSelector(poSelectorHoplink);
+            seSelection.prepareSelector(poSelectorHoplink);
 
             /*
              * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
              */
 
-            seSelection.addSelector(new PoSelector(ByteArrayUtils.fromHex("EEDDCCBBAA"), true,
+            seSelection.prepareSelector(new PoSelector(ByteArrayUtils.fromHex("EEDDCCBBAA"), true,
                     ContactlessProtocols.PROTOCOL_ISO14443_4,
-                    PoSelector.RevisionTarget.TARGET_REV2_REV3));
+                    PoSelector.RevisionTarget.TARGET_REV2_REV3, "Selector with fake AID2"));
 
             /* Time measurement */
             profiler.start("Initial selection");
@@ -228,42 +228,25 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
             /*
              * Execute the selection process
              */
-            List<SeResponse> seResponses = seSelection.processSelection().getResponses();
+            if (seSelection.processSelection()) {
+                int responseIndex = 0;
 
-            int responseIndex = 0;
-            /*
-             * we expect up to 3 responses, only one should be not null since the selection process
-             * stops at the first successful selection
-             */
-            if (logger.isInfoEnabled()) {
-                for (Iterator<SeResponse> seRespIterator = seResponses.iterator(); seRespIterator
-                        .hasNext();) {
-                    SeResponse seResponse = seRespIterator.next();
-                    if (seResponse != null) {
-                        logger.info("Selection case #{}, RESPONSE = {}", responseIndex,
-                                seResponse.getApduResponses());
-                    }
-                    responseIndex++;
-                }
-            }
-
-            /*
-             * If the Hoplink selection succeeded we should have 2 responses and the 2nd one not
-             * null
-             */
-            if (seResponses.size() == 2 && seResponses.get(1) != null) {
+                /*
+                 * If the Hoplink selection succeeded we should have 2 responses and the 2nd one not
+                 * null
+                 */
                 PoTransaction poTransaction = new PoTransaction(poReader,
-                        new CalypsoPO(seResponses.get(1)), samReader, samSetting);
+                        new CalypsoPO(seSelection.getSelectedSe()), samReader, samSetting);
                 profiler.start("Hoplink1");
                 doHoplinkReadWriteTransaction(poTransaction, true);
             } else {
                 logger.error("No Hoplink transaction. SeResponse to Hoplink selection was null.");
             }
-
-            profiler.stop();
-            logger.warn(System.getProperty("line.separator") + "{}", profiler);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (KeypleReaderException ex) {
+            logger.error("Selection exception: {}", ex.getMessage());
         }
+
+        profiler.stop();
+        logger.warn(System.getProperty("line.separator") + "{}", profiler);
     }
 }

@@ -12,8 +12,6 @@ package org.eclipse.keyple.example.common.calypso;
 
 import static org.eclipse.keyple.example.common.calypso.CalypsoBasicInfo.*;
 import java.util.EnumMap;
-import java.util.Iterator;
-import java.util.List;
 import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
@@ -277,9 +275,9 @@ public class Demo_CalypsoBasicTransactionEngine extends DemoHelpers
              * Add selection case 1: Fake AID1, protocol ISO, target rev 3
              */
 
-            seSelection.addSelector(new PoSelector(ByteArrayUtils.fromHex(poFakeAid1), true,
-                    ContactlessProtocols.PROTOCOL_ISO14443_4,
-                    PoSelector.RevisionTarget.TARGET_REV3));
+            seSelection.prepareSelector(new PoSelector(ByteArrayUtils.fromHex(poFakeAid1), true,
+                    ContactlessProtocols.PROTOCOL_ISO14443_4, PoSelector.RevisionTarget.TARGET_REV3,
+                    "Selector with fake AID1"));
 
             /*
              * Add selection case 2: Calypso application, protocol ISO, target rev 2 or 3
@@ -289,20 +287,20 @@ public class Demo_CalypsoBasicTransactionEngine extends DemoHelpers
             PoSelector poSelectorCalypsoAid =
                     new PoSelector(ByteArrayUtils.fromHex(CalypsoBasicInfo.AID), true,
                             ContactlessProtocols.PROTOCOL_ISO14443_4,
-                            PoSelector.RevisionTarget.TARGET_REV2_REV3);
+                            PoSelector.RevisionTarget.TARGET_REV2_REV3, "Calypso selector");
 
             poSelectorCalypsoAid.prepareReadRecordsCmd(SFI_EventLog, RECORD_NUMBER_1, true,
                     (byte) 0x00, "EventLog (selection step)");
 
-            seSelection.addSelector(poSelectorCalypsoAid);
+            seSelection.prepareSelector(poSelectorCalypsoAid);
 
             /*
              * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
              */
 
-            seSelection.addSelector(new PoSelector(ByteArrayUtils.fromHex(poFakeAid2), true,
+            seSelection.prepareSelector(new PoSelector(ByteArrayUtils.fromHex(poFakeAid2), true,
                     ContactlessProtocols.PROTOCOL_ISO14443_4,
-                    PoSelector.RevisionTarget.TARGET_REV2_REV3));
+                    PoSelector.RevisionTarget.TARGET_REV2_REV3, "Selector with fake AID2"));
 
             /* Time measurement */
             profiler.start("Initial selection");
@@ -310,45 +308,19 @@ public class Demo_CalypsoBasicTransactionEngine extends DemoHelpers
             /*
              * Execute the selection process
              */
-            List<SeResponse> seResponses = seSelection.processSelection().getResponses();
-
-            int responseIndex = 0;
-
-            /*
-             * we expect up to 3 responses, only one should be not null since the selection process
-             * stops at the first successful selection
-             *
-             * TODO improve the response analysis
-             */
-            if (logger.isInfoEnabled()) {
-                for (Iterator<SeResponse> seRespIterator = seResponses.iterator(); seRespIterator
-                        .hasNext();) {
-                    SeResponse seResponse = seRespIterator.next();
-                    if (seResponse != null) {
-                        logger.info("Selection case #{}, RESPONSE = {}", responseIndex,
-                                seResponse.getApduResponses());
-                    }
-                    responseIndex++;
-                }
-            }
-
-            /*
-             * If the Calypso selection succeeded we should have 2 responses and the 2nd one not
-             * null
-             */
-            if (seResponses.size() == 2 && seResponses.get(1) != null) {
+            if (seSelection.processSelection()) {
+                int responseIndex = 0;
 
                 profiler.start("Calypso1");
 
                 PoTransaction poTransaction = new PoTransaction(poReader,
-                        new CalypsoPO(seResponses.get(1)), samReader, samSetting);
+                        new CalypsoPO(seSelection.getSelectedSe()), samReader, samSetting);
 
                 doCalypsoReadWriteTransaction(poTransaction, true);
 
             } else {
-                logger.error("No Calypso transaction. SeResponse to Calypso selection was null.");
+                logger.info("No matching PO were found.");
             }
-
             profiler.stop();
             logger.warn(System.getProperty("line.separator") + "{}", profiler);
         } catch (Exception e) {

@@ -17,6 +17,10 @@ import org.eclipse.keyple.seproxy.SeRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The SeSelector class groups the information and methods used to select a particular secure
+ * element
+ */
 public class SeSelector {
     private static final Logger logger = LoggerFactory.getLogger(SeSelector.class);
 
@@ -27,7 +31,17 @@ public class SeSelector {
     private final byte[] seAid;
     private final boolean selectionByAid;
     private final SeProtocol protocolFlag;
+    private String extraInfo;
 
+    /**
+     * ATR based selector
+     * 
+     * @param atrRegex regular expression to be applied to the SE ATR
+     * @param keepChannelOpen flag to tell if the logical channel should be left open at the end of
+     *        the selection
+     * @param protocolFlag flag to be compared with the protocol identified when communicating the
+     *        SE
+     */
     public SeSelector(String atrRegex, boolean keepChannelOpen, SeProtocol protocolFlag) {
         if (atrRegex == null || atrRegex.length() == 0) {
             throw new IllegalArgumentException("Selector ATR regex can't be null or empty");
@@ -44,6 +58,35 @@ public class SeSelector {
         }
     }
 
+    /**
+     * ATR based selector with extraInfo
+     * 
+     * @param atrRegex regular expression to be applied to the SE ATR
+     * @param keepChannelOpen flag to tell if the logical channel should be left open at the end of
+     *        the selection
+     * @param protocolFlag flag to be compared with the protocol identified when communicating the
+     *        SE
+     * @param extraInfo information string to be printed in logs
+     */
+    public SeSelector(String atrRegex, boolean keepChannelOpen, SeProtocol protocolFlag,
+            String extraInfo) {
+        this(atrRegex, keepChannelOpen, protocolFlag);
+        if (extraInfo != null) {
+            this.extraInfo = extraInfo;
+        } else {
+            this.extraInfo = "";
+        }
+    }
+
+    /**
+     * AID based selector with extraInfo
+     * 
+     * @param seAid application identification data
+     * @param keepChannelOpen flag to tell if the logical channel should be left open at the end of
+     *        the selection
+     * @param protocolFlag flag to be compared with the protocol identified when communicating the
+     *        SE
+     */
     public SeSelector(byte[] seAid, boolean keepChannelOpen, SeProtocol protocolFlag) {
         if (seAid == null) {
             throw new IllegalArgumentException("Selector AID can't be null");
@@ -56,6 +99,26 @@ public class SeSelector {
         if (logger.isTraceEnabled()) {
             logger.trace("AID based selection: AID = {}, KEEPCHANNELOPEN = {}, PROTOCOLFLAG = {}",
                     atrRegex, keepChannelOpen, protocolFlag);
+        }
+    }
+
+    /**
+     * AID based selector with extraInfo
+     * 
+     * @param seAid application identification data
+     * @param keepChannelOpen flag to tell if the logical channel should be left open at the end of
+     *        the selection
+     * @param protocolFlag flag to be compared with the protocol identified when communicating the
+     *        SE
+     * @param extraInfo information string to be printed in logs
+     */
+    public SeSelector(byte[] seAid, boolean keepChannelOpen, SeProtocol protocolFlag,
+            String extraInfo) {
+        this(seAid, keepChannelOpen, protocolFlag);
+        if (extraInfo != null) {
+            this.extraInfo = extraInfo;
+        } else {
+            this.extraInfo = "";
         }
     }
 
@@ -91,5 +154,14 @@ public class SeSelector {
                     seSelectionApduRequestList, keepChannelOpen, protocolFlag);
         }
         return seSelectionRequest;
+    }
+
+    /**
+     * Gets the information string
+     * 
+     * @return
+     */
+    public String getExtraInfo() {
+        return extraInfo;
     }
 }

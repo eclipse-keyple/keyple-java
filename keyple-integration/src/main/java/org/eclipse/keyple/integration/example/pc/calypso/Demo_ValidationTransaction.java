@@ -23,8 +23,10 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars;
 import org.eclipse.keyple.calypso.transaction.CalypsoPO;
+import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.pc.generic.PcscReadersSettings;
+import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -34,6 +36,8 @@ import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
+import org.eclipse.keyple.transaction.MatchingSe;
+import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.util.ByteArrayUtils;
 
 public class Demo_ValidationTransaction implements ObservableReader.ReaderObserver {
@@ -99,8 +103,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
     }
 
     // Not optimized for online/remote operation
-    private void validateAuditC0(PoTransaction poTransaction, ApduResponse fciData)
-            throws KeypleReaderException {
+    private void validateAuditC0(PoTransaction poTransaction) throws KeypleReaderException {
 
         byte eventSfi = 0x08;
         byte contractListSfi = 0x1E;
@@ -209,8 +212,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
 
     // Optimised for online/remote operation
-    private void validateClap(PoTransaction poTransaction, ApduResponse fciData)
-            throws KeypleReaderException {
+    private void validateClap(PoTransaction poTransaction) throws KeypleReaderException {
 
         byte eventSfi = 0x08;
         byte countersSfi = 0x1B;
@@ -345,49 +347,47 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                 throw new IllegalStateException("SAM channel opening failure");
             }
 
-            // Create a SeRequest list
-            Set<SeRequest> selectionRequests = new LinkedHashSet<SeRequest>();
+            SeSelection seSelection = new SeSelection(poReader);
 
             // Add Audit C0 AID to the list
-            SeRequest seRequest = new SeRequest(
-                    new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAuditC0Aid)), null, false);
-            selectionRequests.add(seRequest);
+            MatchingSe auditC0Se = seSelection.prepareSelector(
+                    new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.poAuditC0Aid), true,
+                            null, PoSelector.RevisionTarget.TARGET_REV3, "Audit C0"));
 
             // Add CLAP AID to the list
-            seRequest = new SeRequest(new SeRequest.AidSelector(ByteArrayUtils.fromHex(clapAid)),
-                    null, false);
-            selectionRequests.add(seRequest);
+            MatchingSe clapSe = seSelection.prepareSelector(
+                    new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.clapAid), true, null,
+                            PoSelector.RevisionTarget.TARGET_REV3, "CLAP"));
 
-            // Add CdLight AID to the list
-            seRequest = new SeRequest(new SeRequest.AidSelector(ByteArrayUtils.fromHex(cdLightAid)),
-                    null, false);
-            selectionRequests.add(seRequest);
+            // Add cdLight AID to the list
+            MatchingSe cdLightSe = seSelection.prepareSelector(
+                    new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.cdLightAid), true,
+                            null, PoSelector.RevisionTarget.TARGET_REV2_REV3, "CDLight"));
 
-            List<SeResponse> seResponses =
-                    poReader.transmit(new SeRequestSet(selectionRequests)).getResponses();
+            if (!seSelection.processSelection()) {
+                throw new IllegalArgumentException("No recognizable PO detected.");
+            }
+
 
             // Depending on the PO detected perform either a Season Pass validation or a MultiTrip
             // validation
-            if (seResponses.get(0) != null) {
+            if (auditC0Se.isSelected()) {
 
-                ApduResponse fciData = seResponses.get(0).getFci();
-                PoTransaction poTransaction = new PoTransaction(poReader,
-                        new CalypsoPO(seResponses.get(0)), samReader, null);
-                validateAuditC0(poTransaction, fciData);
+                PoTransaction poTransaction =
+                        new PoTransaction(poReader, new CalypsoPO(auditC0Se), samReader, null);
+                validateAuditC0(poTransaction);
 
-            } else if (seResponses.get(1) != null) {
+            } else if (clapSe.isSelected()) {
 
-                ApduResponse fciData = seResponses.get(1).getFci();
-                PoTransaction poTransaction = new PoTransaction(poReader,
-                        new CalypsoPO(seResponses.get(1)), samReader, null);
-                validateClap(poTransaction, fciData);
+                PoTransaction poTransaction =
+                        new PoTransaction(poReader, new CalypsoPO(clapSe), samReader, null);
+                validateClap(poTransaction);
 
-            } else if (seResponses.get(2) != null) {
+            } else if (cdLightSe.isSelected()) {
 
-                ApduResponse fciData = seResponses.get(2).getFci();
-                PoTransaction poTransaction = new PoTransaction(poReader,
-                        new CalypsoPO(seResponses.get(2)), samReader, null);
-                validateAuditC0(poTransaction, fciData);
+                PoTransaction poTransaction =
+                        new PoTransaction(poReader, new CalypsoPO(cdLightSe), samReader, null);
+                validateAuditC0(poTransaction);
 
             } else {
                 System.out.println("No recognizable PO detected.");

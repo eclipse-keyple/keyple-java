@@ -13,13 +13,13 @@ package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.seproxy.SeResponse;
+import org.eclipse.keyple.transaction.MatchingSe;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles the PO characteristics such as:
+ * The CalypsoPO handles the Calypso SE characteristics such as:
  * <ul>
  * <li>revision</li>
  * <li>serial number</li>
@@ -37,11 +37,12 @@ public final class CalypsoPO {
     private byte[] poAtr;
     private int modificationsCounterMax;
 
-    public CalypsoPO(SeResponse selectionSeResponse) {
+    public CalypsoPO(MatchingSe matchingSe) {
         /* The selectionSeResponse may not include a FCI field (e.g. old PO Calypso Rev 1) */
-        if (selectionSeResponse.getFci() != null) {
+        if (matchingSe.getSelectionSeResponse().getFci() != null) {
             /* Parse PO FCI - to retrieve Calypso Revision, Serial Number, &amp; DF Name (AID) */
-            GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(selectionSeResponse.getFci());
+            GetDataFciRespPars poFciRespPars =
+                    new GetDataFciRespPars(matchingSe.getSelectionSeResponse().getFci());
 
             /**
              * Resolve the PO revision from the application type byte:
@@ -78,7 +79,7 @@ public final class CalypsoPO {
              * FCI is not provided: we consider it is Calypso PO rev 1, it's serial number is
              * provided in the ATR
              */
-            poAtr = selectionSeResponse.getAtr().getBytes();
+            poAtr = matchingSe.getSelectionSeResponse().getAtr().getBytes();
 
             /* basic check: we expect to be here following a selection based on the ATR */
             if (poAtr.length != PO_REV1_ATR_LENGTH) {
