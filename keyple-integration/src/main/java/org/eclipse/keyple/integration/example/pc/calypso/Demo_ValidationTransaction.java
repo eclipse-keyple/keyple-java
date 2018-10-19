@@ -22,7 +22,7 @@ import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPO;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.pc.generic.PcscReadersSettings;
@@ -36,7 +36,6 @@ import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.transaction.MatchingSe;
 import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.util.ByteArrayUtils;
 
@@ -350,17 +349,17 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
             SeSelection seSelection = new SeSelection(poReader);
 
             // Add Audit C0 AID to the list
-            MatchingSe auditC0Se = seSelection.prepareSelector(
+            CalypsoPo auditC0Se = (CalypsoPo) seSelection.prepareSelector(
                     new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.poAuditC0Aid), true,
                             null, PoSelector.RevisionTarget.TARGET_REV3, "Audit C0"));
 
             // Add CLAP AID to the list
-            MatchingSe clapSe = seSelection.prepareSelector(
+            CalypsoPo clapSe = (CalypsoPo) seSelection.prepareSelector(
                     new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.clapAid), true, null,
                             PoSelector.RevisionTarget.TARGET_REV3, "CLAP"));
 
             // Add cdLight AID to the list
-            MatchingSe cdLightSe = seSelection.prepareSelector(
+            CalypsoPo cdLightSe = (CalypsoPo) seSelection.prepareSelector(
                     new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.cdLightAid), true,
                             null, PoSelector.RevisionTarget.TARGET_REV2_REV3, "CDLight"));
 
@@ -374,19 +373,18 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
             if (auditC0Se.isSelected()) {
 
                 PoTransaction poTransaction =
-                        new PoTransaction(poReader, new CalypsoPO(auditC0Se), samReader, null);
+                        new PoTransaction(poReader, auditC0Se, samReader, null);
                 validateAuditC0(poTransaction);
 
             } else if (clapSe.isSelected()) {
 
-                PoTransaction poTransaction =
-                        new PoTransaction(poReader, new CalypsoPO(clapSe), samReader, null);
+                PoTransaction poTransaction = new PoTransaction(poReader, clapSe, samReader, null);
                 validateClap(poTransaction);
 
             } else if (cdLightSe.isSelected()) {
 
                 PoTransaction poTransaction =
-                        new PoTransaction(poReader, new CalypsoPO(cdLightSe), samReader, null);
+                        new PoTransaction(poReader, cdLightSe, samReader, null);
                 validateAuditC0(poTransaction);
 
             } else {

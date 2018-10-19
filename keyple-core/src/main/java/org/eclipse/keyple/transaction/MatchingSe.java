@@ -17,9 +17,9 @@ import org.eclipse.keyple.seproxy.SeResponse;
  *
  */
 public class MatchingSe {
-    private boolean channelIsKeptOpen;
-    private String extraInfo;
-    protected SeResponse selectionSeResponse;
+    private final boolean channelIsKeptOpen;
+    private final String extraInfo;
+    private SeResponse selectionSeResponse;
 
     /**
      * Constructor taking a SeSelector as an argument. Keeps the isKeepChannelOpen flag and the

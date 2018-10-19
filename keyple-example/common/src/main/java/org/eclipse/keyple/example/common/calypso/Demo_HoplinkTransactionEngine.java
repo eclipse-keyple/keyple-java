@@ -13,7 +13,7 @@ package org.eclipse.keyple.example.common.calypso;
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPO;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.common.generic.DemoHelpers;
@@ -236,7 +236,7 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
                  * null
                  */
                 PoTransaction poTransaction = new PoTransaction(poReader,
-                        new CalypsoPO(seSelection.getSelectedSe()), samReader, samSetting);
+                        (CalypsoPo) seSelection.getSelectedSe(), samReader, samSetting);
                 profiler.start("Hoplink1");
                 doHoplinkReadWriteTransaction(poTransaction, true);
             } else {

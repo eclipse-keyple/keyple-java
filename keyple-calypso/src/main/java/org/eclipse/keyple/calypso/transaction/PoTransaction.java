@@ -96,8 +96,8 @@ public class PoTransaction {
             new EnumMap<SamSettings, Byte>(SamSettings.class);
     /** The PO serial number extracted from FCI */
     private final byte[] poCalypsoInstanceSerial;
-    /** The current CalypsoPO */
-    protected final CalypsoPO calypsoPo;
+    /** The current CalypsoPo */
+    protected final CalypsoPo calypsoPo;
     /** The PO selector from the selection result */
     private SeRequest.Selector selector;
     /** the type of the notified event. */
@@ -142,13 +142,13 @@ public class PoTransaction {
      * </ul>
      *
      * @param poReader the PO reader
-     * @param calypsoPO the CalypsoPO object obtained at the end of the selection step
+     * @param calypsoPO the CalypsoPo object obtained at the end of the selection step
      * @param samReader the SAM reader
      * @param samSetting a list of SAM related parameters. In the case this parameter is null,
      *        default parameters are applied. The available setting keys are defined in
      *        {@link SamSettings}
      */
-    public PoTransaction(ProxyReader poReader, CalypsoPO calypsoPO, ProxyReader samReader,
+    public PoTransaction(ProxyReader poReader, CalypsoPo calypsoPO, ProxyReader samReader,
             EnumMap<SamSettings, Byte> samSetting) {
 
         this(poReader, calypsoPO);
@@ -163,9 +163,9 @@ public class PoTransaction {
      * </ul>
      *
      * @param poReader the PO reader
-     * @param calypsoPO the CalypsoPO object obtained at the end of the selection step
+     * @param calypsoPO the CalypsoPo object obtained at the end of the selection step
      */
-    public PoTransaction(ProxyReader poReader, CalypsoPO calypsoPO) {
+    public PoTransaction(ProxyReader poReader, CalypsoPo calypsoPO) {
         this.poReader = poReader;
 
         this.calypsoPo = calypsoPO;
@@ -428,7 +428,7 @@ public class PoTransaction {
         /* Build the Digest Init command from PO Open Session */
         poKif = poOpenSessionPars.getSelectedKif();
         /** The PO KVC */
-        // TODO handle rev 1 KVC (provided in the response to select DF. CalypsoPO?)
+        // TODO handle rev 1 KVC (provided in the response to select DF. CalypsoPo?)
         byte poKvc = poOpenSessionPars.getSelectedKvc();
 
         if (logger.isDebugEnabled()) {

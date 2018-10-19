@@ -26,7 +26,7 @@ import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Demo_CalypsoBasic_Pcsc {
+public class Demo_CalypsoClassic_Pcsc {
     /**
      * This object is used to freeze the main thread while card operations are handle through the
      * observers callbacks. A call to the notify() method would end the program (not demonstrated
@@ -42,7 +42,7 @@ public class Demo_CalypsoBasic_Pcsc {
      * @throws InterruptedException thread exception
      */
     public static void main(String[] args) throws KeypleBaseException, InterruptedException {
-        Logger logger = LoggerFactory.getLogger(Demo_CalypsoBasic_Pcsc.class);
+        Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Pcsc.class);
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();

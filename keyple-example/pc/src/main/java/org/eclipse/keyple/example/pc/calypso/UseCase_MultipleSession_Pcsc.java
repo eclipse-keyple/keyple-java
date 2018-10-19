@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.util.EnumMap;
 import java.util.Properties;
 import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPO;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.common.generic.DemoHelpers;
@@ -105,7 +105,7 @@ public class UseCase_MultipleSession_Pcsc extends DemoHelpers {
 
                     profiler.start("Calypso1");
 
-                    CalypsoPO calypsoPO = new CalypsoPO(seSelection.getSelectedSe());
+                    CalypsoPo calypsoPO = (CalypsoPo) seSelection.getSelectedSe();
 
                     PoTransaction poTransaction =
                             new PoTransaction(poReader, calypsoPO, samReader, samSetting);

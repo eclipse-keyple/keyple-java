@@ -23,7 +23,7 @@ import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Demo_CalypsoBasic_Stub {
+public class Demo_CalypsoClassic_Stub {
 
     /**
      * main program entry

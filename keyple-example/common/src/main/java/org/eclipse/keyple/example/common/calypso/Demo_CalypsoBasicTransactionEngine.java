@@ -15,7 +15,7 @@ import java.util.EnumMap;
 import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPO;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.common.generic.DemoHelpers;
@@ -314,7 +314,7 @@ public class Demo_CalypsoBasicTransactionEngine extends DemoHelpers
                 profiler.start("Calypso1");
 
                 PoTransaction poTransaction = new PoTransaction(poReader,
-                        new CalypsoPO(seSelection.getSelectedSe()), samReader, samSetting);
+                        (CalypsoPo) seSelection.getSelectedSe(), samReader, samSetting);
 
                 doCalypsoReadWriteTransaction(poTransaction, true);
 

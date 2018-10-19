@@ -49,6 +49,8 @@ public class PoSelector extends SeSelector {
     public PoSelector(String atrRegex, short dfLid, boolean keepChannelOpen,
             SeProtocol protocolFlag, String extraInfo) {
         super(atrRegex, keepChannelOpen, protocolFlag, extraInfo);
+        setMatchingClass(CalypsoPo.class);
+        setSelectorClass(PoSelector.class);
         revisionTarget = RevisionTarget.TARGET_REV1;
         if (logger.isTraceEnabled()) {
             logger.trace("Calypso {} selector", revisionTarget);
@@ -68,7 +70,8 @@ public class PoSelector extends SeSelector {
     public PoSelector(byte[] poAid, boolean keepChannelOpen, SeProtocol protocolFlag,
             RevisionTarget revisionTarget, String extraInfo) {
         super(poAid, keepChannelOpen, protocolFlag, extraInfo);
-
+        setMatchingClass(CalypsoPo.class);
+        setSelectorClass(PoSelector.class);
         if (revisionTarget == RevisionTarget.TARGET_REV1) {
             throw new IllegalArgumentException("Calypso PO Rev1 cannot be selected with AID.");
         }

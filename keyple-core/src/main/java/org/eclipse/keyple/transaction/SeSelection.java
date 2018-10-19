@@ -10,6 +10,8 @@
  */
 package org.eclipse.keyple.transaction;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
@@ -25,7 +27,6 @@ public class SeSelection {
     private final ProxyReader proxyReader;
     private List<MatchingSe> matchingSeList = new ArrayList<MatchingSe>();
     private Set<SeRequest> selectionRequestSet = new LinkedHashSet<SeRequest>();
-    private SeResponseSet seResponseSet;
     private MatchingSe selectedSe;
 
     /**
@@ -41,18 +42,33 @@ public class SeSelection {
      * Prepare a selection: add the selection request from the provided selector to the selection
      * request set.
      * <p>
-     * Create a MatchingSe, retain it in a list and return it
+     * Create a MatchingSe, retain it in a list and return it. The MatchingSe may be an extended
+     * class
      * 
      * @param seSelector the selector to prepare
      * @return a MatchingSe for further information request about this selector
      */
     public MatchingSe prepareSelector(SeSelector seSelector) {
         if (logger.isTraceEnabled()) {
-            logger.trace("SELECTORREQUEST = {}", seSelector.getSelectorRequest());
+            logger.trace("SELECTORREQUEST = {}, EXTRAINFO = {}", seSelector.getSelectorRequest(),
+                    seSelector.getExtraInfo());
         }
         selectionRequestSet.add(seSelector.getSelectorRequest());
-        MatchingSe matchingSe = new MatchingSe(seSelector);
-        matchingSeList.add(matchingSe);
+        MatchingSe matchingSe = null;
+        try {
+            Constructor constructor =
+                    seSelector.getMatchingClass().getConstructor(seSelector.getSelectorClass());
+            matchingSe = (MatchingSe) constructor.newInstance(seSelector);
+            matchingSeList.add(matchingSe);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
         return matchingSe;
     }
 
@@ -75,15 +91,15 @@ public class SeSelection {
      * Responses that have not matched the current PO are set to null.
      * 
      * @return boolean true or false
-     * @throws KeypleReaderException
+     * @throws KeypleReaderException if the requests transmission failed
      */
     public boolean processSelection() throws KeypleReaderException {
         boolean selectionSuccessful = false;
         if (logger.isTraceEnabled()) {
             logger.trace("Transmit SELECTIONREQUEST ({} request(s))", selectionRequestSet.size());
         }
-        seResponseSet = proxyReader.transmit(new SeRequestSet(selectionRequestSet));
-        /* Check SeReponses */
+        SeResponseSet seResponseSet = proxyReader.transmit(new SeRequestSet(selectionRequestSet));
+        /* Check SeResponses */
         Iterator<MatchingSe> matchingSeIterator = matchingSeList.iterator();
         for (SeResponse seResponse : seResponseSet.getResponses()) {
             if (seResponse != null) {
