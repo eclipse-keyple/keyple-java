@@ -16,66 +16,36 @@ node {
       //checkout scm
     git credentialsId: 'odelcroi-github',
         url: 'https://github.com/calypsonet/keyple-java.git', branch:'maven-versioning'
-
-
    }
 
 
    stage('Build keyple core') {
-        sh '/opt/bitnami/gradle4.10/gradle-4.10.2/bin/gradle keyple-core:build --info'
-
+        sh './gradlew keyple-core:build --info'
    }
 
    stage('Build keyple calypso') {
-        sh '/opt/bitnami/gradle4.10/gradle-4.10.2/bin/gradle keyple-calypso:build --info'
+        sh './gradlew keyple-calypso:build --info'
    }
 
    stage('Build java keyple plugins') {
-        sh '/opt/bitnami/gradle4.10/gradle-4.10.2/bin/gradle keyple-plugin:build --info'
+        sh './gradlew keyple-plugin:build --info'
    }
-   /*
-   stage('Build java keyple examples') {
-        sh '/opt/bitnami/gradle4.10/gradle-4.10.2/bin/gradle keyple-example:build --info'
-   }
-   */
 
+   stage('Build java keyple examples') {
+        sh './gradlew keyple-example:build --info'
+   }
 
    stage('Build android OMAPI Plugin') {
-        sh '/opt/bitnami/gradle4.10/gradle-4.10.2/bin/gradle -b ./keyple-plugin/android-omapi/build.gradle build test assembleDebug generateDebugJavadoc --info'
+        sh './gradlew :keyple-plugin:keyple-plugin-android-omapi:build :keyple-plugin:keyple-plugin-android-omapi:generateDebugJavadoc --info'
    }
-/*
-    stage('Build android OMAPI example') {
-        sh '/opt/bitnami/gradle4.10/gradle-4.10.2/bin/gradle -b ./keyple-example/android/omapi/build.gradle assembleDebug --info'
-   }
-*/
-   /*
-   */
+
    stage('Build android NFC Plugin') {
-       //error='Cannot allocate memory' (errno=12)
-        sh '/opt/bitnami/gradle4.10/gradle-4.10.2/bin/gradle -b ./keyple-plugin/android-nfc/build.gradle build test assembleDebug generateDebugJavadoc --info'
+        sh './gradlew :keyple-plugin:keyple-plugin-android-nfc:build :keyple-plugin:keyple-plugin-android-nfc:generateDebugJavadoc --info'
    }
-
-/*
-   stage('Build android NFC Example') {
-        sh '/opt/bitnami/gradle4.10/gradle-4.10.2/bin/gradle -b ./keyple-example/android/nfc/build.gradle assembleDebug --info'
+   stage('Build android NFC Example APP') {
+        sh './gradlew -b ./keyple-example/android/nfc/build.gradle assembleDebug --info'
    }
-*/
-   /*
-   work
-   stage('Build keyple plugin') {
-        sh '/opt/bitnami/gradle4.10/gradle-4.10.2/bin/gradle keyple-plugin:build --info'
-   }
-   */
-
-
-   /*
-   does not work
-   stage('Javadoc') {
-        sh '/opt/bitnami/gradle4.10/gradle-4.10.2/bin/gradle javadoc --info'
-   }
-   */
-
-   stage('Results') {
+   stage('Finished') {
         echo "Finished"
    }
 }

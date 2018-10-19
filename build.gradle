@@ -67,7 +67,7 @@ allprojects {
     }
 
     task copyNOTICE(type: Copy) {
-        from file("${rootDir}/NOTICE")
+        from file("${rootDir}/NOTICE.md")
         into file("${buildDir}/resources/main/META-INF/")
     }
 
