@@ -12,7 +12,7 @@ package org.eclipse.keyple.example.pc.calypso;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.example.common.calypso.Demo_CalypsoBasicTransactionEngine;
+import org.eclipse.keyple.example.common.calypso.transaction.CalypsoClassicTransactionEngine;
 import org.eclipse.keyple.example.pc.calypso.stub.se.*;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.stub.*;
@@ -48,8 +48,7 @@ public class Demo_CalypsoClassic_Stub {
         seProxyService.setPlugins(pluginsSet);
 
         /* Setting up the transaction engine (implements Observer) */
-        Demo_CalypsoBasicTransactionEngine transactionEngine =
-                new Demo_CalypsoBasicTransactionEngine();
+        CalypsoClassicTransactionEngine transactionEngine = new CalypsoClassicTransactionEngine();
 
         /*
          * Plug PO and SAM stub readers.
@@ -83,8 +82,8 @@ public class Demo_CalypsoClassic_Stub {
         transactionEngine.setReaders(poReader, samReader);
 
         /* Create 'virtual' Hoplink and SAM SE */
-        StubSecureElement calypsoStubSe = new StubCalypsoBasic();
-        StubSecureElement samSE = new StubSamCalypsoBasic();
+        StubSecureElement calypsoStubSe = new StubCalypsoClassic();
+        StubSecureElement samSE = new StubSamCalypsoClassic();
 
         /* Insert the SAM into the SAM reader */
         logger.info("Insert stub SAM SE.");

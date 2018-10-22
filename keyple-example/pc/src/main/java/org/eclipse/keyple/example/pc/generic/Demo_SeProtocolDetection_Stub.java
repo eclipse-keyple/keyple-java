@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.example.common.generic.CustomProtocolSetting;
-import org.eclipse.keyple.example.common.generic.Demo_SeProtocolDetectionEngine;
+import org.eclipse.keyple.example.common.generic.SeProtocolDetectionEngine;
 import org.eclipse.keyple.example.pc.generic.stub.se.*;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
@@ -64,7 +64,7 @@ Demo_SeProtocolDetection_Stub {
         seProxyService.setPlugins(pluginsSet);
 
         /* create an observer class to handle the SE operations */
-        Demo_SeProtocolDetectionEngine observer = new Demo_SeProtocolDetectionEngine();
+        SeProtocolDetectionEngine observer = new SeProtocolDetectionEngine();
 
         /*
          * Plug PO reader.
@@ -119,7 +119,7 @@ Demo_SeProtocolDetection_Stub {
         // Set terminal as Observer of the first reader
         ((ObservableReader) poReader).addObserver(observer);
 
-        // poReader.insertSe(new StubCalypsoBasic());
+        // poReader.insertSe(new StubCalypsoClassic());
         //
         // Thread.sleep(300);
         //

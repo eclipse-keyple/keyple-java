@@ -23,15 +23,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class Demo_ObservableReaderNotificationEngine {
+public class ObservableReaderNotificationEngine {
     private final static Logger logger =
-            LoggerFactory.getLogger(Demo_ObservableReaderNotificationEngine.class);
+            LoggerFactory.getLogger(ObservableReaderNotificationEngine.class);
 
     private SpecificReaderObserver readerObserver;
     private SpecificPluginObserver pluginObserver;
 
 
-    public Demo_ObservableReaderNotificationEngine() {
+    public ObservableReaderNotificationEngine() {
         /* initializes observers */
         readerObserver = new SpecificReaderObserver();
         pluginObserver = new SpecificPluginObserver(readerObserver);

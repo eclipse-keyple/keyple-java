@@ -17,7 +17,8 @@ import java.util.*;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.example.common.generic.DemoHelpers;
+import org.eclipse.keyple.example.common.calypso.transaction.SamManagement;
+import org.eclipse.keyple.example.common.generic.AbstractTransactionEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -33,16 +34,16 @@ import org.slf4j.profiler.Profiler;
 
 
 
-public class UseCase_CalypsoAuthenticationLevel3_Pcsc extends DemoHelpers {
+public class UseCase_CalypsoAuthenticationLevel3_Pcsc extends AbstractTransactionEngine {
     private static Properties properties;
 
     @Override
-    public void operatePoTransactions() {
+    public void operateSeTransaction() {
 
     }
 
     @SuppressWarnings("unused")
-    static class CalypsoAuthenticationLeve3TransactionEngine extends DemoHelpers
+    static class CalypsoAuthenticationLeve3TransactionEngine extends AbstractTransactionEngine
             implements ObservableReader.ReaderObserver {
         private final Logger logger =
                 LoggerFactory.getLogger(CalypsoAuthenticationLeve3TransactionEngine.class);
@@ -71,13 +72,13 @@ public class UseCase_CalypsoAuthenticationLevel3_Pcsc extends DemoHelpers {
             this.samReader = samReader;
         }
 
-        public void operatePoTransactions() {
+        public void operateSeTransaction() {
             Profiler profiler;
             try {
                 /* first time: check SAM */
                 if (!this.samChannelOpen) {
                     /* the following method will throw an exception if the SAM is not available. */
-                    checkSamAndOpenChannel(samReader);
+                    SamManagement.checkSamAndOpenChannel(samReader);
                     this.samChannelOpen = true;
                 }
 

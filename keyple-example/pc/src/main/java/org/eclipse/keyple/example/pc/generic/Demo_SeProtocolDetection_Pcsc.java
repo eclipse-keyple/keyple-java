@@ -10,13 +10,13 @@
  */
 package org.eclipse.keyple.example.pc.generic;
 
-import static org.eclipse.keyple.example.common.generic.DemoHelpers.getReaderByName;
+import static org.eclipse.keyple.example.common.generic.AbstractTransactionEngine.getReaderByName;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 import org.eclipse.keyple.example.common.generic.CustomProtocolSetting;
-import org.eclipse.keyple.example.common.generic.Demo_SeProtocolDetectionEngine;
+import org.eclipse.keyple.example.common.generic.SeProtocolDetectionEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -63,7 +63,7 @@ public class Demo_SeProtocolDetection_Pcsc {
         poReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
 
         /* create an observer class to handle the SE operations */
-        Demo_SeProtocolDetectionEngine observer = new Demo_SeProtocolDetectionEngine();
+        SeProtocolDetectionEngine observer = new SeProtocolDetectionEngine();
 
         observer.setReader(poReader);
 

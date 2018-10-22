@@ -12,7 +12,7 @@ package org.eclipse.keyple.example.pc.calypso;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.example.common.calypso.Demo_HoplinkTransactionEngine;
+import org.eclipse.keyple.example.common.calypso.transaction.HoplinkTransactionEngine;
 import org.eclipse.keyple.example.pc.calypso.stub.se.*;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.stub.*;
@@ -50,7 +50,7 @@ public class Demo_Hoplink_Stub {
         seProxyService.setPlugins(pluginsSet);
 
         /* Setting up the transaction engine (implements Observer) */
-        Demo_HoplinkTransactionEngine transactionEngine = new Demo_HoplinkTransactionEngine();
+        HoplinkTransactionEngine transactionEngine = new HoplinkTransactionEngine();
 
         /*
          * Plug PO and SAM stub readers.
