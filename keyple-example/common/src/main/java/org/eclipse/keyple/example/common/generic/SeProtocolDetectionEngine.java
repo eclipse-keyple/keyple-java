@@ -23,7 +23,7 @@ import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
- * This code demonstrates the multi-protocols capability of the Keyple SeProxy:
+ * This code demonstrates the multi-protocols capability of the Keyple SeProxy
  * <ul>
  * <li>instantiates a PC/SC plugin for a reader which name matches the regular expression provided
  * by poReaderName.</li>
