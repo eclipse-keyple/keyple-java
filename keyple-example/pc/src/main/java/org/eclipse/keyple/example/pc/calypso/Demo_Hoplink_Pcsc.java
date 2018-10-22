@@ -11,8 +11,8 @@
 package org.eclipse.keyple.example.pc.calypso;
 
 
-import org.eclipse.keyple.example.common.calypso.Demo_HoplinkTransactionEngine;
-import org.eclipse.keyple.example.common.generic.DemoHelpers;
+import org.eclipse.keyple.example.common.calypso.transaction.HoplinkTransactionEngine;
+import org.eclipse.keyple.example.common.generic.AbstractTransactionEngine;
 import org.eclipse.keyple.example.pc.generic.PcscReadersSettings;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
@@ -54,15 +54,15 @@ public class Demo_Hoplink_Pcsc {
         seProxyService.addPlugin(pcscPlugin);
 
         /* Setting up the transaction engine (implements Observer) */
-        Demo_HoplinkTransactionEngine transactionEngine = new Demo_HoplinkTransactionEngine();
+        HoplinkTransactionEngine transactionEngine = new HoplinkTransactionEngine();
 
         /*
          * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
          * readers. Use the getReader helper method from the transaction engine.
          */
-        ProxyReader poReader = DemoHelpers.getReaderByName(seProxyService,
+        ProxyReader poReader = AbstractTransactionEngine.getReaderByName(seProxyService,
                 PcscReadersSettings.PO_READER_NAME_REGEX);
-        ProxyReader samReader = DemoHelpers.getReaderByName(seProxyService,
+        ProxyReader samReader = AbstractTransactionEngine.getReaderByName(seProxyService,
                 PcscReadersSettings.SAM_READER_NAME_REGEX);
 
         /* Both readers are expected not null */

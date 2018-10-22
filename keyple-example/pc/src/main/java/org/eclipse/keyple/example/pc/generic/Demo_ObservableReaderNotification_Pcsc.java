@@ -11,7 +11,7 @@
 package org.eclipse.keyple.example.pc.generic;
 
 
-import org.eclipse.keyple.example.common.generic.Demo_ObservableReaderNotificationEngine;
+import org.eclipse.keyple.example.common.generic.ObservableReaderNotificationEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.seproxy.*;
 
@@ -20,8 +20,7 @@ public class Demo_ObservableReaderNotification_Pcsc {
     public final static Object waitBeforeEnd = new Object();
 
     public static void main(String[] args) throws Exception {
-        Demo_ObservableReaderNotificationEngine demoEngine =
-                new Demo_ObservableReaderNotificationEngine();
+        ObservableReaderNotificationEngine demoEngine = new ObservableReaderNotificationEngine();
 
         /* Instantiate SeProxyService and add PC/SC plugin */
         SeProxyService seProxyService = SeProxyService.getInstance();

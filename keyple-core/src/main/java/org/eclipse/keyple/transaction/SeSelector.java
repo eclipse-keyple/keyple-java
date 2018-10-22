@@ -14,6 +14,7 @@ import java.util.*;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.SeRequest;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +101,7 @@ public class SeSelector {
         this.protocolFlag = protocolFlag;
         if (logger.isTraceEnabled()) {
             logger.trace("AID based selection: AID = {}, KEEPCHANNELOPEN = {}, PROTOCOLFLAG = {}",
-                    seAid, keepChannelOpen, protocolFlag);
+                    ByteArrayUtils.toHex(seAid), keepChannelOpen, protocolFlag);
         }
     }
 

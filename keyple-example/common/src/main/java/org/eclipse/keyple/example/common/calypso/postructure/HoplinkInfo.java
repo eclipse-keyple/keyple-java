@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  */
-package org.eclipse.keyple.example.common.calypso;
+package org.eclipse.keyple.example.common.calypso.postructure;
 
 
 
