@@ -15,7 +15,7 @@ import static org.eclipse.keyple.integration.calypso.TestEngine.selectPO;
 import java.io.IOException;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPO;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
@@ -128,7 +128,7 @@ public class CommandSetTestSuite {
             PoFileStructureInfo poData = selectPO();
 
             PoTransaction poTransaction = new PoTransaction(TestEngine.poReader,
-                    new CalypsoPO(poData.getSelectionData()), TestEngine.samReader, null);
+                    (CalypsoPo) poData.getMatchingSe(), TestEngine.samReader, null);
 
             byte[] genericCounterData = new byte[] {0x00, 0x00, 0x0A, 0x00, 0x01, 0x00, 0x00, 0x0B,
                     0x00, 0x01, 0x00, 0x00, 0x0C, 0x00, 0x00, 0x00, 0x00, (byte) 0xB0, 0x00,
@@ -180,7 +180,7 @@ public class CommandSetTestSuite {
             PoFileStructureInfo poData = selectPO();
 
             PoTransaction poTransaction = new PoTransaction(TestEngine.poReader,
-                    new CalypsoPO(poData.getSelectionData()), TestEngine.samReader, null);
+                    (CalypsoPo) poData.getMatchingSe(), TestEngine.samReader, null);
 
             byte[] initialCounterData = readRecords(poTransaction,
                     poData.getCountersFileData().getSfi(), (byte) 0x01, true);
@@ -229,7 +229,7 @@ public class CommandSetTestSuite {
             PoFileStructureInfo poData = selectPO();
 
             PoTransaction poTransaction = new PoTransaction(TestEngine.poReader,
-                    new CalypsoPO(poData.getSelectionData()), TestEngine.samReader, null);
+                    (CalypsoPo) poData.getMatchingSe(), TestEngine.samReader, null);
 
             byte[] initialCounterData = readRecords(poTransaction,
                     poData.getCountersFileData().getSfi(), (byte) 0x01, true);
@@ -280,7 +280,7 @@ public class CommandSetTestSuite {
             PoFileStructureInfo poData = selectPO();
 
             PoTransaction poTransaction = new PoTransaction(TestEngine.poReader,
-                    new CalypsoPO(poData.getSelectionData()), TestEngine.samReader, null);
+                    (CalypsoPo) poData.getMatchingSe(), TestEngine.samReader, null);
 
             byte[] firstRecordData = new byte[] {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
                     0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,

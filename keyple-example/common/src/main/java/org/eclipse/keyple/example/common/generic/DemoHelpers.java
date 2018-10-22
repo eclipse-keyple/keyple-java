@@ -15,7 +15,6 @@ import org.eclipse.keyple.example.common.calypso.CalypsoBasicInfo;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
@@ -64,11 +63,11 @@ public abstract class DemoHelpers {
 
         SeSelector samSelector = new SeSelector(CalypsoBasicInfo.SAM_C1_ATR_REGEX, true, null);
 
-        samSelection.addSelector(samSelector);
+        /* Prepare selector, ignore MatchingSe here */
+        samSelection.prepareSelector(samSelector);
 
         try {
-            SeResponse samCheckResponse = samSelection.processSelection().getSingleResponse();
-            if (samCheckResponse == null) {
+            if (!samSelection.processSelection()) {
                 throw new IllegalStateException("Unable to open a logical channel for SAM!");
             } else {
             }

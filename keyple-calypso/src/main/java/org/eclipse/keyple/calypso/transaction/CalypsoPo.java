@@ -14,12 +14,13 @@ package org.eclipse.keyple.calypso.transaction;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.seproxy.SeResponse;
+import org.eclipse.keyple.transaction.MatchingSe;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles the PO characteristics such as:
+ * The CalypsoPo handles the Calypso SE characteristics such as:
  * <ul>
  * <li>revision</li>
  * <li>serial number</li>
@@ -27,8 +28,8 @@ import org.slf4j.LoggerFactory;
  * </ul>
  * TODO Complete with other PO features from the FCI and/or ATR
  */
-public final class CalypsoPO {
-    private static final Logger logger = LoggerFactory.getLogger(CalypsoPO.class);
+public final class CalypsoPo extends MatchingSe {
+    private static final Logger logger = LoggerFactory.getLogger(CalypsoPo.class);
 
     private byte[] applicationSerialNumber;
     private PoRevision revision;
@@ -37,23 +38,34 @@ public final class CalypsoPO {
     private byte[] poAtr;
     private int modificationsCounterMax;
 
-    public CalypsoPO(SeResponse selectionSeResponse) {
-        /* The selectionSeResponse may not include a FCI field (e.g. old PO Calypso Rev 1) */
-        if (selectionSeResponse.getFci() != null) {
-            /* Parse PO FCI - to retrieve Calypso Revision, Serial Number, &amp; DF Name (AID) */
-            GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(selectionSeResponse.getFci());
+    public CalypsoPo(PoSelector poSelector) {
+        super(poSelector);
+    }
 
-            /**
+    /**
+     * Retains the selection response and analyses its relevant information to determine the
+     * characteristics of the PO required to process it correctly.
+     * 
+     * @param selectionResponse the received response to the selection request
+     */
+    @Override
+    public void setSelectionResponse(SeResponse selectionResponse) {
+        super.setSelectionResponse(selectionResponse);
+
+        /* The selectionSeResponse may not include a FCI field (e.g. old PO Calypso Rev 1) */
+        if (selectionResponse.getFci() != null) {
+            /* Parse PO FCI - to retrieve Calypso Revision, Serial Number, &amp; DF Name (AID) */
+            GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(selectionResponse.getFci());
+
+            /*
              * Resolve the PO revision from the application type byte:
              *
-             * <ul>
-             * <li>if
-             * <code>%1-------</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;CLAP&nbsp;&nbsp;&rarr;&nbsp;&nbsp;
-             * REV3.1</li>
-             * <li>if <code>%00101---</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.2</li>
-             * <li>if <code>%00100---</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.1</li>
-             * <li>otherwise&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV2.4</li>
-             * </ul>
+             * <ul> <li>if
+             * <code>%1-------</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;CLAP&nbsp;&nbsp;&rarr;&nbsp;&
+             * nbsp; REV3.1</li> <li>if
+             * <code>%00101---</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.2</li> <li>if
+             * <code>%00100---</code>&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV3.1</li>
+             * <li>otherwise&nbsp;&nbsp;&rarr;&nbsp;&nbsp;REV2.4</li> </ul>
              */
             // TODO Improve this code by taking into account the startup information and the atr
             byte applicationTypeByte = poFciRespPars.getApplicationTypeByte();
@@ -78,7 +90,7 @@ public final class CalypsoPO {
              * FCI is not provided: we consider it is Calypso PO rev 1, it's serial number is
              * provided in the ATR
              */
-            poAtr = selectionSeResponse.getAtr().getBytes();
+            poAtr = selectionResponse.getAtr().getBytes();
 
             /* basic check: we expect to be here following a selection based on the ATR */
             if (poAtr.length != PO_REV1_ATR_LENGTH) {
