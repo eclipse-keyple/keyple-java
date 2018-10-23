@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Calypso Networks Association
  */
-public class PoTransaction {
+public final class PoTransaction {
 
     /* public constants */
     /** The key index for personalization operations (issuer key needed) */

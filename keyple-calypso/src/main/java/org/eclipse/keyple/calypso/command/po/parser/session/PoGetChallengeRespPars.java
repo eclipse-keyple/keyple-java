@@ -17,7 +17,7 @@ import org.eclipse.keyple.seproxy.ApduResponse;
 /**
  * PO Get challenge response parser. See specs: Calypso / page 108 / 9.54 - Get challenge
  */
-public class PoGetChallengeRespPars extends AbstractApduResponseParser {
+public final class PoGetChallengeRespPars extends AbstractApduResponseParser {
 
     /**
      * Instantiates a new PoGetChallengeRespPars.

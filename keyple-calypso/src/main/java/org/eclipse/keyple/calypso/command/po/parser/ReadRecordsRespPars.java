@@ -17,7 +17,7 @@ import org.eclipse.keyple.util.ByteArrayUtils;
 /**
  * Read Records (00B2) response parser. See specs: Calypso / page 89 / 9.4.7 Read Records
  */
-public class ReadRecordsRespPars extends AbstractApduResponseParser {
+public final class ReadRecordsRespPars extends AbstractApduResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 

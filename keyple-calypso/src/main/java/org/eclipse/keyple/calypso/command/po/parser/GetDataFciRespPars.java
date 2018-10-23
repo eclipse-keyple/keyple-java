@@ -20,7 +20,7 @@ import org.eclipse.keyple.seproxy.ApduResponse;
  * This class provides status code properties and the getters to access to the structured fields of
  * data from response of a Get Data response.
  */
-public class GetDataFciRespPars extends AbstractApduResponseParser {
+public final class GetDataFciRespPars extends AbstractApduResponseParser {
 
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
