@@ -26,7 +26,7 @@ public class SeSelector {
     private static final Logger logger = LoggerFactory.getLogger(SeSelector.class);
 
     protected List<ApduRequest> seSelectionApduRequestList = new ArrayList<ApduRequest>();
-    protected Set<Short> selectApplicationSuccessfulStatusCodes = new HashSet<Short>();
+    protected Set<Integer> selectApplicationSuccessfulStatusCodes = new HashSet<Integer>();
     private Class<? extends MatchingSe> matchingClass = MatchingSe.class;
     private Class<? extends SeSelector> selectorClass = SeSelector.class;
     private final boolean keepChannelOpen;

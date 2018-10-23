@@ -60,7 +60,7 @@ public class ApduRequestTest {
      */
 
     public static ApduRequest getApduSample() {
-        Set<Short> successfulStatusCodes = getASuccessFulStatusCode();
+        Set<Integer> successfulStatusCodes = getASuccessFulStatusCode();
         Boolean case4 = true;
         byte[] command = getACommand();
         ApduRequest request = new ApduRequest(command, case4, successfulStatusCodes);
@@ -72,9 +72,9 @@ public class ApduRequestTest {
         return ByteArrayUtils.fromHex("FEDCBA98 9005h");
     }
 
-    static Set<Short> getASuccessFulStatusCode() {
-        Set<Short> successfulStatusCodes = new HashSet<Short>();
-        successfulStatusCodes.add(Short.valueOf("9000"));
+    static Set<Integer> getASuccessFulStatusCode() {
+        Set<Integer> successfulStatusCodes = new HashSet<Integer>();
+        successfulStatusCodes.add(Integer.valueOf("9000"));
         return successfulStatusCodes;
     }
 

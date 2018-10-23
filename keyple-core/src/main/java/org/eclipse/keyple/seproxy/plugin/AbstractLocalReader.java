@@ -55,7 +55,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @throws KeypleApplicationSelectionException if the application selection fails
      */
     protected abstract byte[][] openLogicalChannelAndSelect(SeRequest.Selector selector,
-            Set<Short> successfulSelectionStatusCodes)
+            Set<Integer> successfulSelectionStatusCodes)
             throws KeypleApplicationSelectionException, KeypleReaderException;
 
     /**
