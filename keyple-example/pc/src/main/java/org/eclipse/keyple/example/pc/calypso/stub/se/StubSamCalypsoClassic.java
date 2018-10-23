@@ -17,12 +17,12 @@ import org.eclipse.keyple.util.ByteArrayUtils;
 /**
  * This class is an example of a Stub SAM
  */
-public class StubSamCalypsoBasic extends StubSecureElement {
+public class StubSamCalypsoClassic extends StubSecureElement {
 
     final static String seProtocol = "PROTOCOL_ISO7816_3";
     final String ATR_HEX = "3B3F9600805A0080C120000012345678829000";// serial number : 12345678
 
-    public StubSamCalypsoBasic() {
+    public StubSamCalypsoClassic() {
         /* Select Diversifier */
         addHexCommand("8014 0000 08 0000000011223344", "9000");
         /* Get Challenge */

@@ -12,7 +12,7 @@ package org.eclipse.keyple.example.pc.generic;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.example.common.generic.Demo_ObservableReaderNotificationEngine;
+import org.eclipse.keyple.example.common.generic.ObservableReaderNotificationEngine;
 import org.eclipse.keyple.example.pc.generic.stub.se.StubSe1;
 import org.eclipse.keyple.example.pc.generic.stub.se.StubSe2;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
@@ -26,8 +26,7 @@ public class Demo_ObservableReaderNotification_Stub {
     public final static Object waitBeforeEnd = new Object();
 
     public static void main(String[] args) throws Exception {
-        Demo_ObservableReaderNotificationEngine demoEngine =
-                new Demo_ObservableReaderNotificationEngine();
+        ObservableReaderNotificationEngine demoEngine = new ObservableReaderNotificationEngine();
 
         // Set Stub plugin
         SeProxyService seProxyService = SeProxyService.getInstance();

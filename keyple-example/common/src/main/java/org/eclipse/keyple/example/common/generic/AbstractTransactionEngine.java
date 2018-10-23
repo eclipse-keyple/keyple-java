@@ -11,21 +11,17 @@
 package org.eclipse.keyple.example.common.generic;
 
 import java.util.regex.Pattern;
-import org.eclipse.keyple.example.common.calypso.CalypsoBasicInfo;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.transaction.SeSelection;
-import org.eclipse.keyple.transaction.SeSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class DemoHelpers {
-    private static Logger logger = LoggerFactory.getLogger(DemoHelpers.class);;
+public abstract class AbstractTransactionEngine {
+    private static Logger logger = LoggerFactory.getLogger(AbstractTransactionEngine.class);;
 
     /**
      * Get the terminal which names match the expected pattern
@@ -49,36 +45,10 @@ public abstract class DemoHelpers {
     }
 
     /**
-     * Check SAM presence and consistency
-     *
-     * Throw an exception if the expected SAM is not available
-     * 
-     * @param samReader the SAM reader
+     * Abstract method to be implemented by the class that extends it in order to process particular
+     * transactions.
      */
-    public static void checkSamAndOpenChannel(ProxyReader samReader) {
-        /*
-         * check the availability of the SAM doing a ATR based selection, open its physical and
-         * logical channels and keep it open
-         */
-        SeSelection samSelection = new SeSelection(samReader);
-
-        SeSelector samSelector = new SeSelector(CalypsoBasicInfo.SAM_C1_ATR_REGEX, true, null);
-
-        samSelection.addSelector(samSelector);
-
-        try {
-            SeResponse samCheckResponse = samSelection.processSelection().getSingleResponse();
-            if (samCheckResponse == null) {
-                throw new IllegalStateException("Unable to open a logical channel for SAM!");
-            } else {
-            }
-        } catch (KeypleReaderException e) {
-            throw new IllegalStateException("Reader exception: " + e.getMessage());
-
-        }
-    }
-
-    public abstract void operatePoTransactions();
+    public abstract void operateSeTransaction();
 
     /*
      * This method is called when an reader event occurs according to the Observer pattern
@@ -90,7 +60,7 @@ public abstract class DemoHelpers {
                     logger.info("SE INSERTED");
                     logger.info("Start processing of a Calypso PO");
                 }
-                operatePoTransactions();
+                operateSeTransaction();
                 break;
             case SE_REMOVAL:
                 if (logger.isInfoEnabled()) {
@@ -102,5 +72,4 @@ public abstract class DemoHelpers {
                 logger.error("IO Error");
         }
     }
-
 }

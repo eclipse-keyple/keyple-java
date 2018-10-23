@@ -8,19 +8,18 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  */
-package org.eclipse.keyple.example.common.calypso;
+package org.eclipse.keyple.example.common.calypso.transaction;
 
-import static org.eclipse.keyple.example.common.calypso.CalypsoBasicInfo.*;
+import static org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo.*;
 import java.util.EnumMap;
-import java.util.Iterator;
-import java.util.List;
 import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPO;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.example.common.generic.DemoHelpers;
+import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
+import org.eclipse.keyple.example.common.generic.AbstractTransactionEngine;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
@@ -37,15 +36,15 @@ import org.slf4j.profiler.Profiler;
  *
  * <ol>
  * <li>Setting up a two-reader configuration and adding an observer method ({@link #update update})
- * <li>Starting a card operation when a PO presence is notified ({@link #operatePoTransactions
- * operatePoTransactions})
+ * <li>Starting a card operation when a PO presence is notified ({@link #operateSeTransaction
+ * operateSeTransaction})
  * <li>Opening a logical channel with the SAM (C1 SAM is expected) see
- * ({@link CalypsoBasicInfo#SAM_C1_ATR_REGEX SAM_C1_ATR_REGEX})
+ * ({@link CalypsoClassicInfo#SAM_C1_ATR_REGEX SAM_C1_ATR_REGEX})
  * <li>Attempting to open a logical channel with the PO with 3 options:
  * <ul>
- * <li>Selection with a fake AID (1)
- * <li>Selection with a Navigo AID
- * <li>Selection with a fake AID (2)
+ * <li>Selecting with a fake AID (1)
+ * <li>Selecting with the Calypso AID and reading the event log file
+ * <li>Selecting with a fake AID (2)
  * </ul>
  * <li>Display SeResponse data
  * <li>If the Calypso selection succeeded, do a Calypso transaction
@@ -60,10 +59,9 @@ import org.slf4j.profiler.Profiler;
  * <p>
  * Read the doc of each methods for further details.
  */
-public class Demo_CalypsoBasicTransactionEngine extends DemoHelpers
+public class CalypsoClassicTransactionEngine extends AbstractTransactionEngine
         implements ObservableReader.ReaderObserver {
-    private static Logger logger =
-            LoggerFactory.getLogger(Demo_CalypsoBasicTransactionEngine.class);
+    private static Logger logger = LoggerFactory.getLogger(CalypsoClassicTransactionEngine.class);
 
     /* define the SAM parameters to provide when creating PoTransaction */
     private final static EnumMap<PoTransaction.SamSettings, Byte> samSetting =
@@ -85,7 +83,7 @@ public class Demo_CalypsoBasicTransactionEngine extends DemoHelpers
     private boolean samChannelOpen;
 
     /* Constructor */
-    public Demo_CalypsoBasicTransactionEngine() {
+    public CalypsoClassicTransactionEngine() {
         super();
         this.samChannelOpen = false;
     }
@@ -97,16 +95,43 @@ public class Demo_CalypsoBasicTransactionEngine extends DemoHelpers
     }
 
     /**
-     * Do an Calypso transaction:
+     * Do a Calypso transaction
+     * <p>
+     * Nominal case (the previous transaction was ratified):
      * <ul>
-     * <li>Process opening</li>
-     * <li>Process PO commands</li>
-     * <li>Process closing</li>
+     * <li>Process opening
+     * <ul>
+     * <li>Reading the event log file</li>
+     * <li>Reading the contract list</li>
+     * </ul>
+     * </li>
+     * <li>Process PO commands
+     * <ul>
+     * <li>Reading the 4 contracts</li>
+     * </ul>
+     * </li>
+     * <li>Process closing
+     * <ul>
+     * <li>A new record is appended to the event log file</li>
+     * <li>The session is closed in CONTACTLESS_MODE (a ratification command is sent)</li>
+     * </ul>
+     * </li>
      * </ul>
      * <p>
-     * File with SFI 1A is read on session opening.
-     * <p>
-     * T2 Environment and T2 Usage are read in session.
+     * Alternative case (the previous transaction was not ratified):
+     * <ul>
+     * <li>Process opening
+     * <ul>
+     * <li>Reading the event log file</li>
+     * <li>Reading the contract list</li>
+     * </ul>
+     * </li>
+     * <li>Process closing
+     * <ul>
+     * <li>The session is closed in CONTACTLESS_MODE (a ratification command is sent)</li>
+     * </ul>
+     * </li>
+     * </ul>
      * <p>
      * The PO logical channel is kept open or closed according to the closeSeChannel flag
      *
@@ -253,12 +278,12 @@ public class Demo_CalypsoBasicTransactionEngine extends DemoHelpers
     /**
      * Do the PO selection and possibly go on with Calypso transactions.
      */
-    public void operatePoTransactions() {
+    public void operateSeTransaction() {
         try {
             /* first time: check SAM */
             if (!this.samChannelOpen) {
                 /* the following method will throw an exception if the SAM is not available. */
-                checkSamAndOpenChannel(samReader);
+                SamManagement.checkSamAndOpenChannel(samReader);
                 this.samChannelOpen = true;
             }
 
@@ -277,9 +302,9 @@ public class Demo_CalypsoBasicTransactionEngine extends DemoHelpers
              * Add selection case 1: Fake AID1, protocol ISO, target rev 3
              */
 
-            seSelection.addSelector(new PoSelector(ByteArrayUtils.fromHex(poFakeAid1), true,
-                    ContactlessProtocols.PROTOCOL_ISO14443_4,
-                    PoSelector.RevisionTarget.TARGET_REV3));
+            seSelection.prepareSelector(new PoSelector(ByteArrayUtils.fromHex(poFakeAid1), true,
+                    ContactlessProtocols.PROTOCOL_ISO14443_4, PoSelector.RevisionTarget.TARGET_REV3,
+                    "Selector with fake AID1"));
 
             /*
              * Add selection case 2: Calypso application, protocol ISO, target rev 2 or 3
@@ -287,22 +312,22 @@ public class Demo_CalypsoBasicTransactionEngine extends DemoHelpers
              * addition of read commands to execute following the selection
              */
             PoSelector poSelectorCalypsoAid =
-                    new PoSelector(ByteArrayUtils.fromHex(CalypsoBasicInfo.AID), true,
+                    new PoSelector(ByteArrayUtils.fromHex(CalypsoClassicInfo.AID), true,
                             ContactlessProtocols.PROTOCOL_ISO14443_4,
-                            PoSelector.RevisionTarget.TARGET_REV2_REV3);
+                            PoSelector.RevisionTarget.TARGET_REV2_REV3, "Calypso selector");
 
             poSelectorCalypsoAid.prepareReadRecordsCmd(SFI_EventLog, RECORD_NUMBER_1, true,
                     (byte) 0x00, "EventLog (selection step)");
 
-            seSelection.addSelector(poSelectorCalypsoAid);
+            seSelection.prepareSelector(poSelectorCalypsoAid);
 
             /*
              * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
              */
 
-            seSelection.addSelector(new PoSelector(ByteArrayUtils.fromHex(poFakeAid2), true,
+            seSelection.prepareSelector(new PoSelector(ByteArrayUtils.fromHex(poFakeAid2), true,
                     ContactlessProtocols.PROTOCOL_ISO14443_4,
-                    PoSelector.RevisionTarget.TARGET_REV2_REV3));
+                    PoSelector.RevisionTarget.TARGET_REV2_REV3, "Selector with fake AID2"));
 
             /* Time measurement */
             profiler.start("Initial selection");
@@ -310,45 +335,19 @@ public class Demo_CalypsoBasicTransactionEngine extends DemoHelpers
             /*
              * Execute the selection process
              */
-            List<SeResponse> seResponses = seSelection.processSelection().getResponses();
-
-            int responseIndex = 0;
-
-            /*
-             * we expect up to 3 responses, only one should be not null since the selection process
-             * stops at the first successful selection
-             *
-             * TODO improve the response analysis
-             */
-            if (logger.isInfoEnabled()) {
-                for (Iterator<SeResponse> seRespIterator = seResponses.iterator(); seRespIterator
-                        .hasNext();) {
-                    SeResponse seResponse = seRespIterator.next();
-                    if (seResponse != null) {
-                        logger.info("Selection case #{}, RESPONSE = {}", responseIndex,
-                                seResponse.getApduResponses());
-                    }
-                    responseIndex++;
-                }
-            }
-
-            /*
-             * If the Calypso selection succeeded we should have 2 responses and the 2nd one not
-             * null
-             */
-            if (seResponses.size() == 2 && seResponses.get(1) != null) {
+            if (seSelection.processSelection()) {
+                int responseIndex = 0;
 
                 profiler.start("Calypso1");
 
                 PoTransaction poTransaction = new PoTransaction(poReader,
-                        new CalypsoPO(seResponses.get(1)), samReader, samSetting);
+                        (CalypsoPo) seSelection.getSelectedSe(), samReader, samSetting);
 
                 doCalypsoReadWriteTransaction(poTransaction, true);
 
             } else {
-                logger.error("No Calypso transaction. SeResponse to Calypso selection was null.");
+                logger.info("No matching PO were found.");
             }
-
             profiler.stop();
             logger.warn(System.getProperty("line.separator") + "{}", profiler);
         } catch (Exception e) {

@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  */
-package org.eclipse.keyple.example.common.calypso;
+package org.eclipse.keyple.example.common.calypso.postructure;
 
 
 
@@ -27,7 +27,7 @@ package org.eclipse.keyple.example.common.calypso;
  * </li>
  * </ul>
  */
-public class CalypsoBasicInfo {
+public class CalypsoClassicInfo {
     /** Calypso default AID */
     public final static String AID = "A0000004040125090101";
     /// ** 1TIC.ICA AID */

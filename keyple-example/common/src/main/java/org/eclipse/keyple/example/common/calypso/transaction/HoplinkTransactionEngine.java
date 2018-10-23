@@ -8,15 +8,16 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  */
-package org.eclipse.keyple.example.common.calypso;
+package org.eclipse.keyple.example.common.calypso.transaction;
 
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPO;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.example.common.generic.DemoHelpers;
+import org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo;
+import org.eclipse.keyple.example.common.generic.AbstractTransactionEngine;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
@@ -32,10 +33,11 @@ import org.slf4j.profiler.Profiler;
  *
  * <ol>
  * <li>Setting up a two-reader configuration and adding an observer method ({@link #update update})
- * <li>Starting a card operation when a PO presence is notified ({@link #operatePoTransactions
- * operatePoTransactions})
+ * <li>Starting a card operation when a PO presence is notified ({@link #operateSeTransaction
+ * operateSeTransaction})
  * <li>Opening a logical channel with the SAM (C1 SAM is expected) see
- * ({@link HoplinkInfo#SAM_C1_ATR_REGEX SAM_C1_ATR_REGEX})
+ * ({@link org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo#SAM_C1_ATR_REGEX
+ * SAM_C1_ATR_REGEX})
  * <li>Attempting to open a logical channel with the PO with 3 options:
  * <ul>
  * <li>Selection with a fake AID
@@ -54,10 +56,9 @@ import org.slf4j.profiler.Profiler;
  * <p>
  * Read the doc of each methods for further details.
  */
-public class Demo_HoplinkTransactionEngine extends DemoHelpers
+public class HoplinkTransactionEngine extends AbstractTransactionEngine
         implements ObservableReader.ReaderObserver {
-    private final static Logger logger =
-            LoggerFactory.getLogger(Demo_HoplinkTransactionEngine.class);
+    private final static Logger logger = LoggerFactory.getLogger(HoplinkTransactionEngine.class);
 
     /* define the SAM parameters to provide when creating PoTransaction */
     private final static EnumMap<PoTransaction.SamSettings, Byte> samSetting =
@@ -82,7 +83,7 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
     private boolean samChannelOpen;
 
     /* Constructor */
-    public Demo_HoplinkTransactionEngine() {
+    public HoplinkTransactionEngine() {
         super();
         this.samChannelOpen = false;
     }
@@ -94,7 +95,7 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
     }
 
     /**
-     * Do an Hoplink transaction:
+     * Do a Hoplink transaction:
      * <ul>
      * <li>Process opening</li>
      * <li>Process PO commands</li>
@@ -129,8 +130,9 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
          * file (read twice in this demo!)
          */
         poProcessStatus = poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
-                PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, HoplinkInfo.SFI_T2Environment,
-                HoplinkInfo.RECORD_NUMBER_1);
+                PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT,
+                org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.SFI_T2Environment,
+                org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.RECORD_NUMBER_1);
 
         if (!poTransaction.wasRatified()) {
             logger.info("### Previous Secure Session was not ratified. ###");
@@ -141,16 +143,20 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
                     "========= PO Hoplink session ======= Processing of PO commands =======================");
         }
         /* prepare T2 Environment read record */
-        ReadRecordsRespPars readT2EnvironmentParser =
-                poTransaction.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Environment,
-                        ReadDataStructure.SINGLE_RECORD_DATA, HoplinkInfo.RECORD_NUMBER_1,
-                        (byte) 0x00, HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
+        ReadRecordsRespPars readT2EnvironmentParser = poTransaction.prepareReadRecordsCmd(
+                org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.SFI_T2Environment,
+                ReadDataStructure.SINGLE_RECORD_DATA,
+                org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.RECORD_NUMBER_1,
+                (byte) 0x00,
+                org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
 
         /* prepare T2 Usage read record */
-        ReadRecordsRespPars readT2UsageParser =
-                poTransaction.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Usage,
-                        ReadDataStructure.SINGLE_RECORD_DATA, HoplinkInfo.RECORD_NUMBER_1,
-                        (byte) 0x00, HoplinkInfo.EXTRAINFO_ReadRecord_T2UsageRec1);
+        ReadRecordsRespPars readT2UsageParser = poTransaction.prepareReadRecordsCmd(
+                org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.SFI_T2Usage,
+                ReadDataStructure.SINGLE_RECORD_DATA,
+                org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.RECORD_NUMBER_1,
+                (byte) 0x00,
+                org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.EXTRAINFO_ReadRecord_T2UsageRec1);
 
         poProcessStatus = poTransaction.processPoCommands();
 
@@ -175,12 +181,12 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
     /**
      * Do the PO selection and possibly go on with Hoplink transactions.
      */
-    public void operatePoTransactions() {
+    public void operateSeTransaction() {
         try {
             /* first time: check SAM */
             if (!this.samChannelOpen) {
                 /* the following method will throw an exception if the SAM is not available. */
-                checkSamAndOpenChannel(samReader);
+                SamManagement.checkSamAndOpenChannel(samReader);
                 this.samChannelOpen = true;
             }
 
@@ -196,31 +202,34 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
              * Add selection case 1: Fake AID1, protocol ISO, target rev 3
              */
 
-            seSelection.addSelector(new PoSelector(ByteArrayUtils.fromHex("AABBCCDDEE"), true,
-                    ContactlessProtocols.PROTOCOL_ISO14443_4,
-                    PoSelector.RevisionTarget.TARGET_REV3));
+            seSelection.prepareSelector(new PoSelector(ByteArrayUtils.fromHex("AABBCCDDEE"), true,
+                    ContactlessProtocols.PROTOCOL_ISO14443_4, PoSelector.RevisionTarget.TARGET_REV3,
+                    "Selector with fake AID1"));
             /*
              * Add selection case 2: Hoplink application, protocol ISO, target rev 3
              *
              * addition of read commands to execute following the selection
              */
-            PoSelector poSelectorHoplink = new PoSelector(ByteArrayUtils.fromHex(HoplinkInfo.AID),
+            PoSelector poSelectorHoplink = new PoSelector(
+                    ByteArrayUtils.fromHex(
+                            org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.AID),
                     true, ContactlessProtocols.PROTOCOL_ISO14443_4,
-                    PoSelector.RevisionTarget.TARGET_REV3);
+                    PoSelector.RevisionTarget.TARGET_REV3, "Hoplink selector");
 
-            poSelectorHoplink.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Environment,
-                    HoplinkInfo.RECORD_NUMBER_1, true, (byte) 0x00,
-                    HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
+            poSelectorHoplink.prepareReadRecordsCmd(
+                    org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.SFI_T2Environment,
+                    org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.RECORD_NUMBER_1,
+                    true, (byte) 0x00, HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
 
-            seSelection.addSelector(poSelectorHoplink);
+            seSelection.prepareSelector(poSelectorHoplink);
 
             /*
              * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
              */
 
-            seSelection.addSelector(new PoSelector(ByteArrayUtils.fromHex("EEDDCCBBAA"), true,
+            seSelection.prepareSelector(new PoSelector(ByteArrayUtils.fromHex("EEDDCCBBAA"), true,
                     ContactlessProtocols.PROTOCOL_ISO14443_4,
-                    PoSelector.RevisionTarget.TARGET_REV2_REV3));
+                    PoSelector.RevisionTarget.TARGET_REV2_REV3, "Selector with fake AID2"));
 
             /* Time measurement */
             profiler.start("Initial selection");
@@ -228,42 +237,25 @@ public class Demo_HoplinkTransactionEngine extends DemoHelpers
             /*
              * Execute the selection process
              */
-            List<SeResponse> seResponses = seSelection.processSelection().getResponses();
+            if (seSelection.processSelection()) {
+                int responseIndex = 0;
 
-            int responseIndex = 0;
-            /*
-             * we expect up to 3 responses, only one should be not null since the selection process
-             * stops at the first successful selection
-             */
-            if (logger.isInfoEnabled()) {
-                for (Iterator<SeResponse> seRespIterator = seResponses.iterator(); seRespIterator
-                        .hasNext();) {
-                    SeResponse seResponse = seRespIterator.next();
-                    if (seResponse != null) {
-                        logger.info("Selection case #{}, RESPONSE = {}", responseIndex,
-                                seResponse.getApduResponses());
-                    }
-                    responseIndex++;
-                }
-            }
-
-            /*
-             * If the Hoplink selection succeeded we should have 2 responses and the 2nd one not
-             * null
-             */
-            if (seResponses.size() == 2 && seResponses.get(1) != null) {
+                /*
+                 * If the Hoplink selection succeeded we should have 2 responses and the 2nd one not
+                 * null
+                 */
                 PoTransaction poTransaction = new PoTransaction(poReader,
-                        new CalypsoPO(seResponses.get(1)), samReader, samSetting);
+                        (CalypsoPo) seSelection.getSelectedSe(), samReader, samSetting);
                 profiler.start("Hoplink1");
                 doHoplinkReadWriteTransaction(poTransaction, true);
             } else {
                 logger.error("No Hoplink transaction. SeResponse to Hoplink selection was null.");
             }
-
-            profiler.stop();
-            logger.warn(System.getProperty("line.separator") + "{}", profiler);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (KeypleReaderException ex) {
+            logger.error("Selection exception: {}", ex.getMessage());
         }
+
+        profiler.stop();
+        logger.warn(System.getProperty("line.separator") + "{}", profiler);
     }
 }

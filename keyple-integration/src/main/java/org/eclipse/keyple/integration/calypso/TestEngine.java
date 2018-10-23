@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
+import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -24,6 +25,7 @@ import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
+import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.util.ByteArrayUtils;
 
 public class TestEngine {
@@ -48,36 +50,25 @@ public class TestEngine {
             throw new IllegalStateException("SAM channel opening failure");
         }
 
-        // Create a SeRequest list
-        Set<SeRequest> selectionRequests = new LinkedHashSet<SeRequest>();
+        SeSelection seSelection = new SeSelection(poReader);
 
         // Add Audit C0 AID to the list
-        SeRequest seRequest = new SeRequest(
-                new SeRequest.AidSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.poAuditC0Aid)),
-                null, false);
-        selectionRequests.add(seRequest);
+        seSelection.prepareSelector(
+                new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.poAuditC0Aid), true, null,
+                        PoSelector.RevisionTarget.TARGET_REV3, "Audit C0"));
 
         // Add CLAP AID to the list
-        seRequest = new SeRequest(
-                new SeRequest.AidSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.clapAid)),
-                null, false);
-        selectionRequests.add(seRequest);
+        seSelection
+                .prepareSelector(new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.clapAid),
+                        true, null, PoSelector.RevisionTarget.TARGET_REV3, "CLAP"));
 
         // Add cdLight AID to the list
-        seRequest = new SeRequest(
-                new SeRequest.AidSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.cdLightAid)),
-                null, false);
-        selectionRequests.add(seRequest);
+        seSelection.prepareSelector(
+                new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.cdLightAid), true, null,
+                        PoSelector.RevisionTarget.TARGET_REV2_REV3, "CDLight"));
 
-        List<SeResponse> responses =
-                poReader.transmit(new SeRequestSet(selectionRequests)).getResponses();
-
-        for (int i = 0; i < responses.size(); i++) {
-
-            if (responses.get(i) != null) {
-
-                return new PoFileStructureInfo(responses.get(i));
-            }
+        if (seSelection.processSelection()) {
+            return new PoFileStructureInfo(seSelection.getSelectedSe());
         }
 
         throw new IllegalArgumentException("No recognizable PO detected.");
