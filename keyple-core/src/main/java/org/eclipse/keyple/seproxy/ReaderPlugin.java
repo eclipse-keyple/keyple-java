@@ -22,13 +22,6 @@ import org.eclipse.keyple.util.NameableConfigurable;
 public interface ReaderPlugin extends NameableConfigurable, Comparable<ReaderPlugin> {
 
     /**
-     * Gets the name.
-     *
-     * @return the ‘unique’ name of the readers’ plugin.
-     */
-    String getName();
-
-    /**
      * Gets the readers.
      *
      * @return the ‘unique’ name of the readers’ plugin.
