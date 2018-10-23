@@ -48,7 +48,7 @@ public class SeSelection {
      * @param seSelector the selector to prepare
      * @return a MatchingSe for further information request about this selector
      */
-    public MatchingSe prepareSelector(SeSelector seSelector) {
+    public final MatchingSe prepareSelector(SeSelector seSelector) {
         if (logger.isTraceEnabled()) {
             logger.trace("SELECTORREQUEST = {}, EXTRAINFO = {}", seSelector.getSelectorRequest(),
                     seSelector.getExtraInfo());
@@ -93,7 +93,7 @@ public class SeSelection {
      * @return boolean true or false
      * @throws KeypleReaderException if the requests transmission failed
      */
-    public boolean processSelection() throws KeypleReaderException {
+    public final boolean processSelection() throws KeypleReaderException {
         boolean selectionSuccessful = false;
         if (logger.isTraceEnabled()) {
             logger.trace("Transmit SELECTIONREQUEST ({} request(s))", selectionRequestSet.size());
@@ -137,7 +137,7 @@ public class SeSelection {
      * 
      * @return a {@link MatchingSe} or null
      */
-    public MatchingSe getSelectedSe() {
+    public final MatchingSe getSelectedSe() {
         return selectedSe;
     }
 
@@ -147,7 +147,7 @@ public class SeSelection {
      * 
      * @return a list of {@link MatchingSe}
      */
-    public List<MatchingSe> getMatchingSeList() {
+    public final List<MatchingSe> getMatchingSeList() {
         return matchingSeList;
     }
 }
