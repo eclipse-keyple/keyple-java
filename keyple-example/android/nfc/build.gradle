@@ -21,7 +21,7 @@ pmd {
 }
 
 project.group 'org.eclipse.keyple'
-project.version = '0.10.0-SNAPSHOT'
+project.version = '1.0.0-RC1'
 
 
 android {
