@@ -118,7 +118,7 @@ public class CalypsoClassicTransactionEngine extends AbstractTransactionEngine
      * </li>
      * </ul>
      * <p>
-     * Alternative case (the previous transaction was not ratified):
+     * Alternate case (the previous transaction was not ratified):
      * <ul>
      * <li>Process opening
      * <ul>

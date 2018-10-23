@@ -22,7 +22,7 @@ import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 public interface NameableConfigurable {
     /**
      *
-     * @return the name of the item
+     * @return the ‘unique’ name of the item
      */
     String getName();
 

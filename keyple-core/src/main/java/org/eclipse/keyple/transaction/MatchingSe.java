@@ -46,7 +46,7 @@ public class MatchingSe {
      * 
      * @return the selection SeResponse
      */
-    public SeResponse getSelectionSeResponse() {
+    public final SeResponse getSelectionSeResponse() {
         return selectionSeResponse;
     }
 
@@ -54,11 +54,12 @@ public class MatchingSe {
      * Indicates whether the current SE is eligible to application selection in preparation for a
      * transaction.
      * <p>
-     * The SE will be eligible only if the logical channel is kept open after the selection process.
+     * The SE will only be eligible if the logical channel is required to be kept open after the
+     * selection process.
      * 
      * @return true or false
      */
-    public boolean isSelectable() {
+    protected final boolean isSelectable() {
         return channelIsKeptOpen;
     }
 
@@ -68,7 +69,7 @@ public class MatchingSe {
      * 
      * @return true or false
      */
-    public boolean isSelected() {
+    public final boolean isSelected() {
         return channelIsKeptOpen && selectionSeResponse != null;
     }
 
@@ -77,7 +78,7 @@ public class MatchingSe {
      * 
      * @return a string
      */
-    public String getExtraInfo() {
+    public final String getExtraInfo() {
         return extraInfo;
     }
 }

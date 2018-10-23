@@ -131,7 +131,7 @@ public final class SeRequest implements Serializable {
      * List of status codes in response to the select application command that should be considered
      * successful although they are different from 9000
      */
-    private Set<Short> successfulSelectionStatusCodes = new LinkedHashSet<Short>();
+    private Set<Integer> successfulSelectionStatusCodes = new LinkedHashSet<Integer>();
 
     /**
      * contains a group of APDUCommand to operate on the selected SE application by the SE reader.
@@ -173,7 +173,7 @@ public final class SeRequest implements Serializable {
      *        application command
      */
     public SeRequest(Selector selector, List<ApduRequest> apduRequests, boolean keepChannelOpen,
-            SeProtocol protocolFlag, Set<Short> successfulSelectionStatusCodes) {
+            SeProtocol protocolFlag, Set<Integer> successfulSelectionStatusCodes) {
         this.selector = selector;
         this.apduRequests = apduRequests;
         this.keepChannelOpen = keepChannelOpen;
@@ -207,7 +207,7 @@ public final class SeRequest implements Serializable {
      *
      */
     public SeRequest(Selector selector, List<ApduRequest> apduRequests, boolean keepChannelOpen,
-            Set<Short> successfulSelectionStatusCodes) {
+            Set<Integer> successfulSelectionStatusCodes) {
         this(selector, apduRequests, keepChannelOpen, null, successfulSelectionStatusCodes);
     }
 
@@ -266,7 +266,7 @@ public final class SeRequest implements Serializable {
      * 
      * @return the list of status codes
      */
-    public Set<Short> getSuccessfulSelectionStatusCodes() {
+    public Set<Integer> getSuccessfulSelectionStatusCodes() {
         return successfulSelectionStatusCodes;
     }
 

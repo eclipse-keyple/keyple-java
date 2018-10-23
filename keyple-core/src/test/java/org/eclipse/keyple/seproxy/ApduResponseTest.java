@@ -123,9 +123,9 @@ public class ApduResponseTest {
      */
 
 
-    public static Set<Short> getA9005CustomCode() {
-        Set<Short> successfulStatusCodes = new HashSet<Short>();
-        successfulStatusCodes.add((short) 0x9005);
+    public static Set<Integer> getA9005CustomCode() {
+        Set<Integer> successfulStatusCodes = new HashSet<Integer>();
+        successfulStatusCodes.add(0x9005);
         return successfulStatusCodes;
     }
 

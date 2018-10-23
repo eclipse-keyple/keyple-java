@@ -129,6 +129,6 @@ public abstract class AbstractIso7816CommandBuilder extends AbstractApduCommandB
             case4 = false;
         }
 
-        return new ApduRequest(apdu, case4).setName(command.getName());
+        return new ApduRequest(command.getName(), apdu, case4);
     }
 }

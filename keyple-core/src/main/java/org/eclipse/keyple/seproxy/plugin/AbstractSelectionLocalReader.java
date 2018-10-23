@@ -71,7 +71,7 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
      * @throws KeypleApplicationSelectionException - if the application selection is not successful
      */
     protected final byte[][] openLogicalChannelAndSelect(SeRequest.Selector selector,
-            Set<Short> successfulSelectionStatusCodes) throws KeypleChannelStateException,
+            Set<Integer> successfulSelectionStatusCodes) throws KeypleChannelStateException,
             KeypleApplicationSelectionException, KeypleIOReaderException {
         byte[][] atrAndFci = new byte[2][];
 
@@ -122,9 +122,9 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
                      * codes list for this command is provided
                      */
                     ApduResponse fciResponse =
-                            processApduRequest(new ApduRequest(selectApplicationCommand, true,
-                                    successfulSelectionStatusCodes)
-                                            .setName("Intrinsic Select Application"));
+                            processApduRequest(new ApduRequest("Intrinsic Select Application",
+                                    selectApplicationCommand, true,
+                                    successfulSelectionStatusCodes));
 
                     /* add FCI */
                     atrAndFci[1] = fciResponse.getBytes();
