@@ -17,9 +17,9 @@ build.dependsOn ":keyple-plugin:keyple-plugin-pcsc:build" // build and install k
 
 dependencies {
 
-    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'
-    implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
-    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc', version: '0.+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '1.+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc', version: '1.+'
 
     implementation project(':keyple-example:keyple-example-pc')
 

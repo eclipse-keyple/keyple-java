@@ -37,14 +37,14 @@ dependencies {
     //imports keyple example common projects and its dependencies
     implementation project(':keyple-example:keyple-example-common')
 
-    //use keyple library : keyple calypso
-    implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
+    //use keyple library : calypso
+    implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.+'
 
-    //use keyple library : keyple plugin stub
-    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-stub', version: '0.+'
+    //use keyple library : plugin stub
+    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-stub', version: '1.+'
 
-    //use keyple library : keyple plugin stub
-    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc', version: '0.+'
+    //use keyple library : plugin pcsc
+    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc', version: '1.+'
 
     //https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
