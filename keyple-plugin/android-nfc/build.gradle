@@ -118,6 +118,7 @@ repositories {
     mavenCentral()
     google()
     jcenter()
+}
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -149,7 +150,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.powermock:powermock-api-mockito:1.6.6'
     testCompile 'org.powermock:powermock-module-junit4:1.6.6'
-
     /**End of power mock **/
 
 }
