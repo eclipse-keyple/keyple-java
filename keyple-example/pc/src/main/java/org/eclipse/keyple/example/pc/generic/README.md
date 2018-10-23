@@ -5,7 +5,8 @@
 
 - Resources common to all Keyple Calypso demonstration examples
 
-      `org.eclipse.keyple.example.common.calypso`
+      `org.eclipse.keyple.example.common.calypso.transaction`
+      `org.eclipse.keyple.example.common.calypso.postructure`
 - PC platform launchers
 
       `org.eclipse.keyple.example.pc.calypso`
@@ -18,8 +19,8 @@
 * Four launchers working out of the box on a PC platform
 
   * Basic Calypso Transaction (use of PoSecure session) 
-    * Real mode with PC/SC readers (Calypso Secure Elements required [PO and SAM]) [`Demo_CalypsoBasic_Pcsc.java`]
-    * Simulation mode (virtual Secure Elements included) [`Demo_CalypsoBasic_Stub.java`]
+    * Real mode with PC/SC readers (Calypso Secure Elements required [PO and SAM]) [`Demo_CalypsoClassic_Pcsc.java`]
+    * Simulation mode (virtual Secure Elements included) [`Demo_CalypsoClassic_Stub.java`]
   * Basic Hoplink Transaction (use of PoSecure session) 
     * Real mode with PC/SC readers (Hoplink Secure Elements required [PO and SAM]) [`Demo_Hoplink_Pcsc.java`]
     * Simulation mode (virtual Secure Elements included) [`Demo_Hoplink_Stub.java`]
