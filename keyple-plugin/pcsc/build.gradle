@@ -6,7 +6,7 @@ apply plugin: 'java'
 
 sourceCompatibility = 1.6
 
-project.version = '0.10.0-SNAPSHOT'
+project.version = '1.0.0-RC1'
 
 apply plugin: 'java-library'
 
@@ -36,8 +36,8 @@ build.finalizedBy publishToMavenLocal
 
 dependencies {
 
-    //use keyple library : keyple core
-    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'
+    //use keyple library : core
+    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '1.+'
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     api group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'

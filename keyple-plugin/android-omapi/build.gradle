@@ -1,9 +1,8 @@
-
 buildscript {
     repositories {
         mavenCentral()
-        jcenter()
         google()
+        jcenter()
 
     }
     dependencies {
@@ -15,7 +14,7 @@ buildscript {
 
 
 group 'org.eclipse.keyple'
-project.version = '0.10.0-SNAPSHOT'
+project.version = '1.0.0-RC1'
 
 apply plugin: 'pmd'
 apply plugin: 'com.android.library'
@@ -118,8 +117,8 @@ publishing {
 repositories {
     mavenLocal()
     mavenCentral()
-    jcenter()
     google()
+    jcenter()
 }
 
 dependencies {
@@ -131,7 +130,7 @@ dependencies {
 
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 
-    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '1.+'
 
     compileOnly files('libs/org.simalliance.openmobileapi.jar')
     /*
@@ -143,7 +142,7 @@ dependencies {
 
 
     /** Test **/
-    testImplementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
+    testImplementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.+'
     testImplementation files('libs/org.simalliance.openmobileapi.jar')
 
     /**Power mock**/
