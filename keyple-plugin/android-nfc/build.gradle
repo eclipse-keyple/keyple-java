@@ -117,7 +117,7 @@ repositories {
     mavenLocal()
     mavenCentral()
     google()
-}
+    jcenter()
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
