@@ -20,7 +20,7 @@ import org.eclipse.keyple.util.ByteArrayUtils;
 /**
  * This class provides the dedicated constructor to build the Close Secure Session APDU command.
  */
-public class CloseSessionCmdBuild extends PoCommandBuilder {
+public final class CloseSessionCmdBuild extends PoCommandBuilder {
 
     /** The command. */
     private final static CalypsoPoCommands command = CalypsoPoCommands.CLOSE_SESSION;

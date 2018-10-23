@@ -21,7 +21,7 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
  * and thus make calculation of the digest impossible.
  *
  */
-public class GetDataFciCmdBuild extends PoCommandBuilder {
+public final class GetDataFciCmdBuild extends PoCommandBuilder {
 
     private static final CalypsoPoCommands command = CalypsoPoCommands.GET_DATA_FCI;
 

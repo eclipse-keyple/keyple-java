@@ -19,7 +19,7 @@ import org.eclipse.keyple.calypso.command.po.*;
  * Record APDU command.
  *
  */
-public class UpdateRecordCmdBuild extends PoCommandBuilder
+public final class UpdateRecordCmdBuild extends PoCommandBuilder
         implements PoSendableInSession, PoModificationCommand {
 
     /** The command. */
