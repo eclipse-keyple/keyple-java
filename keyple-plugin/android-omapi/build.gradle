@@ -1,9 +1,8 @@
-
 buildscript {
     repositories {
         mavenCentral()
-        jcenter()
         google()
+        jcenter()
 
     }
     dependencies {
@@ -118,8 +117,8 @@ publishing {
 repositories {
     mavenLocal()
     mavenCentral()
-    jcenter()
     google()
+    jcenter()
 }
 
 dependencies {
