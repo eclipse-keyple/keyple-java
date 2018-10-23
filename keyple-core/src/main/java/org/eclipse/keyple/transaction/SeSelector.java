@@ -173,10 +173,13 @@ public class SeSelector {
      * The matchingClass is the MatchingSe class or one of its extensions
      * <p>
      * It is used in SeSelection to determine what kind of MatchingSe is to be instantiated.
+     *
+     * This method must be called in the classes that extend SeSelector in order to specify the
+     * expected class derived from MatchingSe in return to the selection process.
      * 
      * @param matchingClass the expected class for this SeSelector
      */
-    public final void setMatchingClass(Class<? extends MatchingSe> matchingClass) {
+    protected final void setMatchingClass(Class<? extends MatchingSe> matchingClass) {
         this.matchingClass = matchingClass;
     }
 
@@ -185,10 +188,13 @@ public class SeSelector {
      * <p>
      * It is used in SeSelection to determine what kind of SeSelector is to be used as argument to
      * the matchingClass constructor.
+     *
+     * This method must be called in the classes that extend SeSelector in order to specify the
+     * expected class derived from SeSelector used as an argument to derived form of MatchingSe.
      * 
      * @param selectorClass the argument for the constructor of the matchingClass
      */
-    public final void setSelectorClass(Class<? extends SeSelector> selectorClass) {
+    protected final void setSelectorClass(Class<? extends SeSelector> selectorClass) {
         this.selectorClass = selectorClass;
     }
 
@@ -197,7 +203,7 @@ public class SeSelector {
      * 
      * @return the current matchingClass
      */
-    public final Class<? extends MatchingSe> getMatchingClass() {
+    protected final Class<? extends MatchingSe> getMatchingClass() {
         return matchingClass;
     }
 
@@ -206,7 +212,7 @@ public class SeSelector {
      * 
      * @return the current selectorClass
      */
-    public final Class<? extends SeSelector> getSelectorClass() {
+    protected final Class<? extends SeSelector> getSelectorClass() {
         return selectorClass;
     }
 }

@@ -17,7 +17,7 @@ import org.eclipse.keyple.command.AbstractApduResponseParser;
 /**
  * Increase (0032) response parser. See specs: Calypso / page 85 / 9.4.4 Increase
  */
-public class IncreaseRespPars extends AbstractApduResponseParser {
+public final class IncreaseRespPars extends AbstractApduResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 

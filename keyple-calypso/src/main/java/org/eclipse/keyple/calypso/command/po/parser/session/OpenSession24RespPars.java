@@ -14,7 +14,7 @@ import java.util.Arrays;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.seproxy.ApduResponse;
 
-public class OpenSession24RespPars extends AbstractOpenSessionRespPars {
+public final class OpenSession24RespPars extends AbstractOpenSessionRespPars {
 
     public OpenSession24RespPars(ApduResponse response) {
         super(response, PoRevision.REV2_4);

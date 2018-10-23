@@ -17,7 +17,7 @@ import org.eclipse.keyple.command.AbstractApduResponseParser;
 /**
  * Update Record response parser. See specs: Calypso / page 96 / 9.4.11 - Update Record
  */
-public class UpdateRecordRespPars extends AbstractApduResponseParser {
+public final class UpdateRecordRespPars extends AbstractApduResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 

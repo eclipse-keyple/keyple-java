@@ -17,7 +17,7 @@ import org.eclipse.keyple.command.AbstractApduResponseParser;
 /**
  * Decrease (0030) response parser. See specs: Calypso / page 83 / 9.4.2 Decrease
  */
-public class DecreaseRespPars extends AbstractApduResponseParser {
+public final class DecreaseRespPars extends AbstractApduResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
