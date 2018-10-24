@@ -108,8 +108,8 @@ public final class SeResponse implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("SeResponse:{RESPONSES = %s, ATR = %s, FCI =%s, CHANNELWASOPEN = %s}",
-                getApduResponses(), ByteArrayUtils.toHex(getAtr().getBytes()), getFci(),
+        return String.format("SeResponse:{RESPONSES = %s, ATR = %s, FCI = %s, CHANNELWASOPEN = %s}",
+                getApduResponses(), getAtr() == null ? "null" : ByteArrayUtils.toHex(getAtr().getBytes()), getFci(),
                 wasChannelPreviouslyOpen());
     }
 
