@@ -47,6 +47,7 @@ public final class CalypsoPo extends MatchingSe {
      * characteristics of the PO required to process it correctly.
      * 
      * @param selectionResponse the received response to the selection request
+     * TODO the parsing of the FCI should be done using a true BER-TLV library
      */
     @Override
     public void setSelectionResponse(SeResponse selectionResponse) {
@@ -84,7 +85,12 @@ public final class CalypsoPo extends MatchingSe {
 
             this.applicationSerialNumber = poFciRespPars.getApplicationSerialNumber();
 
-            this.modificationsCounterMax = poFciRespPars.getBufferSizeValue();
+            // TODO review this to take into consideration the type and subtype
+            if(this.revision == PoRevision.REV2_4) {
+                this.modificationsCounterMax = 6;
+            } else {
+                this.modificationsCounterMax = poFciRespPars.getBufferSizeValue();
+            }
         } else {
             /*
              * FCI is not provided: we consider it is Calypso PO rev 1, it's serial number is
@@ -101,6 +107,7 @@ public final class CalypsoPo extends MatchingSe {
             this.revision = PoRevision.REV1_0;
             this.dfName = null;
             this.applicationSerialNumber = new byte[8];
+            this.modificationsCounterMax = 3;
             /*
              * the array is initialized with 0 (cf. default value for primitive types)
              */
@@ -108,7 +115,7 @@ public final class CalypsoPo extends MatchingSe {
         }
         if (logger.isTraceEnabled()) {
             logger.trace("REVISION = {}, SERIALNUMBER = {}, DFNAME = {}", this.revision,
-                    this.applicationSerialNumber, this.dfName);
+                    ByteArrayUtils.toHex(this.applicationSerialNumber), ByteArrayUtils.toHex(this.dfName));
         }
     }
 
