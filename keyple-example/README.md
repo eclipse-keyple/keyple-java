@@ -11,14 +11,14 @@
 |`Demo_SeProtocolDetectionEngine.java`|This class provides all the mechanisms to implement to perform the protocol detection.|
 |`DemoHelpers.java`|Helper class (reader management method)|
 
-* Package `org.eclipse.keyple.example.common.calypso`
+* Package `org.eclipse.keyple.example.common.calypso.transaction` and `org.eclipse.keyple.example.common.calypso.postructure`
 
 |File|Description|
 |:---|---|
-|`CalypsoBasicInfoAndSampleCommands.java`|This class provides Calypso data elements (files definitions, commands).|
-|`Demo_CalypsoBasicTransactionEngine.java`|This class provides all the mechanisms to implement to perform a ticketing scenario with a basic Calypso Secure Session.<br>It is independent of the platform.|
-|`HoplinkInfoAndSampleCommands.java`|This class provides Hoplink data elements (files definitions, commands).|
-|`Demo_HoplinkTransactionEngine.java`|This class provides all the mechanisms to implement to perform a ticketing scenario with an Hoplink Secure Session.<br>It is independent of the platform.|
+|`CalypsoClassicInfo.java`|This class provides Calypso data elements (files definitions).|
+|`CalypsoClassicTransactionEngine.java`|This class provides all the mechanisms to implement to perform a ticketing scenario with a basic Calypso Secure Session.<br>It is independent of the platform.|
+|`HoplinkInfo.java`|This class provides Hoplink data elements (files definitions).|
+|`HoplinkTransactionEngine.java`|This class provides all the mechanisms to implement to perform a ticketing scenario with an Hoplink Secure Session.<br>It is independent of the platform.|
 
 * Package `org.eclipse.keyple.example.pc.generic`
 
@@ -47,8 +47,8 @@
 
 |File|Description|
 |:---|---|
-|`Demo_CalypsoBasic_Pcsc.java`|Contains the main class for the Calypso PC/SC demo|
-|`Demo_CalypsoBasic_Stub.java`|Contains the main class for the Calypso basic without the need of hardware readers|
+|`Demo_CalypsoClassic_Pcsc.java`|Contains the main class for the Calypso PC/SC demo|
+|`Demo_CalypsoClassic_Stub.java`|Contains the main class for the Calypso basic without the need of hardware readers|
 |`Demo_Hoplink_Pcsc.java`|Contains the main class for the Hoplink PC/SC demo|
 |`UseCase_CalypsoAuthenticationLevel3_Pcsc.java`|Contains the main class of an example of code focusing on session opening/closing|
 |`UseCase_MultipleSession_Pcsc.java`|Contains the main class of an example of code focusing on the multiple session mode (for handling large amount of data transferred to a PO)|
@@ -57,7 +57,7 @@
 
 |File|Description|
 |:---|---|
-|`StubCalypsoBasic.java`|Calypso PO stub SE (`StubSecureElement`)|
+|`StubCalypsoClassic.java`|Calypso PO stub SE (`StubSecureElement`)|
 |`StubSam.java`|Calypso SAM stub SE (`StubSecureElement`)|
 |`StubHoplink.java`|Hoplink PO stub SE (`StubSecureElement`)|
 

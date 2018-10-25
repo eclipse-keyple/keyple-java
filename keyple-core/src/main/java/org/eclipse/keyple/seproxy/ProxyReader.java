@@ -32,13 +32,6 @@ import org.eclipse.keyple.util.NameableConfigurable;
 public interface ProxyReader extends NameableConfigurable, Comparable<ProxyReader> {
 
     /**
-     * Gets the name.
-     *
-     * @return returns the ‘unique’ name of the SE reader for the selected plugin.
-     */
-    String getName();
-
-    /**
      * Checks if is SE present.
      *
      * @return true if a Secure Element is present in the reader

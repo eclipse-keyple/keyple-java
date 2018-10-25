@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
  * The Class PoGetChallengeCmdBuild. This class provides the dedicated constructor to build the PO
  * Get Challenge.
  */
-public class PoGetChallengeCmdBuild extends PoCommandBuilder {
+public final class PoGetChallengeCmdBuild extends PoCommandBuilder {
 
     private static final CalypsoPoCommands command = CalypsoPoCommands.GET_CHALLENGE;
 

@@ -21,7 +21,7 @@ import org.eclipse.keyple.seproxy.ApduResponse;
  * Close Secure Session (008E) response parser. See specs: Calypso / page 104 / 9.5.2 - Close Secure
  * Session
  */
-public class CloseSessionRespPars extends AbstractApduResponseParser {
+public final class CloseSessionRespPars extends AbstractApduResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 

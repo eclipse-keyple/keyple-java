@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.command.po.builder.session;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 
-public class OpenSession32CmdBuild extends AbstractOpenSessionCmdBuild {
+public final class OpenSession32CmdBuild extends AbstractOpenSessionCmdBuild {
     /**
      * Instantiates a new AbstractOpenSessionCmdBuild.
      *

@@ -36,7 +36,7 @@ public class SeRequestTest {
     List<ApduRequest> apdus;
     Boolean keepChannelOpen;
     SeProtocol seProtocol;
-    Set<Short> selectionStatusCode;
+    Set<Integer> selectionStatusCode;
     SeRequest.Selector selector;
 
 
@@ -157,7 +157,7 @@ public class SeRequestTest {
         List<ApduRequest> apdus = getAapduLists();
         Boolean keepChannelOpen = true;
         SeProtocol seProtocol = getASeProtocol();
-        Set<Short> selectionStatusCode = ApduRequestTest.getASuccessFulStatusCode();
+        Set<Integer> selectionStatusCode = ApduRequestTest.getASuccessFulStatusCode();
 
         return new SeRequest(getAidSelector(), apdus, keepChannelOpen, seProtocol,
                 selectionStatusCode);

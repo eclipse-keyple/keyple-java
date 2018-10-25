@@ -1,8 +1,8 @@
 buildscript {
     repositories {
         mavenCentral()
-        jcenter()
         google()
+        jcenter()
 
     }
     dependencies {
@@ -21,7 +21,7 @@ pmd {
 }
 
 project.group 'org.eclipse.keyple'
-project.version = '0.10.0-SNAPSHOT'
+project.version = '1.0.0-RC3'
 
 
 android {
@@ -83,10 +83,10 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-    //implementation project(':keyple-calypso')
+    //use keyple library: calypso
+    implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.+'
 
-    implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
-    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-android-nfc', version: '0.+'
-    //implementation project(':keyple-plugin-android-nfc')
+    //use keyple plugin: keyple android nfc
+    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-android-nfc', version: '1.+'
 
 }

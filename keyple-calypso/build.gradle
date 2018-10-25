@@ -7,7 +7,7 @@ apply plugin: 'java-library'
 
 sourceCompatibility = 1.6
 
-project.version = '0.10.0-SNAPSHOT'
+project.version = '1.0.0-RC3'
 
 jar.dependsOn copyLICENSE, copyNOTICE
 
@@ -35,8 +35,8 @@ build.finalizedBy publishToMavenLocal //install artifact in local repo
 
 dependencies {
 
-    //use java library : keyple core
-    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'
+    //use keyple library : keyple core
+    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '1.+'
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     api group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'

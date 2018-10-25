@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Specialized selector to manage the specific characteristics of Calypso POs
  */
-public class PoSelector extends SeSelector {
+public final class PoSelector extends SeSelector {
     private static final Logger logger = LoggerFactory.getLogger(PoSelector.class);
 
     private final RevisionTarget revisionTarget;
@@ -82,7 +82,7 @@ public class PoSelector extends SeSelector {
          * with Rev2 and 3. SW=6283 in response to a selection (application invalidated) is
          * considered as successful
          */
-        selectApplicationSuccessfulStatusCodes.add((short) 0x6283);
+        selectApplicationSuccessfulStatusCodes.add(0x6283);
         logger.trace("Calypso rev {} selector, SUCCESSFULSTATUSCODES = {}", this.revisionTarget,
                 selectApplicationSuccessfulStatusCodes);
     }

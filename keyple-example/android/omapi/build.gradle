@@ -1,8 +1,8 @@
 buildscript {
     repositories {
         mavenCentral()
-        jcenter()
         google()
+        jcenter()
 
     }
     dependencies {
@@ -12,7 +12,7 @@ buildscript {
 
 
 project.group 'org.eclipse.keyple'
-project.version = '0.10.0-SNAPSHOT'
+project.version = '1.0.0-RC3'
 
 
 apply plugin: 'com.android.application'
@@ -75,8 +75,8 @@ android {
 repositories {
     mavenLocal()
     mavenCentral()
-    jcenter()
     google()
+    jcenter()
 }
 
 dependencies {
@@ -91,14 +91,15 @@ dependencies {
 
 
     //use keyple library : keyple calypso
-    implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.+'
 
-    //implementation project(path: ':keyple-plugin-android-omapi')
-    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-android-omapi', version: '0.+'
+    //use keyple plugin: keyple android omapi
+    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-android-omapi', version: '1.+'
 
     compileOnly files('libs/org.simalliance.openmobileapi.jar')
 
-    testImplementation group: 'org.eclipse.keyple', name: 'keyple-plugin-android-omapi', version: '0.+'
+    //use keyple plugin: keyple android omapi
+    testImplementation group: 'org.eclipse.keyple', name: 'keyple-plugin-android-omapi', version: '1.+'
 
 }
 

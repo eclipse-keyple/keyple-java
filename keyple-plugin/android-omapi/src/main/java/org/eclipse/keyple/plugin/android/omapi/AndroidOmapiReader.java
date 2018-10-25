@@ -85,7 +85,7 @@ public class AndroidOmapiReader extends AbstractStaticReader {
      */
     @Override
     protected byte[][] openLogicalChannelAndSelect(SeRequest.Selector selector,
-            Set<Short> successfulSelectionStatusCodes)
+            Set<Integer> successfulSelectionStatusCodes)
             throws KeypleChannelStateException, KeypleApplicationSelectionException {
         byte[][] atrAndFci = new byte[2][];
         byte[] aid = ((SeRequest.AidSelector) selector).getAidToSelect();

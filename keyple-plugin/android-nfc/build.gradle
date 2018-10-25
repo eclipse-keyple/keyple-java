@@ -1,8 +1,8 @@
 buildscript {
     repositories {
         mavenCentral()
-        jcenter()
         google()
+        jcenter()
 
     }
     dependencies {
@@ -15,7 +15,7 @@ buildscript {
 
 
 project.group 'org.eclipse.keyple'
-project.version = '0.10.0-SNAPSHOT'
+project.version = '1.0.0-RC3'
 
 apply plugin: 'pmd'
 apply plugin: 'com.android.library'
@@ -116,8 +116,8 @@ publishing {
 repositories {
     mavenLocal()
     mavenCentral()
-    jcenter()
     google()
+    jcenter()
 }
 
 dependencies {
@@ -129,17 +129,19 @@ dependencies {
 
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 
-    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '1.+'
 
     /*
     Tests
      */
 
-    testCompile group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.+'
+    testCompile group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.+'
 
+    /*
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    */
     /**Power mock**/
     androidTestCompile "org.mockito:mockito-android:2.7.21"
     androidTestCompile "org.powermock:powermock-api-mockito:1.6.6"
@@ -148,7 +150,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.powermock:powermock-api-mockito:1.6.6'
     testCompile 'org.powermock:powermock-module-junit4:1.6.6'
-
     /**End of power mock **/
 
 }

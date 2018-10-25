@@ -41,7 +41,7 @@ public final class ApduRequest implements Serializable {
      * List of status codes that should be considered successful although they are different from
      * 9000
      */
-    private final Set<Short> successfulStatusCodes;
+    private final Set<Integer> successfulStatusCodes;
 
     /**
      * Name of the request being sent
@@ -59,10 +59,25 @@ public final class ApduRequest implements Serializable {
      * @param successfulStatusCodes the list of status codes to be considered as successful although
      *        different from 9000
      */
-    public ApduRequest(byte[] buffer, boolean case4, Set<Short> successfulStatusCodes) {
+    public ApduRequest(byte[] buffer, boolean case4, Set<Integer> successfulStatusCodes) {
         this.bytes = buffer;
         this.case4 = case4;
         this.successfulStatusCodes = successfulStatusCodes;
+    }
+
+    /**
+     * Alternate constructor with name
+     * 
+     * @param name name to be printed (e.g. in logs)
+     * @param buffer data buffer
+     * @param case4 case 4 flag (true if case 4)
+     * @param successfulStatusCodes the list of status codes to be considered as successful although
+     *        different from 9000
+     */
+    public ApduRequest(String name, byte[] buffer, boolean case4,
+            Set<Integer> successfulStatusCodes) {
+        this(buffer, case4, successfulStatusCodes);
+        this.name = name;
     }
 
     /**
@@ -73,6 +88,18 @@ public final class ApduRequest implements Serializable {
      */
     public ApduRequest(byte[] buffer, boolean case4) {
         this(buffer, case4, null);
+    }
+
+    /**
+     * Alternate constructor with name, without status codes list
+     *
+     * @param name name to be printed (e.g. in logs)
+     * @param buffer data buffer
+     * @param case4 case 4 flag (true if case 4)
+     */
+    public ApduRequest(String name, byte[] buffer, boolean case4) {
+        this(buffer, case4, null);
+        this.name = name;
     }
 
     /**
@@ -89,11 +116,9 @@ public final class ApduRequest implements Serializable {
      * Name this APDU request
      * 
      * @param name Name of the APDU request
-     * @return Name of the APDU request
      */
-    public ApduRequest setName(final String name) {
+    public void setName(final String name) {
         this.name = name;
-        return this;
     }
 
     /**
@@ -101,7 +126,7 @@ public final class ApduRequest implements Serializable {
      * 
      * @return the list of status codes
      */
-    public Set<Short> getSuccessfulStatusCodes() {
+    public Set<Integer> getSuccessfulStatusCodes() {
         return successfulStatusCodes;
     }
 
@@ -133,7 +158,7 @@ public final class ApduRequest implements Serializable {
         }
         if (successfulStatusCodes != null) {
             string.append(", additional successful status codes = ");
-            Iterator<Short> iterator = successfulStatusCodes.iterator();
+            Iterator<Integer> iterator = successfulStatusCodes.iterator();
             while (iterator.hasNext()) {
                 string.append(String.format("%04X", iterator.next()));
                 if (iterator.hasNext()) {

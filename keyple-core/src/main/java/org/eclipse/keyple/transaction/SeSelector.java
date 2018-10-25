@@ -26,7 +26,7 @@ public class SeSelector {
     private static final Logger logger = LoggerFactory.getLogger(SeSelector.class);
 
     protected List<ApduRequest> seSelectionApduRequestList = new ArrayList<ApduRequest>();
-    protected Set<Short> selectApplicationSuccessfulStatusCodes = new HashSet<Short>();
+    protected Set<Integer> selectApplicationSuccessfulStatusCodes = new HashSet<Integer>();
     private Class<? extends MatchingSe> matchingClass = MatchingSe.class;
     private Class<? extends SeSelector> selectorClass = SeSelector.class;
     private final boolean keepChannelOpen;
@@ -128,7 +128,7 @@ public class SeSelector {
     /**
      * @return the protocolFlag defined by the constructor
      */
-    public SeProtocol getProtocolFlag() {
+    public final SeProtocol getProtocolFlag() {
         return protocolFlag;
     }
 
@@ -137,7 +137,7 @@ public class SeSelector {
      * 
      * @param seSelectionApduRequestList the list of requests
      */
-    public void setSelectionApduRequestList(List<ApduRequest> seSelectionApduRequestList) {
+    public final void setSelectionApduRequestList(List<ApduRequest> seSelectionApduRequestList) {
         this.seSelectionApduRequestList = seSelectionApduRequestList;
     }
 
@@ -147,7 +147,7 @@ public class SeSelector {
      *
      * @return the selection SeRequest
      */
-    protected SeRequest getSelectorRequest() {
+    protected final SeRequest getSelectorRequest() {
         SeRequest seSelectionRequest;
         if (!selectionByAid) {
             seSelectionRequest = new SeRequest(new SeRequest.AtrSelector(atrRegex),
@@ -165,7 +165,7 @@ public class SeSelector {
      * 
      * @return a string to be printed in logs
      */
-    public String getExtraInfo() {
+    public final String getExtraInfo() {
         return extraInfo;
     }
 
@@ -173,10 +173,13 @@ public class SeSelector {
      * The matchingClass is the MatchingSe class or one of its extensions
      * <p>
      * It is used in SeSelection to determine what kind of MatchingSe is to be instantiated.
+     *
+     * This method must be called in the classes that extend SeSelector in order to specify the
+     * expected class derived from MatchingSe in return to the selection process.
      * 
      * @param matchingClass the expected class for this SeSelector
      */
-    public void setMatchingClass(Class<? extends MatchingSe> matchingClass) {
+    protected final void setMatchingClass(Class<? extends MatchingSe> matchingClass) {
         this.matchingClass = matchingClass;
     }
 
@@ -185,10 +188,13 @@ public class SeSelector {
      * <p>
      * It is used in SeSelection to determine what kind of SeSelector is to be used as argument to
      * the matchingClass constructor.
+     *
+     * This method must be called in the classes that extend SeSelector in order to specify the
+     * expected class derived from SeSelector used as an argument to derived form of MatchingSe.
      * 
      * @param selectorClass the argument for the constructor of the matchingClass
      */
-    public void setSelectorClass(Class<? extends SeSelector> selectorClass) {
+    protected final void setSelectorClass(Class<? extends SeSelector> selectorClass) {
         this.selectorClass = selectorClass;
     }
 
@@ -197,7 +203,7 @@ public class SeSelector {
      * 
      * @return the current matchingClass
      */
-    public Class<? extends MatchingSe> getMatchingClass() {
+    protected final Class<? extends MatchingSe> getMatchingClass() {
         return matchingClass;
     }
 
@@ -206,7 +212,7 @@ public class SeSelector {
      * 
      * @return the current selectorClass
      */
-    public Class<? extends SeSelector> getSelectorClass() {
+    protected final Class<? extends SeSelector> getSelectorClass() {
         return selectorClass;
     }
 }
