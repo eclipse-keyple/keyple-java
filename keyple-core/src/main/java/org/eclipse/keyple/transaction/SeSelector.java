@@ -35,6 +35,7 @@ public class SeSelector {
     private final boolean selectionByAid;
     private final SeProtocol protocolFlag;
     private String extraInfo;
+    private boolean selectNext = false;
 
     /**
      * ATR based selector
@@ -126,6 +127,28 @@ public class SeSelector {
     }
 
     /**
+     * AID based selector targeting the next application (with extraInfo)
+     *
+     * @param seAid application identification data
+     * @param selectNext true if the selection targets the next matching application
+     * @param keepChannelOpen flag to tell if the logical channel should be left open at the end of
+     *        the selection
+     * @param protocolFlag flag to be compared with the protocol identified when communicating the
+     *        SE
+     * @param extraInfo information string to be printed in logs
+     */
+    public SeSelector(byte[] seAid, boolean selectNext, boolean keepChannelOpen,
+            SeProtocol protocolFlag, String extraInfo) {
+        this(seAid, keepChannelOpen, protocolFlag);
+        this.selectNext = selectNext;
+        if (extraInfo != null) {
+            this.extraInfo = extraInfo;
+        } else {
+            this.extraInfo = "";
+        }
+    }
+
+    /**
      * @return the protocolFlag defined by the constructor
      */
     public final SeProtocol getProtocolFlag() {
@@ -153,9 +176,9 @@ public class SeSelector {
             seSelectionRequest = new SeRequest(new SeRequest.AtrSelector(atrRegex),
                     seSelectionApduRequestList, keepChannelOpen, protocolFlag);
         } else {
-            seSelectionRequest =
-                    new SeRequest(new SeRequest.AidSelector(seAid), seSelectionApduRequestList,
-                            keepChannelOpen, protocolFlag, selectApplicationSuccessfulStatusCodes);
+            seSelectionRequest = new SeRequest(new SeRequest.AidSelector(seAid, selectNext),
+                    seSelectionApduRequestList, keepChannelOpen, protocolFlag,
+                    selectApplicationSuccessfulStatusCodes);
         }
         return seSelectionRequest;
     }

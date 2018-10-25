@@ -246,17 +246,18 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 }
                 requestIndex++;
                 if (!request.isKeepChannelOpen()) {
+                    /*
+                     * always explicitly close the logical channel to possibly process a multiple
+                     * selection with the same AID
+                     */
+                    closeLogicalChannel();
                     if (lastRequestIndex == requestIndex) {
-                        // reset temporary properties
-                        closeLogicalChannel();
-
                         /*
                          * For the processing of the last SeRequest with a protocolFlag matching the
                          * SE reader status, if the logical channel doesn't require to be kept open,
                          * then the physical channel is closed.
                          */
                         closePhysicalChannel();
-
 
                         logger.debug("[{}] processSeRequestSet => Closing of the physical channel.",
                                 this.getName());

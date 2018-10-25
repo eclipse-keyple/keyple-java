@@ -59,17 +59,18 @@ public final class PoSelector extends SeSelector {
 
     /**
      * Calypso PO revision 2 and above selector
-     * 
+     *
      * @param poAid the AID of the targeted PO
+     * @param selectNext true if the selection targets the next matching application
      * @param keepChannelOpen indicates whether the logical channel should remain open
      * @param protocolFlag the protocol flag to filter POs according to their communication protocol
      * @param revisionTarget the targeted revisions. The following possible ReadRecords commands
      *        will be built taking this value into account
      * @param extraInfo information string
      */
-    public PoSelector(byte[] poAid, boolean keepChannelOpen, SeProtocol protocolFlag,
-            RevisionTarget revisionTarget, String extraInfo) {
-        super(poAid, keepChannelOpen, protocolFlag, extraInfo);
+    public PoSelector(byte[] poAid, boolean selectNext, boolean keepChannelOpen,
+            SeProtocol protocolFlag, RevisionTarget revisionTarget, String extraInfo) {
+        super(poAid, selectNext, keepChannelOpen, protocolFlag, extraInfo);
         setMatchingClass(CalypsoPo.class);
         setSelectorClass(PoSelector.class);
         if (revisionTarget == RevisionTarget.TARGET_REV1) {
@@ -85,6 +86,21 @@ public final class PoSelector extends SeSelector {
         selectApplicationSuccessfulStatusCodes.add(0x6283);
         logger.trace("Calypso rev {} selector, SUCCESSFULSTATUSCODES = {}", this.revisionTarget,
                 selectApplicationSuccessfulStatusCodes);
+    }
+
+    /**
+     * Calypso PO revision 2 and above selector
+     *
+     * @param poAid the AID of the targeted PO
+     * @param keepChannelOpen indicates whether the logical channel should remain open
+     * @param protocolFlag the protocol flag to filter POs according to their communication protocol
+     * @param revisionTarget the targeted revisions. The following possible ReadRecords commands
+     *        will be built taking this value into account
+     * @param extraInfo information string
+     */
+    public PoSelector(byte[] poAid, boolean keepChannelOpen, SeProtocol protocolFlag,
+            RevisionTarget revisionTarget, String extraInfo) {
+        this(poAid, false, keepChannelOpen, protocolFlag, revisionTarget, extraInfo);
     }
 
     /**
