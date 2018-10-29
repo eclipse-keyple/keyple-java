@@ -37,6 +37,7 @@ import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.transaction.SeSelection;
+import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 
 public class Demo_ValidationTransaction implements ObservableReader.ReaderObserver {
@@ -349,19 +350,28 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
             SeSelection seSelection = new SeSelection(poReader);
 
             // Add Audit C0 AID to the list
-            CalypsoPo auditC0Se = (CalypsoPo) seSelection.prepareSelector(
-                    new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.poAuditC0Aid), true,
-                            null, PoSelector.RevisionTarget.TARGET_REV3, "Audit C0"));
+            CalypsoPo auditC0Se =
+                    (CalypsoPo) seSelection
+                            .prepareSelector(
+                                    new PoSelector(
+                                            new SeSelector.SelectionParameters(
+                                                    ByteArrayUtils.fromHex(
+                                                            PoFileStructureInfo.poAuditC0Aid),
+                                                    false),
+                                            true, null, PoSelector.RevisionTarget.TARGET_REV3,
+                                            "Audit C0"));
 
             // Add CLAP AID to the list
-            CalypsoPo clapSe = (CalypsoPo) seSelection.prepareSelector(
-                    new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.clapAid), true, null,
-                            PoSelector.RevisionTarget.TARGET_REV3, "CLAP"));
+            CalypsoPo clapSe = (CalypsoPo) seSelection.prepareSelector(new PoSelector(
+                    new SeSelector.SelectionParameters(
+                            ByteArrayUtils.fromHex(PoFileStructureInfo.clapAid), false),
+                    true, null, PoSelector.RevisionTarget.TARGET_REV3, "CLAP"));
 
             // Add cdLight AID to the list
-            CalypsoPo cdLightSe = (CalypsoPo) seSelection.prepareSelector(
-                    new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.cdLightAid), true,
-                            null, PoSelector.RevisionTarget.TARGET_REV2_REV3, "CDLight"));
+            CalypsoPo cdLightSe = (CalypsoPo) seSelection.prepareSelector(new PoSelector(
+                    new SeSelector.SelectionParameters(
+                            ByteArrayUtils.fromHex(PoFileStructureInfo.cdLightAid), false),
+                    true, null, PoSelector.RevisionTarget.TARGET_REV2_REV3, "CDLight"));
 
             if (!seSelection.processSelection()) {
                 throw new IllegalArgumentException("No recognizable PO detected.");

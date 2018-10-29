@@ -34,7 +34,9 @@ public final class CalypsoPo extends MatchingSe {
     private byte[] applicationSerialNumber;
     private PoRevision revision;
     private byte[] dfName;
-    private final static int PO_REV1_ATR_LENGTH = 20;
+    private static final int PO_REV1_ATR_LENGTH = 20;
+    private static final int REV1_PO_DEFAULT_WRITE_OPERATIONS_NUMBER_SUPPORTED_PER_SESSION = 3;
+    private static final int REV2_PO_DEFAULT_WRITE_OPERATIONS_NUMBER_SUPPORTED_PER_SESSION = 6;
     private byte[] poAtr;
     private int modificationsCounterMax;
 
@@ -87,7 +89,8 @@ public final class CalypsoPo extends MatchingSe {
 
             // TODO review this to take into consideration the type and subtype
             if (this.revision == PoRevision.REV2_4) {
-                this.modificationsCounterMax = 6;
+                this.modificationsCounterMax =
+                        REV2_PO_DEFAULT_WRITE_OPERATIONS_NUMBER_SUPPORTED_PER_SESSION;
             } else {
                 this.modificationsCounterMax = poFciRespPars.getBufferSizeValue();
             }
@@ -107,7 +110,8 @@ public final class CalypsoPo extends MatchingSe {
             this.revision = PoRevision.REV1_0;
             this.dfName = null;
             this.applicationSerialNumber = new byte[8];
-            this.modificationsCounterMax = 3;
+            this.modificationsCounterMax =
+                    REV1_PO_DEFAULT_WRITE_OPERATIONS_NUMBER_SUPPORTED_PER_SESSION;
             /*
              * the array is initialized with 0 (cf. default value for primitive types)
              */

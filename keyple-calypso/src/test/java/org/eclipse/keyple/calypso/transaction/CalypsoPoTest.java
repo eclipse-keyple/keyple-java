@@ -15,6 +15,7 @@ import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,9 +31,11 @@ public class CalypsoPoTest {
                         + "A5 16 BF0C 13 C7 08 0000000011223344" + "53 07 060A %02X 02200311 9000",
                         applicationByte)), null);
         SeResponse selectionData = new SeResponse(false, null, fciData, null);
-        PoSelector poSelector = new PoSelector(ByteArrayUtils.fromHex("315449432E494341"), true,
-                ContactlessProtocols.PROTOCOL_ISO14443_4, PoSelector.RevisionTarget.TARGET_REV3,
-                null);
+        PoSelector poSelector = new PoSelector(
+                new SeSelector.SelectionParameters(ByteArrayUtils.fromHex("315449432E494341"),
+                        false),
+                true, ContactlessProtocols.PROTOCOL_ISO14443_4,
+                PoSelector.RevisionTarget.TARGET_REV3, null);
         CalypsoPo calypsoPo = new CalypsoPo(poSelector);
         calypsoPo.setSelectionResponse(selectionData);
         return calypsoPo;

@@ -75,10 +75,11 @@ public class SeProtocolDetectionEngine extends AbstractTransactionEngine
                 switch (protocol) {
                     case PROTOCOL_ISO14443_4:
                         /* Add a Hoplink selector */
-                        PoSelector poSelector =
-                                new PoSelector(ByteArrayUtils.fromHex(HoplinkInfo.AID), true,
-                                        ContactlessProtocols.PROTOCOL_ISO14443_4,
-                                        PoSelector.RevisionTarget.TARGET_REV3, "Hoplink selector");
+                        PoSelector poSelector = new PoSelector(
+                                new SeSelector.SelectionParameters(
+                                        ByteArrayUtils.fromHex(HoplinkInfo.AID), false),
+                                true, ContactlessProtocols.PROTOCOL_ISO14443_4,
+                                PoSelector.RevisionTarget.TARGET_REV3, "Hoplink selector");
 
                         poSelector.preparePoCustomReadCmd("Standard Get Data",
                                 new ApduRequest(ByteArrayUtils.fromHex("FFCA000000"), false));
@@ -100,7 +101,8 @@ public class SeProtocolDetectionEngine extends AbstractTransactionEngine
                         break;
                     default:
                         /* Add a generic selector */
-                        seSelection.prepareSelector(new SeSelector(".*", true,
+                        seSelection.prepareSelector(new SeSelector(
+                                new SeSelector.SelectionParameters(".*", (short) 0), true,
                                 ContactlessProtocols.PROTOCOL_ISO14443_4, "Default selector"));
                         break;
                 }

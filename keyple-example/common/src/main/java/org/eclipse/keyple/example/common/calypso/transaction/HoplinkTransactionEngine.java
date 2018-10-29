@@ -23,6 +23,7 @@ import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.transaction.SeSelection;
+import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +37,7 @@ import org.slf4j.profiler.Profiler;
  * <li>Starting a card operation when a PO presence is notified ({@link #operateSeTransaction
  * operateSeTransaction})
  * <li>Opening a logical channel with the SAM (C1 SAM is expected) see
- * ({@link org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo#SAM_C1_ATR_REGEX
- * SAM_C1_ATR_REGEX})
+ * ({@link HoplinkInfo#SAM_C1_ATR_REGEX SAM_C1_ATR_REGEX})
  * <li>Attempting to open a logical channel with the PO with 3 options:
  * <ul>
  * <li>Selection with a fake AID
@@ -130,9 +130,8 @@ public class HoplinkTransactionEngine extends AbstractTransactionEngine
          * file (read twice in this demo!)
          */
         poProcessStatus = poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
-                PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT,
-                org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.SFI_T2Environment,
-                org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.RECORD_NUMBER_1);
+                PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, HoplinkInfo.SFI_T2Environment,
+                HoplinkInfo.RECORD_NUMBER_1);
 
         if (!poTransaction.wasRatified()) {
             logger.info("### Previous Secure Session was not ratified. ###");
@@ -143,20 +142,16 @@ public class HoplinkTransactionEngine extends AbstractTransactionEngine
                     "========= PO Hoplink session ======= Processing of PO commands =======================");
         }
         /* prepare T2 Environment read record */
-        ReadRecordsRespPars readT2EnvironmentParser = poTransaction.prepareReadRecordsCmd(
-                org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.SFI_T2Environment,
-                ReadDataStructure.SINGLE_RECORD_DATA,
-                org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.RECORD_NUMBER_1,
-                (byte) 0x00,
-                org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
+        ReadRecordsRespPars readT2EnvironmentParser =
+                poTransaction.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Environment,
+                        ReadDataStructure.SINGLE_RECORD_DATA, HoplinkInfo.RECORD_NUMBER_1,
+                        (byte) 0x00, HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
 
         /* prepare T2 Usage read record */
-        ReadRecordsRespPars readT2UsageParser = poTransaction.prepareReadRecordsCmd(
-                org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.SFI_T2Usage,
-                ReadDataStructure.SINGLE_RECORD_DATA,
-                org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.RECORD_NUMBER_1,
-                (byte) 0x00,
-                org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.EXTRAINFO_ReadRecord_T2UsageRec1);
+        ReadRecordsRespPars readT2UsageParser =
+                poTransaction.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Usage,
+                        ReadDataStructure.SINGLE_RECORD_DATA, HoplinkInfo.RECORD_NUMBER_1,
+                        (byte) 0x00, HoplinkInfo.EXTRAINFO_ReadRecord_T2UsageRec1);
 
         poProcessStatus = poTransaction.processPoCommands();
 
@@ -202,24 +197,26 @@ public class HoplinkTransactionEngine extends AbstractTransactionEngine
              * Add selection case 1: Fake AID1, protocol ISO, target rev 3
              */
 
-            seSelection.prepareSelector(new PoSelector(ByteArrayUtils.fromHex("AABBCCDDEE"), true,
-                    ContactlessProtocols.PROTOCOL_ISO14443_4, PoSelector.RevisionTarget.TARGET_REV3,
-                    "Selector with fake AID1"));
+            seSelection
+                    .prepareSelector(new PoSelector(
+                            new SeSelector.SelectionParameters(ByteArrayUtils.fromHex("AABBCCDDEE"),
+                                    false),
+                            true, ContactlessProtocols.PROTOCOL_ISO14443_4,
+                            PoSelector.RevisionTarget.TARGET_REV3, "Selector with fake AID1"));
             /*
              * Add selection case 2: Hoplink application, protocol ISO, target rev 3
              *
              * addition of read commands to execute following the selection
              */
             PoSelector poSelectorHoplink = new PoSelector(
-                    ByteArrayUtils.fromHex(
-                            org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.AID),
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(HoplinkInfo.AID),
+                            false),
                     true, ContactlessProtocols.PROTOCOL_ISO14443_4,
                     PoSelector.RevisionTarget.TARGET_REV3, "Hoplink selector");
 
-            poSelectorHoplink.prepareReadRecordsCmd(
-                    org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.SFI_T2Environment,
-                    org.eclipse.keyple.example.common.calypso.postructure.HoplinkInfo.RECORD_NUMBER_1,
-                    true, (byte) 0x00, HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
+            poSelectorHoplink.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Environment,
+                    HoplinkInfo.RECORD_NUMBER_1, true, (byte) 0x00,
+                    HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
 
             seSelection.prepareSelector(poSelectorHoplink);
 
@@ -227,9 +224,12 @@ public class HoplinkTransactionEngine extends AbstractTransactionEngine
              * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
              */
 
-            seSelection.prepareSelector(new PoSelector(ByteArrayUtils.fromHex("EEDDCCBBAA"), true,
-                    ContactlessProtocols.PROTOCOL_ISO14443_4,
-                    PoSelector.RevisionTarget.TARGET_REV2_REV3, "Selector with fake AID2"));
+            seSelection
+                    .prepareSelector(new PoSelector(
+                            new SeSelector.SelectionParameters(ByteArrayUtils.fromHex("EEDDCCBBAA"),
+                                    false),
+                            true, ContactlessProtocols.PROTOCOL_ISO14443_4,
+                            PoSelector.RevisionTarget.TARGET_REV2_REV3, "Selector with fake AID2"));
 
             /* Time measurement */
             profiler.start("Initial selection");

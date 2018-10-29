@@ -27,6 +27,7 @@ import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.transaction.MatchingSe;
 import org.eclipse.keyple.transaction.SeSelection;
+import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,57 +70,70 @@ public class UseCase_SelectNext_Pcsc extends AbstractTransactionEngine {
                 SeSelection seSelection = new SeSelection(poReader);
 
                 /* AID based selection */
-                seSelection.prepareSelector(
-                        new PoSelector(ByteArrayUtils.fromHex(poAidPrefix), false, false, null,
-                                PoSelector.RevisionTarget.TARGET_REV3, "Initial selection"));
+                seSelection.prepareSelector(new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
+                                false),
+                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Initial selection"));
                 /* next selection */
-                seSelection.prepareSelector(
-                        new PoSelector(ByteArrayUtils.fromHex(poAidPrefix), true, false, null,
-                                PoSelector.RevisionTarget.TARGET_REV3, "Next selection #1"));
+                seSelection.prepareSelector(new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
+                                true),
+                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #1"));
                 /* next selection */
-                seSelection.prepareSelector(
-                        new PoSelector(ByteArrayUtils.fromHex(poAidPrefix), true, false, null,
-                                PoSelector.RevisionTarget.TARGET_REV3, "Next selection #2"));
+                seSelection.prepareSelector(new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
+                                true),
+                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #2"));
                 /* next selection */
-                seSelection.prepareSelector(
-                        new PoSelector(ByteArrayUtils.fromHex(poAidPrefix), true, false, null,
-                                PoSelector.RevisionTarget.TARGET_REV3, "Next selection #3"));
+                seSelection.prepareSelector(new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
+                                true),
+                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #3"));
                 /* next selection */
-                seSelection.prepareSelector(
-                        new PoSelector(ByteArrayUtils.fromHex(poAidPrefix), true, false, null,
-                                PoSelector.RevisionTarget.TARGET_REV3, "Next selection #4"));
+                seSelection.prepareSelector(new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
+                                true),
+                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #4"));
                 /* next selection */
-                seSelection.prepareSelector(
-                        new PoSelector(ByteArrayUtils.fromHex(poAidPrefix), true, false, null,
-                                PoSelector.RevisionTarget.TARGET_REV3, "Next selection #5"));
+                seSelection.prepareSelector(new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
+                                true),
+                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #5"));
                 /* next selection */
-                seSelection.prepareSelector(
-                        new PoSelector(ByteArrayUtils.fromHex(poAidPrefix), true, false, null,
-                                PoSelector.RevisionTarget.TARGET_REV3, "Next selection #6"));
+                seSelection.prepareSelector(new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
+                                true),
+                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #6"));
                 /* next selection */
-                seSelection.prepareSelector(
-                        new PoSelector(ByteArrayUtils.fromHex(poAidPrefix), true, false, null,
-                                PoSelector.RevisionTarget.TARGET_REV3, "Next selection #7"));
+                seSelection.prepareSelector(new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
+                                true),
+                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #7"));
                 /* next selection */
-                seSelection.prepareSelector(
-                        new PoSelector(ByteArrayUtils.fromHex(poAidPrefix), true, false, null,
-                                PoSelector.RevisionTarget.TARGET_REV3, "Next selection #8"));
+                seSelection.prepareSelector(new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
+                                true),
+                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #8"));
                 /* next selection */
-                seSelection.prepareSelector(
-                        new PoSelector(ByteArrayUtils.fromHex(poAidPrefix), true, false, null,
-                                PoSelector.RevisionTarget.TARGET_REV3, "Next selection #9"));
+                seSelection.prepareSelector(new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
+                                true),
+                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #9"));
                 /* next selection */
-                seSelection.prepareSelector(
-                        new PoSelector(ByteArrayUtils.fromHex(poAidPrefix), true, false, null,
-                                PoSelector.RevisionTarget.TARGET_REV3, "Next selection #10"));
+                seSelection.prepareSelector(new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
+                                true),
+                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #10"));
                 /* next selection */
-                seSelection.prepareSelector(
-                        new PoSelector(ByteArrayUtils.fromHex(poAidPrefix), true, false, null,
-                                PoSelector.RevisionTarget.TARGET_REV3, "Next selection #11"));
+                seSelection.prepareSelector(new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
+                                true),
+                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #11"));
                 /* next selection */
-                seSelection.prepareSelector(
-                        new PoSelector(ByteArrayUtils.fromHex(poAidPrefix), true, false, null,
-                                PoSelector.RevisionTarget.TARGET_REV3, "Next selection #12"));
+                seSelection.prepareSelector(new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
+                                true),
+                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #12"));
 
                 /* Time measurement */
                 profiler.start("Initial selection");
