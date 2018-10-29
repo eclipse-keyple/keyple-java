@@ -102,7 +102,7 @@ public class SeProtocolDetectionEngine extends AbstractTransactionEngine
                     default:
                         /* Add a generic selector */
                         seSelection.prepareSelector(new SeSelector(
-                                new SeSelector.SelectionParameters(".*", (short) 0), true,
+                                new SeSelector.SelectionParameters(".*", null), true,
                                 ContactlessProtocols.PROTOCOL_ISO14443_4, "Default selector"));
                         break;
                 }

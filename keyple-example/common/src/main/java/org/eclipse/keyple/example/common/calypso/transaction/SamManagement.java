@@ -32,8 +32,8 @@ public class SamManagement {
         SeSelection samSelection = new SeSelection(samReader);
 
         SeSelector samSelector = new SeSelector(
-                new SeSelector.SelectionParameters(CalypsoClassicInfo.SAM_C1_ATR_REGEX, (short) 0),
-                true, null);
+                new SeSelector.SelectionParameters(CalypsoClassicInfo.SAM_C1_ATR_REGEX, null), true,
+                null);
 
         /* Prepare selector, ignore MatchingSe here */
         samSelection.prepareSelector(samSelector);
