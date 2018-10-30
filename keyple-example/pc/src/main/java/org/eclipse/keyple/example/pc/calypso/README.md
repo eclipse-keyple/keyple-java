@@ -1,32 +1,30 @@
-**Using the Keyple Core library**
+**Using the Keyple Calypso library**
 ---
 
 **These examples involve two packages**
 
-- Resources common to all Keyple Core demonstration examples
+- Resources common to all Keyple Calypso demonstration examples
 
-      `org.eclipse.keyple.example.common.generic`
+      `org.eclipse.keyple.example.common.calypso.transaction`
+      `org.eclipse.keyple.example.common.calypso.postructure`
 - PC platform launchers
 
-      `org.eclipse.keyple.example.pc.generic`
-      
-* The purpose of these examples is to demonstrate the use of the Core library.
+      `org.eclipse.keyple.example.pc.calypso`
+* The purpose of this package is to demonstrate the use of the Calypso library.
 
-  * Reader management:
-    * Observability of plugins to manage the insertion / removal of readers
-    * Observability of readers to manage the insertion / removal of secure elements
-  * SeRequestSet/SeResponseSet building
-  * PO technology identification (protocol based filtering)
-  * Application selection (AID or ATR based)
-  * Two basic scenarios
-    * Plugins and readers monitoring
-    * PO selection
+  * Dual reader configuration (PO and SAM)
+  * PO Secure Session management
+  * Basic scenario for ticketing
 
-* Four launchers working out of the box on a PC platform
+* Six launchers working out of the box on a PC platform
 
-  * Plugin and reader observability
-    * Real mode with PC/SC readers (Secure Elements required [Calypso and/or others])
-    * Simulation mode (virtual Secure Elements included)
-  * PO type detection through the use of the protocol flag mechanism
-    * Real mode with PC/SC readers (Secure Elements required [Calypso and/or others])
-    * Simulation mode (virtual Secure Elements included)
+  * Classic Calypso Transaction (use of PoSecure session) 
+    * Real mode with PC/SC readers (Calypso Secure Elements required [PO and SAM]) [`Demo_CalypsoClassic_Pcsc.java`]
+    * Simulation mode (virtual Secure Elements included) [`Demo_CalypsoClassic_Stub.java`]
+  * Basic Hoplink Transaction (use of PoSecure session) 
+    * Real mode with PC/SC readers (Hoplink Secure Elements required [PO and SAM]) [`Demo_Hoplink_Pcsc.java`]
+    * Simulation mode (virtual Secure Elements included) [`Demo_Hoplink_Stub.java`]
+  * Use case Calypso Authentication: open/close Secure Session only [`UseCase_CalypsoAuthenticationLevel3_Pcsc.java`]
+    * Real mode with PC/SC readers
+  * Use case Multiple Session: illustrates the multiple session generation mechanism for managing the sending of modifying commands that exceed the capacity of the session buffer.  [`UseCase_MultipleSession_Pcsc.java`]
+    * Real mode with PC/SC readers

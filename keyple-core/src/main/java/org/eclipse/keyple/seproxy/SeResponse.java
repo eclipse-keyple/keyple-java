@@ -108,8 +108,14 @@ public final class SeResponse implements Serializable {
 
     @Override
     public String toString() {
+        /*
+         * getAtr() can return null, we must check it to avoid the call to getBytes() that would
+         * raise an exception. In case of a null value, String.format prints "null" in the string,
+         * the same is done here.
+         */
         return String.format("SeResponse:{RESPONSES = %s, ATR = %s, FCI = %s, CHANNELWASOPEN = %s}",
-                getApduResponses(), getAtr() == null ? "null" : ByteArrayUtils.toHex(getAtr().getBytes()), getFci(),
+                getApduResponses(),
+                getAtr() == null ? "null" : ByteArrayUtils.toHex(getAtr().getBytes()), getFci(),
                 wasChannelPreviouslyOpen());
     }
 

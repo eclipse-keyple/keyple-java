@@ -39,6 +39,7 @@ public final class SeRequest implements Serializable {
 
         public static final int AID_MIN_LENGTH = 5;
         public static final int AID_MAX_LENGTH = 16;
+        protected boolean selectNext = false;
 
         /**
          * - AID’s bytes of the SE application to select. In case the SE application is currently
@@ -63,10 +64,46 @@ public final class SeRequest implements Serializable {
             this.aidToSelect = aidToSelect;
         }
 
+        /**
+         * AID based selector with selection mode
+         * <p>
+         * The selectNext parameter defines the selection options P2 of the SELECT command message
+         * <ul>
+         * <li>false: first or only occurrence</li>
+         * <li>true: next occurrence</li>
+         * </ul>
+         * 
+         * @param aidToSelect byte array
+         * @param selectNext true or false according to selection mode
+         */
+        public AidSelector(byte[] aidToSelect, boolean selectNext) {
+            this(aidToSelect);
+            this.selectNext = selectNext;
+        }
+
+        /**
+         * Getter for the AID provided at construction time
+         * 
+         * @return byte array containing the AID
+         */
         public byte[] getAidToSelect() {
             return aidToSelect;
         }
 
+        /**
+         * Indicates whether the selection command is targeting the first or the next occurrence
+         * 
+         * @return true or false
+         */
+        public boolean isSelectNext() {
+            return selectNext;
+        }
+
+        /**
+         * Print out the AID in hex
+         * 
+         * @return a string
+         */
         public String toString() {
             return String.format("AID:%s",
                     aidToSelect == null ? "null" : ByteArrayUtils.toHex(aidToSelect));
@@ -89,9 +126,9 @@ public final class SeRequest implements Serializable {
         }
 
         /**
-         * Getter for the regular expression of the selector
+         * Getter for the regular expression provided at construction time
          *
-         * @return Regular expression
+         * @return Regular expression string
          */
         public String getAtrRegex() {
             return atrRegex;
@@ -117,6 +154,11 @@ public final class SeRequest implements Serializable {
             return m;
         }
 
+        /**
+         * Print out the ATR regex
+         * 
+         * @return a string
+         */
         public String toString() {
             return String.format("ATR regex:%s", atrRegex.length() != 0 ? atrRegex : "empty");
         }
