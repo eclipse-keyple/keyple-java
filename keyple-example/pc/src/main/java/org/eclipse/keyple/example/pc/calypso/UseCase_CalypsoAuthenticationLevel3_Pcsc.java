@@ -27,6 +27,7 @@ import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.transaction.SeSelection;
+import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,8 +94,9 @@ public class UseCase_CalypsoAuthenticationLevel3_Pcsc extends AbstractTransactio
                 SeSelection seSelection = new SeSelection(poReader);
 
                 /* AID based selection */
-                seSelection.prepareSelector(new PoSelector(ByteArrayUtils.fromHex(poAid), true,
-                        null, PoSelector.RevisionTarget.TARGET_REV3, "Calypso selection"));
+                seSelection.prepareSelector(new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAid), false),
+                        true, null, PoSelector.RevisionTarget.TARGET_REV3, "Calypso selection"));
 
                 /* Time measurement */
                 profiler.start("Initial selection");
