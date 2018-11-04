@@ -153,7 +153,7 @@ public class UseCase_CalypsoAuthenticationLevel3_Pcsc extends AbstractTransactio
 
         properties = new Properties();
 
-        String propertiesFileName = "config.properties";
+        String propertiesFileName = "generic/pc/src/main/resources/config.properties";
 
         InputStream inputStream = UseCase_CalypsoAuthenticationLevel3_Pcsc.class.getClassLoader()
                 .getResourceAsStream(propertiesFileName);

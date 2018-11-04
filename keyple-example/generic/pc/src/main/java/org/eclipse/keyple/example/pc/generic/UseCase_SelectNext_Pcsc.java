@@ -163,7 +163,7 @@ public class UseCase_SelectNext_Pcsc extends AbstractTransactionEngine {
 
         properties = new Properties();
 
-        String propertiesFileName = "config.properties";
+        String propertiesFileName = "generic/pc/src/main/resources/config.properties";
 
         InputStream inputStream = UseCase_SelectNext_Pcsc.class.getClassLoader()
                 .getResourceAsStream(propertiesFileName);
