@@ -39,6 +39,7 @@ public final class CalypsoPo extends MatchingSe {
     private static final int REV2_PO_DEFAULT_WRITE_OPERATIONS_NUMBER_SUPPORTED_PER_SESSION = 6;
     private byte[] poAtr;
     private int modificationsCounterMax;
+    private boolean modificationCounterIsInBytes = true;
 
     public CalypsoPo(PoSelector poSelector) {
         super(poSelector);
@@ -89,6 +90,8 @@ public final class CalypsoPo extends MatchingSe {
 
             // TODO review this to take into consideration the type and subtype
             if (this.revision == PoRevision.REV2_4) {
+                /* old cards have their modification counter in number of commands */
+                modificationCounterIsInBytes = false;
                 this.modificationsCounterMax =
                         REV2_PO_DEFAULT_WRITE_OPERATIONS_NUMBER_SUPPORTED_PER_SESSION;
             } else {
@@ -110,6 +113,8 @@ public final class CalypsoPo extends MatchingSe {
             this.revision = PoRevision.REV1_0;
             this.dfName = null;
             this.applicationSerialNumber = new byte[8];
+            /* old cards have their modification counter in number of commands */
+            this.modificationCounterIsInBytes = false;
             this.modificationsCounterMax =
                     REV1_PO_DEFAULT_WRITE_OPERATIONS_NUMBER_SUPPORTED_PER_SESSION;
             /*
@@ -141,7 +146,7 @@ public final class CalypsoPo extends MatchingSe {
     }
 
     public boolean isModificationsCounterInBytes() {
-        return true;
+        return modificationCounterIsInBytes;
     }
 
     public int getModificationsCounter() {
