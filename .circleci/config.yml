@@ -82,7 +82,8 @@ jobs:
         - run: ./gradlew :keyple-calypso:build --info # run tests with stacktrace
         - run: ./gradlew :keyple-plugin:keyple-plugin-pcsc:build --info # run tests with stacktrace
         - run: ./gradlew :keyple-plugin:keyple-plugin-stub:build --info # run tests with stacktrace
-        - run: ./gradlew :keyple-example:generic:keyple-example-generic-common:build :keyple-example:calypso:keyple-example-calypso-common:build javadoc fatjar
+        - run: ./gradlew :keyple-example:generic:keyple-example-generic-common:build javadoc fatjar
+        - run: ./gradlew :keyple-example:calypso:keyple-example-calypso-common:build javadoc fatjar
         - run: ./gradlew javadoc fatjar
 
 
