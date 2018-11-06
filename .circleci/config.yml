@@ -30,7 +30,7 @@ jobs:
       - run: gradle :keyple-plugin:keyple-plugin-pcsc:build --info # run tests with stacktrace
       - run: gradle :keyple-plugin:keyple-plugin-stub:build --info # run tests with stacktrace
       #- run: gradle test --stacktrace # run tests with stacktrace
-      - run: gradle :keyple-example:keyple-example-common:build :keyple-example:keyple-example-pc:build javadoc fatjar
+      - run: gradle :keyple-example:keyple-example-generic-common:build :keyple-example:keyple-example-generic-pc:build :keyple-example:keyple-example-calypso-common:build :keyple-example:keyple-example-calypso-pc:build javadoc fatjar
       - run: gradle javadoc fatjar
       - run: .circleci/save_artifacts.sh Android build takes care of it
       #- run: .circleci/push_gh_pages.sh Android build takes care of it
@@ -69,7 +69,7 @@ jobs:
 
         - restore_cache:
             keys:
-            - v1-dependencies-{{ checksum "./keyple-example/android/nfc/build.gradle" }}
+            - v1-dependencies-{{ checksum "./keyple-example/calypso/android/nfc/build.gradle" }}
 
         #- run: gradle test --stacktrace --debug # run tests with stacktrace
 
@@ -81,7 +81,7 @@ jobs:
         - run: ./gradlew :keyple-calypso:build --info # run tests with stacktrace
         - run: ./gradlew :keyple-plugin:keyple-plugin-pcsc:build --info # run tests with stacktrace
         - run: ./gradlew :keyple-plugin:keyple-plugin-stub:build --info # run tests with stacktrace
-        - run: ./gradlew :keyple-example:keyple-example-common:build :keyple-example:keyple-example-pc:build javadoc fatjar
+        - run: ./gradlew :keyple-example:keyple-example-generic-common:build :keyple-example:keyple-example-calypso-common:build javadoc fatjar
         - run: ./gradlew javadoc fatjar
 
 
@@ -98,7 +98,7 @@ jobs:
         #Assemble Example App NFC
         - run:
             name: Assemble Keyple Example Android NFC application to apk file
-            command: ./gradlew -b ./keyple-example/android/nfc/build.gradle assembleDebug
+            command: ./gradlew -b ./keyple-example/calypso/android/nfc/build.gradle assembleDebug
 
         #store Plugin NFC
         - store_artifacts:
@@ -107,7 +107,7 @@ jobs:
 
         #store Example App NFC
         - store_artifacts:
-            path: ./keyple-example/android/nfc/build/outputs/apk/debug
+            path: ./keyple-example/calypso/android/nfc/build/outputs/apk/debug
             destination: keyple-example/android/nfc/
 
 
@@ -123,11 +123,11 @@ jobs:
         #Assemble Example App OMAPI
         - run:
             name: Assemble Keyple Example Android OMAPI application to apk file
-            command: ./gradlew -b ./keyple-example/android/omapi/build.gradle assembleDebug
+            command: ./gradlew -b ./keyple-example/calypso/android/omapi/build.gradle assembleDebug
 
         #store Example App OMAPI
         - store_artifacts:
-            path: ./keyple-example/android/omapi/build/outputs/apk/debug
+            path: ./keyple-example/calypso/android/omapi/build/outputs/apk/debug
             destination: keyple-example/android/omapi/
 
         #store Plugin OMAPI
@@ -156,7 +156,7 @@ jobs:
         - save_cache:
             paths:
             - ~/.gradle
-            key: v1-dependencies-{{ checksum "./keyple-example/android/nfc/build.gradle" }}
+            key: v1-dependencies-{{ checksum "./keyple-example/calypso/android/nfc/build.gradle" }}
 
 
 

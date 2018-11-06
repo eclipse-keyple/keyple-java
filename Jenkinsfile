@@ -43,7 +43,7 @@ node {
         sh './gradlew :keyple-plugin:keyple-plugin-android-nfc:build :keyple-plugin:keyple-plugin-android-nfc:generateDebugJavadoc --info'
    }
    stage('Build android NFC Example APP') {
-        sh './gradlew -b ./keyple-example/android/nfc/build.gradle assembleDebug --info'
+        sh './gradlew -b ./keyple-example/calypso/android/nfc/build.gradle assembleDebug --info'
    }
    stage('Finished') {
         echo "Finished"
