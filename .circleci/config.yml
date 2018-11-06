@@ -83,7 +83,7 @@ jobs:
         - run: ./gradlew :keyple-plugin:keyple-plugin-pcsc:build --info # run tests with stacktrace
         - run: ./gradlew :keyple-plugin:keyple-plugin-stub:build --info # run tests with stacktrace
         - run: ./gradlew :keyple-example:generic:keyple-example-generic-common:build  :keyple-example:generic:keyple-example-generic-pc:build
-        - run: ./gradlew :keyple-example:calypso:keyple-example-calypso-common:build  :keyple-example:generic:keyple-example-calypso-pc:build
+        - run: ./gradlew :keyple-example:calypso:keyple-example-calypso-common:build  :keyple-example:calypso:keyple-example-calypso-pc:build
         - run: ./gradlew javadoc fatjar
 
 
