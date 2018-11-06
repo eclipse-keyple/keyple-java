@@ -30,7 +30,8 @@ jobs:
       - run: gradle :keyple-plugin:keyple-plugin-pcsc:build --info # run tests with stacktrace
       - run: gradle :keyple-plugin:keyple-plugin-stub:build --info # run tests with stacktrace
       #- run: gradle test --stacktrace # run tests with stacktrace
-      - run: gradle :keyple-example:generic:keyple-example-generic-common:build :keyple-example:generic:keyple-example-generic-pc:build :keyple-example:calypso:keyple-example-calypso-common:build :keyple-example:calypso:keyple-example-calypso-pc:build javadoc fatjar
+      - run: gradle :keyple-example:generic:keyple-example-generic-common:build :keyple-example:generic:keyple-example-generic-pc:build javadoc fatjar
+      - run: gradle :keyple-example:calypso:keyple-example-calypso-common:build :keyple-example:calypso:keyple-example-calypso-pc:build javadoc fatjar
       - run: gradle javadoc fatjar
       - run: .circleci/save_artifacts.sh Android build takes care of it
       #- run: .circleci/push_gh_pages.sh Android build takes care of it
