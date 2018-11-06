@@ -1,16 +1,20 @@
 **Using the Keyple Calypso library**
 ---
 
-**These examples involve two packages**
+**These examples involve two set of packages and two complete Android projects**
 
 - Resources common to all Keyple Calypso demonstration examples
 
-      `org.eclipse.keyple.example.common.calypso.transaction`
-      `org.eclipse.keyple.example.common.calypso.postructure`
+      `org.eclipse.keyple.example.calypso.common.transaction`
+      `org.eclipse.keyple.example.calypso.common.postructure`
 - PC platform launchers
 
       `org.eclipse.keyple.example.pc.calypso`
-* The purpose of this package is to demonstrate the use of the Calypso library.
+- Android projects
+
+  - NFC based project (https://developer.android.com/reference/android/nfc/package-summary)
+  - OMAPI based project (https://developer.android.com/reference/android/se/omapi/package-summary)       
+* The purpose of these packages is to demonstrate the use of the Calypso library.
 
   * Dual reader configuration (PO and SAM)
   * PO Secure Session management

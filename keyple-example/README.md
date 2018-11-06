@@ -1,26 +1,22 @@
 **Folder content**
 ---
 
-* Package `org.eclipse.keyple.example.common.generic`
+* Two main branches to demonstrate the use of keyple
+    - generic: examples of keyple-core implementation targeting all kinds of secure elements
+    - calypso : examples of keyple-calypso implementation targeting specific functionalities of Calypso secure elements
+
+* Available packages in details:
+  - `org.eclipse.keyple.example.generic.common`
 
 |File|Description|
 |:---|---|
 |`CustomProtocools.java`|Custom protocol definition|
 |`CustomProtocolSetting.java`|Custom protocols list|
-|`Demo_ObservableReaderNotificationEngine.java`|This class provides all the mechanisms to implement to perform the plugin/reader events handling.|
-|`Demo_SeProtocolDetectionEngine.java`|This class provides all the mechanisms to implement to perform the protocol detection.|
+|`ObservableReaderNotificationEngine.java`|This class provides all the mechanisms to implement to perform the plugin/reader events handling.|
+|`SeProtocolDetectionEngine.java`|This class provides all the mechanisms to implement to perform the protocol detection.|
 |`DemoHelpers.java`|Helper class (reader management method)|
 
-* Package `org.eclipse.keyple.example.common.calypso.transaction` and `org.eclipse.keyple.example.common.calypso.postructure`
-
-|File|Description|
-|:---|---|
-|`CalypsoClassicInfo.java`|This class provides Calypso data elements (files definitions).|
-|`CalypsoClassicTransactionEngine.java`|This class provides all the mechanisms to implement to perform a ticketing scenario with a basic Calypso Secure Session.<br>It is independent of the platform.|
-|`HoplinkInfo.java`|This class provides Hoplink data elements (files definitions).|
-|`HoplinkTransactionEngine.java`|This class provides all the mechanisms to implement to perform a ticketing scenario with an Hoplink Secure Session.<br>It is independent of the platform.|
-
-* Package `org.eclipse.keyple.example.pc.generic`
+  - `org.eclipse.keyple.example.generic.pc`
 
 |File|Description|
 |:---|---|
@@ -30,7 +26,7 @@
 |`Demo_SeProtocolDetection_Stub.java`|Main class for the protocol detection example (stub)|
 |`PcscReadersSettings.java`|Interface defining PC/SC readers identifiers (for PO / SAM reader role assignment)|
 
-* Package `org.eclipse.keyple.example.pc.generic.stub.se`
+  - `org.eclipse.keyple.example.generic.pc.stub.se`
 
 |File|Description|
 |:---|---|
@@ -43,7 +39,24 @@
 |`StubSe1.java`|Generic stub SE 1|
 |`StubSe2.java`|Generic stub SE 2|
 
-* Package `org.eclipse.keyple.example.pc.calypso`
+  - `org.eclipse.keyple.example.calypso.common.transaction` and `org.eclipse.keyple.example.calypso.common.postructure`
+
+|File|Description|
+|:---|---|
+|`CalypsoClassicInfo.java`|This class provides Calypso data elements (files definitions).|
+|`CalypsoClassicTransactionEngine.java`|This class provides all the mechanisms to implement to perform a ticketing scenario with a basic Calypso Secure Session.<br>It is independent of the platform.|
+|`HoplinkInfo.java`|This class provides Hoplink data elements (files definitions).|
+|`HoplinkTransactionEngine.java`|This class provides all the mechanisms to implement to perform a ticketing scenario with an Hoplink Secure Session.<br>It is independent of the platform.|
+
+  - `org.eclipse.keyple.example.calypso.pc.stub.se`
+
+|File|Description|
+|:---|---|
+|`StubCalypsoClassic.java`|Calypso PO stub SE (`StubSecureElement`)|
+|`StubSam.java`|Calypso SAM stub SE (`StubSecureElement`)|
+|`StubHoplink.java`|Hoplink PO stub SE (`StubSecureElement`)|
+
+  - `org.eclipse.keyple.example.calypso.pc`
 
 |File|Description|
 |:---|---|
@@ -52,14 +65,6 @@
 |`Demo_Hoplink_Pcsc.java`|Contains the main class for the Hoplink PC/SC demo|
 |`UseCase_CalypsoAuthenticationLevel3_Pcsc.java`|Contains the main class of an example of code focusing on session opening/closing|
 |`UseCase_MultipleSession_Pcsc.java`|Contains the main class of an example of code focusing on the multiple session mode (for handling large amount of data transferred to a PO)|
-
-* Package `org.eclipse.keyple.example.pc.calypso.stub.se`
-
-|File|Description|
-|:---|---|
-|`StubCalypsoClassic.java`|Calypso PO stub SE (`StubSecureElement`)|
-|`StubSam.java`|Calypso SAM stub SE (`StubSecureElement`)|
-|`StubHoplink.java`|Hoplink PO stub SE (`StubSecureElement`)|
 
 **Build configuration**
 ---

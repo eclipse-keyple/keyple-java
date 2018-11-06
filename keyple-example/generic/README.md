@@ -5,10 +5,10 @@
 
 - Resources common to all Keyple Core demonstration examples
 
-      `org.eclipse.keyple.example.common.generic`
+      `org.eclipse.keyple.example.generic.common`
 - PC platform launchers
 
-      `org.eclipse.keyple.example.pc.generic`
+      `org.eclipse.keyple.example.generic.pc`
       
 * The purpose of these examples is to demonstrate the use of the Core library.
 
