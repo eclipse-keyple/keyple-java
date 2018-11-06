@@ -34,9 +34,6 @@ build.finalizedBy publishToMavenLocal
 
 
 dependencies {
-    //imports keyple example common projects and its dependencies
-    implementation project(':keyple-example:keyple-example-common')
-
     //use keyple library : calypso
     implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.+'
 
@@ -50,6 +47,7 @@ dependencies {
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
     implementation group: 'org.slf4j', name: 'slf4j-ext', version: '1.7.25'
 
+    compile project(path: ':keyple-example:generic:keyple-example-generic-common')
 }
 
 task fatJar(type: Jar) {

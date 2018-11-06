@@ -11,11 +11,13 @@
 package org.eclipse.keyple.integration.example.pc.calypso;
 
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.CommunicationMode;
-import static org.eclipse.keyple.calypso.transaction.PoTransaction.ModificationMode.*;
-import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionAccessLevel.*;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionAccessLevel.SESSION_LVL_LOAD;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
@@ -25,7 +27,7 @@ import org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.example.pc.generic.PcscReadersSettings;
+import org.eclipse.keyple.example.calypso.pc.PcscReadersSettings;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
