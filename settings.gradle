@@ -21,11 +21,19 @@ project(':keyple-plugin:pcsc').name = "keyple-plugin-pcsc"
 include 'keyple-plugin:stub'
 project(':keyple-plugin:stub').name = "keyple-plugin-stub"
 
-include 'keyple-example:common'
-project(':keyple-example:common').name = "keyple-example-common"
+include 'keyple-example:generic:common'
+project(':keyple-example:generic:common').name = "keyple-example-generic-common"
 
-include 'keyple-example:pc'
-project(':keyple-example:pc').name = "keyple-example-pc"
+include 'keyple-example:generic:pc'
+project(':keyple-example:generic:pc').name = "keyple-example-generic-pc"
+
+include 'keyple-example:calypso:common'
+project(':keyple-example:calypso:common').name = "keyple-example-calypso-common"
+
+include 'keyple-example:calypso:pc'
+project(':keyple-example:calypso:pc').name = "keyple-example-calypso-pc"
+
+
 
 
 /*

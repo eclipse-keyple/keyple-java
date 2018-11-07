@@ -11,11 +11,13 @@
 package org.eclipse.keyple.integration.example.pc.calypso;
 
 import static org.eclipse.keyple.calypso.transaction.PoTransaction.CommunicationMode;
-import static org.eclipse.keyple.calypso.transaction.PoTransaction.ModificationMode.*;
-import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionAccessLevel.*;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT;
+import static org.eclipse.keyple.calypso.transaction.PoTransaction.SessionAccessLevel.SESSION_LVL_LOAD;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
@@ -25,7 +27,7 @@ import org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.example.pc.generic.PcscReadersSettings;
+import org.eclipse.keyple.example.calypso.pc.PcscReadersSettings;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
@@ -37,6 +39,7 @@ import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.transaction.SeSelection;
+import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 
 public class Demo_ValidationTransaction implements ObservableReader.ReaderObserver {
@@ -349,19 +352,28 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
             SeSelection seSelection = new SeSelection(poReader);
 
             // Add Audit C0 AID to the list
-            CalypsoPo auditC0Se = (CalypsoPo) seSelection.prepareSelector(
-                    new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.poAuditC0Aid), true,
-                            null, PoSelector.RevisionTarget.TARGET_REV3, "Audit C0"));
+            CalypsoPo auditC0Se =
+                    (CalypsoPo) seSelection
+                            .prepareSelector(
+                                    new PoSelector(
+                                            new SeSelector.SelectionParameters(
+                                                    ByteArrayUtils.fromHex(
+                                                            PoFileStructureInfo.poAuditC0Aid),
+                                                    false),
+                                            true, null, PoSelector.RevisionTarget.TARGET_REV3,
+                                            "Audit C0"));
 
             // Add CLAP AID to the list
-            CalypsoPo clapSe = (CalypsoPo) seSelection.prepareSelector(
-                    new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.clapAid), true, null,
-                            PoSelector.RevisionTarget.TARGET_REV3, "CLAP"));
+            CalypsoPo clapSe = (CalypsoPo) seSelection.prepareSelector(new PoSelector(
+                    new SeSelector.SelectionParameters(
+                            ByteArrayUtils.fromHex(PoFileStructureInfo.clapAid), false),
+                    true, null, PoSelector.RevisionTarget.TARGET_REV3, "CLAP"));
 
             // Add cdLight AID to the list
-            CalypsoPo cdLightSe = (CalypsoPo) seSelection.prepareSelector(
-                    new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.cdLightAid), true,
-                            null, PoSelector.RevisionTarget.TARGET_REV2_REV3, "CDLight"));
+            CalypsoPo cdLightSe = (CalypsoPo) seSelection.prepareSelector(new PoSelector(
+                    new SeSelector.SelectionParameters(
+                            ByteArrayUtils.fromHex(PoFileStructureInfo.cdLightAid), false),
+                    true, null, PoSelector.RevisionTarget.TARGET_REV2_REV3, "CDLight"));
 
             if (!seSelection.processSelection()) {
                 throw new IllegalArgumentException("No recognizable PO detected.");

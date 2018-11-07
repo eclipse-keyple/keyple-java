@@ -85,15 +85,16 @@ public class PoFileStructureInfo {
         GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(selectionData.getFci());
         byte[] poCalypsoInstanceAid = poFciRespPars.getDfName();
 
-        if (poCalypsoInstanceAid.equals((ByteArrayUtils.fromHex(poAuditC0Aid)))) {
+        if (java.util.Arrays.equals(poCalypsoInstanceAid, ByteArrayUtils.fromHex(poAuditC0Aid))) {
 
             setFileStructureForAuditC0();
 
-        } else if (poCalypsoInstanceAid.equals((ByteArrayUtils.fromHex(clapAid)))) {
+        } else if (java.util.Arrays.equals(poCalypsoInstanceAid, ByteArrayUtils.fromHex(clapAid))) {
 
             setFileStructureForClap();
 
-        } else if (poCalypsoInstanceAid.equals((ByteArrayUtils.fromHex(cdLightAid)))) {
+        } else if (java.util.Arrays.equals(poCalypsoInstanceAid,
+                ByteArrayUtils.fromHex(cdLightAid))) {
 
             setFileStructureForCdLight();
 

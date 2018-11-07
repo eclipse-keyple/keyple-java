@@ -21,7 +21,7 @@ dependencies {
     implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.+'
     implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc', version: '1.+'
 
-    implementation project(':keyple-example:keyple-example-pc')
+    compile project(path: ':keyple-example:calypso:keyple-example-calypso-pc')
 
     //https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'

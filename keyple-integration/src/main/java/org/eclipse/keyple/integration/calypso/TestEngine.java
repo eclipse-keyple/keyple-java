@@ -26,6 +26,7 @@ import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.transaction.SeSelection;
+import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 
 public class TestEngine {
@@ -53,19 +54,22 @@ public class TestEngine {
         SeSelection seSelection = new SeSelection(poReader);
 
         // Add Audit C0 AID to the list
-        seSelection.prepareSelector(
-                new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.poAuditC0Aid), true, null,
-                        PoSelector.RevisionTarget.TARGET_REV3, "Audit C0"));
+        seSelection.prepareSelector(new PoSelector(
+                new SeSelector.SelectionParameters(
+                        ByteArrayUtils.fromHex(PoFileStructureInfo.poAuditC0Aid), false),
+                true, null, PoSelector.RevisionTarget.TARGET_REV3, "Audit C0"));
 
         // Add CLAP AID to the list
-        seSelection
-                .prepareSelector(new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.clapAid),
-                        true, null, PoSelector.RevisionTarget.TARGET_REV3, "CLAP"));
+        seSelection.prepareSelector(new PoSelector(
+                new SeSelector.SelectionParameters(
+                        ByteArrayUtils.fromHex(PoFileStructureInfo.clapAid), false),
+                true, null, PoSelector.RevisionTarget.TARGET_REV3, "CLAP"));
 
         // Add cdLight AID to the list
-        seSelection.prepareSelector(
-                new PoSelector(ByteArrayUtils.fromHex(PoFileStructureInfo.cdLightAid), true, null,
-                        PoSelector.RevisionTarget.TARGET_REV2_REV3, "CDLight"));
+        seSelection.prepareSelector(new PoSelector(
+                new SeSelector.SelectionParameters(
+                        ByteArrayUtils.fromHex(PoFileStructureInfo.cdLightAid), false),
+                true, null, PoSelector.RevisionTarget.TARGET_REV2_REV3, "CDLight"));
 
         if (seSelection.processSelection()) {
             return new PoFileStructureInfo(seSelection.getSelectedSe());
