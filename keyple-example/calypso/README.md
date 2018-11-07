@@ -9,7 +9,7 @@
       `org.eclipse.keyple.example.calypso.common.postructure`
 - PC platform launchers
 
-      `org.eclipse.keyple.example.pc.calypso`
+      `org.eclipse.keyple.example.calypso.pc`
 - Android projects
 
   - NFC based project (https://developer.android.com/reference/android/nfc/package-summary)
@@ -32,3 +32,33 @@
     * Real mode with PC/SC readers
   * Use case Multiple Session: illustrates the multiple session generation mechanism for managing the sending of modifying commands that exceed the capacity of the session buffer.  [`UseCase_MultipleSession_Pcsc.java`]
     * Real mode with PC/SC readers
+
+* Available packages in details:
+
+  - `org.eclipse.keyple.example.calypso.common.transaction` and `org.eclipse.keyple.example.calypso.common.postructure`
+
+|File|Description|
+|:---|---|
+|`CalypsoClassicInfo.java`|This class provides Calypso data elements (files definitions).|
+|`CalypsoClassicTransactionEngine.java`|This class provides all the mechanisms to implement to perform a ticketing scenario with a basic Calypso Secure Session.<br>It is independent of the platform.|
+|`HoplinkInfo.java`|This class provides Hoplink data elements (files definitions).|
+|`HoplinkTransactionEngine.java`|This class provides all the mechanisms to implement to perform a ticketing scenario with an Hoplink Secure Session.<br>It is independent of the platform.|
+
+  - `org.eclipse.keyple.example.calypso.pc.stub.se`
+
+|File|Description|
+|:---|---|
+|`StubCalypsoClassic.java`|Calypso PO stub SE (`StubSecureElement`)|
+|`StubSam.java`|Calypso SAM stub SE (`StubSecureElement`)|
+|`StubHoplink.java`|Hoplink PO stub SE (`StubSecureElement`)|
+
+  - `org.eclipse.keyple.example.calypso.pc`
+
+|File|Description|
+|:---|---|
+|`Demo_CalypsoClassic_Pcsc.java`|Contains the main class for the Calypso PC/SC demo|
+|`Demo_CalypsoClassic_Stub.java`|Contains the main class for the Calypso basic without the need of hardware readers|
+|`Demo_Hoplink_Pcsc.java`|Contains the main class for the Hoplink PC/SC demo|
+|`UseCase_CalypsoAuthenticationLevel3_Pcsc.java`|Contains the main class of an example of code focusing on session opening/closing|
+|`UseCase_MultipleSession_Pcsc.java`|Contains the main class of an example of code focusing on the multiple session mode (for handling large amount of data transferred to a PO)|
+
