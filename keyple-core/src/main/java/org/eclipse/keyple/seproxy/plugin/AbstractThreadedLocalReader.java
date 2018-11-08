@@ -11,7 +11,10 @@
 package org.eclipse.keyple.seproxy.plugin;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import org.eclipse.keyple.seproxy.SeRequestSet;
+import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +32,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      * Thread wait timeout in ms
      */
     protected long threadWaitTimeout;
+    private SeRequestSet selectionOperation;
 
     protected AbstractThreadedLocalReader(String pluginName, String readerName) {
         super(pluginName, readerName);
@@ -111,12 +115,23 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
 
         private void cardRemoved() {
             notifyObservers(new ReaderEvent(this.pluginName, this.readerName,
-                    ReaderEvent.EventType.SE_REMOVAL));
+                    ReaderEvent.EventType.SE_REMOVAL, null));
         }
 
         private void cardInserted() {
-            notifyObservers(new ReaderEvent(this.pluginName, this.readerName,
-                    ReaderEvent.EventType.SE_INSERTED));
+            if (selectionOperation == null) {
+                notifyObservers(new ReaderEvent(this.pluginName, this.readerName,
+                        ReaderEvent.EventType.SE_INSERTED, null));
+            } else {
+                try {
+                    /* TODO add responses check */
+                    SeResponseSet seResponseSet = processSeRequestSet(selectionOperation);
+                    notifyObservers(new ReaderEvent(this.pluginName, this.readerName,
+                            ReaderEvent.EventType.SE_INSERTED, seResponseSet));
+                } catch (KeypleReaderException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         public void run() {
@@ -164,5 +179,15 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
         thread = null;
         logger.trace("[{}] Observable Reader thread ended.", this.getName());
         super.finalize();
+    }
+
+    /**
+     * If defined, the prepared selectionOperation will be processed as soon as a SE is inserted.
+     * The result of this selection will be added to the reader event.
+     *
+     * @param selectionOperation the {@link SeRequestSet} to be executed when a SE is inserted
+     */
+    public void setSelectionOperation(SeRequestSet selectionOperation) {
+        this.selectionOperation = selectionOperation;
     }
 }

@@ -11,6 +11,8 @@
 package org.eclipse.keyple.seproxy.event;
 
 
+import org.eclipse.keyple.seproxy.SeResponseSet;
+
 /**
  * ReaderEvent used to notify changes at reader level
  */
@@ -29,6 +31,11 @@ public final class ReaderEvent {
      * The type of event
      */
     private final EventType eventType;
+
+    /**
+     * The response to the selection request
+     */
+    private final SeResponseSet selectionResponseSet;
 
     /**
      * The different types of reader event
@@ -68,10 +75,12 @@ public final class ReaderEvent {
      * @param readerName the name of the current reader
      * @param eventType the type of event
      */
-    public ReaderEvent(String pluginName, String readerName, EventType eventType) {
+    public ReaderEvent(String pluginName, String readerName, EventType eventType,
+            SeResponseSet selectionResponseSet) {
         this.pluginName = pluginName;
         this.readerName = readerName;
         this.eventType = eventType;
+        this.selectionResponseSet = selectionResponseSet;
     }
 
     public String getPluginName() {
@@ -84,5 +93,9 @@ public final class ReaderEvent {
 
     public EventType getEventType() {
         return eventType;
+    }
+
+    public SeResponseSet getSelectionResponseSet() {
+        return selectionResponseSet;
     }
 }

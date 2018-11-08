@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The SeSelection class handles the SE selection process
  */
-public class SeSelection {
+public final class SeSelection {
     private static final Logger logger = LoggerFactory.getLogger(SeSelection.class);
 
     private final ProxyReader proxyReader;
@@ -48,7 +48,7 @@ public class SeSelection {
      * @param seSelector the selector to prepare
      * @return a MatchingSe for further information request about this selector
      */
-    public final MatchingSe prepareSelector(SeSelector seSelector) {
+    public MatchingSe prepareSelector(SeSelector seSelector) {
         if (logger.isTraceEnabled()) {
             logger.trace("SELECTORREQUEST = {}, EXTRAINFO = {}", seSelector.getSelectorRequest(),
                     seSelector.getExtraInfo());
@@ -73,32 +73,22 @@ public class SeSelection {
     }
 
     /**
-     * Execute the selection process.
-     * <p>
-     * The selection requests are transmitted to the SE.
-     * <p>
-     * The process stops in the following cases:
-     * <ul>
-     * <li>All the selection requests have been transmitted</li>
-     * <li>A selection request matches the current SE and the keepChannelOpen flag was true</li>
-     * </ul>
+     * Parses the response to a selection operation sent to a SE and sets the selectedSe if any
      * <p>
      * The returned boolean indicates if at least one response was successful.
      * <p>
      * If one of the response also corresponds to a request for which the channel has been asked to
      * be kept open, then it is retained as a selection answer.
      * <p>
-     * Responses that have not matched the current PO are set to null.
+     * Responses that have not matched the current SE are set to null.
      * 
-     * @return boolean true or false
-     * @throws KeypleReaderException if the requests transmission failed
+     * @param matchingSeList the list of prepared matchingSe
+     * @param seResponseSet the response from the reader to the selection SeRequestSet
+     * @return boolean true if a SE was selected
      */
-    public final boolean processSelection() throws KeypleReaderException {
+    public boolean analyzeSelectionOperation(List<MatchingSe> matchingSeList,
+            SeResponseSet seResponseSet) {
         boolean selectionSuccessful = false;
-        if (logger.isTraceEnabled()) {
-            logger.trace("Transmit SELECTIONREQUEST ({} request(s))", selectionRequestSet.size());
-        }
-        SeResponseSet seResponseSet = proxyReader.transmit(new SeRequestSet(selectionRequestSet));
         /* Check SeResponses */
         Iterator<MatchingSe> matchingSeIterator = matchingSeList.iterator();
         for (SeResponse seResponse : seResponseSet.getResponses()) {
@@ -133,11 +123,44 @@ public class SeSelection {
     }
 
     /**
+     * Execute the selection process.
+     * <p>
+     * The selection requests are transmitted to the SE.
+     * <p>
+     * The process stops in the following cases:
+     * <ul>
+     * <li>All the selection requests have been transmitted</li>
+     * <li>A selection request matches the current SE and the keepChannelOpen flag was true</li>
+     * </ul>
+     * <p>
+     * The returned boolean indicates if at least one response was successful.
+     * <p>
+     * If one of the response also corresponds to a request for which the channel has been asked to
+     * be kept open, then it is retained as a selection answer.
+     * <p>
+     * Responses that have not matched the current PO are set to null.
+     * 
+     * @return boolean true if a SE was selected
+     * @throws KeypleReaderException if the requests transmission failed
+     */
+    public boolean processSelection() throws KeypleReaderException {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Transmit SELECTIONREQUEST ({} request(s))", selectionRequestSet.size());
+        }
+
+        /* Communicate with the SE to do the selection */
+        SeResponseSet seResponseSet =
+                proxyReader.transmitSet(new SeRequestSet(selectionRequestSet));
+
+        return analyzeSelectionOperation(matchingSeList, seResponseSet);
+    }
+
+    /**
      * Returns the {@link MatchingSe} if there is one, null if not
      * 
      * @return a {@link MatchingSe} or null
      */
-    public final MatchingSe getSelectedSe() {
+    public MatchingSe getSelectedSe() {
         return selectedSe;
     }
 
@@ -147,7 +170,18 @@ public class SeSelection {
      * 
      * @return a list of {@link MatchingSe}
      */
-    public final List<MatchingSe> getMatchingSeList() {
+    public List<MatchingSe> getMatchingSeList() {
         return matchingSeList;
+    }
+
+    /**
+     * The SelectionOperation is the SeRequestSet to process in ordered to select a SE among others
+     * through the selection process. This method is useful to build the prepared selection to be
+     * executed by a reader just after a SE insertion.
+     * 
+     * @return the SeRequestSet previously prepared with prepareSelector
+     */
+    public SeRequestSet getSelectionOperation() {
+        return new SeRequestSet(selectionRequestSet);
     }
 }
