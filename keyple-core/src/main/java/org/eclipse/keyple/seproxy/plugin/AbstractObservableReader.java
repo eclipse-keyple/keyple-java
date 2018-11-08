@@ -64,7 +64,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * @return responseSet the response set
      * @throws KeypleReaderException if a reader error occurs
      */
-    public final SeResponseSet transmit(SeRequestSet requestSet) throws KeypleReaderException {
+    public final SeResponseSet transmitSet(SeRequestSet requestSet) throws KeypleReaderException {
         if (requestSet == null) {
             throw new IllegalArgumentException("seRequestSet must not be null");
         }

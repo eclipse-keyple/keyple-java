@@ -112,7 +112,7 @@ public class AndroidOmapiReaderTest {
         // default init
 
         // test
-        SeResponseSet seResponse = proxyReader.transmit(getCalypsoRequestSample());
+        SeResponseSet seResponse = proxyReader.transmitSet(getCalypsoRequestSample());
 
         // assert
         Assert.assertTrue(
@@ -128,7 +128,7 @@ public class AndroidOmapiReaderTest {
         proxyReader = new AndroidOmapiReader(PLUGIN_NAME, omapiReader, omapiReader.getName());
 
         // test
-        SeResponseSet seResponse = proxyReader.transmit(getCalypsoRequestSample());
+        SeResponseSet seResponse = proxyReader.transmitSet(getCalypsoRequestSample());
 
         // assert
         Assert.assertNull(seResponse.getResponses().get(0));
@@ -149,7 +149,7 @@ public class AndroidOmapiReaderTest {
                         poApduRequestList, false, ContactlessProtocols.PROTOCOL_MIFARE_UL);
 
         // test
-        SeResponseSet seResponse = proxyReader.transmit(new SeRequestSet(seRequest));
+        SeResponseSet seResponse = proxyReader.transmitSet(new SeRequestSet(seRequest));
 
         // assert
         Assert.assertNull(seResponse.getResponses().get(0));
@@ -167,7 +167,7 @@ public class AndroidOmapiReaderTest {
         proxyReader = new AndroidOmapiReader(PLUGIN_NAME, omapiReader, omapiReader.getName());
 
         // test
-        SeResponseSet seResponse = proxyReader.transmit(getCalypsoRequestSample());
+        SeResponseSet seResponse = proxyReader.transmitSet(getCalypsoRequestSample());
 
         // expected = KeypleReaderException.class
     }

@@ -121,7 +121,7 @@ public class SmartCardIOReaderTest {
         SeRequestSet seApplicationRequest = new SeRequestSet(
                 new SeRequest(new SeRequest.AidSelector(aidToSelect), apduRequests, true));
 
-        SeResponseSet reponseActuelle = reader.transmit(seApplicationRequest);
+        SeResponseSet reponseActuelle = reader.transmitSet(seApplicationRequest);
 
         assertNull(reponseActuelle.getSingleResponse().getFci());
         assertEquals(reponseActuelle.getSingleResponse().getApduResponses().size(), 0);
@@ -153,7 +153,7 @@ public class SmartCardIOReaderTest {
                 new SeRequest(new SeRequest.AidSelector(aidToSelect), apduRequests, true));
 
         PcscReader spiedReader = spy(this.reader);
-        SeResponseSet reponseActuelle = spiedReader.transmit(seApplicationRequest);
+        SeResponseSet reponseActuelle = spiedReader.transmitSet(seApplicationRequest);
 
         assertEquals(reponseActuelle.getSingleResponse().getApduResponses().size(),
                 seApplicationRequest.getSingleRequest().getApduRequests().size());
@@ -188,7 +188,7 @@ public class SmartCardIOReaderTest {
 
         PcscReader spiedReader = spy(this.reader);
 
-        SeResponseSet reponseActuelle = spiedReader.transmit(seApplicationRequest);
+        SeResponseSet reponseActuelle = spiedReader.transmitSet(seApplicationRequest);
         assertNotNull(reponseActuelle.getSingleResponse().getFci());
         assertEquals(reponseActuelle.getSingleResponse().getApduResponses().size(),
                 seApplicationRequest.getSingleRequest().getApduRequests().size());
@@ -217,7 +217,7 @@ public class SmartCardIOReaderTest {
 
         PcscReader spiedReader = spy(this.reader);
 
-        SeResponseSet reponseActuelle = spiedReader.transmit(seApplicationRequest);
+        SeResponseSet reponseActuelle = spiedReader.transmitSet(seApplicationRequest);
         assertNotNull(reponseActuelle.getSingleResponse().getFci());
         assertEquals(reponseActuelle.getSingleResponse().getApduResponses().size(),
                 seApplicationRequest.getSingleRequest().getApduRequests().size());

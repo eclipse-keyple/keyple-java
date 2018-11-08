@@ -17,6 +17,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import org.eclipse.keyple.seproxy.SeProtocol;
 import org.eclipse.keyple.seproxy.SeRequest;
+import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
 import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
@@ -73,6 +74,11 @@ public class AndroidOmapiReader extends AbstractStaticReader {
     @Override
     public boolean isSePresent() throws NoStackTraceThrowable {
         return omapiReader.isSecureElementPresent();
+    }
+
+    @Override
+    public void setSelectionOperation(SeRequestSet selectionOperation) {
+
     }
 
     /**
