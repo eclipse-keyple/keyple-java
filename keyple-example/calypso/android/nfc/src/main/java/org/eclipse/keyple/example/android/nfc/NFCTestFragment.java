@@ -249,7 +249,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
                     // transmit seRequestSet to Reader
                     final SeResponseSet seResponseSet =
-                            reader.transmit(new SeRequestSet(seRequest));
+                            reader.transmitSet(new SeRequestSet(seRequest));
 
                     /*
                      * print responses in View
