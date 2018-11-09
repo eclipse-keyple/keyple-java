@@ -13,10 +13,9 @@ package org.eclipse.keyple.example.generic.pc;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Properties;
-import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.example.generic.common.AbstractTransactionEngine;
+import org.eclipse.keyple.example.generic.common.AbstractSelectionEngine;
+import org.eclipse.keyple.example.generic.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -26,26 +25,17 @@ import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.transaction.MatchingSe;
-import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.profiler.Profiler;
 
 /**
  * The UseCase_SelectNext_Pcsc class illustrates the use of the select next mechanism
  */
-public class UseCase_SelectNext_Pcsc extends AbstractTransactionEngine {
+public class UseCase_SelectNext_Pcsc {
 
-    @Override
-    public void operateSeTransaction() {
-
-    }
-
-    @SuppressWarnings("unused")
-    static class SelectNextEngine extends AbstractTransactionEngine
-            implements ObservableReader.ReaderObserver {
+    static class SelectNextEngine extends AbstractSelectionEngine {
         private final Logger logger = LoggerFactory.getLogger(SelectNextEngine.class);
 
         private final ProxyReader poReader;
@@ -54,102 +44,78 @@ public class UseCase_SelectNext_Pcsc extends AbstractTransactionEngine {
             this.poReader = poReader;
         }
 
-        public void operateSeTransaction() {
-            Profiler profiler;
-            try {
+        @Override
+        public void prepareSelection() {
+            /* operate SE selection */
+            String poAidPrefix = "A000000404012509";
 
-                profiler = new Profiler("Entire transaction");
+            initializeSelection(poReader);
 
-                /* operate PO selection */
-                String poAidPrefix = "A000000404012509";
+            /* AID based selection */
+            prepareSelector(new SeSelector(
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), false),
+                    false, null, "Initial selection"));
+            /* next selection */
+            prepareSelector(new SeSelector(
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
+                    false, null, "Next selection #1"));
+            /* next selection */
+            prepareSelector(new SeSelector(
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
+                    false, null, "Next selection #2"));
+            /* next selection */
+            prepareSelector(new SeSelector(
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
+                    false, null, "Next selection #3"));
+            /* next selection */
+            prepareSelector(new SeSelector(
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
+                    false, null, "Next selection #4"));
+            /* next selection */
+            prepareSelector(new SeSelector(
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
+                    false, null, "Next selection #5"));
+            /* next selection */
+            prepareSelector(new SeSelector(
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
+                    false, null, "Next selection #6"));
+            /* next selection */
+            prepareSelector(new SeSelector(
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
+                    false, null, "Next selection #7"));
+            /* next selection */
+            prepareSelector(new SeSelector(
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
+                    false, null, "Next selection #8"));
+            /* next selection */
+            prepareSelector(new SeSelector(
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
+                    false, null, "Next selection #9"));
+            /* next selection */
+            prepareSelector(new SeSelector(
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
+                    false, null, "Next selection #10"));
+            /* next selection */
+            prepareSelector(new SeSelector(
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
+                    false, null, "Next selection #11"));
+            /* next selection */
+            prepareSelector(new SeSelector(
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
+                    false, null, "Next selection #12"));
+        }
 
-                /*
-                 * Prepare the selection using the SeSelection class
-                 */
-                SeSelection seSelection = new SeSelection(poReader);
-
-                /* AID based selection */
-                seSelection.prepareSelector(new PoSelector(
-                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
-                                false),
-                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Initial selection"));
-                /* next selection */
-                seSelection.prepareSelector(new PoSelector(
-                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
-                                true),
-                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #1"));
-                /* next selection */
-                seSelection.prepareSelector(new PoSelector(
-                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
-                                true),
-                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #2"));
-                /* next selection */
-                seSelection.prepareSelector(new PoSelector(
-                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
-                                true),
-                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #3"));
-                /* next selection */
-                seSelection.prepareSelector(new PoSelector(
-                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
-                                true),
-                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #4"));
-                /* next selection */
-                seSelection.prepareSelector(new PoSelector(
-                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
-                                true),
-                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #5"));
-                /* next selection */
-                seSelection.prepareSelector(new PoSelector(
-                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
-                                true),
-                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #6"));
-                /* next selection */
-                seSelection.prepareSelector(new PoSelector(
-                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
-                                true),
-                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #7"));
-                /* next selection */
-                seSelection.prepareSelector(new PoSelector(
-                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
-                                true),
-                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #8"));
-                /* next selection */
-                seSelection.prepareSelector(new PoSelector(
-                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
-                                true),
-                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #9"));
-                /* next selection */
-                seSelection.prepareSelector(new PoSelector(
-                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
-                                true),
-                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #10"));
-                /* next selection */
-                seSelection.prepareSelector(new PoSelector(
-                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
-                                true),
-                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #11"));
-                /* next selection */
-                seSelection.prepareSelector(new PoSelector(
-                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix),
-                                true),
-                        false, null, PoSelector.RevisionTarget.TARGET_REV3, "Next selection #12"));
-
-                /* Time measurement */
-                profiler.start("Initial selection");
-
-                if (seSelection.processSelection()) {
-                    List<MatchingSe> matchingSeList = seSelection.getMatchingSeList();
-                    for (MatchingSe matchingSe : matchingSeList) {
-                        logger.info("Selection: {}", matchingSe.getSelectionSeResponse());
-                    }
-                } else {
-                    logger.error("Selection failed. SeResponse to selection was null.");
-                }
-                profiler.stop();
-                logger.warn(System.getProperty("line.separator") + "{}", profiler);
-            } catch (Exception e) {
-                e.printStackTrace();
+        public void operateSeTransaction(MatchingSe selectedSe) {
+            if (selectedSe != null) {
+                logger.info("Selection: {}", selectedSe.getSelectionSeResponse());
+            } else {
+                logger.info("The selection process did not return any selected SE.");
             }
+        }
+
+        @Override
+        public void operateSeRemoval() {
+
         }
     }
 
@@ -186,8 +152,8 @@ public class UseCase_SelectNext_Pcsc extends AbstractTransactionEngine {
         /*
          * Get PO reader. Apply regulars expressions to reader names to select the PO reader.
          */
-        ProxyReader poReader =
-                getReaderByName(seProxyService, properties.getProperty("po.reader.regex"));
+        ProxyReader poReader = ReaderUtilities.getReaderByName(seProxyService,
+                properties.getProperty("po.reader.regex"));
 
         /* Both readers are expected not null */
         if (poReader == null) {

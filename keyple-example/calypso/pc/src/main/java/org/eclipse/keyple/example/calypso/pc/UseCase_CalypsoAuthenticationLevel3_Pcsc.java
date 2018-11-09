@@ -18,7 +18,8 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.calypso.common.transaction.SamManagement;
-import org.eclipse.keyple.example.generic.common.AbstractTransactionEngine;
+import org.eclipse.keyple.example.generic.common.AbstractSelectionEngine;
+import org.eclipse.keyple.example.generic.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -26,7 +27,7 @@ import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.transaction.SeSelection;
+import org.eclipse.keyple.transaction.MatchingSe;
 import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
@@ -35,17 +36,10 @@ import org.slf4j.profiler.Profiler;
 
 
 
-public class UseCase_CalypsoAuthenticationLevel3_Pcsc extends AbstractTransactionEngine {
+public class UseCase_CalypsoAuthenticationLevel3_Pcsc {
     private static Properties properties;
 
-    @Override
-    public void operateSeTransaction() {
-
-    }
-
-    @SuppressWarnings("unused")
-    static class CalypsoAuthenticationLeve3TransactionEngine extends AbstractTransactionEngine
-            implements ObservableReader.ReaderObserver {
+    static class CalypsoAuthenticationLeve3TransactionEngine extends AbstractSelectionEngine {
         private final Logger logger =
                 LoggerFactory.getLogger(CalypsoAuthenticationLeve3TransactionEngine.class);
 
@@ -73,7 +67,23 @@ public class UseCase_CalypsoAuthenticationLevel3_Pcsc extends AbstractTransactio
             this.samReader = samReader;
         }
 
-        public void operateSeTransaction() {
+        @Override
+        public void prepareSelection() {
+            /* operate PO selection */
+            String poAid = properties.getProperty("po.aid");
+
+            /*
+             * Initialize the selection process for the poReader
+             */
+            initializeSelection(poReader);
+
+            /* AID based selection */
+            prepareSelector(new PoSelector(
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAid), false), true,
+                    null, PoSelector.RevisionTarget.TARGET_REV3, "Calypso selection"));
+        }
+
+        public void operateSeTransaction(MatchingSe selectedSe) {
             Profiler profiler;
             try {
                 /* first time: check SAM */
@@ -85,61 +95,47 @@ public class UseCase_CalypsoAuthenticationLevel3_Pcsc extends AbstractTransactio
 
                 profiler = new Profiler("Entire transaction");
 
-                /* operate PO selection */
-                String poAid = properties.getProperty("po.aid");
-
-                /*
-                 * Prepare the selection using the SeSelection class
-                 */
-                SeSelection seSelection = new SeSelection(poReader);
-
-                /* AID based selection */
-                seSelection.prepareSelector(new PoSelector(
-                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAid), false),
-                        true, null, PoSelector.RevisionTarget.TARGET_REV3, "Calypso selection"));
-
                 /* Time measurement */
                 profiler.start("Initial selection");
 
-                if (seSelection.processSelection()) {
+                profiler.start("Calypso1");
 
-                    profiler.start("Calypso1");
-
-                    PoTransaction poTransaction = new PoTransaction(poReader,
-                            (CalypsoPo) seSelection.getSelectedSe(), samReader, samSetting);
-                    /*
-                     * Open Session for the debit key
-                     */
-                    boolean poProcessStatus = poTransaction.processOpening(
-                            PoTransaction.ModificationMode.ATOMIC,
-                            PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
-                    if (!poTransaction.wasRatified()) {
-                        logger.info(
-                                "========= Previous Secure Session was not ratified. =====================");
-                    }
-                    /*
-                     * Close the Secure Session.
-                     */
-
-                    if (logger.isInfoEnabled()) {
-                        logger.info(
-                                "========= PO Calypso session ======= Closing ============================");
-                    }
-
-                    /*
-                     * A ratification command will be sent (CONTACTLESS_MODE).
-                     */
-                    poProcessStatus = poTransaction.processClosing(
-                            PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
-                } else {
-                    logger.error(
-                            "No Calypso transaction. SeResponse to Calypso selection was null.");
+                PoTransaction poTransaction =
+                        new PoTransaction(poReader, (CalypsoPo) selectedSe, samReader, samSetting);
+                /*
+                 * Open Session for the debit key
+                 */
+                boolean poProcessStatus = poTransaction.processOpening(
+                        PoTransaction.ModificationMode.ATOMIC,
+                        PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
+                if (!poTransaction.wasRatified()) {
+                    logger.info(
+                            "========= Previous Secure Session was not ratified. =====================");
                 }
+                /*
+                 * Close the Secure Session.
+                 */
+
+                if (logger.isInfoEnabled()) {
+                    logger.info(
+                            "========= PO Calypso session ======= Closing ============================");
+                }
+
+                /*
+                 * A ratification command will be sent (CONTACTLESS_MODE).
+                 */
+                poProcessStatus = poTransaction
+                        .processClosing(PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
                 profiler.stop();
                 logger.warn(System.getProperty("line.separator") + "{}", profiler);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        @Override
+        public void operateSeRemoval() {
+
         }
     }
 
@@ -178,10 +174,10 @@ public class UseCase_CalypsoAuthenticationLevel3_Pcsc extends AbstractTransactio
          * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
          * readers. Use the getReader helper method from the transaction engine.
          */
-        ProxyReader poReader =
-                getReaderByName(seProxyService, properties.getProperty("po.reader.regex"));
-        ProxyReader samReader =
-                getReaderByName(seProxyService, properties.getProperty("sam.reader.regex"));
+        ProxyReader poReader = ReaderUtilities.getReaderByName(seProxyService,
+                properties.getProperty("po.reader.regex"));
+        ProxyReader samReader = ReaderUtilities.getReaderByName(seProxyService,
+                properties.getProperty("sam.reader.regex"));
 
         /* Both readers are expected not null */
         if (poReader == samReader || poReader == null || samReader == null) {

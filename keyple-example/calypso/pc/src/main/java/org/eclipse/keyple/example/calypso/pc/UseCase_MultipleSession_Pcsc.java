@@ -22,7 +22,8 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.calypso.common.transaction.SamManagement;
-import org.eclipse.keyple.example.generic.common.AbstractTransactionEngine;
+import org.eclipse.keyple.example.generic.common.AbstractSelectionEngine;
+import org.eclipse.keyple.example.generic.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -31,7 +32,7 @@ import org.eclipse.keyple.seproxy.SeProxyService;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.transaction.SeSelection;
+import org.eclipse.keyple.transaction.MatchingSe;
 import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
@@ -39,17 +40,10 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.Profiler;
 
 
-public class UseCase_MultipleSession_Pcsc extends AbstractTransactionEngine {
+public class UseCase_MultipleSession_Pcsc {
     private static Properties properties;
 
-    @Override
-    public void operateSeTransaction() {
-
-    }
-
-    @SuppressWarnings("unused")
-    static class MultipleSessionLeve3TransactionEngine extends AbstractTransactionEngine
-            implements ObservableReader.ReaderObserver {
+    static class MultipleSessionLeve3TransactionEngine extends AbstractSelectionEngine {
         private final Logger logger =
                 LoggerFactory.getLogger(MultipleSessionLeve3TransactionEngine.class);
 
@@ -76,7 +70,22 @@ public class UseCase_MultipleSession_Pcsc extends AbstractTransactionEngine {
             this.samReader = samReader;
         }
 
-        public void operateSeTransaction() {
+        @Override
+        public void prepareSelection() {
+            String poAid = properties.getProperty("po.aid");
+
+            /*
+             * Initialize the selection process for the poReader
+             */
+            initializeSelection(poReader);
+
+            /* AID based selection */
+            prepareSelector(new PoSelector(
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAid), false), true,
+                    null, PoSelector.RevisionTarget.TARGET_REV3, "AID: " + poAid));
+        }
+
+        public void operateSeTransaction(MatchingSe selectedSe) {
             Profiler profiler;
             try {
                 /* first time: check SAM */
@@ -88,99 +97,85 @@ public class UseCase_MultipleSession_Pcsc extends AbstractTransactionEngine {
 
                 profiler = new Profiler("Entire transaction");
 
-                /* operate PO selection */
-                String poAid = properties.getProperty("po.aid");
-
-                /*
-                 * Prepare the selection using the SeSelection class
-                 */
-                SeSelection seSelection = new SeSelection(poReader);
-
-                /* AID based selection */
-                seSelection.prepareSelector(new PoSelector(
-                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAid), false),
-                        true, null, PoSelector.RevisionTarget.TARGET_REV3, "AID: " + poAid));
-
                 /* Time measurement */
                 profiler.start("Initial selection");
 
-                if (seSelection.processSelection()) {
+                profiler.start("Calypso1");
 
-                    profiler.start("Calypso1");
+                CalypsoPo calypsoPO = (CalypsoPo) selectedSe;
 
-                    CalypsoPo calypsoPO = (CalypsoPo) seSelection.getSelectedSe();
-
-                    PoTransaction poTransaction =
-                            new PoTransaction(poReader, calypsoPO, samReader, samSetting);
-                    /*
-                     * Open Session for the debit key in MULTIPLE mode
-                     */
-                    boolean poProcessStatus = poTransaction.processOpening(
-                            PoTransaction.ModificationMode.MULTIPLE,
-                            PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
-                    if (!poTransaction.wasRatified()) {
-                        logger.info(
-                                "========= Previous Secure Session was not ratified. =====================");
-                    }
-
-                    /*
-                     * Compute the number of append records (29 bytes) commands that will overflow
-                     * the PO modifications buffer. Each append records will consume 35 (29 + 6)
-                     * bytes in the buffer.
-                     *
-                     * We'll send one more command to demonstrate the MULTIPLE mode
-                     */
-                    int modificationsBufferSize = calypsoPO.getModificationsCounter();
-
-                    int nbCommands = (modificationsBufferSize / 35) + 1;
-
-                    AppendRecordRespPars appendRecordParsers[] =
-                            new AppendRecordRespPars[nbCommands];
-
+                PoTransaction poTransaction =
+                        new PoTransaction(poReader, calypsoPO, samReader, samSetting);
+                /*
+                 * Open Session for the debit key in MULTIPLE mode
+                 */
+                boolean poProcessStatus = poTransaction.processOpening(
+                        PoTransaction.ModificationMode.MULTIPLE,
+                        PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
+                if (!poTransaction.wasRatified()) {
                     logger.info(
-                            "==== Send {} Append Record commands. Modifications buffer capacity = {} bytes i.e. {} 29-byte commands ====",
-                            nbCommands, modificationsBufferSize, modificationsBufferSize / 35);
+                            "========= Previous Secure Session was not ratified. =====================");
+                }
 
+                /*
+                 * Compute the number of append records (29 bytes) commands that will overflow the
+                 * PO modifications buffer. Each append records will consume 35 (29 + 6) bytes in
+                 * the buffer.
+                 *
+                 * We'll send one more command to demonstrate the MULTIPLE mode
+                 */
+                int modificationsBufferSize = calypsoPO.getModificationsCounter();
+
+                int nbCommands = (modificationsBufferSize / 35) + 1;
+
+                AppendRecordRespPars appendRecordParsers[] = new AppendRecordRespPars[nbCommands];
+
+                logger.info(
+                        "==== Send {} Append Record commands. Modifications buffer capacity = {} bytes i.e. {} 29-byte commands ====",
+                        nbCommands, modificationsBufferSize, modificationsBufferSize / 35);
+
+                for (int i = 0; i < nbCommands; i++) {
+                    appendRecordParsers[i] = poTransaction.prepareAppendRecordCmd(SFI_EventLog,
+                            ByteArrayUtils.fromHex(eventLog_dataFill),
+                            String.format("EventLog (SFI=%02X) #%d", SFI_EventLog, i));
+                }
+
+                poProcessStatus = poTransaction.processPoCommands();
+
+                if (!poProcessStatus) {
                     for (int i = 0; i < nbCommands; i++) {
-                        appendRecordParsers[i] = poTransaction.prepareAppendRecordCmd(SFI_EventLog,
-                                ByteArrayUtils.fromHex(eventLog_dataFill),
-                                String.format("EventLog (SFI=%02X) #%d", SFI_EventLog, i));
-                    }
-
-                    poProcessStatus = poTransaction.processPoCommands();
-
-                    if (!poProcessStatus) {
-                        for (int i = 0; i < nbCommands; i++) {
-                            if (!appendRecordParsers[i].isSuccessful()) {
-                                logger.error("Append record #%d failed with errror %s.", i,
-                                        appendRecordParsers[i].getStatusInformation());
-                            }
+                        if (!appendRecordParsers[i].isSuccessful()) {
+                            logger.error("Append record #%d failed with errror %s.", i,
+                                    appendRecordParsers[i].getStatusInformation());
                         }
                     }
-
-                    /*
-                     * Close the Secure Session.
-                     */
-
-                    if (logger.isInfoEnabled()) {
-                        logger.info(
-                                "========= PO Calypso session ======= Closing ============================");
-                    }
-
-                    /*
-                     * A ratification command will be sent (CONTACTLESS_MODE).
-                     */
-                    poProcessStatus = poTransaction.processClosing(
-                            PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
-                } else {
-                    logger.error(
-                            "No Calypso transaction. SeResponse to Calypso selection was null.");
                 }
+
+                /*
+                 * Close the Secure Session.
+                 */
+
+                if (logger.isInfoEnabled()) {
+                    logger.info(
+                            "========= PO Calypso session ======= Closing ============================");
+                }
+
+                /*
+                 * A ratification command will be sent (CONTACTLESS_MODE).
+                 */
+                poProcessStatus = poTransaction
+                        .processClosing(PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
+
                 profiler.stop();
                 logger.warn(System.getProperty("line.separator") + "{}", profiler);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        @Override
+        public void operateSeRemoval() {
+
         }
     }
 
@@ -218,10 +213,10 @@ public class UseCase_MultipleSession_Pcsc extends AbstractTransactionEngine {
          * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
          * readers. Use the getReader helper method from the transaction engine.
          */
-        ProxyReader poReader =
-                getReaderByName(seProxyService, properties.getProperty("po.reader.regex"));
-        ProxyReader samReader =
-                getReaderByName(seProxyService, properties.getProperty("sam.reader.regex"));
+        ProxyReader poReader = ReaderUtilities.getReaderByName(seProxyService,
+                properties.getProperty("po.reader.regex"));
+        ProxyReader samReader = ReaderUtilities.getReaderByName(seProxyService,
+                properties.getProperty("sam.reader.regex"));
 
         /* Both readers are expected not null */
         if (poReader == samReader || poReader == null || samReader == null) {

@@ -144,8 +144,8 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
         LOG.info("Received Tag Discovered event");
         try {
             tagProxy = TagProxy.getTagProxy(tag);
-            notifyObservers(new ReaderEvent(PLUGIN_NAME, READER_NAME,
-                    ReaderEvent.EventType.SE_INSERTED, null));
+            notifyObservers(
+                    new ReaderEvent(PLUGIN_NAME, READER_NAME, ReaderEvent.EventType.SE_INSERTED));
 
         } catch (KeypleReaderException e) {
             // print and do nothing
@@ -202,7 +202,7 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
             if (tagProxy != null) {
                 tagProxy.close();
                 notifyObservers(new ReaderEvent(PLUGIN_NAME, READER_NAME,
-                        ReaderEvent.EventType.SE_REMOVAL, null));
+                        ReaderEvent.EventType.SE_REMOVAL));
                 LOG.info("Disconnected tag : " + printTagId());
             }
         } catch (IOException e) {

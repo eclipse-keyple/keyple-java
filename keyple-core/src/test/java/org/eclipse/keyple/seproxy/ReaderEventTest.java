@@ -21,15 +21,13 @@ public class ReaderEventTest {
 
     @Test
     public void testReaderEvent() {
-        ReaderEvent event =
-                new ReaderEvent("plugin", "reader", ReaderEvent.EventType.IO_ERROR, null);
+        ReaderEvent event = new ReaderEvent("plugin", "reader", ReaderEvent.EventType.IO_ERROR);
         assertNotNull(event);
     }
 
     @Test
     public void testGetEvent() {
-        ReaderEvent event =
-                new ReaderEvent("plugin", "reader", ReaderEvent.EventType.IO_ERROR, null);
+        ReaderEvent event = new ReaderEvent("plugin", "reader", ReaderEvent.EventType.IO_ERROR);
         assertEquals(event.getReaderName(), "reader");
         assertEquals(event.getPluginName(), "plugin");
         assertEquals(event.getEventType(), ReaderEvent.EventType.IO_ERROR);

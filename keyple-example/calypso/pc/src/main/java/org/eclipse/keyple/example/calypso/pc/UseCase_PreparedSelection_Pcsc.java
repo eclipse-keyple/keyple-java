@@ -13,30 +13,23 @@ package org.eclipse.keyple.example.calypso.pc;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Properties;
-import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.calypso.common.transaction.SamManagement;
+import org.eclipse.keyple.example.generic.common.AbstractSelectionEngine;
+import org.eclipse.keyple.example.generic.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.seproxy.ProxyReader;
-import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.transaction.MatchingSe;
-import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
@@ -48,56 +41,9 @@ public class UseCase_PreparedSelection_Pcsc {
     private static Logger logger = LoggerFactory.getLogger(UseCase_PreparedSelection_Pcsc.class);
     private static Properties properties;
 
-    /**
-     * Get the terminal which names match the expected pattern
-     *
-     * @param seProxyService SE Proxy service
-     * @param pattern Pattern
-     * @return ProxyReader
-     * @throws KeypleReaderException Readers are not initialized
-     */
-    public static ProxyReader getReaderByName(SeProxyService seProxyService, String pattern)
-            throws KeypleReaderException {
-        Pattern p = Pattern.compile(pattern);
-        for (ReaderPlugin plugin : seProxyService.getPlugins()) {
-            for (ProxyReader reader : plugin.getReaders()) {
-                if (p.matcher(reader.getName()).matches()) {
-                    return reader;
-                }
-            }
-        }
-        throw new KeypleReaderNotFoundException("Reader name pattern: " + pattern);
-    }
-
-    @SuppressWarnings("unused")
-    static class PreparedSelectionTransactionEngine implements ObservableReader.ReaderObserver {
+    static class PreparedSelectionTransactionEngine extends AbstractSelectionEngine {
         private final Logger logger =
                 LoggerFactory.getLogger(PreparedSelectionTransactionEngine.class);
-
-        List<MatchingSe> matchingSeList = new ArrayList<MatchingSe>();
-
-        /*
-         * This method is called when an reader event occurs according to the Observer pattern
-         */
-        public void update(ReaderEvent event) {
-            switch (event.getEventType()) {
-                case SE_INSERTED:
-                    if (logger.isInfoEnabled()) {
-                        logger.info("SE INSERTED");
-                        logger.info("Start processing of a Calypso PO");
-                    }
-                    operateSeTransaction(event.getSelectionResponseSet());
-                    break;
-                case SE_REMOVAL:
-                    if (logger.isInfoEnabled()) {
-                        logger.info("SE REMOVED");
-                        logger.info("Wait for Calypso PO");
-                    }
-                    break;
-                default:
-                    logger.error("IO Error");
-            }
-        }
 
         private final ProxyReader poReader, samReader;
         private boolean samChannelOpen;
@@ -120,25 +66,26 @@ public class UseCase_PreparedSelection_Pcsc {
         public PreparedSelectionTransactionEngine(ProxyReader poReader, ProxyReader samReader) {
             this.poReader = poReader;
             this.samReader = samReader;
+            /* set the implicit selection mode */
+            setImplicitSelectionMode();
+        }
 
-            /* Prepared PO selection */
+        @Override
+        public void prepareSelection() {
             String poAid = properties.getProperty("po.aid");
 
             /*
-             * Prepare the selection using the SeSelection class
+             * Initialize the selection process for the poReader
              */
-            SeSelection seSelection = new SeSelection(poReader);
+            initializeSelection(poReader);
 
             /* AID based selection */
-            matchingSeList.add(seSelection.prepareSelector(new PoSelector(
+            prepareSelector(new PoSelector(
                     new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAid), false), true,
-                    null, PoSelector.RevisionTarget.TARGET_REV3, "Calypso selection")));
-
-            /* Prepare the reader to execute the selection operation when a SE is detected */
-            poReader.setSelectionOperation(seSelection.getSelectionOperation());
+                    null, PoSelector.RevisionTarget.TARGET_REV3, "Calypso selection"));
         }
 
-        public void operateSeTransaction(SeResponseSet selectionResponse) {
+        public void operateSeTransaction(MatchingSe selectedSe) {
             Profiler profiler;
             try {
                 /* first time: check SAM */
@@ -153,47 +100,45 @@ public class UseCase_PreparedSelection_Pcsc {
                 /* Time measurement */
                 profiler.start("Initial selection");
 
-                SeSelection seSelection = new SeSelection(poReader);
+                profiler.start("Calypso1");
 
-                if (seSelection.analyzeSelectionOperation(matchingSeList, selectionResponse)) {
-
-                    profiler.start("Calypso1");
-
-                    PoTransaction poTransaction = new PoTransaction(poReader,
-                            (CalypsoPo) seSelection.getSelectedSe(), samReader, samSetting);
-                    /*
-                     * Open Session for the debit key
-                     */
-                    boolean poProcessStatus = poTransaction.processOpening(
-                            PoTransaction.ModificationMode.ATOMIC,
-                            PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
-                    if (!poTransaction.wasRatified()) {
-                        logger.info(
-                                "========= Previous Secure Session was not ratified. =====================");
-                    }
-                    /*
-                     * Close the Secure Session.
-                     */
-
-                    if (logger.isInfoEnabled()) {
-                        logger.info(
-                                "========= PO Calypso session ======= Closing ============================");
-                    }
-
-                    /*
-                     * A ratification command will be sent (CONTACTLESS_MODE).
-                     */
-                    poProcessStatus = poTransaction.processClosing(
-                            PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
-                } else {
-                    logger.error(
-                            "No Calypso transaction. SeResponse to Calypso selection was null.");
+                PoTransaction poTransaction =
+                        new PoTransaction(poReader, (CalypsoPo) selectedSe, samReader, samSetting);
+                /*
+                 * Open Session for the debit key
+                 */
+                boolean poProcessStatus = poTransaction.processOpening(
+                        PoTransaction.ModificationMode.ATOMIC,
+                        PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
+                if (!poTransaction.wasRatified()) {
+                    logger.info(
+                            "========= Previous Secure Session was not ratified. =====================");
                 }
+                /*
+                 * Close the Secure Session.
+                 */
+
+                if (logger.isInfoEnabled()) {
+                    logger.info(
+                            "========= PO Calypso session ======= Closing ============================");
+                }
+
+                /*
+                 * A ratification command will be sent (CONTACTLESS_MODE).
+                 */
+                poProcessStatus = poTransaction
+                        .processClosing(PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
+
                 profiler.stop();
                 logger.warn(System.getProperty("line.separator") + "{}", profiler);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        @Override
+        public void operateSeRemoval() {
+
         }
     }
 
@@ -231,10 +176,10 @@ public class UseCase_PreparedSelection_Pcsc {
          * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
          * readers. Use the getReader helper method from the transaction engine.
          */
-        ProxyReader poReader =
-                getReaderByName(seProxyService, properties.getProperty("po.reader.regex"));
-        ProxyReader samReader =
-                getReaderByName(seProxyService, properties.getProperty("sam.reader.regex"));
+        ProxyReader poReader = ReaderUtilities.getReaderByName(seProxyService,
+                properties.getProperty("po.reader.regex"));
+        ProxyReader samReader = ReaderUtilities.getReaderByName(seProxyService,
+                properties.getProperty("sam.reader.regex"));
 
         /* Both readers are expected not null */
         if (poReader == samReader || poReader == null || samReader == null) {

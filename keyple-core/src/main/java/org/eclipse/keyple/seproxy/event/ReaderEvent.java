@@ -52,6 +52,11 @@ public final class ReaderEvent {
         SE_INSERTED("SE insertion"),
 
         /**
+         * A SE has been inserted and the selection process has been operated.
+         */
+        SE_SELECTED("SE selection"),
+
+        /**
          * The SE has been removed.
          */
         SE_REMOVAL("SE removal");
@@ -69,17 +74,32 @@ public final class ReaderEvent {
     }
 
     /**
-     * ReaderEvent constructor
+     * ReaderEvent constructor for simple insertion notification mode
      * 
      * @param pluginName the name of the current plugin
      * @param readerName the name of the current reader
      * @param eventType the type of event
      */
-    public ReaderEvent(String pluginName, String readerName, EventType eventType,
-            SeResponseSet selectionResponseSet) {
+    public ReaderEvent(String pluginName, String readerName, EventType eventType) {
         this.pluginName = pluginName;
         this.readerName = readerName;
         this.eventType = eventType;
+        this.selectionResponseSet = null;
+    }
+
+    /**
+     * ReaderEvent constructor for implicit selection notification mode.
+     * <p>
+     * The event type is fixed to SE_SELECTED.
+     *
+     * @param pluginName
+     * @param readerName
+     * @param selectionResponseSet
+     */
+    public ReaderEvent(String pluginName, String readerName, SeResponseSet selectionResponseSet) {
+        this.pluginName = pluginName;
+        this.readerName = readerName;
+        this.eventType = EventType.SE_SELECTED;
         this.selectionResponseSet = selectionResponseSet;
     }
 

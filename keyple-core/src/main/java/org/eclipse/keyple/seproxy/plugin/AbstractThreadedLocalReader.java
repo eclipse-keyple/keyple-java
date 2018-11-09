@@ -115,19 +115,19 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
 
         private void cardRemoved() {
             notifyObservers(new ReaderEvent(this.pluginName, this.readerName,
-                    ReaderEvent.EventType.SE_REMOVAL, null));
+                    ReaderEvent.EventType.SE_REMOVAL));
         }
 
         private void cardInserted() {
             if (selectionOperation == null) {
                 notifyObservers(new ReaderEvent(this.pluginName, this.readerName,
-                        ReaderEvent.EventType.SE_INSERTED, null));
+                        ReaderEvent.EventType.SE_INSERTED));
             } else {
                 try {
-                    /* TODO add responses check */
+                    /* TODO add responses check? */
                     SeResponseSet seResponseSet = processSeRequestSet(selectionOperation);
-                    notifyObservers(new ReaderEvent(this.pluginName, this.readerName,
-                            ReaderEvent.EventType.SE_INSERTED, seResponseSet));
+                    notifyObservers(
+                            new ReaderEvent(this.pluginName, this.readerName, seResponseSet));
                 } catch (KeypleReaderException e) {
                     e.printStackTrace();
                 }

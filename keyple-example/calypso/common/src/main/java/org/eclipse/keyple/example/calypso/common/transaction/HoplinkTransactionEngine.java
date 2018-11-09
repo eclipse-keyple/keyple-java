@@ -17,12 +17,11 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.calypso.common.postructure.HoplinkInfo;
-import org.eclipse.keyple.example.generic.common.AbstractTransactionEngine;
+import org.eclipse.keyple.example.generic.common.AbstractSelectionEngine;
 import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.transaction.SeSelection;
+import org.eclipse.keyple.transaction.MatchingSe;
 import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
@@ -56,8 +55,7 @@ import org.slf4j.profiler.Profiler;
  * <p>
  * Read the doc of each methods for further details.
  */
-public class HoplinkTransactionEngine extends AbstractTransactionEngine
-        implements ObservableReader.ReaderObserver {
+public class HoplinkTransactionEngine extends AbstractSelectionEngine {
     private final static Logger logger = LoggerFactory.getLogger(HoplinkTransactionEngine.class);
 
     /* define the SAM parameters to provide when creating PoTransaction */
@@ -173,10 +171,57 @@ public class HoplinkTransactionEngine extends AbstractTransactionEngine
         }
     }
 
+    @Override
+    public void prepareSelection() {
+
+        /*
+         * Initialize the selection process for the poReader
+         */
+        initializeSelection(poReader);
+
+        /*
+         * Add selection case 1: Fake AID1, protocol ISO, target rev 3
+         */
+        prepareSelector(
+                new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex("AABBCCDDEE"),
+                                false),
+                        true, ContactlessProtocols.PROTOCOL_ISO14443_4,
+                        PoSelector.RevisionTarget.TARGET_REV3, "Selector with fake AID1"));
+        /*
+         * Add selection case 2: Hoplink application, protocol ISO, target rev 3
+         *
+         * addition of read commands to execute following the selection
+         */
+        PoSelector poSelectorHoplink =
+                new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(HoplinkInfo.AID),
+                                false),
+                        true, ContactlessProtocols.PROTOCOL_ISO14443_4,
+                        PoSelector.RevisionTarget.TARGET_REV3, "Hoplink selector");
+
+        poSelectorHoplink.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Environment,
+                HoplinkInfo.RECORD_NUMBER_1, true, (byte) 0x00,
+                HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
+
+        prepareSelector(poSelectorHoplink);
+
+        /*
+         * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
+         */
+
+        prepareSelector(
+                new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex("EEDDCCBBAA"),
+                                false),
+                        true, ContactlessProtocols.PROTOCOL_ISO14443_4,
+                        PoSelector.RevisionTarget.TARGET_REV2_REV3, "Selector with fake AID2"));
+    }
+
     /**
      * Do the PO selection and possibly go on with Hoplink transactions.
      */
-    public void operateSeTransaction() {
+    public void operateSeTransaction(MatchingSe selectedSe) {
         try {
             /* first time: check SAM */
             if (!this.samChannelOpen) {
@@ -187,75 +232,23 @@ public class HoplinkTransactionEngine extends AbstractTransactionEngine
 
             profiler = new Profiler("Entire transaction");
 
-            /* operate multiple PO selections */
-            /*
-             * Prepare the selection using the SeSelection class
-             */
-            SeSelection seSelection = new SeSelection(poReader);
-
-            /*
-             * Add selection case 1: Fake AID1, protocol ISO, target rev 3
-             */
-
-            seSelection
-                    .prepareSelector(new PoSelector(
-                            new SeSelector.SelectionParameters(ByteArrayUtils.fromHex("AABBCCDDEE"),
-                                    false),
-                            true, ContactlessProtocols.PROTOCOL_ISO14443_4,
-                            PoSelector.RevisionTarget.TARGET_REV3, "Selector with fake AID1"));
-            /*
-             * Add selection case 2: Hoplink application, protocol ISO, target rev 3
-             *
-             * addition of read commands to execute following the selection
-             */
-            PoSelector poSelectorHoplink = new PoSelector(
-                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(HoplinkInfo.AID),
-                            false),
-                    true, ContactlessProtocols.PROTOCOL_ISO14443_4,
-                    PoSelector.RevisionTarget.TARGET_REV3, "Hoplink selector");
-
-            poSelectorHoplink.prepareReadRecordsCmd(HoplinkInfo.SFI_T2Environment,
-                    HoplinkInfo.RECORD_NUMBER_1, true, (byte) 0x00,
-                    HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
-
-            seSelection.prepareSelector(poSelectorHoplink);
-
-            /*
-             * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
-             */
-
-            seSelection
-                    .prepareSelector(new PoSelector(
-                            new SeSelector.SelectionParameters(ByteArrayUtils.fromHex("EEDDCCBBAA"),
-                                    false),
-                            true, ContactlessProtocols.PROTOCOL_ISO14443_4,
-                            PoSelector.RevisionTarget.TARGET_REV2_REV3, "Selector with fake AID2"));
-
             /* Time measurement */
             profiler.start("Initial selection");
 
-            /*
-             * Execute the selection process
-             */
-            if (seSelection.processSelection()) {
-                int responseIndex = 0;
-
-                /*
-                 * If the Hoplink selection succeeded we should have 2 responses and the 2nd one not
-                 * null
-                 */
-                PoTransaction poTransaction = new PoTransaction(poReader,
-                        (CalypsoPo) seSelection.getSelectedSe(), samReader, samSetting);
-                profiler.start("Hoplink1");
-                doHoplinkReadWriteTransaction(poTransaction, true);
-            } else {
-                logger.error("No Hoplink transaction. SeResponse to Hoplink selection was null.");
-            }
+            PoTransaction poTransaction =
+                    new PoTransaction(poReader, (CalypsoPo) selectedSe, samReader, samSetting);
+            profiler.start("Hoplink1");
+            doHoplinkReadWriteTransaction(poTransaction, true);
         } catch (KeypleReaderException ex) {
             logger.error("Selection exception: {}", ex.getMessage());
         }
 
         profiler.stop();
         logger.warn(System.getProperty("line.separator") + "{}", profiler);
+    }
+
+    @Override
+    public void operateSeRemoval() {
+
     }
 }

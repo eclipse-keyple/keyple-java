@@ -82,12 +82,10 @@ public final class SeSelection {
      * <p>
      * Responses that have not matched the current SE are set to null.
      * 
-     * @param matchingSeList the list of prepared matchingSe
      * @param seResponseSet the response from the reader to the selection SeRequestSet
      * @return boolean true if a SE was selected
      */
-    public boolean analyzeSelectionOperation(List<MatchingSe> matchingSeList,
-            SeResponseSet seResponseSet) {
+    public boolean processSelection(SeResponseSet seResponseSet) {
         boolean selectionSuccessful = false;
         /* Check SeResponses */
         Iterator<MatchingSe> matchingSeIterator = matchingSeList.iterator();
@@ -152,7 +150,7 @@ public final class SeSelection {
         SeResponseSet seResponseSet =
                 proxyReader.transmitSet(new SeRequestSet(selectionRequestSet));
 
-        return analyzeSelectionOperation(matchingSeList, seResponseSet);
+        return processSelection(seResponseSet);
     }
 
     /**

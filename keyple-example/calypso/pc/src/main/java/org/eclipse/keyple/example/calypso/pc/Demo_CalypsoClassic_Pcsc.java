@@ -12,7 +12,7 @@ package org.eclipse.keyple.example.calypso.pc;
 
 
 import org.eclipse.keyple.example.calypso.common.transaction.CalypsoClassicTransactionEngine;
-import org.eclipse.keyple.example.generic.common.AbstractTransactionEngine;
+import org.eclipse.keyple.example.generic.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -61,9 +61,9 @@ public class Demo_CalypsoClassic_Pcsc {
          */
         ProxyReader poReader = null, samReader = null;
         try {
-            poReader = AbstractTransactionEngine.getReaderByName(seProxyService,
+            poReader = ReaderUtilities.getReaderByName(seProxyService,
                     PcscReadersSettings.PO_READER_NAME_REGEX);
-            samReader = AbstractTransactionEngine.getReaderByName(seProxyService,
+            samReader = ReaderUtilities.getReaderByName(seProxyService,
                     PcscReadersSettings.SAM_READER_NAME_REGEX);
         } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
