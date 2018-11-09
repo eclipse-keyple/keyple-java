@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This abstract is intended to be extended by the applications classes in which the SE insertion,
+ * This abstract class is intended to be extended by the applications classes in which the SE insertion,
  * selection, removal is factorized here.
  */
 public abstract class AbstractSelectionEngine implements ObservableReader.ReaderObserver {
