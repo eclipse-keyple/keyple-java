@@ -97,7 +97,7 @@ public class Demo_Hoplink_Pcsc {
         poReader.addSeProtocolSetting(
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
 
-        /* Assign readers to Hoplink transaction engine */
+        /* Assign the readers to the Hoplink transaction engine */
         transactionEngine.setReaders(poReader, samReader);
 
         /* Set the default selection operation */

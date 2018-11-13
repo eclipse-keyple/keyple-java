@@ -106,7 +106,8 @@ public class Demo_CalypsoClassic_Pcsc {
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
         poReader.addSeProtocolSetting(
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_B_PRIME));
-        /* Assign readers to Calypso transaction engine */
+
+        /* Assign the readers to the Calypso transaction engine */
         transactionEngine.setReaders(poReader, samReader);
 
         /* Set the default selection operation */
