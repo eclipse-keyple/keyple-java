@@ -36,6 +36,15 @@ SPDX-License-Identifier: EPL-2.0
 The project maintains the following source code repositories:
 
  * https://github.com/eclipse/keyple.git
+ 
+ 
+## Contributors
+   *   Pierre Terrée - API specification
+   *   Jean-Pierre Fortune - plugin PCSC, keyple Core and Keyple Calypso
+   *   Olivier Delcroix - plugins Android, plugin Remote SE
+   *   Florent Clairambault - Keyple Core
+   *   Paulo Barreto - integration and demo
+   
 
 ## Third-party Content
 
@@ -55,7 +64,9 @@ Junit (4.12)
 
  * License: Eclipse Public License, 2.0
 
-SEEK for Android
+####Specific for Android plugins
+
+SEEK for Android (plugin OMAPI)
 
  * License: Apache Software License, 2.0
 

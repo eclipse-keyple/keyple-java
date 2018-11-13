@@ -11,12 +11,10 @@ plugins {
 }
 
 
-
 subprojects {
     group 'org.eclipse.keyple'
-
-
 }
+
 
 allprojects {
 
@@ -62,15 +60,18 @@ allprojects {
         ]
     }
 
+    //copy license file from root folder to each generated artifact
     task copyLICENSE(type: Copy) {
         from file("${rootDir}/LICENSE")
         into file("${buildDir}/resources/main/META-INF/")
     }
 
+    //copy notice file from root folder to each generated artifact
     task copyNOTICE(type: Copy) {
         from file("${rootDir}/NOTICE.md")
         into file("${buildDir}/resources/main/META-INF/")
     }
+
 
 }
 
@@ -94,5 +95,63 @@ spotless {
 
         indentWithSpaces()
         endWithNewline()
+    }
+}
+
+
+//create task for to agragate javadoc
+task aggregatedJavadocs(type: Javadoc, description: 'Generate javadocs from all child projects as if it was a single project', group: 'Documentation') {
+    println 'Create a aggregated javadoc Task to : ' + "$buildDir/docs/javadoc"
+    destinationDir = file("$buildDir/docs/javadoc")
+    title = "$project.name " +  project(":keyple-core").version + " version API"
+    options.author true
+    options.links 'http://docs.spring.io/spring/docs/4.3.x/javadoc-api/',
+            'http://docs.oracle.com/javase/8/docs/api/',
+            'http://docs.spring.io/spring-ws/docs/2.3.0.RELEASE/api/',
+            'http://docs.spring.io/spring-security/site/docs/4.0.4.RELEASE/apidocs/',
+            'http://docs.oracle.com/javase/6/docs/api/',
+            "http://d.android.com/reference/",
+            'http://seek-for-android.github.io/javadoc/V4.0.0/'
+
+
+    options.addStringOption 'Xdoclint:none', '-quiet'
+
+    //init source to whatever file to avoid NO-SOURCE
+    source = 'README.MD'
+}
+
+//dynamically configure the source
+aggregatedJavadocs.doFirst {
+
+    println "DoFirst in task  : aggregatedJavadocs"
+
+    //add Java modules javadoc
+    def aggregatedJavaProjects = [project(":keyple-core"),
+                                  project(":keyple-calypso"),
+                                  project(":keyple-plugin:keyple-plugin-pcsc"),
+                                  project(":keyple-plugin:keyple-plugin-stub")]
+
+    aggregatedJavaProjects.each { aggregatedJavaProject ->
+        source += aggregatedJavaProject.javadoc.source
+        classpath += aggregatedJavaProject.javadoc.classpath
+        excludes += aggregatedJavaProject.javadoc.excludes
+        includes += aggregatedJavaProject.javadoc.includes
+
+    }
+
+    //exclude the init file
+    excludes += "README.MD"
+
+    //add Android modules javadoc
+    def aggregatedAndroidProjects = [
+                                  project(":keyple-plugin:keyple-plugin-android-nfc"),
+                                  project(":keyple-plugin:keyple-plugin-android-omapi")]
+
+    aggregatedAndroidProjects.each { aggregatedAndroidProject ->
+            source += aggregatedAndroidProject.generateDebugJavadoc.source
+            classpath += aggregatedAndroidProject.generateDebugJavadoc.classpath
+            excludes += aggregatedAndroidProject.generateDebugJavadoc.excludes
+            includes += aggregatedAndroidProject.generateDebugJavadoc.includes
+
     }
 }
