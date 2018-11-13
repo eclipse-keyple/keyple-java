@@ -637,11 +637,12 @@ public final class PoTransaction {
                     null);
         }
 
-        if (samSeResponse.wasChannelPreviouslyOpen() == false) {
+        if (currentState == SessionState.SESSION_OPEN && samSeResponse.wasChannelPreviouslyOpen() == false) {
             throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
                     KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
                     null);
         }
+        // TODO check if the wasChannelPreviouslyOpen should be done in the case where the session is closed
 
         return samSeResponse;
     }
