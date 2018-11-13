@@ -61,4 +61,3 @@
 |`Demo_Hoplink_Pcsc.java`|Contains the main class for the Hoplink PC/SC demo|
 |`UseCase_CalypsoAuthenticationLevel3_Pcsc.java`|Contains the main class of an example of code focusing on session opening/closing|
 |`UseCase_MultipleSession_Pcsc.java`|Contains the main class of an example of code focusing on the multiple session mode (for handling large amount of data transferred to a PO)|
-
