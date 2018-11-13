@@ -13,6 +13,7 @@ package org.eclipse.keyple.seproxy;
 import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.keyple.util.ByteArrayUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -21,15 +22,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class SeResponseSetTest {
 
-
     @Test
     public void getSingleResponse() throws Exception {
         SeResponseSet set = new SeResponseSet(SeResponseTest.getASeResponse());
         // assertArrayEquals(SeResponseTest.getASeResponse().getApduResponses().toArray(),
         // set.getSingleResponse().getApduResponses().toArray());
         assertEquals(SeResponseTest.getASeResponse(), set.getSingleResponse());
-
-
     }
 
     @Test(expected = IllegalStateException.class)
@@ -42,7 +40,6 @@ public class SeResponseSetTest {
         set.getSingleResponse();// throw exception
     }
 
-
     @Test
     public void getResponses() throws Exception {
         List<SeResponse> seResponses = new ArrayList<SeResponse>();
@@ -52,12 +49,11 @@ public class SeResponseSetTest {
         assertArrayEquals(seResponses.toArray(), set.getResponses().toArray());
     }
 
-
     @Test
     public void toStringTest() throws Exception {
-        SeResponse emptySeR = new SeResponse(true, new ApduResponse(null, null), null, null);
+        SeResponse emptySeR = new SeResponse(true, new SelectionStatus(
+                new AnswerToReset(ByteArrayUtils.fromHex("3BFF00")), null, true), null);
         SeResponseSet set = new SeResponseSet(emptySeR);
         assertNotNull(set.toString());
     }
-
 }

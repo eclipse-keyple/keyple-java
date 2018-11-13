@@ -15,41 +15,61 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-@SuppressWarnings("PMD.SignatureDeclareThrowsException")
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.SignatureDeclareThrowsException"})
 @RunWith(MockitoJUnitRunner.class)
 public class SeResponseTest {
 
 
     @Test
-    public void constructorSuccessfullResponse() throws IllegalArgumentException {
+    public void constructorSuccessfullResponseMatch() throws IllegalArgumentException {
 
-        SeResponse response = new SeResponse(true, ApduResponseTest.getAAtr(),
-                ApduResponseTest.getAFCI(), ApduResponseTest.getAListOfAPDUs());
+        SeResponse response = new SeResponse(true,
+                new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), true),
+                ApduResponseTest.getAListOfAPDUs());
         Assert.assertNotNull(response);
         Assert.assertArrayEquals(ApduResponseTest.getAListOfAPDUs().toArray(),
                 response.getApduResponses().toArray());
         Assert.assertEquals(true, response.wasChannelPreviouslyOpen());
-        Assert.assertEquals(ApduResponseTest.getAAtr(), response.getAtr());
-        Assert.assertEquals(ApduResponseTest.getAFCI(), response.getFci());
+        Assert.assertEquals(ApduResponseTest.getAAtr(), response.getSelectionStatus().getAtr());
+        Assert.assertEquals(ApduResponseTest.getAFCI(), response.getSelectionStatus().getFci());
+        Assert.assertEquals(response.getSelectionStatus().hasMatched(), true);
+    }
+
+    @Test
+    public void constructorSuccessfullResponseNoMatch() throws IllegalArgumentException {
+
+        SeResponse response = new SeResponse(true,
+                new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), false),
+                ApduResponseTest.getAListOfAPDUs());
+        Assert.assertNotNull(response);
+        Assert.assertArrayEquals(ApduResponseTest.getAListOfAPDUs().toArray(),
+                response.getApduResponses().toArray());
+        Assert.assertEquals(true, response.wasChannelPreviouslyOpen());
+        Assert.assertEquals(ApduResponseTest.getAAtr(), response.getSelectionStatus().getAtr());
+        Assert.assertEquals(ApduResponseTest.getAFCI(), response.getSelectionStatus().getFci());
+        Assert.assertEquals(response.getSelectionStatus().hasMatched(), false);
     }
 
     @Test
     public void constructorATRNull() throws IllegalArgumentException {
-        SeResponse response = new SeResponse(true, null, ApduResponseTest.getAFCI(),
-                ApduResponseTest.getAListOfAPDUs());
+        SeResponse response =
+                new SeResponse(true, new SelectionStatus(null, ApduResponseTest.getAFCI(), true),
+                        ApduResponseTest.getAListOfAPDUs());
         Assert.assertNotNull(response);
     }
 
     @Test
     public void constructorFCINull() throws IllegalArgumentException {
-        SeResponse response = new SeResponse(true, ApduResponseTest.getAAtr(), null,
-                ApduResponseTest.getAListOfAPDUs());
+        SeResponse response =
+                new SeResponse(true, new SelectionStatus(ApduResponseTest.getAAtr(), null, true),
+                        ApduResponseTest.getAListOfAPDUs());
         Assert.assertNotNull(response);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void constructorFCIAndATRNull() throws IllegalArgumentException {
-        SeResponse response = new SeResponse(true, null, null, ApduResponseTest.getAListOfAPDUs());
+        SeResponse response = new SeResponse(true, new SelectionStatus(null, null, true),
+                ApduResponseTest.getAListOfAPDUs());
         Assert.assertNull(response);
     }
 
@@ -74,10 +94,13 @@ public class SeResponseTest {
     @Test()
     public void testNotEqualsNull() throws Exception {
         SeResponse resp = getASeResponse();
-        SeResponse respNull = new SeResponse(true, null, ApduResponseTest.getAFCI(), null);
-        SeResponse respNull2 = new SeResponse(true, ApduResponseTest.getAAtr(), null, null);
-        SeResponse respNull3 =
-                new SeResponse(true, ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), null);
+        SeResponse respNull = new SeResponse(true,
+                new SelectionStatus(null, ApduResponseTest.getAFCI(), true), null);
+        SeResponse respNull2 = new SeResponse(true,
+                new SelectionStatus(ApduResponseTest.getAAtr(), null, true), null);
+        SeResponse respNull3 = new SeResponse(true,
+                new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), true),
+                null);
         Assert.assertFalse(resp.equals(respNull));
         Assert.assertFalse(resp.equals(respNull2));
         Assert.assertFalse(resp.equals(respNull3));
@@ -92,7 +115,8 @@ public class SeResponseTest {
 
     @Test()
     public void hashcodeNull() throws Exception {
-        SeResponse resp = new SeResponse(true, null, ApduResponseTest.getAFCI(), null);
+        SeResponse resp = new SeResponse(true,
+                new SelectionStatus(null, ApduResponseTest.getAFCI(), true), null);
         Assert.assertNotNull(resp.hashCode());
     }
 
@@ -102,7 +126,8 @@ public class SeResponseTest {
      */
 
     public static SeResponse getASeResponse() throws IllegalArgumentException {
-        return new SeResponse(true, ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(),
+        return new SeResponse(true,
+                new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), true),
                 ApduResponseTest.getAListOfAPDUs());
     }
 }

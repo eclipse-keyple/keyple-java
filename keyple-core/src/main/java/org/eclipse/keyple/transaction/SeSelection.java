@@ -92,7 +92,7 @@ public final class SeSelection {
         for (SeResponse seResponse : seResponseSet.getResponses()) {
             if (seResponse != null) {
                 /* test if the selection is successful: we should have either a FCI or an ATR */
-                if (seResponse.getFci() != null || seResponse.getAtr() != null) {
+                if (seResponse.getSelectionStatus().hasMatched()) {
                     /* at least one is successful */
                     selectionSuccessful = true;
                     /* update the matchingSe list */

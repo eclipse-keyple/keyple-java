@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.calypso.common.transaction.SamManagement;
-import org.eclipse.keyple.example.generic.common.AbstractSelectionEngine;
+import org.eclipse.keyple.example.generic.common.AbstractReaderObserverEngine;
 import org.eclipse.keyple.example.generic.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
@@ -28,6 +28,7 @@ import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.transaction.MatchingSe;
+import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
@@ -39,11 +40,12 @@ import org.slf4j.profiler.Profiler;
 public class UseCase_CalypsoAuthenticationLevel3_Pcsc {
     private static Properties properties;
 
-    static class CalypsoAuthenticationLeve3TransactionEngine extends AbstractSelectionEngine {
+    static class CalypsoAuthenticationLevel3TransactionEngine extends AbstractReaderObserverEngine {
         private final Logger logger =
-                LoggerFactory.getLogger(CalypsoAuthenticationLeve3TransactionEngine.class);
+                LoggerFactory.getLogger(CalypsoAuthenticationLevel3TransactionEngine.class);
 
         private final ProxyReader poReader, samReader;
+        private SeSelection seSelection;
         private boolean samChannelOpen;
 
         /* define the SAM parameters to provide when creating PoTransaction */
@@ -61,81 +63,100 @@ public class UseCase_CalypsoAuthenticationLevel3_Pcsc {
                     }
                 };
 
-        public CalypsoAuthenticationLeve3TransactionEngine(ProxyReader poReader,
+        public CalypsoAuthenticationLevel3TransactionEngine(ProxyReader poReader,
                 ProxyReader samReader) {
             this.poReader = poReader;
             this.samReader = samReader;
         }
 
-        @Override
-        public void prepareSelection() {
-            /* operate PO selection */
-            String poAid = properties.getProperty("po.aid");
-
+        public SeRequestSet prepareSelection() {
             /*
              * Initialize the selection process for the poReader
              */
-            initializeSelection(poReader);
+            seSelection = new SeSelection(poReader);
+
+            /* operate PO selection */
+            String poAid = properties.getProperty("po.aid");
+
 
             /* AID based selection */
-            prepareSelector(new PoSelector(
+            seSelection.prepareSelector(new PoSelector(
                     new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAid), false), true,
                     null, PoSelector.RevisionTarget.TARGET_REV3, "Calypso selection"));
+            return seSelection.getSelectionOperation();
         }
 
-        public void operateSeTransaction(MatchingSe selectedSe) {
+        @Override
+        public void processSeMatch(SeResponseSet seResponses) {
             Profiler profiler;
-            try {
-                /* first time: check SAM */
-                if (!this.samChannelOpen) {
-                    /* the following method will throw an exception if the SAM is not available. */
-                    SamManagement.checkSamAndOpenChannel(samReader);
-                    this.samChannelOpen = true;
+            if (seSelection.processSelection(seResponses)) {
+                MatchingSe selectedSe = seSelection.getSelectedSe();
+                try {
+                    /* first time: check SAM */
+                    if (!this.samChannelOpen) {
+                        /*
+                         * the following method will throw an exception if the SAM is not available.
+                         */
+                        SamManagement.checkSamAndOpenChannel(samReader);
+                        this.samChannelOpen = true;
+                    }
+
+                    profiler = new Profiler("Entire transaction");
+
+                    /* Time measurement */
+                    profiler.start("Initial selection");
+
+                    profiler.start("Calypso1");
+
+                    PoTransaction poTransaction = new PoTransaction(poReader,
+                            (CalypsoPo) selectedSe, samReader, samSetting);
+                    /*
+                     * Open Session for the debit key
+                     */
+                    boolean poProcessStatus = poTransaction.processOpening(
+                            PoTransaction.ModificationMode.ATOMIC,
+                            PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
+                    if (!poTransaction.wasRatified()) {
+                        logger.info(
+                                "========= Previous Secure Session was not ratified. =====================");
+                    }
+                    /*
+                     * Close the Secure Session.
+                     */
+
+                    if (logger.isInfoEnabled()) {
+                        logger.info(
+                                "========= PO Calypso session ======= Closing ============================");
+                    }
+
+                    /*
+                     * A ratification command will be sent (CONTACTLESS_MODE).
+                     */
+                    poProcessStatus = poTransaction.processClosing(
+                            PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
+                    profiler.stop();
+                    logger.warn(System.getProperty("line.separator") + "{}", profiler);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-
-                profiler = new Profiler("Entire transaction");
-
-                /* Time measurement */
-                profiler.start("Initial selection");
-
-                profiler.start("Calypso1");
-
-                PoTransaction poTransaction =
-                        new PoTransaction(poReader, (CalypsoPo) selectedSe, samReader, samSetting);
-                /*
-                 * Open Session for the debit key
-                 */
-                boolean poProcessStatus = poTransaction.processOpening(
-                        PoTransaction.ModificationMode.ATOMIC,
-                        PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
-                if (!poTransaction.wasRatified()) {
-                    logger.info(
-                            "========= Previous Secure Session was not ratified. =====================");
-                }
-                /*
-                 * Close the Secure Session.
-                 */
-
-                if (logger.isInfoEnabled()) {
-                    logger.info(
-                            "========= PO Calypso session ======= Closing ============================");
-                }
-
-                /*
-                 * A ratification command will be sent (CONTACTLESS_MODE).
-                 */
-                poProcessStatus = poTransaction
-                        .processClosing(PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
-                profiler.stop();
-                logger.warn(System.getProperty("line.separator") + "{}", profiler);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } else {
+                logger.info("No SE matched the selection");
             }
         }
 
         @Override
-        public void operateSeRemoval() {
+        public void processSeInsertion() {
+            System.out.println("Unexpected SE insertion event");
+        }
 
+        @Override
+        public void processSeRemoval() {
+            System.out.println("SE removal event");
+        }
+
+        @Override
+        public void processUnexpectedSeRemoval() {
+            System.out.println("Unexpected SE removal event");
         }
     }
 
@@ -212,8 +233,11 @@ public class UseCase_CalypsoAuthenticationLevel3_Pcsc {
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
 
         /* Setting up the transaction engine (implements Observer) */
-        CalypsoAuthenticationLeve3TransactionEngine transactionEngine =
-                new CalypsoAuthenticationLeve3TransactionEngine(poReader, samReader);
+        CalypsoAuthenticationLevel3TransactionEngine transactionEngine =
+                new CalypsoAuthenticationLevel3TransactionEngine(poReader, samReader);
+
+        /* Set the default selection operation */
+        ((ObservableReader) poReader).setDefaultSeRequests(transactionEngine.prepareSelection());
 
         /* Set terminal as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);

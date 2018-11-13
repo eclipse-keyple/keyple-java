@@ -57,9 +57,10 @@ public final class CalypsoPo extends MatchingSe {
         super.setSelectionResponse(selectionResponse);
 
         /* The selectionSeResponse may not include a FCI field (e.g. old PO Calypso Rev 1) */
-        if (selectionResponse.getFci() != null) {
+        if (selectionResponse.getSelectionStatus().getFci() != null) {
             /* Parse PO FCI - to retrieve Calypso Revision, Serial Number, &amp; DF Name (AID) */
-            GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(selectionResponse.getFci());
+            GetDataFciRespPars poFciRespPars =
+                    new GetDataFciRespPars(selectionResponse.getSelectionStatus().getFci());
 
             /*
              * Resolve the PO revision from the application type byte:
@@ -102,7 +103,7 @@ public final class CalypsoPo extends MatchingSe {
              * FCI is not provided: we consider it is Calypso PO rev 1, it's serial number is
              * provided in the ATR
              */
-            poAtr = selectionResponse.getAtr().getBytes();
+            poAtr = selectionResponse.getSelectionStatus().getAtr().getBytes();
 
             /* basic check: we expect to be here following a selection based on the ATR */
             if (poAtr.length != PO_REV1_ATR_LENGTH) {

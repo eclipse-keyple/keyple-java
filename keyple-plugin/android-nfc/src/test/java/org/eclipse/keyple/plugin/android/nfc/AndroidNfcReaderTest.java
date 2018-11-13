@@ -106,7 +106,8 @@ public class AndroidNfcReaderTest {
         SeResponseSet seResponse = reader.transmitSet(requests);
 
         // assert
-        Assert.assertTrue(seResponse.getSingleResponse().getFci().isSuccessful());
+        Assert.assertTrue(
+                seResponse.getSingleResponse().getSelectionStatus().getFci().isSuccessful());
 
     }
 

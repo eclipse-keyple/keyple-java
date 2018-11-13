@@ -112,12 +112,4 @@ public interface ProxyReader extends NameableConfigurable, Comparable<ProxyReade
      * @param seProtocolSetting the protocol setting to be add to the plugin internal list
      */
     void addSeProtocolSetting(SeProtocolSetting seProtocolSetting);
-
-    /**
-     * If defined, the prepared selectionOperation will be processed as soon as a SE is inserted.
-     * The result of this selection will be added to the reader event.
-     * 
-     * @param selectionOperation the {@link SeRequestSet} to be executed when a SE is inserted
-     */
-    void setSelectionOperation(SeRequestSet selectionOperation);
 }

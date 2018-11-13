@@ -123,7 +123,7 @@ public class SmartCardIOReaderTest {
 
         SeResponseSet reponseActuelle = reader.transmitSet(seApplicationRequest);
 
-        assertNull(reponseActuelle.getSingleResponse().getFci());
+        assertNull(reponseActuelle.getSingleResponse().getSelectionStatus().getFci());
         assertEquals(reponseActuelle.getSingleResponse().getApduResponses().size(), 0);
         assertFalse(reponseActuelle.getSingleResponse().wasChannelPreviouslyOpen());
     }
@@ -159,7 +159,7 @@ public class SmartCardIOReaderTest {
                 seApplicationRequest.getSingleRequest().getApduRequests().size());
         // assertNotNull(Whitebox.getInternalState(spiedReader, "card"));
         // assertNotNull(Whitebox.getInternalState(spiedReader, "channel"));
-        assertNotNull(reponseActuelle.getSingleResponse().getFci());
+        assertNotNull(reponseActuelle.getSingleResponse().getSelectionStatus().getFci());
     }
 
     // TODO redesign @Test
@@ -189,7 +189,7 @@ public class SmartCardIOReaderTest {
         PcscReader spiedReader = spy(this.reader);
 
         SeResponseSet reponseActuelle = spiedReader.transmitSet(seApplicationRequest);
-        assertNotNull(reponseActuelle.getSingleResponse().getFci());
+        assertNotNull(reponseActuelle.getSingleResponse().getSelectionStatus().getFci());
         assertEquals(reponseActuelle.getSingleResponse().getApduResponses().size(),
                 seApplicationRequest.getSingleRequest().getApduRequests().size());
     }
@@ -218,7 +218,7 @@ public class SmartCardIOReaderTest {
         PcscReader spiedReader = spy(this.reader);
 
         SeResponseSet reponseActuelle = spiedReader.transmitSet(seApplicationRequest);
-        assertNotNull(reponseActuelle.getSingleResponse().getFci());
+        assertNotNull(reponseActuelle.getSingleResponse().getSelectionStatus().getFci());
         assertEquals(reponseActuelle.getSingleResponse().getApduResponses().size(),
                 seApplicationRequest.getSingleRequest().getApduRequests().size());
         // assertNull(Whitebox.getInternalState(spiedReader, "card"));

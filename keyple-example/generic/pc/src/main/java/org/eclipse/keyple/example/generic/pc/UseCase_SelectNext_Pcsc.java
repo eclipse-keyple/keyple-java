@@ -14,17 +14,19 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import org.eclipse.keyple.example.generic.common.AbstractSelectionEngine;
+import org.eclipse.keyple.example.generic.common.AbstractReaderObserverEngine;
 import org.eclipse.keyple.example.generic.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.SeProxyService;
+import org.eclipse.keyple.seproxy.SeRequestSet;
+import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.transaction.MatchingSe;
+import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
@@ -35,87 +37,100 @@ import org.slf4j.LoggerFactory;
  */
 public class UseCase_SelectNext_Pcsc {
 
-    static class SelectNextEngine extends AbstractSelectionEngine {
-        private final Logger logger = LoggerFactory.getLogger(SelectNextEngine.class);
+    static class PoObserver extends AbstractReaderObserverEngine {
+        private final Logger logger = LoggerFactory.getLogger(PoObserver.class);
 
         private final ProxyReader poReader;
+        private SeSelection seSelection;
 
-        public SelectNextEngine(ProxyReader poReader) {
+        public PoObserver(ProxyReader poReader) {
             this.poReader = poReader;
         }
 
-        @Override
-        public void prepareSelection() {
+        public SeRequestSet prepareSelection() {
+            seSelection = new SeSelection(poReader);
+
             /* operate SE selection */
             String poAidPrefix = "A000000404012509";
 
-            initializeSelection(poReader);
-
             /* AID based selection */
-            prepareSelector(new SeSelector(
+            seSelection.prepareSelector(new SeSelector(
                     new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), false),
                     false, null, "Initial selection"));
             /* next selection */
-            prepareSelector(new SeSelector(
+            seSelection.prepareSelector(new SeSelector(
                     new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
                     false, null, "Next selection #1"));
             /* next selection */
-            prepareSelector(new SeSelector(
+            seSelection.prepareSelector(new SeSelector(
                     new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
                     false, null, "Next selection #2"));
             /* next selection */
-            prepareSelector(new SeSelector(
+            seSelection.prepareSelector(new SeSelector(
                     new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
                     false, null, "Next selection #3"));
             /* next selection */
-            prepareSelector(new SeSelector(
+            seSelection.prepareSelector(new SeSelector(
                     new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
                     false, null, "Next selection #4"));
             /* next selection */
-            prepareSelector(new SeSelector(
+            seSelection.prepareSelector(new SeSelector(
                     new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
                     false, null, "Next selection #5"));
             /* next selection */
-            prepareSelector(new SeSelector(
+            seSelection.prepareSelector(new SeSelector(
                     new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
                     false, null, "Next selection #6"));
             /* next selection */
-            prepareSelector(new SeSelector(
+            seSelection.prepareSelector(new SeSelector(
                     new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
                     false, null, "Next selection #7"));
             /* next selection */
-            prepareSelector(new SeSelector(
+            seSelection.prepareSelector(new SeSelector(
                     new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
                     false, null, "Next selection #8"));
             /* next selection */
-            prepareSelector(new SeSelector(
+            seSelection.prepareSelector(new SeSelector(
                     new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
                     false, null, "Next selection #9"));
             /* next selection */
-            prepareSelector(new SeSelector(
+            seSelection.prepareSelector(new SeSelector(
                     new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
                     false, null, "Next selection #10"));
             /* next selection */
-            prepareSelector(new SeSelector(
+            seSelection.prepareSelector(new SeSelector(
                     new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
                     false, null, "Next selection #11"));
             /* next selection */
-            prepareSelector(new SeSelector(
+            seSelection.prepareSelector(new SeSelector(
                     new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAidPrefix), true),
                     false, null, "Next selection #12"));
+
+            return seSelection.getSelectionOperation();
         }
 
-        public void operateSeTransaction(MatchingSe selectedSe) {
-            if (selectedSe != null) {
-                logger.info("Selection: {}", selectedSe.getSelectionSeResponse());
+        @Override
+        public void processSeMatch(SeResponseSet seResponses) {
+            if (seSelection.processSelection(seResponses)) {
+                logger.info("Selection: {}", seSelection.getSelectedSe());
             } else {
                 logger.info("The selection process did not return any selected SE.");
             }
         }
 
         @Override
-        public void operateSeRemoval() {
+        public void processSeInsertion() {
+            System.out.println("Unexpected SE insertion event");
+        }
 
+        @Override
+        public void processSeRemoval() {
+            System.out.println("SE removal event");
+        }
+
+        @Override
+        public void processUnexpectedSeRemoval() {
+            System.out.println("Unexpected SE removal event");
         }
     }
 
@@ -181,7 +196,7 @@ public class UseCase_SelectNext_Pcsc {
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
 
         /* Setting up the transaction engine (implements Observer) */
-        SelectNextEngine transactionEngine = new SelectNextEngine(poReader);
+        PoObserver transactionEngine = new PoObserver(poReader);
 
         /* Set terminal as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);

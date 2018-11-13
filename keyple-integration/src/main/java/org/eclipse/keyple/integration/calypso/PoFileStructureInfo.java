@@ -82,7 +82,8 @@ public class PoFileStructureInfo {
 
         selectionData = matchingSe.getSelectionSeResponse();
 
-        GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(selectionData.getFci());
+        GetDataFciRespPars poFciRespPars =
+                new GetDataFciRespPars(selectionData.getSelectionStatus().getFci());
         byte[] poCalypsoInstanceAid = poFciRespPars.getDfName();
 
         if (java.util.Arrays.equals(poCalypsoInstanceAid, ByteArrayUtils.fromHex(poAuditC0Aid))) {

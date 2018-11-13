@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
+import org.eclipse.keyple.seproxy.SelectionStatus;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
@@ -30,7 +31,8 @@ public class CalypsoPoTest {
                 new ApduResponse(ByteArrayUtils.fromHex(String.format("6F 22 84 08 315449432E494341"
                         + "A5 16 BF0C 13 C7 08 0000000011223344" + "53 07 060A %02X 02200311 9000",
                         applicationByte)), null);
-        SeResponse selectionData = new SeResponse(false, null, fciData, null);
+        SeResponse selectionData =
+                new SeResponse(false, new SelectionStatus(null, fciData, true), null);
         PoSelector poSelector = new PoSelector(
                 new SeSelector.SelectionParameters(ByteArrayUtils.fromHex("315449432E494341"),
                         false),

@@ -15,8 +15,11 @@ import java.util.List;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.seproxy.ApduRequest;
 import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.SeRequestSet;
+import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.transaction.MatchingSe;
+import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 
@@ -33,8 +36,9 @@ import org.eclipse.keyple.util.ByteArrayUtils;
  * The program spends most of its time waiting for a Enter key before exit. The actual SE processing
  * is mainly event driven through the observability.
  */
-public class SeProtocolDetectionEngine extends AbstractSelectionEngine {
+public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
     private ProxyReader poReader;
+    private SeSelection seSelection;
 
     public SeProtocolDetectionEngine() {
         super();
@@ -45,9 +49,9 @@ public class SeProtocolDetectionEngine extends AbstractSelectionEngine {
         this.poReader = poReader;
     }
 
-    @Override
-    public void prepareSelection() {
-        initializeSelection(poReader);
+    public SeRequestSet prepareSelection() {
+
+        seSelection = new SeSelection(poReader);
 
         ApduRequest pcscContactlessReaderGetData =
                 new ApduRequest(ByteArrayUtils.fromHex("FFCA000000"), false);
@@ -75,7 +79,7 @@ public class SeProtocolDetectionEngine extends AbstractSelectionEngine {
                     poSelector.prepareReadRecordsCmd(SFI_T2Environment, (byte) 0x01, true,
                             (byte) 0x00, "Hoplink T2 Environment");
 
-                    prepareSelector(poSelector);
+                    seSelection.prepareSelector(poSelector);
 
                     break;
                 case PROTOCOL_ISO14443_3A:
@@ -88,24 +92,42 @@ public class SeProtocolDetectionEngine extends AbstractSelectionEngine {
                     break;
                 default:
                     /* Add a generic selector */
-                    prepareSelector(new SeSelector(new SeSelector.SelectionParameters(".*", null),
-                            true, ContactlessProtocols.PROTOCOL_ISO14443_4, "Default selector"));
+                    seSelection.prepareSelector(
+                            new SeSelector(new SeSelector.SelectionParameters(".*", null), true,
+                                    ContactlessProtocols.PROTOCOL_ISO14443_4, "Default selector"));
                     break;
             }
         }
+        return seSelection.getSelectionOperation();
     }
 
     /**
      * This method is called when a SE is inserted (or presented to the reader's antenna). It
      * executes a SeRequestSet and processes the SeResponseSet showing the APDUs exchanges
      */
-    public void operateSeTransaction(MatchingSe selectedSe) {
-        System.out.println("Selector: " + selectedSe.getExtraInfo() + ", selection status = "
-                + selectedSe.isSelected());
+    @Override
+    public void processSeMatch(SeResponseSet seResponses) {
+        if (seSelection.processSelection(seResponses)) {
+            MatchingSe selectedSe = seSelection.getSelectedSe();
+            System.out.println("Selector: " + selectedSe.getExtraInfo() + ", selection status = "
+                    + selectedSe.isSelected());
+        } else {
+            System.out.println("No selection matched!");
+        }
     }
 
     @Override
-    public void operateSeRemoval() {
+    public void processSeInsertion() {
+        System.out.println("Unexpected SE insertion event");
+    }
 
+    @Override
+    public void processSeRemoval() {
+        System.out.println("SE removal event");
+    }
+
+    @Override
+    public void processUnexpectedSeRemoval() {
+        System.out.println("Unexpected SE removal event");
     }
 }

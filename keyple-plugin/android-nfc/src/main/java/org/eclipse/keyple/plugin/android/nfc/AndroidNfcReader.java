@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.seproxy.SeProtocol;
-import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
@@ -158,11 +157,6 @@ public class AndroidNfcReader extends AbstractSelectionLocalReader
     @Override
     public boolean isSePresent() {
         return tagProxy != null && tagProxy.isConnected();
-    }
-
-    @Override
-    public void setSelectionOperation(SeRequestSet selectionOperation) {
-        // TODO complete this method
     }
 
     @Override

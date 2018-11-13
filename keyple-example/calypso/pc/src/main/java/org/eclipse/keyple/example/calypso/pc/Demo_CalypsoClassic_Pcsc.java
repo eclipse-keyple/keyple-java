@@ -108,6 +108,9 @@ public class Demo_CalypsoClassic_Pcsc {
         /* Assign readers to Calypso transaction engine */
         transactionEngine.setReaders(poReader, samReader);
 
+        /* Set the default selection operation */
+        ((ObservableReader) poReader).setDefaultSeRequests(transactionEngine.prepareSelection());
+
         /* Set terminal as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);
 

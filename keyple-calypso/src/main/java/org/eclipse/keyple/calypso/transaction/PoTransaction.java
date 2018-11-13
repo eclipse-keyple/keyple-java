@@ -496,8 +496,7 @@ public final class PoTransaction {
         /* Remove Open Secure Session response and create a new SeResponse */
         poApduResponseList.remove(0);
 
-        return new SeResponse(true, poSeResponse.getAtr(), poSeResponse.getFci(),
-                poApduResponseList);
+        return new SeResponse(true, poSeResponse.getSelectionStatus(), poApduResponseList);
     }
 
     /**
@@ -884,8 +883,7 @@ public final class PoTransaction {
         /* Remove Close Secure Session response and create a new SeResponse */
         poApduResponseList.remove(poApduResponseList.size() - 1);
 
-        return new SeResponse(true, poSeResponse.getAtr(), poSeResponse.getFci(),
-                poApduResponseList);
+        return new SeResponse(true, poSeResponse.getSelectionStatus(), poApduResponseList);
     }
 
     /**

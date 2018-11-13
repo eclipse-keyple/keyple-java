@@ -17,11 +17,12 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.calypso.common.postructure.HoplinkInfo;
-import org.eclipse.keyple.example.generic.common.AbstractSelectionEngine;
+import org.eclipse.keyple.example.generic.common.AbstractReaderObserverEngine;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.transaction.MatchingSe;
+import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
@@ -55,7 +56,7 @@ import org.slf4j.profiler.Profiler;
  * <p>
  * Read the doc of each methods for further details.
  */
-public class HoplinkTransactionEngine extends AbstractSelectionEngine {
+public class HoplinkTransactionEngine extends AbstractReaderObserverEngine {
     private final static Logger logger = LoggerFactory.getLogger(HoplinkTransactionEngine.class);
 
     /* define the SAM parameters to provide when creating PoTransaction */
@@ -75,6 +76,8 @@ public class HoplinkTransactionEngine extends AbstractSelectionEngine {
 
     private ProxyReader poReader;
     private ProxyReader samReader;
+
+    private SeSelection seSelection;
 
     private Profiler profiler;
 
@@ -171,19 +174,17 @@ public class HoplinkTransactionEngine extends AbstractSelectionEngine {
         }
     }
 
-    @Override
-    public void prepareSelection() {
-
+    public SeRequestSet prepareSelection() {
         /*
          * Initialize the selection process for the poReader
          */
-        initializeSelection(poReader);
+        seSelection = new SeSelection(poReader);
 
         /*
          * Add selection case 1: Fake AID1, protocol ISO, target rev 3
          */
-        prepareSelector(
-                new PoSelector(
+        seSelection
+                .prepareSelector(new PoSelector(
                         new SeSelector.SelectionParameters(ByteArrayUtils.fromHex("AABBCCDDEE"),
                                 false),
                         true, ContactlessProtocols.PROTOCOL_ISO14443_4,
@@ -204,43 +205,51 @@ public class HoplinkTransactionEngine extends AbstractSelectionEngine {
                 HoplinkInfo.RECORD_NUMBER_1, true, (byte) 0x00,
                 HoplinkInfo.EXTRAINFO_ReadRecord_T2EnvironmentRec1);
 
-        prepareSelector(poSelectorHoplink);
+        seSelection.prepareSelector(poSelectorHoplink);
 
         /*
          * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
          */
 
-        prepareSelector(
-                new PoSelector(
+        seSelection
+                .prepareSelector(new PoSelector(
                         new SeSelector.SelectionParameters(ByteArrayUtils.fromHex("EEDDCCBBAA"),
                                 false),
                         true, ContactlessProtocols.PROTOCOL_ISO14443_4,
                         PoSelector.RevisionTarget.TARGET_REV2_REV3, "Selector with fake AID2"));
+
+        return seSelection.getSelectionOperation();
     }
 
     /**
      * Do the PO selection and possibly go on with Hoplink transactions.
      */
-    public void operateSeTransaction(MatchingSe selectedSe) {
-        try {
-            /* first time: check SAM */
-            if (!this.samChannelOpen) {
-                /* the following method will throw an exception if the SAM is not available. */
-                SamManagement.checkSamAndOpenChannel(samReader);
-                this.samChannelOpen = true;
+    @Override
+    public void processSeMatch(SeResponseSet seResponses) {
+        if (seSelection.processSelection(seResponses)) {
+            MatchingSe selectedSe = seSelection.getSelectedSe();
+            try {
+                /* first time: check SAM */
+                if (!this.samChannelOpen) {
+                    /* the following method will throw an exception if the SAM is not available. */
+                    SamManagement.checkSamAndOpenChannel(samReader);
+                    this.samChannelOpen = true;
+                }
+
+                profiler = new Profiler("Entire transaction");
+
+                /* Time measurement */
+                profiler.start("Initial selection");
+
+                PoTransaction poTransaction =
+                        new PoTransaction(poReader, (CalypsoPo) selectedSe, samReader, samSetting);
+                profiler.start("Hoplink1");
+                doHoplinkReadWriteTransaction(poTransaction, true);
+            } catch (KeypleReaderException ex) {
+                logger.error("Selection exception: {}", ex.getMessage());
             }
-
-            profiler = new Profiler("Entire transaction");
-
-            /* Time measurement */
-            profiler.start("Initial selection");
-
-            PoTransaction poTransaction =
-                    new PoTransaction(poReader, (CalypsoPo) selectedSe, samReader, samSetting);
-            profiler.start("Hoplink1");
-            doHoplinkReadWriteTransaction(poTransaction, true);
-        } catch (KeypleReaderException ex) {
-            logger.error("Selection exception: {}", ex.getMessage());
+        } else {
+            logger.info("No SE matched the selection");
         }
 
         profiler.stop();
@@ -248,7 +257,17 @@ public class HoplinkTransactionEngine extends AbstractSelectionEngine {
     }
 
     @Override
-    public void operateSeRemoval() {
+    public void processSeInsertion() {
+        System.out.println("Unexpected SE insertion event");
+    }
 
+    @Override
+    public void processSeRemoval() {
+        System.out.println("SE removal event");
+    }
+
+    @Override
+    public void processUnexpectedSeRemoval() {
+        System.out.println("Unexpected SE removal event");
     }
 }

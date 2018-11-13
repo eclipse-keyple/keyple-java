@@ -11,9 +11,7 @@
 package org.eclipse.keyple.seproxy.plugin;
 
 import java.util.Set;
-import org.eclipse.keyple.seproxy.ApduRequest;
-import org.eclipse.keyple.seproxy.ApduResponse;
-import org.eclipse.keyple.seproxy.SeRequest;
+import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
 import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
@@ -65,15 +63,17 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
      * @param selector the SE Selector: AID of the application to select or ATR regex
      * @param successfulSelectionStatusCodes the list of successful status code for the select
      *        command
-     * @return 2 byte arrays: ATR and FCI data
+     * @return a {@link SelectionStatus} object containing the SE ATR, the SE FCI and a flag giving
+     *         the selection process result. When ATR or FCI are not available, they are set to null
      * @throws KeypleChannelStateException - if a channel state exception occurred
      * @throws KeypleIOReaderException - if an IO exception occurred
      * @throws KeypleApplicationSelectionException - if the application selection is not successful
      */
-    protected final byte[][] openLogicalChannelAndSelect(SeRequest.Selector selector,
+    protected final SelectionStatus openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Integer> successfulSelectionStatusCodes) throws KeypleChannelStateException,
             KeypleApplicationSelectionException, KeypleIOReaderException {
-        byte[][] atrAndFci = new byte[2][];
+        byte atr[], fci[] = null;
+        boolean selectionHasMatched;
 
         if (!isLogicalChannelOpen()) {
             /*
@@ -88,12 +88,13 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
             }
         }
 
-        /* add ATR */
-        atrAndFci[0] = getATR();
+        /* get the ATR bytes */
+        atr = getATR();
         if (logger.isTraceEnabled()) {
             logger.trace("[{}] openLogicalChannelAndSelect => ATR: {}", this.getName(),
-                    ByteArrayUtils.toHex(atrAndFci[0]));
+                    ByteArrayUtils.toHex(atr));
         }
+
         /* selector may be null, in this case we consider the logical channel open */
         if (selector != null) {
             if (selector instanceof SeRequest.AidSelector) {
@@ -124,36 +125,43 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
                     selectApplicationCommand[5 + aid.length] = (byte) 0x00; // Le
 
                     /*
-                     * we use here processApduRequest to manage case 4 hack the successful status
-                     * codes list for this command is provided
+                     * we use here processApduRequest to manage case 4 hack. The successful status
+                     * codes list for this command is provided.
                      */
-                    ApduResponse fciResponse =
-                            processApduRequest(new ApduRequest("Intrinsic Select Application",
-                                    selectApplicationCommand, true,
-                                    successfulSelectionStatusCodes));
+                    ApduResponse fciResponse = processApduRequest(
+                            new ApduRequest("Internal Select Application", selectApplicationCommand,
+                                    true, successfulSelectionStatusCodes));
 
-                    /* add FCI */
-                    atrAndFci[1] = fciResponse.getBytes();
+                    /* get the FCI bytes */
+                    fci = fciResponse.getBytes();
 
-                    if (!fciResponse.isSuccessful()) {
+                    if (fciResponse.isSuccessful()) {
+                        selectionHasMatched = true;
+                    } else {
                         logger.trace(
                                 "[{}] openLogicalChannelAndSelect => Application Selection failed. SELECTOR = {}",
                                 this.getName(), selector);
-                        throw new KeypleApplicationSelectionException(
-                                "Application selection by AID failed " + selector.toString());
+                        selectionHasMatched = false;
                     }
+                } else {
+                    throw new IllegalArgumentException("AID must not be null for an AidSelector.");
                 }
             } else {
-                if (!((SeRequest.AtrSelector) selector).atrMatches(atrAndFci[0])) {
+                if (((SeRequest.AtrSelector) selector).atrMatches(atr)) {
+                    selectionHasMatched = true;
+                } else {
                     logger.trace(
                             "[{}] openLogicalChannelAndSelect => ATR Selection failed. SELECTOR = {}",
                             this.getName(), selector);
-                    throw new KeypleApplicationSelectionException(
-                            "Application selection by ATR failed " + selector.toString());
+                    selectionHasMatched = false;
                 }
             }
+        } else {
+            selectionHasMatched = true;
         }
-        return atrAndFci;
+
+        return new SelectionStatus(new AnswerToReset(atr), new ApduResponse(fci, null),
+                selectionHasMatched);
     }
 
     public final void addObserver(ReaderObserver observer) {

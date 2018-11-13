@@ -35,7 +35,7 @@ public final class ReaderEvent {
     /**
      * The response to the selection request
      */
-    private final SeResponseSet selectionResponseSet;
+    private final SeResponseSet defaultResponseSet;
 
     /**
      * The different types of reader event
@@ -52,9 +52,9 @@ public final class ReaderEvent {
         SE_INSERTED("SE insertion"),
 
         /**
-         * A SE has been inserted and the selection process has been operated.
+         * A SE has been inserted and the default requests process has been operated.
          */
-        SE_SELECTED("SE selection"),
+        SE_MATCHED("SE matched"),
 
         /**
          * The SE has been removed.
@@ -84,7 +84,7 @@ public final class ReaderEvent {
         this.pluginName = pluginName;
         this.readerName = readerName;
         this.eventType = eventType;
-        this.selectionResponseSet = null;
+        this.defaultResponseSet = null;
     }
 
     /**
@@ -92,15 +92,15 @@ public final class ReaderEvent {
      * <p>
      * The event type is fixed to SE_SELECTED.
      *
-     * @param pluginName
-     * @param readerName
-     * @param selectionResponseSet
+     * @param pluginName the name of the current plugin
+     * @param readerName the name of the current reader
+     * @param seResponseSet the response to the default SeRequestSet
      */
-    public ReaderEvent(String pluginName, String readerName, SeResponseSet selectionResponseSet) {
+    public ReaderEvent(String pluginName, String readerName, SeResponseSet seResponseSet) {
         this.pluginName = pluginName;
         this.readerName = readerName;
-        this.eventType = EventType.SE_SELECTED;
-        this.selectionResponseSet = selectionResponseSet;
+        this.eventType = EventType.SE_MATCHED;
+        this.defaultResponseSet = seResponseSet;
     }
 
     public String getPluginName() {
@@ -115,7 +115,7 @@ public final class ReaderEvent {
         return eventType;
     }
 
-    public SeResponseSet getSelectionResponseSet() {
-        return selectionResponseSet;
+    public SeResponseSet getDefaultResponseSet() {
+        return defaultResponseSet;
     }
 }

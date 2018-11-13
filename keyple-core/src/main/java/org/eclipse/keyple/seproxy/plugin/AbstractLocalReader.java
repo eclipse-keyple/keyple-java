@@ -12,6 +12,7 @@ package org.eclipse.keyple.seproxy.plugin;
 
 import java.util.*;
 import org.eclipse.keyple.seproxy.*;
+import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
 import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
@@ -33,8 +34,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     private static final byte[] getResponseHackRequestBytes = ByteArrayUtils.fromHex("00C0000000");
     private boolean logicalChannelIsOpen = false;
     private byte[] aidCurrentlySelected;
-    private ApduResponse fciDataSelected;
-    private ApduResponse atrData;
+    private SelectionStatus currentSelectionStatus;
     private long before; // timestamp recorder
 
     public AbstractLocalReader(String pluginName, String readerName) {
@@ -50,11 +50,12 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      *        selection regular expression
      * @param successfulSelectionStatusCodes the list of successful status code for the select
      *        command
-     * @return an array of 2 byte arrays: byte[0][] the SE ATR, byte[1][] the SE FCI
+     * @return a {@link SelectionStatus} object containing the SE ATR, the SE FCI and a flag giving
+     *         the selection process result. When ATR or FCI are not available, they are set to null
      * @throws KeypleReaderException if a reader error occurs
      * @throws KeypleApplicationSelectionException if the application selection fails
      */
-    protected abstract byte[][] openLogicalChannelAndSelect(SeRequest.Selector selector,
+    protected abstract SelectionStatus openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Integer> successfulSelectionStatusCodes)
             throws KeypleApplicationSelectionException, KeypleReaderException;
 
@@ -85,6 +86,32 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      */
     protected abstract boolean protocolFlagMatches(SeProtocol protocolFlag)
             throws KeypleReaderException;
+
+    /**
+     * This method is invoked when a SE is removed
+     */
+    protected void cardRemoved() {
+        notifyObservers(
+                new ReaderEvent(this.pluginName, this.name, ReaderEvent.EventType.SE_REMOVAL));
+    }
+
+    /**
+     * This method is invoked when a SE is inserted
+     */
+    protected void cardInserted() {
+        if (defaultSeRequests == null) {
+            notifyObservers(
+                    new ReaderEvent(this.pluginName, this.name, ReaderEvent.EventType.SE_INSERTED));
+        } else {
+            try {
+                /* TODO add responses check? */
+                SeResponseSet seResponseSet = processSeRequestSet(defaultSeRequests);
+                notifyObservers(new ReaderEvent(this.pluginName, this.name, seResponseSet));
+            } catch (KeypleReaderException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     /**
      * Transmits an ApduRequest and receives the ApduResponse with time measurement.
@@ -144,7 +171,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
             logger.trace(
-                    "[{}] case4HackGetResponse => ApduRequest: NAME = \"Intrinsic Get Response\", RAWDATA = {}, elapsed = {}",
+                    "[{}] case4HackGetResponse => ApduRequest: NAME = \"Internal Get Response\", RAWDATA = {}, elapsed = {}",
                     this.getName(), ByteArrayUtils.toHex(getResponseHackRequestBytes), elapsedMs);
         }
 
@@ -157,8 +184,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
-            logger.trace("[{}] case4HackGetResponse => Intrinsic {}, elapsed {} ms.",
-                    this.getName(), getResponseHackResponseBytes, elapsedMs);
+            logger.trace("[{}] case4HackGetResponse => Internal {}, elapsed {} ms.", this.getName(),
+                    getResponseHackResponseBytes, elapsedMs);
         }
 
         if (getResponseHackResponse.isSuccessful()) {
@@ -291,9 +318,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     protected final void closeLogicalChannel() {
         logger.trace("[{}] closeLogicalChannel => Closing of the logical channel.", this.getName());
         logicalChannelIsOpen = false;
-        fciDataSelected = null;
-        atrData = null;
         aidCurrentlySelected = null;
+        currentSelectionStatus = null;
     }
 
     private void setLogicalChannelOpen() {
@@ -302,8 +328,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
     /**
      * Executes a request made of one or more Apdus and receives their answers. The selection of the
-     * application is handled. The methods allows decrease the cyclomatic complexity of
-     * TransmitActual
+     * application is handled.
      *
      * @param seRequest the SeRequest
      * @return the SeResponse to the SeRequest
@@ -314,15 +339,13 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     protected final SeResponse processSeRequest(SeRequest seRequest)
             throws IllegalStateException, KeypleReaderException {
         boolean previouslyOpen = true;
+        SelectionStatus selectionStatus;
 
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
         /* unless the selector is null, we try to open a logical channel */
         if (seRequest.getSelector() != null) {
             /* check if AID changed if the channel is already open */
-            // TODO implement "select next" to handle SE having several matching AIDs
-            // for now we check only if the selection AID is included in the AID found in the FCI
-            // data
             if (isLogicalChannelOpen()
                     && seRequest.getSelector() instanceof SeRequest.AidSelector) {
                 /*
@@ -351,15 +374,14 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     }
                     closeLogicalChannel();
                 }
+                selectionStatus = currentSelectionStatus;
             }
 
             if (!isLogicalChannelOpen()) {
-
                 previouslyOpen = false;
-                byte[] atrAndFciDataBytes[];
 
                 try {
-                    atrAndFciDataBytes = openLogicalChannelAndSelect(seRequest.getSelector(),
+                    selectionStatus = openLogicalChannelAndSelect(seRequest.getSelector(),
                             seRequest.getSuccessfulSelectionStatusCodes());
                     logger.trace("[{}] processSeRequest => Logical channel opening success.",
                             this.getName());
@@ -371,32 +393,29 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     return null;
                 }
 
-                if (atrAndFciDataBytes[0] != null) { // the SE Answer to reset
-                    atrData = new ApduResponse(atrAndFciDataBytes[0], null);
-                    if (seRequest.getSelector() instanceof SeRequest.AtrSelector) {
-                        /* channel is considered if the selection mode was ATR based */
-                        setLogicalChannelOpen();
+                if (selectionStatus.hasMatched()) {
+                    /* The selection process succeeded, the logical channel is open */
+                    setLogicalChannelOpen();
+                    if (selectionStatus.getFci().isSuccessful()) {
+                        /* the selection AID based was successful, keep the aid */
+                        aidCurrentlySelected =
+                                ((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect();
                     }
+                    currentSelectionStatus = selectionStatus;
+                } else {
+                    /* The selection process failed, close the logical channel */
+                    closeLogicalChannel();
                 }
-
-                if (atrAndFciDataBytes[1] != null) { // the logical channel opening is successful
-                    aidCurrentlySelected =
-                            ((SeRequest.AidSelector) seRequest.getSelector()).getAidToSelect();
-                    fciDataSelected = new ApduResponse(atrAndFciDataBytes[1],
-                            seRequest.getSuccessfulSelectionStatusCodes());
-                    if (fciDataSelected.isSuccessful()) {
-                        /* the channel opening is successful */
-                        setLogicalChannelOpen();
-                    } else {
-                        closeLogicalChannel();
-                    }
-                }
+            } else {
+                selectionStatus = null;
             }
         } else {
             /* selector is null, we expect that the logical channel was previously opened */
             if (!isLogicalChannelOpen()) {
                 throw new IllegalStateException(
                         "[" + this.getName() + "] processSeRequest => No logical channel opened!");
+            } else {
+                selectionStatus = null;
             }
         }
 
@@ -410,14 +429,14 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                      * The process has been interrupted. We are launching a KeypleReaderException
                      * with the Apdu responses collected so far.
                      */
-                    ex.setSeResponse(new SeResponse(previouslyOpen, atrData, fciDataSelected,
-                            apduResponseList));
+                    ex.setSeResponse(
+                            new SeResponse(previouslyOpen, selectionStatus, apduResponseList));
                     throw ex;
                 }
             }
         }
 
-        return new SeResponse(previouslyOpen, atrData, fciDataSelected, apduResponseList);
+        return new SeResponse(previouslyOpen, selectionStatus, apduResponseList);
     }
 
     /**
