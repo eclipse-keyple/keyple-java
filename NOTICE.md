@@ -39,7 +39,7 @@ The project maintains the following source code repositories:
  
  
 ## Contributors
-   *   Pierre Térré - API specification
+   *   Pierre Terrée - API specification
    *   Jean-Pierre Fortune - plugin PCSC, keyple Core and Keyple Calypso
    *   Olivier Delcroix - plugins Android, plugin Remote SE
    *   Florent Clairambault - Keyple Core
