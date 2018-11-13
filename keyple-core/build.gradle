@@ -94,6 +94,3 @@ dependencies {
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.13.0'
 
 }
-
-
-println "Project "+project.name+" Tasks : " + project.tasks

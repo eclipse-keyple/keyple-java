@@ -158,5 +158,3 @@ dependencies {
 
     /**End of power mock **/
 }
-
-println "Project "+project.name+" Tasks : " + project.tasks
