@@ -343,7 +343,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
             SeRequest samCheckRequest =
                     new SeRequest(new SeRequest.AtrSelector(SAM_ATR_REGEX), null, true);
             SeResponse samCheckResponse =
-                    samReader.transmit(new SeRequestSet(samCheckRequest)).getSingleResponse();
+                    samReader.transmitSet(new SeRequestSet(samCheckRequest)).getSingleResponse();
 
             if (samCheckResponse == null) {
                 System.out.println("Unable to open a logical channel for SAM!");

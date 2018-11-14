@@ -15,15 +15,10 @@ import java.util.regex.Pattern;
 import org.eclipse.keyple.seproxy.ProxyReader;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
 import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public abstract class AbstractTransactionEngine {
-    private static Logger logger = LoggerFactory.getLogger(AbstractTransactionEngine.class);
-
+public class ReaderUtilities {
     /**
      * Get the terminal which names match the expected pattern
      *
@@ -43,34 +38,5 @@ public abstract class AbstractTransactionEngine {
             }
         }
         throw new KeypleReaderNotFoundException("Reader name pattern: " + pattern);
-    }
-
-    /**
-     * Abstract method to be implemented by the class that extends it in order to process particular
-     * transactions.
-     */
-    public abstract void operateSeTransaction();
-
-    /*
-     * This method is called when an reader event occurs according to the Observer pattern
-     */
-    public void update(ReaderEvent event) {
-        switch (event.getEventType()) {
-            case SE_INSERTED:
-                if (logger.isInfoEnabled()) {
-                    logger.info("SE INSERTED");
-                    logger.info("Start processing of a Calypso PO");
-                }
-                operateSeTransaction();
-                break;
-            case SE_REMOVAL:
-                if (logger.isInfoEnabled()) {
-                    logger.info("SE REMOVED");
-                    logger.info("Wait for Calypso PO");
-                }
-                break;
-            default:
-                logger.error("IO Error");
-        }
     }
 }

@@ -20,12 +20,14 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
-import org.eclipse.keyple.example.generic.common.AbstractTransactionEngine;
+import org.eclipse.keyple.example.generic.common.AbstractReaderObserverEngine;
 import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.seproxy.SeResponse;
-import org.eclipse.keyple.seproxy.event.ObservableReader;
+import org.eclipse.keyple.seproxy.SeResponseSet;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.transaction.MatchingSe;
 import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
@@ -38,8 +40,8 @@ import org.slf4j.profiler.Profiler;
  *
  * <ol>
  * <li>Setting up a two-reader configuration and adding an observer method ({@link #update update})
- * <li>Starting a card operation when a PO presence is notified ({@link #operateSeTransaction
- * operateSeTransaction})
+ * <li>Starting a card operation when a PO presence is notified
+ * ({@link #processSeMatch(SeResponseSet)} operateSeTransaction})
  * <li>Opening a logical channel with the SAM (C1 SAM is expected) see
  * ({@link CalypsoClassicInfo#SAM_C1_ATR_REGEX SAM_C1_ATR_REGEX})
  * <li>Attempting to open a logical channel with the PO with 3 options:
@@ -61,8 +63,7 @@ import org.slf4j.profiler.Profiler;
  * <p>
  * Read the doc of each methods for further details.
  */
-public class CalypsoClassicTransactionEngine extends AbstractTransactionEngine
-        implements ObservableReader.ReaderObserver {
+public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngine {
     private static Logger logger = LoggerFactory.getLogger(CalypsoClassicTransactionEngine.class);
 
     /* define the SAM parameters to provide when creating PoTransaction */
@@ -81,6 +82,8 @@ public class CalypsoClassicTransactionEngine extends AbstractTransactionEngine
             };
 
     private ProxyReader poReader, samReader;
+
+    private SeSelection seSelection;
 
     private boolean samChannelOpen;
 
@@ -277,90 +280,104 @@ public class CalypsoClassicTransactionEngine extends AbstractTransactionEngine
         }
     }
 
+    public SeRequestSet prepareSelection() {
+        /*
+         * Initialize the selection process for the poReader
+         */
+        seSelection = new SeSelection(poReader);
+
+        /* operate multiple PO selections */
+        String poFakeAid1 = "AABBCCDDEE"; // fake AID 1
+        String poFakeAid2 = "EEDDCCBBAA"; // fake AID 2
+
+        /*
+         * Add selection case 1: Fake AID1, protocol ISO, target rev 3
+         */
+        seSelection
+                .prepareSelector(new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poFakeAid1),
+                                false),
+                        true, ContactlessProtocols.PROTOCOL_ISO14443_4,
+                        PoSelector.RevisionTarget.TARGET_REV3, "Selector with fake AID1"));
+
+        /*
+         * Add selection case 2: Calypso application, protocol ISO, target rev 2 or 3
+         *
+         * addition of read commands to execute following the selection
+         */
+        PoSelector poSelectorCalypsoAid = new PoSelector(
+                new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(CalypsoClassicInfo.AID),
+                        false),
+                true, ContactlessProtocols.PROTOCOL_ISO14443_4,
+                PoSelector.RevisionTarget.TARGET_REV2_REV3, "Calypso selector");
+
+        poSelectorCalypsoAid.prepareReadRecordsCmd(SFI_EventLog, RECORD_NUMBER_1, true, (byte) 0x00,
+                "EventLog (selection step)");
+
+        seSelection.prepareSelector(poSelectorCalypsoAid);
+
+        /*
+         * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
+         */
+        seSelection
+                .prepareSelector(new PoSelector(
+                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poFakeAid2),
+                                false),
+                        true, ContactlessProtocols.PROTOCOL_ISO14443_4,
+                        PoSelector.RevisionTarget.TARGET_REV2_REV3, "Selector with fake AID2"));
+
+        return seSelection.getSelectionOperation();
+    }
+
     /**
      * Do the PO selection and possibly go on with Calypso transactions.
      */
-    public void operateSeTransaction() {
-        try {
-            /* first time: check SAM */
-            if (!this.samChannelOpen) {
-                /* the following method will throw an exception if the SAM is not available. */
-                SamManagement.checkSamAndOpenChannel(samReader);
-                this.samChannelOpen = true;
-            }
+    @Override
+    public void processSeMatch(SeResponseSet seResponses) {
+        if (seSelection.processSelection(seResponses)) {
+            MatchingSe selectedSe = seSelection.getSelectedSe();
+            try {
+                /* first time: check SAM */
+                if (!this.samChannelOpen) {
+                    /* the following method will throw an exception if the SAM is not available. */
+                    SamManagement.checkSamAndOpenChannel(samReader);
+                    this.samChannelOpen = true;
+                }
 
-            Profiler profiler = new Profiler("Entire transaction");
+                Profiler profiler = new Profiler("Entire transaction");
 
-            /* operate multiple PO selections */
-            String poFakeAid1 = "AABBCCDDEE"; // fake AID 1
-            String poFakeAid2 = "EEDDCCBBAA"; // fake AID 2
-
-            /*
-             * Prepare the selection using the SeSelection class
-             */
-            SeSelection seSelection = new SeSelection(poReader);
-
-            /*
-             * Add selection case 1: Fake AID1, protocol ISO, target rev 3
-             */
-
-            seSelection
-                    .prepareSelector(new PoSelector(
-                            new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poFakeAid1),
-                                    false),
-                            true, ContactlessProtocols.PROTOCOL_ISO14443_4,
-                            PoSelector.RevisionTarget.TARGET_REV3, "Selector with fake AID1"));
-
-            /*
-             * Add selection case 2: Calypso application, protocol ISO, target rev 2 or 3
-             *
-             * addition of read commands to execute following the selection
-             */
-            PoSelector poSelectorCalypsoAid = new PoSelector(
-                    new SeSelector.SelectionParameters(
-                            ByteArrayUtils.fromHex(CalypsoClassicInfo.AID), false),
-                    true, ContactlessProtocols.PROTOCOL_ISO14443_4,
-                    PoSelector.RevisionTarget.TARGET_REV2_REV3, "Calypso selector");
-
-            poSelectorCalypsoAid.prepareReadRecordsCmd(SFI_EventLog, RECORD_NUMBER_1, true,
-                    (byte) 0x00, "EventLog (selection step)");
-
-            seSelection.prepareSelector(poSelectorCalypsoAid);
-
-            /*
-             * Add selection case 3: Fake AID2, unspecified protocol, target rev 2 or 3
-             */
-
-            seSelection
-                    .prepareSelector(new PoSelector(
-                            new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poFakeAid2),
-                                    false),
-                            true, ContactlessProtocols.PROTOCOL_ISO14443_4,
-                            PoSelector.RevisionTarget.TARGET_REV2_REV3, "Selector with fake AID2"));
-
-            /* Time measurement */
-            profiler.start("Initial selection");
-
-            /*
-             * Execute the selection process
-             */
-            if (seSelection.processSelection()) {
-                int responseIndex = 0;
+                /* Time measurement */
+                profiler.start("Initial selection");
 
                 profiler.start("Calypso1");
 
-                PoTransaction poTransaction = new PoTransaction(poReader,
-                        (CalypsoPo) seSelection.getSelectedSe(), samReader, samSetting);
+                PoTransaction poTransaction =
+                        new PoTransaction(poReader, (CalypsoPo) selectedSe, samReader, samSetting);
 
                 doCalypsoReadWriteTransaction(poTransaction, true);
 
-            } else {
-                logger.info("No matching PO were found.");
+                profiler.stop();
+                logger.warn(System.getProperty("line.separator") + "{}", profiler);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            profiler.stop();
-            logger.warn(System.getProperty("line.separator") + "{}", profiler);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else {
+            logger.info("No SE matched the selection");
         }
+    }
+
+    @Override
+    public void processSeInsertion() {
+        System.out.println("Unexpected SE insertion event");
+    }
+
+    @Override
+    public void processSeRemoval() {
+        System.out.println("SE removal event");
+    }
+
+    @Override
+    public void processUnexpectedSeRemoval() {
+        System.out.println("Unexpected SE removal event");
     }
 }

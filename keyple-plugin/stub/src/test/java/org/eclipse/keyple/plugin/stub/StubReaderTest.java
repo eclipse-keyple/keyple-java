@@ -109,7 +109,7 @@ public class StubReaderTest {
 
                 try {
                     SeResponse atrResponse =
-                            reader.transmit(new SeRequestSet(atrRequest)).getSingleResponse();
+                            reader.transmitSet(new SeRequestSet(atrRequest)).getSingleResponse();
 
                     Assert.assertNotNull(atrResponse);
 
@@ -130,7 +130,7 @@ public class StubReaderTest {
     @Test(expected = IllegalArgumentException.class)
     public void transmit_Hoplink_null() throws Exception {
         reader.insertSe(hoplinkSE());
-        reader.transmit((SeRequestSet) null);
+        reader.transmitSet((SeRequestSet) null);
 
         // throws exception
     }
@@ -147,7 +147,7 @@ public class StubReaderTest {
         reader.addSeProtocolSetting(
                 new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
         // test
-        SeResponseSet seResponse = reader.transmit(requests);
+        SeResponseSet seResponse = reader.transmitSet(requests);
 
         // assert
         Assert.assertTrue(seResponse.getSingleResponse().getApduResponses().get(0).isSuccessful());
@@ -185,7 +185,7 @@ public class StubReaderTest {
         reader.addSeProtocolSetting(
                 new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
         // test
-        SeResponseSet seResponse = reader.transmit(requests);
+        SeResponseSet seResponse = reader.transmitSet(requests);
     }
 
     @Test
@@ -201,7 +201,7 @@ public class StubReaderTest {
                 new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
         // test
         try {
-            SeResponseSet seResponseSet = reader.transmit(seRequestSet);
+            SeResponseSet seResponseSet = reader.transmitSet(seRequestSet);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 1);
             Assert.assertEquals(
@@ -223,7 +223,7 @@ public class StubReaderTest {
 
         // test
         try {
-            SeResponseSet seResponseSet = reader.transmit(seRequestSet);
+            SeResponseSet seResponseSet = reader.transmitSet(seRequestSet);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 2);
             Assert.assertEquals(
@@ -250,7 +250,7 @@ public class StubReaderTest {
 
         // test
         try {
-            SeResponseSet seResponseSet = reader.transmit(seRequestSet);
+            SeResponseSet seResponseSet = reader.transmitSet(seRequestSet);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 3);
             Assert.assertEquals(
@@ -276,7 +276,7 @@ public class StubReaderTest {
 
         // test
         try {
-            SeResponseSet seResponseSet = reader.transmit(seRequestSet);
+            SeResponseSet seResponseSet = reader.transmitSet(seRequestSet);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 3);
             Assert.assertEquals(

@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.generic.pc;
 
-import static org.eclipse.keyple.example.generic.common.AbstractTransactionEngine.getReaderByName;
+import static org.eclipse.keyple.example.generic.common.ReaderUtilities.getReaderByName;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

@@ -13,7 +13,7 @@ package org.eclipse.keyple.example.calypso.pc;
 
 
 import org.eclipse.keyple.example.calypso.common.transaction.HoplinkTransactionEngine;
-import org.eclipse.keyple.example.generic.common.AbstractTransactionEngine;
+import org.eclipse.keyple.example.generic.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -60,9 +60,9 @@ public class Demo_Hoplink_Pcsc {
          * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
          * readers. Use the getReader helper method from the transaction engine.
          */
-        ProxyReader poReader = AbstractTransactionEngine.getReaderByName(seProxyService,
+        ProxyReader poReader = ReaderUtilities.getReaderByName(seProxyService,
                 PcscReadersSettings.PO_READER_NAME_REGEX);
-        ProxyReader samReader = AbstractTransactionEngine.getReaderByName(seProxyService,
+        ProxyReader samReader = ReaderUtilities.getReaderByName(seProxyService,
                 PcscReadersSettings.SAM_READER_NAME_REGEX);
 
         /* Both readers are expected not null */
@@ -97,8 +97,11 @@ public class Demo_Hoplink_Pcsc {
         poReader.addSeProtocolSetting(
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
 
-        /* Assign readers to Hoplink transaction engine */
+        /* Assign the readers to the Hoplink transaction engine */
         transactionEngine.setReaders(poReader, samReader);
+
+        /* Set the default selection operation */
+        ((ObservableReader) poReader).setDefaultSeRequests(transactionEngine.prepareSelection());
 
         /* Set terminal as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);

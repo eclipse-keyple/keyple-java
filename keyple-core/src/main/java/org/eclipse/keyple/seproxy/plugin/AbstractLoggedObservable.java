@@ -32,7 +32,7 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
     /**
      * The item name (must be unique)
      */
-    private final String name;
+    protected final String name;
 
     /**
      * Item constructor Force the definition of a name through the use of super method.

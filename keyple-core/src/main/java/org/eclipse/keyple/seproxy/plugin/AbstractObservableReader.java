@@ -33,9 +33,12 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractObservableReader.class);
 
-    private final String pluginName;
-
     private long before; // timestamp recorder
+
+    protected final String pluginName;
+
+    /** the default SeRequestSet to be executed upon SE insertion */
+    protected SeRequestSet defaultSeRequests;
 
     protected abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
             throws KeypleIOReaderException, KeypleChannelStateException, KeypleReaderException;
@@ -57,6 +60,17 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         this.before = System.nanoTime();
     }
 
+
+    /**
+     * If defined, the prepared setDefaultSeRequests will be processed as soon as a SE is inserted.
+     * The result of this request set will be added to the reader event.
+     *
+     * @param defaultSeRequests the {@link SeRequestSet} to be executed when a SE is inserted
+     */
+    public void setDefaultSeRequests(SeRequestSet defaultSeRequests) {
+        this.defaultSeRequests = defaultSeRequests;
+    };
+
     /**
      * Execute the transmission of a list of {@link SeRequest} and returns a list of
      * {@link SeResponse}
@@ -65,7 +79,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * @return responseSet the response set
      * @throws KeypleReaderException if a reader error occurs
      */
-    public final SeResponseSet transmit(SeRequestSet requestSet) throws KeypleReaderException {
+    public final SeResponseSet transmitSet(SeRequestSet requestSet) throws KeypleReaderException {
         if (requestSet == null) {
             throw new IllegalArgumentException("seRequestSet must not be null");
         }

@@ -25,9 +25,9 @@ public class StubHoplink extends StubSecureElement {
     final String ATR_HEX = "3B8E800180318066409089120802830190000B";
 
     public StubHoplink() {
-        /* Intrinsic Select Application */
+        /* Select Application */
         addHexCommand("00A4040005AABBCCDDEE00", "6A82");
-        /* Intrinsic Select Application */
+        /* Select Application */
         addHexCommand("00A404000AA000000291A00000019100",
                 "6F25840BA000000291A00000019102A516BF0C13C708 0000000011223344 53070A3C230C1410019000");
         /* Read Records */

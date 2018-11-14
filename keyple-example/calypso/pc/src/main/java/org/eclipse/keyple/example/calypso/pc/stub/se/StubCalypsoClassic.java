@@ -25,9 +25,9 @@ public class StubCalypsoClassic extends StubSecureElement {
     final String ATR_HEX = "3B8E800180318066409089120802830190000B";
 
     public StubCalypsoClassic() {
-        /* Intrinsic Select Application */
+        /* Select Application */
         addHexCommand("00A4 0400 05 AABBCCDDEE 00", "6A82");
-        /* Intrinsic Select Application */
+        /* Select Application */
         addHexCommand("00A4 0400 0A A0000004040125090101 00",
                 "6F24840AA0000004040125090101A516BF0C13C708 0000000011223344 53070A3C23121410019000");
         /* Read Records */

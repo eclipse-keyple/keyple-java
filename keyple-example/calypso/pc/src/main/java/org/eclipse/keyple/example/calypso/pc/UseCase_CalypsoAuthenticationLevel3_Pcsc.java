@@ -19,7 +19,8 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.example.calypso.common.transaction.SamManagement;
-import org.eclipse.keyple.example.generic.common.AbstractTransactionEngine;
+import org.eclipse.keyple.example.generic.common.AbstractReaderObserverEngine;
+import org.eclipse.keyple.example.generic.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -27,6 +28,7 @@ import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
+import org.eclipse.keyple.transaction.MatchingSe;
 import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.transaction.SeSelector;
 import org.eclipse.keyple.util.ByteArrayUtils;
@@ -36,21 +38,15 @@ import org.slf4j.profiler.Profiler;
 
 
 
-public class UseCase_CalypsoAuthenticationLevel3_Pcsc extends AbstractTransactionEngine {
+public class UseCase_CalypsoAuthenticationLevel3_Pcsc {
     private static Properties properties;
 
-    @Override
-    public void operateSeTransaction() {
-
-    }
-
-    @SuppressWarnings("unused")
-    static class CalypsoAuthenticationLeve3TransactionEngine extends AbstractTransactionEngine
-            implements ObservableReader.ReaderObserver {
+    static class CalypsoAuthenticationLevel3TransactionEngine extends AbstractReaderObserverEngine {
         private final Logger logger =
-                LoggerFactory.getLogger(CalypsoAuthenticationLeve3TransactionEngine.class);
+                LoggerFactory.getLogger(CalypsoAuthenticationLevel3TransactionEngine.class);
 
         private final ProxyReader poReader, samReader;
+        private SeSelection seSelection;
         private boolean samChannelOpen;
 
         /* define the SAM parameters to provide when creating PoTransaction */
@@ -68,46 +64,53 @@ public class UseCase_CalypsoAuthenticationLevel3_Pcsc extends AbstractTransactio
                     }
                 };
 
-        public CalypsoAuthenticationLeve3TransactionEngine(ProxyReader poReader,
+        public CalypsoAuthenticationLevel3TransactionEngine(ProxyReader poReader,
                 ProxyReader samReader) {
             this.poReader = poReader;
             this.samReader = samReader;
         }
 
-        public void operateSeTransaction() {
+        public SeRequestSet prepareSelection() {
+            /*
+             * Initialize the selection process for the poReader
+             */
+            seSelection = new SeSelection(poReader);
+
+            /* operate PO selection */
+            String poAid = properties.getProperty("po.aid");
+
+
+            /* AID based selection */
+            seSelection.prepareSelector(new PoSelector(
+                    new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAid), false), true,
+                    null, PoSelector.RevisionTarget.TARGET_REV3, "Calypso selection"));
+            return seSelection.getSelectionOperation();
+        }
+
+        @Override
+        public void processSeMatch(SeResponseSet seResponses) {
             Profiler profiler;
-            try {
-                /* first time: check SAM */
-                if (!this.samChannelOpen) {
-                    /* the following method will throw an exception if the SAM is not available. */
-                    SamManagement.checkSamAndOpenChannel(samReader);
-                    this.samChannelOpen = true;
-                }
+            if (seSelection.processSelection(seResponses)) {
+                MatchingSe selectedSe = seSelection.getSelectedSe();
+                try {
+                    /* first time: check SAM */
+                    if (!this.samChannelOpen) {
+                        /*
+                         * the following method will throw an exception if the SAM is not available.
+                         */
+                        SamManagement.checkSamAndOpenChannel(samReader);
+                        this.samChannelOpen = true;
+                    }
 
-                profiler = new Profiler("Entire transaction");
+                    profiler = new Profiler("Entire transaction");
 
-                /* operate PO selection */
-                String poAid = properties.getProperty("po.aid");
-
-                /*
-                 * Prepare the selection using the SeSelection class
-                 */
-                SeSelection seSelection = new SeSelection(poReader);
-
-                /* AID based selection */
-                seSelection.prepareSelector(new PoSelector(
-                        new SeSelector.SelectionParameters(ByteArrayUtils.fromHex(poAid), false),
-                        true, null, PoSelector.RevisionTarget.TARGET_REV3, "Calypso selection"));
-
-                /* Time measurement */
-                profiler.start("Initial selection");
-
-                if (seSelection.processSelection()) {
+                    /* Time measurement */
+                    profiler.start("Initial selection");
 
                     profiler.start("Calypso1");
 
                     PoTransaction poTransaction = new PoTransaction(poReader,
-                            (CalypsoPo) seSelection.getSelectedSe(), samReader, samSetting);
+                            (CalypsoPo) selectedSe, samReader, samSetting);
                     /*
                      * Open Session for the debit key
                      */
@@ -132,15 +135,29 @@ public class UseCase_CalypsoAuthenticationLevel3_Pcsc extends AbstractTransactio
                      */
                     poProcessStatus = poTransaction.processClosing(
                             PoTransaction.CommunicationMode.CONTACTLESS_MODE, false);
-                } else {
-                    logger.error(
-                            "No Calypso transaction. SeResponse to Calypso selection was null.");
+                    profiler.stop();
+                    logger.warn(System.getProperty("line.separator") + "{}", profiler);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                profiler.stop();
-                logger.warn(System.getProperty("line.separator") + "{}", profiler);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } else {
+                logger.info("No SE matched the selection");
             }
+        }
+
+        @Override
+        public void processSeInsertion() {
+            System.out.println("Unexpected SE insertion event");
+        }
+
+        @Override
+        public void processSeRemoval() {
+            System.out.println("SE removal event");
+        }
+
+        @Override
+        public void processUnexpectedSeRemoval() {
+            System.out.println("Unexpected SE removal event");
         }
     }
 
@@ -179,10 +196,10 @@ public class UseCase_CalypsoAuthenticationLevel3_Pcsc extends AbstractTransactio
          * Get PO and SAM readers. Apply regulars expressions to reader names to select PO / SAM
          * readers. Use the getReader helper method from the transaction engine.
          */
-        ProxyReader poReader =
-                getReaderByName(seProxyService, properties.getProperty("po.reader.regex"));
-        ProxyReader samReader =
-                getReaderByName(seProxyService, properties.getProperty("sam.reader.regex"));
+        ProxyReader poReader = ReaderUtilities.getReaderByName(seProxyService,
+                properties.getProperty("po.reader.regex"));
+        ProxyReader samReader = ReaderUtilities.getReaderByName(seProxyService,
+                properties.getProperty("sam.reader.regex"));
 
         /* Both readers are expected not null */
         if (poReader == samReader || poReader == null || samReader == null) {
@@ -217,8 +234,11 @@ public class UseCase_CalypsoAuthenticationLevel3_Pcsc extends AbstractTransactio
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
 
         /* Setting up the transaction engine (implements Observer) */
-        CalypsoAuthenticationLeve3TransactionEngine transactionEngine =
-                new CalypsoAuthenticationLeve3TransactionEngine(poReader, samReader);
+        CalypsoAuthenticationLevel3TransactionEngine transactionEngine =
+                new CalypsoAuthenticationLevel3TransactionEngine(poReader, samReader);
+
+        /* Set the default selection operation */
+        ((ObservableReader) poReader).setDefaultSeRequests(transactionEngine.prepareSelection());
 
         /* Set terminal as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);

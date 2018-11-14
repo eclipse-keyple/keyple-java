@@ -250,7 +250,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
                     // transmit seRequestSet to Reader
                     final SeResponseSet seResponseSet =
-                            reader.transmit(new SeRequestSet(seRequest));
+                            reader.transmitSet(new SeRequestSet(seRequest));
 
                     /*
                      * print responses in View
@@ -263,7 +263,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
                             // print AID selection results
                             mText.append("AID " + poAid + " : ");
-                            if (response.getFci().isSuccessful()) {
+                            if (response.getSelectionStatus().getFci().isSuccessful()) {
                                 appendColoredText(mText, "SUCCESS", Color.GREEN);
                             } else {
                                 appendColoredText(mText, "FAILED", Color.RED);

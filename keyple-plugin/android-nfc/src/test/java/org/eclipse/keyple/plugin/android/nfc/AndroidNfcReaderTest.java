@@ -104,10 +104,11 @@ public class AndroidNfcReaderTest {
 
         // test
         insertSe();
-        SeResponseSet seResponse = reader.transmit(requests);
+        SeResponseSet seResponse = reader.transmitSet(requests);
 
         // assert
-        Assert.assertTrue(seResponse.getSingleResponse().getFci().isSuccessful());
+        Assert.assertTrue(
+                seResponse.getSingleResponse().getSelectionStatus().getFci().isSuccessful());
 
     }
 
@@ -133,7 +134,7 @@ public class AndroidNfcReaderTest {
 
         // test
         insertSe();
-        SeResponseSet seResponse = reader.transmit(requests);
+        SeResponseSet seResponse = reader.transmitSet(requests);
 
         // assert the only seRequest is null
         Assert.assertTrue(seResponse.getSingleResponse() == null);
@@ -162,7 +163,7 @@ public class AndroidNfcReaderTest {
 
         // test
         insertSe();
-        SeResponseSet seResponse = reader.transmit(requests);
+        SeResponseSet seResponse = reader.transmitSet(requests);
 
         // assert the only seRequest is null
         Assert.assertTrue(seResponse.getSingleResponse() == null);
@@ -194,7 +195,7 @@ public class AndroidNfcReaderTest {
 
         // test
         insertSe();
-        SeResponseSet seResponse = reader.transmit(requests);
+        SeResponseSet seResponse = reader.transmitSet(requests);
 
         // wait for exception
     }
@@ -222,7 +223,7 @@ public class AndroidNfcReaderTest {
 
         // test
         insertSe();
-        SeResponseSet seResponse = reader.transmit(requests);
+        SeResponseSet seResponse = reader.transmitSet(requests);
 
         // assert the only seRequest is null
         Assert.assertTrue(seResponse.getSingleResponse() == null);
@@ -251,7 +252,7 @@ public class AndroidNfcReaderTest {
 
         // test
         insertSe();
-        SeResponseSet seResponse = reader.transmit(requests);
+        SeResponseSet seResponse = reader.transmitSet(requests);
 
         // assert the only seRequest is null
         Assert.assertTrue(seResponse.getSingleResponse() == null);

@@ -13,7 +13,7 @@ package org.eclipse.keyple.example.calypso.pc;
 
 
 import org.eclipse.keyple.example.calypso.common.transaction.CalypsoClassicTransactionEngine;
-import org.eclipse.keyple.example.generic.common.AbstractTransactionEngine;
+import org.eclipse.keyple.example.generic.common.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -62,9 +62,9 @@ public class Demo_CalypsoClassic_Pcsc {
          */
         ProxyReader poReader = null, samReader = null;
         try {
-            poReader = AbstractTransactionEngine.getReaderByName(seProxyService,
+            poReader = ReaderUtilities.getReaderByName(seProxyService,
                     PcscReadersSettings.PO_READER_NAME_REGEX);
-            samReader = AbstractTransactionEngine.getReaderByName(seProxyService,
+            samReader = ReaderUtilities.getReaderByName(seProxyService,
                     PcscReadersSettings.SAM_READER_NAME_REGEX);
         } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
@@ -106,8 +106,12 @@ public class Demo_CalypsoClassic_Pcsc {
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
         poReader.addSeProtocolSetting(
                 new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_B_PRIME));
-        /* Assign readers to Calypso transaction engine */
+
+        /* Assign the readers to the Calypso transaction engine */
         transactionEngine.setReaders(poReader, samReader);
+
+        /* Set the default selection operation */
+        ((ObservableReader) poReader).setDefaultSeRequests(transactionEngine.prepareSelection());
 
         /* Set terminal as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);

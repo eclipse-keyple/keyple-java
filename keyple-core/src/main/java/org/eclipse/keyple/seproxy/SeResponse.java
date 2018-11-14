@@ -25,24 +25,13 @@ public final class SeResponse implements Serializable {
 
     static final long serialVersionUID = 265369841119873812L;
 
-
     /**
      * is defined as true by the SE reader in case a logical channel was already open with the
      * target SE application.
      */
     private boolean channelPreviouslyOpen;
 
-    /**
-     * The SE answer to reset data
-     */
-    private final ApduResponse atr;
-
-    /**
-     * present if channelPreviouslyOpen is false, contains the FCI response of the channel opening
-     * (either the response of a SelectApplication command, or the response of a GetData(‘FCI’)
-     * command).
-     */
-    private ApduResponse fci;
+    private final SelectionStatus selectionStatus;
 
     /**
      * could contain a group of APDUResponse returned by the selected SE application on the SE
@@ -54,19 +43,14 @@ public final class SeResponse implements Serializable {
      * the constructor called by a ProxyReader during the processing of the ‘transmit’ method.
      *
      * @param channelPreviouslyOpen the channel previously open
-     * @param atr the SE atr (may be null)
-     * @param fci the fci data
+     * @param selectionStatus the SE selection status
      * @param apduResponses the apdu responses
      * @throws IllegalArgumentException if both atr and fci are null
      */
-    public SeResponse(boolean channelPreviouslyOpen, ApduResponse atr, ApduResponse fci,
+    public SeResponse(boolean channelPreviouslyOpen, SelectionStatus selectionStatus,
             List<ApduResponse> apduResponses) throws IllegalArgumentException {
-        if (atr == null && fci == null) {
-            throw new IllegalArgumentException("Atr and Fci can't be null at the same time.", null);
-        }
         this.channelPreviouslyOpen = channelPreviouslyOpen;
-        this.atr = atr;
-        this.fci = fci;
+        this.selectionStatus = selectionStatus;
         this.apduResponses = apduResponses;
     }
 
@@ -80,21 +64,12 @@ public final class SeResponse implements Serializable {
     }
 
     /**
-     * Gets the atr data.
+     * Gets the selection status and its associated data.
      *
-     * @return null or the answer to reset.
+     * @return a {@link SelectionStatus} object.
      */
-    public ApduResponse getAtr() {
-        return this.atr;
-    }
-
-    /**
-     * Gets the fci data.
-     *
-     * @return null or the FCI response if a channel was opened.
-     */
-    public ApduResponse getFci() {
-        return this.fci;
+    public SelectionStatus getSelectionStatus() {
+        return this.selectionStatus;
     }
 
     /**
@@ -114,10 +89,21 @@ public final class SeResponse implements Serializable {
          * raise an exception. In case of a null value, String.format prints "null" in the string,
          * the same is done here.
          */
-        return String.format("SeResponse:{RESPONSES = %s, ATR = %s, FCI = %s, CHANNELWASOPEN = %s}",
-                getApduResponses(),
-                getAtr() == null ? "null" : ByteArrayUtils.toHex(getAtr().getBytes()), getFci(),
-                wasChannelPreviouslyOpen());
+        String string;
+        if (selectionStatus != null) {
+            string = String.format(
+                    "SeResponse:{RESPONSES = %s, ATR = %s, FCI = %s, HASMATCHED = %b CHANNELWASOPEN = %b}",
+                    getApduResponses(),
+                    selectionStatus.getAtr().getBytes() == null ? "null"
+                            : ByteArrayUtils.toHex(selectionStatus.getAtr().getBytes()),
+                    ByteArrayUtils.toHex(selectionStatus.getFci().getBytes()),
+                    selectionStatus.hasMatched(), wasChannelPreviouslyOpen());
+        } else {
+            string = String.format(
+                    "SeResponse:{RESPONSES = %s, ATR = null, FCI = null, HASMATCHED = false CHANNELWASOPEN = %b}",
+                    getApduResponses(), wasChannelPreviouslyOpen());
+        }
+        return string;
     }
 
     @Override
@@ -130,8 +116,7 @@ public final class SeResponse implements Serializable {
         }
 
         SeResponse seResponse = (SeResponse) o;
-        return (seResponse.getAtr() == null ? atr == null : seResponse.getAtr().equals(atr))
-                && (seResponse.getFci() == null ? fci == null : seResponse.getFci().equals(fci))
+        return seResponse.getSelectionStatus().equals(selectionStatus)
                 && (seResponse.getApduResponses() == null ? apduResponses == null
                         : seResponse.getApduResponses().equals(apduResponses))
                 && seResponse.wasChannelPreviouslyOpen() == channelPreviouslyOpen;
@@ -140,10 +125,10 @@ public final class SeResponse implements Serializable {
     @Override
     public int hashCode() {
         int hash = 17;
-        hash = 31 * hash + (atr == null ? 0 : atr.hashCode());
-        hash = 7 * hash + (fci == null ? 0 : fci.hashCode());
-        hash = 29 * hash + (apduResponses == null ? 0 : this.apduResponses.hashCode());
-        hash = 13 * hash + (this.channelPreviouslyOpen ? 1 : 0);
+        hash = 31 * hash
+                + (selectionStatus.getAtr() == null ? 0 : selectionStatus.getAtr().hashCode());
+        hash = 7 * hash + (apduResponses == null ? 0 : this.apduResponses.hashCode());
+        hash = 29 * hash + (this.channelPreviouslyOpen ? 1 : 0);
         return hash;
     }
 }

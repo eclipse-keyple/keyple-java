@@ -399,6 +399,12 @@ public final class PoTransaction {
                     null);
         }
 
+        if (poSeResponse.wasChannelPreviouslyOpen() == false) {
+            throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
+                    KeypleCalypsoSecureSessionException.Type.PO, poSeRequest.getApduRequests(),
+                    null);
+        }
+
         /* Retrieve and check the ApduResponses */
         List<ApduResponse> poApduResponseList = poSeResponse.getApduResponses();
 
@@ -497,8 +503,7 @@ public final class PoTransaction {
         /* Remove Open Secure Session response and create a new SeResponse */
         poApduResponseList.remove(0);
 
-        return new SeResponse(true, poSeResponse.getAtr(), poSeResponse.getFci(),
-                poApduResponseList);
+        return new SeResponse(true, poSeResponse.getSelectionStatus(), poApduResponseList);
     }
 
     /**
@@ -552,6 +557,12 @@ public final class PoTransaction {
 
         if (poSeResponse == null) {
             throw new KeypleCalypsoSecureSessionException("Null response received",
+                    KeypleCalypsoSecureSessionException.Type.PO, poSeRequest.getApduRequests(),
+                    null);
+        }
+
+        if (poSeResponse.wasChannelPreviouslyOpen() == false) {
+            throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
                     KeypleCalypsoSecureSessionException.Type.PO, poSeRequest.getApduRequests(),
                     null);
         }
@@ -620,7 +631,20 @@ public final class PoTransaction {
         /* Transmit SeRequest and get SeResponse */
         SeResponse samSeResponse = samReader.transmit(samSeRequest);
 
-        logger.debug("processSamCommands => SAMSERESPONSE = {}", samSeResponse);
+        if (samSeResponse == null) {
+            throw new KeypleCalypsoSecureSessionException("Null response received",
+                    KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
+                    null);
+        }
+
+        if (currentState == SessionState.SESSION_OPEN
+                && samSeResponse.wasChannelPreviouslyOpen() == false) {
+            throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
+                    KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
+                    null);
+        }
+        // TODO check if the wasChannelPreviouslyOpen should be done in the case where the session
+        // is closed
 
         return samSeResponse;
     }
@@ -728,6 +752,18 @@ public final class PoTransaction {
 
         logger.debug("processAtomicClosing => SAMRESPONSE = {}", samSeResponse);
 
+        if (samSeResponse == null) {
+            throw new KeypleCalypsoSecureSessionException("Null response received",
+                    KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
+                    null);
+        }
+
+        if (samSeResponse.wasChannelPreviouslyOpen() == false) {
+            throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
+                    KeypleCalypsoSecureSessionException.Type.PO, samSeRequest.getApduRequests(),
+                    null);
+        }
+
         List<ApduResponse> samApduResponseList = samSeResponse.getApduResponses();
 
         for (int i = 0; i < samApduResponseList.size(); i++) {
@@ -823,6 +859,18 @@ public final class PoTransaction {
             }
         }
 
+        if (poSeResponse == null) {
+            throw new KeypleCalypsoSecureSessionException("Null response received",
+                    KeypleCalypsoSecureSessionException.Type.PO, poSeRequest.getApduRequests(),
+                    null);
+        }
+
+        if (poSeResponse.wasChannelPreviouslyOpen() == false) {
+            throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
+                    KeypleCalypsoSecureSessionException.Type.PO, poSeRequest.getApduRequests(),
+                    null);
+        }
+
         logger.debug("processAtomicClosing => POSERESPONSE = {}", poSeResponse);
 
         List<ApduResponse> poApduResponseList = poSeResponse.getApduResponses();
@@ -855,6 +903,18 @@ public final class PoTransaction {
         logger.debug("PoTransaction.DigestProcessor => checkPoSignature: SAMRESPONSE = {}",
                 samSeResponse);
 
+        if (samSeResponse == null) {
+            throw new KeypleCalypsoSecureSessionException("Null response received",
+                    KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
+                    null);
+        }
+
+        if (samSeResponse.wasChannelPreviouslyOpen() == false) {
+            throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
+                    KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
+                    null);
+        }
+
         /* Get transaction result parsing the response */
         samApduResponseList = samSeResponse.getApduResponses();
 
@@ -885,8 +945,7 @@ public final class PoTransaction {
         /* Remove Close Secure Session response and create a new SeResponse */
         poApduResponseList.remove(poApduResponseList.size() - 1);
 
-        return new SeResponse(true, poSeResponse.getAtr(), poSeResponse.getFci(),
-                poApduResponseList);
+        return new SeResponse(true, poSeResponse.getSelectionStatus(), poApduResponseList);
     }
 
     /**

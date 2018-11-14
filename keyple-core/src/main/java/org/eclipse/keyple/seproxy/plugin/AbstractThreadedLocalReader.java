@@ -12,7 +12,6 @@
 package org.eclipse.keyple.seproxy.plugin;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,16 +107,6 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
         void end() {
             running = false;
             this.interrupt(); // exit io wait if needed
-        }
-
-        private void cardRemoved() {
-            notifyObservers(new ReaderEvent(this.pluginName, this.readerName,
-                    ReaderEvent.EventType.SE_REMOVAL));
-        }
-
-        private void cardInserted() {
-            notifyObservers(new ReaderEvent(this.pluginName, this.readerName,
-                    ReaderEvent.EventType.SE_INSERTED));
         }
 
         public void run() {

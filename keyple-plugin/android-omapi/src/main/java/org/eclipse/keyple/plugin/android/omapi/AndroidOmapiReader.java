@@ -16,8 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import org.eclipse.keyple.seproxy.SeProtocol;
-import org.eclipse.keyple.seproxy.SeRequest;
+import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
 import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
@@ -85,13 +84,12 @@ public class AndroidOmapiReader extends AbstractStaticReader {
      * @throws KeypleReaderException
      */
     @Override
-    protected byte[][] openLogicalChannelAndSelect(SeRequest.Selector selector,
+    protected SelectionStatus openLogicalChannelAndSelect(SeRequest.Selector selector,
             Set<Integer> successfulSelectionStatusCodes)
             throws KeypleChannelStateException, KeypleApplicationSelectionException {
         byte[][] atrAndFci = new byte[2][];
         byte[] aid = ((SeRequest.AidSelector) selector).getAidToSelect();
         try {
-
             if (openChannel != null && !openChannel.isClosed() && openApplication != null
                     && openApplication.equals(aid)) {
                 Log.i(TAG, "Channel is already open to aid : " + ByteArrayUtils.toHex(aid));
@@ -129,7 +127,8 @@ public class AndroidOmapiReader extends AbstractStaticReader {
                     "Error while selecting application : " + ByteArrayUtils.toHex(aid), e);
         }
 
-        return atrAndFci;
+        return new SelectionStatus(new AnswerToReset(atrAndFci[0]),
+                new ApduResponse(atrAndFci[1], null), true);
     }
 
     /**

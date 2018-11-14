@@ -187,7 +187,7 @@ public class OMAPITestFragment extends Fragment {
                                     poApduRequestList, false, ContactsProtocols.PROTOCOL_ISO7816_3);
 
 
-                    SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
+                    SeResponseSet seResponseSet = reader.transmitSet(new SeRequestSet(seRequest));
 
 
                     mText.append("\n ---- \n");

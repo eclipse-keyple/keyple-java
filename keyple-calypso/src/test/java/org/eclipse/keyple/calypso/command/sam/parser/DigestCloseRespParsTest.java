@@ -17,6 +17,7 @@ import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ApduResponse;
 import org.eclipse.keyple.seproxy.SeResponse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
+import org.eclipse.keyple.seproxy.SelectionStatus;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,8 +33,11 @@ public class DigestCloseRespParsTest {
         ApduResponse apduResponse = new ApduResponse(
                 new byte[] {(byte) 0xA8, 0x31, (byte) 0xC3, 0x3E, (byte) 0x90, 0x00}, null);
         responses.add(apduResponse);
-        SeResponseSet seResponse = new SeResponseSet(new SeResponse(true, null,
-                new ApduResponse(ByteArrayUtils.fromHex("9000"), null), responses));
+        SeResponseSet seResponse =
+                new SeResponseSet(new SeResponse(true,
+                        new SelectionStatus(null,
+                                new ApduResponse(ByteArrayUtils.fromHex("9000"), null), true),
+                        responses));
 
         AbstractApduResponseParser apduResponseParser =
                 new DigestCloseRespPars(seResponse.getSingleResponse().getApduResponses().get(0));

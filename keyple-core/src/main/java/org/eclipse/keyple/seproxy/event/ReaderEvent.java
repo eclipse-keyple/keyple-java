@@ -12,6 +12,8 @@
 package org.eclipse.keyple.seproxy.event;
 
 
+import org.eclipse.keyple.seproxy.SeResponseSet;
+
 /**
  * ReaderEvent used to notify changes at reader level
  */
@@ -32,6 +34,11 @@ public final class ReaderEvent {
     private final EventType eventType;
 
     /**
+     * The response to the selection request
+     */
+    private final SeResponseSet defaultResponseSet;
+
+    /**
      * The different types of reader event
      */
     public enum EventType {
@@ -44,6 +51,11 @@ public final class ReaderEvent {
          * A SE has been inserted.
          */
         SE_INSERTED("SE insertion"),
+
+        /**
+         * A SE has been inserted and the default requests process has been operated.
+         */
+        SE_MATCHED("SE matched"),
 
         /**
          * The SE has been removed.
@@ -63,7 +75,7 @@ public final class ReaderEvent {
     }
 
     /**
-     * ReaderEvent constructor
+     * ReaderEvent constructor for simple insertion notification mode
      * 
      * @param pluginName the name of the current plugin
      * @param readerName the name of the current reader
@@ -73,6 +85,23 @@ public final class ReaderEvent {
         this.pluginName = pluginName;
         this.readerName = readerName;
         this.eventType = eventType;
+        this.defaultResponseSet = null;
+    }
+
+    /**
+     * ReaderEvent constructor for implicit selection notification mode.
+     * <p>
+     * The event type is fixed to SE_SELECTED.
+     *
+     * @param pluginName the name of the current plugin
+     * @param readerName the name of the current reader
+     * @param seResponseSet the response to the default SeRequestSet
+     */
+    public ReaderEvent(String pluginName, String readerName, SeResponseSet seResponseSet) {
+        this.pluginName = pluginName;
+        this.readerName = readerName;
+        this.eventType = EventType.SE_MATCHED;
+        this.defaultResponseSet = seResponseSet;
     }
 
     public String getPluginName() {
@@ -85,5 +114,9 @@ public final class ReaderEvent {
 
     public EventType getEventType() {
         return eventType;
+    }
+
+    public SeResponseSet getDefaultResponseSet() {
+        return defaultResponseSet;
     }
 }

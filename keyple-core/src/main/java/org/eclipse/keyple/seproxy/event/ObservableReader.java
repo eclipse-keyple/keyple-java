@@ -12,6 +12,7 @@
 package org.eclipse.keyple.seproxy.event;
 
 import org.eclipse.keyple.seproxy.ProxyReader;
+import org.eclipse.keyple.seproxy.SeRequestSet;
 import org.eclipse.keyple.util.Observable;
 
 public interface ObservableReader extends ProxyReader {
@@ -23,4 +24,6 @@ public interface ObservableReader extends ProxyReader {
     void removeObserver(ReaderObserver observer);
 
     void notifyObservers(ReaderEvent event);
+
+    void setDefaultSeRequests(SeRequestSet defaultSeRequests);
 }

@@ -130,9 +130,9 @@ public class ApduResponseTest {
         return successfulStatusCodes;
     }
 
-    static ApduResponse getAAtr() {
-        return new ApduResponse(ByteArrayUtils.fromHex("3B8F8001804F0CA000000306030001000000006A"),
-                null);
+    static AnswerToReset getAAtr() {
+        return new AnswerToReset(
+                ByteArrayUtils.fromHex("3B8F8001804F0CA000000306030001000000006A"));
     }
 
     static ApduResponse getAFCI() {

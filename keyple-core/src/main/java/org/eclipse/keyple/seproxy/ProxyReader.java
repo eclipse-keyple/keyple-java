@@ -67,7 +67,7 @@ public interface ProxyReader extends NameableConfigurable, Comparable<ProxyReade
      * @return the SE response
      * @throws KeypleReaderException An error occurs during transmit (channel, IO)
      */
-    SeResponseSet transmit(SeRequestSet seApplicationRequest)
+    SeResponseSet transmitSet(SeRequestSet seApplicationRequest)
             throws KeypleReaderException, IllegalArgumentException;
 
     /**
@@ -93,5 +93,24 @@ public interface ProxyReader extends NameableConfigurable, Comparable<ProxyReade
     SeResponse transmit(SeRequest seApplicationRequest)
             throws KeypleReaderException, IllegalArgumentException;
 
+    /**
+     * A protocol setting is a map that establish the link between a protocol identifier and a
+     * String that defines how a particular SE may match this protocol.
+     * <p>
+     * For example:
+     * <p>
+     * for a PC/SC plugin the String is defined as a regular expression that will be applied to the
+     * ATR in order to identify which type of SE is currently communicating.
+     * <p>
+     * for another plugin (e.g. NFC or proprietary plugin) the String would be any specific word to
+     * match a value handled by the low level API of the reader (e.g. "NfcA", "NfcB",
+     * "MifareClassic", etc)
+     *
+     * <p>
+     * A reader plugin will handle a list of protocol settings in order to target multiple types of
+     * SE.
+     * 
+     * @param seProtocolSetting the protocol setting to be add to the plugin internal list
+     */
     void addSeProtocolSetting(SeProtocolSetting seProtocolSetting);
 }
