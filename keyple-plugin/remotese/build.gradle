@@ -1,0 +1,185 @@
+plugins {
+    id 'maven-publish'
+}
+project.group 'org.eclipse.keyple'
+project.version '0.1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+
+sourceCompatibility = 1.6
+
+
+//Create jar for Native Reader Client
+task nativeJar(type: Jar, group: 'build') {
+
+    baseName project.name+ "-native-reader"
+
+    //define classes to be included
+    from(sourceSets.main.output) {
+        include "org/eclipse/keyple/plugin/remotese/nativese/**"
+    }
+
+    //include META-INF resources copied by copyLICENSE and copyNOTICE tasks
+    into 'META-INF', {
+        from "${buildDir}/resources/main/META-INF/"
+    }
+
+    manifest {
+        attributes 'Implementation-Title': 'Keyple Remote SE - Native Reader',
+                'Implementation-Version': project.version
+    }
+}
+
+nativeJar.dependsOn copyLICENSE, copyNOTICE
+
+//Create jar for Remote SE Plugin
+task pluginJar(type: Jar, group: 'build') {
+
+    baseName project.name+ "-plugin"
+
+    //define classes to be included
+    from(sourceSets.main.output) {
+        include "org/eclipse/keyple/plugin/remotese/pluginse/**"
+    }
+
+    //include META-INF resources copied by copyLICENSE and copyNOTICE tasks
+    into 'META-INF', {
+        from "${buildDir}/resources/main/META-INF/"
+    }
+
+    manifest {
+        attributes 'Implementation-Title': 'Keyple Remote SE - Plugin',
+                'Implementation-Version': project.version
+    }
+
+}
+
+pluginJar.dependsOn copyLICENSE, copyNOTICE
+
+
+//Create jar for Transport classes
+task transportJar(type: Jar, group: 'build') {
+
+    baseName project.name+ "-transport-api"
+
+    //define classes to be included
+    from(sourceSets.main.output) {
+        include "org/eclipse/keyple/plugin/remotese/transport/**"
+    }
+
+    //include META-INF resources copied by copyLICENSE and copyNOTICE tasks
+    into 'META-INF', {
+        from "${buildDir}/resources/main/META-INF/"
+    }
+
+    manifest {
+        attributes 'Implementation-Title': 'Keyple Remote SE - Transport',
+                'Implementation-Version': project.version
+    }
+
+}
+
+transportJar.dependsOn copyLICENSE, copyNOTICE
+
+
+publishing {
+    //publish Native SE Client
+    publications {
+        customPluginJar(MavenPublication) {
+            groupId = project.group
+            artifactId = pluginJar.baseName
+            version = project.version
+            artifact pluginJar
+            //add dependencies to pom
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+
+                //Iterate over the implementation dependencies, adding keyple-core and slf4j
+                configurations.implementation.allDependencies.each {
+                    if(it.name == 'keyple-core' || it.name == 'slf4j-api'){
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+                    }
+                }
+            }
+        }
+    }
+    //publish Remote SE Plugin
+    publications {
+        customNativeJar(MavenPublication) {
+            groupId = project.group
+            artifactId = nativeJar.baseName
+            version = project.version
+            artifact nativeJar
+
+            //add dependencies to pom
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+
+                //Iterate over the implementation dependencies, adding keyple-core and slf4j
+                configurations.implementation.allDependencies.each {
+                    if(it.name == 'keyple-core' || it.name == 'slf4j-api'){
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+                    }
+                }
+            }
+        }
+    }
+    //publish Remote SE Transport
+    publications {
+        customTransportJar(MavenPublication) {
+            groupId = project.group
+            artifactId = transportJar.baseName
+            version = project.version
+            artifact transportJar
+
+            //add dependencies to pom
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+
+                //Iterate over the implementation dependencies, adding gson and keyple-core only
+                configurations.implementation.allDependencies.each {
+                    if(it.name == 'gson' || it.name == 'keyple-core'){
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+                    }
+                }
+            }
+        }
+    }
+}
+
+build.finalizedBy publishToMavenLocal
+
+dependencies {
+
+    //use java library : keyple core
+    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '1.+'
+
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+
+    /*
+    Tests
+     */
+
+    //add slf4j simple logger implementation
+    testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+
+    // https://mvnrepository.com/artifact/junit/junit
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+
+    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.13.0'
+
+}

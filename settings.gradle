@@ -21,6 +21,10 @@ project(':keyple-plugin:pcsc').name = "keyple-plugin-pcsc"
 include 'keyple-plugin:stub'
 project(':keyple-plugin:stub').name = "keyple-plugin-stub"
 
+include 'keyple-plugin:remotese'
+project(':keyple-plugin:remotese').name = "keyple-plugin-remotese"
+
+
 include 'keyple-example:generic:common'
 project(':keyple-example:generic:common').name = "keyple-example-generic-common"
 
@@ -33,6 +37,8 @@ project(':keyple-example:calypso:common').name = "keyple-example-calypso-common"
 include 'keyple-example:calypso:pc'
 project(':keyple-example:calypso:pc').name = "keyple-example-calypso-pc"
 
+include 'keyple-example:calypso:remotese'
+project(':keyple-example:calypso:remotese').name = "keyple-example-remotese"
 
 
 
