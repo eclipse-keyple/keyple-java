@@ -12,7 +12,6 @@
 package org.eclipse.keyple.example.remote.calypso;
 
 import java.io.IOException;
-import org.eclipse.keyple.example.remote.CommandSample;
 import org.eclipse.keyple.example.remote.transport.ClientNode;
 import org.eclipse.keyple.example.remote.transport.ServerNode;
 import org.eclipse.keyple.example.remote.transport.TransportFactory;

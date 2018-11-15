@@ -41,7 +41,7 @@ public class VirtualReaderService implements DtoHandler {
      * @param seProxyService : SeProxyService
      * @param dtoSender : outgoing node to send Dto to Slave
      */
-    private VirtualReaderService(SeProxyService seProxyService, DtoSender dtoSender) {
+    public VirtualReaderService(SeProxyService seProxyService, DtoSender dtoSender) {
         this.dtoSender = dtoSender;
 
         // Instantiate Session Manager
@@ -220,7 +220,7 @@ public class VirtualReaderService implements DtoHandler {
      * @return VirtualReader matching the sessionId
      * @throws KeypleReaderNotFoundException
      */
-    private VirtualReader getReaderBySessionId(String sessionId)
+    public VirtualReader getReaderBySessionId(String sessionId)
             throws KeypleReaderNotFoundException {
         for (ProxyReader reader : plugin.getReaders()) {
 

@@ -82,8 +82,8 @@ class SampleFactory {
         apduResponses.add(apdu);
         apduResponses.add(apdu2);
 
-        seResponses.add(new SeResponse(true, apdu, null, apduResponses));
-        seResponses.add(new SeResponse(true, apdu, null, apduResponses));
+        seResponses.add(new SeResponse(true, new SelectionStatus(null,apdu,true),  apduResponses));
+        seResponses.add(new SeResponse(true, new SelectionStatus(null,apdu,true), apduResponses));
 
         return new SeResponseSet(seResponses);
 

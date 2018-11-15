@@ -187,7 +187,7 @@ public class NativeReaderServiceImpl implements NativeReaderService, DtoHandler 
             throws KeypleReaderException {
         try {
             ProxyReader reader = findLocalReader(nativeReaderName);
-            return reader.transmit(req);
+            return reader.transmitSet(req);
         } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
             return new SeResponseSet(new ArrayList<SeResponse>());// todo

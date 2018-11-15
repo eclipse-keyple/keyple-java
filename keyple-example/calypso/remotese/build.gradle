@@ -37,9 +37,7 @@ build.finalizedBy publishToMavenLocal
 
 dependencies {
 
-
-    implementation group: 'org.eclipse.keyple', name: 'keyple-example-common', version: '1.+'
-    implementation group: 'org.eclipse.keyple', name: 'keyple-example-pc', version: '1.+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-example-calypso-pc', version: '1.+'
     implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.+'
     implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '1.+'
     implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-stub', version: '1.+'

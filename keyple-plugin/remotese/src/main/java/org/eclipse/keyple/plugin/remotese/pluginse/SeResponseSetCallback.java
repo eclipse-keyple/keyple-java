@@ -16,7 +16,7 @@ import org.eclipse.keyple.seproxy.SeResponseSet;
 /**
  * Callback function for AsyncTransmit
  */
-interface SeResponseSetCallback {
+public interface SeResponseSetCallback {
 
     /**
      * Callback called when SeResponseSet is received

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Virtual Reader Behaves like the Remote Reader it emulates
  */
-class VirtualReader extends Observable implements ObservableReader {
+public class VirtualReader extends Observable implements ObservableReader {
 
     private final VirtualReaderSession session;
     private final String remoteName;
@@ -81,7 +81,7 @@ class VirtualReader extends Observable implements ObservableReader {
      * @throws IllegalArgumentException
      */
     @Override
-    public SeResponseSet transmit(SeRequestSet seRequestSet) throws IllegalArgumentException {
+    public SeResponseSet transmitSet(SeRequestSet seRequestSet) throws IllegalArgumentException {
         return session.transmit(this.getNativeReaderName(), this.getName(), seRequestSet);
     }
 
@@ -205,6 +205,10 @@ class VirtualReader extends Observable implements ObservableReader {
 
     }
 
+    @Override
+    public void setDefaultSeRequests(SeRequestSet seRequestSet) {
+        //todo does it makes sense here?
+    }
 
 
 }

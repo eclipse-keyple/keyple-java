@@ -15,8 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.plugin.remotese.pluginse.ISeResponseSetCallback;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
+import org.eclipse.keyple.plugin.remotese.pluginse.SeResponseSetCallback;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
@@ -53,7 +53,7 @@ class CommandSample {
                     ContactlessProtocols.PROTOCOL_ISO14443_4);
 
             // SYNC transmit seRequestSet to Reader With Callback function
-            SeResponseSet seResponseSet = reader.transmit(new SeRequestSet(seRequest));
+            SeResponseSet seResponseSet = reader.transmitSet(new SeRequestSet(seRequest));
 
             logger.info("Received SYNCHRONOUSLY a 1rt SeResponseSet - isSuccessful : {}",
                     seResponseSet);
@@ -69,7 +69,7 @@ class CommandSample {
                     ContactlessProtocols.PROTOCOL_ISO14443_4);
 
             // SYNC transmit seRequestSet to Reader With Callback function
-            SeResponseSet seResponseSet2 = reader.transmit(new SeRequestSet(seRequest2));
+            SeResponseSet seResponseSet2 = reader.transmitSet(new SeRequestSet(seRequest2));
 
             logger.info("Received SYNCHRONOUSLY a 2nd SeResponseSet - isSuccessful : {}",
                     seResponseSet2);
@@ -109,7 +109,7 @@ class CommandSample {
             SeRequest seRequest = new SeRequest(selector, poApduRequestList, true);
 
             // ASYNC transmit seRequestSet to Reader With Callback function
-            reader.asyncTransmit(new SeRequestSet(seRequest), new ISeResponseSetCallback() {
+            reader.asyncTransmit(new SeRequestSet(seRequest), new SeResponseSetCallback() {
                 @Override
                 public void getResponseSet(SeResponseSet seResponseSet) {
                     logger.info(
@@ -128,7 +128,7 @@ class CommandSample {
 
                     // ASYNC transmit seRequestSet to Reader
                     reader.asyncTransmit(new SeRequestSet(seRequest2),
-                            new ISeResponseSetCallback() {
+                            new SeResponseSetCallback() {
                                 @Override
                                 public void getResponseSet(SeResponseSet seResponseSet) {
                                     logger.info(
