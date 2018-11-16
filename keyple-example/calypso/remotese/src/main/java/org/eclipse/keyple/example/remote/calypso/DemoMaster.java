@@ -41,20 +41,13 @@ class DemoMaster implements org.eclipse.keyple.util.Observable.Observer {
     // TransportNode used as to send and receive KeypleDto to Slaves
     private TransportNode node;
 
-    // For demo testing, use blocking or non blocking transmit API
-    private final Boolean transmitSync;
-
-
     /**
      * Constructor of the DemoMaster thread Starts a common node, can be server or client
      * 
      * @param transportFactory : type of transport used (websocket, webservice...)
      * @param isServer : is Master the server?
-     * @param transmitSync : should we used blocking or non blocking transmit API
      */
-    public DemoMaster(TransportFactory transportFactory, Boolean isServer, Boolean transmitSync) {
-
-        this.transmitSync = transmitSync;
+    public DemoMaster(TransportFactory transportFactory, Boolean isServer) {
 
         logger.info("*******************");
         logger.info("Create DemoMaster  ");
@@ -164,13 +157,9 @@ class DemoMaster implements org.eclipse.keyple.util.Observable.Observer {
                 case SE_INSERTED:
                     logger.info("SE_INSERTED {} {}", event.getPluginName(), event.getReaderName());
 
-                    if (transmitSync) {
-                        // test command with blocking transmit
-                        CommandSample.transmit(logger, event.getReaderName());
-                    } else {
-                        // test command with non-blocking transmit
-                        CommandSample.asyncTransmit(logger, event.getReaderName());
-                    }
+                    // Transmit a SeRequestSet to native reader
+                    CommandSample.transmit(logger, event.getReaderName());
+
                     break;
                 case SE_REMOVAL:
                     logger.info("SE_REMOVAL {} {}", event.getPluginName(), event.getReaderName());

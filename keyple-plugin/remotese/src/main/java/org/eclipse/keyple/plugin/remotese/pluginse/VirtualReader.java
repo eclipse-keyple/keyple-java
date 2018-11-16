@@ -92,18 +92,6 @@ public class VirtualReader extends Observable implements ObservableReader {
     }
 
 
-    /**
-     * Non blocking Transmit
-     * 
-     * @param seRequestSet : SeRequestSe to be transmitted
-     * @param seResponseSetCallback : callback to get the seResponseSet
-     */
-    public void asyncTransmit(SeRequestSet seRequestSet,
-            SeResponseSetCallback seResponseSetCallback) throws IllegalArgumentException {
-        session.asyncTransmit(this.getNativeReaderName(), this.getName(), seRequestSet,
-                seResponseSetCallback);
-    }
-
     @Override
     public void addSeProtocolSetting(SeProtocolSetting seProtocolSetting) {
         logger.error("addSeProtocolSetting is not implemented yet");
@@ -207,7 +195,7 @@ public class VirtualReader extends Observable implements ObservableReader {
 
     @Override
     public void setDefaultSeRequests(SeRequestSet seRequestSet) {
-        //todo does it makes sense here?
+        // todo does it makes sense here?
     }
 
 

@@ -16,7 +16,6 @@ import java.util.List;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
-import org.eclipse.keyple.plugin.remotese.pluginse.SeResponseSetCallback;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.seproxy.*;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
@@ -81,78 +80,5 @@ class CommandSample {
             e.printStackTrace();
         }
 
-
-
     }
-
-    static public void asyncTransmit(final Logger logger, final String remoteReaderName) {
-        try {
-
-            // get the reader by its name
-            final VirtualReader reader = (VirtualReader) ((RemoteSePlugin) SeProxyService
-                    .getInstance().getPlugins().first()).getReaderByRemoteName(remoteReaderName);
-
-            logger.info("--- ASYNC COMMAND RUNNING ---");
-
-
-            String poAid = "A000000291A000000191";
-
-            // build 1st seRequestSet with keep channel open to true
-            ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoRevision.REV3_1,
-                    (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
-
-
-            List<ApduRequest> poApduRequestList;
-            poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
-            final SeRequest.Selector selector =
-                    new SeRequest.AidSelector(ByteArrayUtils.fromHex(poAid));
-            SeRequest seRequest = new SeRequest(selector, poApduRequestList, true);
-
-            // ASYNC transmit seRequestSet to Reader With Callback function
-            reader.asyncTransmit(new SeRequestSet(seRequest), new SeResponseSetCallback() {
-                @Override
-                public void getResponseSet(SeResponseSet seResponseSet) {
-                    logger.info(
-                            "Received asynchronously a SeResponseSet with Webservice RemoteSE {}",
-                            seResponseSet);
-
-                    List<ApduRequest> poApduRequestList2;
-
-                    ReadRecordsCmdBuild poReadRecordCmd_T2Usage =
-                            new ReadRecordsCmdBuild(PoRevision.REV3_1, (byte) 0x1A, (byte) 0x01,
-                                    true, (byte) 0x30, "Hoplink EF T2Usage");
-                    poApduRequestList2 = Arrays.asList(poReadRecordCmd_T2Usage.getApduRequest(),
-                            poReadRecordCmd_T2Usage.getApduRequest());
-
-                    SeRequest seRequest2 = new SeRequest(selector, poApduRequestList2, false);
-
-                    // ASYNC transmit seRequestSet to Reader
-                    reader.asyncTransmit(new SeRequestSet(seRequest2),
-                            new SeResponseSetCallback() {
-                                @Override
-                                public void getResponseSet(SeResponseSet seResponseSet) {
-                                    logger.info(
-                                            "Received asynchronously a SeResponseSet with Webservice RemoteSE : {}",
-                                            seResponseSet);
-
-                                    // continue here
-
-                                }
-                            });
-
-                }
-            });
-
-
-
-        } catch (KeypleReaderNotFoundException e) {
-            e.printStackTrace();
-        } catch (KeypleReaderException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
-
 }

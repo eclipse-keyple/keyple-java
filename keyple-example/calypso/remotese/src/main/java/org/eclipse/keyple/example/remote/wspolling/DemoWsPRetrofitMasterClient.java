@@ -18,24 +18,17 @@ import org.eclipse.keyple.example.remote.wspolling.client_retrofit.WsPollingRetr
 public class DemoWsPRetrofitMasterClient {
 
     // blocking : works
-    // non blocking : todo
 
     public static void main(String[] args) throws Exception {
 
-        Boolean isTransmitSync = true; // is Transmit API Blocking or Not Blocking
         Boolean isMasterServer = false; // DemoMaster is the Client (and DemoSlave the server)
-
 
         TransportFactory factory = new WsPollingRetrofitFactory(); // HTTP Web Polling with Android
                                                                    // compatible client_retrofit
                                                                    // Library
 
-        /**
-         * DemoThreads
-         */
-
-        DemoThreads.startServer(isTransmitSync, isMasterServer, factory);
+        DemoThreads.startServer(isMasterServer, factory);
         Thread.sleep(1000);
-        DemoThreads.startClient(isTransmitSync, !isMasterServer, factory);
+        DemoThreads.startClient(!isMasterServer, factory);
     }
 }

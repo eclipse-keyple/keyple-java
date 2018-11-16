@@ -23,8 +23,7 @@ public class DemoThreads {
     private static final Logger logger = LoggerFactory.getLogger(DemoThreads.class);
 
 
-    static public void startServer(final Boolean isTransmitAsync, final Boolean isMaster,
-            final TransportFactory factory) {
+    static public void startServer(final Boolean isMaster, final TransportFactory factory) {
         Thread server = new Thread() {
             @Override
             public void run() {
@@ -33,7 +32,7 @@ public class DemoThreads {
                     logger.info("**** Starting Server Thread ****");
 
                     if (isMaster) {
-                        DemoMaster master = new DemoMaster(factory, true, isTransmitAsync);
+                        DemoMaster master = new DemoMaster(factory, true);
                         master.boot();
 
                     } else {
@@ -66,8 +65,7 @@ public class DemoThreads {
         server.start();
     }
 
-    static public void startClient(final Boolean isTransmitAsync, final Boolean isMaster,
-            final TransportFactory factory) {
+    static public void startClient(final Boolean isMaster, final TransportFactory factory) {
         Thread client = new Thread() {
             @Override
             public void run() {
@@ -75,7 +73,7 @@ public class DemoThreads {
 
                 try {
                     if (isMaster) {
-                        DemoMaster master = new DemoMaster(factory, false, isTransmitAsync);
+                        DemoMaster master = new DemoMaster(factory, false);
                         master.boot();
                     } else {
                         DemoSlave slave = new DemoSlave(factory, false);

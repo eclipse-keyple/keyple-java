@@ -16,22 +16,13 @@ import org.eclipse.keyple.example.remote.transport.TransportFactory;
 
 public class DemoWsPMasterServer {
 
-    // blocking : works
-    // non blocking : todo
-
     public static void main(String[] args) throws Exception {
 
-        Boolean isTransmitSync = true; // is Transmit API Blocking or Not Blocking
         Boolean isMasterServer = true; // DemoMaster is the server (and DemoSlave the Client)
-
-
         TransportFactory factory = new WsPollingFactory(); // HTTP Web Polling
-        /**
-         * DemoThreads
-         */
 
-        DemoThreads.startServer(isTransmitSync, isMasterServer, factory);
+        DemoThreads.startServer(isMasterServer, factory);
         Thread.sleep(1000);
-        DemoThreads.startClient(isTransmitSync, !isMasterServer, factory);
+        DemoThreads.startClient(!isMasterServer, factory);
     }
 }
