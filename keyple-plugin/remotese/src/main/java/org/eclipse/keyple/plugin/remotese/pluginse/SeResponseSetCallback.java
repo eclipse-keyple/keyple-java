@@ -14,9 +14,9 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 import org.eclipse.keyple.seproxy.SeResponseSet;
 
 /**
- * Callback function for AsyncTransmit
+ * Callback function used when seResponseSet is received
  */
-public interface SeResponseSetCallback {
+interface SeResponseSetCallback {
 
     /**
      * Callback called when SeResponseSet is received

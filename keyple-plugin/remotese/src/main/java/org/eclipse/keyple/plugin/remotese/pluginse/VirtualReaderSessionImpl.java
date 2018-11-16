@@ -25,7 +25,8 @@ import org.slf4j.LoggerFactory;
  * Manage RSE Reader Session Manage SeRequestSet to transmit and receive SeResponseSet in blocking
  * and non blocking way
  */
-public class VirtualReaderSessionImpl extends Observable<KeypleDto> implements VirtualReaderSession {
+public class VirtualReaderSessionImpl extends Observable<KeypleDto>
+        implements VirtualReaderSession {
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderSessionImpl.class);
 
@@ -47,7 +48,7 @@ public class VirtualReaderSessionImpl extends Observable<KeypleDto> implements V
      * @param seRequestSet : seRequestSet to be processed
      * @param seResponseSetCallback : callback that will be called once seResponseSet is received
      */
-    public void asyncTransmit(String nativeReaderName, String virtualReaderName,
+    private void asyncTransmit(String nativeReaderName, String virtualReaderName,
             SeRequestSet seRequestSet, SeResponseSetCallback seResponseSetCallback) {
 
         logger.debug("Session {} asyncTransmit {}", sessionId, seRequestSet);
@@ -70,7 +71,7 @@ public class VirtualReaderSessionImpl extends Observable<KeypleDto> implements V
     }
 
     /**
-     * Set the SeResponseSet back into session to be transmitted to client
+     * Set the SeResponseSet back into session to be transmitted to virtual reader
      * 
      * @param seResponseSet
      */

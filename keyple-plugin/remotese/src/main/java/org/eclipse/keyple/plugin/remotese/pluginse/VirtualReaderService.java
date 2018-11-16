@@ -220,7 +220,7 @@ public class VirtualReaderService implements DtoHandler {
      * @return VirtualReader matching the sessionId
      * @throws KeypleReaderNotFoundException
      */
-    public VirtualReader getReaderBySessionId(String sessionId)
+    private VirtualReader getReaderBySessionId(String sessionId)
             throws KeypleReaderNotFoundException {
         for (ProxyReader reader : plugin.getReaders()) {
 

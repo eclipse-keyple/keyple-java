@@ -19,20 +19,11 @@ public interface VirtualReaderSession {
 
     /**
      * Retrieve sessionId
+     * 
      * @return sessionId
      */
     String getSessionId();
 
-    /**
-     * Non-blocking transmit
-     * 
-     * @param nativeReaderName : local reader to transmit to
-     * @param virtualReaderName : virtual reader that receives the order the transmit to
-     * @param seApplicationRequest : seApplicationRequest to transmit
-     * @param seResponseSet : callback that receives the SeResponseSet when received
-     */
-    void asyncTransmit(String nativeReaderName, String virtualReaderName,
-            SeRequestSet seApplicationRequest, SeResponseSetCallback seResponseSet);
 
     /**
      * Blocking transmit

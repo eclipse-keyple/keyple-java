@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
-
 import org.eclipse.keyple.example.calypso.pc.stub.se.StubHoplink;
 import org.eclipse.keyple.example.remote.transport.ClientNode;
 import org.eclipse.keyple.example.remote.transport.ServerNode;
