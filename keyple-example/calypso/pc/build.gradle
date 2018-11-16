@@ -6,7 +6,7 @@ apply plugin: 'java'
 
 sourceCompatibility = 1.6
 
-project.version = '1.0.0-RC3'
+project.version = '1.0.0-RC4'
 
 jar.dependsOn copyLICENSE, copyNOTICE
 
@@ -35,16 +35,16 @@ build.finalizedBy publishToMavenLocal
 
 dependencies {
     //use keyple library : calypso
-    implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.0.0-RC3'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.0.0-RC4'
 
     //use keyple library : plugin stub
-    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-stub', version: '1.0.0-RC3'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-stub', version: '1.0.0-RC4'
 
     //use keyple library : plugin pcsc
-    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc', version: '1.0.0-RC3'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc', version: '1.0.0-RC4'
 
     //use keyple example : generic
-    implementation group: 'org.eclipse.keyple', name: 'keyple-example-generic-common', version: '1.0.0-RC3'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-example-generic-common', version: '1.0.0-RC4'
 
     //https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'

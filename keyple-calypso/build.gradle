@@ -7,7 +7,7 @@ apply plugin: 'java-library'
 
 sourceCompatibility = 1.6
 
-project.version = '1.0.0-RC3'
+project.version = '1.0.0-RC4'
 
 jar.dependsOn copyLICENSE, copyNOTICE
 
