@@ -105,11 +105,7 @@ task aggregatedJavadocs(type: Javadoc, description: 'Generate javadocs from all 
     destinationDir = file("$buildDir/docs/javadoc")
     title = "$project.name " +  project(":keyple-core").version + " version API"
     options.author true
-    options.links 'http://docs.spring.io/spring/docs/4.3.x/javadoc-api/',
-            'http://docs.oracle.com/javase/8/docs/api/',
-            'http://docs.spring.io/spring-ws/docs/2.3.0.RELEASE/api/',
-            'http://docs.spring.io/spring-security/site/docs/4.0.4.RELEASE/apidocs/',
-            'http://docs.oracle.com/javase/6/docs/api/',
+    options.links  'http://docs.oracle.com/javase/6/docs/api/',
             "http://d.android.com/reference/",
             'http://seek-for-android.github.io/javadoc/V4.0.0/'
 
@@ -129,7 +125,8 @@ aggregatedJavadocs.doFirst {
     def aggregatedJavaProjects = [project(":keyple-core"),
                                   project(":keyple-calypso"),
                                   project(":keyple-plugin:keyple-plugin-pcsc"),
-                                  project(":keyple-plugin:keyple-plugin-stub")]
+                                  project(":keyple-plugin:keyple-plugin-stub"),
+                                  project(":keyple-plugin:keyple-plugin-remotese")]
 
     aggregatedJavaProjects.each { aggregatedJavaProject ->
         source += aggregatedJavaProject.javadoc.source

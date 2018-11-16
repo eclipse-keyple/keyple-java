@@ -48,8 +48,9 @@ public class SelectionStatus {
             return false;
         }
         SelectionStatus selectionStatus = (SelectionStatus) o;
-        return selectionStatus.getAtr().equals(atr) && selectionStatus.getFci().equals(fci)
-                && selectionStatus.hasMatched() == hasMatched;
+        return selectionStatus.getAtr() == null ? this.atr == null : selectionStatus.getAtr().equals(this.atr) &&
+                selectionStatus.getFci()== null ? this.fci == null : selectionStatus.getFci().equals(this.fci) &&
+                selectionStatus.hasMatched() == hasMatched;
     }
 
     @Override
