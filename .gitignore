@@ -1,0 +1,7 @@
+# IntelliJ
+*.idea
+*.iml
+
+# Gradle
+**/.gradle
+**/out/production
