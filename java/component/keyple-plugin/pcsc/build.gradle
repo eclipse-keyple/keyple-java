@@ -1,0 +1,64 @@
+plugins {
+    id 'maven-publish'
+}
+
+project.version = '1.0.0-RC4'
+apply plugin: 'java'
+sourceCompatibility = 1.6
+apply plugin: 'java-library'
+
+//copy license file from root folder to each generated artifact
+task copyLICENSE(type: Copy) {
+    from file("${projectDir}/../../../../LICENSE")
+    into file("${buildDir}/resources/main/META-INF/")
+}
+
+//copy notice file from root folder to each generated artifact
+task copyNOTICE(type: Copy) {
+    from file("${projectDir}/../../../../NOTICE.md")
+    into file("${buildDir}/resources/main/META-INF/")
+}
+
+jar.dependsOn copyLICENSE, copyNOTICE
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Keyple Plugin Pcsc',
+                'Implementation-Version': project.version
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+
+            from components.java
+        }
+    }
+}
+
+dependencies {
+
+    //use keyple library : core
+    implementation project(path:':java:component:keyple-core')
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    api "org.slf4j:slf4j-api:${slf4japi_version}"
+
+    /*
+    Test
+     */
+
+    // https://mvnrepository.com/artifact/junit/junit
+    testImplementation "junit:junit:${junit_version}"
+
+    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testImplementation "org.mockito:mockito-core:${mockitocore_version}"
+}
+
+test {
+    exclude '**'
+}

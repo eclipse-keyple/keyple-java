@@ -11,43 +11,35 @@
 rootProject.name = 'keyple-java'
 println '** ' + rootProject.name + ' initialization phase.'
 
-include 'keyple-core'
-include 'keyple-calypso'
-include 'keyple-integration'
 
-include 'keyple-plugin:pcsc'
-project(':keyple-plugin:pcsc').name = "keyple-plugin-pcsc"
+include ':java:component:keyple-core'
+include ':java:component:keyple-calypso'
+include ':java:integration'
 
-include 'keyple-plugin:stub'
-project(':keyple-plugin:stub').name = "keyple-plugin-stub"
+include ':java:component:keyple-plugin:pcsc'
+project(':java:component:keyple-plugin:pcsc').name = "keyple-plugin-pcsc"
 
-include 'keyple-plugin:remotese'
-project(':keyple-plugin:remotese').name = "keyple-plugin-remotese"
+include ':java:component:keyple-plugin:stub'
+project(':java:component:keyple-plugin:stub').name = "keyple-plugin-stub"
 
-
-include 'keyple-example:generic:common'
-project(':keyple-example:generic:common').name = "keyple-example-generic-common"
-
-include 'keyple-example:generic:pc'
-project(':keyple-example:generic:pc').name = "keyple-example-generic-pc"
-
-include 'keyple-example:calypso:common'
-project(':keyple-example:calypso:common').name = "keyple-example-calypso-common"
-
-include 'keyple-example:calypso:pc'
-project(':keyple-example:calypso:pc').name = "keyple-example-calypso-pc"
-
-include 'keyple-example:calypso:remotese'
-project(':keyple-example:calypso:remotese').name = "keyple-example-remotese"
+include ':java:component:keyple-plugin:remotese'
+project(':java:component:keyple-plugin:remotese').name = "keyple-plugin-remotese"
 
 
+include ':java:example:generic:common'
+project(':java:example:generic:common').name = "example-generic-common"
+//
+include ':java:example:generic:pc'
+project(':java:example:generic:pc').name = "example-generic-pc"
+//
+include ':java:example:calypso:common'
+project(':java:example:calypso:common').name = "example-calypso-common"
+//
+include ':java:example:calypso:pc'
+project(':java:example:calypso:pc').name = "example-calypso-pc"
+//
+include ':java:example:calypso:remotese'
+project(':java:example:calypso:remotese').name = "example-remotese"
 
-/*
- Android
- */
 
-include 'keyple-plugin:android-nfc'
-project(':keyple-plugin:android-nfc').name = "keyple-plugin-android-nfc"
-
-include 'keyple-plugin:android-omapi'
-project(':keyple-plugin:android-omapi').name = "keyple-plugin-android-omapi"
+println "rootProject : " + startParameter

@@ -1,0 +1,10 @@
+rootProject.name = 'example-android-nfc'
+
+include ':keyple-plugin:android-nfc'
+project(':keyple-plugin:android-nfc').projectDir = new File("../../../keyple-plugin/android-nfc")
+
+include ':java:component:keyple-core'
+project(':java:component:keyple-core').projectDir = new File("../../../../java/component/keyple-core")
+
+include ':java:component:keyple-calypso'
+project(':java:component:keyple-calypso').projectDir = new File("../../../../java/component/keyple-calypso")

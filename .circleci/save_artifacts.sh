@@ -4,15 +4,14 @@
 
 mkdir -p ~/artifacts/jars ~/pages/jars
 find . -name "keyple-*.jar" \
-  -exec cp {} ~/artifacts/jars \; \
-  -exec cp {} ~/pages/jars \;
+  -exec cp  -rv {} ~/artifacts/jars \; \
+  -exec cp  -rv {} ~/pages/jars \;
 
-save_directory keyple-core
-save_directory keyple-calypso
-save_directory keyple-example/common
-save_directory keyple-example/pc
-save_directory keyple-plugin/pcsc
-save_directory keyple-plugin/stub
+save_directory java/component/keyple-core
+save_directory java/component/keyple-calypso
+save_directory java/component/keyple-plugin/pcsc
+save_directory java/component/keyple-plugin/stub
+save_directory java/component/keyple-plugin/remotese
 
 cp .build/web/* ~/pages/
 

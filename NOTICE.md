@@ -14,7 +14,7 @@ Committers project.
 - keyple-core: source and unit tests for the SeProxy module.
 - keyple-calypso: source and unit tests for the Calypso library.
 - keyple-plugin: source and unit tests for the different plugins: smartcard.io PC/SC, Stub, Android NFC, Android OMAPI, etc.
-- keyple-example: source for the generic and Calypso implementation examples.
+- example: source for the generic and Calypso implementation examples.
 - keyple-integration: source for the integration code (SDK).
 
 ## Copyright
@@ -63,6 +63,10 @@ Mokito API (2.13.0)
 Junit (4.12)
 
  * License: Eclipse Public License, 2.0
+ 
+Open card (TLV library)
+
+ * Licence: Open Card Consortium source license, 1.0
 
 ####Specific for Android plugins
 

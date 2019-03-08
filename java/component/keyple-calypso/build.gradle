@@ -1,0 +1,55 @@
+plugins {
+    id 'maven-publish'
+}
+
+apply plugin: 'java-library'
+apply plugin: 'java'
+sourceCompatibility = 1.6
+project.version = '1.0.0-RC4'
+
+//copy license file from root folder to each generated artifact
+task copyLICENSE(type: Copy) {
+    from file("${projectDir}/../../../LICENSE")
+    into file("${buildDir}/resources/main/META-INF/")
+}
+
+//copy notice file from root folder to each generated artifact
+task copyNOTICE(type: Copy) {
+    from file("${projectDir}/../../../NOTICE.md")
+    into file("${buildDir}/resources/main/META-INF/")
+}
+
+jar.dependsOn copyLICENSE, copyNOTICE
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Keyple Calypso',
+                'Implementation-Version': project.version
+    }
+}
+
+//maven publish configuration
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+
+            from components.java
+        }
+    }
+}
+
+dependencies {
+    implementation project(path: ':java:component:keyple-core')
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    api "org.slf4j:slf4j-api:${slf4japi_version}"
+    /*
+        Test
+         */
+    // https://mvnrepository.com/artifact/junit/junit
+    testImplementation "junit:junit:${junit_version}"
+    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testImplementation "org.mockito:mockito-core:${mockitocore_version}"
+}
