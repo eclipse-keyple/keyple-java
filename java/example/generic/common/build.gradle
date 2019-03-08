@@ -1,0 +1,33 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.6
+
+project.version = '1.0.0-RC4'
+
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Keyple Example Common',
+                'Implementation-Version': project.version
+    }
+}
+
+
+dependencies {
+
+    //use keyple library : core
+    //implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '1.0.0-RC4'
+    implementation project(path:':java:component:keyple-core')
+
+    //use keyple library : calypso
+    //implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.0.0-RC4'
+    implementation project(path:':java:component:keyple-calypso')
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation "org.slf4j:slf4j-api:${slf4japi_version}"
+
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-ext
+    implementation "org.slf4j:slf4j-ext:${slf4jext_version}"
+
+    testImplementation "junit:junit:${junit_version}"
+}

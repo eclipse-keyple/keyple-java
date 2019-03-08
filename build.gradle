@@ -10,14 +10,10 @@ plugins {
     id "com.diffplug.gradle.spotless" version "3.14.0"
 }
 
-
-subprojects {
-    group 'org.eclipse.keyple'
-}
-
-
 allprojects {
 
+    group 'org.eclipse.keyple'
+    
     configurations.all {
         // check for updates every build
         resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
@@ -36,62 +32,51 @@ allprojects {
         ruleSets = [
                 "java-basic",
                 "java-braces",
-                // "java-strings",
-                // "java-imports",
-                // "java-unnecessary",
-                // "java-unusedcode",
-                //"java-metrics",
-                // "java-empty",
-                // "java-codesize",
-                // "java-clone",
-                // "java-typeresolution",
-                // "java-strictexception",
-                // "java-finalizers",
-                // "java-migrating",
-                // "java-logging-java",
-                // "java-controversial"  // 8 issues
-                // "java-sunsecure"      // 1 issue
-                // "java-junit"          // 1 issue
-                // "java-optimizations"  // 44 issues
-                // "java-naming",        // 9 issues
-                // "java-coupling"       // 2 issues
-                // "java-design"         // 19 issues
-                // "java-comments"       // 87 issues --> Kind of conflicting with spotless
+                "java-strings",
+                "java-imports",
+                "java-unnecessary",
+                "java-unusedcode",
+//                "java-metrics",
+                "java-empty",
+                "java-codesize",
+                "java-clone",
+                "java-typeresolution",
+                "java-strictexception",
+                "java-finalizers",
+                "java-migrating",
+                "java-logging-java",
+//                 "java-controversial",
+                "java-sunsecure",
+                "java-junit",
+                "java-optimizations",
+//                "java-naming",
+                "java-coupling",
+                "java-design",
+                "java-comments"
         ]
+        // PMD priorities levels:
+        // 1. Change absolutely required. Behavior is critically broken/buggy.
+        // 2. Change highly recommended. Behavior is quite likely to be broken/buggy.
+        // 3. Change recommended. Behavior is confusing, perhaps buggy, and/or against standards/best practices.
+        // 4. Change optional. Behavior is not likely to be buggy, but more just flies in the face of standards/style/good taste.
+        // 5. Change highly optional. Nice to have, such as a consistent naming policy for package/class/fields…
+        rulePriority = 1
     }
-
-    //copy license file from root folder to each generated artifact
-    task copyLICENSE(type: Copy) {
-        from file("${rootDir}/LICENSE")
-        into file("${buildDir}/resources/main/META-INF/")
-    }
-
-    //copy notice file from root folder to each generated artifact
-    task copyNOTICE(type: Copy) {
-        from file("${rootDir}/NOTICE.md")
-        into file("${buildDir}/resources/main/META-INF/")
-    }
-
-
 }
 
 
 
 spotless {
     java {
-        target '**/*.java'
-
+        target 'java/**/*.java'
         licenseHeaderFile '.build/spotless.license.txt'
-
         importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
-
         removeUnusedImports()
-
         eclipse().configFile '.build/spotless.eclipseformat.xml'
     }
 
     format 'misc', {
-        target '**/*.java', '**/*.gradle', '**/*.yml', '**/*.md'
+        target 'java/**/*.java', 'java/**/*.gradle', 'java/**/*.yml', 'java/**/*.md'
 
         indentWithSpaces()
         endWithNewline()
@@ -99,11 +84,11 @@ spotless {
 }
 
 
-//create task for to agragate javadoc
+//create task to agregate javadoc
 task aggregatedJavadocs(type: Javadoc, description: 'Generate javadocs from all child projects as if it was a single project', group: 'Documentation') {
-    println 'Create a aggregated javadoc Task to : ' + "$buildDir/docs/javadoc"
+    //println 'Create a aggregated javadoc Task to : ' + "$buildDir/docs/javadoc"
     destinationDir = file("$buildDir/docs/javadoc")
-    title = "$project.name " +  project(":keyple-core").version + " version API"
+    title = "$project.name " +  project(":java:component:keyple-core").version + " version API"
     options.author true
     options.links  'http://docs.oracle.com/javase/6/docs/api/',
             "http://d.android.com/reference/",
@@ -119,36 +104,20 @@ task aggregatedJavadocs(type: Javadoc, description: 'Generate javadocs from all 
 //dynamically configure the source
 aggregatedJavadocs.doFirst {
 
-    println "DoFirst in task  : aggregatedJavadocs"
+    //println "DoFirst in task  : aggregatedJavadocs"
 
     //add Java modules javadoc
-    def aggregatedJavaProjects = [project(":keyple-core"),
-                                  project(":keyple-calypso"),
-                                  project(":keyple-plugin:keyple-plugin-pcsc"),
-                                  project(":keyple-plugin:keyple-plugin-stub"),
-                                  project(":keyple-plugin:keyple-plugin-remotese")]
+    def aggregatedJavaProjects = [project(":java:component:keyple-core"),
+                                  project(":java:component:keyple-calypso"),
+                                  project(":java:component:keyple-plugin:keyple-plugin-pcsc"),
+                                  project(":java:component:keyple-plugin:keyple-plugin-stub"),
+                                  project(":java:component:keyple-plugin:keyple-plugin-remotese")]
 
     aggregatedJavaProjects.each { aggregatedJavaProject ->
         source += aggregatedJavaProject.javadoc.source
         classpath += aggregatedJavaProject.javadoc.classpath
         excludes += aggregatedJavaProject.javadoc.excludes
         includes += aggregatedJavaProject.javadoc.includes
-
-    }
-
-    //exclude the init file
-    excludes += "README.MD"
-
-    //add Android modules javadoc
-    def aggregatedAndroidProjects = [
-                                  project(":keyple-plugin:keyple-plugin-android-nfc"),
-                                  project(":keyple-plugin:keyple-plugin-android-omapi")]
-
-    aggregatedAndroidProjects.each { aggregatedAndroidProject ->
-            source += aggregatedAndroidProject.generateDebugJavadoc.source
-            classpath += aggregatedAndroidProject.generateDebugJavadoc.classpath
-            excludes += aggregatedAndroidProject.generateDebugJavadoc.excludes
-            includes += aggregatedAndroidProject.generateDebugJavadoc.includes
 
     }
 }

@@ -1,0 +1,127 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+}
+
+plugins {
+    id "com.diffplug.gradle.spotless" version "3.14.0"
+}
+
+project.ext {
+    enableMavenLocalRepo = false
+}
+
+subprojects {
+    group 'org.eclipse.keyple'
+}
+
+
+allprojects {
+
+    configurations.all {
+        // check for updates every build
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
+        jcenter()
+    }
+
+    apply plugin: 'pmd'
+
+    pmd {
+        ruleSets = [
+                "java-basic",
+                "java-braces",
+                // "java-strings",
+                // "java-imports",
+                // "java-unnecessary",
+                // "java-unusedcode",
+                //"java-metrics",
+                // "java-empty",
+                // "java-codesize",
+                // "java-clone",
+                // "java-typeresolution",
+                // "java-strictexception",
+                // "java-finalizers",
+                // "java-migrating",
+                // "java-logging-java",
+                // "java-controversial"  // 8 issues
+                // "java-sunsecure"      // 1 issue
+                // "java-junit"          // 1 issue
+                // "java-optimizations"  // 44 issues
+                // "java-naming",        // 9 issues
+                // "java-coupling"       // 2 issues
+                // "java-design"         // 19 issues
+                // "java-comments"       // 87 issues --> Kind of conflicting with spotless
+        ]
+    }
+}
+
+
+
+spotless {
+    java {
+        target '**/*.java'
+
+        licenseHeaderFile '../.build/spotless.license.txt'
+
+        importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
+
+        removeUnusedImports()
+
+        eclipse().configFile '../.build/spotless.eclipseformat.xml'
+    }
+
+    format 'misc', {
+        target '**/*.java', '**/*.gradle', '**/*.yml', '**/*.md'
+
+        indentWithSpaces()
+        endWithNewline()
+    }
+}
+
+
+//create task for to agragate javadoc
+task aggregatedJavadocs(type: Javadoc, description: 'Generate javadocs from all child projects as if it was a single project', group: 'Documentation') {
+    println 'Create a aggregated javadoc Task to : ' + "$buildDir/docs/javadoc"
+    destinationDir = file("$buildDir/docs/javadoc")
+    title = "$project.name " +  project(":java:component:keyple-core").version + " version API"
+    options.author true
+    options.links  'http://docs.oracle.com/javase/6/docs/api/',
+            "http://d.android.com/reference/",
+            'http://seek-for-android.github.io/javadoc/V4.0.0/'
+
+
+    options.addStringOption 'Xdoclint:none', '-quiet'
+
+    //init source to whatever file to avoid NO-SOURCE
+    source = 'README.MD'
+}
+
+//dynamically configure the source
+aggregatedJavadocs.doFirst {
+
+    //exclude the init file
+    excludes += "README.MD"
+
+    //add Android modules javadoc
+    def aggregatedAndroidProjects = [
+                                  project(":keyple-plugin:keyple-plugin-android-nfc"),
+                                  project(":keyple-plugin:keyple-plugin-android-omapi")]
+
+    aggregatedAndroidProjects.each { aggregatedAndroidProject ->
+            source += aggregatedAndroidProject.generateDebugJavadoc.source
+            classpath += aggregatedAndroidProject.generateDebugJavadoc.classpath
+            excludes += aggregatedAndroidProject.generateDebugJavadoc.excludes
+            includes += aggregatedAndroidProject.generateDebugJavadoc.includes
+
+    }
+
+}

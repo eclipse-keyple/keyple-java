@@ -1,0 +1,159 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        google()
+        jcenter()
+
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'digital.wup:android-maven-publish:3.4.0'
+    }
+}
+
+
+
+group 'org.eclipse.keyple'
+project.version = '1.0.0-RC4'
+
+apply plugin: 'pmd'
+apply plugin: 'com.android.library'
+
+pmd {
+    ruleSets = [
+            "java-basic",
+            "java-braces",
+    ]
+}
+
+
+
+android {
+    compileSdkVersion 26
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 21
+        versionName project.version
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_6
+        targetCompatibility JavaVersion.VERSION_1_6
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true//mock Log Android object
+    }
+
+    buildToolsVersion '26.0.2'
+
+    lintOptions {
+        abortOnError false
+    }
+
+    //generate output aar with a qualified name : with version number
+    libraryVariants.all { variant ->
+        variant.outputs.all { output ->
+            if (outputFile != null && outputFileName.endsWith('.aar')) {
+                outputFileName = "${archivesBaseName}-${version}.aar"
+            }
+        }
+    }
+
+    //create a task to generate javadoc for each variants
+    libraryVariants.all { variant ->
+        task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
+            description "Generates Javadoc for variant ${variant.name.capitalize()}"
+            println "Generates Javadoc for variant ${variant.name.capitalize()}"
+
+            source = variant.javaCompile.source
+            options.links("http://docs.oracle.com/javase/6/docs/api/")
+            options.links("http://d.android.com/reference/")
+
+            //println 'classpath : ' + classpath.getFiles()
+            //println 'options links : ' + options.links
+            //println 'source : ' + source.getFiles()
+
+            // First add all of your dependencies to the classpath, then add the android jars
+            doFirst {
+                //doFirst is needed else we get the error "Cannot create variant 'android-lint' after configuration" with gradle 4.4+
+                classpath = files(variant.javaCompile.classpath.files, project.android.getBootClasspath())
+            }
+            classpath += files(android.getBootClasspath())
+
+
+            // We're excluding these generated files
+            exclude '**/BuildConfig.java'
+            exclude '**/R.java'
+            failOnError = false
+            destinationDir = file("${project.docsDir}/javadoc")
+            //destinationDir = file(System.getProperty("user.home") +"/pages")
+
+        }
+
+    }
+
+}
+
+apply plugin: 'digital.wup.android-maven-publish'
+
+//assemble.finalizedBy publishToMavenLocal
+
+publishing {
+    publications {
+        mavenAar(MavenPublication) {
+            from components.android
+        }
+    }
+}
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    google()
+    jcenter()
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
+
+
+    implementation "com.android.support:support-v4:${android_support_version}"
+    implementation "com.android.support:appcompat-v7:${android_support_version}"
+
+    implementation "org.slf4j:slf4j-api:${slf4japi_version}"
+
+    //implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '1.0.0-RC4'
+    implementation project(path:":java:component:keyple-core")
+
+
+    compileOnly files('libs/org.simalliance.openmobileapi.jar')
+    /*
+    Tests
+     *
+
+    /** Test **/
+    //testImplementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.0.0-RC4'
+    testImplementation project(path:':java:component:keyple-calypso')
+
+    testImplementation files('libs/org.simalliance.openmobileapi.jar')
+
+    /**Power mock**/
+    androidTestImplementation "org.mockito:mockito-android:${mockito_android_version}"
+    androidTestImplementation "org.powermock:powermock-api-mockito:${powermock_version}"
+    androidTestImplementation "org.powermock:powermock-module-junit4:${powermock_version}"
+
+    testImplementation "junit:junit:${junit_version}"
+    testImplementation "org.powermock:powermock-api-mockito:${powermock_version}"
+    testImplementation "org.powermock:powermock-module-junit4:${powermock_version}"
+    /**End of power mock **/
+}
