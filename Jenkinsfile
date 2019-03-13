@@ -1,51 +1,98 @@
-node {
-   def mvnHome
+pipeline {
+    agent {
+        kubernetes {
+            label 'my-agent-pod'
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+    containers:
+    - name: android-sdk
+      image: eclipsekeyple/build:latest
+      volumeMounts:
+      - name: volume-known-hosts
+        mountPath: /home/jenkins/.ssh
+      command:
+      - cat
+      tty: true
+    volumes:
+    - name: volume-known-hosts
+      configMap:
+        name: known-hosts
 
-   /*
-    stage ('hello') {
-        echo "Hello"
+"""
+        }
     }
-    */
 
-   stage('Checkout github') { // for display purposes
-      // Get some code from a GitHub repository
-      //git 'https://github.com/jglick/simple-maven-project-with-tests.git'
-      // Get the Maven tool.
-      // ** NOTE: This 'M3' Maven tool must be configured
-      // **       in the global configuration.
-      //checkout scm
-    git credentialsId: 'odelcroi-github',
-        url: 'https://github.com/calypsonet/keyple-java.git', branch:'maven-versioning'
-   }
+    environment {
+        JVM_OPTS= '-Xmx3200m'
+        ANDROID_HOME=  '/home/user/android-sdk-linux'
+        GRADLE_CACHE = '/tmp/gradle-user-home'
+
+    }
+
+    stages {
+
+        stage('cache'){
+            steps{
+                configFileProvider([configFile(fileId: '97db9a59-1223-4d6a-a789-598c4eb9fdd8', variable: 'MVN_SETTINGS')]) {
+                    // some block
+                }
+
+            }
+        }
 
 
-   stage('Build keyple core') {
-        sh './gradlew keyple-core:build --info'
-   }
+        stage('Prepare'){
+            steps{
+                container('android-sdk') {
+                    git branch: 'master', url: 'https://github.com/eclipse/keyple-java.git'
+                    //checkout csm
+                }
+            }
+        }
 
-   stage('Build keyple calypso') {
-        sh './gradlew keyple-calypso:build --info'
-   }
+        stage('Execute tests') {
+            steps{
+                container('android-sdk') {
+                    sh 'gradle wrapper --gradle-version 4.5.1'
+                    sh './gradlew test --info'
+                    sh './gradlew -b ./android/build.gradle :keyple-plugin:keyple-plugin-android-nfc:test'
+                    sh './gradlew -b ./android/build.gradle :keyple-plugin:keyple-plugin-android-omapi:test'
+                }
+            }
+        }
 
-   stage('Build java keyple plugins') {
-        sh './gradlew keyple-plugin:build --info'
-   }
+        stage('Assemble artifacts') {
+            steps{
+                container('android-sdk') {
+                    sh './gradlew assemble --info'
+                    sh './gradlew -b ./android/build.gradle :keyple-plugin:keyple-plugin-android-nfc:assembleDebug --info'
+                    sh './gradlew -b ./android/build.gradle :keyple-plugin:keyple-plugin-android-omapi:assembleDebug --info'
+                }
+            }
+        }
 
-   stage('Build java keyple examples') {
-        sh './gradlew example:build --info'
-   }
+        stage('Generate javadocs') {
+            steps{
+                container('android-sdk') {
+                    sh './gradlew -b ./android/build.gradle  :keyple-plugin:keyple-plugin-android-omapi:generateDebugJavadoc'
+                    sh './gradlew -b ./android/build.gradle  :keyple-plugin:keyple-plugin-android-nfc:generateDebugJavadoc'
+                }
+            }
+        }
 
-   stage('Build android OMAPI Plugin') {
-        sh './gradlew :keyple-plugin:keyple-plugin-android-omapi:build :keyple-plugin:keyple-plugin-android-omapi:generateDebugJavadoc --info'
-   }
-
-   stage('Build android NFC Plugin') {
-        sh './gradlew :keyple-plugin:keyple-plugin-android-nfc:build :keyple-plugin:keyple-plugin-android-nfc:generateDebugJavadoc --info'
-   }
-   stage('Build android NFC Example APP') {
-        sh './gradlew -b ./example/calypso/android/nfc/build.gradle assembleDebug --info'
-   }
-   stage('Finished') {
-        echo "Finished"
-   }
+        stage('Generate apks') {
+            steps{
+                container('android-sdk') {
+                    sh 'mkdir -p "/home/jenkins/workspace/test_keyple_java/android/example/calypso/nfc/?/.android/"'
+                    sh 'mkdir -p "/home/jenkins/workspace/test_keyple_java/android/example/calypso/omapi/?/.android/"'
+                    sh 'keytool -genkey -v -keystore /home/jenkins/workspace/test_keyple_java/android/example/calypso/nfc/?/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"'
+                    sh 'keytool -genkey -v -keystore /home/jenkins/workspace/test_keyple_java/android/example/calypso/omapi/?/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"'
+                    sh './gradlew -b ./android/example/calypso/nfc/build.gradle assembleDebug'
+                    sh './gradlew -b ./android/example/calypso/omapi/build.gradle assembleDebug'
+                }
+            }
+        }
+    }
 }
