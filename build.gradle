@@ -1,11 +1,11 @@
 buildscript {
     repositories {
         maven {
-            url 'https://repo.eclipse.org'
+            url 'https://repo.eclipse.org/service/local/repositories/maven_central/content'
         }
-        mavenLocal()
-        mavenCentral()
-        jcenter()
+        //mavenLocal()
+        //mavenCentral()
+        //jcenter()
     }
 }
 
@@ -23,10 +23,13 @@ allprojects {
     }
 
     repositories {
-        mavenLocal()
-        mavenCentral()
-        google()
-        jcenter()
+        maven {
+            url 'https://repo.eclipse.org/service/local/repositories/maven_central/content'
+        }
+        //mavenLocal()
+        //mavenCentral()
+        //google()
+        //jcenter()
     }
 
     apply plugin: 'pmd'
