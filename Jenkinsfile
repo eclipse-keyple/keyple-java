@@ -12,6 +12,12 @@ spec:
       volumeMounts:
       - name: volume-known-hosts
         mountPath: /home/jenkins/.ssh
+      - name: settings-xml
+        mountPath: /home/jenkins/.m2/settings.xml
+        subPath: settings.xml
+        readOnly: true
+      - name: m2-repo
+        mountPath: /home/jenkins/.m2/repository
       command:
       - cat
       tty: true
@@ -19,7 +25,14 @@ spec:
     - name: volume-known-hosts
       configMap:
         name: known-hosts
-
+    - name: settings-xml
+      configMap:
+        name: m2-dir
+        items:
+        - key: settings.xml
+          path: settings.xml
+    - name: m2-repo
+      emptyDir: {}
 """
         }
     }
@@ -46,7 +59,7 @@ spec:
         stage('Prepare'){
             steps{
                 container('android-sdk') {
-                    git branch: 'master', url: 'https://github.com/eclipse/keyple-java.git'
+                    git branch: 'eclipse_develop', url: 'https://github.com/eclipse/keyple-java.git'
                     //checkout csm
                 }
             }
@@ -85,10 +98,10 @@ spec:
         stage('Generate apks') {
             steps{
                 container('android-sdk') {
-                    sh 'mkdir -p "/home/jenkins/workspace/test_keyple_java/android/example/calypso/nfc/?/.android/"'
-                    sh 'mkdir -p "/home/jenkins/workspace/test_keyple_java/android/example/calypso/omapi/?/.android/"'
-                    sh 'keytool -genkey -v -keystore /home/jenkins/workspace/test_keyple_java/android/example/calypso/nfc/?/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"'
-                    sh 'keytool -genkey -v -keystore /home/jenkins/workspace/test_keyple_java/android/example/calypso/omapi/?/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"'
+                    sh 'mkdir -p "/home/jenkins/workspace/${JOB_NAME}/android/example/calypso/nfc/?/.android/"'
+                    sh 'mkdir -p "/home/jenkins/workspace/${JOB_NAME}/android/example/calypso/omapi/?/.android/"'
+                    sh 'keytool -genkey -v -keystore /home/jenkins/workspace/${JOB_NAME}/android/example/calypso/nfc/?/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"'
+                    sh 'keytool -genkey -v -keystore /home/jenkins/workspace/${JOB_NAME}/android/example/calypso/omapi/?/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"'
                     sh './gradlew -b ./android/example/calypso/nfc/build.gradle assembleDebug'
                     sh './gradlew -b ./android/example/calypso/omapi/build.gradle assembleDebug'
                 }
