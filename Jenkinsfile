@@ -61,6 +61,7 @@ spec:
                 container('android-sdk') {
                     git branch: 'eclipse_develop', url: 'https://github.com/eclipse/keyple-java.git'
                     //checkout csm
+                    sh 'gradle wrapper --gradle-version 4.5.1'
                 }
             }
         }
@@ -68,7 +69,6 @@ spec:
         stage('Execute tests') {
             steps{
                 container('android-sdk') {
-                    sh 'gradle wrapper --gradle-version 4.5.1'
                     sh './gradlew test --info'
                     sh './gradlew -b ./android/build.gradle :keyple-plugin:keyple-plugin-android-nfc:test'
                     sh './gradlew -b ./android/build.gradle :keyple-plugin:keyple-plugin-android-omapi:test'
@@ -85,7 +85,7 @@ spec:
                 }
             }
         }
-
+/*
         stage('Generate javadocs') {
             steps{
                 container('android-sdk') {
@@ -107,5 +107,6 @@ spec:
                 }
             }
         }
+        */
     }
 }
