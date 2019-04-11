@@ -13,12 +13,14 @@ package org.eclipse.keyple.calypso.command.po.parser;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
+import org.eclipse.keyple.seproxy.message.ApduResponse;
 
 /**
  * Decrease (0030) response parser. See specs: Calypso / page 83 / 9.4.2 Decrease
  */
-public final class DecreaseRespPars extends AbstractApduResponseParser {
+public final class DecreaseRespPars extends AbstractPoResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
@@ -50,15 +52,15 @@ public final class DecreaseRespPars extends AbstractApduResponseParser {
     /**
      * Instantiates a new DecreaseRespPars.
      */
-    public DecreaseRespPars() {
-
+    public DecreaseRespPars(ApduResponse response) {
+        super(response);
     }
 
     /**
      * Returns the new counter value as an int between 0
      *
      * @return the new value
-     * @throws java.lang.IllegalStateException - if the counter value is not available from the
+     * @throws IllegalStateException - if the counter value is not available from the
      *         command response.
      */
     public int getNewValue() throws IllegalStateException {

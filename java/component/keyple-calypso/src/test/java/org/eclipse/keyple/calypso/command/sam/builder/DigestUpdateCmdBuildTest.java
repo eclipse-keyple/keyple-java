@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.sam.builder;
 
 
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.calypso.command.sam.builder.session.DigestUpdateCmdBuild;
+import org.eclipse.keyple.calypso.command.sam.builder.security.DigestUpdateCmdBuild;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.message.ApduRequest;
 import org.junit.Assert;
@@ -31,7 +31,7 @@ public class DigestUpdateCmdBuildTest {
                 (byte) digestDAta.length, (byte) 0x94, (byte) 0xAE, 0x01, 0x02};
 
         AbstractApduCommandBuilder apduCommandBuilder =
-                new org.eclipse.keyple.calypso.command.sam.builder.session.DigestUpdateCmdBuild(
+                new DigestUpdateCmdBuild(
                         SamRevision.S1D, true, digestDAta);
         ApduRequest ApduRequest = apduCommandBuilder.getApduRequest();
 

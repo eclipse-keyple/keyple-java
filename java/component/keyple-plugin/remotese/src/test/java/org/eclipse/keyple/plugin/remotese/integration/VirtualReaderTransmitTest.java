@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
+import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.plugin.remotese.rm.json.SampleFactory;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
 import org.eclipse.keyple.seproxy.ChannelState;
@@ -37,6 +38,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
     @Before
     public void setUp() throws Exception {
+        // restore plugin state
+        clearStubpluginReaders();
 
         initKeypleServices();
 
@@ -118,7 +121,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
             // test
             ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO,
-                    (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "");
+                    (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true,
+                    (byte) 0x20, "");
             List<ApduRequest> poApduRequestList =
                     Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
             SeRequest seRequest = new SeRequest(poApduRequestList, ChannelState.KEEP_OPEN);

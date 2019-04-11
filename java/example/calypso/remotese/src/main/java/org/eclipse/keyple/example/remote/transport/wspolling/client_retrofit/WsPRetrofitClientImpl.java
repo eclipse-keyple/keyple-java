@@ -18,6 +18,7 @@ import org.eclipse.keyple.example.remote.transport.wspolling.WsPTransportDTO;
 import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ClientNode;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
+import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,35 +38,38 @@ public class WsPRetrofitClientImpl implements ClientNode {
     private static final Logger logger = LoggerFactory.getLogger(WsPRetrofitClientImpl.class);
 
     final private String baseUrl;
-    final private String nodeId;
+    final private String clientNodeId;
+    final private String serverNodeId;
     private Boolean poll;
     private ClientNode.ConnectCallback connectCallback;
 
     private DtoHandler dtoHandler;
 
 
-    public WsPRetrofitClientImpl(String baseUrl, String nodeId) {
+    public WsPRetrofitClientImpl(String baseUrl, String clientNodeId, String serverNodeId) {
         this.baseUrl = baseUrl;
-        this.nodeId = nodeId;
+        this.clientNodeId = clientNodeId;
+        this.serverNodeId = serverNodeId;
+
     }
 
 
     /**
      * recursive polling method based on client_retrofit callbacks
      * 
-     * @param nodeId : terminal node Id (ie : androidDevice1)
+     * @param clientNodeId : terminal node Id (ie : androidDevice1)
      */
-    private void startPollingWorker(final String nodeId) {
+    private void startPollingWorker(final String clientNodeId) {
         this.poll = true;
-        poll(nodeId);
+        poll(clientNodeId);
     }
 
-    private void poll(final String nodeId) {
-        logger.debug("Polling from node {}", nodeId);
+    private void poll(final String clientNodeId) {
+        logger.debug("Polling from node {}", clientNodeId);
         final WsPRetrofitClientImpl thisClient = this;
         // if poll is activated
         if (this.poll) {
-            Call<KeypleDto> call = getRetrofitClient(baseUrl).getPolling(nodeId);
+            Call<KeypleDto> call = getRetrofitClient(baseUrl).getPolling(clientNodeId);
             call.enqueue(new Callback<KeypleDto>() {
                 @Override
                 public void onResponse(Call<KeypleDto> call, Response<KeypleDto> response) {
@@ -75,13 +79,13 @@ public class WsPRetrofitClientImpl implements ClientNode {
                     int statusCode = response.code();
 
                     logger.trace("Polling for clientNodeId {} receive a httpResponse http code {}",
-                            nodeId, statusCode);
+                            clientNodeId, statusCode);
                     if (statusCode == 200) {
                         processHttpResponseDTO(response);
                     } else {
                         // 204 : no response
                     }
-                    poll(nodeId);// recursive call to restart polling
+                    poll(clientNodeId);// recursive call to restart polling
                 }
 
                 @Override
@@ -99,10 +103,10 @@ public class WsPRetrofitClientImpl implements ClientNode {
                     } else if (t instanceof SocketTimeoutException) {
                         logger.trace("polling ends by timeout, keep polling, error : {}",
                                 t.getMessage());
-                        poll(nodeId);// recursive call to restart polling
+                        poll(clientNodeId);// recursive call to restart polling
                     } else {
                         logger.error("Unexpected error : {} , {}", t.getMessage(), t.getCause());
-                        poll(nodeId);// recursive call to restart polling
+                        poll(clientNodeId);// recursive call to restart polling
                         if (thisClient.connectCallback != null) {
                             thisClient.connectCallback.onConnectFailure();
                         }
@@ -163,7 +167,7 @@ public class WsPRetrofitClientImpl implements ClientNode {
                 @Override
                 public void onResponse(Call<KeypleDto> call, Response<KeypleDto> response) {
                     int statusCode = response.code();
-                    logger.trace("Receive response from sendDto {} {}", nodeId, statusCode);
+                    logger.trace("Receive response from sendDto {} {}", clientNodeId, statusCode);
                     processHttpResponseDTO(response);
                 }
 
@@ -186,11 +190,16 @@ public class WsPRetrofitClientImpl implements ClientNode {
 
     @Override
     public String getNodeId() {
-        return this.nodeId;
+        return this.clientNodeId;
+    }
+
+    @Override
+    public String getServerNodeId() {
+        return this.serverNodeId;
     }
 
     /*
-     * TransportNode
+     * DtoNode
      */
     @Override
     public void setDtoHandler(DtoHandler dtoHandler) {
@@ -201,7 +210,7 @@ public class WsPRetrofitClientImpl implements ClientNode {
     @Override
     public void connect(ConnectCallback connectCallback) {
         this.connectCallback = connectCallback;
-        this.startPollingWorker(nodeId);
+        this.startPollingWorker(clientNodeId);
     }
 
     @Override

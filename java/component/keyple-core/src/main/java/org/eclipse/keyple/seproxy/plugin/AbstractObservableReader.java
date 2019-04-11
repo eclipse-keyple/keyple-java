@@ -54,7 +54,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     protected DefaultSelectionRequest defaultSelectionRequest;
 
     /** Indicate if all SE detected should be notified or only matching SE */
-    protected ObservableReader.NotificationMode notificationMode;
+    protected NotificationMode notificationMode;
 
     /** ==== Constructor =================================================== */
 

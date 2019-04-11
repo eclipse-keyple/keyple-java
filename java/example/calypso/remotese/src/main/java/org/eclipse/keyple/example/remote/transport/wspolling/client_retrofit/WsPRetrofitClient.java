@@ -24,7 +24,7 @@ interface WsPRetrofitClient {
 
     @Headers({"Accept: application/json", "Content-Type: application/json; charset=UTF-8"})
     @GET("polling")
-    Call<KeypleDto> getPolling(@Query("clientNodeId") String nodeId);
+    Call<KeypleDto> getPolling(@Query("clientNodeId") String clientNodeId);
 
     @Headers({"Accept: application/json", "Content-Type: application/json; charset=UTF-8"})
     @POST("keypleDTO")

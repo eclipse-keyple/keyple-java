@@ -30,18 +30,17 @@ public class WsPollingFactory extends TransportFactory {
     private Integer port = 8000 + new Random().nextInt((100) + 1);
     private String pollingUrl = "/polling";
     private String keypleUrl = "/keypleDTO";
-    private String clientNodeId;
     private String bindUrl = "0.0.0.0";
     private String protocol = "http://";
-
+    private String serverNodeId;
     private static final Logger logger = LoggerFactory.getLogger(WsPollingFactory.class);
 
-    public WsPollingFactory(String clientNodeId) {
-        this.clientNodeId = clientNodeId;
+    public WsPollingFactory(String serverNodeId) {
+        this.serverNodeId = serverNodeId;
     }
 
-    private WsPollingFactory(Integer port, String pollingUrl, String keypleUrl, String clientNodeId,
-            String bindUrl, String protocol) {
+    private WsPollingFactory(Integer port, String pollingUrl, String keypleUrl, String bindUrl,
+            String protocol, String serverNodeId) {
         if (port != null) {
             this.port = port;
         }
@@ -51,21 +50,20 @@ public class WsPollingFactory extends TransportFactory {
         if (keypleUrl != null) {
             this.keypleUrl = keypleUrl;
         }
-        if (clientNodeId != null) {
-            this.clientNodeId = clientNodeId;
-        }
         if (bindUrl != null) {
             this.bindUrl = bindUrl;
         }
         if (protocol != null) {
             this.protocol = protocol;
         }
+        this.serverNodeId = serverNodeId;
     }
 
     @Override
-    public ClientNode getClient() {
+    public ClientNode getClient(String clientNodeId) {
         logger.info("*** Create Ws Polling Client ***");
-        return new WsPClient(protocol + bindUrl + ":" + port, keypleUrl, pollingUrl, clientNodeId);
+        return new WsPClient(protocol + bindUrl + ":" + port, keypleUrl, pollingUrl, clientNodeId,
+                serverNodeId);
     }
 
 
@@ -74,10 +72,15 @@ public class WsPollingFactory extends TransportFactory {
 
         logger.info("*** Create Ws Polling Server ***");
         try {
-            return new WsPServer(bindUrl, port, keypleUrl, pollingUrl, clientNodeId);
+            return new WsPServer(bindUrl, port, keypleUrl, pollingUrl, serverNodeId);
         } catch (IOException e) {
             return null;
         }
 
+    }
+
+    @Override
+    public String getServerNodeId() {
+        return serverNodeId;
     }
 }

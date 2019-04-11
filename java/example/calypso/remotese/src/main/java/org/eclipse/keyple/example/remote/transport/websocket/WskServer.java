@@ -17,7 +17,9 @@ import java.util.Map;
 import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ServerNode;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
+import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
+import org.eclipse.keyple.seproxy.exception.KeypleRuntimeException;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -35,13 +37,13 @@ class WskServer extends WebSocketServer implements ServerNode {
     // only for when server is master
     private Boolean isMaster;
     private WebSocket masterWebSocket;
-    final private String nodeId;
+    final private String serverNodeId;
 
-    public WskServer(InetSocketAddress address, Boolean isMaster, String nodeId) {
+    public WskServer(InetSocketAddress address, Boolean isMaster, String serverNodeId) {
         super(address);
 
         logger.info("Create websocket server on address {}", address.toString());
-        this.nodeId = nodeId;
+        this.serverNodeId = serverNodeId;
         this.isMaster = isMaster;
     }
 
@@ -88,7 +90,7 @@ class WskServer extends WebSocketServer implements ServerNode {
                                     keypleDto.getNativeReaderName(), conn);
 
                             addConnection(conn, keypleDto.getNativeReaderName(),
-                                    keypleDto.getNodeId());
+                                    keypleDto.getRequesterNodeId());
                         } else {
                             logger.debug(
                                     "No session defined in message, can not map websocket connection {} - {}",
@@ -125,7 +127,7 @@ class WskServer extends WebSocketServer implements ServerNode {
 
 
     /*
-     * TransportNode
+     * DtoNode
      */
 
     final private Map<String, WebSocket> nativeReaderName_session =
@@ -140,8 +142,8 @@ class WskServer extends WebSocketServer implements ServerNode {
         return nativeReaderName_session.put(nativeReaderName + clientNodeId, connection);
     }
 
-    public void setDtoHandler(DtoHandler stubplugin) {
-        this.dtoHandler = stubplugin;
+    public void setDtoHandler(DtoHandler dtoHandler) {
+        this.dtoHandler = dtoHandler;
     }
 
 
@@ -174,11 +176,16 @@ class WskServer extends WebSocketServer implements ServerNode {
                         logger.trace(
                                 "Retrieve socketweb from nativeReaderName and clientNodeId {} {}",
                                 transportDto.getKeypleDTO().getNativeReaderName(),
-                                transportDto.getKeypleDTO().getNodeId());
+                                transportDto.getKeypleDTO().getTargetNodeId());
                         WebSocket conn =
                                 getConnection(transportDto.getKeypleDTO().getNativeReaderName(),
-                                        transportDto.getKeypleDTO().getNodeId());
+                                        transportDto.getKeypleDTO().getTargetNodeId());
 
+                        if (conn == null) {
+                            throw new KeypleRuntimeException("Conn was not found for "
+                                    + transportDto.getKeypleDTO().getNativeReaderName() + " "
+                                    + transportDto.getKeypleDTO().getTargetNodeId());
+                        }
                         logger.trace("send DTO with websocket {} {}",
                                 KeypleDtoHelper.toJson(transportDto.getKeypleDTO()), conn);
 
@@ -202,7 +209,7 @@ class WskServer extends WebSocketServer implements ServerNode {
 
     @Override
     public String getNodeId() {
-        return nodeId;
+        return serverNodeId;
     }
 
 

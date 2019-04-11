@@ -59,7 +59,7 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
      * @param observer Observer to notify
      */
 
-    public void addObserver(final AbstractLoggedObservable.Observer<T> observer) {
+    public void addObserver(final Observer<T> observer) {
 
         logger.trace("[{}][{}] addObserver => Adding an observer.", this.getClass(),
                 this.getName());
@@ -73,7 +73,7 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
      * @param observer Observer to stop notifying
      */
 
-    public void removeObserver(final AbstractLoggedObservable.Observer<T> observer) {
+    public void removeObserver(final Observer<T> observer) {
 
         if (this instanceof AbstractObservableReader) {
             logger.trace("[{}] removeObserver => Deleting a reader observer", this.getName());

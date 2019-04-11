@@ -25,17 +25,24 @@ public class VirtualReaderSessionImpl implements VirtualReaderSession {
 
     private final String sessionId;
     private final String slaveNodeId;
+    private final String masterNodeId;
 
     // constructor
-    public VirtualReaderSessionImpl(String sessionId, String slaveNodeId) {
+    public VirtualReaderSessionImpl(String sessionId, String slaveNodeId, String masterNodeId) {
+        logger.debug("Creating VirtualReader sessionId:{} slaveNodeId:{} slaveNodeId:{}", sessionId,
+                slaveNodeId, slaveNodeId);
         if (sessionId == null) {
             throw new IllegalArgumentException("SessionId must not be null");
+        }
+        if (masterNodeId == null) {
+            throw new IllegalArgumentException("MasterNodeId must not be null");
         }
         if (slaveNodeId == null) {
             throw new IllegalArgumentException("SlaveNodeId must not be null");
         }
         this.sessionId = sessionId;
         this.slaveNodeId = slaveNodeId;
+        this.masterNodeId = masterNodeId;
     }
 
 
@@ -51,7 +58,13 @@ public class VirtualReaderSessionImpl implements VirtualReaderSession {
 
 
     @Override
+    public String getMasterNodeId() {
+        return masterNodeId;
+    }
+
+    @Override
     public String toString() {
-        return "sessionId:" + sessionId + " - slaveNodeId:" + slaveNodeId;
+        return "sessionId:" + sessionId + " - slaveNodeId:" + slaveNodeId + " - masterNodeId:"
+                + masterNodeId;
     }
 }

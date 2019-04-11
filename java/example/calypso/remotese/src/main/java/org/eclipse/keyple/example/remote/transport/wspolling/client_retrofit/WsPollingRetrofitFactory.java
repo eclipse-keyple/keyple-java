@@ -32,25 +32,25 @@ public class WsPollingRetrofitFactory extends TransportFactory {
     final private String pollingUrl = "/polling";
     final private String keypleUrl = "/keypleDTO";
     private Integer port = 8000 + new Random().nextInt((100) + 1);
-    private String clientNodeId;
     private String hostname = "0.0.0.0";
     private String protocol = "http://";
+    private String serverNodeId;
 
     private static final Logger logger = LoggerFactory.getLogger(WsPollingRetrofitFactory.class);
 
-    public WsPollingRetrofitFactory(String clientNodeId) {
-        this.clientNodeId = clientNodeId;
+    public WsPollingRetrofitFactory(String serverNodeId) {
+        this.serverNodeId = serverNodeId;
     }
 
-    public WsPollingRetrofitFactory(Integer port, String clientNodeId, String hostname,
+    public WsPollingRetrofitFactory(Integer port, String serverNodeId, String hostname,
             String protocol) {
         this.port = port;
-        this.clientNodeId = clientNodeId;
+        this.serverNodeId = serverNodeId;
         this.hostname = hostname;
         this.protocol = protocol;
     }
 
-    public WsPollingRetrofitFactory(Properties serverProp, String clientNodeId) {
+    public WsPollingRetrofitFactory(Properties serverProp, String serverNodeId) {
         if (serverProp.containsKey("server.port")) {
             this.port = Integer.decode(serverProp.getProperty("server.port"));
         }
@@ -62,14 +62,15 @@ public class WsPollingRetrofitFactory extends TransportFactory {
             this.protocol = serverProp.getProperty("server.protocol") + "://";
         }
 
-        this.clientNodeId = clientNodeId;
+        this.serverNodeId = serverNodeId;
     }
 
     @Override
-    public ClientNode getClient() {
+    public ClientNode getClient(String clientNodeId) {
 
         logger.info("*** Create RETROFIT Ws Polling Client ***");
-        return new WsPRetrofitClientImpl(protocol + hostname + ":" + port, clientNodeId);
+        return new WsPRetrofitClientImpl(protocol + hostname + ":" + port, clientNodeId,
+                serverNodeId);
     }
 
 
@@ -78,11 +79,18 @@ public class WsPollingRetrofitFactory extends TransportFactory {
     public ServerNode getServer() throws IOException {
 
         logger.info("*** Create Ws Polling Server ***");
-        return new WsPServer(hostname, port, keypleUrl, pollingUrl, clientNodeId);
+        return new WsPServer(hostname, port, keypleUrl, pollingUrl, serverNodeId);
 
+    }
+
+    @Override
+    public String getServerNodeId() {
+        return serverNodeId;
     }
 
     public String getBaseUrl() {
         return protocol + hostname + ":" + port;
     }
+
+
 }

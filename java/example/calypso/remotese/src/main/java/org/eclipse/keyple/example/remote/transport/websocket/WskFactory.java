@@ -33,19 +33,19 @@ public class WskFactory extends TransportFactory {
     final private String keypleUrl = "/keypleDTO";
     final private String bindUrl = "0.0.0.0";
     final private String protocol = "http://";
-    final private String clientNodeId;
     private Boolean isMasterServer;
+    private String serverNodeId;
 
     private static final Logger logger = LoggerFactory.getLogger(WskFactory.class);
 
 
-    public WskFactory(Boolean isMasterServer, String clientNodeId) {
+    public WskFactory(Boolean isMasterServer, String serverNodeId) {
+        this.serverNodeId = serverNodeId;
         this.isMasterServer = isMasterServer;
-        this.clientNodeId = clientNodeId;
     }
 
     @Override
-    public ClientNode getClient() {
+    public ClientNode getClient(String clientNodeId) {
 
         logger.info("*** Create Websocket Client ***");
 
@@ -53,7 +53,7 @@ public class WskFactory extends TransportFactory {
         ClientNode wskClient;
         try {
             wskClient = new WskClient(new URI(protocol + "localhost:" + port + keypleUrl),
-                    clientNodeId);
+                    clientNodeId, serverNodeId);
 
             return wskClient;
         } catch (URISyntaxException e) {
@@ -69,9 +69,12 @@ public class WskFactory extends TransportFactory {
         logger.info("*** Create Websocket Server ***");
 
         InetSocketAddress inet = new InetSocketAddress(Inet4Address.getByName(bindUrl), port);
-        return new WskServer(inet, this.isMasterServer, clientNodeId);
+        return new WskServer(inet, this.isMasterServer, serverNodeId);
 
     }
 
-
+    @Override
+    public String getServerNodeId() {
+        return serverNodeId;
+    }
 }

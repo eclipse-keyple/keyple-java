@@ -17,17 +17,21 @@ package org.eclipse.keyple.plugin.remotese.transport.model;
  */
 public class KeypleDto {
 
-    // Slave Node Id
-    private String clientNodeId;
+    // Requester Node Id (can be slave or master)
+    private final String requesterNodeId;
+
+
+    // Requester Node Id (can be slave or master)
+    private String targetNodeId;
 
     // Master reader session
-    private String sessionId;
+    private final String sessionId;
 
     // Slave reader name
-    private String nativeReaderName;
+    private final String nativeReaderName;
 
     // Master reader name
-    private String virtualReaderName;
+    private final String virtualReaderName;
 
     // API method to be called
     private final String action;
@@ -44,13 +48,21 @@ public class KeypleDto {
      * 
      * @param action : API method to be called
      * @param body : Arguments of the API (json)
-     * @param isRequest : Is a request or a response
+     * @param isRequest : Is a request or a response public KeypleDto(String action, String body,
+     *        Boolean isRequest) { this.action = action; this.body = body; this.isRequest =
+     *        isRequest; }
      */
-    public KeypleDto(String action, String body, Boolean isRequest) {
-        this.action = action;
-        this.body = body;
-        this.isRequest = isRequest;
-    }
+
+    /**
+     * Constructor with a Virtual Reader Session Id
+     *
+     * @param action : API method to be called
+     * @param body : Arguments of the API (json)
+     * @param isRequest : Is a request or a response
+     * @param sessionId : Session Id of current Virtual Reader Session Id public KeypleDto(String
+     *        action, String body, Boolean isRequest, String sessionId) { this.sessionId =
+     *        sessionId; this.action = action; this.body = body; this.isRequest = isRequest; }
+     */
 
     /**
      * Constructor with a Virtual Reader Session Id
@@ -60,11 +72,15 @@ public class KeypleDto {
      * @param isRequest : Is a request or a response
      * @param sessionId : Session Id of current Virtual Reader Session Id
      */
-    public KeypleDto(String action, String body, Boolean isRequest, String sessionId) {
+    public KeypleDto(String action, String body, Boolean isRequest, String sessionId,
+            String nativeReaderName, String virtualReaderName, String requesterNodeId) {
         this.sessionId = sessionId;
         this.action = action;
         this.body = body;
         this.isRequest = isRequest;
+        this.nativeReaderName = nativeReaderName;
+        this.virtualReaderName = virtualReaderName;
+        this.requesterNodeId = requesterNodeId;
     }
 
     /**
@@ -76,14 +92,12 @@ public class KeypleDto {
      * @param sessionId : Session Id of current Virtual Reader Session Id
      */
     public KeypleDto(String action, String body, Boolean isRequest, String sessionId,
-            String nativeReaderName, String virtualReaderName, String clientNodeId) {
-        this.sessionId = sessionId;
-        this.action = action;
-        this.body = body;
-        this.isRequest = isRequest;
-        this.nativeReaderName = nativeReaderName;
-        this.virtualReaderName = virtualReaderName;
-        this.clientNodeId = clientNodeId;
+            String nativeReaderName, String virtualReaderName, String requesterNodeId,
+            String targetNodeId) {
+
+        this(action, body, isRequest, sessionId, nativeReaderName, virtualReaderName,
+                requesterNodeId);
+        this.targetNodeId = targetNodeId;
     }
 
     /*
@@ -106,8 +120,8 @@ public class KeypleDto {
         return sessionId;
     }
 
-    public String getNodeId() {
-        return clientNodeId;
+    public String getRequesterNodeId() {
+        return requesterNodeId;
     }
 
     public String getNativeReaderName() {
@@ -118,11 +132,17 @@ public class KeypleDto {
         return virtualReaderName;
     }
 
+    public String getTargetNodeId() {
+        return targetNodeId;
+    }
+
+
     @Override
     public String toString() {
         return String.format(
-                "KeypleDto : %s - isRequest : %s - native : %s - virtual : %s - clientNodeId : %s - sessionId : %s - body : %s",
+                "KeypleDto : %s - isRequest : %s - native : %s - virtual : %s - requesterNodeId : %s - targetNodeId : %s - sessionId : %s - body : %s",
                 this.getAction(), this.isRequest(), this.getNativeReaderName(),
-                this.getVirtualReaderName(), this.getNodeId(), this.getSessionId(), this.getBody());
+                this.getVirtualReaderName(), this.getRequesterNodeId(), this.getTargetNodeId(),
+                this.getSessionId(), this.getBody());
     }
 }

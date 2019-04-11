@@ -33,8 +33,9 @@ import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.transaction.MatchingSe;
+import org.eclipse.keyple.transaction.MatchingSelection;
 import org.eclipse.keyple.transaction.SeSelection;
+import org.eclipse.keyple.transaction.SelectionsResult;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,7 +143,7 @@ public class UseCase_Calypso4_PoAuthentication_Stub {
             /*
              * Prepare a Calypso PO selection
              */
-            SeSelection seSelection = new SeSelection(poReader);
+            SeSelection seSelection = new SeSelection();
 
             /*
              * Setting of an AID based selection of a Calypso REV3 PO
@@ -165,16 +166,19 @@ public class UseCase_Calypso4_PoAuthentication_Stub {
              * Add the selection case to the current selection (we could have added other cases
              * here)
              */
-            CalypsoPo calypsoPo = (CalypsoPo) seSelection.prepareSelection(poSelectionRequest);
+            seSelection.prepareSelection(poSelectionRequest);
 
             /*
              * Actual PO communication: operate through a single request the Calypso PO selection
              * and the file read
              */
-            if (seSelection.processExplicitSelection()) {
-                logger.info("The selection of the PO has succeeded.");
+            SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
 
-                MatchingSe selectedSe = seSelection.getSelectedSe();
+            if (selectionsResult.hasActiveSelection()) {
+                MatchingSelection matchingSelection = selectionsResult.getActiveSelection();
+
+                CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
+                logger.info("The selection of the PO has succeeded.");
 
                 /* Go on with the reading of the first record of the EventLog file */
                 logger.info(
@@ -184,14 +188,14 @@ public class UseCase_Calypso4_PoAuthentication_Stub {
                 logger.info(
                         "==================================================================================");
 
-                PoTransaction poTransaction = new PoTransaction(poReader, (CalypsoPo) selectedSe,
-                        samReader, CalypsoUtilities.getSamSettings());
+                PoTransaction poTransaction = new PoTransaction(poReader, calypsoPo, samReader,
+                        CalypsoUtilities.getSamSettings());
 
                 /*
                  * Prepare the reading order and keep the associated parser for later use once the
                  * transaction has been processed.
                  */
-                ReadRecordsRespPars readEventLogParser = poTransaction.prepareReadRecordsCmd(
+                int readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
                         CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
                         CalypsoClassicInfo.RECORD_NUMBER_1,
                         String.format("EventLog (SFI=%02X, recnbr=%d))",
@@ -218,7 +222,7 @@ public class UseCase_Calypso4_PoAuthentication_Stub {
                  * Prepare the reading order and keep the associated parser for later use once the
                  * transaction has been processed.
                  */
-                ReadRecordsRespPars readEventLogParserBis = poTransaction.prepareReadRecordsCmd(
+                int readEventLogParserIndexBis = poTransaction.prepareReadRecordsCmd(
                         CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
                         CalypsoClassicInfo.RECORD_NUMBER_1,
                         String.format("EventLog (SFI=%02X, recnbr=%d))",
@@ -230,8 +234,9 @@ public class UseCase_Calypso4_PoAuthentication_Stub {
                 /*
                  * Retrieve the data read from the parser updated during the transaction process
                  */
-                byte eventLog[] = (readEventLogParser.getRecords())
-                        .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+                byte eventLog[] = (((ReadRecordsRespPars) poTransaction
+                        .getResponseParser(readEventLogParserIndexBis)).getRecords())
+                                .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
 
                 /* Log the result */
                 logger.info("EventLog file data: {}", ByteArrayUtils.toHex(eventLog));

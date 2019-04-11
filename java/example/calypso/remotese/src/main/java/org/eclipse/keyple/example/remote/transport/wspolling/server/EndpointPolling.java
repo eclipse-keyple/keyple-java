@@ -16,8 +16,9 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.plugin.remotese.transport.*;
-import org.eclipse.keyple.plugin.remotese.transport.factory.TransportNode;
+import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
+import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ import com.sun.net.httpserver.HttpHandler;
  * Endpoint for polling, used to send keypleDto to polling clients
  */
 
-class EndpointPolling implements HttpHandler, TransportNode {
+class EndpointPolling implements HttpHandler, DtoNode {
 
 
     private final Logger logger = LoggerFactory.getLogger(EndpointPolling.class);
@@ -92,7 +93,7 @@ class EndpointPolling implements HttpHandler, TransportNode {
     }
 
     /*
-     * TransportNode
+     * DtoNode
      */
     @Override
     public void setDtoHandler(DtoHandler receiver) {
@@ -111,7 +112,7 @@ class EndpointPolling implements HttpHandler, TransportNode {
         logger.debug("Using polling to send keypleDTO this action : {}", message.getAction());
         logger.trace("Using polling to send keypleDTO : {}", message);
 
-        PublishQueue keypleDtoQueue = publishQueueManager.get(message.getNodeId());
+        PublishQueue keypleDtoQueue = publishQueueManager.get(message.getTargetNodeId());
         if (keypleDtoQueue == null) {
             throw new IllegalStateException("Keyple Dto Queue is null, what to do?");
         }

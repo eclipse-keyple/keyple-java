@@ -31,6 +31,11 @@ public final class SeResponse implements Serializable {
      */
     private boolean channelPreviouslyOpen;
 
+    /**
+     * true if the channel is open
+     */
+    private final boolean logicalChannelIsOpen;
+
     private final SelectionStatus selectionStatus;
 
     /**
@@ -42,12 +47,14 @@ public final class SeResponse implements Serializable {
     /**
      * the constructor called by a ProxyReader during the processing of the ‘transmit’ method.
      *
+     * @param logicalChannelIsOpen the current channel status
      * @param channelPreviouslyOpen the channel previously open
      * @param selectionStatus the SE selection status
      * @param apduResponses the apdu responses
      */
-    public SeResponse(boolean channelPreviouslyOpen, SelectionStatus selectionStatus,
-            List<ApduResponse> apduResponses) {
+    public SeResponse(boolean logicalChannelIsOpen, boolean channelPreviouslyOpen,
+            SelectionStatus selectionStatus, List<ApduResponse> apduResponses) {
+        this.logicalChannelIsOpen = logicalChannelIsOpen;
         this.channelPreviouslyOpen = channelPreviouslyOpen;
         this.selectionStatus = selectionStatus;
         this.apduResponses = apduResponses;
@@ -60,6 +67,15 @@ public final class SeResponse implements Serializable {
      */
     public boolean wasChannelPreviouslyOpen() {
         return channelPreviouslyOpen;
+    }
+
+    /**
+     * Get the logical channel status
+     * 
+     * @return true if the logical channel is open
+     */
+    public boolean isLogicalChannelOpen() {
+        return logicalChannelIsOpen;
     }
 
     /**
@@ -91,16 +107,20 @@ public final class SeResponse implements Serializable {
         String string;
         if (selectionStatus != null) {
             string = String.format(
-                    "SeResponse:{RESPONSES = %s, ATR = %s, FCI = %s, HASMATCHED = %b CHANNELWASOPEN = %b}",
+                    "SeResponse:{RESPONSES = %s, ATR = %s, FCI = %s, HASMATCHED = %b CHANNELWASOPEN = %b "
+                            + "LOGICALCHANNEL = %s}",
                     getApduResponses(),
                     selectionStatus.getAtr().getBytes() == null ? "null"
                             : ByteArrayUtils.toHex(selectionStatus.getAtr().getBytes()),
                     ByteArrayUtils.toHex(selectionStatus.getFci().getBytes()),
-                    selectionStatus.hasMatched(), wasChannelPreviouslyOpen());
+                    selectionStatus.hasMatched(), wasChannelPreviouslyOpen(),
+                    logicalChannelIsOpen ? "OPEN" : "CLOSED");
         } else {
             string = String.format(
-                    "SeResponse:{RESPONSES = %s, ATR = null, FCI = null, HASMATCHED = false CHANNELWASOPEN = %b}",
-                    getApduResponses(), wasChannelPreviouslyOpen());
+                    "SeResponse:{RESPONSES = %s, ATR = null, FCI = null, HASMATCHED = false CHANNELWASOPEN = %b "
+                            + "LOGICALCHANNEL = %s}",
+                    getApduResponses(), wasChannelPreviouslyOpen(),
+                    logicalChannelIsOpen ? "OPEN" : "CLOSED");
         }
         return string;
     }
@@ -118,6 +138,7 @@ public final class SeResponse implements Serializable {
         return seResponse.getSelectionStatus().equals(selectionStatus)
                 && (seResponse.getApduResponses() == null ? apduResponses == null
                         : seResponse.getApduResponses().equals(apduResponses))
+                && seResponse.isLogicalChannelOpen() == logicalChannelIsOpen
                 && seResponse.wasChannelPreviouslyOpen() == channelPreviouslyOpen;
     }
 
@@ -128,6 +149,7 @@ public final class SeResponse implements Serializable {
                 + (selectionStatus.getAtr() == null ? 0 : selectionStatus.getAtr().hashCode());
         hash = 7 * hash + (apduResponses == null ? 0 : this.apduResponses.hashCode());
         hash = 29 * hash + (this.channelPreviouslyOpen ? 1 : 0);
+        hash = 37 * hash + (this.logicalChannelIsOpen ? 1 : 0);
         return hash;
     }
 }

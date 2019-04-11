@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
 public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements ReaderObserver {
     protected static final Logger logger =
             LoggerFactory.getLogger(UseCase_Generic2_DefaultSelectionNotification_Pcsc.class);
-    private SeReader seReader;
     private String seAid = "A0000004040125090101";
     private SeSelection seSelection;
     /**
@@ -76,7 +75,7 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
          * Get a SE reader ready to work with contactless SE. Use the getReader helper method from
          * the ReaderUtilities class.
          */
-        seReader = ReaderUtilities.getDefaultContactLessSeReader(seProxyService);
+        SeReader seReader = ReaderUtilities.getDefaultContactLessSeReader(seProxyService);
 
         /* Check if the reader exists */
         if (seReader == null) {
@@ -90,7 +89,7 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
         /*
          * Prepare a SE selection
          */
-        seSelection = new SeSelection(seReader);
+        seSelection = new SeSelection();
 
         /*
          * Setting of an AID based selection
@@ -147,9 +146,12 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
     public void update(ReaderEvent event) {
         switch (event.getEventType()) {
             case SE_MATCHED:
-                if (seSelection.processDefaultSelection(event.getDefaultSelectionResponse())) {
-                    MatchingSe selectedSe = seSelection.getSelectedSe();
+                /* the selection has one target, get the result at index 0 */
+                MatchingSe selectedSe =
+                        seSelection.processDefaultSelection(event.getDefaultSelectionResponse())
+                                .getActiveSelection().getMatchingSe();
 
+                if (selectedSe != null) {
                     logger.info("Observer notification: the selection of the SE has succeeded.");
 
                     logger.info(

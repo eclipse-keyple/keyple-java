@@ -11,10 +11,10 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.sam;
 
-import org.eclipse.keyple.calypso.command.sam.builder.session.*;
-import org.eclipse.keyple.calypso.command.sam.builder.session.SelectDiversifierCmdBuild;
-import org.eclipse.keyple.calypso.command.sam.parser.session.*;
-import org.eclipse.keyple.calypso.command.sam.parser.session.SelectDiversifierRespPars;
+import org.eclipse.keyple.calypso.command.sam.builder.security.*;
+import org.eclipse.keyple.calypso.command.sam.builder.security.SelectDiversifierCmdBuild;
+import org.eclipse.keyple.calypso.command.sam.parser.security.*;
+import org.eclipse.keyple.calypso.command.sam.parser.security.SelectDiversifierRespPars;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.command.CommandsTable;
@@ -45,7 +45,14 @@ public enum CalypsoSamCommands implements CommandsTable {
 
     /** The sam digest authenticate. */
     DIGEST_AUTHENTICATE("Digest Authenticate", (byte) 0x82, DigestAuthenticateCmdBuild.class,
-            DigestAuthenticateRespPars.class);
+            DigestAuthenticateRespPars.class),
+
+    /** The sam digest authenticate. */
+    GIVE_RANDOM("Give Random", (byte) 0x86, GiveRandomCmdBuild.class, GiveRandomRespPars.class),
+
+    /** The sam digest authenticate. */
+    CARD_GENERATE_KEY("Card Generate Key", (byte) 0x12, CardGenerateKeyCmdBuild.class,
+            CardGenerateKeyRespPars.class);
 
     /** The name. */
     private final String name;

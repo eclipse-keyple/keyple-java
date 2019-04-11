@@ -12,9 +12,9 @@
 package org.eclipse.keyple.calypso.util;
 
 
-import org.eclipse.keyple.calypso.command.po.parser.session.AbstractOpenSessionRespPars;
-import org.eclipse.keyple.calypso.command.po.parser.session.OpenSession24RespPars;
-import org.eclipse.keyple.calypso.command.po.parser.session.OpenSession32RespPars;
+import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.security.OpenSession24RespPars;
+import org.eclipse.keyple.calypso.command.po.parser.security.OpenSession32RespPars;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.junit.Assert;
 import org.junit.Test;

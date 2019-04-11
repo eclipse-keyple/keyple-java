@@ -1,0 +1,38 @@
+title Connect a Native Reader to Master with a Custom protocol
+
+participantgroup #lightgreen **Ticketing App**
+participant Application
+end
+
+
+participantgroup #lightblue **Keyple**
+participant SlaveAPI
+end
+
+participantgroup #lightgrey **Custom Protocol**
+participant DtoNodeClient
+participant DtoNodeServer
+end
+
+participantgroup #lightblue **Keyple**
+participant MasterAPI
+participant RsePlugin
+end
+
+Application-->SlaveAPI:connect(nativeReader)
+
+SlaveAPI-->DtoNodeClient:send(keypleDto)
+
+DtoNodeServer<--DtoNodeClient:protocol: / / keypleDto
+
+DtoNodeServer-->MasterAPI:onDto(keypleDto)
+
+MasterAPI-->RsePlugin:connectReader(nativeReader)
+
+RsePlugin-->DtoNodeServer:keypleDto
+
+DtoNodeServer-->DtoNodeClient:protocol: / / keypleDto
+
+DtoNodeClient-->SlaveAPI:onDto(keypleDto)
+SlaveAPI-->Application:sessionId
+

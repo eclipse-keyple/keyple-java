@@ -12,6 +12,7 @@
 package org.eclipse.keyple.example.generic.common;
 
 
+
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.seproxy.*;
@@ -50,7 +51,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
 
     public DefaultSelectionRequest prepareSeSelection() {
 
-        seSelection = new SeSelection(poReader);
+        seSelection = new SeSelection();
 
         // process SDK defined protocols
         for (ContactlessProtocols protocol : ContactlessProtocols.values()) {
@@ -107,10 +108,12 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
      */
     @Override
     public void processSeMatch(SelectionResponse selectionResponse) {
-        if (seSelection.processDefaultSelection(selectionResponse)) {
-            MatchingSe selectedSe = seSelection.getSelectedSe();
-            System.out.println("Selector: " + selectedSe.getExtraInfo() + ", selection status = "
-                    + selectedSe.isSelected());
+        SelectionsResult selectionsResult = seSelection.processDefaultSelection(selectionResponse);
+        /* get the SE that matches one of the two selection targets */
+        MatchingSe selectedSe = selectionsResult.getActiveSelection().getMatchingSe();
+        if (selectedSe != null) {
+            System.out.println("Selector: " + selectedSe.getSelectionExtraInfo()
+                    + ", selection status = " + selectedSe.isSelected());
         } else {
             System.out.println("No selection matched!");
         }

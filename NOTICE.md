@@ -63,10 +63,6 @@ Mokito API (2.13.0)
 Junit (4.12)
 
  * License: Eclipse Public License, 2.0
- 
-Open card (TLV library)
-
- * Licence: Open Card Consortium source license, 1.0
 
 ####Specific for Android plugins
 

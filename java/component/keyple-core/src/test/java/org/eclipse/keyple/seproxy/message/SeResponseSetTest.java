@@ -52,7 +52,7 @@ public class SeResponseSetTest {
 
     @Test
     public void toStringTest() throws Exception {
-        SeResponse emptySeR = new SeResponse(true, new SelectionStatus(
+        SeResponse emptySeR = new SeResponse(true, true, new SelectionStatus(
                 new AnswerToReset(ByteArrayUtils.fromHex("3BFF00")), null, true), null);
         SeResponseSet set = new SeResponseSet(emptySeR);
         assertNotNull(set.toString());

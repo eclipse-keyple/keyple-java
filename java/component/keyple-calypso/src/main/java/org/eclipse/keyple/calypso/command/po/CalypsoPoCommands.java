@@ -11,76 +11,51 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.po;
 
-import org.eclipse.keyple.command.AbstractApduCommandBuilder;
-import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.command.CommandsTable;
 
 public enum CalypsoPoCommands implements CommandsTable {
 
     /** The po get data. */
-    GET_DATA_FCI("Get Data'FCI'", (byte) 0xCA,
-            org.eclipse.keyple.calypso.command.po.builder.GetDataFciCmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars.class),
+    GET_DATA_FCI("Get Data'FCI'", (byte) 0xCA),
 
     /** The po open session. */
-    OPEN_SESSION_10("Open Secure Session V1", (byte) 0x8A,
-            org.eclipse.keyple.calypso.command.po.builder.session.OpenSession10CmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.session.OpenSession10RespPars.class),
+    OPEN_SESSION_10("Open Secure Session V1", (byte) 0x8A),
 
     /** The po open session. */
-    OPEN_SESSION_24("Open Secure Session V2.4", (byte) 0x8A,
-            org.eclipse.keyple.calypso.command.po.builder.session.OpenSession24CmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.session.OpenSession24RespPars.class),
+    OPEN_SESSION_24("Open Secure Session V2.4", (byte) 0x8A),
 
     /** The po open session. */
-    OPEN_SESSION_31("Open Secure Session V3.1", (byte) 0x8A,
-            org.eclipse.keyple.calypso.command.po.builder.session.OpenSession31CmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.session.OpenSession31RespPars.class),
+    OPEN_SESSION_31("Open Secure Session V3.1", (byte) 0x8A),
 
     /** The po open session. */
-    OPEN_SESSION_32("Open Secure Session V3.2", (byte) 0x8A,
-            org.eclipse.keyple.calypso.command.po.builder.session.OpenSession32CmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.session.OpenSession32RespPars.class),
+    OPEN_SESSION_32("Open Secure Session V3.2", (byte) 0x8A),
 
     /** The po close session. */
-    CLOSE_SESSION("Close Secure Session", (byte) 0x8E,
-            org.eclipse.keyple.calypso.command.po.builder.session.CloseSessionCmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.session.CloseSessionRespPars.class),
+    CLOSE_SESSION("Close Secure Session", (byte) 0x8E),
 
     /** The po read records. */
-    READ_RECORDS("Read Records", (byte) 0xB2,
-            org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars.class),
+    READ_RECORDS("Read Records", (byte) 0xB2),
 
     /** The po update record. */
-    UPDATE_RECORD("Update Record", (byte) 0xDC,
-            org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars.class),
+    UPDATE_RECORD("Update Record", (byte) 0xDC),
 
     /** The po append record. */
-    APPEND_RECORD("Append Record", (byte) 0xE2,
-            org.eclipse.keyple.calypso.command.po.builder.AppendRecordCmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars.class),
+    APPEND_RECORD("Append Record", (byte) 0xE2),
 
     /** The po get challenge. */
-    GET_CHALLENGE("Get Challenge", (byte) 0x84,
-            org.eclipse.keyple.calypso.command.po.builder.session.PoGetChallengeCmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.session.PoGetChallengeRespPars.class),
+    GET_CHALLENGE("Get Challenge", (byte) 0x84),
 
     /** The po increase counter. */
-    INCREASE("Increase", (byte) 0x32,
-            org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.IncreaseRespPars.class),
+    INCREASE("Increase", (byte) 0x32),
 
     /** The po decrease counter. */
-    DECREASE("Decrease", (byte) 0x30,
-            org.eclipse.keyple.calypso.command.po.builder.DecreaseCmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.DecreaseRespPars.class),
+    DECREASE("Decrease", (byte) 0x30),
 
     /** The po decrease counter. */
-    SELECT_FILE("Select File", (byte) 0xA4,
-            org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild.class,
-            org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars.class);
+    SELECT_FILE("Select File", (byte) 0xA4),
+
+    /* The po change key */
+    CHANGE_KEY("Change Key", (byte) 0xD8);
 
     /** The name. */
     private final String name;
@@ -88,27 +63,15 @@ public enum CalypsoPoCommands implements CommandsTable {
     /** The instruction byte. */
     private final byte instructionbyte;
 
-    /** The command builder class. */
-    private final Class<? extends AbstractApduCommandBuilder> commandBuilderClass;
-
-    /** The response parser class. */
-    private final Class<? extends AbstractApduResponseParser> responseParserClass;
-
     /**
      * The generic constructor of CalypsoCommands.
      *
      * @param name the name
      * @param instructionByte the instruction byte
-     * @param commandBuilderClass the command builder class
-     * @param responseParserClass the response parser class
      */
-    CalypsoPoCommands(String name, byte instructionByte,
-            Class<? extends AbstractApduCommandBuilder> commandBuilderClass,
-            Class<? extends AbstractApduResponseParser> responseParserClass) {
+    CalypsoPoCommands(String name, byte instructionByte) {
         this.name = name;
         this.instructionbyte = instructionByte;
-        this.commandBuilderClass = commandBuilderClass;
-        this.responseParserClass = responseParserClass;
     }
 
 
@@ -129,25 +92,6 @@ public enum CalypsoPoCommands implements CommandsTable {
     public byte getInstructionByte() {
         return instructionbyte;
     }
-
-    /**
-     * Gets the command builder class.
-     *
-     * @return the corresponding command builder class
-     */
-    public Class<? extends AbstractApduCommandBuilder> getCommandBuilderClass() {
-        return commandBuilderClass;
-    }
-
-    /**
-     * Gets the response parser class.
-     *
-     * @return the corresponding response parser class
-     */
-    public Class<? extends AbstractApduResponseParser> getResponseParserClass() {
-        return responseParserClass;
-    }
-
 
     /**
      * Get the right open-session command for a given {@link PoRevision}

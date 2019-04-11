@@ -19,14 +19,16 @@ class VirtualReaderSessionFactory {
 
 
     /**
-     * Create a new session
+     * Create a new session (internal method used by VirtualReader)
      * 
      * @param nativeReaderName
-     * @param nodeId slave device nodeId
+     * @param slaveNodeId slave device slaveNodeId
      * @return Session for this reader
      */
-    public VirtualReaderSession createSession(String nativeReaderName, String nodeId) {
-        return new VirtualReaderSessionImpl(generateSessionId(nativeReaderName, nodeId), nodeId);
+    public VirtualReaderSession createSession(String nativeReaderName, String slaveNodeId,
+            String masterNodeId) {
+        return new VirtualReaderSessionImpl(generateSessionId(nativeReaderName, slaveNodeId),
+                slaveNodeId, masterNodeId);
     }
 
 

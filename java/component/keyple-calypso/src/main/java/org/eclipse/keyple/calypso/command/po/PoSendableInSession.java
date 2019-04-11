@@ -13,5 +13,5 @@ package org.eclipse.keyple.calypso.command.po;
 
 import org.eclipse.keyple.calypso.command.SendableInSession;
 
-public interface PoSendableInSession extends SendableInSession<PoCommandBuilder> {
+public interface PoSendableInSession extends SendableInSession<AbstractPoCommandBuilder> {
 }

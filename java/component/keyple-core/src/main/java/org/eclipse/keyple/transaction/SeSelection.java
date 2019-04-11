@@ -11,8 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.transaction;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import org.eclipse.keyple.seproxy.SeReader;
 import org.eclipse.keyple.seproxy.event.DefaultSelectionRequest;
@@ -34,53 +32,41 @@ import org.slf4j.LoggerFactory;
 public final class SeSelection {
     private static final Logger logger = LoggerFactory.getLogger(SeSelection.class);
 
-    private final SeReader seReader;
-    private List<MatchingSe> matchingSeList = new ArrayList<MatchingSe>();
+    /*
+     * list of target classes and selection requests used to build the MatchingSe list in return of
+     * processSelection methods
+     */
+    private List<SeSelectionRequest> seSelectionRequestList = new ArrayList<SeSelectionRequest>();
     private SeRequestSet selectionRequestSet = new SeRequestSet(new LinkedHashSet<SeRequest>());
-    private MatchingSe selectedSe;
+    private int selectionIndex;
 
     /**
      * Initializes the SeSelection
-     * 
-     * @param seReader the reader to use to make the selection
      */
-    public SeSelection(SeReader seReader) {
-        this.seReader = (ProxyReader) seReader;
+    public SeSelection() {
+        selectionIndex = 0;
     }
 
     /**
      * Prepare a selection: add the selection request from the provided selector to the selection
      * request set.
      * <p>
-     * Create a MatchingSe, retain it in a list and return it. The MatchingSe may be an extended
-     * class
-     * 
+     *
      * @param seSelectionRequest the selector to prepare
-     * @return a MatchingSe for further information request about this selector
+     * @return the selection index giving the current selection position in the selection request.
      */
-    public MatchingSe prepareSelection(SeSelectionRequest seSelectionRequest) {
+    public int prepareSelection(SeSelectionRequest seSelectionRequest) {
         if (logger.isTraceEnabled()) {
             logger.trace("SELECTORREQUEST = {}, EXTRAINFO = {}",
                     seSelectionRequest.getSelectionRequest(),
                     seSelectionRequest.getSeSelector().getExtraInfo());
         }
+        /* build the SeRequest set transmitted to the SE */
         selectionRequestSet.add(seSelectionRequest.getSelectionRequest());
-        MatchingSe matchingSe = null;
-        try {
-            Constructor constructor = seSelectionRequest.getMatchingClass()
-                    .getConstructor(seSelectionRequest.getSelectionClass());
-            matchingSe = (MatchingSe) constructor.newInstance(seSelectionRequest);
-            matchingSeList.add(matchingSe);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        return matchingSe;
+        /* keep the selection request */
+        seSelectionRequestList.add(seSelectionRequest);
+        /* return and post increment the selection index */
+        return selectionIndex++;
     }
 
     /**
@@ -90,84 +76,56 @@ public final class SeSelection {
      * <p>
      * The responses from the {@link SeResponseSet} is parsed and checked.
      * <p>
-     * If one of the responses has matched, the corresponding {@link MatchingSe} is updated with the
-     * data from the response.
-     * <p>
-     * If the updated {@link MatchingSe} is selectable (logical channel requested to be kept open)
-     * the selectedSe field is updated (making the MatchingSe available through getSelectedSe).
-     *
+     * A {@link MatchingSe} list is build and returned. Non matching SE are signaled by a null
+     * element in the list
+     * 
      * @param selectionResponse the selection response
-     * @return true if a successful selection has been made.
+     * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
+     *         including {@link MatchingSe} and {@link SeResponse}.
      */
-    private boolean processSelection(SelectionResponse selectionResponse) {
-        boolean selectionSuccessful = false;
+    private SelectionsResult processSelection(SelectionResponse selectionResponse) {
+        SelectionsResult selectionsResult = new SelectionsResult();
 
         /* null pointer exception protection */
         if (selectionResponse == null) {
             logger.error("selectionResponse shouldn't be null in processSelection.");
-            return false;
+            return null;
         }
+        int selectionIndex = 0;
 
-        /* resets MatchingSe previous data */
-        for (MatchingSe matchingSe : matchingSeList) {
-            matchingSe.reset();
-        }
         /* Check SeResponses */
-        Iterator<MatchingSe> matchingSeIterator = matchingSeList.iterator();
         for (SeResponse seResponse : selectionResponse.getSelectionSeResponseSet().getResponses()) {
             if (seResponse != null) {
                 /* test if the selection is successful: we should have either a FCI or an ATR */
                 if (seResponse.getSelectionStatus() != null
                         && seResponse.getSelectionStatus().hasMatched()) {
-                    /* at least one is successful */
-                    selectionSuccessful = true;
-                    /* update the matchingSe list */
-                    if (matchingSeIterator.hasNext()) {
-                        MatchingSe matchingSe = matchingSeIterator.next();
-                        matchingSe.setSelectionResponse(seResponse);
-                        if (matchingSe.isSelectable()) {
-                            selectedSe = matchingSe;
-                        }
-                    } else {
-                        throw new IllegalStateException(
-                                "The number of selection responses exceeds the number of prepared selectors.");
-                    }
-                } else {
+                    /*
+                     * create a MatchingSe with the class deduced from the selection request during
+                     * the selection preparation
+                     */
+                    MatchingSe matchingSe =
+                            seSelectionRequestList.get(selectionIndex).parse(seResponse);
 
-                    if (!matchingSeIterator.hasNext()) {
-                        throw new IllegalStateException(
-                                "The number of selection responses exceeds the number of prepared selectors.");
-                    }
-
-                    matchingSeIterator.next();
-                }
-            } else {
-                if (matchingSeIterator.hasNext()) {
-                    /* skip not matching response */
-                    matchingSeIterator.next();
-                } else {
-                    throw new IllegalStateException(
-                            "The number of selection responses exceeds the number of prepared selectors.");
+                    selectionsResult.addMatchingSelection(new MatchingSelection(selectionIndex,
+                            seSelectionRequestList.get(selectionIndex), matchingSe, seResponse));
                 }
             }
+            selectionIndex++;
         }
-        return selectionSuccessful;
+        return selectionsResult;
     }
 
     /**
-     * Parses the response to a selection operation sent to a SE and sets the selectedSe if any
+     * Parses the response to a selection operation sent to a SE and return a list of
+     * {@link MatchingSe}
      * <p>
-     * The returned boolean indicates if at least one response was successful.
-     * <p>
-     * If one of the response also corresponds to a request for which the channel has been asked to
-     * be kept open, then it is retained as a selection answer.
-     * <p>
-     * Responses that have not matched the current SE are set to null.
+     * Selection cases that have not matched the current SE are set to null.
      *
      * @param selectionResponse the response from the reader to the {@link DefaultSelectionRequest}
-     * @return boolean true if a SE was selected
+     * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
+     *         including {@link MatchingSe} and {@link SeResponse}.
      */
-    public boolean processDefaultSelection(SelectionResponse selectionResponse) {
+    public SelectionsResult processDefaultSelection(SelectionResponse selectionResponse) {
         if (logger.isTraceEnabled()) {
             logger.trace("Process default SELECTIONRESPONSE ({} response(s))",
                     selectionResponse.getSelectionSeResponseSet().getResponses().size());
@@ -177,9 +135,9 @@ public final class SeSelection {
     }
 
     /**
-     * Execute the selection process.
+     * Execute the selection process and return a list of {@link MatchingSe}.
      * <p>
-     * The selection requests are transmitted to the SE.
+     * Selection requests are transmitted to the SE through the supplied SeReader.
      * <p>
      * The process stops in the following cases:
      * <ul>
@@ -187,17 +145,14 @@ public final class SeSelection {
      * <li>A selection request matches the current SE and the keepChannelOpen flag was true</li>
      * </ul>
      * <p>
-     * The returned boolean indicates if at least one response was successful.
-     * <p>
-     * If one of the response also corresponds to a request for which the channel has been asked to
-     * be kept open, then it is retained as a selection answer.
-     * <p>
-     * Responses that have not matched the current PO are set to null.
-     * 
-     * @return boolean true if a SE was selected
+     *
+     * @param seReader the SeReader on which the selection is made
+     * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
+     *         including {@link MatchingSe} and {@link SeResponse}.
      * @throws KeypleReaderException if the requests transmission failed
      */
-    public boolean processExplicitSelection() throws KeypleReaderException {
+    public SelectionsResult processExplicitSelection(SeReader seReader)
+            throws KeypleReaderException {
         if (logger.isTraceEnabled()) {
             logger.trace("Transmit SELECTIONREQUEST ({} request(s))",
                     selectionRequestSet.getRequests().size());
@@ -207,25 +162,6 @@ public final class SeSelection {
         SeResponseSet seResponseSet = ((ProxyReader) seReader).transmitSet(selectionRequestSet);
 
         return processSelection(new SelectionResponse(seResponseSet));
-    }
-
-    /**
-     * Returns the {@link MatchingSe} if there is one, null if not
-     * 
-     * @return a {@link MatchingSe} or null
-     */
-    public MatchingSe getSelectedSe() {
-        return selectedSe;
-    }
-
-    /**
-     * Returns the updated list of prepared {@link MatchingSe} updated with the responses to the
-     * selection requests sent.
-     * 
-     * @return a list of {@link MatchingSe}
-     */
-    public List<MatchingSe> getMatchingSeList() {
-        return matchingSeList;
     }
 
     /**

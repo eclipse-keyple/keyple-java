@@ -11,14 +11,15 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.calypso.pc.transaction;
 
+import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumMap;
 import java.util.Properties;
-import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
+import org.eclipse.keyple.calypso.transaction.sam.SamSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.sam.SamSelector;
 import org.eclipse.keyple.example.generic.pc.ReaderUtilities;
 import org.eclipse.keyple.seproxy.ChannelState;
 import org.eclipse.keyple.seproxy.SeProxyService;
@@ -27,7 +28,6 @@ import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.protocol.Protocol;
 import org.eclipse.keyple.transaction.SeSelection;
-import org.eclipse.keyple.transaction.SeSelectionRequest;
 
 public class CalypsoUtilities {
     private static Properties properties;
@@ -122,24 +122,22 @@ public class CalypsoUtilities {
          * check the availability of the SAM doing a ATR based selection, open its physical and
          * logical channels and keep it open
          */
-        SeSelection samSelection = new SeSelection(samReader);
+        SeSelection samSelection = new SeSelection();
 
-        PoSelector samSelector = new PoSelector(null,
-                new PoSelector.PoAtrFilter(CalypsoClassicInfo.SAM_C1_ATR_REGEX),
-                "Selection SAM C1");
+        SamSelector samSelector = new SamSelector(C1, null, "Selection SAM C1");
 
         /* Prepare selector, ignore MatchingSe here */
         samSelection.prepareSelection(
-                new SeSelectionRequest(samSelector, ChannelState.KEEP_OPEN, Protocol.ANY));
+                new SamSelectionRequest(samSelector, ChannelState.KEEP_OPEN, Protocol.ANY));
 
         try {
-            if (!samSelection.processExplicitSelection()) {
+            if (!samSelection.processExplicitSelection(samReader).getActiveSelection()
+                    .getMatchingSe().isSelected()) {
                 throw new IllegalStateException("Unable to open a logical channel for SAM!");
             } else {
             }
         } catch (KeypleReaderException e) {
             throw new IllegalStateException("Reader exception: " + e.getMessage());
-
         }
     }
 }

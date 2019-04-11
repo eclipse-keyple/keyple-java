@@ -19,9 +19,11 @@ import java.io.IOException;
  */
 public abstract class TransportFactory {
 
-    abstract public ClientNode getClient();
+    abstract public ClientNode getClient(String clientNodeId);
 
     abstract public ServerNode getServer() throws IOException;
+
+    abstract public String getServerNodeId();
 
 
 

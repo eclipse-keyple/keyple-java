@@ -109,8 +109,8 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
 
     /**
      * Fetch connected native readers (from smartcard.io) and returns a list of corresponding
-     * {@link org.eclipse.keyple.seproxy.plugin.AbstractObservableReader}
-     * {@link org.eclipse.keyple.seproxy.plugin.AbstractObservableReader} are new instances.
+     * {@link AbstractObservableReader}
+     * {@link AbstractObservableReader} are new instances.
      *
      * @return the list of AbstractObservableReader objects.
      * @throws KeypleReaderException if a reader error occurs

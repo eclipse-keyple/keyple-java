@@ -14,13 +14,15 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
+import org.eclipse.keyple.calypso.command.po.parser.IncreaseRespPars;
+import org.eclipse.keyple.seproxy.message.ApduResponse;
 
 /**
  * The Class IncreaseCmdBuild. This class provides the dedicated constructor to build the Increase
  * APDU command.
  *
  */
-public final class IncreaseCmdBuild extends PoCommandBuilder
+public final class IncreaseCmdBuild extends AbstractPoCommandBuilder<IncreaseRespPars>
         implements PoSendableInSession, PoModificationCommand {
 
     /** The command. */
@@ -36,8 +38,8 @@ public final class IncreaseCmdBuild extends PoCommandBuilder
      * @param incValue Value to add to the counter (defined as a positive int &lt;= 16777215
      *        [FFFFFFh])
      * @param extraInfo extra information included in the logs (can be null or empty)
-     * @throws java.lang.IllegalArgumentException - if the decrement value is out of range
-     * @throws java.lang.IllegalArgumentException - if the command is inconsistent
+     * @throws IllegalArgumentException - if the decrement value is out of range
+     * @throws IllegalArgumentException - if the command is inconsistent
      */
     public IncreaseCmdBuild(PoClass poClass, byte sfi, byte counterNumber, int incValue,
             String extraInfo) throws IllegalArgumentException {
@@ -67,5 +69,10 @@ public final class IncreaseCmdBuild extends PoCommandBuilder
         if (extraInfo != null) {
             this.addSubName(extraInfo);
         }
+    }
+
+    @Override
+    public IncreaseRespPars createResponseParser(ApduResponse apduResponse) {
+        return new IncreaseRespPars(apduResponse);
     }
 }

@@ -65,7 +65,7 @@ public class CommandSetTestSuite {
         PoTransaction poTransaction =
                 new PoTransaction(TestEngine.poReader, calypsoPo, TestEngine.samReader, null);
 
-        ReadRecordsRespPars readRecordsRespPars = poTransaction.prepareReadRecordsCmd(fileSfi,
+        int readRecordsRespParsIndex = poTransaction.prepareReadRecordsCmd(fileSfi,
                 readDataStructureValue, (byte) recordNumber,
                 String.format("SFI=%02X, recnbr=%d", fileSfi, recordNumber));
 
@@ -81,7 +81,7 @@ public class CommandSetTestSuite {
          * Integer.toHexString(dataReadInSession.getApduResponses().get(1).getStatusCode() &
          * 0xFFFF));
          */
-        return readRecordsRespPars;
+        return (ReadRecordsRespPars) poTransaction.getResponseParser(readRecordsRespParsIndex);
     }
 
 

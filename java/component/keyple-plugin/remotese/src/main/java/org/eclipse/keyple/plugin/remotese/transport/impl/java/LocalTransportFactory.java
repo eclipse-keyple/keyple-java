@@ -24,21 +24,24 @@ public class LocalTransportFactory extends TransportFactory {
      * LocalTransportFactory(){} static public LocalTransportFactory instance(){ return instance; }
      */
 
-    private final LocalClient theClient;
     private final LocalServer theServer;
 
-    public LocalTransportFactory() {
-        theServer = new LocalServer();
-        theClient = new LocalClient(theServer);
+    public LocalTransportFactory(String serverNodeId) {
+        theServer = new LocalServer(serverNodeId);
     }
 
     @Override
-    public ClientNode getClient() {
-        return theClient;
+    public ClientNode getClient(String clientNodeId) {
+        return new LocalClient(clientNodeId, theServer);
     }
 
     @Override
     public ServerNode getServer() {
         return theServer;
+    }
+
+    @Override
+    public String getServerNodeId() {
+        return theServer.getNodeId();
     }
 }

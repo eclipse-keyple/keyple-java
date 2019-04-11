@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.sam.parser;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.keyple.calypso.command.sam.parser.session.DigestUpdateRespPars;
+import org.eclipse.keyple.calypso.command.sam.parser.security.DigestUpdateRespPars;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.message.ApduResponse;
 import org.eclipse.keyple.seproxy.message.SeResponse;
@@ -34,7 +34,7 @@ public class DigestUpdateRespParsTest {
         ApduResponse apduResponse = new ApduResponse(new byte[] {90, 00}, null);
         responses.add(apduResponse);
         SeResponseSet seResponse =
-                new SeResponseSet(new SeResponse(true,
+                new SeResponseSet(new SeResponse(true, true,
                         new SelectionStatus(null,
                                 new ApduResponse(ByteArrayUtils.fromHex("9000"), null), true),
                         responses));

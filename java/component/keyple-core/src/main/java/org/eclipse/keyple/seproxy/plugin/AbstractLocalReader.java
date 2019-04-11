@@ -561,10 +561,10 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     closeLogicalChannel();
                 } else if (seRequest.getSeSelector().getAidSelector()
                         .getAidToSelect().length >= aidCurrentlySelected.length
-                        && aidCurrentlySelected.equals(Arrays.copyOfRange(
+                        || !aidCurrentlySelected.equals(Arrays.copyOfRange(
                                 seRequest.getSeSelector().getAidSelector().getAidToSelect(), 0,
                                 aidCurrentlySelected.length))) {
-                    // the AID changed, close the logical channel
+                    // the AID changed (longer or different), close the logical channel
                     if (logger.isTraceEnabled()) {
                         logger.trace(
                                 "[{}] processSeRequest => The AID changed, close the logical channel. AID = {}, EXPECTEDAID = {}",
@@ -632,8 +632,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     logger.debug(
                             "The process has been interrupted, collect Apdu responses collected so far");
                     closeLogicalChannel();
-                    ex.setSeResponse(
-                            new SeResponse(previouslyOpen, selectionStatus, apduResponseList));
+                    ex.setSeResponse(new SeResponse(false, previouslyOpen, selectionStatus,
+                            apduResponseList));
                     throw ex;
                 }
             }
@@ -644,7 +644,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             closeLogicalChannel();
         }
 
-        return new SeResponse(previouslyOpen, selectionStatus, apduResponseList);
+        return new SeResponse(isLogicalChannelOpen(), previouslyOpen, selectionStatus,
+                apduResponseList);
     }
 
     /** ==== APDU transmission management ================================== */

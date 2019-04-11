@@ -13,6 +13,6 @@ package org.eclipse.keyple.plugin.remotese.rm;
 
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 
-public interface RemoteMethodTxCallback<T> {
+interface RemoteMethodTxCallback<T> {
     void get(T response, KeypleRemoteException exception);
 }

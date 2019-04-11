@@ -153,14 +153,14 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
          */
 
         /* prepare Event Log read record */
-        ReadRecordsRespPars readEventLogParser = poTransaction.prepareReadRecordsCmd(
+        int readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
                 CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
                 CalypsoClassicInfo.RECORD_NUMBER_1, String.format("EventLog (SFI=%02X, recnbr=%d))",
                         CalypsoClassicInfo.SFI_EventLog, CalypsoClassicInfo.RECORD_NUMBER_1));
 
 
         /* prepare Contract List read record */
-        ReadRecordsRespPars readContractListParser = poTransaction.prepareReadRecordsCmd(
+        int readContractListParserIndex = poTransaction.prepareReadRecordsCmd(
                 CalypsoClassicInfo.SFI_ContractList, ReadDataStructure.SINGLE_RECORD_DATA,
                 CalypsoClassicInfo.RECORD_NUMBER_1,
                 String.format("ContractList (SFI=%02X))", CalypsoClassicInfo.SFI_ContractList));
@@ -178,9 +178,12 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                 PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT,
                 CalypsoClassicInfo.SFI_EnvironmentAndHolder, CalypsoClassicInfo.RECORD_NUMBER_1);
 
-        logger.info("Parsing Read EventLog file: " + readEventLogParser.toString());
+        logger.info("Parsing Read EventLog file: "
+                + ((ReadRecordsRespPars) poTransaction.getResponseParser(readEventLogParserIndex))
+                        .toString());
 
-        logger.info("Parsing Read ContractList file: " + readContractListParser.toString());
+        logger.info("Parsing Read ContractList file: " + ((ReadRecordsRespPars) poTransaction
+                .getResponseParser(readContractListParserIndex)).toString());
 
         if (!poTransaction.wasRatified()) {
             logger.info(
@@ -227,7 +230,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
 
             /* Read contract command (we assume we have determine Contract #1 to be read. */
             /* prepare Contract #1 read record */
-            ReadRecordsRespPars readContractsParser = poTransaction.prepareReadRecordsCmd(
+            int readContractsParserIndex = poTransaction.prepareReadRecordsCmd(
                     CalypsoClassicInfo.SFI_Contracts, ReadDataStructure.MULTIPLE_RECORD_DATA,
                     CalypsoClassicInfo.RECORD_NUMBER_1,
                     String.format("Contracts (SFI=%02X, recnbr=%d)",
@@ -236,7 +239,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             /* proceed with the sending of commands, don't close the channel */
             poProcessStatus = poTransaction.processPoCommandsInSession();
 
-            logger.info("Parsing Read Contract file: " + readContractsParser.toString());
+            logger.info("Parsing Read Contract file: " + ((ReadRecordsRespPars) poTransaction
+                    .getResponseParser(readContractsParserIndex)).toString());
 
             if (logger.isInfoEnabled()) {
                 logger.info(
@@ -256,7 +260,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
              */
 
             /* prepare Event Log append record */
-            AppendRecordRespPars appendEventLogParser =
+            int appendEventLogParserIndex =
                     poTransaction.prepareAppendRecordCmd(CalypsoClassicInfo.SFI_EventLog,
                             ByteArrayUtils.fromHex(CalypsoClassicInfo.eventLog_dataFill),
                             String.format("EventLog (SFI=%02X)", CalypsoClassicInfo.SFI_EventLog));
@@ -267,7 +271,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             poProcessStatus = poTransaction.processClosing(TransmissionMode.CONTACTLESS,
                     ChannelState.KEEP_OPEN);
 
-            logger.info("Parsing Append EventLog file: " + appendEventLogParser.toString());
+            logger.info("Parsing Append EventLog file: " + ((AppendRecordRespPars) poTransaction
+                    .getResponseParser(appendEventLogParserIndex)).toString());
         }
 
         if (poTransaction.isSuccessful()) {
@@ -283,9 +288,9 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
 
     public DefaultSelectionRequest preparePoSelection() {
         /*
-         * Initialize the selection process for the poReader
+         * Initialize the selection process
          */
-        seSelection = new SeSelection(poReader);
+        seSelection = new SeSelection();
 
         /* operate multiple PO selections */
         String poFakeAid1 = "AABBCCDDEE"; // fake AID 1
@@ -351,8 +356,9 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
      */
     @Override
     public void processSeMatch(SelectionResponse selectionResponse) {
-        if (seSelection.processDefaultSelection(selectionResponse)) {
-            MatchingSe selectedSe = seSelection.getSelectedSe();
+        MatchingSe selectedSe = seSelection.processDefaultSelection(selectionResponse)
+                .getActiveSelection().getMatchingSe();
+        if (selectedSe != null) {
             try {
                 /* first time: check SAM */
                 if (!this.samChannelOpen) {
@@ -378,8 +384,6 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
-            logger.info("No SE matched the selection");
         }
     }
 

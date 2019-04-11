@@ -14,6 +14,8 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
+import org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars;
+import org.eclipse.keyple.seproxy.message.ApduResponse;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -21,7 +23,7 @@ import org.eclipse.keyple.calypso.command.po.*;
  * Record APDU command.
  *
  */
-public final class UpdateRecordCmdBuild extends PoCommandBuilder
+public final class UpdateRecordCmdBuild extends AbstractPoCommandBuilder<UpdateRecordRespPars>
         implements PoSendableInSession, PoModificationCommand {
 
     /** The command. */
@@ -35,8 +37,8 @@ public final class UpdateRecordCmdBuild extends PoCommandBuilder
      * @param recordNumber the record number to update
      * @param newRecordData the new record data to write
      * @param extraInfo extra information included in the logs (can be null or empty)
-     * @throws java.lang.IllegalArgumentException - if record number is &lt; 1
-     * @throws java.lang.IllegalArgumentException - if the request is inconsistent
+     * @throws IllegalArgumentException - if record number is &lt; 1
+     * @throws IllegalArgumentException - if the request is inconsistent
      */
     public UpdateRecordCmdBuild(PoClass poClass, byte sfi, byte recordNumber, byte[] newRecordData,
             String extraInfo) throws IllegalArgumentException {
@@ -51,5 +53,10 @@ public final class UpdateRecordCmdBuild extends PoCommandBuilder
         if (extraInfo != null) {
             this.addSubName(extraInfo);
         }
+    }
+
+    @Override
+    public UpdateRecordRespPars createResponseParser(ApduResponse apduResponse) {
+        return new UpdateRecordRespPars(apduResponse);
     }
 }

@@ -48,7 +48,6 @@ public abstract class AbstractApduCommandBuilder {
     // public AbstractApduCommandBuilder(CalypsoCommands commandReference, ApduRequest request) {
     public AbstractApduCommandBuilder(CommandsTable commandReference, ApduRequest request) {
         this.name = commandReference.getName();
-        this.commandParserClass = commandReference.getResponseParserClass();
         this.request = request;
         // set APDU name for non null request
         if (request != null) {
@@ -87,16 +86,6 @@ public abstract class AbstractApduCommandBuilder {
      */
     public final String getName() {
         return this.name;
-    }
-
-    /**
-     * Gets the apdu response parser class.
-     *
-     * @return the corresponding AbstractApduResponseParser class of the APDU command from the
-     *         CommandsTable information
-     */
-    public final Class<? extends AbstractApduResponseParser> getApduResponseParserClass() {
-        return this.commandParserClass;
     }
 
     /**

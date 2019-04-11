@@ -12,8 +12,10 @@
 package org.eclipse.keyple.calypso.command.po.builder;
 
 import org.eclipse.keyple.calypso.command.PoClass;
+import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
-import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
+import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
+import org.eclipse.keyple.seproxy.message.ApduResponse;
 
 /**
  * This class provides the dedicated constructor to build the Get data APDU commands.
@@ -22,7 +24,7 @@ import org.eclipse.keyple.calypso.command.po.PoCommandBuilder;
  * and thus make calculation of the digest impossible.
  *
  */
-public final class GetDataFciCmdBuild extends PoCommandBuilder {
+public final class GetDataFciCmdBuild extends AbstractPoCommandBuilder<GetDataFciRespPars> {
 
     private static final CalypsoPoCommands command = CalypsoPoCommands.GET_DATA_FCI;
 
@@ -36,5 +38,10 @@ public final class GetDataFciCmdBuild extends PoCommandBuilder {
 
         request = setApduRequest(poClass.getValue(), command, (byte) 0x00, (byte) 0x6F, null,
                 (byte) 0x00);
+    }
+
+    @Override
+    public GetDataFciRespPars createResponseParser(ApduResponse apduResponse) {
+        return new GetDataFciRespPars(apduResponse);
     }
 }

@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse.method;
 
-import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTx;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
@@ -22,14 +21,15 @@ import com.google.gson.JsonObject;
 
 public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
 
-    private DefaultSelectionRequest defaultSelectionRequest;
-    private ObservableReader.NotificationMode notificationMode;
+    private final DefaultSelectionRequest defaultSelectionRequest;
+    private final ObservableReader.NotificationMode notificationMode;
 
 
     public RmSetDefaultSelectionRequestTx(DefaultSelectionRequest defaultSelectionRequest,
             ObservableReader.NotificationMode notificationMode, String nativeReaderName,
-            String virtualReaderName, String sessionId, String clientNodeId) {
-        super(sessionId, nativeReaderName, virtualReaderName, clientNodeId);
+            String virtualReaderName, String sessionId, String slaveNodeId,
+            String requesterNodeId) {
+        super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
         this.defaultSelectionRequest = defaultSelectionRequest;
         this.notificationMode = notificationMode;
 
@@ -37,7 +37,7 @@ public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
 
 
     @Override
-    public Object parseResponse(KeypleDto keypleDto) throws KeypleRemoteException {
+    public Object parseResponse(KeypleDto keypleDto) {
         return new Object();
 
     }
@@ -51,7 +51,7 @@ public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
 
         return new KeypleDto(RemoteMethod.DEFAULT_SELECTION_REQUEST.getName(),
                 JsonParser.getGson().toJson(body, JsonObject.class), true, sessionId,
-                nativeReaderName, virtualReaderName, clientNodeId);
+                nativeReaderName, virtualReaderName, requesterNodeId, targetNodeId);
 
     }
 }

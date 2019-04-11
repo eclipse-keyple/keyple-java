@@ -14,9 +14,9 @@ package org.eclipse.keyple.plugin.remotese.pluginse.method;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTx;
-import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
+import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.message.SeRequestSet;
 import org.eclipse.keyple.seproxy.message.SeResponseSet;
@@ -30,10 +30,9 @@ public class RmTransmitTx extends RemoteMethodTx<SeResponseSet> {
     private final SeRequestSet seRequestSet;
 
 
-
     public RmTransmitTx(SeRequestSet seRequestSet, String sessionId, String nativeReaderName,
-            String virtualReaderName, String clientNodeId) {
-        super(sessionId, nativeReaderName, virtualReaderName, clientNodeId);
+            String virtualReaderName, String requesterNodeId, String slaveNodeId) {
+        super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
         this.seRequestSet = seRequestSet;
     }
 
@@ -41,7 +40,7 @@ public class RmTransmitTx extends RemoteMethodTx<SeResponseSet> {
     public KeypleDto dto() {
         return new KeypleDto(RemoteMethod.READER_TRANSMIT.getName(),
                 JsonParser.getGson().toJson(seRequestSet, SeRequestSet.class), true, this.sessionId,
-                this.nativeReaderName, this.virtualReaderName, this.clientNodeId);
+                this.nativeReaderName, this.virtualReaderName, requesterNodeId, targetNodeId);
     }
 
 

@@ -12,7 +12,9 @@
 package org.eclipse.keyple.calypso.command.po.parser;
 
 import java.util.*;
+import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
+import org.eclipse.keyple.seproxy.message.ApduResponse;
 import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
@@ -21,7 +23,7 @@ import org.eclipse.keyple.util.ByteArrayUtils;
  * provides methods to retrieve these data according to the file structure profile specified in the
  * command preparation step: SINGLE or MULTIPLE RECORD or COUNTER.
  */
-public final class ReadRecordsRespPars extends AbstractApduResponseParser {
+public final class ReadRecordsRespPars extends AbstractPoResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
@@ -59,7 +61,9 @@ public final class ReadRecordsRespPars extends AbstractApduResponseParser {
      * @param recordNumber the record number
      * @param readDataStructure the type of content in the response to parse
      */
-    public ReadRecordsRespPars(byte recordNumber, ReadDataStructure readDataStructure) {
+    public ReadRecordsRespPars(ApduResponse apduResponse, ReadDataStructure readDataStructure,
+            byte recordNumber) {
+        super(apduResponse);
         this.recordNumber = recordNumber;
         this.readDataStructure = readDataStructure;
     }
@@ -86,9 +90,6 @@ public final class ReadRecordsRespPars extends AbstractApduResponseParser {
      * @exception IllegalStateException if the parser has not been initialized
      */
     public SortedMap<Integer, byte[]> getRecords() {
-        if (!isInitialized()) {
-            throw new IllegalStateException("Parser not initialized.");
-        }
         SortedMap<Integer, byte[]> records = new TreeMap<Integer, byte[]>();
         if (!response.isSuccessful()) {
             /* return an empty map */
@@ -126,9 +127,6 @@ public final class ReadRecordsRespPars extends AbstractApduResponseParser {
      * @exception IllegalStateException if the parser has not been initialized
      */
     public SortedMap<Integer, Integer> getCounters() {
-        if (!isInitialized()) {
-            throw new IllegalStateException("Parser not initialized.");
-        }
         SortedMap<Integer, Integer> counters = new TreeMap<Integer, Integer>();
         if (!response.isSuccessful()) {
             /* return an empty map */
@@ -160,58 +158,54 @@ public final class ReadRecordsRespPars extends AbstractApduResponseParser {
     @Override
     public String toString() {
         String string;
-        if (isInitialized()) {
-            switch (readDataStructure) {
-                case SINGLE_RECORD_DATA: {
-                    SortedMap<Integer, byte[]> recordMap = getRecords();
-                    string = String.format("Single record data: {RECORD = %d, DATA = %s}",
-                            recordMap.firstKey(),
-                            ByteArrayUtils.toHex(recordMap.get(recordMap.firstKey())));
-                }
-                    break;
-                case MULTIPLE_RECORD_DATA: {
-                    SortedMap<Integer, byte[]> recordMap = getRecords();
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("Multiple record data: ");
-                    Set records = recordMap.keySet();
-                    for (Iterator it = records.iterator(); it.hasNext();) {
-                        Integer record = (Integer) it.next();
-                        sb.append(String.format("{RECORD = %d, DATA = %s}", record,
-                                ByteArrayUtils.toHex(recordMap.get(record))));
-                        if (it.hasNext()) {
-                            sb.append(", ");
-                        }
-                    }
-                    string = sb.toString();
-                }
-                    break;
-                case SINGLE_COUNTER: {
-                    SortedMap<Integer, Integer> counterMap = getCounters();
-                    string = String.format("Single counter: {COUNTER = %d, VALUE = %d}",
-                            counterMap.firstKey(), counterMap.get(counterMap.firstKey()));
-                }
-                    break;
-                case MULTIPLE_COUNTER: {
-                    SortedMap<Integer, Integer> counterMap = getCounters();
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("Multiple counter: ");
-                    Set counters = counterMap.keySet();
-                    for (Iterator it = counters.iterator(); it.hasNext();) {
-                        Integer counter = (Integer) it.next();
-                        sb.append(String.format("{COUNTER = %d, VALUE = %d}", counter,
-                                counterMap.get(counter)));
-                        if (it.hasNext()) {
-                            sb.append(", ");
-                        }
-                    }
-                    string = sb.toString();
-                }
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected data structure");
+        switch (readDataStructure) {
+            case SINGLE_RECORD_DATA: {
+                SortedMap<Integer, byte[]> recordMap = getRecords();
+                string = String.format("Single record data: {RECORD = %d, DATA = %s}",
+                        recordMap.firstKey(),
+                        ByteArrayUtils.toHex(recordMap.get(recordMap.firstKey())));
             }
-        } else {
-            string = "Not initialized.";
+                break;
+            case MULTIPLE_RECORD_DATA: {
+                SortedMap<Integer, byte[]> recordMap = getRecords();
+                StringBuilder sb = new StringBuilder();
+                sb.append("Multiple record data: ");
+                Set records = recordMap.keySet();
+                for (Iterator it = records.iterator(); it.hasNext();) {
+                    Integer record = (Integer) it.next();
+                    sb.append(String.format("{RECORD = %d, DATA = %s}", record,
+                            ByteArrayUtils.toHex(recordMap.get(record))));
+                    if (it.hasNext()) {
+                        sb.append(", ");
+                    }
+                }
+                string = sb.toString();
+            }
+                break;
+            case SINGLE_COUNTER: {
+                SortedMap<Integer, Integer> counterMap = getCounters();
+                string = String.format("Single counter: {COUNTER = %d, VALUE = %d}",
+                        counterMap.firstKey(), counterMap.get(counterMap.firstKey()));
+            }
+                break;
+            case MULTIPLE_COUNTER: {
+                SortedMap<Integer, Integer> counterMap = getCounters();
+                StringBuilder sb = new StringBuilder();
+                sb.append("Multiple counter: ");
+                Set counters = counterMap.keySet();
+                for (Iterator it = counters.iterator(); it.hasNext();) {
+                    Integer counter = (Integer) it.next();
+                    sb.append(String.format("{COUNTER = %d, VALUE = %d}", counter,
+                            counterMap.get(counter)));
+                    if (it.hasNext()) {
+                        sb.append(", ");
+                    }
+                }
+                string = sb.toString();
+            }
+                break;
+            default:
+                throw new IllegalStateException("Unexpected data structure");
         }
         return string;
     }

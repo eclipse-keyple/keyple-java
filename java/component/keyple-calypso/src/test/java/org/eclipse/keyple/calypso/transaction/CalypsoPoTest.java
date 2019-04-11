@@ -15,6 +15,7 @@ package org.eclipse.keyple.calypso.transaction;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.seproxy.ChannelState;
 import org.eclipse.keyple.seproxy.SeSelector;
+import org.eclipse.keyple.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.seproxy.message.ApduResponse;
 import org.eclipse.keyple.seproxy.message.SeResponse;
 import org.eclipse.keyple.seproxy.message.SelectionStatus;
@@ -29,12 +30,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class CalypsoPoTest {
     /* Building FCI data with the application byte as a variant and initialize PO */
     public static CalypsoPo getPoApplicationByte(byte applicationByte) {
+        AnswerToReset atr = new AnswerToReset(ByteArrayUtils.fromHex("3B8880010000000000718100F9"));
         ApduResponse fciData =
                 new ApduResponse(ByteArrayUtils.fromHex(String.format("6F 22 84 08 315449432E494341"
                         + "A5 16 BF0C 13 C7 08 0000000011223344" + "53 07 060A %02X 02200311 9000",
                         applicationByte)), null);
         SeResponse selectionData =
-                new SeResponse(false, new SelectionStatus(null, fciData, true), null);
+                new SeResponse(true, false, new SelectionStatus(atr, fciData, true), null);
         PoSelectionRequest poSelectionRequest =
                 new PoSelectionRequest(
                         new SeSelector(
@@ -42,8 +44,7 @@ public class CalypsoPoTest {
                                         ByteArrayUtils.fromHex("315449432E494341"), null),
                                 null, null),
                         ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
-        CalypsoPo calypsoPo = new CalypsoPo(poSelectionRequest);
-        calypsoPo.setSelectionResponse(selectionData);
+        CalypsoPo calypsoPo = new CalypsoPo(selectionData, null);
         return calypsoPo;
     }
 

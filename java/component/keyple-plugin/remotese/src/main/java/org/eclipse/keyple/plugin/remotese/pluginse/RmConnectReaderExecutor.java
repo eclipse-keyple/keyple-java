@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
 import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
+import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
@@ -21,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-public class RmConnectReaderExecutor implements RemoteMethodExecutor {
+class RmConnectReaderExecutor implements RemoteMethodExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(RmConnectReaderExecutor.class);
 
@@ -41,12 +42,12 @@ public class RmConnectReaderExecutor implements RemoteMethodExecutor {
 
         // parseResponse msg
         String nativeReaderName = keypleDto.getNativeReaderName();
-        String clientNodeId = keypleDto.getNodeId();
+        String slaveNodeId = keypleDto.getRequesterNodeId();
 
         VirtualReader virtualReader = null;
         try {
             // create a virtual Reader
-            virtualReader = (VirtualReader) this.plugin.createVirtualReader(clientNodeId,
+            virtualReader = (VirtualReader) this.plugin.createVirtualReader(slaveNodeId,
                     nativeReaderName, this.dtoSender);
 
             // create response
@@ -57,7 +58,7 @@ public class RmConnectReaderExecutor implements RemoteMethodExecutor {
             // build transport DTO with body
             return transportDto.nextTransportDTO(new KeypleDto(keypleDto.getAction(),
                     respBody.toString(), false, virtualReader.getSession().getSessionId(),
-                    nativeReaderName, virtualReader.getName(), clientNodeId));
+                    nativeReaderName, virtualReader.getName(), slaveNodeId));
 
         } catch (KeypleReaderException e) {
             // virtual reader for remote reader already exists
@@ -65,7 +66,7 @@ public class RmConnectReaderExecutor implements RemoteMethodExecutor {
 
             // send the exception inside the dto
             return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(),
-                    e, null, nativeReaderName, null, clientNodeId));
+                    e, null, nativeReaderName, null, slaveNodeId));
 
         }
     }

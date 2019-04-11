@@ -63,7 +63,7 @@ public class Demo_WriteName {
 
         String SAM_ATR_REGEX = "3B3F9600805A[0-9a-fA-F]{2}80[0-9a-fA-F]{16}829000";
 
-        SeSelection samSelection = new SeSelection(samReader);
+        SeSelection samSelection = new SeSelection();
 
         SeSelectionRequest samSelectionRequest = new SeSelectionRequest(
                 new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
@@ -73,7 +73,7 @@ public class Demo_WriteName {
         samSelection.prepareSelection(samSelectionRequest);
 
         try {
-            if (!samSelection.processExplicitSelection()) {
+            if (!samSelection.processExplicitSelection(samReader).hasActiveSelection()) {
                 System.out.println("Unable to open a logical channel for SAM!");
                 throw new IllegalStateException("SAM channel opening failure");
             }
@@ -88,7 +88,7 @@ public class Demo_WriteName {
             /*
              * Prepare a Calypso PO selection
              */
-            SeSelection seSelection = new SeSelection(poReader);
+            SeSelection seSelection = new SeSelection();
 
             /*
              * Setting of an AID based selection of a Calypso REV3 PO
@@ -107,8 +107,8 @@ public class Demo_WriteName {
             String cdLightAid = "315449432E494341"; // AID of the Rev2.4 PO emulating CDLight
 
             // Add Audit C0 AID to the list
-            CalypsoPo auditC0Se =
-                    (CalypsoPo) seSelection
+            int auditC0SeIndex =
+                    seSelection
                             .prepareSelection(
                                     new PoSelectionRequest(
                                             new SeSelector(new SeSelector.AidSelector(
@@ -118,8 +118,8 @@ public class Demo_WriteName {
                                             ChannelState.KEEP_OPEN, Protocol.ANY));
 
             // Add CLAP AID to the list
-            CalypsoPo clapSe =
-                    (CalypsoPo) seSelection
+            int clapSe =
+                    seSelection
                             .prepareSelection(
                                     new PoSelectionRequest(
                                             new SeSelector(
@@ -131,8 +131,8 @@ public class Demo_WriteName {
                                             ChannelState.KEEP_OPEN, Protocol.ANY));
 
             // Add cdLight AID to the list
-            CalypsoPo cdLightSe =
-                    (CalypsoPo) seSelection
+            int cdLightSe =
+                    seSelection
                             .prepareSelection(new PoSelectionRequest(
                                     new SeSelector(
                                             new SeSelector.AidSelector(ByteArrayUtils
@@ -140,18 +140,19 @@ public class Demo_WriteName {
                                             null, "CDLight"),
                                     ChannelState.KEEP_OPEN, Protocol.ANY));
 
-            if (!seSelection.processExplicitSelection()) {
+            SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
+            if (!selectionsResult.hasActiveSelection()) {
                 throw new IllegalArgumentException("No recognizable PO detected.");
             }
 
             byte environmentSid = (byte) 0x00;
-
-            if (auditC0Se.isSelected()) {
+            int activeSelectionIndex = selectionsResult.getActiveSelection().getSelectionIndex();
+            if (auditC0SeIndex == auditC0SeIndex) {
                 environmentSid = (byte) 0x07;
-            } else if (clapSe.isSelected()) {
+            } else if (auditC0SeIndex == clapSe) {
                 environmentSid = (byte) 0x14;
 
-            } else if (cdLightSe.isSelected()) {
+            } else if (auditC0SeIndex == cdLightSe) {
                 environmentSid = (byte) 0x07;
             } else {
                 throw new IllegalArgumentException("No recognizable PO detected.");
@@ -163,7 +164,7 @@ public class Demo_WriteName {
              */
             logger.info("The selection of the PO has succeeded.");
 
-            MatchingSe selectedSe = seSelection.getSelectedSe();
+            MatchingSe selectedSe = selectionsResult.getActiveSelection().getMatchingSe();
 
             PoTransaction poTransaction =
                     new PoTransaction(poReader, (CalypsoPo) selectedSe, samReader, null);

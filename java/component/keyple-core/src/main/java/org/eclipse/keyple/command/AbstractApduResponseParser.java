@@ -30,13 +30,6 @@ public abstract class AbstractApduResponseParser {
         STATUS_TABLE = m;
     }
 
-    /** Indicates whether the ApduResponse has been provided or not */
-    private boolean initialized;
-
-    // Note: The conversion of all commands was done with:
-    // Input regex: new byte\[\] \{\(byte\) 0x([0-9A-Za-z]{2})\, \(byte\) 0x([0-9A-Za-z]{2})\}
-    // Output regex: 0x$1$2
-
     /**
      * Get the internal status table
      * 
@@ -51,31 +44,8 @@ public abstract class AbstractApduResponseParser {
      *
      * @param response response to parse
      */
-    @Deprecated
     public AbstractApduResponseParser(ApduResponse response) {
         this.response = response;
-        initialized = true;
-    }
-
-    /**
-     * Default constructor
-     */
-    public AbstractApduResponseParser() {
-        initialized = false;
-    }
-
-    /**
-     * Sets the Apdu response to parse
-     * 
-     * @param response the apdu response
-     */
-    public final void setApduResponse(ApduResponse response) {
-        this.response = response;
-        initialized = true;
-    }
-
-    public final boolean isInitialized() {
-        return initialized;
     }
 
     /**
@@ -84,9 +54,6 @@ public abstract class AbstractApduResponseParser {
      * @return the ApduResponse instance.
      */
     public final ApduResponse getApduResponse() {
-        if (!initialized) {
-            throw new IllegalStateException("The parser has not been initialized.");
-        }
         return response;
     }
 
@@ -105,9 +72,6 @@ public abstract class AbstractApduResponseParser {
      *         code.
      */
     public boolean isSuccessful() {
-        if (!initialized) {
-            throw new IllegalStateException("The parser has not been initialized.");
-        }
         StatusProperties props = getPropertiesForStatusCode();
         return props != null && props.isSuccessful();
     }

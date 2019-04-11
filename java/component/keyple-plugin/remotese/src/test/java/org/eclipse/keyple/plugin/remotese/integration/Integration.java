@@ -12,11 +12,11 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 
-import org.eclipse.keyple.plugin.remotese.nativese.NativeReaderServiceImpl;
-import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReaderService;
-import org.eclipse.keyple.plugin.remotese.transport.KeypleDtoHelper;
-import org.eclipse.keyple.plugin.remotese.transport.factory.TransportNode;
+import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
+import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
+import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportDto;
+import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
@@ -41,18 +41,17 @@ class Integration {
      * @param node
      * @return
      */
-    public static VirtualReaderService bindMaster(TransportNode node) {
-        // Create Master services : virtualReaderService
-        VirtualReaderService virtualReaderService =
-                new VirtualReaderService(SeProxyService.getInstance(), node);
+    public static MasterAPI bindMaster(DtoNode node) {
+        // Create Master services : masterAPI
+        MasterAPI masterAPI = new MasterAPI(SeProxyService.getInstance(), node);
 
         // observe remote se plugin for events
-        ReaderPlugin rsePlugin = virtualReaderService.getPlugin();
+        ReaderPlugin rsePlugin = masterAPI.getPlugin();
 
-        // Binds virtualReaderService to a
-        virtualReaderService.bindDtoEndpoint(node);
+        // Binds masterAPI to a
+        // masterAPI.bindDtoEndpoint(node);
 
-        return virtualReaderService;
+        return masterAPI;
     }
 
     /**
@@ -61,14 +60,14 @@ class Integration {
      * @param node
      * @return
      */
-    public static NativeReaderServiceImpl bindSlave(TransportNode node) {
+    public static SlaveAPI bindSlave(DtoNode node, String masterNodeId) {
         // Binds node for outgoing KeypleDto
-        NativeReaderServiceImpl nativeReaderService = new NativeReaderServiceImpl(node);
+        SlaveAPI slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId);
 
         // Binds node for incoming KeypleDTo
-        nativeReaderService.bindDtoEndpoint(node);
+        // slaveAPI.bindDtoEndpoint(node);
 
-        return nativeReaderService;
+        return slaveAPI;
     }
 
     /**
@@ -77,14 +76,14 @@ class Integration {
      * @param node
      * @return
      */
-    public static NativeReaderServiceImpl bindSlaveSpy(TransportNode node) {
+    public static SlaveAPI bindSlaveSpy(DtoNode node, String masterNodeId) {
         // Binds node for outgoing KeypleDto
-        NativeReaderServiceImpl nativeReaderService = new NativeReaderServiceImpl(node);
+        SlaveAPI slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId);
 
-        NativeReaderServiceImpl spy = Mockito.spy(nativeReaderService);
+        SlaveAPI spy = Mockito.spy(slaveAPI);
 
         // Binds node for incoming KeypleDTo
-        spy.bindDtoEndpoint(node);
+        // spy.bindDtoEndpoint(node);
 
         return spy;
     }

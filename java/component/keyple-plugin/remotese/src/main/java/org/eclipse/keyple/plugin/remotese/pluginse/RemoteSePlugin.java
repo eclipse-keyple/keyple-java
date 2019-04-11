@@ -44,7 +44,7 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
     private final Map<String, String> parameters;
 
     /**
-     * Only {@link VirtualReaderService} can instanciate a RemoteSePlugin
+     * Only {@link MasterAPI} can instanciate a RemoteSePlugin
      */
     RemoteSePlugin(VirtualReaderSessionFactory sessionManager, DtoSender sender) {
         super(PLUGIN_NAME);
@@ -72,21 +72,22 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
     }
 
     /**
-     * Create a virtual reader
-     *
+     * Create a virtual reader (internal method)
      */
-    ProxyReader createVirtualReader(String clientNodeId, String nativeReaderName,
+    ProxyReader createVirtualReader(String slaveNodeId, String nativeReaderName,
             DtoSender dtoSender) throws KeypleReaderException {
-        logger.debug("createVirtualReader for nativeReader {}", nativeReaderName);
+        logger.debug("createVirtualReader for slaveNodeId {} and reader {}", slaveNodeId,
+                nativeReaderName);
 
         // create a new session for the new reader
-        VirtualReaderSession session = sessionManager.createSession(nativeReaderName, clientNodeId);
+        VirtualReaderSession session =
+                sessionManager.createSession(nativeReaderName, slaveNodeId, dtoSender.getNodeId());
 
         try {
             if (getReaderByRemoteName(nativeReaderName) != null) {
                 throw new KeypleReaderException(
                         "Virtual Reader already exists for reader " + nativeReaderName);
-            } ;
+            }
         } catch (KeypleReaderNotFoundException e) {
             // no reader found, continue
         }
@@ -115,7 +116,7 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
     }
 
     /**
-     * Delete a virtual reader
+     * Delete a virtual reader (internal method)
      * 
      * @param nativeReaderName name of the virtual reader to be deleted
      */
@@ -124,8 +125,7 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
         logger.debug("Disconnect Virtual reader {}", nativeReaderName);
 
         // retrieve virtual reader to delete
-        final VirtualReader virtualReader =
-                (VirtualReader) this.getReaderByRemoteName(nativeReaderName);
+        final VirtualReader virtualReader = this.getReaderByRemoteName(nativeReaderName);
 
         logger.info("Disconnect VirtualReader with name {} with session {}", nativeReaderName);
 
@@ -144,9 +144,9 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
     }
 
     /**
-     * Propagate a received event from slave device
+     * Propagate a received event from slave device (internal method)
      * 
-     * @param event
+     * @param event : Reader Event to be propagated
      * @param sessionId : not used yet
      */
     void onReaderEvent(ReaderEvent event, String sessionId) {
@@ -154,8 +154,7 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
         logger.debug("Dispatch ReaderEvent to the appropriate Reader : {} sessionId : {}",
                 event.getReaderName(), sessionId);
         try {
-            VirtualReader virtualReader =
-                    (VirtualReader) getReaderByRemoteName(event.getReaderName());
+            VirtualReader virtualReader = getReaderByRemoteName(event.getReaderName());
             virtualReader.onRemoteReaderEvent(event);
 
         } catch (KeypleReaderNotFoundException e) {
@@ -169,7 +168,7 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
      * Init Native Readers to empty Set
      */
     @Override
-    protected SortedSet<AbstractObservableReader> initNativeReaders() throws KeypleReaderException {
+    protected SortedSet<AbstractObservableReader> initNativeReaders() {
         return new TreeSet<AbstractObservableReader>();
     }
 
@@ -177,7 +176,7 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
      * Not used
      */
     @Override
-    protected AbstractObservableReader fetchNativeReader(String name) throws KeypleReaderException {
+    protected AbstractObservableReader fetchNativeReader(String name) {
         // should not be call
         throw new IllegalArgumentException(
                 "fetchNativeReader is not used in this plugin, did you meant to use getReader?");

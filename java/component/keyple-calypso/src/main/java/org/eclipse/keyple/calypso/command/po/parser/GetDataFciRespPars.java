@@ -13,20 +13,21 @@ package org.eclipse.keyple.calypso.command.po.parser;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.message.ApduResponse;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import opencard.opt.util.TLV;
-import opencard.opt.util.Tag;
+import com.sun.jndi.ldap.BerDecoder;
+
 
 /**
  * Extracts information from the FCI data returned is response to the selection application command.
  * <p>
  * Provides getter methods for all relevant information.
  */
-public final class GetDataFciRespPars extends AbstractApduResponseParser {
+public final class GetDataFciRespPars extends AbstractPoResponseParser {
     protected static final Logger logger = LoggerFactory.getLogger(GetDataFciRespPars.class);
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
@@ -57,25 +58,23 @@ public final class GetDataFciRespPars extends AbstractApduResponseParser {
 
     /* BER-TLV tags definitions */
     /* FCI Template: application class, constructed, tag number Fh => tag field 6Fh */
-    private static final Tag TAG_FCI_TEMPLATE = new Tag(0x0F, Tag.APPLICATION, Tag.CONSTRUCTED);
+    private static final int TAG_FCI_TEMPLATE = 0x6F;
+
     /* DF Name: context-specific class, primitive, tag number 4h => tag field 84h */
-    private static final Tag TAG_DF_NAME = new Tag(0x04, Tag.CONTEXT, Tag.PRIMITIVE);
+    private static final int TAG_DF_NAME = 0x84;
     /*
      * FCI Proprietary Template: context-specific class, constructed, tag number 5h => tag field A5h
      */
-    private static final Tag TAG_FCI_PROPRIETARY_TEMPLATE =
-            new Tag(0x05, Tag.CONTEXT, Tag.CONSTRUCTED);
+    private static final int TAG_FCI_PROPRIETARY_TEMPLATE = 0xA5;
     /*
      * FCI Issuer Discretionary Data: context-specific class, constructed, tag number Ch => tag
      * field BF0Ch
      */
-    private static final Tag TAG_FCI_ISSUER_DISCRETIONARY_DATA =
-            new Tag(0x0C, Tag.CONTEXT, Tag.CONSTRUCTED);
+    private static final int TAG_FCI_ISSUER_DISCRETIONARY_DATA = 0xBF0C;
     /* Application Serial Number: private class, primitive, tag number 7h => tag field C7h */
-    private static final Tag TAG_APPLICATION_SERIAL_NUMBER =
-            new Tag(0x07, Tag.PRIVATE, Tag.PRIMITIVE);
+    private static final int TAG_APPLICATION_SERIAL_NUMBER = 0xC7;
     /* Discretionary Data: application class, primitive, tag number 13h => tag field 53h */
-    private static final Tag TAG_DISCRETIONARY_DATA = new Tag(0x13, Tag.APPLICATION, Tag.PRIMITIVE);
+    private static final int TAG_DISCRETIONARY_DATA = 0x53;
 
     /** attributes result of th FCI parsing */
     private boolean isDfInvalidated = false;
@@ -119,13 +118,18 @@ public final class GetDataFciRespPars extends AbstractApduResponseParser {
      * through dedicated getter methods.
      * <p>
      * All fields are pre-initialized to handle the case where the parsing fails.
+     * <p>
+     * The TLV processing is done with a standard ASN.1 BerDecoder.
      * 
      * @param selectApplicationResponse the selectApplicationResponse from Get Data APDU commmand
      */
     public GetDataFciRespPars(ApduResponse selectApplicationResponse) {
+        super(selectApplicationResponse);
 
-        TLV cTag; /* constructed tag */
-        TLV pTag; /* primitive tag */
+        final byte[] response = selectApplicationResponse.getBytes();
+        byte[] octetString;
+        int[] rlen = new int[1];
+        BerDecoder ber;
 
         /* check the command status to determine if the DF has been invalidated */
         if (selectApplicationResponse.getStatusCode() == 0x6283) {
@@ -134,58 +138,79 @@ public final class GetDataFciRespPars extends AbstractApduResponseParser {
             isDfInvalidated = true;
         }
 
-        /* parse the raw data with the help of the TLV class */
+        /* parse the raw data with the help of the BerDecoder class */
         try {
-            /* init TLV object */
-            cTag = new TLV(selectApplicationResponse.getDataOut());
-            if (cTag != null && cTag.tag().equals(TAG_FCI_TEMPLATE)) {
-                pTag = cTag.findTag(TAG_DF_NAME, null);
-                if (pTag != null) {
-                    /* store dfName */
-                    dfName = pTag.valueAsByteArray();
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("DF Name = {}", ByteArrayUtils.toHex(dfName));
-                    }
-                    cTag = cTag.findTag(TAG_FCI_PROPRIETARY_TEMPLATE, null);
-                    if (cTag != null) {
-                        cTag = cTag.findTag(TAG_FCI_ISSUER_DISCRETIONARY_DATA, null);
-                        if (cTag != null) {
-                            pTag = cTag.findTag(TAG_APPLICATION_SERIAL_NUMBER, null);
-                            if (pTag != null) {
-                                /* store Application Serial Number */
-                                applicationSN = pTag.valueAsByteArray();
-                                if (logger.isDebugEnabled()) {
-                                    logger.debug("Application Serial Number = {}",
-                                            ByteArrayUtils.toHex(applicationSN));
-                                }
-                                pTag = cTag.findTag(TAG_DISCRETIONARY_DATA, null);
-                                if (cTag != null) {
-                                    discretionaryData = pTag.valueAsByteArray();
-                                    if (logger.isDebugEnabled()) {
-                                        logger.debug("Discretionary Data = {}",
-                                                ByteArrayUtils.toHex(discretionaryData));
-                                    }
-                                    /*
-                                     * split discretionary data in as many individual startup
-                                     * information
-                                     */
-                                    siBufferSizeIndicator = discretionaryData[0];
-                                    siPlatform = discretionaryData[1];
-                                    siApplicationType = discretionaryData[2];
-                                    siApplicationSubtype = discretionaryData[3];
-                                    siSoftwareIssuer = discretionaryData[4];
-                                    siSoftwareVersion = discretionaryData[5];
-                                    siSoftwareRevision = discretionaryData[6];
-                                    /* all 3 main fields were retrieved */
-                                    isValidCalypsoFCI = true;
-                                }
-                            }
-                        }
-                    }
-                }
+            /* init BerDecoder object */
+            ber = new BerDecoder(response, 0, response.length);
+
+            /* Extract the FCI Template */
+            octetString = ber.parseOctetString(TAG_FCI_TEMPLATE, null);
+
+            ber = new BerDecoder(octetString, 0, octetString.length);
+
+            /* Get the DF Name */
+            dfName = ber.parseOctetString(TAG_DF_NAME, rlen);
+
+            /* Get the FCI Proprietary Template */
+            ber = new BerDecoder(octetString, rlen[0], octetString.length);
+
+            octetString = ber.parseOctetString(TAG_FCI_PROPRIETARY_TEMPLATE, rlen);
+
+            /* Get the FCI Issuer Discretionary Data */
+            ber = new BerDecoder(octetString, 0, octetString.length);
+
+            /*
+             * We process the TAG_FCI_ISSUER_DISCRETIONARY_DATA tag here in a particular way since
+             * the BerDecoder we use does not support 2-byte tags. We first check the two bytes of
+             * the TAG field and then skip the LENGTH field using an offset value of 3 to obtain the
+             * following data.
+             */
+            byte b = (byte) ber.parseByte();
+            if (b != (byte) (TAG_FCI_ISSUER_DISCRETIONARY_DATA >> 8)) {
+                throw new IllegalStateException(
+                        String.format("Encountered ASN.1 tag %d (expected tag %d)", b,
+                                TAG_FCI_ISSUER_DISCRETIONARY_DATA >> 8));
             }
+
+            b = (byte) ber.parseByte();
+            if (b != (byte) (TAG_FCI_ISSUER_DISCRETIONARY_DATA & 0xFF)) {
+                throw new IllegalStateException(
+                        String.format("Encountered ASN.1 tag %d (expected tag %d)", b,
+                                TAG_FCI_ISSUER_DISCRETIONARY_DATA & 0xFF));
+            }
+
+            ber = new BerDecoder(octetString, 3, octetString.length);
+
+            /* Get the Application Serial Number */
+            applicationSN = ber.parseOctetString(TAG_APPLICATION_SERIAL_NUMBER, rlen);
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Application Serial Number = {}", ByteArrayUtils.toHex(applicationSN));
+            }
+
+            /* Get the Discretionary Data */
+            discretionaryData = ber.parseOctetString(TAG_DISCRETIONARY_DATA, null);
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Discretionary Data = {}", ByteArrayUtils.toHex(discretionaryData));
+            }
+
+            /*
+             * split discretionary data in as many individual startup information
+             */
+            siBufferSizeIndicator = discretionaryData[0];
+            siPlatform = discretionaryData[1];
+            siApplicationType = discretionaryData[2];
+            siApplicationSubtype = discretionaryData[3];
+            siSoftwareIssuer = discretionaryData[4];
+            siSoftwareVersion = discretionaryData[5];
+            siSoftwareRevision = discretionaryData[6];
+            /* all 3 main fields were retrieved */
+            isValidCalypsoFCI = true;
+
         } catch (Exception e) {
-            /* Silently ignore problems decoding TLV structure */
+            /* Silently ignore problems decoding TLV structure. Just log. */
+            logger.debug("Error while parsing the FCI BER-TLV data structure ({})", e.getMessage());
         }
     }
 

@@ -24,7 +24,7 @@ public final class PoSelector extends SeSelector {
      * Indicates if an invalidated PO should be selected or not.
      * <p>
      * The acceptance of an invalid PO is determined with the additional successful status codes
-     * specified in the {@link org.eclipse.keyple.seproxy.SeSelector.AidSelector}
+     * specified in the {@link AidSelector}
      */
     public enum InvalidatedPo {
         REJECT, ACCEPT
@@ -44,7 +44,7 @@ public final class PoSelector extends SeSelector {
     /**
      * PoAidSelector embedding the Calypo PO additional successful codes list
      */
-    public static class PoAidSelector extends SeSelector.AidSelector {
+    public static class PoAidSelector extends AidSelector {
 
         private final static Set<Integer> successfulSelectionStatusCodes = new HashSet<Integer>() {
             {
@@ -60,9 +60,9 @@ public final class PoSelector extends SeSelector {
          * @param invalidatedPo an enum value to indicate if an invalidated PO should be accepted or
          *        not
          * @param fileOccurrence the ISO7816-4 file occurrence parameter (see
-         *        {@link org.eclipse.keyple.seproxy.SeSelector.AidSelector.FileOccurrence})
+         *        {@link FileOccurrence})
          * @param fileControlInformation the ISO7816-4 file control information parameter (see
-         *        {@link org.eclipse.keyple.seproxy.SeSelector.AidSelector.FileControlInformation})
+         *        {@link FileControlInformation})
          */
         public PoAidSelector(byte[] aidToSelect, InvalidatedPo invalidatedPo,
                 FileOccurrence fileOccurrence, FileControlInformation fileControlInformation) {
@@ -73,7 +73,7 @@ public final class PoSelector extends SeSelector {
 
         /**
          * Simplified constructor with default values for the FileOccurrence and
-         * FileControlInformation (see {@link org.eclipse.keyple.seproxy.SeSelector.AidSelector})
+         * FileControlInformation (see {@link AidSelector})
          * 
          * @param aidToSelect the application identifier
          * @param invalidatedPo an enum value to indicate if an invalidated PO should be accepted or
@@ -90,7 +90,7 @@ public final class PoSelector extends SeSelector {
      * <p>
      * Could be completed to handle Calypso specific ATR filtering process.
      */
-    public static class PoAtrFilter extends SeSelector.AtrFilter {
+    public static class PoAtrFilter extends AtrFilter {
 
         /**
          * Regular expression based filter

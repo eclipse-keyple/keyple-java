@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.sam.builder;
 
 
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.calypso.command.sam.builder.session.DigestCloseCmdBuild;
+import org.eclipse.keyple.calypso.command.sam.builder.security.DigestCloseCmdBuild;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.message.ApduRequest;
 import org.junit.Assert;
@@ -29,7 +29,7 @@ public class DigestCloseCmdBuildTest {
 
         byte[] request = new byte[] {(byte) 0x94, (byte) 0x8E, 0x00, 0x00, (byte) 0x04};
         AbstractApduCommandBuilder apduCommandBuilder =
-                new org.eclipse.keyple.calypso.command.sam.builder.session.DigestCloseCmdBuild(
+                new DigestCloseCmdBuild(
                         SamRevision.S1D, (byte) 0x04);// 94
         ApduRequest apduReq = apduCommandBuilder.getApduRequest();
 

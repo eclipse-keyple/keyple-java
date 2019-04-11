@@ -14,6 +14,8 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
+import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
+import org.eclipse.keyple.seproxy.message.ApduResponse;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -21,7 +23,7 @@ import org.eclipse.keyple.calypso.command.po.*;
  * Record APDU command.
  *
  */
-public final class AppendRecordCmdBuild extends PoCommandBuilder
+public final class AppendRecordCmdBuild extends AbstractPoCommandBuilder<AppendRecordRespPars>
         implements PoSendableInSession, PoModificationCommand {
 
     /** The command. */
@@ -34,7 +36,7 @@ public final class AppendRecordCmdBuild extends PoCommandBuilder
      * @param sfi the sfi to select
      * @param newRecordData the new record data to write
      * @param extraInfo extra information included in the logs (can be null or empty)
-     * @throws java.lang.IllegalArgumentException - if the command is inconsistent
+     * @throws IllegalArgumentException - if the command is inconsistent
      */
     public AppendRecordCmdBuild(PoClass poClass, byte sfi, byte[] newRecordData, String extraInfo) {
         super(command, null);
@@ -46,5 +48,10 @@ public final class AppendRecordCmdBuild extends PoCommandBuilder
         if (extraInfo != null) {
             this.addSubName(extraInfo);
         }
+    }
+
+    @Override
+    public AppendRecordRespPars createResponseParser(ApduResponse apduResponse) {
+        return new AppendRecordRespPars(apduResponse);
     }
 }

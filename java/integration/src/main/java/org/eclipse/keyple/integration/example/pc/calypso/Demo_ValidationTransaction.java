@@ -17,10 +17,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
@@ -39,6 +37,7 @@ import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.transaction.SeSelectionRequest;
+import org.eclipse.keyple.transaction.SelectionsResult;
 import org.eclipse.keyple.util.ByteArrayUtils;
 
 @SuppressWarnings("PMD.VariableNamingConventions")
@@ -114,10 +113,10 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         byte environmentSfi = 0x07;
 
 
-        ReadRecordsRespPars readEventParser = poTransaction.prepareReadRecordsCmd(eventSfi,
+        int readEventParserIndex = poTransaction.prepareReadRecordsCmd(eventSfi,
                 ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, "Event");
-        ReadRecordsRespPars readContractListParser = poTransaction.prepareReadRecordsCmd(
-                contractListSfi, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, "ContractList");
+        int readContractListParserIndex = poTransaction.prepareReadRecordsCmd(contractListSfi,
+                ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, "ContractList");
 
         // Open Session with debit key #3 and reading the Environment at SFI 07h
         // Files to read during the beginning of the session: Event (SFI 0x08) and ContractList (SFI
@@ -125,9 +124,13 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
                 PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, environmentSfi, (byte) 0x01);
 
-        byte contractIndex = readContractListParser.getRecords().get(1)[0];
-        byte[] eventTimestampData = Arrays.copyOfRange(readEventParser.getRecords().get(1), 1,
-                (Long.SIZE / Byte.SIZE) + 1);
+        byte contractIndex =
+                ((ReadRecordsRespPars) poTransaction.getResponseParser(readContractListParserIndex))
+                        .getRecords().get(1)[0];
+        byte[] eventTimestampData = Arrays.copyOfRange(
+                ((ReadRecordsRespPars) poTransaction.getResponseParser(readEventParserIndex))
+                        .getRecords().get(1),
+                1, (Long.SIZE / Byte.SIZE) + 1);
 
         String timeStampString = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                 .format(new Date(bytesToLong(eventTimestampData)));
@@ -146,7 +149,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         System.out.println(
                 "\t------------------------------------------------------------------------------\n");
 
-        ReadRecordsRespPars readContractParser = poTransaction.prepareReadRecordsCmd((byte) 0x29,
+        int readContractParserIndex = poTransaction.prepareReadRecordsCmd((byte) 0x29,
                 ReadDataStructure.SINGLE_RECORD_DATA, (byte) (contractIndex + 1), (byte) 0x1D,
                 "Contract");
 
@@ -178,9 +181,9 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         byte[] dateToInsert = longToBytes(new Date().getTime());
         System.arraycopy(dateToInsert, 0, newEventData, 1, (Long.SIZE / Byte.SIZE));
 
-        UpdateRecordRespPars updateContractListParser = poTransaction.prepareUpdateRecordCmd(
-                contractListSfi, (byte) 0x01, newContractListData, "ContractList");
-        AppendRecordRespPars appendEventPars =
+        int updateContractListParserIndex = poTransaction.prepareUpdateRecordCmd(contractListSfi,
+                (byte) 0x01, newContractListData, "ContractList");
+        int appendEventParsIndex =
                 poTransaction.prepareAppendRecordCmd(eventSfi, newEventData, "Event");
 
         poTransaction.processPoCommandsInSession();
@@ -204,9 +207,9 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         SeResponse dataReadInSession;
         PoTransaction poTransaction = new PoTransaction(poReader, detectedPO, samReader, null);
 
-        ReadRecordsRespPars readEventParser = poTransaction.prepareReadRecordsCmd(eventSfi,
+        int readEventParserIndex = poTransaction.prepareReadRecordsCmd(eventSfi,
                 ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, "Event");
-        ReadRecordsRespPars readCountersParser = poTransaction.prepareReadRecordsCmd(countersSfi,
+        int readCountersParserIndex = poTransaction.prepareReadRecordsCmd(countersSfi,
                 ReadDataStructure.SINGLE_COUNTER, (byte) 0x01, "Counters");
         poTransaction.prepareReadRecordsCmd(contractsSfi, ReadDataStructure.MULTIPLE_RECORD_DATA,
                 (byte) 0x01, "Contracts");
@@ -217,13 +220,17 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
                 PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, environmentSfi, (byte) 0x01);
 
-        byte[] eventTimestampData = Arrays.copyOfRange(readEventParser.getRecords().get(1), 1,
-                (Long.SIZE / Byte.SIZE) + 1);
+        byte[] eventTimestampData = Arrays.copyOfRange(
+                ((ReadRecordsRespPars) poTransaction.getResponseParser(readEventParserIndex))
+                        .getRecords().get(1),
+                1, (Long.SIZE / Byte.SIZE) + 1);
 
         String timeStampString = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                 .format(new Date(bytesToLong(eventTimestampData)));
 
-        int counterValue = readCountersParser.getCounters().get(0);
+        int counterValue =
+                ((ReadRecordsRespPars) poTransaction.getResponseParser(readEventParserIndex))
+                        .getCounters().get(0);
 
         System.out.println(
                 "\t------------------------------------------------------------------------------");
@@ -298,11 +305,11 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
             String clapAid = "315449432E494341D62010029101"; // AID of the CLAP product being tested
             String cdLightAid = "315449432E494341"; // AID of the Rev2.4 PO emulating CDLight
 
-            SeSelection seSelection = new SeSelection(poReader);
+            SeSelection seSelection = new SeSelection();
 
             // Add Audit C0 AID to the list
-            CalypsoPo auditC0Se =
-                    (CalypsoPo) seSelection
+            int auditC0SeIndex =
+                    seSelection
                             .prepareSelection(
                                     new PoSelectionRequest(
                                             new SeSelector(new SeSelector.AidSelector(
@@ -312,8 +319,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                                             ChannelState.KEEP_OPEN, Protocol.ANY));
 
             // Add CLAP AID to the list
-            CalypsoPo clapSe =
-                    (CalypsoPo) seSelection
+            int clapSeIndex =
+                    seSelection
                             .prepareSelection(
                                     new PoSelectionRequest(
                                             new SeSelector(
@@ -325,8 +332,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                                             ChannelState.KEEP_OPEN, Protocol.ANY));
 
             // Add cdLight AID to the list
-            CalypsoPo cdLightSe =
-                    (CalypsoPo) seSelection
+            int cdLightSeIndex =
+                    seSelection
                             .prepareSelection(new PoSelectionRequest(
                                     new SeSelector(
                                             new SeSelector.AidSelector(ByteArrayUtils
@@ -334,25 +341,36 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                                             null, "CDLight"),
                                     ChannelState.KEEP_OPEN, Protocol.ANY));
 
-            if (!seSelection.processExplicitSelection()) {
+            SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
+
+            if (selectionsResult == null) {
                 throw new IllegalArgumentException("No recognizable PO detected.");
             }
 
 
             // Depending on the PO detected perform either a Season Pass validation or a MultiTrip
             // validation
-            if (auditC0Se.isSelected()) {
+            int matchingSelectionIndex = selectionsResult.getActiveSelection().getSelectionIndex();
+
+            if (matchingSelectionIndex == auditC0SeIndex) {
+                CalypsoPo auditC0Se = (CalypsoPo) selectionsResult
+                        .getMatchingSelection(auditC0SeIndex).getMatchingSe();
 
                 PoTransaction poTransaction =
                         new PoTransaction(poReader, auditC0Se, samReader, null);
                 validateAuditC0(poTransaction);
 
-            } else if (clapSe.isSelected()) {
+            } else if (matchingSelectionIndex == clapSeIndex) {
+                CalypsoPo clapSe = (CalypsoPo) selectionsResult.getMatchingSelection(clapSeIndex)
+                        .getMatchingSe();
 
                 PoTransaction poTransaction = new PoTransaction(poReader, clapSe, samReader, null);
                 validateClap(clapSe);
 
-            } else if (cdLightSe.isSelected()) {
+            } else if (matchingSelectionIndex == cdLightSeIndex) {
+
+                CalypsoPo cdLightSe = (CalypsoPo) selectionsResult
+                        .getMatchingSelection(cdLightSeIndex).getMatchingSe();
 
                 PoTransaction poTransaction =
                         new PoTransaction(poReader, cdLightSe, samReader, null);
@@ -404,7 +422,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         final String SAM_ATR_REGEX = "3B3F9600805A[0-9a-fA-F]{2}80[0-9a-fA-F]{16}829000";
 
-        SeSelection samSelection = new SeSelection(samReader);
+        SeSelection samSelection = new SeSelection();
 
         SeSelectionRequest samSelectionRequest = new SeSelectionRequest(
                 new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
@@ -414,13 +432,12 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         samSelection.prepareSelection(samSelectionRequest);
 
         try {
-            if (!samSelection.processExplicitSelection()) {
+            if (!samSelection.processExplicitSelection(samReader).hasActiveSelection()) {
                 System.out.println("Unable to open a logical channel for SAM!");
                 throw new IllegalStateException("SAM channel opening failure");
             }
         } catch (KeypleReaderException e) {
             throw new IllegalStateException("Reader exception: " + e.getMessage());
-
         }
 
         // Setting up ourselves as an observer
@@ -436,5 +453,4 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
             waitForEnd.wait();
         }
     }
-
 }

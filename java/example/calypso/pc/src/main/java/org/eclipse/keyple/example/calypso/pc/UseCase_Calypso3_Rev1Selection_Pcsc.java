@@ -29,7 +29,9 @@ import org.eclipse.keyple.seproxy.SeReader;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.transaction.MatchingSelection;
 import org.eclipse.keyple.transaction.SeSelection;
+import org.eclipse.keyple.transaction.SelectionsResult;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +105,7 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
             /*
              * Prepare a Calypso PO selection
              */
-            SeSelection seSelection = new SeSelection(poReader);
+            SeSelection seSelection = new SeSelection();
 
             /*
              * Setting of an AID based selection of a Calypso REV3 PO
@@ -124,14 +126,14 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
             /*
              * Prepare the selection of the DF RT.
              */
-            SelectFileRespPars selectFileRespPars = poSelectionRequest.prepareSelectFileDfCmd(
+            int selectFileParserIndex = poSelectionRequest.prepareSelectFileCmd(
                     ByteArrayUtils.fromHex(poDfRtPath), "Select file: " + poDfRtPath);
 
             /*
              * Prepare the reading order and keep the associated parser for later use once the
              * selection has been made.
              */
-            ReadRecordsRespPars readEnvironmentParser = poSelectionRequest.prepareReadRecordsCmd(
+            int readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
                     CalypsoClassicInfo.SFI_EnvironmentAndHolder,
                     ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1,
                     String.format("EnvironmentAndHolder (SFI=%02X))",
@@ -141,14 +143,24 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
              * Add the selection case to the current selection (we could have added other cases
              * here)
              */
-            CalypsoPo calypsoPo = (CalypsoPo) seSelection.prepareSelection(poSelectionRequest);
+            seSelection.prepareSelection(poSelectionRequest);
 
             /*
              * Actual PO communication: operate through a single request the Calypso PO selection
              * and the file read
              */
-            if (seSelection.processExplicitSelection()) {
+            SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
+
+            if (selectionsResult.hasActiveSelection()) {
+                MatchingSelection matchingSelection = selectionsResult.getActiveSelection();
+
+                CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
                 logger.info("The selection of the PO has succeeded.");
+
+                SelectFileRespPars selectFileRespPars = (SelectFileRespPars) matchingSelection
+                        .getResponseParser(selectFileParserIndex);
+                ReadRecordsRespPars readEnvironmentParser = (ReadRecordsRespPars) matchingSelection
+                        .getResponseParser(readEnvironmentParserIndex);
 
                 logger.info("DF RT FCI: {}",
                         ByteArrayUtils.toHex(selectFileRespPars.getSelectionData()));
@@ -175,7 +187,7 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
                  * Prepare the reading order and keep the associated parser for later use once the
                  * transaction has been processed.
                  */
-                ReadRecordsRespPars readEventLogParser = poTransaction.prepareReadRecordsCmd(
+                int readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
                         CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
                         CalypsoClassicInfo.RECORD_NUMBER_1,
                         String.format("EventLog (SFI=%02X, recnbr=%d))",
@@ -192,8 +204,9 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
                     /*
                      * Retrieve the data read from the parser updated during the transaction process
                      */
-                    byte eventLog[] = (readEventLogParser.getRecords())
-                            .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+                    byte eventLog[] = (((ReadRecordsRespPars) poTransaction
+                            .getResponseParser(readEventLogParserIndex)).getRecords())
+                                    .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
 
                     /* Log the result */
                     logger.info("EventLog file data: {}", ByteArrayUtils.toHex(eventLog));

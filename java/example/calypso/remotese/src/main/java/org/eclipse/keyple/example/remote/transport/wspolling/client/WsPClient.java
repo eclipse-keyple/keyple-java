@@ -22,6 +22,7 @@ import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ClientNode;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
+import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,16 +40,18 @@ public class WsPClient implements ClientNode {
     final private String keypleDtoEndpoint;
     final private String pollingEndpoint;
     final private String clientNodeId;
+    final private String serverNodeId;
     final private String baseUrl;
 
     private DtoHandler dtoHandler;
 
     public WsPClient(String baseUrl, String keypleDtoEndpoint, String pollingEndpoint,
-            String clientNodeId) {
+            String clientNodeId, String serverNodeId) {
         this.baseUrl = baseUrl;
         this.keypleDtoEndpoint = keypleDtoEndpoint;
         this.pollingEndpoint = pollingEndpoint;
         this.clientNodeId = clientNodeId;
+        this.serverNodeId = serverNodeId;
     }
 
 
@@ -136,7 +139,7 @@ public class WsPClient implements ClientNode {
      */
 
     /*
-     * TransportNode
+     * DtoNode
      */
     @Override
     public void setDtoHandler(DtoHandler dtoHandler) {
@@ -148,6 +151,10 @@ public class WsPClient implements ClientNode {
         return clientNodeId;
     }
 
+    @Override
+    public String getServerNodeId() {
+        return serverNodeId;
+    }
 
     @Override
     public void connect(ConnectCallback connectCallback) {

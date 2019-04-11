@@ -26,14 +26,17 @@ import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.eclipse.keyple.seproxy.ChannelState;
 import org.eclipse.keyple.seproxy.SeProxyService;
+import org.eclipse.keyple.seproxy.SeReader;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
 import org.eclipse.keyple.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.transaction.MatchingSe;
+import org.eclipse.keyple.transaction.MatchingSelection;
 import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
@@ -64,9 +67,8 @@ import org.slf4j.LoggerFactory;
 public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements ReaderObserver {
     protected static final Logger logger =
             LoggerFactory.getLogger(UseCase_Calypso2_DefaultSelectionNotification_Stub.class);
-    private StubReader poReader;
     private SeSelection seSelection;
-    private ReadRecordsRespPars readEnvironmentParser;
+    private int readEnvironmentParserIndex;
     /**
      * This object is used to freeze the main thread while card operations are handle through the
      * observers callbacks. A call to the notify() method would end the program (not demonstrated
@@ -92,7 +94,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
         /*
          * Get a PO reader ready to work with Calypso PO.
          */
-        poReader = (StubReader) (stubPlugin.getReader("poReader"));
+        StubReader poReader = (StubReader) (stubPlugin.getReader("poReader"));
 
         /* Check if the reader exists */
         if (poReader == null) {
@@ -109,7 +111,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
         /*
          * Prepare a Calypso PO selection
          */
-        seSelection = new SeSelection(poReader);
+        seSelection = new SeSelection();
 
         /*
          * Setting of an AID based selection of a Calypso REV3 PO
@@ -133,7 +135,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
          * Prepare the reading order and keep the associated parser for later use once the selection
          * has been made.
          */
-        readEnvironmentParser = poSelectionRequest.prepareReadRecordsCmd(
+        readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
                 CalypsoClassicInfo.SFI_EnvironmentAndHolder, ReadDataStructure.SINGLE_RECORD_DATA,
                 CalypsoClassicInfo.RECORD_NUMBER_1,
                 String.format("EnvironmentAndHolder (SFI=%02X))",
@@ -190,14 +192,32 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
     public void update(ReaderEvent event) {
         switch (event.getEventType()) {
             case SE_MATCHED:
-                if (seSelection.processDefaultSelection(event.getDefaultSelectionResponse())) {
-                    MatchingSe selectedSe = seSelection.getSelectedSe();
+                MatchingSelection matchingSelection =
+                        seSelection.processDefaultSelection(event.getDefaultSelectionResponse())
+                                .getActiveSelection();
+
+                CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
+
+                if (calypsoPo.isSelected()) {
+                    SeReader poReader = null;
+                    try {
+                        poReader = SeProxyService.getInstance().getPlugin(event.getPluginName())
+                                .getReader(event.getReaderName());
+                    } catch (KeyplePluginNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (KeypleReaderNotFoundException e) {
+                        e.printStackTrace();
+                    }
 
                     logger.info("Observer notification: the selection of the PO has succeeded.");
 
                     /*
                      * Retrieve the data read from the parser updated during the selection process
                      */
+                    ReadRecordsRespPars readEnvironmentParser =
+                            (ReadRecordsRespPars) matchingSelection
+                                    .getResponseParser(readEnvironmentParserIndex);
+
                     byte environmentAndHolder[] = (readEnvironmentParser.getRecords())
                             .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
 
@@ -213,14 +233,13 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
                     logger.info(
                             "==================================================================================");
 
-                    PoTransaction poTransaction =
-                            new PoTransaction(poReader, (CalypsoPo) selectedSe);
+                    PoTransaction poTransaction = new PoTransaction(poReader, calypsoPo);
 
                     /*
                      * Prepare the reading order and keep the associated parser for later use once
                      * the transaction has been processed.
                      */
-                    ReadRecordsRespPars readEventLogParser = poTransaction.prepareReadRecordsCmd(
+                    int readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
                             CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
                             CalypsoClassicInfo.RECORD_NUMBER_1,
                             String.format("EventLog (SFI=%02X, recnbr=%d))",
@@ -239,8 +258,9 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
                              * Retrieve the data read from the parser updated during the transaction
                              * process
                              */
-                            byte eventLog[] = (readEventLogParser.getRecords())
-                                    .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+                            byte eventLog[] = (((ReadRecordsRespPars) poTransaction
+                                    .getResponseParser(readEventLogParserIndex)).getRecords())
+                                            .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
 
                             /* Log the result */
                             logger.info("EventLog file data: {}", ByteArrayUtils.toHex(eventLog));

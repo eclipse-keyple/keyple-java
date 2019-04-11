@@ -29,7 +29,7 @@ public class WsPServer implements ServerNode {
     private InetSocketAddress inet;
     final private String apiUrl;
     final private String pollingUrl;
-    final private String nodeId;
+    final private String serverNodeId;
     final private HttpServer server;
     final private Integer MAX_CONNECTION = 10;
     final private HttpHandler keypleDTOEndpoint;
@@ -54,20 +54,20 @@ public class WsPServer implements ServerNode {
      * @param pollingUrl : polling URL to deploy polling listener endpoint
      * @throws IOException : if server can not bind given parameters
      */
-    public WsPServer(String url, Integer port, String apiUrl, String pollingUrl, String nodeId)
-            throws IOException {
+    public WsPServer(String url, Integer port, String apiUrl, String pollingUrl,
+            String serverNodeId) throws IOException {
         logger.info("Init Web Service DemoMaster on url : {}:{}", url, port);
 
-        this.nodeId = nodeId;
+        this.serverNodeId = serverNodeId;
         this.apiUrl = apiUrl;
         this.pollingUrl = pollingUrl;
 
         // Create Endpoint for polling DTO
         // pollingEndpoint = new EndpointPolling(requestQueue, nodeId);
-        pollingEndpoint = new EndpointPolling(publishQueueManager, nodeId);
+        pollingEndpoint = new EndpointPolling(publishQueueManager, serverNodeId);
 
         // Create Endpoint for sending DTO
-        keypleDTOEndpoint = new EndpointKeypleDTO((DtoSender) pollingEndpoint, nodeId);
+        keypleDTOEndpoint = new EndpointKeypleDTO((DtoSender) pollingEndpoint, serverNodeId);
 
 
 
@@ -91,7 +91,7 @@ public class WsPServer implements ServerNode {
     }
 
     /*
-     * TransportNode
+     * DtoNode
      */
     @Override
     public void setDtoHandler(DtoHandler receiver) {
@@ -100,7 +100,7 @@ public class WsPServer implements ServerNode {
 
     @Override
     public String getNodeId() {
-        return nodeId;
+        return serverNodeId;
     }
 
     @Override
@@ -110,7 +110,8 @@ public class WsPServer implements ServerNode {
 
     @Override
     public void sendDTO(KeypleDto message) {
-        ((EndpointPolling) this.pollingEndpoint).sendDTO(message);
+        ((EndpointPolling) this.pollingEndpoint).sendDTO(message); // TODO to which poller should we
+                                                                   // send the message?!
     }
 
     public HttpServer getHttpServer() {

@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.remote.application;
 
+import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
 import org.eclipse.keyple.example.remote.transport.websocket.WskFactory;
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 
@@ -22,16 +23,27 @@ public class Demo_Websocket_MasterClient {
 
     public static void main(String[] args) throws Exception {
 
-        // Create the procotol factory
-        TransportFactory factory = new WskFactory(false, "Demo_Websocket_MasterClient1"); // Web
-                                                                                          // socket
 
-        // Launch the server thread
-        Demo_Threads.startServer(false, factory);
+        final String CLIENT_NODE_ID = "Demo_Websocket_MasterClient1";
+        final String SERVER_NODE_ID = "Demo_Websocket_MasterClientServer1";
+
+
+        // Create the procotol factory
+        TransportFactory factory = new WskFactory(false, SERVER_NODE_ID); // Web
+        // socket
+
+        // Launch the Server thread
+        // Server is slave
+        Demo_Slave slave = new Demo_Slave(factory, true, factory.getServerNodeId(), CLIENT_NODE_ID);
 
         Thread.sleep(1000);
 
-        // Launch the client thread
-        Demo_Threads.startClient(true, factory);
+        // Launch the client
+        // Client is Master
+        Demo_Master master = new Demo_Master(factory, false, CLIENT_NODE_ID);
+        master.boot();
+
+        // execute slave scenario
+        slave.insertSE(new StubCalypsoClassic(), true);
     }
 }

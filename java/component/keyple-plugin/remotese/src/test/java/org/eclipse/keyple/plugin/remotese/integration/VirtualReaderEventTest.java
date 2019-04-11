@@ -26,6 +26,7 @@ import org.eclipse.keyple.seproxy.protocol.Protocol;
 import org.eclipse.keyple.transaction.MatchingSe;
 import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.transaction.SeSelectionRequest;
+import org.eclipse.keyple.transaction.SelectionsResult;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.junit.*;
 import org.slf4j.Logger;
@@ -45,6 +46,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     @Before
     public void setUp() throws Exception {
+        // restore plugin state
+        clearStubpluginReaders();
 
         initKeypleServices();
 
@@ -148,7 +151,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         Assert.assertEquals(0, lock.getCount());
 
         // https://github.com/calypsonet/keyple-java/issues/420
-        // Assert.assertEquals(0, virtualReaderService.getPlugin().getReaders().size());
+        // Assert.assertEquals(0, masterAPI.getPlugin().getReaders().size());
     }
 
 
@@ -203,7 +206,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
             }
         });
 
-        SeSelection seSelection = new SeSelection(virtualReader);
+        SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
                 new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
@@ -247,7 +250,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         });
         String poAid = "A000000291A000000192";// not matching poAid
 
-        SeSelection seSelection = new SeSelection(virtualReader);
+        SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
                 new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
@@ -298,7 +301,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         });
         String poAid = "A000000291A000000192";// not matching poAid
 
-        SeSelection seSelection = new SeSelection(virtualReader);
+        SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
                 new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
@@ -336,7 +339,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
-                SeSelection seSelection = new SeSelection(virtualReader);
+                SeSelection seSelection = new SeSelection();
                 SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
                         new SeSelector(null, new SeSelector.AtrFilter("3B.*"), "Test ATR"),
                         ChannelState.KEEP_OPEN, Protocol.ANY);
@@ -345,9 +348,10 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 seSelection.prepareSelection(seSelectionRequest);
 
                 try {
-                    seSelection.processExplicitSelection();
+                    SelectionsResult selectionsResult =
+                            seSelection.processExplicitSelection(virtualReader);
 
-                    MatchingSe matchingSe = seSelection.getSelectedSe();
+                    MatchingSe matchingSe = selectionsResult.getActiveSelection().getMatchingSe();
 
                     Assert.assertNotNull(matchingSe);
 
@@ -368,6 +372,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         // lock thread for 2 seconds max to wait for the event
         lock.await(5, TimeUnit.SECONDS);
+        Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
 
     }
 

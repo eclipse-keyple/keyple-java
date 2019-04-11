@@ -14,9 +14,9 @@ package org.eclipse.keyple.plugin.remotese.nativese.method;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTx;
-import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
+import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +27,9 @@ public class RmDisconnectReaderTx extends RemoteMethodTx<Boolean> {
     private static final Logger logger = LoggerFactory.getLogger(RmDisconnectReaderTx.class);
 
 
-    public RmDisconnectReaderTx(String sessionId, String nativeReaderName, String slaveNodeId) {
-        super(sessionId, nativeReaderName, "", slaveNodeId);
+    public RmDisconnectReaderTx(String sessionId, String nativeReaderName, String slaveNodeId,
+            String targetNodeId) {
+        super(sessionId, nativeReaderName, null, targetNodeId, slaveNodeId);
     }
 
     @Override
@@ -54,6 +55,6 @@ public class RmDisconnectReaderTx extends RemoteMethodTx<Boolean> {
 
         return new KeypleDto(RemoteMethod.READER_DISCONNECT.getName(),
                 JsonParser.getGson().toJson(body, JsonObject.class), true, null, nativeReaderName,
-                null, clientNodeId);
+                null, "", targetNodeId);
     }
 }

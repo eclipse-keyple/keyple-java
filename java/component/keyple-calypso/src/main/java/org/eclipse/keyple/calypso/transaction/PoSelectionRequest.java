@@ -26,7 +26,6 @@ import org.eclipse.keyple.command.AbstractApduResponseParser;
 import org.eclipse.keyple.seproxy.ChannelState;
 import org.eclipse.keyple.seproxy.SeSelector;
 import org.eclipse.keyple.seproxy.message.ApduRequest;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
 import org.eclipse.keyple.seproxy.message.SeResponse;
 import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
 import org.eclipse.keyple.seproxy.protocol.SeProtocol;
@@ -36,27 +35,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Specialized selector to manage the specific characteristics of Calypso POs
+ * Specialized selection request to manage the specific characteristics of Calypso POs
  */
 public final class PoSelectionRequest extends SeSelectionRequest {
     private static final Logger logger = LoggerFactory.getLogger(PoSelectionRequest.class);
 
+    private int commandIndex;
+    private List<Class<? extends AbstractApduResponseParser>> parsingClassList =
+            new ArrayList<Class<? extends AbstractApduResponseParser>>();
+    private Map<Integer, Byte> readRecordFirstRecordNumberMap = new HashMap<Integer, Byte>();
+    private Map<Integer, ReadDataStructure> readRecordDataStructureMap =
+            new HashMap<Integer, ReadDataStructure>();
+
     private final PoClass poClass;
 
-    /** The list to contain the parsers associated to the prepared commands */
-    private List<AbstractApduResponseParser> poResponseParserList =
-            new ArrayList<AbstractApduResponseParser>();
-
     /**
-     *
-     * @param seSelector
+     * Constructor.
+     * 
+     * @param seSelector the selector to target a particular SE
+     * @param channelState tell if the channel is to be closed or not after the command
+     * @param protocolFlag the targeted protocol
      */
     public PoSelectionRequest(SeSelector seSelector, ChannelState channelState,
             SeProtocol protocolFlag) {
+
         super(seSelector, channelState, protocolFlag);
 
-        setMatchingClass(CalypsoPo.class);
-        setSelectionClass(PoSelectionRequest.class);
+        commandIndex = 0;
 
         /* No AID selector for a legacy Calypso PO */
         if (seSelector.getAidSelector() == null) {
@@ -83,10 +88,10 @@ public final class PoSelectionRequest extends SeSelectionRequest {
      *        several records)
      * @param expectedLength the expected length of the record(s)
      * @param extraInfo extra information included in the logs (can be null or empty)
+     * @return the command index indicating the order of the command in the command list
      */
-    private ReadRecordsRespPars prepareReadRecordsCmdInternal(byte sfi,
-            ReadDataStructure readDataStructureEnum, byte firstRecordNumber, int expectedLength,
-            String extraInfo) {
+    private int prepareReadRecordsCmdInternal(byte sfi, ReadDataStructure readDataStructureEnum,
+            byte firstRecordNumber, int expectedLength, String extraInfo) {
 
         /*
          * the readJustOneRecord flag is set to false only in case of multiple read records, in all
@@ -95,24 +100,24 @@ public final class PoSelectionRequest extends SeSelectionRequest {
         boolean readJustOneRecord =
                 !(readDataStructureEnum == ReadDataStructure.MULTIPLE_RECORD_DATA);
 
-        addApduRequest(new ReadRecordsCmdBuild(poClass, sfi, firstRecordNumber, readJustOneRecord,
-                (byte) expectedLength, extraInfo).getApduRequest());
+        addApduRequest(
+                new ReadRecordsCmdBuild(poClass, sfi, readDataStructureEnum, firstRecordNumber,
+                        readJustOneRecord, (byte) expectedLength, extraInfo).getApduRequest());
 
         if (logger.isTraceEnabled()) {
             logger.trace("ReadRecords: SFI = {}, RECNUMBER = {}, JUSTONE = {}, EXPECTEDLENGTH = {}",
                     sfi, firstRecordNumber, readJustOneRecord, expectedLength);
         }
 
-        /* create a parser to be returned to the caller */
-        ReadRecordsRespPars poResponseParser =
-                new ReadRecordsRespPars(firstRecordNumber, readDataStructureEnum);
+        /* keep read record parameters in the dedicated Maps */
+        readRecordFirstRecordNumberMap.put(commandIndex, firstRecordNumber);
+        readRecordDataStructureMap.put(commandIndex, readDataStructureEnum);
 
-        /*
-         * keep the parser in the CommandParser list
-         */
-        poResponseParserList.add(poResponseParser);
+        /* set the parser for the response of this command */
+        parsingClassList.add(ReadRecordsRespPars.class);
 
-        return poResponseParser;
+        /* return and post increment the command index */
+        return commandIndex++;
     }
 
     /**
@@ -130,10 +135,10 @@ public final class PoSelectionRequest extends SeSelectionRequest {
      *        several records)
      * @param expectedLength the expected length of the record(s)
      * @param extraInfo extra information included in the logs (can be null or empty)
+     * @return the command index indicating the order of the command in the command list
      */
-    public ReadRecordsRespPars prepareReadRecordsCmd(byte sfi,
-            ReadDataStructure readDataStructureEnum, byte firstRecordNumber, int expectedLength,
-            String extraInfo) {
+    public int prepareReadRecordsCmd(byte sfi, ReadDataStructure readDataStructureEnum,
+            byte firstRecordNumber, int expectedLength, String extraInfo) {
         if (expectedLength < 1 || expectedLength > 250) {
             throw new IllegalArgumentException("Bad length.");
         }
@@ -154,9 +159,10 @@ public final class PoSelectionRequest extends SeSelectionRequest {
      * @param firstRecordNumber the record number to read (or first record to read in case of
      *        several records)
      * @param extraInfo extra information included in the logs (can be null or empty)
+     * @return the command index indicating the order of the command in the command list
      */
-    public ReadRecordsRespPars prepareReadRecordsCmd(byte sfi,
-            ReadDataStructure readDataStructureEnum, byte firstRecordNumber, String extraInfo) {
+    public int prepareReadRecordsCmd(byte sfi, ReadDataStructure readDataStructureEnum,
+            byte firstRecordNumber, String extraInfo) {
         if (protocolFlag == ContactsProtocols.PROTOCOL_ISO7816_3) {
             throw new IllegalArgumentException(
                     "In contacts mode, the expected length must be specified.");
@@ -169,26 +175,43 @@ public final class PoSelectionRequest extends SeSelectionRequest {
      * Prepare a select file ApduRequest to be executed following the selection.
      * <p>
      * 
-     * @param path path from the MF (MF identifier excluded)
+     * @param path path from the CURRENT_DF (CURRENT_DF identifier excluded)
      * @param extraInfo extra information included in the logs (can be null or empty)
+     * @return the command index indicating the order of the command in the command list
      */
-    public SelectFileRespPars prepareSelectFileDfCmd(byte[] path, String extraInfo) {
-        addApduRequest(
-                new SelectFileCmdBuild(poClass, SelectFileCmdBuild.SelectControl.PATH_FROM_MF,
-                        SelectFileCmdBuild.SelectOptions.FCI, path).getApduRequest());
+    public int prepareSelectFileCmd(byte[] path, String extraInfo) {
+        addApduRequest(new SelectFileCmdBuild(poClass, path).getApduRequest());
         if (logger.isTraceEnabled()) {
             logger.trace("Select File: PATH = {}", ByteArrayUtils.toHex(path));
         }
 
-        /* create a parser to be returned to the caller */
-        SelectFileRespPars poResponseParser = new SelectFileRespPars();
+        /* set the parser for the response of this command */
+        parsingClassList.add(SelectFileRespPars.class);
 
-        /*
-         * keep the parser in a CommandParser list with the number of apduRequest associated with it
-         */
-        poResponseParserList.add(poResponseParser);
+        /* return and post increment the command index */
+        return commandIndex++;
+    }
 
-        return poResponseParser;
+    /**
+     * Prepare a select file ApduRequest to be executed following the selection.
+     * <p>
+     *
+     * @param selectControl provides the navigation case: FIRST, NEXT or CURRENT
+     * @param extraInfo extra information included in the logs (can be null or empty)
+     * @return the command index indicating the order of the command in the command list
+     */
+    public int prepareSelectFileCmd(SelectFileCmdBuild.SelectControl selectControl,
+            String extraInfo) {
+        addApduRequest(new SelectFileCmdBuild(poClass, selectControl).getApduRequest());
+        if (logger.isTraceEnabled()) {
+            logger.trace("Navigate: CONTROL = {}", selectControl);
+        }
+
+        /* set the parser for the response of this command */
+        parsingClassList.add(SelectFileRespPars.class);
+
+        /* return and post increment the command index */
+        return commandIndex++;
     }
 
     /**
@@ -196,12 +219,15 @@ public final class PoSelectionRequest extends SeSelectionRequest {
      * 
      * @param name the name of the command (will appear in the ApduRequest log)
      * @param apduRequest the ApduRequest (the correct instruction byte must be provided)
+     * @return the command index indicating the order of the command in the command list
      */
-    public void preparePoCustomReadCmd(String name, ApduRequest apduRequest) {
+    public int preparePoCustomReadCmd(String name, ApduRequest apduRequest) {
         addApduRequest(new PoCustomReadCommandBuilder(name, apduRequest).getApduRequest());
         if (logger.isTraceEnabled()) {
             logger.trace("CustomReadCommand: APDUREQUEST = {}", apduRequest);
         }
+        /* return and post increment the command index */
+        return commandIndex++;
     }
 
     /**
@@ -209,33 +235,57 @@ public final class PoSelectionRequest extends SeSelectionRequest {
      *
      * @param name the name of the command (will appear in the ApduRequest log)
      * @param apduRequest the ApduRequest (the correct instruction byte must be provided)
+     * @return the command index indicating the order of the command in the command list
      */
-    public void preparePoCustomModificationCmd(String name, ApduRequest apduRequest) {
+    public int preparePoCustomModificationCmd(String name, ApduRequest apduRequest) {
         addApduRequest(new PoCustomModificationCommandBuilder(name, apduRequest).getApduRequest());
         if (logger.isTraceEnabled()) {
             logger.trace("CustomModificationCommand: APDUREQUEST = {}", apduRequest);
         }
+        /* return and post increment the command index */
+        return commandIndex++;
     }
 
+    /**
+     * Return the parser corresponding to the command whose index is provided.
+     * 
+     * @param seResponse the received SeResponse containing the commands raw responses
+     * @param commandIndex the command index
+     * @return a parser of the type matching the command
+     */
+    @Override
+    public AbstractApduResponseParser getCommandParser(SeResponse seResponse, int commandIndex) {
+        if (commandIndex >= parsingClassList.size()) {
+            throw new IllegalArgumentException(
+                    "Incorrect command index while getting command parser.");
+        }
+        if (seResponse.getApduResponses().size() != parsingClassList.size()) {
+            throw new IllegalArgumentException(
+                    "The number of responses and commands doesn't match.");
+        }
+        Class<? extends AbstractApduResponseParser> parsingClass =
+                parsingClassList.get(commandIndex);
+        AbstractApduResponseParser parser;
+        if (parsingClass == ReadRecordsRespPars.class) {
+            parser = new ReadRecordsRespPars(seResponse.getApduResponses().get(commandIndex),
+                    readRecordDataStructureMap.get(commandIndex),
+                    readRecordFirstRecordNumberMap.get(commandIndex));
+        } else if (parsingClass == SelectFileRespPars.class) {
+            parser = new SelectFileRespPars(seResponse.getApduResponses().get(commandIndex));
+        } else {
+            throw new IllegalArgumentException("No parser available for this command.");
+        }
+        return parser;
+    }
 
     /**
-     * Loops on the SeResponse and updates the list of parsers previously memorized
-     *
-     * @param seResponse the seResponse from the PO
+     * Create a CalypsoPo object containing the selection data received from the plugin
+     * 
+     * @param seResponse the SE response received
+     * @return a {@link CalypsoPo}
      */
-    protected void updateParsersWithResponses(SeResponse seResponse) {
-        /* attempt to update the parsers only if the list is not empty! */
-        if (poResponseParserList.size() != 0) {
-            Iterator<AbstractApduResponseParser> parserIterator = poResponseParserList.iterator();
-            /* double loop to set apdu responses to corresponding parsers */
-            for (ApduResponse apduResponse : seResponse.getApduResponses()) {
-                if (!parserIterator.hasNext()) {
-                    throw new IllegalStateException("Parsers list and responses list mismatch! ");
-                }
-                parserIterator.next().setApduResponse(apduResponse);
-                if (!apduResponse.isSuccessful()) {
-                }
-            }
-        }
+    @Override
+    protected CalypsoPo parse(SeResponse seResponse) {
+        return new CalypsoPo(seResponse, seSelector.getExtraInfo());
     }
 }

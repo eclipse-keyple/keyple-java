@@ -11,9 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.rm;
 
-import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
+import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,8 @@ public class RemoteMethodTxEngine implements DtoHandler {
      * Set Response to a RemoteMethod Invocation
      * 
      * @param message to be processed
-     * @return
+     * @return TransportDto : response of the processing of the transportDto, can be an empty
+     *         TransportDto
      */
     @Override
     public TransportDto onDTO(TransportDto message) {
@@ -69,14 +70,14 @@ public class RemoteMethodTxEngine implements DtoHandler {
     /**
      * Execute RemoteMethodTx
      * 
-     * @param rm
+     * @param rm : RemoteMethodTx to be executed
      */
-    public void register(final RemoteMethodTx rm) throws KeypleRemoteException {
+    public void register(final RemoteMethodTx rm) {
 
         logger.debug("Register rm to engine : {}", rm);
         remoteMethodTx = rm;
 
-        rm.setDto(sender);
+        rm.setDtoSender(sender);
     }
 
 }

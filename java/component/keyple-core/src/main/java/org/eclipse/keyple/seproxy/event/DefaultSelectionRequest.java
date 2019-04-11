@@ -15,7 +15,7 @@ import org.eclipse.keyple.seproxy.message.SeRequestSet;
 
 /**
  * Class containing the {@link SeRequestSet} used to make a default selection at the
- * {@link org.eclipse.keyple.seproxy.event.ObservableReader} level.
+ * {@link ObservableReader} level.
  */
 public class DefaultSelectionRequest {
     /** The {@link SeRequestSet} */

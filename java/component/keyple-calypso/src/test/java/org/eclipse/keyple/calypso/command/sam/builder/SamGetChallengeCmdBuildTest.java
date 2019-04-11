@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.sam.builder;
 
 
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.calypso.command.sam.builder.session.SamGetChallengeCmdBuild;
+import org.eclipse.keyple.calypso.command.sam.builder.security.SamGetChallengeCmdBuild;
 import org.eclipse.keyple.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.seproxy.message.ApduRequest;
 import org.junit.Assert;

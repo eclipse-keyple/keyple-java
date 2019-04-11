@@ -25,6 +25,7 @@ import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.Protocol;
 import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
+import org.eclipse.keyple.transaction.MatchingSelection;
 import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.transaction.SeSelectionRequest;
 import org.eclipse.keyple.util.ByteArrayUtils;
@@ -36,7 +37,7 @@ public class TestEngine {
     public static PoFileStructureInfo selectPO()
             throws IllegalArgumentException, KeypleReaderException {
 
-        SeSelection seSelection = new SeSelection(poReader);
+        SeSelection seSelection = new SeSelection();
 
         // Add Audit C0 AID to the list
         seSelection
@@ -59,8 +60,10 @@ public class TestEngine {
                                 ByteArrayUtils.fromHex(PoFileStructureInfo.cdLightAid), null),
                         null, "CDLight"), ChannelState.KEEP_OPEN, Protocol.ANY));
 
-        if (seSelection.processExplicitSelection()) {
-            return new PoFileStructureInfo(seSelection.getSelectedSe());
+        MatchingSelection matchingSelection =
+                seSelection.processExplicitSelection(poReader).getActiveSelection();
+        if (matchingSelection != null && matchingSelection.getMatchingSe().isSelected()) {
+            return new PoFileStructureInfo(matchingSelection.getMatchingSe());
         }
 
         throw new IllegalArgumentException("No recognizable PO detected.");
@@ -126,7 +129,7 @@ public class TestEngine {
 
         // check the availability of the SAM, open its physical and logical channels and keep it
         // open
-        SeSelection samSelection = new SeSelection(samReader);
+        SeSelection samSelection = new SeSelection();
 
         SeSelectionRequest samSelectionRequest = new SeSelectionRequest(
                 new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
@@ -136,7 +139,9 @@ public class TestEngine {
         samSelection.prepareSelection(samSelectionRequest);
 
         try {
-            if (!samSelection.processExplicitSelection()) {
+            MatchingSelection matchingSelection =
+                    samSelection.processExplicitSelection(samReader).getActiveSelection();
+            if (matchingSelection != null && matchingSelection.getMatchingSe().isSelected()) {
                 System.out.println("Unable to open a logical channel for SAM!");
                 throw new IllegalStateException("SAM channel opening failure");
             } else {

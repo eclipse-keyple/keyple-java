@@ -152,8 +152,9 @@ public class SeSelector {
          * @return a string
          */
         public String toString() {
-            return String.format("AID:%s",
-                    aidToSelect == null ? "null" : ByteArrayUtils.toHex(aidToSelect));
+            return String.format("AID:%s, OCCURRENCE:%s",
+                    aidToSelect == null ? "null" : ByteArrayUtils.toHex(aidToSelect),
+                    fileOccurrence);
         }
     }
 
@@ -172,6 +173,15 @@ public class SeSelector {
          * @param atrRegex String hex regular expression
          */
         public AtrFilter(String atrRegex) {
+            this.atrRegex = atrRegex;
+        }
+
+        /**
+         * Setter for the regular expression provided at construction time
+         *
+         * @param atrRegex expression string
+         */
+        public void setAtrRegex(String atrRegex) {
             this.atrRegex = atrRegex;
         }
 

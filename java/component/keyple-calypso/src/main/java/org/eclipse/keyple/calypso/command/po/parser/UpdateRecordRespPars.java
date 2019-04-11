@@ -13,12 +13,14 @@ package org.eclipse.keyple.calypso.command.po.parser;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.command.AbstractApduResponseParser;
+import org.eclipse.keyple.seproxy.message.ApduResponse;
 
 /**
  * Update Record response parser. See specs: Calypso / page 96 / 9.4.11 - Update Record
  */
-public final class UpdateRecordRespPars extends AbstractApduResponseParser {
+public final class UpdateRecordRespPars extends AbstractPoResponseParser {
 
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
@@ -50,5 +52,7 @@ public final class UpdateRecordRespPars extends AbstractApduResponseParser {
     /**
      * Instantiates a new UpdateRecordRespPars.
      */
-    public UpdateRecordRespPars() {}
+    public UpdateRecordRespPars(ApduResponse response) {
+        super(response);
+    }
 }

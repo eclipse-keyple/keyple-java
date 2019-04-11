@@ -27,7 +27,7 @@ public class StubSamHoplink extends StubSecureElement {
         /* Select Diversifier */
         addHexCommand("8014 0000 08 0000000011223344", "9000");
         /* Get Challenge */
-        addHexCommand("0084000004", "C1C2C3C49000");
+        addHexCommand("8084000004", "C1C2C3C49000");
         /* Digest Init */
         addHexCommand(
                 "808A00FF3A300E03082ED700300E300102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F30",

@@ -13,9 +13,9 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
-import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
+import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 
-public class RmDisconnectReaderExecutor implements RemoteMethodExecutor {
+class RmDisconnectReaderExecutor implements RemoteMethodExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(RmDisconnectReaderExecutor.class);
 
@@ -40,7 +40,7 @@ public class RmDisconnectReaderExecutor implements RemoteMethodExecutor {
         KeypleDto keypleDto = transportDto.getKeypleDTO();
 
         String nativeReaderName = keypleDto.getNativeReaderName();
-        String clientNodeId = keypleDto.getNodeId();
+        String clientNodeId = keypleDto.getRequesterNodeId();
         String sessionId = keypleDto.getSessionId();
 
         try {
@@ -57,7 +57,7 @@ public class RmDisconnectReaderExecutor implements RemoteMethodExecutor {
             return transportDto.nextTransportDTO(
                     KeypleDtoHelper.ExceptionDTO(RemoteMethod.READER_DISCONNECT.getName(), e,
                             keypleDto.getSessionId(), keypleDto.getNativeReaderName(),
-                            keypleDto.getVirtualReaderName(), keypleDto.getNodeId()));
+                            keypleDto.getVirtualReaderName(), keypleDto.getRequesterNodeId()));
         }
 
     }

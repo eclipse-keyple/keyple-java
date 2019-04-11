@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
+import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.seproxy.ChannelState;
 import org.eclipse.keyple.seproxy.SeSelector;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
@@ -506,7 +507,8 @@ public class AndroidNfcReaderTest {
         String poAid = "A000000291A000000191";
 
         ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO,
-                (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
+                (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, (byte) 0x20, "Hoplink EF " +
+                "T2Environment");
 
         List<ApduRequest> poApduRequestList;
 

@@ -13,7 +13,6 @@ package org.eclipse.keyple.integration.calypso;
 
 
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.seproxy.message.SeResponse;
 import org.eclipse.keyple.transaction.MatchingSe;
 import org.eclipse.keyple.util.ByteArrayUtils;
 
@@ -38,8 +37,6 @@ public class PoFileStructureInfo {
     private EfData countersFileData;
 
     private EfData simulatedCountersFileData;
-
-    private SeResponse selectionData;
 
     private MatchingSe matchingSe;
 
@@ -82,10 +79,9 @@ public class PoFileStructureInfo {
 
         this.matchingSe = matchingSe;
 
-        selectionData = matchingSe.getSelectionSeResponse();
-
         GetDataFciRespPars poFciRespPars =
-                new GetDataFciRespPars(selectionData.getSelectionStatus().getFci());
+                new GetDataFciRespPars(matchingSe.getSelectionStatus().getFci());
+
         byte[] poCalypsoInstanceAid = poFciRespPars.getDfName();
 
         if (java.util.Arrays.equals(poCalypsoInstanceAid, ByteArrayUtils.fromHex(poAuditC0Aid))) {
@@ -130,10 +126,6 @@ public class PoFileStructureInfo {
 
     public EfData getSimulatedCountersFileData() {
         return simulatedCountersFileData;
-    }
-
-    public SeResponse getSelectionData() {
-        return selectionData;
     }
 
     public MatchingSe getMatchingSe() {

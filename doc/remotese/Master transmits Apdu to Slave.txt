@@ -1,0 +1,36 @@
+title Master transmits Apdu to Slave
+
+
+participantgroup #lightblue **Keyple**
+participant NativeReader
+participant SlaveAPI
+end
+
+participantgroup #lightgrey **Custom Protocol**
+participant DtoNodeClient
+participant DtoNodeServer
+end
+
+participantgroup #lightblue **Keyple**
+participant MasterAPI
+participant VirtualReader
+end
+
+participantgroup **Ticketing Server**
+participant TicketingServer
+end
+
+DtoNodeClient-->DtoNodeServer:poll()
+
+TicketingServer->VirtualReader:transmit([AdpuRequest])
+VirtualReader->MasterAPI:sendDto(keypleDto)
+MasterAPI->DtoNodeServer:sendDto(keypleDto)
+DtoNodeServer->DtoNodeClient: keypleDto
+DtoNodeClient->SlaveAPI:onDto(keypleDto)
+SlaveAPI->NativeReader:transmit([ApduRequest])
+NativeReader->SlaveAPI:[AdpuResponse]
+SlaveAPI->DtoNodeClient:sendDto(keypleDto)
+DtoNodeClient->DtoNodeServer:keypleDto
+DtoNodeServer->MasterAPI:onDto(keypleDto)
+MasterAPI->VirtualReader:keypleDto
+VirtualReader->TicketingServer:[AdpuResponse]

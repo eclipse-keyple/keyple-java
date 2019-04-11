@@ -12,7 +12,6 @@
 package org.eclipse.keyple.example.calypso.pc;
 
 
-import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
@@ -27,7 +26,9 @@ import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.transaction.MatchingSelection;
 import org.eclipse.keyple.transaction.SeSelection;
+import org.eclipse.keyple.transaction.SelectionsResult;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,7 +119,7 @@ public class UseCase_Calypso5_MultipleSession_Pcsc {
             /*
              * Prepare a Calypso PO selection
              */
-            SeSelection seSelection = new SeSelection(poReader);
+            SeSelection seSelection = new SeSelection();
 
             /*
              * Setting of an AID based selection of a Calypso REV3 PO
@@ -141,13 +142,18 @@ public class UseCase_Calypso5_MultipleSession_Pcsc {
              * Add the selection case to the current selection (we could have added other cases
              * here)
              */
-            CalypsoPo calypsoPo = (CalypsoPo) seSelection.prepareSelection(poSelectionRequest);
+            seSelection.prepareSelection(poSelectionRequest);
 
             /*
              * Actual PO communication: operate through a single request the Calypso PO selection
              * and the file read
              */
-            if (seSelection.processExplicitSelection()) {
+            SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
+
+            if (selectionsResult.hasActiveSelection()) {
+                MatchingSelection matchingSelection = selectionsResult.getActiveSelection();
+
+                CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
                 logger.info("The selection of the PO has succeeded.");
 
                 /* Go on with the reading of the first record of the EventLog file */
@@ -187,7 +193,7 @@ public class UseCase_Calypso5_MultipleSession_Pcsc {
 
                 int nbCommands = (modificationsBufferSize / 35) + 1;
 
-                AppendRecordRespPars appendRecordParsers[] = new AppendRecordRespPars[nbCommands];
+                int appendRecordParsers[] = new int[nbCommands];
 
                 logger.info(
                         "==== Send {} Append Record commands. Modifications buffer capacity = {} bytes i.e. {} 29-byte commands ====",
@@ -206,9 +212,11 @@ public class UseCase_Calypso5_MultipleSession_Pcsc {
 
                 if (!poProcessStatus) {
                     for (int i = 0; i < nbCommands; i++) {
-                        if (!appendRecordParsers[i].isSuccessful()) {
+                        if (!poTransaction.getResponseParser(appendRecordParsers[i])
+                                .isSuccessful()) {
                             logger.error("Append record #%d failed with errror %s.", i,
-                                    appendRecordParsers[i].getStatusInformation());
+                                    poTransaction.getResponseParser(appendRecordParsers[i])
+                                            .getStatusInformation());
                         }
                     }
                 }

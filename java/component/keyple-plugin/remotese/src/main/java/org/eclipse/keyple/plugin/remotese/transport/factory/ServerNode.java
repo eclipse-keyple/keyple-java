@@ -12,10 +12,12 @@
 package org.eclipse.keyple.plugin.remotese.transport.factory;
 
 
+import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
+
 /**
- * Server type of a TransportNode, start and waits for clients to connectAReader
+ * Server type of a DtoNode, start and waits for clients to connectAReader
  */
-public interface ServerNode extends TransportNode {
+public interface ServerNode extends DtoNode {
 
     void start();
 

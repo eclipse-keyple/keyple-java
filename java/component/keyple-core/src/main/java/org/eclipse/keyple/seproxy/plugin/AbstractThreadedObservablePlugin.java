@@ -72,7 +72,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
      */
     @Override
     protected void startObservation() {
-        thread = new AbstractThreadedObservablePlugin.EventThread(this.getName());
+        thread = new EventThread(this.getName());
         thread.start();
     }
 

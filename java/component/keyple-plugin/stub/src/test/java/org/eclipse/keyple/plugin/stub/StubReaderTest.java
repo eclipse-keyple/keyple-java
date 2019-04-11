@@ -19,13 +19,11 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
+import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.seproxy.ChannelState;
 import org.eclipse.keyple.seproxy.SeReader;
 import org.eclipse.keyple.seproxy.SeSelector;
-import org.eclipse.keyple.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.event.PluginEvent;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.seproxy.event.*;
 import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
@@ -35,6 +33,7 @@ import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.transaction.MatchingSe;
 import org.eclipse.keyple.transaction.SeSelection;
 import org.eclipse.keyple.transaction.SeSelectionRequest;
+import org.eclipse.keyple.transaction.SelectionsResult;
 import org.eclipse.keyple.util.ByteArrayUtils;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -89,7 +88,7 @@ public class StubReaderTest {
 
 
     static public void selectSe(SeReader reader) throws KeypleReaderException {
-        SeSelection seSelection = new SeSelection(reader);
+        SeSelection seSelection = new SeSelection();
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
                 new SeSelector(null, new SeSelector.AtrFilter("3B.*"), "ATR selection"),
                 ChannelState.KEEP_OPEN, Protocol.ANY);
@@ -97,7 +96,7 @@ public class StubReaderTest {
         /* Prepare selector, ignore MatchingSe here */
         seSelection.prepareSelection(seSelectionRequest);
 
-        seSelection.processExplicitSelection();
+        seSelection.processExplicitSelection(reader);
     }
 
     /*
@@ -184,7 +183,7 @@ public class StubReaderTest {
             }
         });
 
-        SeSelection seSelection = new SeSelection(reader);
+        SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
                 new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
@@ -223,7 +222,7 @@ public class StubReaderTest {
         });
         String poAid = "A000000291A000000192";// not matching poAid
 
-        SeSelection seSelection = new SeSelection(reader);
+        SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
                 new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
@@ -269,7 +268,7 @@ public class StubReaderTest {
         });
         String poAid = "A000000291A000000192";// not matching poAid
 
-        SeSelection seSelection = new SeSelection(reader);
+        SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
                 new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
@@ -303,7 +302,7 @@ public class StubReaderTest {
 
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
-                SeSelection seSelection = new SeSelection(reader);
+                SeSelection seSelection = new SeSelection();
                 SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
                         new SeSelector(null, new SeSelector.AtrFilter("3B.*"), "Test ATR"),
                         ChannelState.KEEP_OPEN, Protocol.ANY);
@@ -312,9 +311,10 @@ public class StubReaderTest {
                 seSelection.prepareSelection(seSelectionRequest);
 
                 try {
-                    seSelection.processExplicitSelection();
+                    SelectionsResult selectionsResult =
+                            seSelection.processExplicitSelection(reader);
 
-                    MatchingSe matchingSe = seSelection.getSelectedSe();
+                    MatchingSe matchingSe = selectionsResult.getActiveSelection().getMatchingSe();
 
                     Assert.assertNotNull(matchingSe);
 
@@ -680,8 +680,9 @@ public class StubReaderTest {
     static public SeRequestSet getRequestIsoDepSetSample() {
         String poAid = "A000000291A000000191";
 
-        ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO,
-                (byte) 0x14, (byte) 0x01, true, (byte) 0x20, "");
+        ReadRecordsCmdBuild poReadRecordCmd_T2Env =
+                new ReadRecordsCmdBuild(PoClass.ISO, (byte) 0x14,
+                        ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, (byte) 0x20, "");
 
         List<ApduRequest> poApduRequestList;
 
@@ -721,12 +722,12 @@ public class StubReaderTest {
     static public SeRequestSet getPartialRequestSet(int scenario) {
         String poAid = "A000000291A000000191";
 
-        ReadRecordsCmdBuild poReadRecord1CmdBuild =
-                new ReadRecordsCmdBuild(PoClass.ISO, (byte) 0x14, (byte) 0x01, true, "");
+        ReadRecordsCmdBuild poReadRecord1CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO,
+                (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, "");
 
         /* this command doesn't in the PartialSE */
-        ReadRecordsCmdBuild poReadRecord2CmdBuild =
-                new ReadRecordsCmdBuild(PoClass.ISO, (byte) 0x1E, (byte) 0x01, true, "");
+        ReadRecordsCmdBuild poReadRecord2CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO,
+                (byte) 0x1E, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, "");
 
         List<ApduRequest> poApduRequestList1 = new ArrayList<ApduRequest>();
         poApduRequestList1.add(poReadRecord1CmdBuild.getApduRequest());
@@ -796,12 +797,12 @@ public class StubReaderTest {
     static public SeRequest getPartialRequest(int scenario) {
         String poAid = "A000000291A000000191";
 
-        ReadRecordsCmdBuild poReadRecord1CmdBuild =
-                new ReadRecordsCmdBuild(PoClass.ISO, (byte) 0x14, (byte) 0x01, true, "");
+        ReadRecordsCmdBuild poReadRecord1CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO,
+                (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, "");
 
         /* this command doesn't in the PartialSE */
-        ReadRecordsCmdBuild poReadRecord2CmdBuild =
-                new ReadRecordsCmdBuild(PoClass.ISO, (byte) 0x1E, (byte) 0x01, true, "");
+        ReadRecordsCmdBuild poReadRecord2CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO,
+                (byte) 0x1E, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, "");
 
         List<ApduRequest> poApduRequestList = new ArrayList<ApduRequest>();
 

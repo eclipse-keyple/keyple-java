@@ -18,6 +18,7 @@ import java.util.TreeSet;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
+import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin;
 import org.eclipse.keyple.seproxy.ChannelState;
 import org.eclipse.keyple.seproxy.ReaderPlugin;
@@ -150,11 +151,11 @@ public class OMAPITestFragment extends Fragment {
 
 
                     ReadRecordsCmdBuild poReadRecordCmd_T2Env =
-                            new ReadRecordsCmdBuild(PoClass.ISO, (byte) 0x14, (byte) 0x01, true,
+                            new ReadRecordsCmdBuild(PoClass.ISO,  (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true,
                                     (byte) 0x20, "Hoplink EF T2Environment");
 
                     ReadRecordsCmdBuild poReadRecordCmd_T2Usage =
-                            new ReadRecordsCmdBuild(PoClass.ISO, (byte) 0x1A, (byte) 0x01, true,
+                            new ReadRecordsCmdBuild(PoClass.ISO, (byte) 0x1A, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true,
                                     (byte) 0x30, "Hoplink EF T2Usage");
 
                     UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill = new UpdateRecordCmdBuild(

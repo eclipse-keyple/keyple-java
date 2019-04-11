@@ -24,7 +24,7 @@ public class SeResponseTest {
     @Test
     public void constructorSuccessfullResponseMatch() throws IllegalArgumentException {
 
-        SeResponse response = new SeResponse(true,
+        SeResponse response = new SeResponse(true, true,
                 new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), true),
                 ApduResponseTest.getAListOfAPDUs());
         Assert.assertNotNull(response);
@@ -39,7 +39,7 @@ public class SeResponseTest {
     @Test
     public void constructorSuccessfullResponseNoMatch() throws IllegalArgumentException {
 
-        SeResponse response = new SeResponse(true,
+        SeResponse response = new SeResponse(true, true,
                 new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), false),
                 ApduResponseTest.getAListOfAPDUs());
         Assert.assertNotNull(response);
@@ -53,23 +53,23 @@ public class SeResponseTest {
 
     @Test
     public void constructorATRNull() throws IllegalArgumentException {
-        SeResponse response =
-                new SeResponse(true, new SelectionStatus(null, ApduResponseTest.getAFCI(), true),
-                        ApduResponseTest.getAListOfAPDUs());
+        SeResponse response = new SeResponse(true, true,
+                new SelectionStatus(null, ApduResponseTest.getAFCI(), true),
+                ApduResponseTest.getAListOfAPDUs());
         Assert.assertNotNull(response);
     }
 
     @Test
     public void constructorFCINull() throws IllegalArgumentException {
-        SeResponse response =
-                new SeResponse(true, new SelectionStatus(ApduResponseTest.getAAtr(), null, true),
-                        ApduResponseTest.getAListOfAPDUs());
+        SeResponse response = new SeResponse(true, true,
+                new SelectionStatus(ApduResponseTest.getAAtr(), null, true),
+                ApduResponseTest.getAListOfAPDUs());
         Assert.assertNotNull(response);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void constructorFCIAndATRNull() throws IllegalArgumentException {
-        SeResponse response = new SeResponse(true, new SelectionStatus(null, null, true),
+        SeResponse response = new SeResponse(true, true, new SelectionStatus(null, null, true),
                 ApduResponseTest.getAListOfAPDUs());
         Assert.assertNull(response);
     }
@@ -95,11 +95,11 @@ public class SeResponseTest {
     @Test()
     public void testNotEqualsNull() throws Exception {
         SeResponse resp = getASeResponse();
-        SeResponse respNull = new SeResponse(true,
+        SeResponse respNull = new SeResponse(true, true,
                 new SelectionStatus(null, ApduResponseTest.getAFCI(), true), null);
-        SeResponse respNull2 = new SeResponse(true,
+        SeResponse respNull2 = new SeResponse(true, true,
                 new SelectionStatus(ApduResponseTest.getAAtr(), null, true), null);
-        SeResponse respNull3 = new SeResponse(true,
+        SeResponse respNull3 = new SeResponse(true, true,
                 new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), true),
                 null);
         Assert.assertFalse(resp.equals(respNull));
@@ -116,7 +116,7 @@ public class SeResponseTest {
 
     @Test()
     public void hashcodeNull() throws Exception {
-        SeResponse resp = new SeResponse(true,
+        SeResponse resp = new SeResponse(true, true,
                 new SelectionStatus(null, ApduResponseTest.getAFCI(), true), null);
         Assert.assertNotNull(resp.hashCode());
     }
@@ -127,7 +127,7 @@ public class SeResponseTest {
      */
 
     public static SeResponse getASeResponse() throws IllegalArgumentException {
-        return new SeResponse(true,
+        return new SeResponse(true, true,
                 new SelectionStatus(ApduResponseTest.getAAtr(), ApduResponseTest.getAFCI(), true),
                 ApduResponseTest.getAListOfAPDUs());
     }

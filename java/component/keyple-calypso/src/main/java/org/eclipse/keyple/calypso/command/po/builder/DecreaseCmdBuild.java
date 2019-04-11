@@ -14,13 +14,15 @@ package org.eclipse.keyple.calypso.command.po.builder;
 
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
+import org.eclipse.keyple.calypso.command.po.parser.DecreaseRespPars;
+import org.eclipse.keyple.seproxy.message.ApduResponse;
 
 /**
  * The Class DecreaseCmdBuild. This class provides the dedicated constructor to build the Decrease
  * APDU command.
  *
  */
-public final class DecreaseCmdBuild extends PoCommandBuilder
+public final class DecreaseCmdBuild extends AbstractPoCommandBuilder<DecreaseRespPars>
         implements PoSendableInSession, PoModificationCommand {
 
     /** The command. */
@@ -36,8 +38,8 @@ public final class DecreaseCmdBuild extends PoCommandBuilder
      * @param decValue Value to subtract to the counter (defined as a positive int &lt;= 16777215
      *        [FFFFFFh])
      * @param extraInfo extra information included in the logs (can be null or empty)
-     * @throws java.lang.IllegalArgumentException - if the decrement value is out of range
-     * @throws java.lang.IllegalArgumentException - if the command is inconsistent
+     * @throws IllegalArgumentException - if the decrement value is out of range
+     * @throws IllegalArgumentException - if the command is inconsistent
      */
 
     public DecreaseCmdBuild(PoClass poClass, byte sfi, byte counterNumber, int decValue,
@@ -68,5 +70,10 @@ public final class DecreaseCmdBuild extends PoCommandBuilder
         if (extraInfo != null) {
             this.addSubName(extraInfo);
         }
+    }
+
+    @Override
+    public DecreaseRespPars createResponseParser(ApduResponse apduResponse) {
+        return new DecreaseRespPars(apduResponse);
     }
 }

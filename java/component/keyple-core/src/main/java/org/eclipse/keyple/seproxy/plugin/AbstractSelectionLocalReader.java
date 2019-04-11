@@ -60,12 +60,12 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
             }
 
             if (logger.isTraceEnabled()) {
-                logger.trace("[{}] openLogicalChannel => ATR: {}", this.getName(),
+                logger.trace("[{}] openLogicalChannel => ATR = {}", this.getName(),
                         ByteArrayUtils.toHex(atr));
             }
             if (!seSelector.getAtrFilter().atrMatches(atr)) {
-                logger.trace("[{}] openLogicalChannel => ATR didn't match. SELECTOR = {}",
-                        this.getName(), seSelector);
+                logger.info("[{}] openLogicalChannel => ATR didn't match. SELECTOR = {}, ATR = {}",
+                        this.getName(), seSelector, ByteArrayUtils.toHex(atr));
                 selectionHasMatched = false;
             }
         }

@@ -11,12 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
-import org.eclipse.keyple.plugin.remotese.nativese.NativeReaderServiceImpl;
+import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
-import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
+import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.eclipse.keyple.seproxy.event.DefaultSelectionRequest;
 import org.eclipse.keyple.seproxy.event.ObservableReader;
@@ -32,10 +32,10 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
     private static final Logger logger =
             LoggerFactory.getLogger(RmSetDefaultSelectionRequestExecutor.class);
 
-    private final NativeReaderServiceImpl nativeReaderService;
+    private final SlaveAPI slaveAPI;
 
-    public RmSetDefaultSelectionRequestExecutor(NativeReaderServiceImpl nativeReaderService) {
-        this.nativeReaderService = nativeReaderService;
+    public RmSetDefaultSelectionRequestExecutor(SlaveAPI slaveAPI) {
+        this.slaveAPI = slaveAPI;
     }
 
 
@@ -65,7 +65,7 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
 
         try {
             // find native reader by name
-            ProxyReader reader = nativeReaderService.findLocalReader(nativeReaderName);
+            ProxyReader reader = slaveAPI.findLocalReader(nativeReaderName);
 
             if (reader instanceof ObservableReader) {
                 logger.debug(reader.getName()
@@ -78,7 +78,7 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
                 return transportDto.nextTransportDTO(
                         new KeypleDto(RemoteMethod.DEFAULT_SELECTION_REQUEST.getName(), parseBody,
                                 false, keypleDto.getSessionId(), nativeReaderName,
-                                keypleDto.getVirtualReaderName(), keypleDto.getNodeId()));
+                                keypleDto.getVirtualReaderName(), keypleDto.getRequesterNodeId()));
             } else {
                 throw new KeypleReaderException(
                         "Reader is not observable, can not invoke SetDefaultSelectionRequest on "
@@ -88,9 +88,10 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
 
         } catch (KeypleReaderException e) {
             // if an exception occurs, send it into a keypleDto to the Master
-            return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(
-                    RemoteMethod.DEFAULT_SELECTION_REQUEST.getName(), e, keypleDto.getSessionId(),
-                    nativeReaderName, keypleDto.getVirtualReaderName(), keypleDto.getNodeId()));
+            return transportDto.nextTransportDTO(
+                    KeypleDtoHelper.ExceptionDTO(RemoteMethod.DEFAULT_SELECTION_REQUEST.getName(),
+                            e, keypleDto.getSessionId(), nativeReaderName,
+                            keypleDto.getVirtualReaderName(), keypleDto.getRequesterNodeId()));
         }
     }
 }

@@ -16,9 +16,4 @@ public interface CommandsTable {
     String getName();
 
     byte getInstructionByte();
-
-    Class<? extends AbstractApduCommandBuilder> getCommandBuilderClass();
-
-    Class<? extends AbstractApduResponseParser> getResponseParserClass();
-
 }
