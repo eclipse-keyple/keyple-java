@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.calypso.transaction.sam;
+package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.seproxy.SeSelector;

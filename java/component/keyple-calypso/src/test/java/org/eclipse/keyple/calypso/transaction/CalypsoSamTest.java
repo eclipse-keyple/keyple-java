@@ -13,8 +13,6 @@ package org.eclipse.keyple.calypso.transaction;
 
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.*;
 import static org.junit.Assert.*;
-import org.eclipse.keyple.calypso.transaction.sam.CalypsoSam;
-import org.eclipse.keyple.calypso.transaction.sam.SamSelectionRequest;
 import org.eclipse.keyple.seproxy.ChannelState;
 import org.eclipse.keyple.seproxy.SeSelector;
 import org.eclipse.keyple.seproxy.message.AnswerToReset;
