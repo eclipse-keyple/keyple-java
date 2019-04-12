@@ -11,13 +11,16 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import org.eclipse.keyple.calypso.transaction.sam.CalypsoSam;
+import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.seproxy.ChannelState;
 import org.eclipse.keyple.seproxy.SeSelector;
 import org.eclipse.keyple.seproxy.message.SeResponse;
 import org.eclipse.keyple.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.transaction.SeSelectionRequest;
 
+/**
+ * Specialized selection request to manage the specific characteristics of Calypso SAMs
+ */
 public class SamSelectionRequest extends SeSelectionRequest {
     public SamSelectionRequest(SeSelector seSelector, ChannelState channelState,
             SeProtocol protocolFlag) {
@@ -33,5 +36,12 @@ public class SamSelectionRequest extends SeSelectionRequest {
     @Override
     protected CalypsoSam parse(SeResponse seResponse) {
         return new CalypsoSam(seResponse, seSelector.getExtraInfo());
+    }
+
+    @Override
+    public AbstractSamResponseParser getCommandParser(SeResponse seResponse, int commandIndex) {
+        /* not yet implemented in keyple-calypso */
+        // TODO add a generic command parser
+        throw new IllegalStateException("No parsers available for this request.");
     }
 }

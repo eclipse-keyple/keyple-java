@@ -23,7 +23,7 @@ import org.eclipse.keyple.calypso.command.sam.builder.security.GiveRandomCmdBuil
 import org.eclipse.keyple.calypso.command.sam.builder.security.SelectDiversifierCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.parser.security.CardGenerateKeyRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.calypso.transaction.sam.CalypsoSam;
+import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.integration.example.pc.calypso.DemoUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;

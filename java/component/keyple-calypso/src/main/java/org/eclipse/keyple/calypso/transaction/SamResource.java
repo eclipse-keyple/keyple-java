@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import org.eclipse.keyple.calypso.transaction.sam.CalypsoSam;
 import org.eclipse.keyple.seproxy.SeReader;
 import org.eclipse.keyple.transaction.SeResource;
 
