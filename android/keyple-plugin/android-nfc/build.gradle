@@ -14,7 +14,7 @@ buildscript {
 
 
 project.group 'org.eclipse.keyple'
-project.version = '1.0.0-RC4'
+project.version = '0.7.0-SNAPSHOT'
 
 apply plugin: 'pmd'
 apply plugin: 'com.android.library'

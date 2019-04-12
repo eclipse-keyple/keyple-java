@@ -5,7 +5,7 @@ plugins {
 apply plugin: 'java-library'
 apply plugin: 'java'
 sourceCompatibility = 1.6
-project.version = '1.0.0-RC4'
+project.version = '0.7.0-SNAPSHOT'
 
 //copy license file from root folder to each generated artifact
 task copyLICENSE(type: Copy) {
@@ -27,6 +27,7 @@ jar {
                 'Implementation-Version': project.version
     }
 }
+
 
 //maven publish configuration
 publishing {

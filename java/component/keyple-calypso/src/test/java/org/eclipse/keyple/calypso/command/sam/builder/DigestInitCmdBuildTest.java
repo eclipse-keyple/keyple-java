@@ -35,9 +35,8 @@ public class DigestInitCmdBuildTest {
         SamRevision revision = SamRevision.S1D;
 
         AbstractApduCommandBuilder apduCommandBuilder =
-                new DigestInitCmdBuild(
-                        revision, verificationMode, rev3_2Mode, workKeyRecordNumber, workKeyKif,
-                        workKeyKVC, digestData);
+                new DigestInitCmdBuild(revision, verificationMode, rev3_2Mode, workKeyRecordNumber,
+                        workKeyKif, workKeyKVC, digestData);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -53,9 +52,8 @@ public class DigestInitCmdBuildTest {
         SamRevision revision = SamRevision.S1D;
 
         AbstractApduCommandBuilder apduCommandBuilder =
-                new DigestInitCmdBuild(
-                        revision, verificationMode, rev3_2Mode, workKeyRecordNumber, workKeyKif,
-                        workKeyKVC, digestData);
+                new DigestInitCmdBuild(revision, verificationMode, rev3_2Mode, workKeyRecordNumber,
+                        workKeyKif, workKeyKVC, digestData);
     }
 
     @Test

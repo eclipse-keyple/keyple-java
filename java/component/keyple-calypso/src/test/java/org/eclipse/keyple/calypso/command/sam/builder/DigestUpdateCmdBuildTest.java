@@ -31,8 +31,7 @@ public class DigestUpdateCmdBuildTest {
                 (byte) digestDAta.length, (byte) 0x94, (byte) 0xAE, 0x01, 0x02};
 
         AbstractApduCommandBuilder apduCommandBuilder =
-                new DigestUpdateCmdBuild(
-                        SamRevision.S1D, true, digestDAta);
+                new DigestUpdateCmdBuild(SamRevision.S1D, true, digestDAta);
         ApduRequest ApduRequest = apduCommandBuilder.getApduRequest();
 
         Assert.assertArrayEquals(request, ApduRequest.getBytes());

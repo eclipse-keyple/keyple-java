@@ -33,8 +33,7 @@ public class DigestUpdateCmdBuild extends AbstractSamCommandBuilder {
      * @param revision of the SAM
      * @param encryptedSession the encrypted session
      * @param digestData all bytes from command sent by the PO or response from the command
-     * @throws IllegalArgumentException - if the digest data is null or has a length &gt;
-     *         255
+     * @throws IllegalArgumentException - if the digest data is null or has a length &gt; 255
      * @throws IllegalArgumentException - if the request is inconsistent
      */
     public DigestUpdateCmdBuild(SamRevision revision, boolean encryptedSession, byte[] digestData)
