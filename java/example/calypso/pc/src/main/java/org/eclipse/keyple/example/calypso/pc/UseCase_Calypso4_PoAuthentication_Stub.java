@@ -28,7 +28,7 @@ import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.transaction.MatchingSelection;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubSamCalypsoClassic;
@@ -157,7 +157,7 @@ public class UseCase_Calypso4_PoAuthentication_Stub {
              * make the selection and read additional information afterwards
              */
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                    new PoSelector.PoAidSelector(ByteArrayUtils.fromHex(CalypsoClassicInfo.AID),
+                    new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
                             PoSelector.InvalidatedPo.REJECT),
                     null, "AID: " + CalypsoClassicInfo.AID), ChannelState.KEEP_OPEN,
                     ContactlessProtocols.PROTOCOL_ISO14443_4);
@@ -239,7 +239,7 @@ public class UseCase_Calypso4_PoAuthentication_Stub {
                                 .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
 
                 /* Log the result */
-                logger.info("EventLog file data: {}", ByteArrayUtils.toHex(eventLog));
+                logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
 
                 if (!poProcessStatus) {
                     throw new IllegalStateException("processPoCommandsInSession failure.");

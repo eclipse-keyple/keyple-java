@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.core.transaction.*;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +103,7 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
          * selection
          */
         SeSelectionRequest seSelector = new SeSelectionRequest(
-                new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(seAid), null),
+                new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAid), null),
                         null, "AID: " + seAid),
                 ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
 

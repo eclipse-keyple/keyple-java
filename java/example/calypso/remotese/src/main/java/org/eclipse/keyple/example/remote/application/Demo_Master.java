@@ -32,7 +32,7 @@ import org.eclipse.keyple.core.seproxy.util.Observable;
 import org.eclipse.keyple.core.transaction.MatchingSe;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
@@ -172,7 +172,7 @@ public class Demo_Master implements Observable.Observer {
                         PoSelectionRequest poSelectionRequest =
                                 new PoSelectionRequest(
                                         new SeSelector(
-                                                new SeSelector.AidSelector(ByteArrayUtils
+                                                new SeSelector.AidSelector(ByteArrayUtil
                                                         .fromHex(CalypsoClassicInfo.AID), null),
                                                 null, "AID: " + CalypsoClassicInfo.AID),
                                         ChannelState.KEEP_OPEN,
@@ -262,7 +262,7 @@ public class Demo_Master implements Observable.Observer {
 
                         /* Log the result */
                         logger.info("{} Environment file data: {}", node.getNodeId(),
-                                ByteArrayUtils.toHex(environmentAndHolder));
+                                ByteArrayUtil.toHex(environmentAndHolder));
 
                         /* Go on with the reading of the first record of the EventLog file */
                         logger.info(
@@ -309,7 +309,7 @@ public class Demo_Master implements Observable.Observer {
 
                                 /* Log the result */
                                 logger.info("{} EventLog file data: {} ", node.getNodeId(),
-                                        ByteArrayUtils.toHex(eventLog));
+                                        ByteArrayUtil.toHex(eventLog));
                             }
                         } catch (KeypleReaderException e) {
                             e.printStackTrace();

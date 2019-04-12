@@ -37,7 +37,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,9 +84,9 @@ public final class PoTransaction {
     private final static int OFFSET_DATA = 5;
 
     /** Ratification command APDU for rev <= 2.4 */
-    private final static byte[] ratificationCmdApduLegacy = ByteArrayUtils.fromHex("94B2000000");
+    private final static byte[] ratificationCmdApduLegacy = ByteArrayUtil.fromHex("94B2000000");
     /** Ratification command APDU for rev > 2.4 */
-    private final static byte[] ratificationCmdApdu = ByteArrayUtils.fromHex("00B2000000");
+    private final static byte[] ratificationCmdApdu = ByteArrayUtil.fromHex("00B2000000");
 
     private static final Logger logger = LoggerFactory.getLogger(PoTransaction.class);
 
@@ -299,8 +299,8 @@ public final class PoTransaction {
 
         if (logger.isDebugEnabled()) {
             logger.debug("processAtomicOpening => Identification: DFNAME = {}, SERIALNUMBER = {}",
-                    ByteArrayUtils.toHex(poCalypsoInstanceAid),
-                    ByteArrayUtils.toHex(poCalypsoInstanceSerial));
+                    ByteArrayUtil.toHex(poCalypsoInstanceAid),
+                    ByteArrayUtil.toHex(poCalypsoInstanceSerial));
         }
         /* diversify only if this has not already been done. */
         if (!isDiversificationDone) {
@@ -355,7 +355,7 @@ public final class PoTransaction {
             sessionTerminalChallenge = samChallengePars.getChallenge();
             if (logger.isDebugEnabled()) {
                 logger.debug("processAtomicOpening => identification: TERMINALCHALLENGE = {}",
-                        ByteArrayUtils.toHex(sessionTerminalChallenge));
+                        ByteArrayUtil.toHex(sessionTerminalChallenge));
             }
         } else {
             throw new KeypleCalypsoSecureSessionException("Invalid message received",
@@ -438,7 +438,7 @@ public final class PoTransaction {
         if (logger.isDebugEnabled()) {
             logger.debug(
                     "processAtomicOpening => opening: CARDCHALLENGE = {}, POKIF = {}, POKVC = {}",
-                    ByteArrayUtils.toHex(sessionCardChallenge), String.format("%02X", poKif),
+                    ByteArrayUtil.toHex(sessionCardChallenge), String.format("%02X", poKif),
                     String.format("%02X", poKvc));
         }
 
@@ -789,7 +789,7 @@ public final class PoTransaction {
 
         if (logger.isDebugEnabled()) {
             logger.debug("processAtomicClosing => SIGNATURE = {}",
-                    ByteArrayUtils.toHex(sessionTerminalSignature));
+                    ByteArrayUtil.toHex(sessionTerminalSignature));
         }
 
         PoCustomReadCommandBuilder ratificationCommand;
@@ -1151,7 +1151,7 @@ public final class PoTransaction {
                 logger.debug(
                         "PoTransaction.DigestProcessor => initialize: KIF = {}, KVC {}, DIGESTDATA = {}",
                         String.format("%02X", workKeyKif), String.format("%02X", workKeyKVC),
-                        ByteArrayUtils.toHex(digestData));
+                        ByteArrayUtil.toHex(digestData));
             }
 
             /* Clear data cache */
@@ -1365,11 +1365,11 @@ public final class PoTransaction {
                              * number. Convert the 3-byte block indexed by the counter number to an
                              * int.
                              */
-                            int currentCounterValue = ByteArrayUtils.threeBytesToInt(
+                            int currentCounterValue = ByteArrayUtil.threeBytesToInt(
                                     commandResponse.getApduResponse().getBytes(),
                                     (counterNumber - 1) * 3);
                             /* Extract the add or subtract value from the modification request */
-                            int addSubtractValue = ByteArrayUtils
+                            int addSubtractValue = ByteArrayUtil
                                     .threeBytesToInt(modCounterApduRequest, OFFSET_DATA);
                             /* Build the response */
                             byte[] response = new byte[5];
@@ -1409,7 +1409,7 @@ public final class PoTransaction {
                         }
                     } else {
                         /* Append/Update/Write Record: response = 9000 */
-                        apduResponses.add(new ApduResponse(ByteArrayUtils.fromHex("9000"), null));
+                        apduResponses.add(new ApduResponse(ByteArrayUtil.fromHex("9000"), null));
                     }
                 }
             }
@@ -1961,7 +1961,7 @@ public final class PoTransaction {
     public int prepareSelectFileCmd(byte[] path, String extraInfo) {
 
         if (logger.isTraceEnabled()) {
-            logger.trace("Select File: PATH = {}", ByteArrayUtils.toHex(path));
+            logger.trace("Select File: PATH = {}", ByteArrayUtil.toHex(path));
         }
 
         /*

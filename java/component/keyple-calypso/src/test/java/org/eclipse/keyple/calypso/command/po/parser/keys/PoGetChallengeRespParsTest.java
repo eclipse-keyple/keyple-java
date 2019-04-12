@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +38,7 @@ public class PoGetChallengeRespParsTest {
         SeResponseSet seResponse =
                 new SeResponseSet(new SeResponse(true, true,
                         new SelectionStatus(null,
-                                new ApduResponse(ByteArrayUtils.fromHex("9000"), null), true),
+                                new ApduResponse(ByteArrayUtil.fromHex("9000"), null), true),
                         responses));
 
         AbstractApduResponseParser apduResponseParser = new PoGetChallengeRespPars(

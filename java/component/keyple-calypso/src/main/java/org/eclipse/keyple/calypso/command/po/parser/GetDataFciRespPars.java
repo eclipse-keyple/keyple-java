@@ -16,7 +16,7 @@ import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.sun.jndi.ldap.BerDecoder;
@@ -185,14 +185,14 @@ public final class GetDataFciRespPars extends AbstractPoResponseParser {
             applicationSN = ber.parseOctetString(TAG_APPLICATION_SERIAL_NUMBER, rlen);
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Application Serial Number = {}", ByteArrayUtils.toHex(applicationSN));
+                logger.debug("Application Serial Number = {}", ByteArrayUtil.toHex(applicationSN));
             }
 
             /* Get the Discretionary Data */
             discretionaryData = ber.parseOctetString(TAG_DISCRETIONARY_DATA, null);
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Discretionary Data = {}", ByteArrayUtils.toHex(discretionaryData));
+                logger.debug("Discretionary Data = {}", ByteArrayUtil.toHex(discretionaryData));
             }
 
             /*

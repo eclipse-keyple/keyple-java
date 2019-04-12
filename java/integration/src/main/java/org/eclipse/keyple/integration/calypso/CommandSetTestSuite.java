@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -75,7 +75,7 @@ public class CommandSetTestSuite {
         poTransaction.processClosing(TransmissionMode.CONTACTLESS, ChannelState.KEEP_OPEN);
         /*
          * System.out.println("DataRead#: " +
-         * ByteArrayUtils.toHex(dataReadInSession.getApduResponses().get(1).getDataOut()));
+         * ByteArrayUtil.toHex(dataReadInSession.getApduResponses().get(1).getDataOut()));
          * 
          * System.out.println("SW1SW2: " +
          * Integer.toHexString(dataReadInSession.getApduResponses().get(1).getStatusCode() &
@@ -167,7 +167,7 @@ public class CommandSetTestSuite {
 
             byte[] counterData = new byte[poData.getCountersFileData().getRecSize()];
 
-            System.arraycopy(ByteArrayUtils.fromHex(genericCounterData), 0, counterData, 0,
+            System.arraycopy(ByteArrayUtil.fromHex(genericCounterData), 0, counterData, 0,
                     counterData.length);
 
             updateRecord((CalypsoPo) poData.getMatchingSe(), poData.getCountersFileData().getSfi(),
@@ -433,7 +433,7 @@ public class CommandSetTestSuite {
 
             byte[] counterData = new byte[poData.getCountersFileData().getRecSize()];
 
-            System.arraycopy(ByteArrayUtils.fromHex(genericCounterData), 0, counterData, 0,
+            System.arraycopy(ByteArrayUtil.fromHex(genericCounterData), 0, counterData, 0,
                     counterData.length);
 
             poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
@@ -481,7 +481,7 @@ public class CommandSetTestSuite {
 
             byte[] counterData = new byte[poData.getCountersFileData().getRecSize()];
 
-            System.arraycopy(ByteArrayUtils.fromHex(genericCounterData), 0, counterData, 0,
+            System.arraycopy(ByteArrayUtil.fromHex(genericCounterData), 0, counterData, 0,
                     counterData.length);
 
             poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,

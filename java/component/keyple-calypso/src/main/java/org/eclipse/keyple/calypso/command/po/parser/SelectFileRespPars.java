@@ -16,7 +16,7 @@ import java.util.Map;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,13 +105,13 @@ public final class SelectFileRespPars extends AbstractPoResponseParser {
         }
 
         if (logger.isTraceEnabled()) {
-            logger.trace("Parsing FCI: {}", ByteArrayUtils.toHex(inFileParameters));
+            logger.trace("Parsing FCI: {}", ByteArrayUtil.toHex(inFileParameters));
         }
 
         // Check File TLV Tag and length
         if (inFileParameters[iter++] != (byte) 0x85 || inFileParameters[iter++] != (byte) 0x17) {
             throw new IllegalStateException(
-                    "Unexpected FCI format: " + ByteArrayUtils.toHex(inFileParameters));
+                    "Unexpected FCI format: " + ByteArrayUtil.toHex(inFileParameters));
         }
 
         fileBinaryData = new byte[inFileParameters.length];

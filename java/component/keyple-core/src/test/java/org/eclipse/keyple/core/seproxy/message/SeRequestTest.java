@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.Protocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -190,7 +190,7 @@ public class SeRequestTest {
          * test is to verify the proper format of the request.
          */
         SeSelector.AidSelector aidSelector = new SeSelector.AidSelector(
-                ByteArrayUtils.fromHex("AABBCCDDEEFF"), selectionStatusCode);
+                ByteArrayUtil.fromHex("AABBCCDDEEFF"), selectionStatusCode);
         SeSelector seSelector = new SeSelector(aidSelector, null, null);
         return seSelector;
     }

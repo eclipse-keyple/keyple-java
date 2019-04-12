@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.command.po.parser;
 
 
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +37,7 @@ public class GetDataRespParsTest {
                 siBufferSizeIndicator, siPlatform, siApplicationType, siApplicationSubtype,
                 siSoftwareIssuer, siSoftwareVersion, siSoftwareRevision);
         ApduResponse apduResponse = new ApduResponse(
-                ByteArrayUtils.fromHex("6F 24 84 0A " + dfName + " A5 16 BF0C 13 C7 08 "
+                ByteArrayUtil.fromHex("6F 24 84 0A " + dfName + " A5 16 BF0C 13 C7 08 "
                         + appSerialNumber + " 53 07 " + startupInformation + "9000"),
                 null);
 
@@ -48,9 +48,9 @@ public class GetDataRespParsTest {
         /* DF not invalidated */
         Assert.assertFalse(parser.isDfInvalidated());
         /* expected dfName */
-        Assert.assertArrayEquals(ByteArrayUtils.fromHex(dfName), parser.getDfName());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(dfName), parser.getDfName());
         /* expected Application Serial Number */
-        Assert.assertArrayEquals(ByteArrayUtils.fromHex(appSerialNumber),
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(appSerialNumber),
                 parser.getApplicationSerialNumber());
         /* Buffer size indicator and value */
         Assert.assertEquals(siBufferSizeIndicator, parser.getBufferSizeIndicator());
@@ -84,7 +84,7 @@ public class GetDataRespParsTest {
                 siPlatform, siApplicationType, siApplicationSubtype, siSoftwareIssuer,
                 siSoftwareVersion, siSoftwareRevision);
         apduResponse = new ApduResponse(
-                ByteArrayUtils.fromHex("6F 24 84 0A " + dfName + " A5 16 BF0C 13 C7 08 "
+                ByteArrayUtil.fromHex("6F 24 84 0A " + dfName + " A5 16 BF0C 13 C7 08 "
                         + appSerialNumber + " 53 07 " + startupInformation + "9000"),
                 null);
 
@@ -95,9 +95,9 @@ public class GetDataRespParsTest {
         /* DF not invalidated */
         Assert.assertFalse(parser.isDfInvalidated());
         /* expected dfName */
-        Assert.assertArrayEquals(ByteArrayUtils.fromHex(dfName), parser.getDfName());
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(dfName), parser.getDfName());
         /* expected Application Serial Number */
-        Assert.assertArrayEquals(ByteArrayUtils.fromHex(appSerialNumber),
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(appSerialNumber),
                 parser.getApplicationSerialNumber());
         /* Buffer size indicator and value */
         Assert.assertEquals(siBufferSizeIndicator, parser.getBufferSizeIndicator());
@@ -135,7 +135,7 @@ public class GetDataRespParsTest {
                 siBufferSizeIndicator, siPlatform, siApplicationType, siApplicationSubtype,
                 siSoftwareIssuer, siSoftwareVersion, siSoftwareRevision);
         ApduResponse apduResponse = new ApduResponse(
-                ByteArrayUtils.fromHex("6F 24 84 0A " + dfName + " A5 16 BF0C 13 C7 08 "
+                ByteArrayUtil.fromHex("6F 24 84 0A " + dfName + " A5 16 BF0C 13 C7 08 "
                         + appSerialNumber + " 53 07 " + startupInformation + "6283"),
                 null);
 
@@ -164,7 +164,7 @@ public class GetDataRespParsTest {
 
         /* bad tag FCI Template (not constructed) */
         ApduResponse apduResponse = new ApduResponse(
-                ByteArrayUtils.fromHex("4F 24 84 0A " + dfName + " A5 16 BF0C 13 C7 08 "
+                ByteArrayUtil.fromHex("4F 24 84 0A " + dfName + " A5 16 BF0C 13 C7 08 "
                         + appSerialNumber + " 53 07 " + startupInformation + "9000"),
                 null);
 
@@ -175,7 +175,7 @@ public class GetDataRespParsTest {
 
         /* bad tag DF Name (constructed) */
         apduResponse = new ApduResponse(
-                ByteArrayUtils.fromHex("6F 24 C4 0A " + dfName + " A5 16 BF0C 13 C7 08 "
+                ByteArrayUtil.fromHex("6F 24 C4 0A " + dfName + " A5 16 BF0C 13 C7 08 "
                         + appSerialNumber + " 53 07 " + startupInformation + "9000"),
                 null);
 
@@ -186,7 +186,7 @@ public class GetDataRespParsTest {
 
         /* bad tag FCI Proprietary Template (not constructed) */
         apduResponse = new ApduResponse(
-                ByteArrayUtils.fromHex("6F 24 84 0A " + dfName + " 85 16 BF0C 13 C7 08 "
+                ByteArrayUtil.fromHex("6F 24 84 0A " + dfName + " 85 16 BF0C 13 C7 08 "
                         + appSerialNumber + " 53 07 " + startupInformation + "9000"),
                 null);
 
@@ -197,7 +197,7 @@ public class GetDataRespParsTest {
 
         /* bad tag FCI Issuer Discretionary */
         apduResponse = new ApduResponse(
-                ByteArrayUtils.fromHex("6F 24 84 0A " + dfName + " A5 16 BF0D 13 C7 08 "
+                ByteArrayUtil.fromHex("6F 24 84 0A " + dfName + " A5 16 BF0D 13 C7 08 "
                         + appSerialNumber + " 53 07 " + startupInformation + "9000"),
                 null);
 
@@ -208,7 +208,7 @@ public class GetDataRespParsTest {
 
         /* bad tag Application Serial Number */
         apduResponse = new ApduResponse(
-                ByteArrayUtils.fromHex("6F 24 84 0A " + dfName + " A5 16 BF0C 13 87 08 "
+                ByteArrayUtil.fromHex("6F 24 84 0A " + dfName + " A5 16 BF0C 13 87 08 "
                         + appSerialNumber + " 53 07 " + startupInformation + "9000"),
                 null);
 
@@ -219,7 +219,7 @@ public class GetDataRespParsTest {
 
         /* bad tag Discretionary Data */
         apduResponse = new ApduResponse(
-                ByteArrayUtils.fromHex("6F 24 84 0A " + dfName + " A5 16 BF0C 13 C7 08 "
+                ByteArrayUtil.fromHex("6F 24 84 0A " + dfName + " A5 16 BF0C 13 C7 08 "
                         + appSerialNumber + " 43 07 " + startupInformation + "9000"),
                 null);
 

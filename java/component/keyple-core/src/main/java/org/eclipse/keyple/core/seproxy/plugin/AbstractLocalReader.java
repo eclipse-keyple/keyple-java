@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     private static final Logger logger = LoggerFactory.getLogger(AbstractLocalReader.class);
 
     /** predefined "get response" byte array */
-    private static final byte[] getResponseHackRequestBytes = ByteArrayUtils.fromHex("00C0000000");
+    private static final byte[] getResponseHackRequestBytes = ByteArrayUtil.fromHex("00C0000000");
 
     /** logical channel status flag */
     private boolean logicalChannelIsOpen = false;
@@ -568,7 +568,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     if (logger.isTraceEnabled()) {
                         logger.trace(
                                 "[{}] processSeRequest => The AID changed, close the logical channel. AID = {}, EXPECTEDAID = {}",
-                                this.getName(), ByteArrayUtils.toHex(aidCurrentlySelected),
+                                this.getName(), ByteArrayUtil.toHex(aidCurrentlySelected),
                                 seRequest.getSeSelector());
                     }
                     /* close the channel (will reset the current selection status) */
@@ -712,7 +712,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             this.before = timeStamp;
             logger.trace(
                     "[{}] case4HackGetResponse => ApduRequest: NAME = \"Internal Get Response\", RAWDATA = {}, elapsed = {}",
-                    this.getName(), ByteArrayUtils.toHex(getResponseHackRequestBytes), elapsedMs);
+                    this.getName(), ByteArrayUtil.toHex(getResponseHackRequestBytes), elapsedMs);
         }
 
         byte[] getResponseHackResponseBytes = transmitApdu(getResponseHackRequestBytes);

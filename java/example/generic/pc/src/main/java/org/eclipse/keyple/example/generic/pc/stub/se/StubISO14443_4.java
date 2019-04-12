@@ -12,7 +12,7 @@
 package org.eclipse.keyple.example.generic.pc.stub.se;
 
 
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 
 /**
@@ -60,7 +60,7 @@ public class StubISO14443_4 extends StubSecureElement {
 
     @Override
     public byte[] getATR() {
-        return ByteArrayUtils.fromHex(ATR_HEX);
+        return ByteArrayUtil.fromHex(ATR_HEX);
     }
 
     @Override

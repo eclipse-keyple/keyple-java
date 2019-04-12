@@ -39,7 +39,7 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SeSelectionRequest;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.example.pc.calypso.DemoUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
@@ -113,7 +113,7 @@ public class Tool_LoadKeys {
                     sourceKeyReference.getKif(), sourceKeyReference.getKvc());
         }
         logger.info("LOAD KEY {}, {}, CRYPTOGRAM: {}", keyIndex, keyInfo,
-                ByteArrayUtils.toHex(cipheredData));
+                ByteArrayUtil.toHex(cipheredData));
 
         // send change key command to the PO
         apduRequests.clear();
@@ -196,10 +196,10 @@ public class Tool_LoadKeys {
         // Check if a PO is present in the reader
         if (poReader.isSePresent()) {
             // do the PO selection (kif/kvc values below must be adapted accordingly)
-            // byte[] aid = ByteArrayUtils.fromHex("D2760000850101"); // NFC NDEF
-            // byte[] aid = ByteArrayUtils.fromHex("315449432E49434132"); // INTERCODE 2.2
-            // byte[] aid = ByteArrayUtils.fromHex("304554502E494341"); // STORED VALUE
-            byte[] aid = ByteArrayUtils.fromHex("315449432E49434131"); // CD LIGHT/GTML
+            // byte[] aid = ByteArrayUtil.fromHex("D2760000850101"); // NFC NDEF
+            // byte[] aid = ByteArrayUtil.fromHex("315449432E49434132"); // INTERCODE 2.2
+            // byte[] aid = ByteArrayUtil.fromHex("304554502E494341"); // STORED VALUE
+            byte[] aid = ByteArrayUtil.fromHex("315449432E49434131"); // CD LIGHT/GTML
 
             SeSelection seSelection = new SeSelection();
 

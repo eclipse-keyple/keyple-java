@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.Protocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.transaction.*;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.slf4j.Logger;
@@ -112,7 +112,7 @@ public class Demo_WriteName {
                             .prepareSelection(
                                     new PoSelectionRequest(
                                             new SeSelector(new SeSelector.AidSelector(
-                                                    ByteArrayUtils.fromHex(
+                                                    ByteArrayUtil.fromHex(
                                                             PoFileStructureInfo.poAuditC0Aid),
                                                     null), null, "Audit C0"),
                                             ChannelState.KEEP_OPEN, Protocol.ANY));
@@ -124,7 +124,7 @@ public class Demo_WriteName {
                                     new PoSelectionRequest(
                                             new SeSelector(
                                                     new SeSelector.AidSelector(
-                                                            ByteArrayUtils.fromHex(
+                                                            ByteArrayUtil.fromHex(
                                                                     PoFileStructureInfo.clapAid),
                                                             null),
                                                     null, "CLAP"),
@@ -135,7 +135,7 @@ public class Demo_WriteName {
                     seSelection
                             .prepareSelection(new PoSelectionRequest(
                                     new SeSelector(
-                                            new SeSelector.AidSelector(ByteArrayUtils
+                                            new SeSelector.AidSelector(ByteArrayUtil
                                                     .fromHex(PoFileStructureInfo.cdLightAid), null),
                                             null, "CDLight"),
                                     ChannelState.KEEP_OPEN, Protocol.ANY));

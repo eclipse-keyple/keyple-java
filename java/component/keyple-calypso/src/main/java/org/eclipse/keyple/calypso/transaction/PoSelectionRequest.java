@@ -30,7 +30,7 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.ContactsProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.transaction.SeSelectionRequest;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,7 +182,7 @@ public final class PoSelectionRequest extends SeSelectionRequest {
     public int prepareSelectFileCmd(byte[] path, String extraInfo) {
         addApduRequest(new SelectFileCmdBuild(poClass, path).getApduRequest());
         if (logger.isTraceEnabled()) {
-            logger.trace("Select File: PATH = {}", ByteArrayUtils.toHex(path));
+            logger.trace("Select File: PATH = {}", ByteArrayUtil.toHex(path));
         }
 
         /* set the parser for the response of this command */

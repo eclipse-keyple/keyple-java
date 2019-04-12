@@ -16,7 +16,7 @@ package org.eclipse.keyple.calypso.command.po.builder.security;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -103,7 +103,7 @@ public class OpenSessionCmdBuildTest {
         apduCommandBuilder = AbstractOpenSessionCmdBuild.create(PoRevision.REV3_2, keyIndex,
                 samChallenge, sfiToSelect, recordNumberToRead, "");
         apduRequest = apduCommandBuilder.getApduRequest();
-        Assert.assertEquals(ByteArrayUtils.toHex(request3_2),
-                ByteArrayUtils.toHex(apduRequest.getBytes()));
+        Assert.assertEquals(ByteArrayUtil.toHex(request3_2),
+                ByteArrayUtil.toHex(apduRequest.getBytes()));
     }
 }

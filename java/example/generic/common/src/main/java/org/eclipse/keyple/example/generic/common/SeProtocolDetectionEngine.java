@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.core.transaction.*;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
  * This code demonstrates the multi-protocols capability of the Keyple SeProxy
@@ -66,13 +66,13 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                             new PoSelectionRequest(
                                     new SeSelector(
                                             new SeSelector.AidSelector(
-                                                    ByteArrayUtils.fromHex(HoplinkAID), null),
+                                                    ByteArrayUtil.fromHex(HoplinkAID), null),
                                             null, "Hoplink selector"),
                                     ChannelState.KEEP_OPEN,
                                     ContactlessProtocols.PROTOCOL_ISO14443_4);
 
                     poSelectionRequest.preparePoCustomReadCmd("Standard Get Data",
-                            new ApduRequest(ByteArrayUtils.fromHex("FFCA000000"), false));
+                            new ApduRequest(ByteArrayUtil.fromHex("FFCA000000"), false));
 
                     poSelectionRequest.prepareReadRecordsCmd(SFI_T2Environment,
                             ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01,

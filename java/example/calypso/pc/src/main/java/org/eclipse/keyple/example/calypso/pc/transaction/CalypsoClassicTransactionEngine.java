@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.transaction.*;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.generic.common.AbstractReaderObserverEngine;
 import org.slf4j.Logger;
@@ -262,7 +262,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             /* prepare Event Log append record */
             int appendEventLogParserIndex =
                     poTransaction.prepareAppendRecordCmd(CalypsoClassicInfo.SFI_EventLog,
-                            ByteArrayUtils.fromHex(CalypsoClassicInfo.eventLog_dataFill),
+                            ByteArrayUtil.fromHex(CalypsoClassicInfo.eventLog_dataFill),
                             String.format("EventLog (SFI=%02X)", CalypsoClassicInfo.SFI_EventLog));
 
             /*
@@ -302,7 +302,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         seSelection
                 .prepareSelection(new PoSelectionRequest(
                         new PoSelector(
-                                new PoSelector.PoAidSelector(ByteArrayUtils.fromHex(poFakeAid1),
+                                new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(poFakeAid1),
                                         PoSelector.InvalidatedPo.REJECT),
                                 null, "Selector with fake AID1"),
                         ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4));
@@ -314,7 +314,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
          */
         PoSelectionRequest poSelectionRequestCalypsoAid = new PoSelectionRequest(
                 new PoSelector(
-                        new PoSelector.PoAidSelector(ByteArrayUtils.fromHex(CalypsoClassicInfo.AID),
+                        new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
                                 PoSelector.InvalidatedPo.ACCEPT),
                         null, "Calypso selector"),
                 ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
@@ -331,7 +331,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         seSelection
                 .prepareSelection(new PoSelectionRequest(
                         new PoSelector(
-                                new PoSelector.PoAidSelector(ByteArrayUtils.fromHex(poFakeAid2),
+                                new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(poFakeAid2),
                                         PoSelector.InvalidatedPo.REJECT),
                                 null, "Selector with fake AID2"),
                         ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_B_PRIME));

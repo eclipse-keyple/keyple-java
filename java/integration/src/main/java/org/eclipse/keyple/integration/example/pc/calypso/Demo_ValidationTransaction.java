@@ -34,7 +34,7 @@ import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SeSelectionRequest;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
@@ -160,7 +160,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         /*
          * System.out.println("Contract#" + (contractIndex+1) + ": " +
-         * ByteArrayUtils.toHex(dataReadInSession.getApduResponses().get(0).getDataOut()) +
+         * ByteArrayUtil.toHex(dataReadInSession.getApduResponses().get(0).getDataOut()) +
          * ", SW1SW2: " +
          * Integer.toHexString(dataReadInSession.getApduResponses().get(0).getStatusCode() &
          * 0xFFFF));
@@ -270,7 +270,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         /*
          * System.out.println("Contract#" + (contractIndex+1) + ": " +
-         * ByteArrayUtils.toHex(dataReadInSession.getApduResponses().get(0).getDataOut()) +
+         * ByteArrayUtil.toHex(dataReadInSession.getApduResponses().get(0).getDataOut()) +
          * ", SW1SW2: " +
          * Integer.toHexString(dataReadInSession.getApduResponses().get(0).getStatusCode() &
          * 0xFFFF));
@@ -313,7 +313,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                             .prepareSelection(
                                     new PoSelectionRequest(
                                             new SeSelector(new SeSelector.AidSelector(
-                                                    ByteArrayUtils.fromHex(
+                                                    ByteArrayUtil.fromHex(
                                                             PoFileStructureInfo.poAuditC0Aid),
                                                     null), null, "Audit C0"),
                                             ChannelState.KEEP_OPEN, Protocol.ANY));
@@ -325,7 +325,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                                     new PoSelectionRequest(
                                             new SeSelector(
                                                     new SeSelector.AidSelector(
-                                                            ByteArrayUtils.fromHex(
+                                                            ByteArrayUtil.fromHex(
                                                                     PoFileStructureInfo.clapAid),
                                                             null),
                                                     null, "CLAP"),
@@ -336,7 +336,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                     seSelection
                             .prepareSelection(new PoSelectionRequest(
                                     new SeSelector(
-                                            new SeSelector.AidSelector(ByteArrayUtils
+                                            new SeSelector.AidSelector(ByteArrayUtil
                                                     .fromHex(PoFileStructureInfo.cdLightAid), null),
                                             null, "CDLight"),
                                     ChannelState.KEEP_OPEN, Protocol.ANY));

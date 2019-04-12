@@ -15,7 +15,7 @@ package org.eclipse.keyple.calypso.command.sam.builder;
 import org.eclipse.keyple.calypso.command.sam.builder.security.DigestAuthenticateCmdBuild;
 import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +35,7 @@ public class DigestAuthenticateCmdBuildTest {
                 new DigestAuthenticateCmdBuild(null, signaturePO);
         ApduRequest ApduRequest = apduCommandBuilder.getApduRequest();
 
-        Assert.assertEquals(ByteArrayUtils.toHex(request),
-                ByteArrayUtils.toHex(ApduRequest.getBytes()));
+        Assert.assertEquals(ByteArrayUtil.toHex(request),
+                ByteArrayUtil.toHex(ApduRequest.getBytes()));
     }
 }

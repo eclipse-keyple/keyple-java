@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +37,7 @@ public class CloseSessionRespParsTest {
         SeResponseSet seResponse =
                 new SeResponseSet(new SeResponse(true, true,
                         new SelectionStatus(null,
-                                new ApduResponse(ByteArrayUtils.fromHex("9000"), null), true),
+                                new ApduResponse(ByteArrayUtil.fromHex("9000"), null), true),
                         responses));
 
         AbstractApduResponseParser apduResponseParser =
@@ -84,31 +84,31 @@ public class CloseSessionRespParsTest {
     @Test
     public void existingTestConverted() {
         CloseSessionRespPars parser =
-                new CloseSessionRespPars(new ApduResponse(ByteArrayUtils.fromHex("9000h"), null));
+                new CloseSessionRespPars(new ApduResponse(ByteArrayUtil.fromHex("9000h"), null));
         // This assert wasn't passing
-        Assert.assertEquals("", ByteArrayUtils.toHex(parser.getSignatureLo()));
-        Assert.assertEquals("", ByteArrayUtils.toHex(parser.getPostponedData()));
+        Assert.assertEquals("", ByteArrayUtil.toHex(parser.getSignatureLo()));
+        Assert.assertEquals("", ByteArrayUtil.toHex(parser.getPostponedData()));
     }
 
     @Test // Calypso / page 105 / Example command aborting a session:
     public void abortingASession() {
         CloseSessionRespPars parser = new CloseSessionRespPars(
-                new ApduResponse(ByteArrayUtils.fromHex("FEDCBA98 9000h"), null));
+                new ApduResponse(ByteArrayUtil.fromHex("FEDCBA98 9000h"), null));
     }
 
     @Test // Calypso / page 105 / Example command, Lc=4, without postponed data:
     public void lc4withoutPostponedData() {
         CloseSessionRespPars parser = new CloseSessionRespPars(
-                new ApduResponse(ByteArrayUtils.fromHex("FEDCBA98 9000h"), null));
-        Assert.assertEquals("FEDCBA98", ByteArrayUtils.toHex(parser.getSignatureLo()));
-        Assert.assertEquals("", ByteArrayUtils.toHex(parser.getPostponedData()));
+                new ApduResponse(ByteArrayUtil.fromHex("FEDCBA98 9000h"), null));
+        Assert.assertEquals("FEDCBA98", ByteArrayUtil.toHex(parser.getSignatureLo()));
+        Assert.assertEquals("", ByteArrayUtil.toHex(parser.getPostponedData()));
     }
 
     @Test // Calypso / page 105 / Example command, Lc=4, with postponed data:
     public void lc4WithPostponedData() {
         CloseSessionRespPars parser = new CloseSessionRespPars(
-                new ApduResponse(ByteArrayUtils.fromHex("04 345678 FEDCBA98 9000h"), null));
-        Assert.assertEquals("FEDCBA98", ByteArrayUtils.toHex(parser.getSignatureLo()));
-        Assert.assertEquals("04345678", ByteArrayUtils.toHex(parser.getPostponedData()));
+                new ApduResponse(ByteArrayUtil.fromHex("04 345678 FEDCBA98 9000h"), null));
+        Assert.assertEquals("FEDCBA98", ByteArrayUtil.toHex(parser.getSignatureLo()));
+        Assert.assertEquals("04345678", ByteArrayUtil.toHex(parser.getPostponedData()));
     }
 }

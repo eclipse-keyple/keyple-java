@@ -14,7 +14,7 @@ package org.eclipse.keyple.core.util;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-public class ByteArrayUtilsTest {
+public class ByteArrayUtilTest {
     private final static String HEXSTRING_ODD = "0102030";
     private final static String HEXSTRING_BAD = "010203ABGH80";
     private final static String HEXSTRING_GOOD = "1234567890ABCDEFFEDCBA0987654321";
@@ -28,93 +28,93 @@ public class ByteArrayUtilsTest {
 
     @Test(expected = NullPointerException.class)
     public void fromHex_null() {
-        byte[] bytes = ByteArrayUtils.fromHex(null);
+        byte[] bytes = ByteArrayUtil.fromHex(null);
     }
 
     @Test
     public void fromHex_empty() {
-        byte[] bytes = ByteArrayUtils.fromHex("");
+        byte[] bytes = ByteArrayUtil.fromHex("");
         assertEquals(bytes.length, 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void fromHex_odd_length() {
-        byte[] bytes = ByteArrayUtils.fromHex(HEXSTRING_ODD);
+        byte[] bytes = ByteArrayUtil.fromHex(HEXSTRING_ODD);
     }
 
     @Test
     public void fromHex_bad_hex() {
         // no verification is being carried out at the moment.
-        byte[] bytes = ByteArrayUtils.fromHex(HEXSTRING_BAD);
+        byte[] bytes = ByteArrayUtil.fromHex(HEXSTRING_BAD);
     }
 
     @Test
     public void fromHex_good_hex() {
         // no verification is being carried out at the moment.
-        byte[] bytes = ByteArrayUtils.fromHex(HEXSTRING_GOOD);
+        byte[] bytes = ByteArrayUtil.fromHex(HEXSTRING_GOOD);
         assertArrayEquals(bytes, BYTEARRAY_GOOD);
     }
 
     @Test
     public void toHex_null() {
-        String hex = ByteArrayUtils.toHex(null);
+        String hex = ByteArrayUtil.toHex(null);
         assertEquals(hex.length(), 0);
     }
 
     @Test
     public void toHex_empty() {
         byte[] bytes = new byte[0];
-        String hex = ByteArrayUtils.toHex(bytes);
+        String hex = ByteArrayUtil.toHex(bytes);
         assertEquals(hex.length(), 0);
     }
 
     @Test
     public void toHex_bytearray_good() {
-        String hex = ByteArrayUtils.toHex(BYTEARRAY_GOOD);
+        String hex = ByteArrayUtil.toHex(BYTEARRAY_GOOD);
         assertEquals(hex, HEXSTRING_GOOD);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void threeBytesToInt_null() {
-        int value = ByteArrayUtils.threeBytesToInt(null, 0);
+        int value = ByteArrayUtil.threeBytesToInt(null, 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void threeBytesToInt_negative_offset() {
-        int value = ByteArrayUtils.threeBytesToInt(BYTEARRAY_GOOD, -1);
+        int value = ByteArrayUtil.threeBytesToInt(BYTEARRAY_GOOD, -1);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void threeBytesToInt_too_short_buffer_1() {
-        int value = ByteArrayUtils.threeBytesToInt(BYTEARRAY_LEN_2, 0);
+        int value = ByteArrayUtil.threeBytesToInt(BYTEARRAY_LEN_2, 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void threeBytesToInt_too_short_buffer_2() {
-        int value = ByteArrayUtils.threeBytesToInt(BYTEARRAY_LEN_3, 1);
+        int value = ByteArrayUtil.threeBytesToInt(BYTEARRAY_LEN_3, 1);
     }
 
     @Test
     public void threeBytesToInt_buffer_ok_1() {
-        int value = ByteArrayUtils.threeBytesToInt(BYTEARRAY_LEN_3, 0);
+        int value = ByteArrayUtil.threeBytesToInt(BYTEARRAY_LEN_3, 0);
         assertEquals(value, 0x123456);
     }
 
     @Test
     public void threeBytesToInt_buffer_ok_2() {
-        int value = ByteArrayUtils.threeBytesToInt(BYTEARRAY_GOOD, 0);
+        int value = ByteArrayUtil.threeBytesToInt(BYTEARRAY_GOOD, 0);
         assertEquals(value, 0x123456);
     }
 
     @Test
     public void threeBytesToInt_buffer_ok_3() {
-        int value = ByteArrayUtils.threeBytesToInt(BYTEARRAY_GOOD, 1);
+        int value = ByteArrayUtil.threeBytesToInt(BYTEARRAY_GOOD, 1);
         assertEquals(value, 0x345678);
     }
 
     @Test
     public void threeBytesToInt_buffer_ok_4() {
-        int value = ByteArrayUtils.threeBytesToInt(BYTEARRAY_GOOD, 13);
+        int value = ByteArrayUtil.threeBytesToInt(BYTEARRAY_GOOD, 13);
         assertEquals(value, 0x654321);
     }
 }

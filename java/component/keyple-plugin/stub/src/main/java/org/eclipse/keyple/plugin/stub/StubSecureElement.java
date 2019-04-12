@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public abstract class StubSecureElement {
 
@@ -86,11 +86,11 @@ public abstract class StubSecureElement {
         }
 
         // convert apduIn to hexa
-        String hexApdu = ByteArrayUtils.toHex(apduIn);
+        String hexApdu = ByteArrayUtil.toHex(apduIn);
 
         // return matching hexa response if found
         if (hexCommands.containsKey(hexApdu)) {
-            return ByteArrayUtils.fromHex(hexCommands.get(hexApdu));
+            return ByteArrayUtil.fromHex(hexCommands.get(hexApdu));
         }
 
         // throw a KeypleIOReaderException if not found

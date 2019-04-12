@@ -13,7 +13,8 @@ package org.eclipse.keyple.core.seproxy;
 
 import java.util.*;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,7 +154,7 @@ public class SeSelector {
          */
         public String toString() {
             return String.format("AID:%s, OCCURRENCE:%s",
-                    aidToSelect == null ? "null" : ByteArrayUtils.toHex(aidToSelect),
+                    aidToSelect == null ? "null" : ByteArrayUtil.toHex(aidToSelect),
                     fileOccurrence);
         }
     }
@@ -206,7 +207,7 @@ public class SeSelector {
             boolean m;
             if (atrRegex.length() != 0) {
                 Pattern p = Pattern.compile(atrRegex);
-                String atrString = ByteArrayUtils.toHex(atr);
+                String atrString = ByteArrayUtil.toHex(atr);
                 m = p.matcher(atrString).matches();
             } else {
                 m = true;
@@ -254,7 +255,7 @@ public class SeSelector {
         if (logger.isTraceEnabled()) {
             logger.trace("Selection data: AID = {}, ATRREGEX = {}, EXTRAINFO = {}",
                     this.aidSelector == null ? "null"
-                            : ByteArrayUtils.toHex(this.aidSelector.getAidToSelect()),
+                            : ByteArrayUtil.toHex(this.aidSelector.getAidToSelect()),
                     this.atrFilter == null ? "null" : this.atrFilter.getAtrRegex(), extraInfo);
         }
     }

@@ -34,7 +34,7 @@ import org.eclipse.keyple.core.transaction.MatchingSe;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SeSelectionRequest;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -155,7 +155,7 @@ public class StubReaderTest {
                         hoplinkSE().getATR());
 
                 // retrieve the expected FCI from the Stub SE running the select application command
-                byte[] aid = ByteArrayUtils.fromHex(poAid);
+                byte[] aid = ByteArrayUtil.fromHex(poAid);
                 byte[] selectApplicationCommand = new byte[6 + aid.length];
                 selectApplicationCommand[0] = (byte) 0x00; // CLA
                 selectApplicationCommand[1] = (byte) 0xA4; // INS
@@ -186,7 +186,7 @@ public class StubReaderTest {
         SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
-                new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
+                new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
                         null, "AID: " + poAid),
                 ChannelState.KEEP_OPEN, Protocol.ANY);
 
@@ -225,7 +225,7 @@ public class StubReaderTest {
         SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
-                new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
+                new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
                         null, "AID: " + poAid),
                 ChannelState.KEEP_OPEN, Protocol.ANY);
 
@@ -271,7 +271,7 @@ public class StubReaderTest {
         SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
-                new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
+                new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
                         null, "AID: " + poAid),
                 ChannelState.KEEP_OPEN, Protocol.ANY);
 
@@ -832,7 +832,7 @@ public class StubReaderTest {
         }
 
         SeSelector selector = new SeSelector(
-                new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null), null, null);
+                new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null, null);
 
         return new SeRequest(poApduRequestList, ChannelState.CLOSE_AFTER);
     }
@@ -858,7 +858,7 @@ public class StubReaderTest {
 
             @Override
             public byte[] getATR() {
-                return ByteArrayUtils
+                return ByteArrayUtil
                         .fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
             }
 
@@ -885,7 +885,7 @@ public class StubReaderTest {
 
             @Override
             public byte[] getATR() {
-                return ByteArrayUtils
+                return ByteArrayUtil
                         .fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
             }
 
@@ -914,7 +914,7 @@ public class StubReaderTest {
 
             @Override
             public byte[] getATR() {
-                return ByteArrayUtils
+                return ByteArrayUtil
                         .fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
             }
 
@@ -965,6 +965,6 @@ public class StubReaderTest {
     }
 
     static public ApduRequest getApduSample() {
-        return new ApduRequest(ByteArrayUtils.fromHex("FEDCBA98 9005h"), false);
+        return new ApduRequest(ByteArrayUtil.fromHex("FEDCBA98 9005h"), false);
     }
 }

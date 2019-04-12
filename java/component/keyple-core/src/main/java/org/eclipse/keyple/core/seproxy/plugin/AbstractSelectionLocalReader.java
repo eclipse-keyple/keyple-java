@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,11 +61,11 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
 
             if (logger.isTraceEnabled()) {
                 logger.trace("[{}] openLogicalChannel => ATR = {}", this.getName(),
-                        ByteArrayUtils.toHex(atr));
+                        ByteArrayUtil.toHex(atr));
             }
             if (!seSelector.getAtrFilter().atrMatches(atr)) {
                 logger.info("[{}] openLogicalChannel => ATR didn't match. SELECTOR = {}, ATR = {}",
-                        this.getName(), seSelector, ByteArrayUtils.toHex(atr));
+                        this.getName(), seSelector, ByteArrayUtil.toHex(atr));
                 selectionHasMatched = false;
             }
         }
@@ -82,7 +82,7 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
             }
             if (logger.isTraceEnabled()) {
                 logger.trace("[{}] openLogicalChannel => Select Application with AID = {}",
-                        this.getName(), ByteArrayUtils.toHex(aid));
+                        this.getName(), ByteArrayUtil.toHex(aid));
             }
             /*
              * build a get response command the actual length expected by the SE in the get response

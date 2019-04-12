@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.transaction.MatchingSe;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SeSelectionRequest;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
 import org.junit.*;
@@ -178,7 +178,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                         hoplinkSE().getATR());
 
                 // retrieve the expected FCI from the Stub SE running the select application command
-                byte[] aid = ByteArrayUtils.fromHex(poAid);
+                byte[] aid = ByteArrayUtil.fromHex(poAid);
                 byte[] selectApplicationCommand = new byte[6 + aid.length];
                 selectApplicationCommand[0] = (byte) 0x00; // CLA
                 selectApplicationCommand[1] = (byte) 0xA4; // INS
@@ -209,7 +209,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
-                new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
+                new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
                         null, "AID: " + poAid),
                 ChannelState.KEEP_OPEN, Protocol.ANY);
 
@@ -253,7 +253,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
-                new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
+                new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
                         null, "AID: " + poAid),
                 ChannelState.KEEP_OPEN, Protocol.ANY);
 
@@ -304,7 +304,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
-                new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
+                new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
                         null, "AID: " + poAid),
                 ChannelState.KEEP_OPEN, Protocol.ANY);
 

@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.transaction.MatchingSelection;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
@@ -133,7 +133,7 @@ public class UseCase_Calypso5_MultipleSession_Pcsc {
              * make the selection and read additional information afterwards
              */
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                    new PoSelector.PoAidSelector(ByteArrayUtils.fromHex(CalypsoClassicInfo.AID),
+                    new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
                             PoSelector.InvalidatedPo.REJECT),
                     null, "AID: " + CalypsoClassicInfo.AID), ChannelState.KEEP_OPEN,
                     ContactlessProtocols.PROTOCOL_ISO14443_4);
@@ -202,7 +202,7 @@ public class UseCase_Calypso5_MultipleSession_Pcsc {
                 for (int i = 0; i < nbCommands; i++) {
                     appendRecordParsers[i] =
                             poTransaction.prepareAppendRecordCmd(CalypsoClassicInfo.SFI_EventLog,
-                                    ByteArrayUtils.fromHex(CalypsoClassicInfo.eventLog_dataFill),
+                                    ByteArrayUtil.fromHex(CalypsoClassicInfo.eventLog_dataFill),
                                     String.format("EventLog (SFI=%02X) #%d",
                                             CalypsoClassicInfo.SFI_EventLog, i));
                 }

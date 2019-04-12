@@ -14,7 +14,8 @@ package org.eclipse.keyple.core.seproxy.message;
 import static org.junit.Assert.*;
 import java.util.HashSet;
 import java.util.Set;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,7 +71,7 @@ public class ApduRequestTest {
     }
 
     static byte[] getACommand() {
-        return ByteArrayUtils.fromHex("FEDCBA98 9005h");
+        return ByteArrayUtil.fromHex("FEDCBA98 9005h");
     }
 
     static Set<Integer> getASuccessFulStatusCode() {

@@ -13,7 +13,8 @@ package org.eclipse.keyple.core.seproxy.message;
 
 import java.io.Serializable;
 import java.util.List;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
  * Group of SE responses received in response to a {@link SeRequest}.
@@ -111,8 +112,8 @@ public final class SeResponse implements Serializable {
                             + "LOGICALCHANNEL = %s}",
                     getApduResponses(),
                     selectionStatus.getAtr().getBytes() == null ? "null"
-                            : ByteArrayUtils.toHex(selectionStatus.getAtr().getBytes()),
-                    ByteArrayUtils.toHex(selectionStatus.getFci().getBytes()),
+                            : ByteArrayUtil.toHex(selectionStatus.getAtr().getBytes()),
+                    ByteArrayUtil.toHex(selectionStatus.getFci().getBytes()),
                     selectionStatus.hasMatched(), wasChannelPreviouslyOpen(),
                     logicalChannelIsOpen ? "OPEN" : "CLOSED");
         } else {

@@ -14,7 +14,7 @@ package org.eclipse.keyple.core.seproxy.message;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Set;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 
 /**
@@ -153,7 +153,7 @@ public final class ApduRequest implements Serializable {
     public String toString() {
         StringBuilder string;
         string = new StringBuilder("ApduRequest: NAME = \"" + this.getName() + "\", RAWDATA = "
-                + ByteArrayUtils.toHex(bytes));
+                + ByteArrayUtil.toHex(bytes));
         if (isCase4()) {
             string.append(", case4");
         }

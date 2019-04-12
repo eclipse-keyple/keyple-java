@@ -14,7 +14,7 @@ package org.eclipse.keyple.core.seproxy.message;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Set;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 
 /**
@@ -117,7 +117,7 @@ public final class ApduResponse implements Serializable {
         } else {
             prefix = "ApduResponse: FAILURE, RAWDATA = ";
         }
-        return prefix + ByteArrayUtils.toHex(this.bytes);
+        return prefix + ByteArrayUtil.toHex(this.bytes);
     }
 
     @Override

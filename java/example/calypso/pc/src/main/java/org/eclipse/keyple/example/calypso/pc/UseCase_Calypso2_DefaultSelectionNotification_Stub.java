@@ -32,7 +32,7 @@ import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.core.transaction.MatchingSelection;
 import org.eclipse.keyple.core.transaction.SeSelection;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
@@ -126,7 +126,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
          */
         PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
                 new PoSelector(
-                        new PoSelector.PoAidSelector(ByteArrayUtils.fromHex(CalypsoClassicInfo.AID),
+                        new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
                                 PoSelector.InvalidatedPo.REJECT),
                         null, "AID: " + CalypsoClassicInfo.AID),
                 ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
@@ -223,7 +223,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
 
                     /* Log the result */
                     logger.info("Environment file data: {}",
-                            ByteArrayUtils.toHex(environmentAndHolder));
+                            ByteArrayUtil.toHex(environmentAndHolder));
 
                     /* Go on with the reading of the first record of the EventLog file */
                     logger.info(
@@ -263,7 +263,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
                                             .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
 
                             /* Log the result */
-                            logger.info("EventLog file data: {}", ByteArrayUtils.toHex(eventLog));
+                            logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
                         }
                     } catch (KeypleReaderException e) {
                         e.printStackTrace();
