@@ -18,7 +18,7 @@ plugins {
 apply plugin: 'com.android.application'
 
 project.group 'org.eclipse.keyple'
-project.version = '1.0.0-RC4'
+project.version = '0.7.0-SNAPSHOT'
 
 allprojects {
 

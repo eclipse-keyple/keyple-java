@@ -29,8 +29,7 @@ public class DigestCloseCmdBuildTest {
 
         byte[] request = new byte[] {(byte) 0x94, (byte) 0x8E, 0x00, 0x00, (byte) 0x04};
         AbstractApduCommandBuilder apduCommandBuilder =
-                new DigestCloseCmdBuild(
-                        SamRevision.S1D, (byte) 0x04);// 94
+                new DigestCloseCmdBuild(SamRevision.S1D, (byte) 0x04);// 94
         ApduRequest apduReq = apduCommandBuilder.getApduRequest();
 
         Assert.assertArrayEquals(request, apduReq.getBytes());

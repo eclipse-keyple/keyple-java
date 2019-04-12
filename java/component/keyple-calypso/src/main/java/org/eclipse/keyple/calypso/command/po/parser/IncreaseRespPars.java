@@ -63,8 +63,8 @@ public final class IncreaseRespPars extends AbstractPoResponseParser {
      * Returns the new counter value as an int between 0
      *
      * @return the new value
-     * @throws IllegalStateException - if the counter value is not available from the
-     *         command response.
+     * @throws IllegalStateException - if the counter value is not available from the command
+     *         response.
      */
     public int getNewValue() throws IllegalStateException {
         byte[] newValueBuffer = getApduResponse().getDataOut();
