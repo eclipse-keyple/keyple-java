@@ -103,8 +103,8 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
          * selection
          */
         SeSelectionRequest seSelector = new SeSelectionRequest(
-                new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAid), null),
-                        null, "AID: " + seAid),
+                new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAid), null), null,
+                        "AID: " + seAid),
                 ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
 
         /*

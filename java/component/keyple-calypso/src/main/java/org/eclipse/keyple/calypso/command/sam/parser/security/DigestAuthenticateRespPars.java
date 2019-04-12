@@ -12,14 +12,14 @@
 package org.eclipse.keyple.calypso.command.sam.parser.security;
 
 
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Digest authentication response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC
  * computation
  */
-public class DigestAuthenticateRespPars extends AbstractApduResponseParser {
+public class DigestAuthenticateRespPars extends AbstractSamResponseParser {
     /**
      * Instantiates a new DigestAuthenticateRespPars.
      *

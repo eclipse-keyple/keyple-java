@@ -13,15 +13,15 @@ package org.eclipse.keyple.calypso.command.sam.parser.security;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
-public class CardGenerateKeyRespPars extends AbstractApduResponseParser {
+public class CardGenerateKeyRespPars extends AbstractSamResponseParser {
     private static final Map<Integer, StatusProperties> STATUS_TABLE;
 
     static {
         Map<Integer, StatusProperties> m =
-                new HashMap<Integer, StatusProperties>(AbstractApduResponseParser.STATUS_TABLE);
+                new HashMap<Integer, StatusProperties>(AbstractSamResponseParser.STATUS_TABLE);
         m.put(0x6700, new StatusProperties(false, "Lc value not supported"));
         m.put(0x6985, new StatusProperties(false, "Preconditions not satisfied"));
         m.put(0x6A00, new StatusProperties(false, "Incorrect P1 or P2"));

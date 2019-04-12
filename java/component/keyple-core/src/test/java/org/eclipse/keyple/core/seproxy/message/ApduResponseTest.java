@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -132,8 +131,7 @@ public class ApduResponseTest {
     }
 
     static AnswerToReset getAAtr() {
-        return new AnswerToReset(
-                ByteArrayUtil.fromHex("3B8F8001804F0CA000000306030001000000006A"));
+        return new AnswerToReset(ByteArrayUtil.fromHex("3B8F8001804F0CA000000306030001000000006A"));
     }
 
     static ApduResponse getAFCI() {

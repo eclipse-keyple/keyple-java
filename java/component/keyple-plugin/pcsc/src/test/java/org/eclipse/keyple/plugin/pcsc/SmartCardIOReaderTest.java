@@ -111,8 +111,7 @@ public class SmartCardIOReaderTest {
             throws CardException, KeypleReaderException, KeypleReaderException {
 
         when(terminal.isCardPresent()).thenReturn(false);
-        ApduRequest apduRequestMF =
-                new ApduRequest(ByteArrayUtil.fromHex("94A40000023F02"), false);
+        ApduRequest apduRequestMF = new ApduRequest(ByteArrayUtil.fromHex("94A40000023F02"), false);
 
         // code de la requete
         byte[] aidToSelect = new byte[0];
@@ -142,8 +141,7 @@ public class SmartCardIOReaderTest {
         ApduResponse responseMockMF = new ApduResponse(
                 ByteArrayUtil.fromHex("0x851700010000001212000001030101007E7E7E0000000000009000"),
                 null);
-        ApduRequest apduRequestMF =
-                new ApduRequest(ByteArrayUtil.fromHex("94A40000023F02"), false);
+        ApduRequest apduRequestMF = new ApduRequest(ByteArrayUtil.fromHex("94A40000023F02"), false);
 
         // code de la requete
         byte[] aidToSelect = null;
@@ -176,8 +174,7 @@ public class SmartCardIOReaderTest {
         ApduResponse responseMockMF = new ApduResponse(
                 ByteArrayUtil.fromHex("0x851700010000001212000001030101007E7E7E0000000000009000"),
                 null);
-        ApduRequest apduRequestMF =
-                new ApduRequest(ByteArrayUtil.fromHex("94A40000023F02"), false);
+        ApduRequest apduRequestMF = new ApduRequest(ByteArrayUtil.fromHex("94A40000023F02"), false);
 
         // code de la requete
         byte[] aidToSelect = ByteArrayUtil.fromHex("94CA004F00");
@@ -206,8 +203,7 @@ public class SmartCardIOReaderTest {
         ApduResponse responseMockMF = new ApduResponse(
                 ByteArrayUtil.fromHex("0x851700010000001212000001030101007E7E7E0000000000009000"),
                 null);
-        ApduRequest apduRequestMF =
-                new ApduRequest(ByteArrayUtil.fromHex("94A40000023F02"), false);
+        ApduRequest apduRequestMF = new ApduRequest(ByteArrayUtil.fromHex("94A40000023F02"), false);
         // code de la requete
         byte[] aidToSelect = ByteArrayUtil.fromHex("94CA004F00");
 

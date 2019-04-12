@@ -13,7 +13,6 @@ package org.eclipse.keyple.core.seproxy.message;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**

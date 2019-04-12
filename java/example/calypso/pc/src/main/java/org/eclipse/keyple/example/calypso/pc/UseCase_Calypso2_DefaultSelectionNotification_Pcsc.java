@@ -199,8 +199,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
                         .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
 
                 /* Log the result */
-                logger.info("Environment file data: {}",
-                        ByteArrayUtil.toHex(environmentAndHolder));
+                logger.info("Environment file data: {}", ByteArrayUtil.toHex(environmentAndHolder));
 
                 /* Go on with the reading of the first record of the EventLog file */
                 logger.info(

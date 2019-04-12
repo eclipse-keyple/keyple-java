@@ -14,7 +14,6 @@ package org.eclipse.keyple.core.seproxy.message;
 import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,8 +52,9 @@ public class SeResponseSetTest {
 
     @Test
     public void toStringTest() throws Exception {
-        SeResponse emptySeR = new SeResponse(true, true, new SelectionStatus(
-                new AnswerToReset(ByteArrayUtil.fromHex("3BFF00")), null, true), null);
+        SeResponse emptySeR = new SeResponse(true, true,
+                new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex("3BFF00")), null, true),
+                null);
         SeResponseSet set = new SeResponseSet(emptySeR);
         assertNotNull(set.toString());
     }

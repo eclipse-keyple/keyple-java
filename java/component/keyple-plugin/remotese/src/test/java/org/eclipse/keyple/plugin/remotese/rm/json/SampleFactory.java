@@ -130,8 +130,7 @@ public class SampleFactory {
     public static SeResponseSet getCompleteResponseSet() {
         List<SeResponse> seResponses = new ArrayList<SeResponse>();
 
-        ApduResponse apdu =
-                new ApduResponse(ByteArrayUtil.fromHex("9000"), new HashSet<Integer>());
+        ApduResponse apdu = new ApduResponse(ByteArrayUtil.fromHex("9000"), new HashSet<Integer>());
         ApduResponse apdu2 =
                 new ApduResponse(ByteArrayUtil.fromHex("9000"), new HashSet<Integer>());
 
