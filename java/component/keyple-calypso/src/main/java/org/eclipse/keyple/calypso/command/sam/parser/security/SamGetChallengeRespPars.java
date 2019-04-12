@@ -13,8 +13,8 @@ package org.eclipse.keyple.calypso.command.sam.parser.security;
 
 
 
-import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * SAM get challenge. See specs: Calypso / Page 108 / 9.5.4 - Get challenge

@@ -13,9 +13,9 @@ package org.eclipse.keyple.plugin.stub;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
-import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.core.util.ByteArrayUtils;
 
 public abstract class StubSecureElement {
 

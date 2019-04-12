@@ -12,8 +12,8 @@
 package org.eclipse.keyple.example.generic.pc.stub.se;
 
 
+import org.eclipse.keyple.core.util.ByteArrayUtils;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
-import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
  * Simple contactless stub SE (no command)

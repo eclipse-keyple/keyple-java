@@ -15,7 +15,7 @@ package org.eclipse.keyple.calypso.util;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.OpenSession24RespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.OpenSession32RespPars;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.remotese.transport.json;
 
 
 
-import org.eclipse.keyple.seproxy.protocol.SeProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

@@ -12,8 +12,8 @@
 package org.eclipse.keyple.calypso.util;
 
 import java.io.ByteArrayOutputStream;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.util.ByteArrayUtils;
 
 /**
  * @author f.razakarivony

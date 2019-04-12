@@ -15,13 +15,13 @@ package org.eclipse.keyple.example.generic.common;
 
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.event.DefaultSelectionRequest;
-import org.eclipse.keyple.seproxy.event.SelectionResponse;
-import org.eclipse.keyple.seproxy.message.ApduRequest;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.transaction.*;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.seproxy.*;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
+import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
+import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.transaction.*;
+import org.eclipse.keyple.core.util.ByteArrayUtils;
 
 /**
  * This code demonstrates the multi-protocols capability of the Keyple SeProxy

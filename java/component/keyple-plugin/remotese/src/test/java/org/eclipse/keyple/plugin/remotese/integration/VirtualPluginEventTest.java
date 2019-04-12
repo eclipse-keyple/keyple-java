@@ -14,10 +14,10 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.util.Observable;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
-import org.eclipse.keyple.seproxy.event.PluginEvent;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.util.Observable;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

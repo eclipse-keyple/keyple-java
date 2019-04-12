@@ -33,10 +33,10 @@ Keyple features global for any Secure Element solution:
 | -------------------------------------------- |-------------|
 | Selections of Secure Elements (high level API) | org.eclipse.keyple.**transaction** |
 | Management of SE readers | org.eclipse.keyple.**seproxy** |
-| Notifications of reader plug/unplug, of SE insertion/remove<ul><li>definition of automatic selection request in case of SE insertion on an Observable Reader.</li></ul> | org.eclipse.keyple.seproxy.**event** |
-| Communication protocols filters (setting for contactless/contacts SE Reader) | org.eclipse.keyple.seproxy.**protocol** |
-| Reader plugins implementation support <ul><li>Utility classes providing generic processing for SE Reader Plugins</li></ul> | org.eclipse.keyple.seproxy.**plugin** |
-| Transmition of grouped APDU commands to a SE Reader (low level API) | org.eclipse.keyple.seproxy.**message** |
+| Notifications of reader plug/unplug, of SE insertion/remove<ul><li>definition of automatic selection request in case of SE insertion on an Observable Reader.</li></ul> | org.eclipse.keyple.core.seproxy.**event** |
+| Communication protocols filters (setting for contactless/contacts SE Reader) | org.eclipse.keyple.core.seproxy.**protocol** |
+| Reader plugins implementation support <ul><li>Utility classes providing generic processing for SE Reader Plugins</li></ul> | org.eclipse.keyple.core.seproxy.**plugin** |
+| Transmition of grouped APDU commands to a SE Reader (low level API) | org.eclipse.keyple.core.seproxy.**message** |
 | SE specific library implementation support <ul><li>generic API to build a SE specific commands library</li></ul> | org.eclipse.keyple.**command** |
 
 Keyple features defined to support the Calypso solution:

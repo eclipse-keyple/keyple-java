@@ -15,10 +15,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
-import org.eclipse.keyple.seproxy.plugin.AbstractStaticPlugin;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractStaticPlugin;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.SEService;
 import android.util.Log;
@@ -114,7 +114,7 @@ public final class AndroidOmapiPlugin extends AbstractStaticPlugin implements SE
 
     /**
      * Fetch connected native reader (from third party library) by its name Returns the current
-     * {@link org.eclipse.keyple.seproxy.plugin.AbstractObservableReader} if it is already listed.
+     * {@link org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader} if it is already listed.
      *
      * @return the list of AbstractObservableReader objects.
      * @throws KeypleReaderNotFoundException if reader is not found

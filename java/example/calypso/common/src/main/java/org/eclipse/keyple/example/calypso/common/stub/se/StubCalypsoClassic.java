@@ -12,8 +12,8 @@
 package org.eclipse.keyple.example.calypso.common.stub.se;
 
 
+import org.eclipse.keyple.core.util.ByteArrayUtils;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
-import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
  * This class is an example of a Stub Implementation of SecureElement. It works with the protocol

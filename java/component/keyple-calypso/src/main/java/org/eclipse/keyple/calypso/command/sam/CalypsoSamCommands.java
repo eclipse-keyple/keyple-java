@@ -15,9 +15,9 @@ import org.eclipse.keyple.calypso.command.sam.builder.security.*;
 import org.eclipse.keyple.calypso.command.sam.builder.security.SelectDiversifierCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.parser.security.*;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SelectDiversifierRespPars;
-import org.eclipse.keyple.command.AbstractApduCommandBuilder;
-import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.command.CommandsTable;
+import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.command.CommandsTable;
 
 public enum CalypsoSamCommands implements CommandsTable {
 

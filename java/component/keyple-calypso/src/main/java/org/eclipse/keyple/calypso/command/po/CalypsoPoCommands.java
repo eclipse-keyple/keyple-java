@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.po;
 
-import org.eclipse.keyple.command.CommandsTable;
+import org.eclipse.keyple.core.command.CommandsTable;
 
 public enum CalypsoPoCommands implements CommandsTable {
 

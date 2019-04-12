@@ -13,8 +13,8 @@ package org.eclipse.keyple.integration.calypso;
 
 
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.transaction.MatchingSe;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.transaction.MatchingSe;
+import org.eclipse.keyple.core.util.ByteArrayUtils;
 
 @SuppressWarnings("PMD.VariableNamingConventions")
 public class PoFileStructureInfo {
