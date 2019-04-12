@@ -14,7 +14,7 @@ package org.eclipse.keyple.core.seproxy.event;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.util.Observable;
+import org.eclipse.keyple.core.seproxy.util.Observable;
 
 public interface ObservableReader extends SeReader {
     interface ReaderObserver extends Observable.Observer<ReaderEvent> {

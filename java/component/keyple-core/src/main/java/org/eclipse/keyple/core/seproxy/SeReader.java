@@ -15,8 +15,8 @@ package org.eclipse.keyple.core.seproxy;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.core.util.Configurable;
-import org.eclipse.keyple.core.util.Nameable;
+import org.eclipse.keyple.core.seproxy.util.Configurable;
+import org.eclipse.keyple.core.seproxy.util.Nameable;
 
 
 /**

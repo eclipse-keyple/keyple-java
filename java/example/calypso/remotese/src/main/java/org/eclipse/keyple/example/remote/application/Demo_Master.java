@@ -28,11 +28,11 @@ import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.util.Observable;
 import org.eclipse.keyple.core.transaction.MatchingSe;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
 import org.eclipse.keyple.core.util.ByteArrayUtils;
-import org.eclipse.keyple.core.util.Observable;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * delegates control of one of its native reader to the Master. In response a {@link VirtualReader}
  * is created and accessible via {@link RemoteSePlugin} like any local reader
  */
-public class Demo_Master implements org.eclipse.keyple.core.util.Observable.Observer {
+public class Demo_Master implements Observable.Observer {
 
     private static final Logger logger = LoggerFactory.getLogger(Demo_Master.class);
     private SeSelection seSelection;

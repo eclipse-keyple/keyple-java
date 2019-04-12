@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.util;
 
+import org.eclipse.keyple.core.seproxy.util.Observable;
 import org.junit.Assert;
 import org.junit.Test;
 

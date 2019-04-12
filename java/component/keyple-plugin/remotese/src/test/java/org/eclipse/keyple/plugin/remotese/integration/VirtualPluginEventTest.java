@@ -16,7 +16,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.util.Observable;
+import org.eclipse.keyple.core.seproxy.util.Observable;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
 import org.junit.After;
 import org.junit.Assert;
