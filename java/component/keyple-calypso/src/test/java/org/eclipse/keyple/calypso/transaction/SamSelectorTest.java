@@ -13,7 +13,6 @@ package org.eclipse.keyple.calypso.transaction;
 
 import static org.junit.Assert.*;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.calypso.transaction.sam.SamSelector;
 import org.junit.Test;
 
 public class SamSelectorTest {

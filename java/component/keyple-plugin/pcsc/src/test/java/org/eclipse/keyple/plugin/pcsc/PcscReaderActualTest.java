@@ -11,10 +11,10 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.pcsc;
 
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
-import org.eclipse.keyple.util.Observable;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
+import org.eclipse.keyple.core.seproxy.util.Observable;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;

@@ -16,19 +16,19 @@ package org.eclipse.keyple.integration.example.pc.calypso;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.core.seproxy.protocol.Protocol;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.transaction.*;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeReader;
-import org.eclipse.keyple.seproxy.SeSelector;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.seproxy.protocol.Protocol;
-import org.eclipse.keyple.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.transaction.*;
-import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,7 +112,7 @@ public class Demo_WriteName {
                             .prepareSelection(
                                     new PoSelectionRequest(
                                             new SeSelector(new SeSelector.AidSelector(
-                                                    ByteArrayUtils.fromHex(
+                                                    ByteArrayUtil.fromHex(
                                                             PoFileStructureInfo.poAuditC0Aid),
                                                     null), null, "Audit C0"),
                                             ChannelState.KEEP_OPEN, Protocol.ANY));
@@ -124,7 +124,7 @@ public class Demo_WriteName {
                                     new PoSelectionRequest(
                                             new SeSelector(
                                                     new SeSelector.AidSelector(
-                                                            ByteArrayUtils.fromHex(
+                                                            ByteArrayUtil.fromHex(
                                                                     PoFileStructureInfo.clapAid),
                                                             null),
                                                     null, "CLAP"),
@@ -135,7 +135,7 @@ public class Demo_WriteName {
                     seSelection
                             .prepareSelection(new PoSelectionRequest(
                                     new SeSelector(
-                                            new SeSelector.AidSelector(ByteArrayUtils
+                                            new SeSelector.AidSelector(ByteArrayUtil
                                                     .fromHex(PoFileStructureInfo.cdLightAid), null),
                                             null, "CDLight"),
                                     ChannelState.KEEP_OPEN, Protocol.ANY));

@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.exception;
 
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 
 public class KeypleRemoteReaderException extends KeypleReaderException {
 

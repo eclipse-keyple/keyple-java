@@ -12,17 +12,17 @@
 package org.eclipse.keyple.example.generic.pc;
 
 import java.io.IOException;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.transaction.*;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeReader;
-import org.eclipse.keyple.seproxy.SeSelector;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.transaction.*;
-import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +42,8 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
             logger.info("The SE matched the selection {}.", index);
 
             logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index,
-                    ByteArrayUtils.toHex(matchingSe.getSelectionStatus().getAtr().getBytes()),
-                    ByteArrayUtils.toHex(matchingSe.getSelectionStatus().getFci().getDataOut()));
+                    ByteArrayUtil.toHex(matchingSe.getSelectionStatus().getAtr().getBytes()),
+                    ByteArrayUtil.toHex(matchingSe.getSelectionStatus().getFci().getDataOut()));
         } else {
             logger.info("The selection did not match for case {}.", index);
         }
@@ -92,7 +92,7 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
             /* AID based selection */
             seSelection.prepareSelection(new SeSelectionRequest(
                     new SeSelector(
-                            new SeSelector.AidSelector(ByteArrayUtils.fromHex(seAidPrefix), null,
+                            new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.FIRST,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
                             null, "Initial selection #1"),
@@ -105,7 +105,7 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
             /* next selection */
             seSelection.prepareSelection(new SeSelectionRequest(
                     new SeSelector(
-                            new SeSelector.AidSelector(ByteArrayUtils.fromHex(seAidPrefix), null,
+                            new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
                             null, "Next selection #2"),
@@ -118,7 +118,7 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
             /* next selection */
             seSelection.prepareSelection(new SeSelectionRequest(
                     new SeSelector(
-                            new SeSelector.AidSelector(ByteArrayUtils.fromHex(seAidPrefix), null,
+                            new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
                             null, "Next selection #3"),

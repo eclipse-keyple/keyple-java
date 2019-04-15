@@ -11,9 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import org.eclipse.keyple.calypso.transaction.sam.CalypsoSam;
-import org.eclipse.keyple.seproxy.SeReader;
-import org.eclipse.keyple.transaction.SeResource;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.transaction.SeResource;
 
 public class SamResource extends SeResource<CalypsoSam> {
     /**

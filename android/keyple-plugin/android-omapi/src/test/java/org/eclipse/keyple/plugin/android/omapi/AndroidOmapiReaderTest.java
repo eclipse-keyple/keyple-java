@@ -22,19 +22,19 @@ import java.util.NoSuchElementException;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.SeSelector;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.seproxy.message.ApduRequest;
-import org.eclipse.keyple.seproxy.message.ProxyReader;
-import org.eclipse.keyple.seproxy.message.SeRequest;
-import org.eclipse.keyple.seproxy.message.SeRequestSet;
-import org.eclipse.keyple.seproxy.message.SeResponseSet;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.core.seproxy.message.SeRequest;
+import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
+import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
+import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.ContactsProtocols;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -149,7 +149,7 @@ public class AndroidOmapiReaderTest {
 
         // wrong protocol
         SeRequest seRequest = new SeRequest(new SeSelector(
-                new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid),null), null,null), poApduRequestList,
+                new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid),null), null,null), poApduRequestList,
                 ChannelState.CLOSE_AFTER, ContactlessProtocols.PROTOCOL_MIFARE_UL);
 
         // test
@@ -191,13 +191,13 @@ public class AndroidOmapiReaderTest {
 
         when(omapiReader.getName()).thenReturn("SIM1");
         when(omapiReader.isSecureElementPresent()).thenReturn(true);
-        when(session.openLogicalChannel(ByteArrayUtils.fromHex(poAid))).thenReturn(channel);
+        when(session.openLogicalChannel(ByteArrayUtil.fromHex(poAid))).thenReturn(channel);
         when(omapiReader.openSession()).thenReturn(session);
         when(session.getATR()).thenReturn(null);
-        when(channel.getSelectResponse()).thenReturn(ByteArrayUtils.fromHex(poAidResponse));
+        when(channel.getSelectResponse()).thenReturn(ByteArrayUtil.fromHex(poAidResponse));
         when(channel.getSession()).thenReturn(session);
 
-        when(channel.transmit(ByteArrayUtils.fromHex("00B201A420"))).thenReturn(ByteArrayUtils
+        when(channel.transmit(ByteArrayUtil.fromHex("00B201A420"))).thenReturn(ByteArrayUtil
                 .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
 
         return omapiReader;
@@ -213,7 +213,7 @@ public class AndroidOmapiReaderTest {
         when(omapiReader.getName()).thenReturn("SIM1");
         when(omapiReader.isSecureElementPresent()).thenReturn(true);
         when(omapiReader.openSession()).thenReturn(session);
-        when(session.openLogicalChannel(ByteArrayUtils.fromHex(poAid)))
+        when(session.openLogicalChannel(ByteArrayUtil.fromHex(poAid)))
                 .thenThrow(new NoSuchElementException(""));
 
         return omapiReader;
@@ -231,7 +231,7 @@ public class AndroidOmapiReaderTest {
         poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
         SeRequest seRequest = new SeRequest(new SeSelector(
-                new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null), null, null), poApduRequestList,
+                new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null, null), poApduRequestList,
                 ChannelState.CLOSE_AFTER, ContactsProtocols.PROTOCOL_ISO7816_3);
 
         return new SeRequestSet(seRequest);

@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
-import org.eclipse.keyple.seproxy.plugin.AbstractStaticPlugin;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractStaticPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

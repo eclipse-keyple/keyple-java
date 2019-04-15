@@ -12,8 +12,8 @@
 package org.eclipse.keyple.calypso.util;
 
 import java.io.ByteArrayOutputStream;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
  * @author f.razakarivony
@@ -44,7 +44,7 @@ public class TestsUtilsResponseTabByteGenerator {
     }
 
     private static byte[] generateResponseOkTabByteRev2_4() {
-        return ByteArrayUtils.fromHex(
+        return ByteArrayUtil.fromHex(
                 "CC 11223344 00112233445566778899AABBCCDDEEFF 00112233445566778899AABBCC 9000");
     }
 

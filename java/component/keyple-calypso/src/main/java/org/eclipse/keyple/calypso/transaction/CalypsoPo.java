@@ -16,9 +16,9 @@ package org.eclipse.keyple.calypso.transaction;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.seproxy.message.SeResponse;
-import org.eclipse.keyple.transaction.MatchingSe;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.transaction.MatchingSe;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +105,7 @@ public final class CalypsoPo extends MatchingSe {
             /* basic check: we expect to be here following a selection based on the ATR */
             if (poAtr.length != PO_REV1_ATR_LENGTH) {
                 throw new IllegalStateException(
-                        "Unexpected ATR length: " + ByteArrayUtils.toHex(poAtr));
+                        "Unexpected ATR length: " + ByteArrayUtil.toHex(poAtr));
             }
 
             this.revision = PoRevision.REV1_0;
@@ -122,8 +122,8 @@ public final class CalypsoPo extends MatchingSe {
         }
         if (logger.isTraceEnabled()) {
             logger.trace("REVISION = {}, SERIALNUMBER = {}, DFNAME = {}", this.revision,
-                    ByteArrayUtils.toHex(this.applicationSerialNumber),
-                    ByteArrayUtils.toHex(this.dfName));
+                    ByteArrayUtil.toHex(this.applicationSerialNumber),
+                    ByteArrayUtil.toHex(this.dfName));
         }
     }
 

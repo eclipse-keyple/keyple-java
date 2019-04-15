@@ -20,22 +20,22 @@ import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.ReaderPlugin;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeReader;
-import org.eclipse.keyple.seproxy.SeSelector;
-import org.eclipse.keyple.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.message.ApduRequest;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
-import org.eclipse.keyple.seproxy.message.ProxyReader;
-import org.eclipse.keyple.seproxy.message.SeRequest;
-import org.eclipse.keyple.seproxy.message.SeRequestSet;
-import org.eclipse.keyple.seproxy.message.SeResponse;
-import org.eclipse.keyple.seproxy.message.SeResponseSet;
-import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.core.seproxy.message.SeRequest;
+import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
+import org.eclipse.keyple.core.seproxy.protocol.ContactsProtocols;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -160,7 +160,7 @@ public class OMAPITestFragment extends Fragment {
 
                     UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill = new UpdateRecordCmdBuild(
                             PoClass.ISO, (byte) 0x1A, (byte) 0x01,
-                            ByteArrayUtils.fromHex(t2UsageRecord1_dataFill), "Hoplink EF T2Usage");
+                            ByteArrayUtil.fromHex(t2UsageRecord1_dataFill), "Hoplink EF T2Usage");
 
 
                     Boolean keepChannelOpen = false;
@@ -188,7 +188,7 @@ public class OMAPITestFragment extends Fragment {
 
 
                     SeRequest seRequest =
-                            new SeRequest(new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null), null, "AID = " + poAid),
+                            new SeRequest(new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null, "AID = " + poAid),
                                     poApduRequestList, ChannelState.CLOSE_AFTER,
                                     ContactsProtocols.PROTOCOL_ISO7816_3);
 
@@ -207,7 +207,7 @@ public class OMAPITestFragment extends Fragment {
                         if (response != null) {
                             for (ApduResponse apdu : response.getApduResponses()) {
                                 mText.append("Response : " + apdu.getStatusCode() + " - "
-                                        + ByteArrayUtils.toHex(apdu.getBytes()));
+                                        + ByteArrayUtil.toHex(apdu.getBytes()));
                                 mText.append("\n");
                             }
                             mText.append("\n\n\n\n\n");

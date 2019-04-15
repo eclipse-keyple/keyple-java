@@ -14,7 +14,7 @@ package org.eclipse.keyple.calypso.command.sam.builder;
 import static org.junit.Assert.assertArrayEquals;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.builder.security.DigestInitCmdBuild;
-import org.eclipse.keyple.command.AbstractApduCommandBuilder;
+import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;

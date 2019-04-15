@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.generic.common;
 
-import org.eclipse.keyple.seproxy.protocol.SeProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
  * Custom protocol definitions to illustrate the extension of the Keyple SDK definitions
