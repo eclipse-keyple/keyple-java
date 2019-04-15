@@ -28,7 +28,7 @@ import org.eclipse.keyple.core.seproxy.plugin.AbstractStaticReader;
 import org.eclipse.keyple.core.seproxy.protocol.ContactsProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.simalliance.openmobileapi.Channel;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.Session;
@@ -134,7 +134,7 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
 
             if (logger.isTraceEnabled()) {
                 logger.trace("[{}] openLogicalChannel => ATR: {}", this.getName(),
-                        ByteArrayUtils.toHex(atr));
+                        ByteArrayUtil.toHex(atr));
             }
             if (!seSelector.getAtrFilter().atrMatches(atr)) {
                 logger.trace("[{}] openLogicalChannel => ATR didn't match. SELECTOR = {}",
@@ -167,7 +167,7 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
             }
             if (logger.isTraceEnabled()) {
                 logger.trace("[{}] openLogicalChannel => Select Application with AID = {}",
-                        this.getName(), ByteArrayUtils.toHex(aid));
+                        this.getName(), ByteArrayUtil.toHex(aid));
             }
             try {
                 openChannel = session.openLogicalChannel(aid);
@@ -176,9 +176,9 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
                 throw new KeypleIOReaderException("IOException while opening logical channel.");
             } catch (NoSuchElementException e) {
                 throw new KeypleApplicationSelectionException(
-                        "Error while selecting application : " + ByteArrayUtils.toHex(aid), e);
+                        "Error while selecting application : " + ByteArrayUtil.toHex(aid), e);
             } catch (SecurityException e) {
-                throw new KeypleChannelStateException("Error while opening logical channel, aid :" + ByteArrayUtils.toHex(aid), e.getCause());
+                throw new KeypleChannelStateException("Error while opening logical channel, aid :" + ByteArrayUtil.toHex(aid), e.getCause());
             }
 
             if (openChannel == null) {
@@ -255,7 +255,7 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         // Initialization
         Log.d(TAG, "Data Length to be sent to tag : " + apduIn.length);
-        Log.d(TAG, "Data in : " + ByteArrayUtils.toHex(apduIn));
+        Log.d(TAG, "Data in : " + ByteArrayUtil.toHex(apduIn));
         byte[] data = apduIn;
         byte[] dataOut = new byte[0];
         try {
@@ -265,7 +265,7 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
             throw new KeypleIOReaderException("Error while transmitting APDU", e);
         }
         byte[] out = dataOut;
-        Log.d(TAG, "Data out : " + ByteArrayUtils.toHex(out));
+        Log.d(TAG, "Data out : " + ByteArrayUtil.toHex(out));
         return out;
     }
 

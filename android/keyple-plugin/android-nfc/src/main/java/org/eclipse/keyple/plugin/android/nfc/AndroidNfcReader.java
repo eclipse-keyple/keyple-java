@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.Protocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.core.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import android.app.Activity;
@@ -236,7 +236,7 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
     @Override
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         // Initialization
-        LOG.debug("Send " + apduIn.length + " bytes to tag : " + ByteArrayUtils.toHex(apduIn));
+        LOG.debug("Send " + apduIn.length + " bytes to tag : " + ByteArrayUtil.toHex(apduIn));
         byte[] dataOut = null;
         try {
             dataOut = tagProxy.transceive(apduIn);
@@ -247,7 +247,7 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
         } catch (IOException e) {
             throw new KeypleIOReaderException("Error while transmitting APDU", e);
         }
-        LOG.debug("Data out : " + ByteArrayUtils.toHex(dataOut));
+        LOG.debug("Data out : " + ByteArrayUtil.toHex(dataOut));
         return dataOut;
     }
 
