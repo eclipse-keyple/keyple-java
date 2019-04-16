@@ -15,12 +15,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
-import org.eclipse.keyple.seproxy.exception.*;
-import org.eclipse.keyple.seproxy.plugin.AbstractThreadedLocalReader;
-import org.eclipse.keyple.seproxy.protocol.Protocol;
-import org.eclipse.keyple.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.seproxy.exception.*;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedLocalReader;
+import org.eclipse.keyple.core.seproxy.protocol.Protocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -196,7 +196,7 @@ public final class PcscReader extends AbstractThreadedLocalReader {
                 throw new KeypleReaderException("Target selector mask not found!", null);
             }
             Pattern p = Pattern.compile(selectionMask);
-            String atr = ByteArrayUtils.toHex(card.getATR().getBytes());
+            String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
             if (!p.matcher(atr).matches()) {
                 if (logging) {
                     logger.trace("[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}",

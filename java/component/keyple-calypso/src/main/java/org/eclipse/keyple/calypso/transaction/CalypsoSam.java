@@ -15,9 +15,9 @@ import static org.eclipse.keyple.calypso.command.sam.SamRevision.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.seproxy.message.SeResponse;
-import org.eclipse.keyple.transaction.MatchingSe;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.transaction.MatchingSe;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public class CalypsoSam extends MatchingSe {
         super(selectionResponse, extraInfo);
 
         String atrString =
-                ByteArrayUtils.toHex(selectionResponse.getSelectionStatus().getAtr().getBytes());
+                ByteArrayUtil.toHex(selectionResponse.getSelectionStatus().getAtr().getBytes());
         if (atrString.isEmpty()) {
             throw new IllegalStateException("ATR should not be empty.");
         }
@@ -52,7 +52,7 @@ public class CalypsoSam extends MatchingSe {
         Pattern pattern = Pattern.compile(extractRegex);
         Matcher matcher = pattern.matcher(atrString);
         if (matcher.find(0)) {
-            byte[] atrSubElements = ByteArrayUtils.fromHex(matcher.group(2));
+            byte[] atrSubElements = ByteArrayUtil.fromHex(matcher.group(2));
             platform = atrSubElements[0];
             applicationType = atrSubElements[1];
             applicationSubType = atrSubElements[2];
@@ -86,7 +86,7 @@ public class CalypsoSam extends MatchingSe {
                                 + "%02X, SWREVISION = %02X",
                         samRevision.getName(), platform, applicationType, applicationSubType,
                         softwareIssuer, softwareVersion, softwareRevision));
-                logger.trace("SAM SERIALNUMBER = {}", ByteArrayUtils.toHex(serialNumber));
+                logger.trace("SAM SERIALNUMBER = {}", ByteArrayUtil.toHex(serialNumber));
             }
         } else {
             throw new IllegalStateException("Unrecognized ATR structure: " + atrString);

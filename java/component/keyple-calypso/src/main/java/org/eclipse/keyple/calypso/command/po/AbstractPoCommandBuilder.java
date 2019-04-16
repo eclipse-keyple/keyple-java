@@ -11,10 +11,10 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.po;
 
-import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.command.AbstractIso7816CommandBuilder;
-import org.eclipse.keyple.seproxy.message.ApduRequest;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.command.AbstractIso7816CommandBuilder;
+import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Abstract class for all PO command builders.

@@ -11,9 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.pcsc;
 
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSettingList;
+import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSettingList;
 
 /**
  * These objects are used by the application to build the SeProtocolsMap

@@ -14,11 +14,11 @@ package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
-import org.eclipse.keyple.seproxy.message.AnswerToReset;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
-import org.eclipse.keyple.seproxy.message.SeResponse;
-import org.eclipse.keyple.seproxy.message.SelectionStatus;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,10 +33,10 @@ public class CalypsoPoTest {
 
     /* Building FCI data with the application byte as a variant and initialize PO */
     public static CalypsoPo getPoApplicationByte(byte applicationByte) {
-        AnswerToReset atr = new AnswerToReset(ByteArrayUtils.fromHex(ATR_VALUE));
+        AnswerToReset atr = new AnswerToReset(ByteArrayUtil.fromHex(ATR_VALUE));
         ApduResponse fciData =
                 new ApduResponse(
-                        ByteArrayUtils
+                        ByteArrayUtil
                                 .fromHex(String.format(
                                         "6F 22 84 08 " + DF_NAME + "A5 16 BF0C 13 C7 08 "
                                                 + SERIAL_NUMBER + "53 07 060A %02X 02200311 9000",
@@ -72,19 +72,19 @@ public class CalypsoPoTest {
 
     @Test
     public void getDfName() {
-        Assert.assertArrayEquals(ByteArrayUtils.fromHex(DF_NAME),
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(DF_NAME),
                 getPoApplicationByte((byte) 0x01).getDfName());
     }
 
     @Test
     public void getApplicationSerialNumber() {
-        Assert.assertArrayEquals(ByteArrayUtils.fromHex(SERIAL_NUMBER),
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(SERIAL_NUMBER),
                 getPoApplicationByte((byte) 0x01).getApplicationSerialNumber());
     }
 
     @Test
     public void getAtr() {
-        Assert.assertArrayEquals(ByteArrayUtils.fromHex(ATR_VALUE),
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(ATR_VALUE),
                 getPoApplicationByte((byte) 0x01).getAtr());
     }
 
@@ -114,7 +114,7 @@ public class CalypsoPoTest {
 
     @Test(expected = IllegalStateException.class)
     public void testRev1_1() {
-        AnswerToReset atr = new AnswerToReset(ByteArrayUtils.fromHex(ATR_VALUE_2));
+        AnswerToReset atr = new AnswerToReset(ByteArrayUtil.fromHex(ATR_VALUE_2));
         ApduResponse fciData = new ApduResponse(null, null);
         SeResponse selectionData =
                 new SeResponse(true, false, new SelectionStatus(atr, fciData, true), null);
@@ -123,7 +123,7 @@ public class CalypsoPoTest {
 
     @Test
     public void testRev1_2() {
-        AnswerToReset atr = new AnswerToReset(ByteArrayUtils.fromHex(ATR_VALUE));
+        AnswerToReset atr = new AnswerToReset(ByteArrayUtil.fromHex(ATR_VALUE));
         ApduResponse fciData = new ApduResponse(null, null);
         SeResponse selectionData =
                 new SeResponse(true, false, new SelectionStatus(atr, fciData, true), null);
@@ -131,7 +131,7 @@ public class CalypsoPoTest {
 
         Assert.assertEquals(PoRevision.REV1_0, calypsoPo.getRevision());
         Assert.assertNull(calypsoPo.getDfName());
-        Assert.assertArrayEquals(ByteArrayUtils.fromHex(SERIAL_NUMBER),
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(SERIAL_NUMBER),
                 calypsoPo.getApplicationSerialNumber());
         Assert.assertFalse(calypsoPo.isModificationsCounterInBytes());
         Assert.assertEquals(3, calypsoPo.getModificationsCounter());

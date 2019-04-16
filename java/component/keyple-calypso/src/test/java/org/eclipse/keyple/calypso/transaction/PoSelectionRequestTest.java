@@ -17,10 +17,10 @@ import org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.message.*;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,13 +38,13 @@ public class PoSelectionRequestTest {
     private final static String FILE_FCI_2 = "851704040210011F1000000001000000000000000000003F04";
     private final static String FILE_FCI_3 = "85170804041D031F1010100003030300000000000000002010";
     private final ApduResponse READ_REC_APDU_RESPONSE =
-            new ApduResponse(ByteArrayUtils.fromHex(RECORD_CONTENT + "9000"), null);
+            new ApduResponse(ByteArrayUtil.fromHex(RECORD_CONTENT + "9000"), null);
     private final ApduResponse SELECT_FILE_APDU_RESPONSE_1 =
-            new ApduResponse(ByteArrayUtils.fromHex(FILE_FCI_1 + "9000"), null);
+            new ApduResponse(ByteArrayUtil.fromHex(FILE_FCI_1 + "9000"), null);
     private final ApduResponse SELECT_FILE_APDU_RESPONSE_2 =
-            new ApduResponse(ByteArrayUtils.fromHex(FILE_FCI_2 + "9000"), null);
+            new ApduResponse(ByteArrayUtil.fromHex(FILE_FCI_2 + "9000"), null);
     private final ApduResponse SELECT_FILE_APDU_RESPONSE_3 =
-            new ApduResponse(ByteArrayUtils.fromHex(FILE_FCI_3 + "9000"), null);
+            new ApduResponse(ByteArrayUtil.fromHex(FILE_FCI_3 + "9000"), null);
     private PoSelectionRequest poSelectionRequest;
 
     @Before
@@ -56,12 +56,12 @@ public class PoSelectionRequestTest {
 
     @Test
     public void parse() {
-        AnswerToReset atr = new AnswerToReset(ByteArrayUtils.fromHex(ATR_VALUE));
-        ApduResponse fciData = new ApduResponse(ByteArrayUtils.fromHex("6F 22 84 08 " + DF_NAME
+        AnswerToReset atr = new AnswerToReset(ByteArrayUtil.fromHex(ATR_VALUE));
+        ApduResponse fciData = new ApduResponse(ByteArrayUtil.fromHex("6F 22 84 08 " + DF_NAME
                 + "A5 16 BF0C 13 C7 08 " + SERIAL_NUMBER + "53 07 060A 27 02200311 9000"), null);
         CalypsoPo calypsoPo = poSelectionRequest
                 .parse(new SeResponse(true, false, new SelectionStatus(atr, fciData, true), null));
-        Assert.assertArrayEquals(ByteArrayUtils.fromHex(SERIAL_NUMBER),
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(SERIAL_NUMBER),
                 calypsoPo.getApplicationSerialNumber());
     }
 
@@ -87,7 +87,7 @@ public class PoSelectionRequestTest {
                 (ReadRecordsRespPars) poSelectionRequest.getCommandParser(
                         new SeResponse(true, true, null, apduResponseList), readParserIndex2);
 
-        Assert.assertArrayEquals(ByteArrayUtils.fromHex(RECORD_CONTENT),
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(RECORD_CONTENT),
                 readRecordsRespPars1.getRecords().get(1));
         Assert.assertEquals((Integer) 0x001122,
                 (Integer) readRecordsRespPars2.getCounters().get(1));
@@ -113,7 +113,7 @@ public class PoSelectionRequestTest {
                 (ReadRecordsRespPars) poSelectionRequest.getCommandParser(
                         new SeResponse(true, true, null, apduResponseList), readParserIndex1);
 
-        Assert.assertArrayEquals(ByteArrayUtils.fromHex(RECORD_CONTENT),
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(RECORD_CONTENT),
                 readRecordsRespPars1.getRecords().get(1));
     }
 
@@ -130,7 +130,7 @@ public class PoSelectionRequestTest {
                 (ReadRecordsRespPars) poSelectionRequest.getCommandParser(
                         new SeResponse(true, true, null, apduResponseList), readParserIndex1);
 
-        Assert.assertArrayEquals(ByteArrayUtils.fromHex(RECORD_CONTENT),
+        Assert.assertArrayEquals(ByteArrayUtil.fromHex(RECORD_CONTENT),
                 readRecordsRespPars1.getRecords().get(1));
     }
 
@@ -198,8 +198,8 @@ public class PoSelectionRequestTest {
 
     @Test
     public void prepareSelectFileCmd2() {
-        int selectIndex1 = poSelectionRequest
-                .prepareSelectFileCmd(ByteArrayUtils.fromHex(FILE_PATH), "Path 3F00");
+        int selectIndex1 = poSelectionRequest.prepareSelectFileCmd(ByteArrayUtil.fromHex(FILE_PATH),
+                "Path 3F00");
 
         Assert.assertEquals(selectIndex1, 0);
 
@@ -213,7 +213,7 @@ public class PoSelectionRequestTest {
 
     @Test
     public void preparePoCustomReadCmd() {
-        ApduRequest apduRequest = new ApduRequest(ByteArrayUtils.fromHex("FFCA000000"), false);
+        ApduRequest apduRequest = new ApduRequest(ByteArrayUtil.fromHex("FFCA000000"), false);
         int readParserIndex1 =
                 poSelectionRequest.preparePoCustomReadCmd("Custom command read", apduRequest);
         Assert.assertEquals(0, readParserIndex1);
@@ -221,7 +221,7 @@ public class PoSelectionRequestTest {
 
     @Test
     public void preparePoCustomModificationCmd() {
-        ApduRequest apduRequest = new ApduRequest(ByteArrayUtils.fromHex("FFCA000000"), false);
+        ApduRequest apduRequest = new ApduRequest(ByteArrayUtil.fromHex("FFCA000000"), false);
         int modifyParserIndex1 = poSelectionRequest
                 .preparePoCustomModificationCmd("Custom command modify", apduRequest);
         Assert.assertEquals(0, modifyParserIndex1);

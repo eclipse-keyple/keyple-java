@@ -24,26 +24,26 @@ import org.eclipse.keyple.calypso.command.sam.builder.security.SelectDiversifier
 import org.eclipse.keyple.calypso.command.sam.parser.security.CardGenerateKeyRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.core.seproxy.message.SeRequest;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.protocol.Protocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
+import org.eclipse.keyple.core.transaction.SeSelection;
+import org.eclipse.keyple.core.transaction.SeSelectionRequest;
+import org.eclipse.keyple.core.transaction.SelectionsResult;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.example.pc.calypso.DemoUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeSelector;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.seproxy.message.ApduRequest;
-import org.eclipse.keyple.seproxy.message.ProxyReader;
-import org.eclipse.keyple.seproxy.message.SeRequest;
-import org.eclipse.keyple.seproxy.message.SeResponse;
-import org.eclipse.keyple.seproxy.protocol.Protocol;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.transaction.SeSelection;
-import org.eclipse.keyple.transaction.SeSelectionRequest;
-import org.eclipse.keyple.transaction.SelectionsResult;
-import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,7 +113,7 @@ public class Tool_LoadKeys {
                     sourceKeyReference.getKif(), sourceKeyReference.getKvc());
         }
         logger.info("LOAD KEY {}, {}, CRYPTOGRAM: {}", keyIndex, keyInfo,
-                ByteArrayUtils.toHex(cipheredData));
+                ByteArrayUtil.toHex(cipheredData));
 
         // send change key command to the PO
         apduRequests.clear();
@@ -196,10 +196,10 @@ public class Tool_LoadKeys {
         // Check if a PO is present in the reader
         if (poReader.isSePresent()) {
             // do the PO selection (kif/kvc values below must be adapted accordingly)
-            // byte[] aid = ByteArrayUtils.fromHex("D2760000850101"); // NFC NDEF
-            // byte[] aid = ByteArrayUtils.fromHex("315449432E49434132"); // INTERCODE 2.2
-            // byte[] aid = ByteArrayUtils.fromHex("304554502E494341"); // STORED VALUE
-            byte[] aid = ByteArrayUtils.fromHex("315449432E49434131"); // CD LIGHT/GTML
+            // byte[] aid = ByteArrayUtil.fromHex("D2760000850101"); // NFC NDEF
+            // byte[] aid = ByteArrayUtil.fromHex("315449432E49434132"); // INTERCODE 2.2
+            // byte[] aid = ByteArrayUtil.fromHex("304554502E494341"); // STORED VALUE
+            byte[] aid = ByteArrayUtil.fromHex("315449432E49434131"); // CD LIGHT/GTML
 
             SeSelection seSelection = new SeSelection();
 

@@ -13,13 +13,13 @@ package org.eclipse.keyple.calypso.command.sam.parser.security;
 
 
 
-import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
+import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Digest close response parser. See specs: Calypso / page 54 / 7.4.2 - Session MAC computation
  */
-public class DigestCloseRespPars extends AbstractApduResponseParser {
+public class DigestCloseRespPars extends AbstractSamResponseParser {
     /**
      * Instantiates a new DigestCloseRespPars.
      *

@@ -13,7 +13,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 import java.util.HashSet;
 import java.util.Set;
-import org.eclipse.keyple.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.SeSelector;
 
 /**
  * The {@link PoSelector} class extends {@link SeSelector} to handle specific PO features such as

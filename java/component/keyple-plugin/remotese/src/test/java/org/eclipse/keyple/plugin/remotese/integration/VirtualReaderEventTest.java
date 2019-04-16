@@ -14,20 +14,20 @@ package org.eclipse.keyple.plugin.remotese.integration;
 import static org.eclipse.keyple.plugin.stub.StubReaderTest.hoplinkSE;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.protocol.Protocol;
+import org.eclipse.keyple.core.transaction.MatchingSe;
+import org.eclipse.keyple.core.transaction.SeSelection;
+import org.eclipse.keyple.core.transaction.SeSelectionRequest;
+import org.eclipse.keyple.core.transaction.SelectionsResult;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.SeSelector;
-import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.protocol.Protocol;
-import org.eclipse.keyple.transaction.MatchingSe;
-import org.eclipse.keyple.transaction.SeSelection;
-import org.eclipse.keyple.transaction.SeSelectionRequest;
-import org.eclipse.keyple.transaction.SelectionsResult;
-import org.eclipse.keyple.util.ByteArrayUtils;
 import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -178,7 +178,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                         hoplinkSE().getATR());
 
                 // retrieve the expected FCI from the Stub SE running the select application command
-                byte[] aid = ByteArrayUtils.fromHex(poAid);
+                byte[] aid = ByteArrayUtil.fromHex(poAid);
                 byte[] selectApplicationCommand = new byte[6 + aid.length];
                 selectApplicationCommand[0] = (byte) 0x00; // CLA
                 selectApplicationCommand[1] = (byte) 0xA4; // INS
@@ -209,8 +209,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
-                new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
-                        null, "AID: " + poAid),
+                new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null,
+                        "AID: " + poAid),
                 ChannelState.KEEP_OPEN, Protocol.ANY);
 
         seSelection.prepareSelection(seSelectionRequest);
@@ -253,8 +253,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
-                new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
-                        null, "AID: " + poAid),
+                new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null,
+                        "AID: " + poAid),
                 ChannelState.KEEP_OPEN, Protocol.ANY);
 
         seSelection.prepareSelection(seSelectionRequest);
@@ -304,8 +304,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
-                new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
-                        null, "AID: " + poAid),
+                new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null,
+                        "AID: " + poAid),
                 ChannelState.KEEP_OPEN, Protocol.ANY);
 
         seSelection.prepareSelection(seSelectionRequest);

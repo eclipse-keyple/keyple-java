@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.exception;
 
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 
 public class KeypleRemoteException extends KeypleBaseException {
 

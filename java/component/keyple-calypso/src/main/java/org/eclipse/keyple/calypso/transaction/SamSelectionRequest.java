@@ -11,12 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
-import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.SeSelector;
-import org.eclipse.keyple.seproxy.message.SeResponse;
-import org.eclipse.keyple.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.transaction.SeSelectionRequest;
+import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
+import org.eclipse.keyple.core.transaction.SeSelectionRequest;
 
 /**
  * Specialized selection request to manage the specific characteristics of Calypso SAMs
@@ -31,7 +31,7 @@ public class SamSelectionRequest extends SeSelectionRequest {
      * Create a CalypsoSam object containing the selection data received from the plugin
      *
      * @param seResponse the SE response received
-     * @return a {@link org.eclipse.keyple.calypso.transaction.CalypsoSam}
+     * @return a {@link CalypsoSam}
      */
     @Override
     protected CalypsoSam parse(SeResponse seResponse) {
@@ -39,7 +39,7 @@ public class SamSelectionRequest extends SeSelectionRequest {
     }
 
     @Override
-    public AbstractApduResponseParser getCommandParser(SeResponse seResponse, int commandIndex) {
+    public AbstractSamResponseParser getCommandParser(SeResponse seResponse, int commandIndex) {
         /* not yet implemented in keyple-calypso */
         // TODO add a generic command parser
         throw new IllegalStateException("No parsers available for this request.");

@@ -25,20 +25,20 @@ import org.eclipse.keyple.plugin.android.nfc.AndroidNfcFragment;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.ReaderPlugin;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeReader;
-import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.event.SelectionResponse;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.transaction.SeSelection;
-import org.eclipse.keyple.transaction.SelectionsResult;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
+import org.eclipse.keyple.core.transaction.SeSelection;
+import org.eclipse.keyple.core.transaction.SelectionsResult;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import android.graphics.Color;
@@ -137,7 +137,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
              * the selection and read additional information afterwards
              */
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                    new PoSelector.PoAidSelector(ByteArrayUtils.fromHex(CalypsoClassicInfo.AID),
+                    new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
                             PoSelector.InvalidatedPo.REJECT),
                     null, "AID: " + CalypsoClassicInfo.AID), ChannelState.KEEP_OPEN,
                     ContactlessProtocols.PROTOCOL_ISO14443_4);
@@ -280,7 +280,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                         mText.append("\nCalypso PO selection: ");
                         appendColoredText(mText, "SUCCESS\n", Color.GREEN);
                         mText.append("AID: ");
-                        appendHexBuffer(mText, ByteArrayUtils.fromHex(CalypsoClassicInfo.AID));
+                        appendHexBuffer(mText, ByteArrayUtil.fromHex(CalypsoClassicInfo.AID));
 
                         /*
                          * Retrieve the data read from the parser updated during the selection
@@ -396,7 +396,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
      */
     private static void appendHexBuffer(TextView tv, byte[] ba) {
         int start = tv.getText().length();
-        tv.append(ByteArrayUtils.toHex(ba));
+        tv.append(ByteArrayUtil.toHex(ba));
         int end = tv.getText().length();
 
         Spannable spannableText = (Spannable) tv.getText();

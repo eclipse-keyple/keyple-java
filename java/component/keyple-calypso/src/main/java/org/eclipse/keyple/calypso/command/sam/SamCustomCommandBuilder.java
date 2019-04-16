@@ -11,8 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.sam;
 
-import org.eclipse.keyple.command.AbstractIso7816CommandBuilder;
-import org.eclipse.keyple.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.command.AbstractIso7816CommandBuilder;
+import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 
 /**
  * Class to build custom (non-referenced) SAM commands

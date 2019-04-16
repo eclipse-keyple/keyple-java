@@ -12,15 +12,15 @@
 package org.eclipse.keyple.calypso.command.sam.parser.security;
 
 
-import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
+import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * PO Give Random response parser.
  * <p>
  * No output data except status word
  */
-public class GiveRandomRespPars extends AbstractApduResponseParser {
+public class GiveRandomRespPars extends AbstractSamResponseParser {
     /**
      * Instantiates a new GiveRandomRespPars.
      *
