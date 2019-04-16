@@ -144,17 +144,18 @@ public final class PoTransaction {
      * <li>A list of SAM parameters is provided as en EnumMap.</li>
      * </ul>
      *
-     * @param poReader the PO reader
-     * @param calypsoPO the CalypsoPo object obtained at the end of the selection step
-     * @param samReader the SAM reader
+     * @param poResource the PO resource (combination of {@link SeReader} and {@link CalypsoPo})
+     * @param samResource the SAM resource (combination of {@link SeReader} and {@link CalypsoSam})
      * @param samSetting a list of SAM related parameters. In the case this parameter is null,
      *        default parameters are applied. The available setting keys are defined in
      *        {@link SamSettings}
      */
-    public PoTransaction(SeReader poReader, CalypsoPo calypsoPO, SeReader samReader,
+    public PoTransaction(PoResource poResource, SamResource samResource,
             EnumMap<SamSettings, Byte> samSetting) {
 
-        this(poReader, calypsoPO);
+        this(poResource);
+
+        samReader = (ProxyReader) samResource.getSeReader();
 
         setSamSettings(samReader, samSetting);
     }
@@ -165,24 +166,23 @@ public final class PoTransaction {
      * <li>Logical channels with PO could already be established or not.</li>
      * </ul>
      *
-     * @param poReader the PO reader
-     * @param calypsoPO the CalypsoPo object obtained at the end of the selection step
+     * @param poResource the PO resource (combination of {@link SeReader} and {@link CalypsoPo})
      */
-    public PoTransaction(SeReader poReader, CalypsoPo calypsoPO) {
-        this.poReader = (ProxyReader) poReader;
+    public PoTransaction(PoResource poResource) {
+        this.poReader = (ProxyReader) poResource.getSeReader();
 
-        this.calypsoPo = calypsoPO;
+        this.calypsoPo = poResource.getMatchingSe();
 
-        poRevision = calypsoPO.getRevision();
+        poRevision = calypsoPo.getRevision();
 
-        poCalypsoInstanceAid = calypsoPO.getDfName();
+        poCalypsoInstanceAid = calypsoPo.getDfName();
 
-        modificationsCounterIsInBytes = calypsoPO.isModificationsCounterInBytes();
+        modificationsCounterIsInBytes = calypsoPo.isModificationsCounterInBytes();
 
-        modificationsCounterMax = modificationsCounter = calypsoPO.getModificationsCounter();
+        modificationsCounterMax = modificationsCounter = calypsoPo.getModificationsCounter();
 
         /* Serial Number of the selected Calypso instance. */
-        poCalypsoInstanceSerial = calypsoPO.getApplicationSerialNumber();
+        poCalypsoInstanceSerial = calypsoPo.getApplicationSerialNumber();
 
         currentState = SessionState.SESSION_CLOSED;
 

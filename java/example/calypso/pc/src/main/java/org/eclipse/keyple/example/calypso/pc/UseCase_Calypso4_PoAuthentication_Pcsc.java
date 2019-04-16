@@ -15,10 +15,7 @@ package org.eclipse.keyple.example.calypso.pc;
 
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -85,16 +82,16 @@ public class UseCase_Calypso4_PoAuthentication_Pcsc {
          * Get a SAM reader ready to work with Calypso PO. Use the getReader helper method from the
          * CalypsoUtilities class.
          */
-        SeReader samReader = CalypsoUtilities.getDefaultSamReader(seProxyService);
+        SamResource samResource = CalypsoUtilities.getDefaultSamResource(seProxyService);
 
         /* Check if the readers exists */
-        if (poReader == null || samReader == null) {
+        if (poReader == null || samResource == null) {
             throw new IllegalStateException("Bad PO or SAM reader setup");
         }
 
         logger.info("=============== UseCase Calypso #4: Po Authentication ==================");
         logger.info("= PO Reader  NAME = {}", poReader.getName());
-        logger.info("= SAM Reader  NAME = {}", samReader.getName());
+        logger.info("= SAM Reader  NAME = {}", samResource.getSeReader().getName());
 
         /* Check if a PO is present in the reader */
         if (poReader.isSePresent()) {
@@ -154,8 +151,8 @@ public class UseCase_Calypso4_PoAuthentication_Pcsc {
                 logger.info(
                         "==================================================================================");
 
-                PoTransaction poTransaction = new PoTransaction(poReader, calypsoPo, samReader,
-                        CalypsoUtilities.getSamSettings());
+                PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
+                        samResource, CalypsoUtilities.getSamSettings());
 
                 /*
                  * Prepare the reading order and keep the associated parser for later use once the

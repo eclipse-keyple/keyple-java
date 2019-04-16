@@ -15,7 +15,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
+import org.eclipse.keyple.calypso.transaction.CalypsoSam;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.SamResource;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -32,7 +34,8 @@ import org.eclipse.keyple.plugin.pcsc.PcscReader;
 
 public class TestEngine {
 
-    public static SeReader poReader, samReader;
+    public static SeReader poReader;
+    public static SamResource samResource;
 
     public static PoFileStructureInfo selectPO()
             throws IllegalArgumentException, KeypleReaderException {
@@ -95,7 +98,7 @@ public class TestEngine {
         final String SAM_READER_NAME_REGEX = ".*(Cherry TC|SCM Microsystems|Identive|HID).*";
 
         poReader = getReader(seProxyService, PO_READER_NAME_REGEX);
-        samReader = getReader(seProxyService, SAM_READER_NAME_REGEX);
+        SeReader samReader = getReader(seProxyService, SAM_READER_NAME_REGEX);
 
 
         if (poReader == samReader || poReader == null || samReader == null) {
@@ -138,20 +141,24 @@ public class TestEngine {
         /* Prepare selector, ignore MatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
 
+        CalypsoSam calypsoSam = null;
+
         try {
             MatchingSelection matchingSelection =
                     samSelection.processExplicitSelection(samReader).getActiveSelection();
-            if (matchingSelection != null && matchingSelection.getMatchingSe().isSelected()) {
-                System.out.println("Unable to open a logical channel for SAM!");
-                throw new IllegalStateException("SAM channel opening failure");
-            } else {
+            if (matchingSelection != null) {
+                calypsoSam = (CalypsoSam) matchingSelection.getMatchingSe();
+                if (matchingSelection.getMatchingSe().isSelected()) {
+                    System.out.println("Unable to open a logical channel for SAM!");
+                    throw new IllegalStateException("SAM channel opening failure");
+                } else {
+                }
             }
         } catch (KeypleReaderException e) {
             throw new IllegalStateException("Reader exception: " + e.getMessage());
-
         }
 
-
+        samResource = new SamResource(samReader, calypsoSam);
     }
 
 }

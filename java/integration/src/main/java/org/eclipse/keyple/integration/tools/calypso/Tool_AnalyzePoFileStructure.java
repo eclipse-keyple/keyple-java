@@ -16,6 +16,7 @@ import static org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild.S
 import static org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild.SelectControl.NEXT;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
@@ -112,7 +113,7 @@ public class Tool_AnalyzePoFileStructure {
     private static void printApplicationInformation(SeReader poReader, CalypsoPo curApp) {
 
         try {
-            PoTransaction poTransaction = new PoTransaction(poReader, curApp);
+            PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, curApp));
 
             int selectCurrentDfIndex = poTransaction.prepareSelectFileCmd(CURRENT_DF, "CurrentDF");
 
@@ -148,7 +149,7 @@ public class Tool_AnalyzePoFileStructure {
     protected static void getApplicationFileData(SeReader poReader, CalypsoPo curApp) {
 
         try {
-            PoTransaction poTransaction = new PoTransaction(poReader, curApp);
+            PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, curApp));
             int currentFile;
 
             int selectFileParserFirstIndex = poTransaction.prepareSelectFileCmd(FIRST, "First EF");

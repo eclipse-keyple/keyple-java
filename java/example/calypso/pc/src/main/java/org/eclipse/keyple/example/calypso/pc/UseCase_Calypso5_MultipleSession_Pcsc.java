@@ -12,10 +12,7 @@
 package org.eclipse.keyple.example.calypso.pc;
 
 
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -95,16 +92,16 @@ public class UseCase_Calypso5_MultipleSession_Pcsc {
          * Get a SAM reader ready to work with Calypso PO. Use the getReader helper method from the
          * CalypsoUtilities class.
          */
-        SeReader samReader = CalypsoUtilities.getDefaultSamReader(seProxyService);
+        SamResource samResource = CalypsoUtilities.getDefaultSamResource(seProxyService);
 
         /* Check if the readers exists */
-        if (poReader == null || samReader == null) {
+        if (poReader == null || samResource == null) {
             throw new IllegalStateException("Bad PO or SAM reader setup");
         }
 
         logger.info("=============== UseCase Calypso #5: Po Authentication ==================");
         logger.info("= PO Reader  NAME = {}", poReader.getName());
-        logger.info("= SAM Reader  NAME = {}", samReader.getName());
+        logger.info("= SAM Reader  NAME = {}", samResource.getSeReader().getName());
 
         /* Check if a PO is present in the reader */
         if (poReader.isSePresent()) {
@@ -164,8 +161,8 @@ public class UseCase_Calypso5_MultipleSession_Pcsc {
                 logger.info(
                         "==================================================================================");
 
-                PoTransaction poTransaction = new PoTransaction(poReader, calypsoPo, samReader,
-                        CalypsoUtilities.getSamSettings());
+                PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
+                        samResource, CalypsoUtilities.getSamSettings());
 
                 /*
                  * Open Session for the debit key

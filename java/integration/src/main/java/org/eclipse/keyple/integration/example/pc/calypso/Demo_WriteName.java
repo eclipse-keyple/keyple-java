@@ -13,9 +13,7 @@ package org.eclipse.keyple.integration.example.pc.calypso;
 
 
 
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -81,6 +79,9 @@ public class Demo_WriteName {
             throw new IllegalStateException("Reader exception: " + e.getMessage());
 
         }
+
+        SamResource samResource = new SamResource(samReader, (CalypsoSam) samSelection
+                .processExplicitSelection(samReader).getActiveSelection().getMatchingSe());
 
         /* Check if a PO is present in the reader */
         if (poReader.isSePresent()) {
@@ -164,10 +165,10 @@ public class Demo_WriteName {
              */
             logger.info("The selection of the PO has succeeded.");
 
-            MatchingSe selectedSe = selectionsResult.getActiveSelection().getMatchingSe();
+            CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveSelection().getMatchingSe();
 
             PoTransaction poTransaction =
-                    new PoTransaction(poReader, (CalypsoPo) selectedSe, samReader, null);
+                    new PoTransaction(new PoResource(poReader, calypsoPo), samResource, null);
 
             String name = "CNA Keyple Demo";
 

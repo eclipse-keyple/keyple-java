@@ -15,10 +15,7 @@ import java.util.EnumMap;
 import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
 import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
@@ -81,6 +78,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             };
 
     private SeReader poReader, samReader;
+    private SamResource samResource = null;
 
     private SeSelection seSelection;
 
@@ -356,14 +354,14 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
      */
     @Override
     public void processSeMatch(SelectionResponse selectionResponse) {
-        MatchingSe selectedSe = seSelection.processDefaultSelection(selectionResponse)
+        CalypsoPo calypsoPo = (CalypsoPo) seSelection.processDefaultSelection(selectionResponse)
                 .getActiveSelection().getMatchingSe();
-        if (selectedSe != null) {
+        if (calypsoPo != null) {
             try {
                 /* first time: check SAM */
                 if (!this.samChannelOpen) {
                     /* the following method will throw an exception if the SAM is not available. */
-                    CalypsoUtilities.checkSamAndOpenChannel(samReader);
+                    samResource = CalypsoUtilities.checkSamAndOpenChannel(samReader);
                     this.samChannelOpen = true;
                 }
 
@@ -374,8 +372,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
 
                 profiler.start("Calypso1");
 
-                PoTransaction poTransaction =
-                        new PoTransaction(poReader, (CalypsoPo) selectedSe, samReader, samSetting);
+                PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
+                        samResource, samSetting);
 
                 doCalypsoReadWriteTransaction(poTransaction, true);
 
