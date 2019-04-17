@@ -99,7 +99,7 @@ public class ByteArrayUtil {
         if (bytes == null || bytes.length < offset + 3 || offset < 0) {
             throw new IllegalArgumentException("Bad data for converting 3-byte integers.");
         }
-        return (((int) bytes[offset]) << 16) + (((int) bytes[offset + 1]) << 8)
-                + ((int) bytes[offset + 2]);
+        return (bytes[offset] & 0xFF) << 16 | (bytes[offset + 1] & 0xFF) << 8
+                | (bytes[offset + 2] & 0xFF);
     }
 }

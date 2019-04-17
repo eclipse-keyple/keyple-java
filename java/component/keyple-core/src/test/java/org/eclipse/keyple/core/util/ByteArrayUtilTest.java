@@ -114,6 +114,12 @@ public class ByteArrayUtilTest {
 
     @Test
     public void threeBytesToInt_buffer_ok_4() {
+        int value = ByteArrayUtil.threeBytesToInt(BYTEARRAY_GOOD, 4);
+        assertEquals(value, 0x90ABCD);
+    }
+
+    @Test
+    public void threeBytesToInt_buffer_ok_5() {
         int value = ByteArrayUtil.threeBytesToInt(BYTEARRAY_GOOD, 13);
         assertEquals(value, 0x654321);
     }
