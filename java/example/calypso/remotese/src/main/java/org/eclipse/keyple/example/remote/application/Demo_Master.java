@@ -15,6 +15,7 @@ import java.io.IOException;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.seproxy.ChannelState;
@@ -274,7 +275,7 @@ public class Demo_Master implements Observable.Observer {
                                 "==================================================================================");
 
                         PoTransaction poTransaction =
-                                new PoTransaction(poReader, (CalypsoPo) selectedSe);
+                                new PoTransaction(new PoResource(poReader, (CalypsoPo) selectedSe));
 
                         /*
                          * Prepare the reading order and keep the associated parser for later use
