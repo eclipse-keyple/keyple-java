@@ -12,6 +12,8 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import java.util.EnumMap;
+import java.util.List;
+import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionUnauthorizedKvcException;
 
 /**
  * A class dedicated to managing the security settings involved in managing secure sessions.
@@ -44,6 +46,8 @@ public class SecuritySettings {
     private final static byte DEFAULT_KIF_DEBIT = (byte) 0x30;
     /** The default key record number */
     private final static byte DEFAULT_KEY_RECORD_NUMER = (byte) 0x00;
+    /** List of authorized KVCs */
+    private List<Byte> authorizedKvcList;
 
     /** Enummap containing the key information */
     private final EnumMap<DefaultKeyInfo, Byte> keySettings =
@@ -84,5 +88,31 @@ public class SecuritySettings {
      */
     byte getKeyInfo(DefaultKeyInfo keyInfo) {
         return keySettings.get(keyInfo);
+    }
+
+    /**
+     * Provides a list of authorized KVC
+     *
+     * If this method is not called, the list will remain empty and all KVCs will be accepted.
+     *
+     * If a list is provided and a PO with a KVC not belonging to this list is presented, a
+     * {@link KeypleCalypsoSecureSessionUnauthorizedKvcException} will be raised.
+     *
+     * @param authorizedKvcList the list of authorized KVCs
+     */
+    public void setAuthorizedKvcList(List<Byte> authorizedKvcList) {
+        this.authorizedKvcList = authorizedKvcList;
+    }
+
+    /**
+     * CHeck if the provided kvc value is authorized or not.
+     * <p>
+     * If no list of authorized kvc is defined (authorizedKvcList null), all kvc are authorized.
+     * 
+     * @param kvc to be tested
+     * @return true if the kvc is authorized
+     */
+    public boolean isAuthorizedKvc(byte kvc) {
+        return authorizedKvcList == null || authorizedKvcList.contains(kvc);
     }
 }

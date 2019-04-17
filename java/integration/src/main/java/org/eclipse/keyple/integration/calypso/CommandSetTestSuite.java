@@ -332,10 +332,7 @@ public class CommandSetTestSuite {
             PoFileStructureInfo poData = TestEngine.selectPO();
             ReadDataStructure readDataStructureValue = ReadDataStructure.MULTIPLE_RECORD_DATA;
 
-            PoRevision poRevision = (new PoTransaction(
-                    new PoResource(TestEngine.poReader, (CalypsoPo) poData.getMatchingSe()),
-                    TestEngine.samResource, new SecuritySettings())).getRevision();
-
+            PoRevision poRevision = ((CalypsoPo) poData.getMatchingSe()).getRevision();
 
             List<byte[]> recordsData = new ArrayList<byte[]>();
 

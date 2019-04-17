@@ -95,7 +95,7 @@ public final class PoTransaction {
     /** The current CalypsoPo */
     private final CalypsoPo calypsoPo;
     /** the type of the notified event. */
-    private SessionState currentState;
+    private SessionState sessionState;
     /** Selected AID of the Calypso PO. */
     private byte[] poCalypsoInstanceAid;
     /** The PO Calypso Revision. */
@@ -112,8 +112,6 @@ public final class PoTransaction {
     private byte[] openRecordDataRead;
     /** The list to contain the prepared commands and their parsers */
     private final List<PoBuilderParser> poBuilderParserList = new ArrayList<PoBuilderParser>();
-    /** List of authorized KVCs */
-    private List<Byte> authorizedKvcList;
     /** The current secure session modification mode: ATOMIC or MULTIPLE */
     private ModificationMode currentModificationMode;
     /** The current secure session access level: PERSO, RELOAD, DEBIT */
@@ -172,23 +170,9 @@ public final class PoTransaction {
         /* Serial Number of the selected Calypso instance. */
         poCalypsoInstanceSerial = calypsoPo.getApplicationSerialNumber();
 
-        currentState = SessionState.SESSION_CLOSED;
+        sessionState = SessionState.SESSION_UNINITIALIZED;
 
         preparedCommandsProcessed = true;
-    }
-
-    /**
-     * Provides a list of authorized KVC
-     *
-     * If this method is not called, the list will remain empty and all KVCs will be accepted.
-     *
-     * If a list is provided and a PO with a KVC not belonging to this list is presented, a
-     * {@link KeypleCalypsoSecureSessionUnauthorizedKvcException} will be raised.
-     * 
-     * @param authorizedKvcList the list of authorized KVCs
-     */
-    public void setAuthorizedKvcList(List<Byte> authorizedKvcList) {
-        this.authorizedKvcList = authorizedKvcList;
     }
 
     /**
@@ -313,9 +297,9 @@ public final class PoTransaction {
 
         /* Build the PO Open Secure Session command */
         // TODO decide how to define the extraInfo field. Empty for the moment.
-        AbstractOpenSessionCmdBuild poOpenSession = AbstractOpenSessionCmdBuild.create(
-                getRevision(), (byte) (accessLevel.ordinal() + 1), sessionTerminalChallenge,
-                openingSfiToSelect, openingRecordNumberToRead, "");
+        AbstractOpenSessionCmdBuild poOpenSession = AbstractOpenSessionCmdBuild.create(poRevision,
+                (byte) (accessLevel.ordinal() + 1), sessionTerminalChallenge, openingSfiToSelect,
+                openingRecordNumberToRead, "");
 
         /* Add the resulting ApduRequest to the PO ApduRequest list */
         poApduRequestList.add(poOpenSession.getApduRequest());
@@ -387,7 +371,7 @@ public final class PoTransaction {
                     String.format("%02X", poKvc));
         }
 
-        if (authorizedKvcList != null && !authorizedKvcList.contains(poKvc)) {
+        if (!securitySettings.isAuthorizedKvc(poKvc)) {
             throw new KeypleCalypsoSecureSessionUnauthorizedKvcException(
                     String.format("PO KVC = %02X", poKvc));
         }
@@ -444,7 +428,7 @@ public final class PoTransaction {
             }
         }
 
-        currentState = SessionState.SESSION_OPEN;
+        sessionState = SessionState.SESSION_OPEN;
 
         /* Remove Open Secure Session response and create a new SeResponse */
         poApduResponseList.remove(0);
@@ -545,7 +529,7 @@ public final class PoTransaction {
          * Add all commands data to the digest computation if this method is called within a Secure
          * Session.
          */
-        if (currentState == SessionState.SESSION_OPEN) {
+        if (sessionState == SessionState.SESSION_OPEN) {
             for (int i = 0; i < poApduRequestList.size(); i++) { // The loop starts after the Open
                 /*
                  * Add requests and responses to the DigestProcessor
@@ -589,7 +573,7 @@ public final class PoTransaction {
                     null);
         }
 
-        if (currentState == SessionState.SESSION_OPEN
+        if (sessionState == SessionState.SESSION_OPEN
                 && !samSeResponse.wasChannelPreviouslyOpen()) {
             throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
                     KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
@@ -660,8 +644,8 @@ public final class PoTransaction {
             List<ApduResponse> poAnticipatedResponses, TransmissionMode transmissionMode,
             ChannelState channelState) throws KeypleReaderException {
 
-        if (currentState != SessionState.SESSION_OPEN) {
-            throw new IllegalStateException("Bad session state. Current: " + currentState.toString()
+        if (sessionState != SessionState.SESSION_OPEN) {
+            throw new IllegalStateException("Bad session state. Current: " + sessionState.toString()
                     + ", expected: " + SessionState.SESSION_OPEN.toString());
         }
 
@@ -886,7 +870,7 @@ public final class PoTransaction {
             throw new IllegalStateException("No response to Digest Authenticate.");
         }
 
-        currentState = SessionState.SESSION_CLOSED;
+        sessionState = SessionState.SESSION_CLOSED;
 
         /* Remove ratification response if any */
         if (!ratificationAsked) {
@@ -927,16 +911,6 @@ public final class PoTransaction {
     }
 
     /**
-     * Gets the PO Revision.
-     *
-     * @return the PoPlainSecureSession_OLD.poRevision
-     */
-    public PoRevision getRevision() {
-        // TODO checks if poRevision initialized
-        return poRevision;
-    }
-
-    /**
      * Get the Secure Session Status.
      * <ul>
      * <li>To check the result of a closed secure session, returns true if the SAM Digest
@@ -947,9 +921,9 @@ public final class PoTransaction {
      */
     public boolean isSuccessful() {
 
-        if (currentState != SessionState.SESSION_CLOSED) {
+        if (sessionState != SessionState.SESSION_CLOSED) {
             throw new IllegalStateException(
-                    "Session is not closed, state:" + currentState.toString() + ", expected: "
+                    "Session is not closed, state:" + sessionState.toString() + ", expected: "
                             + SessionState.SESSION_OPEN.toString());
         }
 
@@ -957,20 +931,15 @@ public final class PoTransaction {
     }
 
     /**
-     * Get the PO KIF
-     * 
-     * @return the PO KIF byte
-     */
-    public byte getPoKif() {
-        return poKif;
-    }
-
-    /**
      * Get the ratification status obtained at Session Opening
      * 
      * @return true or false
+     * @throws IllegalStateException if no session has been initiated
      */
     public boolean wasRatified() {
+        if (sessionState == SessionState.SESSION_UNINITIALIZED) {
+            throw new IllegalStateException("No active session.");
+        }
         return wasRatified;
     }
 
@@ -978,8 +947,12 @@ public final class PoTransaction {
      * Get the data read at Session Opening
      * 
      * @return a byte array containing the data
+     * @throws IllegalStateException if no session has been initiated
      */
     public byte[] getOpenRecordDataRead() {
+        if (sessionState == SessionState.SESSION_UNINITIALIZED) {
+            throw new IllegalStateException("No active session.");
+        }
         return openRecordDataRead;
     }
 
@@ -1018,9 +991,11 @@ public final class PoTransaction {
      */
     public enum SessionState {
         /** Initial state of a PO transaction. The PO must have been previously selected. */
-        SESSION_CLOSED,
+        SESSION_UNINITIALIZED,
         /** The secure session is active. */
-        SESSION_OPEN
+        SESSION_OPEN,
+        /** The secure session is closed. */
+        SESSION_CLOSED
     }
 
     /**
@@ -1274,7 +1249,7 @@ public final class PoTransaction {
          * @return the anticipated responses.
          * @throws KeypleCalypsoSecureSessionException if an response can't be determined.
          */
-        public static List<ApduResponse> getResponses(List<PoBuilderParser> poBuilderParsers)
+        private static List<ApduResponse> getResponses(List<PoBuilderParser> poBuilderParsers)
                 throws KeypleCalypsoSecureSessionException {
             List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
             if (poBuilderParsers != null) {
@@ -1490,7 +1465,7 @@ public final class PoTransaction {
     public boolean processPoCommands(ChannelState channelState) throws KeypleReaderException {
 
         /** This method should be called only if no session was previously open */
-        if (currentState == SessionState.SESSION_OPEN) {
+        if (sessionState == SessionState.SESSION_OPEN) {
             throw new IllegalStateException("A session is open");
         }
 
@@ -1528,7 +1503,7 @@ public final class PoTransaction {
     public boolean processPoCommandsInSession() throws KeypleReaderException {
 
         /** This method should be called only if a session was previously open */
-        if (currentState == SessionState.SESSION_CLOSED) {
+        if (sessionState != SessionState.SESSION_OPEN) {
             throw new IllegalStateException("No open session");
         }
 
@@ -1781,7 +1756,7 @@ public final class PoTransaction {
          * session is now considered closed regardless the previous state or the result of the abort
          * session command sent to the PO.
          */
-        currentState = SessionState.SESSION_CLOSED;
+        sessionState = SessionState.SESSION_CLOSED;
 
         /* return the successful status of the abort session command */
         return poSeResponse.getApduResponses().get(0).isSuccessful();
