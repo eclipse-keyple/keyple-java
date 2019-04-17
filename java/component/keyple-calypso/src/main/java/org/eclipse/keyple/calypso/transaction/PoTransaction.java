@@ -59,14 +59,6 @@ public final class PoTransaction {
     public static final byte KEY_INDEX_LOAD = (byte) 0x02;
     /** The key index for debit and validation operations (validation key needed) */
     public static final byte KEY_INDEX_VALIDATION_DEBIT = (byte) 0x03;
-    /** The default KIF value for personalization */
-    public final static byte DEFAULT_KIF_PERSO = (byte) 0x21;
-    /** The default KIF value for loading */
-    public final static byte DEFAULT_KIF_LOAD = (byte) 0x27;
-    /** The default KIF value for debiting */
-    public final static byte DEFAULT_KIF_DEBIT = (byte) 0x30;
-    /** The default key record number */
-    public final static byte DEFAULT_KEY_RECORD_NUMER = (byte) 0x00;
 
     /* private constants */
     private final static byte KIF_UNDEFINED = (byte) 0xFF;
@@ -96,9 +88,8 @@ public final class PoTransaction {
     private ProxyReader samReader;
     /** The SAM default revision. */
     private final SamRevision samRevision = SamRevision.C1;
-    /** The SAM settings map. */
-    private final EnumMap<SamSettings, Byte> samSetting =
-            new EnumMap<SamSettings, Byte>(SamSettings.class);
+    /** The security settings. */
+    private SecuritySettings securitySettings;
     /** The PO serial number extracted from FCI */
     private final byte[] poCalypsoInstanceSerial;
     /** The current CalypsoPo */
@@ -121,8 +112,6 @@ public final class PoTransaction {
     private byte[] openRecordDataRead;
     /** The list to contain the prepared commands and their parsers */
     private final List<PoBuilderParser> poBuilderParserList = new ArrayList<PoBuilderParser>();
-    /** The SAM settings status */
-    private boolean samSettingsDefined;
     /** List of authorized KVCs */
     private List<Byte> authorizedKvcList;
     /** The current secure session modification mode: ATOMIC or MULTIPLE */
@@ -146,18 +135,17 @@ public final class PoTransaction {
      *
      * @param poResource the PO resource (combination of {@link SeReader} and {@link CalypsoPo})
      * @param samResource the SAM resource (combination of {@link SeReader} and {@link CalypsoSam})
-     * @param samSetting a list of SAM related parameters. In the case this parameter is null,
-     *        default parameters are applied. The available setting keys are defined in
-     *        {@link SamSettings}
+     * @param securitySettings a list of security settings ({@link SecuritySettings}) used in the
+     *        session (such as key identification)
      */
     public PoTransaction(PoResource poResource, SamResource samResource,
-            EnumMap<SamSettings, Byte> samSetting) {
+            SecuritySettings securitySettings) {
 
         this(poResource);
 
         samReader = (ProxyReader) samResource.getSeReader();
 
-        setSamSettings(samReader, samSetting);
+        this.securitySettings = securitySettings;
     }
 
     /**
@@ -190,40 +178,6 @@ public final class PoTransaction {
     }
 
     /**
-     * Sets the SAM parameters for Secure Session management
-     * 
-     * @param samReader the reader in which the SAM is present
-     * @param samSetting the SAM settings to be applied
-     */
-    public void setSamSettings(SeReader samReader, EnumMap<SamSettings, Byte> samSetting) {
-        this.samReader = (ProxyReader) samReader;
-
-        /* Initialize samSetting with provided settings */
-        if (samSetting != null) {
-            this.samSetting.putAll(samSetting);
-        }
-
-        /* Just work mode: we make sure that all the necessary parameters exist at least. */
-        if (!this.samSetting.containsKey(SamSettings.SAM_DEFAULT_KIF_PERSO)) {
-            this.samSetting.put(SamSettings.SAM_DEFAULT_KIF_PERSO, DEFAULT_KIF_PERSO);
-        }
-        if (!this.samSetting.containsKey(SamSettings.SAM_DEFAULT_KIF_LOAD)) {
-            this.samSetting.put(SamSettings.SAM_DEFAULT_KIF_LOAD, DEFAULT_KIF_LOAD);
-        }
-        if (!this.samSetting.containsKey(SamSettings.SAM_DEFAULT_KIF_DEBIT)) {
-            this.samSetting.put(SamSettings.SAM_DEFAULT_KIF_DEBIT, DEFAULT_KIF_DEBIT);
-        }
-        if (!this.samSetting.containsKey(SamSettings.SAM_DEFAULT_KEY_RECORD_NUMBER)) {
-            this.samSetting.put(SamSettings.SAM_DEFAULT_KEY_RECORD_NUMBER,
-                    DEFAULT_KEY_RECORD_NUMER);
-        }
-
-        logger.debug("Contructor => SAMSETTING = {}", this.samSetting);
-
-        samSettingsDefined = true;
-    }
-
-    /**
      * Provides a list of authorized KVC
      *
      * If this method is not called, the list will remain empty and all KVCs will be accepted.
@@ -235,15 +189,6 @@ public final class PoTransaction {
      */
     public void setAuthorizedKvcList(List<Byte> authorizedKvcList) {
         this.authorizedKvcList = authorizedKvcList;
-    }
-
-    /**
-     * Indicates whether or not the SAM settings have been defined
-     * 
-     * @return true if the SAM settings have been defined.
-     */
-    public boolean isSamSettingsDefined() {
-        return samSettingsDefined;
     }
 
     /**
@@ -451,14 +396,17 @@ public final class PoTransaction {
         if (poKif == KIF_UNDEFINED) {
             switch (accessLevel) {
                 case SESSION_LVL_PERSO:
-                    kif = samSetting.get(SamSettings.SAM_DEFAULT_KIF_PERSO);
+                    kif = securitySettings
+                            .getKeyInfo(SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KIF_PERSO);
                     break;
                 case SESSION_LVL_LOAD:
-                    kif = samSetting.get(SamSettings.SAM_DEFAULT_KIF_LOAD);
+                    kif = securitySettings
+                            .getKeyInfo(SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KIF_LOAD);
                     break;
                 case SESSION_LVL_DEBIT:
                 default:
-                    kif = samSetting.get(SamSettings.SAM_DEFAULT_KIF_DEBIT);
+                    kif = securitySettings
+                            .getKeyInfo(SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KIF_DEBIT);
                     break;
             }
         } else {
@@ -476,8 +424,9 @@ public final class PoTransaction {
          */
         DigestProcessor.initialize(poRevision, samRevision, false, false,
                 poRevision.equals(PoRevision.REV3_2),
-                samSetting.get(SamSettings.SAM_DEFAULT_KEY_RECORD_NUMBER), kif, poKvc,
-                poApduResponseList.get(0).getDataOut());
+                securitySettings
+                        .getKeyInfo(SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KEY_RECORD_NUMBER),
+                kif, poKvc, poApduResponseList.get(0).getDataOut());
 
         /*
          * Add all commands data to the digest computation. The first command in the list is the
@@ -1032,20 +981,6 @@ public final class PoTransaction {
      */
     public byte[] getOpenRecordDataRead() {
         return openRecordDataRead;
-    }
-
-    /**
-     * List of SAM settings keys that can be provided when the secure session is created.
-     */
-    public enum SamSettings {
-        /** KIF for personalization used when not provided by the PO */
-        SAM_DEFAULT_KIF_PERSO,
-        /** KIF for load used when not provided by the PO */
-        SAM_DEFAULT_KIF_LOAD,
-        /** KIF for debit used when not provided by the PO */
-        SAM_DEFAULT_KIF_DEBIT,
-        /** Key record number to use when KIF/KVC is unavailable */
-        SAM_DEFAULT_KEY_RECORD_NUMBER
     }
 
     /**
