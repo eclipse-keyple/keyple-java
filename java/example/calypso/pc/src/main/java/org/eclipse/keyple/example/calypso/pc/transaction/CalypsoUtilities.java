@@ -111,7 +111,8 @@ public class CalypsoUtilities {
          */
         SeSelection samSelection = new SeSelection();
 
-        SamSelector samSelector = new SamSelector(C1, null, "Selection SAM C1");
+        SamSelector samSelector =
+                new SamSelector(new SamIdentifier(C1, ".*", ""), "Selection SAM C1");
 
         /* Prepare selector, ignore MatchingSe here */
         samSelection.prepareSelection(
