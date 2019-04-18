@@ -29,7 +29,6 @@ import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.Protocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.core.transaction.MatchingSe;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SeSelectionRequest;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
@@ -205,8 +204,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         byte contractsSfi = 0x29;
 
         SeResponse dataReadInSession;
-        PoTransaction poTransaction =
-                new PoTransaction(new PoResource(poReader, detectedPO), samResource, null);
+        PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, detectedPO),
+                samResource, new SecuritySettings());
 
         int readEventParserIndex = poTransaction.prepareReadRecordsCmd(eventSfi,
                 ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, "Event");
@@ -257,8 +256,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
             poTransaction.processClosing(TransmissionMode.CONTACTLESS, ChannelState.KEEP_OPEN);
 
-            poTransaction =
-                    new PoTransaction(new PoResource(poReader, detectedPO), samResource, null);
+            poTransaction = new PoTransaction(new PoResource(poReader, detectedPO), samResource,
+                    new SecuritySettings());
 
             poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
                     PoTransaction.SessionAccessLevel.SESSION_LVL_LOAD, (byte) 0x00, (byte) 0x00);
@@ -358,16 +357,16 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                 CalypsoPo auditC0Se = (CalypsoPo) selectionsResult
                         .getMatchingSelection(auditC0SeIndex).getMatchingSe();
 
-                PoTransaction poTransaction =
-                        new PoTransaction(new PoResource(poReader, auditC0Se), samResource, null);
+                PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, auditC0Se),
+                        samResource, new SecuritySettings());
                 validateAuditC0(poTransaction);
 
             } else if (matchingSelectionIndex == clapSeIndex) {
                 CalypsoPo clapSe = (CalypsoPo) selectionsResult.getMatchingSelection(clapSeIndex)
                         .getMatchingSe();
 
-                PoTransaction poTransaction =
-                        new PoTransaction(new PoResource(poReader, clapSe), samResource, null);
+                PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, clapSe),
+                        samResource, new SecuritySettings());
                 validateClap(clapSe);
 
             } else if (matchingSelectionIndex == cdLightSeIndex) {
@@ -375,8 +374,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                 CalypsoPo cdLightSe = (CalypsoPo) selectionsResult
                         .getMatchingSelection(cdLightSeIndex).getMatchingSe();
 
-                PoTransaction poTransaction =
-                        new PoTransaction(new PoResource(poReader, cdLightSe), samResource, null);
+                PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, cdLightSe),
+                        samResource, new SecuritySettings());
                 validateAuditC0(poTransaction);
 
             } else {
@@ -427,14 +426,14 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         SeSelection samSelection = new SeSelection();
 
-        SeSelectionRequest samSelectionRequest = new SeSelectionRequest(
+        SeSelectionRequest samSelectionRequest = new SamSelectionRequest(
                 new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
                 ChannelState.KEEP_OPEN, Protocol.ANY);
 
         /* Prepare selector, ignore MatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
 
-        SamResource samResource = null;
+        SamResource samResource;
 
         try {
             SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
@@ -442,9 +441,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                 System.out.println("Unable to open a logical channel for SAM!");
                 throw new IllegalStateException("SAM channel opening failure");
             }
-            MatchingSe matchingSe = selectionsResult.getActiveSelection().getMatchingSe();
-            CalypsoSam calypsoSam = (CalypsoSam) matchingSe;
-            samResource = new SamResource(samReader, calypsoSam);
+            samResource = new SamResource(samReader,
+                    (CalypsoSam) selectionsResult.getActiveSelection().getMatchingSe());
         } catch (KeypleReaderException e) {
             throw new IllegalStateException("Reader exception: " + e.getMessage());
         }

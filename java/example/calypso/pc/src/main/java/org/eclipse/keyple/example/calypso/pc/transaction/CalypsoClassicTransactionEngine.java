@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.calypso.pc.transaction;
 
-import java.util.EnumMap;
+
 import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
@@ -63,20 +63,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
     private static Logger logger = LoggerFactory.getLogger(CalypsoClassicTransactionEngine.class);
 
     /* define the SAM parameters to provide when creating PoTransaction */
-    private final static EnumMap<PoTransaction.SamSettings, Byte> samSetting =
-            new EnumMap<PoTransaction.SamSettings, Byte>(PoTransaction.SamSettings.class) {
-                {
-                    put(PoTransaction.SamSettings.SAM_DEFAULT_KIF_PERSO,
-                            PoTransaction.DEFAULT_KIF_PERSO);
-                    put(PoTransaction.SamSettings.SAM_DEFAULT_KIF_LOAD,
-                            PoTransaction.DEFAULT_KIF_LOAD);
-                    put(PoTransaction.SamSettings.SAM_DEFAULT_KIF_DEBIT,
-                            PoTransaction.DEFAULT_KIF_DEBIT);
-                    put(PoTransaction.SamSettings.SAM_DEFAULT_KEY_RECORD_NUMBER,
-                            PoTransaction.DEFAULT_KEY_RECORD_NUMER);
-                }
-            };
-
+    private final SecuritySettings securitySettings = new SecuritySettings();
     private SeReader poReader, samReader;
     private SamResource samResource = null;
 
@@ -373,7 +360,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                 profiler.start("Calypso1");
 
                 PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
-                        samResource, samSetting);
+                        samResource, securitySettings);
 
                 doCalypsoReadWriteTransaction(poTransaction, true);
 

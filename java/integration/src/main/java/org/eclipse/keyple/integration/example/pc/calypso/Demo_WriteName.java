@@ -27,6 +27,7 @@ import org.eclipse.keyple.core.transaction.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +57,8 @@ public class Demo_WriteName {
             throw new IllegalStateException("Bad PO or SAM reader setup");
         }
 
+        samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
+
         logger.info("= PO Reader  NAME = {}", poReader.getName());
         logger.info("= SAM Reader  NAME = {}", samReader.getName());
 
@@ -63,25 +66,25 @@ public class Demo_WriteName {
 
         SeSelection samSelection = new SeSelection();
 
-        SeSelectionRequest samSelectionRequest = new SeSelectionRequest(
+        SeSelectionRequest samSelectionRequest = new SamSelectionRequest(
                 new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
                 ChannelState.KEEP_OPEN, Protocol.ANY);
 
         /* Prepare selector, ignore MatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
-
+        SelectionsResult samSelectionsResult;
         try {
-            if (!samSelection.processExplicitSelection(samReader).hasActiveSelection()) {
+            samSelectionsResult = samSelection.processExplicitSelection(samReader);
+            if (!samSelectionsResult.hasActiveSelection()) {
                 System.out.println("Unable to open a logical channel for SAM!");
                 throw new IllegalStateException("SAM channel opening failure");
             }
         } catch (KeypleReaderException e) {
             throw new IllegalStateException("Reader exception: " + e.getMessage());
-
         }
 
-        SamResource samResource = new SamResource(samReader, (CalypsoSam) samSelection
-                .processExplicitSelection(samReader).getActiveSelection().getMatchingSe());
+        SamResource samResource = new SamResource(samReader,
+                (CalypsoSam) samSelectionsResult.getActiveSelection().getMatchingSe());
 
         /* Check if a PO is present in the reader */
         if (poReader.isSePresent()) {
@@ -167,8 +170,8 @@ public class Demo_WriteName {
 
             CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveSelection().getMatchingSe();
 
-            PoTransaction poTransaction =
-                    new PoTransaction(new PoResource(poReader, calypsoPo), samResource, null);
+            PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
+                    samResource, new SecuritySettings());
 
             String name = "CNA Keyple Demo";
 
