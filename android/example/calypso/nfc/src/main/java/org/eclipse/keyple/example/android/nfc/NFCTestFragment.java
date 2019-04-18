@@ -298,7 +298,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
                         appendColoredText(mText, "\n\n2nd PO exchange:\n", Color.BLACK);
                         mText.append("* read the event log file");
-                        PoTransaction poTransaction = new PoTransaction(reader, calypsoPo);
+                        PoTransaction poTransaction = new PoTransaction(new PoResource(reader, calypsoPo));
 
                         /*
                          * Prepare the reading order and keep the associated parser for later use

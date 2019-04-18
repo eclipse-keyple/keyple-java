@@ -123,8 +123,8 @@ public final class SelectFileRespPars extends AbstractPoResponseParser {
 
         if (fileType == FILE_TYPE_EF && efType == EF_TYPE_BINARY) {
 
-            recSize = ((inFileParameters[iter + 1] << 8) & 0x0000ff00)
-                    | (inFileParameters[iter] & 0x000000ff);
+            recSize = ((inFileParameters[iter] << 8) & 0x0000ff00)
+                    | (inFileParameters[iter + 1] & 0x000000ff);
             numRec = 1;
             iter += 2;
 

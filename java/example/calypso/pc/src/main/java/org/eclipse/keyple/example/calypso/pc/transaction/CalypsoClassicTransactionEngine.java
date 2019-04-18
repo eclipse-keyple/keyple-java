@@ -11,14 +11,11 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.calypso.pc.transaction;
 
-import java.util.EnumMap;
+
 import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
 import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
@@ -66,21 +63,9 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
     private static Logger logger = LoggerFactory.getLogger(CalypsoClassicTransactionEngine.class);
 
     /* define the SAM parameters to provide when creating PoTransaction */
-    private final static EnumMap<PoTransaction.SamSettings, Byte> samSetting =
-            new EnumMap<PoTransaction.SamSettings, Byte>(PoTransaction.SamSettings.class) {
-                {
-                    put(PoTransaction.SamSettings.SAM_DEFAULT_KIF_PERSO,
-                            PoTransaction.DEFAULT_KIF_PERSO);
-                    put(PoTransaction.SamSettings.SAM_DEFAULT_KIF_LOAD,
-                            PoTransaction.DEFAULT_KIF_LOAD);
-                    put(PoTransaction.SamSettings.SAM_DEFAULT_KIF_DEBIT,
-                            PoTransaction.DEFAULT_KIF_DEBIT);
-                    put(PoTransaction.SamSettings.SAM_DEFAULT_KEY_RECORD_NUMBER,
-                            PoTransaction.DEFAULT_KEY_RECORD_NUMER);
-                }
-            };
-
+    private final SecuritySettings securitySettings = new SecuritySettings();
     private SeReader poReader, samReader;
+    private SamResource samResource = null;
 
     private SeSelection seSelection;
 
@@ -356,14 +341,14 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
      */
     @Override
     public void processSeMatch(SelectionResponse selectionResponse) {
-        MatchingSe selectedSe = seSelection.processDefaultSelection(selectionResponse)
+        CalypsoPo calypsoPo = (CalypsoPo) seSelection.processDefaultSelection(selectionResponse)
                 .getActiveSelection().getMatchingSe();
-        if (selectedSe != null) {
+        if (calypsoPo != null) {
             try {
                 /* first time: check SAM */
                 if (!this.samChannelOpen) {
                     /* the following method will throw an exception if the SAM is not available. */
-                    CalypsoUtilities.checkSamAndOpenChannel(samReader);
+                    samResource = CalypsoUtilities.checkSamAndOpenChannel(samReader);
                     this.samChannelOpen = true;
                 }
 
@@ -374,8 +359,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
 
                 profiler.start("Calypso1");
 
-                PoTransaction poTransaction =
-                        new PoTransaction(poReader, (CalypsoPo) selectedSe, samReader, samSetting);
+                PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
+                        samResource, securitySettings);
 
                 doCalypsoReadWriteTransaction(poTransaction, true);
 

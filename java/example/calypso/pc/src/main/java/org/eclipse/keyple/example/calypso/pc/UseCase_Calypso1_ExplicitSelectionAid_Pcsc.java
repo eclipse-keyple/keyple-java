@@ -15,10 +15,7 @@ package org.eclipse.keyple.example.calypso.pc;
 import java.io.IOException;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -168,7 +165,8 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Pcsc {
                 logger.info(
                         "==================================================================================");
 
-                PoTransaction poTransaction = new PoTransaction(poReader, calypsoPo);
+                PoTransaction poTransaction =
+                        new PoTransaction(new PoResource(poReader, calypsoPo));
 
                 /*
                  * Prepare the reading order and keep the associated parser for later use once the
