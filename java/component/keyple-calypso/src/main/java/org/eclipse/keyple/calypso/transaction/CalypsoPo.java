@@ -56,7 +56,6 @@ public final class CalypsoPo extends MatchingSe {
     private byte[] poAtr;
     private int modificationsCounterMax;
     private boolean modificationCounterIsInBytes = true;
-    private final ApduResponse fci;
 
     /**
      * Constructor.
@@ -70,7 +69,7 @@ public final class CalypsoPo extends MatchingSe {
 
         /* The selectionSeResponse may not include a FCI field (e.g. old PO Calypso Rev 1) */
         if (selectionResponse.getSelectionStatus().getFci().isSuccessful()) {
-            fci = selectionResponse.getSelectionStatus().getFci();
+            ApduResponse fci = selectionResponse.getSelectionStatus().getFci();
             /* Parse PO FCI - to retrieve Calypso Revision, Serial Number, &amp; DF Name (AID) */
             GetDataFciRespPars poFciRespPars = new GetDataFciRespPars(fci);
 
@@ -126,7 +125,6 @@ public final class CalypsoPo extends MatchingSe {
              * FCI is not provided: we consider it is Calypso PO rev 1, it's serial number is
              * provided in the ATR
              */
-            fci = null;
 
             /* basic check: we expect to be here following a selection based on the ATR */
             if (poAtr.length != PO_REV1_ATR_LENGTH) {
@@ -241,14 +239,6 @@ public final class CalypsoPo extends MatchingSe {
 
     public boolean isDfInvalidated() {
         return isDfInvalidated;
-    }
-
-    public byte[] getFci() {
-        if (fci != null) {
-            return fci.getBytes();
-        } else {
-            return null;
-        }
     }
 
     /**
