@@ -31,7 +31,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
 import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Before;
