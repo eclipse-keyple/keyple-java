@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.protocol.Protocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.transaction.SeSelection;
@@ -317,20 +317,17 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                                                     ByteArrayUtil.fromHex(
                                                             PoFileStructureInfo.poAuditC0Aid),
                                                     null), null, "Audit C0"),
-                                            ChannelState.KEEP_OPEN, Protocol.ANY));
+                                            ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
 
             // Add CLAP AID to the list
             int clapSeIndex =
                     seSelection
-                            .prepareSelection(
-                                    new PoSelectionRequest(
-                                            new SeSelector(
-                                                    new SeSelector.AidSelector(
-                                                            ByteArrayUtil.fromHex(
-                                                                    PoFileStructureInfo.clapAid),
-                                                            null),
-                                                    null, "CLAP"),
-                                            ChannelState.KEEP_OPEN, Protocol.ANY));
+                            .prepareSelection(new PoSelectionRequest(
+                                    new SeSelector(
+                                            new SeSelector.AidSelector(ByteArrayUtil
+                                                    .fromHex(PoFileStructureInfo.clapAid), null),
+                                            null, "CLAP"),
+                                    ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
 
             // Add cdLight AID to the list
             int cdLightSeIndex =
@@ -340,7 +337,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                                             new SeSelector.AidSelector(ByteArrayUtil
                                                     .fromHex(PoFileStructureInfo.cdLightAid), null),
                                             null, "CDLight"),
-                                    ChannelState.KEEP_OPEN, Protocol.ANY));
+                                    ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
 
             SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
 
@@ -428,7 +425,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         SeSelectionRequest samSelectionRequest = new SamSelectionRequest(
                 new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY);
 
         /* Prepare selector, ignore MatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);

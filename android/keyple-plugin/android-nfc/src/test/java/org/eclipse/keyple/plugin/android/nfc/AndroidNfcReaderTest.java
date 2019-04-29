@@ -456,7 +456,7 @@ public class AndroidNfcReaderTest {
                 .thenReturn(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4.getValue());
 
         // test
-        Assert.assertTrue(reader.protocolFlagMatches(ContactlessProtocols.PROTOCOL_ISO14443_4));
+        Assert.assertTrue(reader.protocolFlagMatches(SeCommonProtocol.PROTOCOL_ISO14443_4));
     }
 
     @Test
@@ -517,7 +517,7 @@ public class AndroidNfcReaderTest {
         // TODO change this with the use of the selection API
         SeRequest seRequest = new SeRequest(new SeSelector(
                 new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null, null), poApduRequestList,
-                ChannelState.CLOSE_AFTER, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                ChannelState.CLOSE_AFTER, SeCommonProtocol.PROTOCOL_ISO14443_4);
 
         return new SeRequestSet(seRequest);
 

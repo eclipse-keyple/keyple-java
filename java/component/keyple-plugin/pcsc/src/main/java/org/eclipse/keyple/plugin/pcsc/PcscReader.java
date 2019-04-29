@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedLocalReader;
-import org.eclipse.keyple.core.seproxy.protocol.Protocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -186,7 +186,7 @@ public final class PcscReader extends AbstractThreadedLocalReader {
     protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
         boolean result;
         // Get protocolFlag to check if ATR filtering is required
-        if (protocolFlag != Protocol.ANY) {
+        if (protocolFlag != SeCommonProtocol.PROTOCOL_ANY) {
             if (!isPhysicalChannelOpen()) {
                 openPhysicalChannel();
             }

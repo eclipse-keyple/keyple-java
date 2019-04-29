@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.pcsc;
 
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSettingList;
 
@@ -20,22 +20,22 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSettingList;
  */
 public enum PcscProtocolSetting implements SeProtocolSettingList {
 
-    SETTING_PROTOCOL_ISO14443_4(ContactlessProtocols.PROTOCOL_ISO14443_4,
+    SETTING_PROTOCOL_ISO14443_4(SeCommonProtocol.PROTOCOL_ISO14443_4,
             ProtocolSetting.REGEX_PROTOCOL_ISO14443_4),
 
-    SETTING_PROTOCOL_B_PRIME(ContactlessProtocols.PROTOCOL_B_PRIME,
+    SETTING_PROTOCOL_B_PRIME(SeCommonProtocol.PROTOCOL_B_PRIME,
             ProtocolSetting.REGEX_PROTOCOL_B_PRIME),
 
-    SETTING_PROTOCOL_MIFARE_UL(ContactlessProtocols.PROTOCOL_MIFARE_UL,
+    SETTING_PROTOCOL_MIFARE_UL(SeCommonProtocol.PROTOCOL_MIFARE_UL,
             ProtocolSetting.REGEX_PROTOCOL_MIFARE_UL),
 
-    SETTING_PROTOCOL_MIFARE_CLASSIC(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC,
+    SETTING_PROTOCOL_MIFARE_CLASSIC(SeCommonProtocol.PROTOCOL_MIFARE_CLASSIC,
             ProtocolSetting.REGEX_PROTOCOL_MIFARE_CLASSIC),
 
-    SETTING_PROTOCOL_MIFARE_DESFIRE(ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE,
+    SETTING_PROTOCOL_MIFARE_DESFIRE(SeCommonProtocol.PROTOCOL_MIFARE_DESFIRE,
             ProtocolSetting.REGEX_PROTOCOL_MIFARE_DESFIRE),
 
-    SETTING_PROTOCOL_MEMORY_ST25(ContactlessProtocols.PROTOCOL_MEMORY_ST25,
+    SETTING_PROTOCOL_MEMORY_ST25(SeCommonProtocol.PROTOCOL_MEMORY_ST25,
             ProtocolSetting.REGEX_PROTOCOL_MEMORY_ST25);
 
     /**

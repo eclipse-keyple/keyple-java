@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.transaction.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
@@ -96,7 +96,7 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
                                     SeSelector.AidSelector.FileOccurrence.FIRST,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
                             null, "Initial selection #1"),
-                    ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4));
+                    ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4));
 
             seSelection = new SeSelection();
 
@@ -109,7 +109,7 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
                             null, "Next selection #2"),
-                    ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4));
+                    ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4));
 
             seSelection = new SeSelection();
 
@@ -122,7 +122,7 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
                             null, "Next selection #3"),
-                    ChannelState.CLOSE_AFTER, ContactlessProtocols.PROTOCOL_ISO14443_4));
+                    ChannelState.CLOSE_AFTER, SeCommonProtocol.PROTOCOL_ISO14443_4));
 
             doAndAnalyseSelection(seReader, seSelection, 3);
 

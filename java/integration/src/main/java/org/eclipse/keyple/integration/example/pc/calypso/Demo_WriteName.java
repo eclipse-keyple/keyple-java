@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.protocol.Protocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.transaction.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -68,7 +68,7 @@ public class Demo_WriteName {
 
         SeSelectionRequest samSelectionRequest = new SamSelectionRequest(
                 new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY);
 
         /* Prepare selector, ignore MatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
@@ -119,20 +119,17 @@ public class Demo_WriteName {
                                                     ByteArrayUtil.fromHex(
                                                             PoFileStructureInfo.poAuditC0Aid),
                                                     null), null, "Audit C0"),
-                                            ChannelState.KEEP_OPEN, Protocol.ANY));
+                                            ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
 
             // Add CLAP AID to the list
             int clapSe =
                     seSelection
-                            .prepareSelection(
-                                    new PoSelectionRequest(
-                                            new SeSelector(
-                                                    new SeSelector.AidSelector(
-                                                            ByteArrayUtil.fromHex(
-                                                                    PoFileStructureInfo.clapAid),
-                                                            null),
-                                                    null, "CLAP"),
-                                            ChannelState.KEEP_OPEN, Protocol.ANY));
+                            .prepareSelection(new PoSelectionRequest(
+                                    new SeSelector(
+                                            new SeSelector.AidSelector(ByteArrayUtil
+                                                    .fromHex(PoFileStructureInfo.clapAid), null),
+                                            null, "CLAP"),
+                                    ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
 
             // Add cdLight AID to the list
             int cdLightSe =
@@ -142,7 +139,7 @@ public class Demo_WriteName {
                                             new SeSelector.AidSelector(ByteArrayUtil
                                                     .fromHex(PoFileStructureInfo.cdLightAid), null),
                                             null, "CDLight"),
-                                    ChannelState.KEEP_OPEN, Protocol.ANY));
+                                    ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
 
             SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
             if (!selectionsResult.hasActiveSelection()) {

@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.example.generic.common.CustomProtocolSetting;
@@ -108,10 +108,10 @@ Demo_SeProtocolDetection_Stub {
         // create and fill a protocol map
         Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
 
-        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC,
+        protocolsMap.put(SeCommonProtocol.PROTOCOL_MIFARE_CLASSIC,
                 StubProtocolSetting.ProtocolSetting.REGEX_PROTOCOL_MIFARE_CLASSIC);
 
-        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_UL,
+        protocolsMap.put(SeCommonProtocol.PROTOCOL_MIFARE_UL,
                 StubProtocolSetting.ProtocolSetting.REGEX_PROTOCOL_MIFARE_UL);
 
         // provide the reader with the map

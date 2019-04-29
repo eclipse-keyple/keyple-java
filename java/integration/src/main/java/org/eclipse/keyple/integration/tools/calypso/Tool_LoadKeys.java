@@ -34,7 +34,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.Protocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SeSelectionRequest;
@@ -172,7 +172,7 @@ public class Tool_LoadKeys {
 
         SeSelectionRequest samSelectionRequest = new SamSelectionRequest(
                 new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY);
 
         /* Prepare selector, ignore MatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
@@ -203,9 +203,10 @@ public class Tool_LoadKeys {
 
             SeSelection seSelection = new SeSelection();
 
-            seSelection.prepareSelection(
-                    new PoSelectionRequest(new SeSelector(new SeSelector.AidSelector(aid, null),
-                            null, "Calypso Classic AID"), ChannelState.KEEP_OPEN, Protocol.ANY));
+            seSelection.prepareSelection(new PoSelectionRequest(
+                    new SeSelector(new SeSelector.AidSelector(aid, null), null,
+                            "Calypso Classic AID"),
+                    ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
 
             SelectionsResult poSelectionsResult = seSelection.processExplicitSelection(poReader);
 

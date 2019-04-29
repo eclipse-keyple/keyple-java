@@ -28,7 +28,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.protocol.Protocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.core.transaction.MatchingSe;
 import org.eclipse.keyple.core.transaction.SeSelection;
@@ -91,7 +91,7 @@ public class StubReaderTest {
         SeSelection seSelection = new SeSelection();
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
                 new SeSelector(null, new SeSelector.AtrFilter("3B.*"), "ATR selection"),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY);
 
         /* Prepare selector, ignore MatchingSe here */
         seSelection.prepareSelection(seSelectionRequest);
@@ -188,7 +188,7 @@ public class StubReaderTest {
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
                 new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null,
                         "AID: " + poAid),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY);
 
         seSelection.prepareSelection(seSelectionRequest);
 
@@ -227,7 +227,7 @@ public class StubReaderTest {
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
                 new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null,
                         "AID: " + poAid),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY);
 
         seSelection.prepareSelection(seSelectionRequest);
 
@@ -273,7 +273,7 @@ public class StubReaderTest {
         SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
                 new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null,
                         "AID: " + poAid),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY);
 
         seSelection.prepareSelection(seSelectionRequest);
 
@@ -305,7 +305,7 @@ public class StubReaderTest {
                 SeSelection seSelection = new SeSelection();
                 SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
                         new SeSelector(null, new SeSelector.AtrFilter("3B.*"), "Test ATR"),
-                        ChannelState.KEEP_OPEN, Protocol.ANY);
+                        ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY);
 
                 /* Prepare selector, ignore MatchingSe here */
                 seSelection.prepareSelection(seSelectionRequest);

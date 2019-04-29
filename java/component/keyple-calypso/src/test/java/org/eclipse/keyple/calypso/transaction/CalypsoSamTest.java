@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ public class CalypsoSamTest {
     public void test_CalypsoSam_1() {
         SeSelector seSelector = new SeSelector(null, null, "Dummy SeSelector");
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(seSelector,
-                ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO7816_3);
         SelectionStatus selectionStatus = new SelectionStatus(
                 new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180D002030411223344829000")),
                 null, true);
@@ -51,7 +51,7 @@ public class CalypsoSamTest {
     public void test_CalypsoSam_2() {
         SeSelector seSelector = new SeSelector(null, null, "Dummy SeSelector");
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(seSelector,
-                ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4);
         SelectionStatus selectionStatus = new SelectionStatus(
                 new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180D102030411223344829000")),
                 null, true);
@@ -66,7 +66,7 @@ public class CalypsoSamTest {
     public void test_CalypsoSam_3() {
         SeSelector seSelector = new SeSelector(null, null, "Dummy SeSelector");
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(seSelector,
-                ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4);
         SelectionStatus selectionStatus = new SelectionStatus(
                 new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180D202030411223344829000")),
                 null, true);
@@ -81,7 +81,7 @@ public class CalypsoSamTest {
     public void test_CalypsoSam_4() {
         SeSelector seSelector = new SeSelector(null, null, "Dummy SeSelector");
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(seSelector,
-                ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4);
         SelectionStatus selectionStatus = new SelectionStatus(
                 new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180C102030411223344829000")),
                 null, true);
@@ -96,7 +96,7 @@ public class CalypsoSamTest {
     public void test_CalypsoSam_5() {
         SeSelector seSelector = new SeSelector(null, null, "Dummy SeSelector");
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(seSelector,
-                ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4);
         SelectionStatus selectionStatus = new SelectionStatus(
                 new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180E102030411223344829000")),
                 null, true);
@@ -111,7 +111,7 @@ public class CalypsoSamTest {
     public void test_CalypsoSam_6() {
         SeSelector seSelector = new SeSelector(null, null, "Dummy SeSelector");
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(seSelector,
-                ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4);
         SelectionStatus selectionStatus = new SelectionStatus(
                 new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180E202030411223344829000")),
                 null, true);
@@ -124,7 +124,7 @@ public class CalypsoSamTest {
     public void test_CalypsoSam_7() {
         SeSelector seSelector = new SeSelector(null, null, "Dummy SeSelector");
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(seSelector,
-                ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4);
         SelectionStatus selectionStatus = new SelectionStatus(
                 new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180E202030411223344820000")),
                 null, true);
@@ -137,7 +137,7 @@ public class CalypsoSamTest {
     public void test_CalypsoSam_8() {
         SeSelector seSelector = new SeSelector(null, null, "Dummy SeSelector");
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(seSelector,
-                ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4);
         SelectionStatus selectionStatus =
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex("")), null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),

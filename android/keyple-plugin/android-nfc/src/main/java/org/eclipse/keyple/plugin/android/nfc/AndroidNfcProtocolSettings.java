@@ -11,19 +11,19 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc;
 
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSettingList;
 
 public enum AndroidNfcProtocolSettings implements SeProtocolSettingList {
 
-    SETTING_PROTOCOL_ISO14443_4(ContactlessProtocols.PROTOCOL_ISO14443_4,
+    SETTING_PROTOCOL_ISO14443_4(SeCommonProtocol.PROTOCOL_ISO14443_4,
             ProtocolSetting.NFC_TAG_TYPE_ISODEP),
 
-    SETTING_PROTOCOL_MIFARE_UL(ContactlessProtocols.PROTOCOL_MIFARE_UL,
+    SETTING_PROTOCOL_MIFARE_UL(SeCommonProtocol.PROTOCOL_MIFARE_UL,
             ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL),
 
-    SETTING_PROTOCOL_MIFARE_CLASSIC(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC,
+    SETTING_PROTOCOL_MIFARE_CLASSIC(SeCommonProtocol.PROTOCOL_MIFARE_CLASSIC,
             ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC);
 
     private final SeProtocol flag;

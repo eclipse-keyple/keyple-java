@@ -19,7 +19,7 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,7 +51,7 @@ public class PoSelectionRequestTest {
     public void setUp() throws Exception {
         poSelectionRequest = new PoSelectionRequest(
                 new PoSelector(null, new PoSelector.PoAtrFilter(".*"), "ATR: .*"),
-                ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4);
     }
 
     @Test

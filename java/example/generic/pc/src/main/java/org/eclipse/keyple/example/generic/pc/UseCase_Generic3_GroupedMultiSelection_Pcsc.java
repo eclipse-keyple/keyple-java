@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.transaction.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
@@ -76,7 +76,7 @@ public class UseCase_Generic3_GroupedMultiSelection_Pcsc {
                                     SeSelector.AidSelector.FileOccurrence.FIRST,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
                             null, "Initial selection #1"),
-                    ChannelState.CLOSE_AFTER, ContactlessProtocols.PROTOCOL_ISO14443_4));
+                    ChannelState.CLOSE_AFTER, SeCommonProtocol.PROTOCOL_ISO14443_4));
 
             /* next selection (2nd selection, later indexed 1) */
             seSelection.prepareSelection(new SeSelectionRequest(
@@ -85,7 +85,7 @@ public class UseCase_Generic3_GroupedMultiSelection_Pcsc {
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
                             null, "Next selection #2"),
-                    ChannelState.CLOSE_AFTER, ContactlessProtocols.PROTOCOL_ISO14443_4));
+                    ChannelState.CLOSE_AFTER, SeCommonProtocol.PROTOCOL_ISO14443_4));
 
             /* next selection (3rd selection, later indexed 2) */
             seSelection.prepareSelection(new SeSelectionRequest(
@@ -94,7 +94,7 @@ public class UseCase_Generic3_GroupedMultiSelection_Pcsc {
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
                             null, "Next selection #3"),
-                    ChannelState.CLOSE_AFTER, ContactlessProtocols.PROTOCOL_ISO14443_4));
+                    ChannelState.CLOSE_AFTER, SeCommonProtocol.PROTOCOL_ISO14443_4));
             /*
              * Actual SE communication: operate through a single request the SE selection
              */

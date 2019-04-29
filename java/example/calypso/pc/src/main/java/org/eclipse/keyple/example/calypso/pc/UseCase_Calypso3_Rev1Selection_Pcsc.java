@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.transaction.MatchingSelection;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
@@ -118,7 +118,7 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
                     new PoSelector(null, new PoSelector.PoAtrFilter(poAtrRegex),
                             "ATR: " + poAtrRegex),
-                    ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                    ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4);
 
             /*
              * Prepare the selection of the DF RT.

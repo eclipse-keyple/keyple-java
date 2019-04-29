@@ -15,7 +15,7 @@ import java.io.Serializable;
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.protocol.Protocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
@@ -41,7 +41,7 @@ public final class SeRequest implements Serializable {
     /**
      * the protocol flag is used to target specific SE technologies for a given request
      */
-    private SeProtocol protocolFlag = Protocol.ANY;
+    private SeProtocol protocolFlag = SeCommonProtocol.PROTOCOL_ANY;
 
     /**
      * the final logical channel status: the SE reader may kept active the logical channel of the SE
@@ -62,8 +62,8 @@ public final class SeRequest implements Serializable {
      *        selection process
      * @param channelState the channel management parameter allowing to close or keep the channel
      *        open after the request execution
-     * @param protocolFlag the expected protocol for the SE (may be set to Protocol.ANY if no check
-     *        is needed)
+     * @param protocolFlag the expected protocol for the SE (may be set to
+     *        SeCommonProtocol.PROTOCOL_ANY if no check is needed)
      */
     public SeRequest(SeSelector seSelector, List<ApduRequest> apduRequests,
             ChannelState channelState, SeProtocol protocolFlag) {
@@ -83,7 +83,7 @@ public final class SeRequest implements Serializable {
         this.seSelector = null;
         this.apduRequests = apduRequests;
         this.channelState = channelState;
-        this.protocolFlag = Protocol.ANY;
+        this.protocolFlag = SeCommonProtocol.PROTOCOL_ANY;
     }
 
 

@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.example.generic.common.CustomProtocolSetting;
@@ -97,10 +97,10 @@ public class Demo_SeProtocolDetection_Pcsc {
         // create and fill a protocol map
         Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
 
-        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC,
+        protocolsMap.put(SeCommonProtocol.PROTOCOL_MIFARE_CLASSIC,
                 PcscProtocolSetting.ProtocolSetting.REGEX_PROTOCOL_MIFARE_CLASSIC);
 
-        protocolsMap.put(ContactlessProtocols.PROTOCOL_MIFARE_UL,
+        protocolsMap.put(SeCommonProtocol.PROTOCOL_MIFARE_UL,
                 PcscProtocolSetting.ProtocolSetting.REGEX_PROTOCOL_MIFARE_UL);
 
         // provide the reader with the map

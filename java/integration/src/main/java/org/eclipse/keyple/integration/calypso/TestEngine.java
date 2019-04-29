@@ -23,7 +23,7 @@ import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.protocol.Protocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.core.transaction.MatchingSelection;
 import org.eclipse.keyple.core.transaction.SeSelection;
@@ -45,24 +45,32 @@ public class TestEngine {
 
         // Add Audit C0 AID to the list
         seSelection
-                .prepareSelection(new PoSelectionRequest(new SeSelector(
-                        new SeSelector.AidSelector(
-                                ByteArrayUtil.fromHex(PoFileStructureInfo.poAuditC0Aid), null),
-                        null, "Audit C0"), ChannelState.KEEP_OPEN, Protocol.ANY));
+                .prepareSelection(
+                        new PoSelectionRequest(
+                                new SeSelector(
+                                        new SeSelector.AidSelector(ByteArrayUtil
+                                                .fromHex(PoFileStructureInfo.poAuditC0Aid), null),
+                                        null, "Audit C0"),
+                                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
 
         // Add CLAP AID to the list
         seSelection
-                .prepareSelection(new PoSelectionRequest(new SeSelector(
-                        new SeSelector.AidSelector(
-                                ByteArrayUtil.fromHex(PoFileStructureInfo.clapAid), null),
-                        null, "CLAP"), ChannelState.KEEP_OPEN, Protocol.ANY));
+                .prepareSelection(new PoSelectionRequest(
+                        new SeSelector(
+                                new SeSelector.AidSelector(
+                                        ByteArrayUtil.fromHex(PoFileStructureInfo.clapAid), null),
+                                null, "CLAP"),
+                        ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
 
         // Add cdLight AID to the list
         seSelection
-                .prepareSelection(new PoSelectionRequest(new SeSelector(
-                        new SeSelector.AidSelector(
-                                ByteArrayUtil.fromHex(PoFileStructureInfo.cdLightAid), null),
-                        null, "CDLight"), ChannelState.KEEP_OPEN, Protocol.ANY));
+                .prepareSelection(
+                        new PoSelectionRequest(
+                                new SeSelector(
+                                        new SeSelector.AidSelector(ByteArrayUtil
+                                                .fromHex(PoFileStructureInfo.cdLightAid), null),
+                                        null, "CDLight"),
+                                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
 
         MatchingSelection matchingSelection =
                 seSelection.processExplicitSelection(poReader).getActiveSelection();
@@ -137,7 +145,7 @@ public class TestEngine {
 
         SeSelectionRequest samSelectionRequest = new SamSelectionRequest(
                 new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY);
 
         /* Prepare selector, ignore MatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);

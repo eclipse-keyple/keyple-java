@@ -12,5 +12,32 @@
 package org.eclipse.keyple.core.seproxy.protocol;
 
 public interface SeProtocol {
+    /**
+     * Type of protocol.
+     * <p>
+     * Standard protocols are defined as ISO standards.
+     * <p>
+     * Proprietary protocols are defined by the chip manufacturers.
+     */
+    public enum ProtocolType {
+        STANDARD, PROPRIETARY
+    }
+
+    /**
+     * NFC compatibility.
+     * <p>
+     * The NFC compatibility indicates whether the protocol is supported or not by NFC readers
+     * (Android)
+     */
+    public enum NfcCompatibility {
+        NFC, NOT_NFC
+    }
+
     String getName();
+
+    public ProtocolType getProtocolType();
+
+    public TransmissionMode getTransmissionMode();
+
+    public NfcCompatibility getNfcCompatibility();
 }
