@@ -172,12 +172,11 @@ public class Demo_Master implements Observable.Observer {
                          */
                         PoSelectionRequest poSelectionRequest =
                                 new PoSelectionRequest(
-                                        new SeSelector(
+                                        new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
                                                 new SeSelector.AidSelector(ByteArrayUtil
                                                         .fromHex(CalypsoClassicInfo.AID), null),
-                                                null, "AID: " + CalypsoClassicInfo.AID),
-                                        ChannelState.KEEP_OPEN,
-                                        SeCommonProtocol.PROTOCOL_ISO14443_4);
+                                                "AID: " + CalypsoClassicInfo.AID),
+                                        ChannelState.KEEP_OPEN);
 
                         logger.info("{} Create a PoSelectionRequest", node.getNodeId());
 

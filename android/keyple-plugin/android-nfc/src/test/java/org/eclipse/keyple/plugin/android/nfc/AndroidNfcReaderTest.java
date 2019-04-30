@@ -515,9 +515,9 @@ public class AndroidNfcReaderTest {
         poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
         // TODO change this with the use of the selection API
-        SeRequest seRequest = new SeRequest(new SeSelector(
-                new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null, null), poApduRequestList,
-                ChannelState.CLOSE_AFTER, SeCommonProtocol.PROTOCOL_ISO14443_4);
+        SeRequest seRequest = new SeRequest(new SeSelector( SeCommonProtocol.PROTOCOL_ISO14443_4,null,
+                new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null), poApduRequestList,
+                ChannelState.CLOSE_AFTER);
 
         return new SeRequestSet(seRequest);
 

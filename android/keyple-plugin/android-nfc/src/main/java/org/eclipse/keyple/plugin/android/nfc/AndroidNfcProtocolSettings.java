@@ -18,13 +18,13 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSettingList;
 public enum AndroidNfcProtocolSettings implements SeProtocolSettingList {
 
     SETTING_PROTOCOL_ISO14443_4(SeCommonProtocol.PROTOCOL_ISO14443_4,
-            ProtocolSetting.NFC_TAG_TYPE_ISODEP),
+            "android.nfc.tech.IsoDep"),
 
     SETTING_PROTOCOL_MIFARE_UL(SeCommonProtocol.PROTOCOL_MIFARE_UL,
-            ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL),
+            "android.nfc.tech.MifareUltralight"),
 
     SETTING_PROTOCOL_MIFARE_CLASSIC(SeCommonProtocol.PROTOCOL_MIFARE_CLASSIC,
-            ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC);
+            "android.nfc.tech.MifareClassic");
 
     private final SeProtocol flag;
     private final String value;
@@ -44,15 +44,4 @@ public enum AndroidNfcProtocolSettings implements SeProtocolSettingList {
         return value;
     }
 
-    public interface ProtocolSetting {
-
-        String NFC_TAG_TYPE_ISODEP = "android.nfc.tech.IsoDep";
-
-        String NFC_TAG_TYPE_MIFARE_UL = "android.nfc.tech.MifareUltralight";
-
-        String NFC_TAG_TYPE_MIFARE_CLASSIC = "android.nfc.tech.MifareClassic";
-
-
-
-    }
 }
