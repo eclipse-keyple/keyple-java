@@ -21,8 +21,11 @@ public interface SeProtocolPluginSetting {
     SeProtocol getFlag();
 
     /**
-     * This value is used to identify the protocol at low level (e.g. ATR regex [PC/SC] or tech name [Android]).
-     * <p>However, this value depends on the plugin and can take any other form for other plugins.
+     * This value is used to identify the protocol at low level (e.g. ATR regex [PC/SC] or tech name
+     * [Android]).
+     * <p>
+     * However, this value depends on the plugin and can take any other form for other plugins.
+     * 
      * @return a string
      */
     String getValue();
