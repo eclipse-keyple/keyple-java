@@ -13,12 +13,12 @@ package org.eclipse.keyple.plugin.pcsc;
 
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSettingList;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocolPluginSetting;
 
 /**
  * These objects are used by the application to build the SeProtocolsMap
  */
-public enum PcscProtocolSetting implements SeProtocolSettingList {
+public enum PcscProtocolSetting implements SeProtocolPluginSetting {
     /**
      * Associates protocol names and regular expressions to match ATRs produced by PC/SC readers
      * <p>

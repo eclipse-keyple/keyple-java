@@ -14,13 +14,12 @@ package org.eclipse.keyple.example.generic.pc;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.example.generic.common.CustomProtocolSetting;
+import org.eclipse.keyple.example.generic.common.CustomPluginSetting;
 import org.eclipse.keyple.example.generic.common.SeProtocolDetectionEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
@@ -92,7 +91,7 @@ public class Demo_SeProtocolDetection_Pcsc {
 
         // Method 2
         // add all settings at once with setting enum
-        poReader.addSeProtocolSetting(new SeProtocolSetting(CustomProtocolSetting.values()));
+        poReader.addSeProtocolSetting(new SeProtocolSetting(CustomPluginSetting.values()));
 
         // Set terminal as Observer of the first reader
         ((ObservableReader) poReader).addObserver(observer);

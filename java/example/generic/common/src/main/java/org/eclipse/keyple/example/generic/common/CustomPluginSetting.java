@@ -12,12 +12,12 @@
 package org.eclipse.keyple.example.generic.common;
 
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSettingList;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocolPluginSetting;
 
 /**
  * Custom protocol setting definitions to illustrate the extension of the Keyple SDK definitions
  */
-public enum CustomProtocolSetting implements SeProtocolSettingList {
+public enum CustomPluginSetting implements SeProtocolPluginSetting {
     CUSTOM_SETTING_PROTOCOL_B_PRIME(CustomProtocols.CUSTOM_PROTOCOL_B_PRIME,
             "3B8F8001805A0A0103200311........829000.."),
 
@@ -30,7 +30,7 @@ public enum CustomProtocolSetting implements SeProtocolSettingList {
     /* the protocol setting value */
     String value;
 
-    CustomProtocolSetting(SeProtocol flag, String value) {
+    CustomPluginSetting(SeProtocol flag, String value) {
         this.flag = flag;
         this.value = value;
     }

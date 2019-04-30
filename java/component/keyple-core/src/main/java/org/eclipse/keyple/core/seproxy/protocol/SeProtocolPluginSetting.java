@@ -12,10 +12,18 @@
 package org.eclipse.keyple.core.seproxy.protocol;
 
 /**
- * Interface to be implemented by SeProtocolSetting enums
+ * Interface to be implemented by plugin creators to manage protocol parameter enum lists
  */
-public interface SeProtocolSettingList {
+public interface SeProtocolPluginSetting {
+    /**
+     * @return the protocol identifier
+     */
     SeProtocol getFlag();
 
+    /**
+     * This value is used to identify the protocol at low level (e.g. ATR regex [PC/SC] or tech name [Android]).
+     * <p>However, this value depends on the plugin and can take any other form for other plugins.
+     * @return a string
+     */
     String getValue();
 }

@@ -13,9 +13,9 @@ package org.eclipse.keyple.plugin.android.nfc;
 
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSettingList;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocolPluginSetting;
 
-public enum AndroidNfcProtocolSettings implements SeProtocolSettingList {
+public enum AndroidNfcProtocolSettings implements SeProtocolPluginSetting {
 
     SETTING_PROTOCOL_ISO14443_4(SeCommonProtocol.PROTOCOL_ISO14443_4,
             "android.nfc.tech.IsoDep"),

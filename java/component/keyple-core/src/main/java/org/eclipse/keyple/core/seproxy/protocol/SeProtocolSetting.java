@@ -20,16 +20,12 @@ import java.util.Map;
 public class SeProtocolSetting {
     private Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
 
-    public SeProtocolSetting(Map<SeProtocol, String> seProtocolSettingList) {
-        this.protocolsMap.putAll(seProtocolSettingList);
-    }
-
-    public SeProtocolSetting(SeProtocolSettingList seProtocolSetting) {
+    public SeProtocolSetting(SeProtocolPluginSetting seProtocolSetting) {
         this.protocolsMap.put(seProtocolSetting.getFlag(), seProtocolSetting.getValue());
     }
 
-    public SeProtocolSetting(SeProtocolSettingList[] seProtocolSettingList) {
-        for (SeProtocolSettingList seProtocolSetting : seProtocolSettingList) {
+    public SeProtocolSetting(SeProtocolPluginSetting[] seProtocolPluginSetting) {
+        for (SeProtocolPluginSetting seProtocolSetting : seProtocolPluginSetting) {
             this.protocolsMap.put(seProtocolSetting.getFlag(), seProtocolSetting.getValue());
         }
     }

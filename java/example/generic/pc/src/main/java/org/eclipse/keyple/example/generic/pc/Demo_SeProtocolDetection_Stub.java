@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.example.generic.common.CustomProtocolSetting;
+import org.eclipse.keyple.example.generic.common.CustomPluginSetting;
 import org.eclipse.keyple.example.generic.common.SeProtocolDetectionEngine;
 import org.eclipse.keyple.example.generic.pc.stub.se.*;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
@@ -102,7 +102,7 @@ Demo_SeProtocolDetection_Stub {
 
         // Method 2
         // add all settings at once with setting enum
-        poReader.addSeProtocolSetting(new SeProtocolSetting(CustomProtocolSetting.values()));
+        poReader.addSeProtocolSetting(new SeProtocolSetting(CustomPluginSetting.values()));
 
         // Set terminal as Observer of the first reader
         ((ObservableReader) poReader).addObserver(observer);
