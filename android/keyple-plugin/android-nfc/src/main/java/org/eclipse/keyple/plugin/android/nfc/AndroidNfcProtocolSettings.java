@@ -11,37 +11,79 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc;
 
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolPluginSetting;
 
-public enum AndroidNfcProtocolSettings implements SeProtocolPluginSetting {
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
-    SETTING_PROTOCOL_ISO14443_4(SeCommonProtocol.PROTOCOL_ISO14443_4,
-            "android.nfc.tech.IsoDep"),
+/**
+ * This class contains all the parameters to identify the communication protocols supported by NFC
+ * readers.
+ * <p>
+ * The application can choose to add all parameters or only a subset.
+ */
+public class AndroidNfcProtocolSettings {
 
-    SETTING_PROTOCOL_MIFARE_UL(SeCommonProtocol.PROTOCOL_MIFARE_UL,
-            "android.nfc.tech.MifareUltralight"),
+    public static final Map<SeProtocol, String> NFC_PROTOCOL_SETTING;
 
-    SETTING_PROTOCOL_MIFARE_CLASSIC(SeCommonProtocol.PROTOCOL_MIFARE_CLASSIC,
-            "android.nfc.tech.MifareClassic");
+    /**
+     * Associates a protocol and a string defining how to identify it (here a regex to be applied on
+     * the ATR)
+     */
+    static {
 
-    private final SeProtocol flag;
-    private final String value;
+        Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
 
-    AndroidNfcProtocolSettings(SeProtocol flag, String value) {
-        this.flag = flag;
-        this.value = value;
+        map.put(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                "android.nfc.tech.IsoDep");
+
+        map.put(SeCommonProtocols.PROTOCOL_ISO14443_3A, "android.nfc.tech.NfcA");
+
+        map.put(SeCommonProtocols.PROTOCOL_ISO14443_3B, "android.nfc.tech.NfcB");
+
+        map.put(SeCommonProtocols.PROTOCOL_JIS_6319_4, "android.nfc.tech.NfcF");
+
+        map.put(SeCommonProtocols.PROTOCOL_ISO15693, "android.nfc.tech.NfcV");
+
+        map.put(SeCommonProtocols.PROTOCOL_NDEF, "android.nfc.tech.Ndef");
+
+        map.put(SeCommonProtocols.PROTOCOL_NDEF_FORMATABLE, "android.nfc.tech.NdefFormatable");
+
+        map.put(SeCommonProtocols.PROTOCOL_NFC_BARCODE, "android.nfc.tech.NfcBarcode");
+
+        map.put(SeCommonProtocols.PROTOCOL_MIFARE_UL, "android.nfc.tech.MifareUltralight");
+
+        map.put(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC,
+                "android.nfc.tech.MifareClassic");
+
+        NFC_PROTOCOL_SETTING = Collections.unmodifiableMap(map);
     }
 
-    @Override
-    public SeProtocol getFlag() {
-        return flag;
+    /**
+     * Return a subset of the settings map
+     *
+     * @param specificProtocols
+     * @return a settings map
+     */
+    public static Map<SeProtocol, String> getSpecificSettings(
+            EnumSet<SeCommonProtocols> specificProtocols) {
+        Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
+        for (SeCommonProtocols seCommonProtocols : specificProtocols) {
+            map.put(seCommonProtocols, NFC_PROTOCOL_SETTING.get(seCommonProtocols));
+        }
+        return map;
+
     }
 
-    @Override
-    public String getValue() {
-        return value;
+    /**
+     * Return the whole settings map
+     *
+     * @return a settings map
+     */
+    public static Map<SeProtocol, String> getAllSettings() {
+        return NFC_PROTOCOL_SETTING;
     }
-
 }

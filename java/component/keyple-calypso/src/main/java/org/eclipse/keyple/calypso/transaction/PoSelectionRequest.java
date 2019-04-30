@@ -27,7 +27,7 @@ import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.transaction.SeSelectionRequest;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
@@ -160,7 +160,7 @@ public final class PoSelectionRequest extends SeSelectionRequest {
      */
     public int prepareReadRecordsCmd(byte sfi, ReadDataStructure readDataStructureEnum,
             byte firstRecordNumber, String extraInfo) {
-        if (seSelector.getSeProtocol() == SeCommonProtocol.PROTOCOL_ISO7816_3) {
+        if (seSelector.getSeProtocol() == SeCommonProtocols.PROTOCOL_ISO7816_3) {
             throw new IllegalArgumentException(
                     "In contacts mode, the expected length must be specified.");
         }

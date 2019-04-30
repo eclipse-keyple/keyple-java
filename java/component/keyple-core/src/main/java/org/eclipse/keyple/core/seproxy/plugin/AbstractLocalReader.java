@@ -20,7 +20,6 @@ import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -350,12 +349,22 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /**
      * Defines the protocol setting Map to allow SE to be differentiated according to their
      * communication protocol.
-     * 
-     * @param seProtocolSetting the protocol setting to be added to the plugin internal list
+     *
+     * @param seProtocol the protocol key identifier to be added to the plugin internal list
+     * @param protocolRule a string use to define how to identify the protocol
      */
     @Override
-    public void addSeProtocolSetting(SeProtocolSetting seProtocolSetting) {
-        this.protocolsMap.putAll(seProtocolSetting.getProtocolsMap());
+    public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {
+        this.protocolsMap.put(seProtocol, protocolRule);
+    }
+
+    /**
+     * Complete the current setting map with the provided map
+     * 
+     * @param protocolSetting
+     */
+    public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
+        this.protocolsMap.putAll(protocolSetting);
     }
 
     /**

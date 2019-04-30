@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractSelectionLocalReader;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -322,11 +322,11 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
 
         // Build flags list for reader mode
         for (SeProtocol seProtocol : this.protocolsMap.keySet()) {
-            if (SeCommonProtocol.PROTOCOL_ISO14443_4 == seProtocol) {
+            if (SeCommonProtocols.PROTOCOL_ISO14443_4 == seProtocol) {
                 flags = flags | NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_NFC_A;
 
-            } else if (seProtocol == SeCommonProtocol.PROTOCOL_MIFARE_UL
-                    || seProtocol == SeCommonProtocol.PROTOCOL_MIFARE_CLASSIC) {
+            } else if (seProtocol == SeCommonProtocols.PROTOCOL_MIFARE_UL
+                    || seProtocol == SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC) {
                 flags = flags | NfcAdapter.FLAG_READER_NFC_A;
             }
         }

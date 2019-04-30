@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 public class SampleFactory {
@@ -49,7 +49,7 @@ public class SampleFactory {
         List<ApduRequest> poApduRequestList;
         poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-        SeSelector seSelector = new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+        SeSelector seSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                 new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null);
 
         SeRequest seRequest =
@@ -78,7 +78,7 @@ public class SampleFactory {
         List<ApduRequest> poApduRequestList;
         poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-        SeSelector seSelector = new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+        SeSelector seSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                 new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null);
 
         SeRequest seRequest =
@@ -105,10 +105,10 @@ public class SampleFactory {
 
         poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("9000"), true));
 
-        SeSelector aidSelector = new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+        SeSelector aidSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                 new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null);
 
-        SeSelector atrSelector = new SeSelector(SeCommonProtocol.PROTOCOL_ISO7816_3,
+        SeSelector atrSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3,
                 new SeSelector.AtrFilter("/regex/"), null, null);
 
         SeRequest seRequest =

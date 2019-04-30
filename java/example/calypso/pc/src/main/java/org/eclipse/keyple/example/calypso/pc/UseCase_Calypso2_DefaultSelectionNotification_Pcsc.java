@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.transaction.MatchingSelection;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -112,7 +112,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
          * make the selection and read additional information afterwards
          */
         PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                new PoSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
                                 PoSelector.InvalidatedPo.REJECT),
                         "AID: " + CalypsoClassicInfo.AID),

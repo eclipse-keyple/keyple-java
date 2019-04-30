@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.transaction.MatchingSelection;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
@@ -116,7 +116,7 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
              * make the selection and read additional information afterwards
              */
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                    new PoSelector(SeCommonProtocol.PROTOCOL_ISO14443_4,
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                             new PoSelector.PoAtrFilter(poAtrRegex), null, "ATR: " + poAtrRegex),
                     ChannelState.KEEP_OPEN);
 

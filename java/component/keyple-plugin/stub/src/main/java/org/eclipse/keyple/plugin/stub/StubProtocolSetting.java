@@ -11,53 +11,70 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.stub;
 
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolPluginSetting;
 
 /**
- * These objects are used by the application to build the SeProtocolsMap
+ * This class contains all the parameters to identify the communication protocols supported by STUB
+ * readers.
+ * <p>
+ * The application can choose to add all parameters or only a subset.
  */
-public enum StubProtocolSetting implements SeProtocolPluginSetting {
+public class StubProtocolSetting {
+
+    public static final Map<SeProtocol, String> STUB_PROTOCOL_SETTING;
+
     /**
-     * Associates protocol names and regular expressions to match ATRs produced by Stub readers
-     * <p>
-     * To be compared with the StubSE protocol
+     * Associates a protocol and a string defining how to identify it (here a regex to be applied on
+     * the ATR)
      */
-    SETTING_PROTOCOL_ISO14443_4(SeCommonProtocol.PROTOCOL_ISO14443_4, "PROTOCOL_ISO14443_4"),
+    static {
 
-    SETTING_PROTOCOL_B_PRIME(SeCommonProtocol.PROTOCOL_B_PRIME, "PROTOCOL_B_PRIME"),
+        Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
 
-    SETTING_PROTOCOL_MIFARE_UL(SeCommonProtocol.PROTOCOL_MIFARE_UL, "PROTOCOL_MIFARE_UL"),
+        map.put(SeCommonProtocols.PROTOCOL_ISO14443_4, "PROTOCOL_ISO14443_4");
 
-    SETTING_PROTOCOL_MIFARE_CLASSIC(SeCommonProtocol.PROTOCOL_MIFARE_CLASSIC,
-            "PROTOCOL_MIFARE_CLASSIC"),
+        map.put(SeCommonProtocols.PROTOCOL_B_PRIME, "PROTOCOL_B_PRIME");
 
-    SETTING_PROTOCOL_MIFARE_DESFIRE(SeCommonProtocol.PROTOCOL_MIFARE_DESFIRE,
-            "PROTOCOL_MIFARE_DESFIRE"),
+        map.put(SeCommonProtocols.PROTOCOL_MIFARE_UL, "PROTOCOL_MIFARE_UL");
 
-    SETTING_PROTOCOL_MEMORY_ST25(SeCommonProtocol.PROTOCOL_MEMORY_ST25, "PROTOCOL_MEMORY_ST25"),
+        map.put(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC, "PROTOCOL_MIFARE_CLASSIC");
 
-    SETTING_PROTOCOL_ISO7816_3(SeCommonProtocol.PROTOCOL_ISO7816_3, "PROTOCOL_ISO7816_3");
+        map.put(SeCommonProtocols.PROTOCOL_MIFARE_DESFIRE, "PROTOCOL_MIFARE_DESFIRE");
 
-    /* the protocol flag */
-    SeProtocol flag;
+        map.put(SeCommonProtocols.PROTOCOL_MEMORY_ST25, "PROTOCOL_MEMORY_ST25");
 
-    /* the protocol setting value */
-    String value;
+        map.put(SeCommonProtocols.PROTOCOL_ISO7816_3, "PROTOCOL_ISO7816_3");
 
-    StubProtocolSetting(SeProtocol flag, String value) {
-        this.flag = flag;
-        this.value = value;
+        STUB_PROTOCOL_SETTING = Collections.unmodifiableMap(map);
     }
 
-    @Override
-    public SeProtocol getFlag() {
-        return this.flag;
+    /**
+     * Return a subset of the settings map
+     *
+     * @param specificProtocols
+     * @return a settings map
+     */
+    public static Map<SeProtocol, String> getSpecificSettings(
+            EnumSet<SeCommonProtocols> specificProtocols) {
+        Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
+        for (SeCommonProtocols seCommonProtocols : specificProtocols) {
+            map.put(seCommonProtocols, STUB_PROTOCOL_SETTING.get(seCommonProtocols));
+        }
+        return map;
+
     }
 
-    @Override
-    public String getValue() {
-        return this.value;
+    /**
+     * Return the whole settings map
+     *
+     * @return a settings map
+     */
+    public static Map<SeProtocol, String> getAllSettings() {
+        return STUB_PROTOCOL_SETTING;
     }
 }

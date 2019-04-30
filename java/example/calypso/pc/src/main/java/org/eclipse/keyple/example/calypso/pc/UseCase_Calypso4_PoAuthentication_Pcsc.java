@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.transaction.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -120,7 +120,7 @@ public class UseCase_Calypso4_PoAuthentication_Pcsc {
              * make the selection and read additional information afterwards
              */
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                    SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                     new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
                             PoSelector.InvalidatedPo.REJECT),
                     "AID: " + CalypsoClassicInfo.AID), ChannelState.KEEP_OPEN);

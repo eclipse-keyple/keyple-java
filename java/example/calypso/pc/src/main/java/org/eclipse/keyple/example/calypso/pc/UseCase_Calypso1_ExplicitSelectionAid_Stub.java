@@ -20,8 +20,7 @@ import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.transaction.MatchingSelection;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
@@ -85,8 +84,9 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Stub {
             throw new IllegalStateException("Bad PO reader setup");
         }
 
-        poReader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         /* Create 'virtual' Calypso PO */
         StubSecureElement calypsoStubSe = new StubCalypsoClassic();
@@ -125,7 +125,7 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Stub {
              * make the selection and read additional information afterwards
              */
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                    SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                     new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
                             PoSelector.InvalidatedPo.REJECT),
                     "AID: " + CalypsoClassicInfo.AID), ChannelState.KEEP_OPEN);

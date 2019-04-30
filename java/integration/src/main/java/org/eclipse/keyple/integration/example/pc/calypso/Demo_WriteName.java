@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.transaction.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -67,7 +67,7 @@ public class Demo_WriteName {
         SeSelection samSelection = new SeSelection();
 
         SeSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SeSelector(SeCommonProtocol.PROTOCOL_ISO7816_3,
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3,
                         new SeSelector.AtrFilter(SAM_ATR_REGEX), null, "SAM Selection"),
                 ChannelState.KEEP_OPEN);
 
@@ -113,7 +113,7 @@ public class Demo_WriteName {
 
             // Add Audit C0 AID to the list
             int auditC0SeIndex = seSelection.prepareSelection(new PoSelectionRequest(
-                    new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(
                                     ByteArrayUtil.fromHex(PoFileStructureInfo.poAuditC0Aid), null),
                             "Audit C0"),
@@ -124,7 +124,7 @@ public class Demo_WriteName {
                     seSelection
                             .prepareSelection(
                                     new PoSelectionRequest(
-                                            new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4,
+                                            new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                                                     null,
                                                     new SeSelector.AidSelector(
                                                             ByteArrayUtil.fromHex(
@@ -138,7 +138,7 @@ public class Demo_WriteName {
                     seSelection
                             .prepareSelection(
                                     new PoSelectionRequest(
-                                            new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4,
+                                            new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                                                     null,
                                                     new SeSelector.AidSelector(
                                                             ByteArrayUtil.fromHex(

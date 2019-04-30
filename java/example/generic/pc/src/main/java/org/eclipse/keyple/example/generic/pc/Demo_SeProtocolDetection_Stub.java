@@ -12,6 +12,7 @@
 package org.eclipse.keyple.example.generic.pc;
 
 
+import java.util.EnumSet;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
@@ -19,8 +20,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.example.generic.common.CustomPluginSetting;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.example.generic.common.SeProtocolDetectionEngine;
 import org.eclipse.keyple.example.generic.pc.stub.se.*;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
@@ -81,28 +81,26 @@ Demo_SeProtocolDetection_Stub {
 
         // Protocol detection settings.
         // add 8 expected protocols with three different methods:
+        // - using a custom enumset
         // - adding protocols individually
-        // - using a custom enum
         // A real application should use only one method.
 
         // Method 1
-        // add protocols individually
-        poReader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_MEMORY_ST25));
-
-        poReader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
-
-        poReader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_MIFARE_CLASSIC));
-
-        poReader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_MIFARE_UL));
-
+        // add several settings at once with setting an enumset
+        poReader.setSeProtocolSetting(StubProtocolSetting.getSpecificSettings(EnumSet.of(
+                SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC, SeCommonProtocols.PROTOCOL_MIFARE_UL)));
 
         // Method 2
-        // add all settings at once with setting enum
-        poReader.addSeProtocolSetting(new SeProtocolSetting(CustomPluginSetting.values()));
+        // append protocols individually
+        // no change
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_MEMORY_ST25,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_MEMORY_ST25));
+
+        // regex extended
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4)
+                        + "|3B8D.*");
 
         // Set terminal as Observer of the first reader
         ((ObservableReader) poReader).addObserver(observer);

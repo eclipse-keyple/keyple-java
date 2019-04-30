@@ -15,17 +15,25 @@ import static org.eclipse.keyple.core.seproxy.protocol.SeProtocol.NfcCompatibili
 import static org.eclipse.keyple.core.seproxy.protocol.SeProtocol.ProtocolType.*;
 import static org.eclipse.keyple.core.seproxy.protocol.TransmissionMode.*;
 
-public enum SeCommonProtocol implements SeProtocol {
+public enum SeCommonProtocols implements SeProtocol {
 
-    /* ------------ contactless standard ---------------- */
+    /* ---- contactless standard ----------------------------- */
     PROTOCOL_ISO14443_4("ISO 14443-4", STANDARD, CONTACTLESS, NFC),
 
-    /* ------------ contactless proprietary ------------- */
+    /* ---- contactless proprietary (NFC compliant) ---------- */
     PROTOCOL_ISO14443_3A("ISO 14443-3 Type A", PROPRIETARY, CONTACTLESS, NFC),
 
     PROTOCOL_ISO14443_3B("ISO 14443-3 Type B", PROPRIETARY, CONTACTLESS, NFC),
 
-    PROTOCOL_B_PRIME("Old Calypso B Prime", PROPRIETARY, CONTACTLESS, NOT_NFC),
+    PROTOCOL_JIS_6319_4("JIS 6319-4 Felica", PROPRIETARY, CONTACTLESS, NFC),
+
+    PROTOCOL_ISO15693("ISO 15693 Type V", PROPRIETARY, CONTACTLESS, NFC),
+
+    PROTOCOL_NDEF("NFC NDEF TAG", PROPRIETARY, CONTACTLESS, NFC),
+
+    PROTOCOL_NDEF_FORMATABLE("NFC NDEF FORMATABLE", PROPRIETARY, CONTACTLESS, NFC),
+
+    PROTOCOL_NFC_BARCODE("NFC BARCODE", PROPRIETARY, CONTACTLESS, NFC),
 
     PROTOCOL_MIFARE_CLASSIC("Mifare Classic", PROPRIETARY, CONTACTLESS, NFC),
 
@@ -33,10 +41,16 @@ public enum SeCommonProtocol implements SeProtocol {
 
     PROTOCOL_MIFARE_DESFIRE("Mifare Desfire", PROPRIETARY, CONTACTLESS, NFC),
 
+    /* ---- contactless proprietary (not NFC compliant) ------ */
+    PROTOCOL_B_PRIME("Old Calypso B Prime", PROPRIETARY, CONTACTLESS, NOT_NFC),
+
     PROTOCOL_MEMORY_ST25("Memory ST25", PROPRIETARY, CONTACTLESS, NOT_NFC),
 
-    /* ------------ contacts standard ------------------- */
-    PROTOCOL_ISO7816_3("ISO 7816-3", STANDARD, CONTACTS, NOT_NFC);
+    /* ---- contacts standard ------------------- */
+    PROTOCOL_ISO7816_3("ISO 7816-3", STANDARD, CONTACTS, NOT_NFC),
+
+    /* ---- contacts proprietary ---------------- */
+    PROTOCOL_HSP("HSP (SAM)", PROPRIETARY, CONTACTS, NOT_NFC);
 
     private final String name;
     private final ProtocolType protocolType;
@@ -46,7 +60,7 @@ public enum SeCommonProtocol implements SeProtocol {
     /**
      * Constructor
      */
-    SeCommonProtocol(String name, ProtocolType protocolType, TransmissionMode transmissionMode,
+    SeCommonProtocols(String name, ProtocolType protocolType, TransmissionMode transmissionMode,
             NfcCompatibility nfcCompatibility) {
         this.name = name;
         this.protocolType = protocolType;

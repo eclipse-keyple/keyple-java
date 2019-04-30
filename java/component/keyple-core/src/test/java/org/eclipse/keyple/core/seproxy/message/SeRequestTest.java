@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Before;
@@ -113,7 +113,7 @@ public class SeRequestTest {
         assertEquals(channelState == ChannelState.KEEP_OPEN, seRequest.isKeepChannelOpen());
         assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
         //
-        assertEquals(SeCommonProtocol.PROTOCOL_ISO14443_4,
+        assertEquals(SeCommonProtocols.PROTOCOL_ISO14443_4,
                 seRequest.getSeSelector().getSeProtocol());
         assertNull(seRequest.getSeSelector().getAidSelector().getSuccessfulSelectionStatusCodes());
     }
@@ -136,7 +136,7 @@ public class SeRequestTest {
                 seRequest.getSeSelector().toString());
         assertEquals(channelState == ChannelState.KEEP_OPEN, seRequest.isKeepChannelOpen());
         assertArrayEquals(apdus.toArray(), seRequest.getApduRequests().toArray());
-        assertEquals(SeCommonProtocol.PROTOCOL_ISO14443_4,
+        assertEquals(SeCommonProtocols.PROTOCOL_ISO14443_4,
                 seRequest.getSeSelector().getSeProtocol());
         //
         assertArrayEquals(selectionStatusCode.toArray(), seRequest.getSeSelector().getAidSelector()
@@ -180,7 +180,7 @@ public class SeRequestTest {
     }
 
     static SeProtocol getASeProtocol() {
-        return SeCommonProtocol.PROTOCOL_ISO14443_4;
+        return SeCommonProtocols.PROTOCOL_ISO14443_4;
     }
 
     static SeSelector getSelector(Set<Integer> selectionStatusCode) {

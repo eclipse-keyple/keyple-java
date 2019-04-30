@@ -31,8 +31,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -118,8 +117,9 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
 
             // with this protocol settings we activate the nfc for ISO1443_4 protocol
-            ((ObservableReader) reader).addSeProtocolSetting(
-                    new SeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4));
+            ((ObservableReader) reader).addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                    AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING
+                            .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
             /*
              * Prepare a Calypso PO selection
@@ -138,7 +138,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
              * the selection and read additional information afterwards
              */
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                    SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                     new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
                             PoSelector.InvalidatedPo.REJECT),
                     "AID: " + CalypsoClassicInfo.AID), ChannelState.KEEP_OPEN);

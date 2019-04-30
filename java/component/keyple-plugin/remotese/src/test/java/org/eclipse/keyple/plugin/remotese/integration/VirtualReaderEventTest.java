@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.transaction.MatchingSe;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SeSelectionRequest;
@@ -209,7 +209,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest =
-                new SeSelectionRequest(new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                new SeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
                         "AID: " + poAid), ChannelState.KEEP_OPEN);
 
@@ -253,7 +253,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest =
-                new SeSelectionRequest(new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                new SeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
                         "AID: " + poAid), ChannelState.KEEP_OPEN);
 
@@ -304,7 +304,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         SeSelection seSelection = new SeSelection();
 
         SeSelectionRequest seSelectionRequest =
-                new SeSelectionRequest(new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                new SeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
                         "AID: " + poAid), ChannelState.KEEP_OPEN);
 
@@ -341,7 +341,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
                 SeSelection seSelection = new SeSelection();
                 SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
-                        new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4,
+                        new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                                 new SeSelector.AtrFilter("3B.*"), null, "Test " + "ATR"),
                         ChannelState.KEEP_OPEN);
 

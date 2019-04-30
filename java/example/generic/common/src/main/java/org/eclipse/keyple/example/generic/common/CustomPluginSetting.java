@@ -11,37 +11,60 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.generic.common;
 
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolPluginSetting;
 
 /**
- * Custom protocol setting definitions to illustrate the extension of the Keyple SDK definitions
+ * This class contains all the parameters to identify the communication protocols supported by a
+ * custom reader.
+ * <p>
+ * The application can choose to add all parameters or only a subset.
  */
-public enum CustomPluginSetting implements SeProtocolPluginSetting {
-    CUSTOM_SETTING_PROTOCOL_B_PRIME(CustomProtocols.CUSTOM_PROTOCOL_B_PRIME,
-            "3B8F8001805A0A0103200311........829000.."),
+public class CustomPluginSetting {
 
-    CUSTOM_SETTING_PROTOCOL_ISO14443_4(CustomProtocols.CUSTOM_PROTOCOL_MIFARE_DESFIRE,
-            "3B8180018080");
+    public static final Map<SeProtocol, String> CUSTOM_PROTOCOL_SETTING;
 
-    /* the protocol flag */
-    SeProtocol flag;
+    /**
+     * Associates a protocol and a string defining how to identify it (here a regex to be applied on
+     * the ATR)
+     */
+    static {
 
-    /* the protocol setting value */
-    String value;
+        Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
 
-    CustomPluginSetting(SeProtocol flag, String value) {
-        this.flag = flag;
-        this.value = value;
+        map.put(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                "3B8880....................|3B8C800150.*|.*4F4D4141544C4153.*");
+
+        map.put(SeCommonProtocols.PROTOCOL_B_PRIME, "3B8F8001805A0A0103200311........829000..");
+
+        CUSTOM_PROTOCOL_SETTING = Collections.unmodifiableMap(map);
     }
 
-    @Override
-    public SeProtocol getFlag() {
-        return flag;
+    /**
+     * Return a subset of the settings map
+     *
+     * @param specificProtocols
+     * @return a settings map
+     */
+    public static Map<SeProtocol, String> getSpecificSettings(
+            EnumSet<SeCommonProtocols> specificProtocols) {
+        Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
+        for (SeCommonProtocols seCommonProtocols : specificProtocols) {
+            map.put(seCommonProtocols, CUSTOM_PROTOCOL_SETTING.get(seCommonProtocols));
+        }
+        return map;
     }
 
-    @Override
-    public String getValue() {
-        return value;
+    /**
+     * Return the whole settings map
+     *
+     * @return a settings map
+     */
+    public static Map<SeProtocol, String> getAllSettings() {
+        return CUSTOM_PROTOCOL_SETTING;
     }
 }

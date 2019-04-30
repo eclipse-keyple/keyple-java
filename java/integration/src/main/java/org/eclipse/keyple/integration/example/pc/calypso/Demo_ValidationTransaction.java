@@ -26,8 +26,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SeSelectionRequest;
@@ -310,7 +309,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
             // Add Audit C0 AID to the list
             int auditC0SeIndex = seSelection.prepareSelection(new PoSelectionRequest(
-                    new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(
                                     ByteArrayUtil.fromHex(PoFileStructureInfo.poAuditC0Aid), null),
                             "Audit C0"),
@@ -321,7 +320,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                     seSelection
                             .prepareSelection(
                                     new PoSelectionRequest(
-                                            new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4,
+                                            new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                                                     null,
                                                     new SeSelector.AidSelector(
                                                             ByteArrayUtil.fromHex(
@@ -335,7 +334,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                     seSelection
                             .prepareSelection(
                                     new PoSelectionRequest(
-                                            new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4,
+                                            new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                                                     null,
                                                     new SeSelector.AidSelector(
                                                             ByteArrayUtil.fromHex(
@@ -420,16 +419,17 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
         samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
-        // provide the reader with the map
-        poReader.addSeProtocolSetting(
-                new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        // provide the reader with the protocol settings
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         final String SAM_ATR_REGEX = "3B3F9600805A[0-9a-fA-F]{2}80[0-9a-fA-F]{16}829000";
 
         SeSelection samSelection = new SeSelection();
 
         SeSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SeSelector(SeCommonProtocol.PROTOCOL_ISO7816_3,
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3,
                         new SeSelector.AtrFilter(SAM_ATR_REGEX), null, "SAM Selection"),
                 ChannelState.KEEP_OPEN);
 

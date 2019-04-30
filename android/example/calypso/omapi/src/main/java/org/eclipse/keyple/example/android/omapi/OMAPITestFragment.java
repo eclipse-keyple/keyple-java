@@ -33,7 +33,7 @@ import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin;
 import android.app.Fragment;
@@ -177,7 +177,7 @@ public class OMAPITestFragment extends Fragment {
                     mText.append("Keep Channel Open : " + keepChannelOpen);
                     mText.append("\n");
                     mText.append(
-                            "Using protocol : " + SeCommonProtocol.PROTOCOL_ISO7816_3.getName());
+                            "Using protocol : " + SeCommonProtocols.PROTOCOL_ISO7816_3.getName());
                     mText.append("\n ----\n ");
 
                     List<ApduRequest> poApduRequestList;
@@ -189,7 +189,7 @@ public class OMAPITestFragment extends Fragment {
 
                     SeRequest seRequest =
                             new SeRequest(
-                                    new SeSelector(SeCommonProtocol.PROTOCOL_ISO7816_3, null,
+                                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid),
                                                     null),
                                             "AID = " + poAid),

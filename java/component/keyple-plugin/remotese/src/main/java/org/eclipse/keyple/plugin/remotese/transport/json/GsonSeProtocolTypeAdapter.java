@@ -33,7 +33,7 @@ class GsonSeProtocolTypeAdapter
 
         String value = json.getAsString();
 
-        for (SeCommonProtocol p : SeCommonProtocol.values()) {
+        for (SeCommonProtocols p : SeCommonProtocols.values()) {
             if (p.name().equals(value)) {
                 return p;
             }

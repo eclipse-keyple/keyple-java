@@ -26,7 +26,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -214,7 +214,7 @@ public class Tool_AnalyzePoFileStructure {
 
 
             PoSelectionRequest poSelectionRequest1 =
-                    new PoSelectionRequest(new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4,
+                    new PoSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                             null, new SeSelector.AidSelector(ByteArrayUtil.fromHex(aid), null),
                             "firstApplication"), ChannelState.KEEP_OPEN);
 
@@ -239,7 +239,7 @@ public class Tool_AnalyzePoFileStructure {
             seSelection = new SeSelection();
 
             PoSelectionRequest poSelectionRequest2 = new PoSelectionRequest(
-                    new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(aid), null,
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),

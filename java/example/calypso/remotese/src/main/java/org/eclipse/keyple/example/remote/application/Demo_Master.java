@@ -28,7 +28,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.util.Observable;
 import org.eclipse.keyple.core.transaction.MatchingSe;
 import org.eclipse.keyple.core.transaction.SeSelection;
@@ -172,7 +172,7 @@ public class Demo_Master implements Observable.Observer {
                          */
                         PoSelectionRequest poSelectionRequest =
                                 new PoSelectionRequest(
-                                        new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                                        new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                                                 new SeSelector.AidSelector(ByteArrayUtil
                                                         .fromHex(CalypsoClassicInfo.AID), null),
                                                 "AID: " + CalypsoClassicInfo.AID),

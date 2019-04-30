@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.transaction.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
@@ -71,7 +71,7 @@ public class UseCase_Generic3_GroupedMultiSelection_Pcsc {
 
             /* AID based selection (1st selection, later indexed 0) */
             seSelection.prepareSelection(new SeSelectionRequest(
-                    new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.FIRST,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
@@ -80,7 +80,7 @@ public class UseCase_Generic3_GroupedMultiSelection_Pcsc {
 
             /* next selection (2nd selection, later indexed 1) */
             seSelection.prepareSelection(new SeSelectionRequest(
-                    new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
@@ -89,7 +89,7 @@ public class UseCase_Generic3_GroupedMultiSelection_Pcsc {
 
             /* next selection (3rd selection, later indexed 2) */
             seSelection.prepareSelection(new SeSelectionRequest(
-                    new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
