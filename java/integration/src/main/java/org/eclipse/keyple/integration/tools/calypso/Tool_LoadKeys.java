@@ -171,8 +171,9 @@ public class Tool_LoadKeys {
         SeSelection samSelection = new SeSelection();
 
         SeSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
-                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY);
+                new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4,
+                        new SeSelector.AtrFilter(SAM_ATR_REGEX), null, "SAM Selection"),
+                ChannelState.KEEP_OPEN);
 
         /* Prepare selector, ignore MatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
@@ -203,10 +204,11 @@ public class Tool_LoadKeys {
 
             SeSelection seSelection = new SeSelection();
 
-            seSelection.prepareSelection(new PoSelectionRequest(
-                    new SeSelector(new SeSelector.AidSelector(aid, null), null,
-                            "Calypso Classic AID"),
-                    ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
+            seSelection.prepareSelection(
+                    new PoSelectionRequest(new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4,
+                            null, new SeSelector.AidSelector(aid, null),
+
+                            "Calypso Classic AID"), ChannelState.KEEP_OPEN));
 
             SelectionsResult poSelectionsResult = seSelection.processExplicitSelection(poReader);
 

@@ -36,9 +36,9 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
 
     private static void doAndAnalyseSelection(SeReader seReader, SeSelection seSelection, int index)
             throws KeypleReaderException {
-        MatchingSe matchingSe = seSelection.processExplicitSelection(seReader)
-                .getMatchingSelection(index).getMatchingSe();
-        if (matchingSe != null && matchingSe.getSelectionStatus().hasMatched()) {
+        SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
+        if (selectionsResult.hasActiveSelection()) {
+            MatchingSe matchingSe = selectionsResult.getMatchingSelection(index).getMatchingSe();
             logger.info("The SE matched the selection {}.", index);
 
             logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index,
@@ -91,12 +91,12 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
 
             /* AID based selection */
             seSelection.prepareSelection(new SeSelectionRequest(
-                    new SeSelector(
+                    new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.FIRST,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
-                            null, "Initial selection #1"),
-                    ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4));
+                            "Initial selection #1"),
+                    ChannelState.KEEP_OPEN));
 
             seSelection = new SeSelection();
 
@@ -104,12 +104,12 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
 
             /* next selection */
             seSelection.prepareSelection(new SeSelectionRequest(
-                    new SeSelector(
+                    new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
-                            null, "Next selection #2"),
-                    ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4));
+                            "Next selection #2"),
+                    ChannelState.KEEP_OPEN));
 
             seSelection = new SeSelection();
 
@@ -117,12 +117,12 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
 
             /* next selection */
             seSelection.prepareSelection(new SeSelectionRequest(
-                    new SeSelector(
+                    new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
-                            null, "Next selection #3"),
-                    ChannelState.CLOSE_AFTER, SeCommonProtocol.PROTOCOL_ISO14443_4));
+                            "Next selection #3"),
+                    ChannelState.CLOSE_AFTER));
 
             doAndAnalyseSelection(seReader, seSelection, 3);
 

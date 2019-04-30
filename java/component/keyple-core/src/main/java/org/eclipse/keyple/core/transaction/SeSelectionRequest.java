@@ -19,7 +19,6 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
  * The SeSelectionRequest class combines a SeSelector with additional helper methods useful to the
@@ -34,17 +33,14 @@ public class SeSelectionRequest {
     protected final List<ApduRequest> seSelectionApduRequestList = new ArrayList<ApduRequest>();
 
     /**
-     * the channelState and protocolFlag may be accessed from derived classes. Let them with the
-     * protected access level.
+     * the channelState may be accessed from derived classes. Let it with the protected access
+     * level.
      */
     protected final ChannelState channelState;
-    protected final SeProtocol protocolFlag;
 
-    public SeSelectionRequest(SeSelector seSelector, ChannelState channelState,
-            SeProtocol protocolFlag) {
+    public SeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
         this.seSelector = seSelector;
         this.channelState = channelState;
-        this.protocolFlag = protocolFlag;
     }
 
     /**
@@ -55,8 +51,7 @@ public class SeSelectionRequest {
      */
     protected final SeRequest getSelectionRequest() {
         SeRequest seSelectionRequest = null;
-        seSelectionRequest =
-                new SeRequest(seSelector, seSelectionApduRequestList, channelState, protocolFlag);
+        seSelectionRequest = new SeRequest(seSelector, seSelectionApduRequestList, channelState);
         return seSelectionRequest;
     }
 

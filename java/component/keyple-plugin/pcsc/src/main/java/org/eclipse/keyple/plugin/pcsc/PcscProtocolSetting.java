@@ -19,44 +19,29 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSettingList;
  * These objects are used by the application to build the SeProtocolsMap
  */
 public enum PcscProtocolSetting implements SeProtocolSettingList {
-
+    /**
+     * Associates protocol names and regular expressions to match ATRs produced by PC/SC readers
+     * <p>
+     * To be compared with the PC/SC protocol
+     */
     SETTING_PROTOCOL_ISO14443_4(SeCommonProtocol.PROTOCOL_ISO14443_4,
-            ProtocolSetting.REGEX_PROTOCOL_ISO14443_4),
+            "3B8880....................|3B8C800150.*|.*4F4D4141544C4153.*"),
 
     SETTING_PROTOCOL_B_PRIME(SeCommonProtocol.PROTOCOL_B_PRIME,
-            ProtocolSetting.REGEX_PROTOCOL_B_PRIME),
+            "3B8F8001805A0A0103200311........829000.."),
 
     SETTING_PROTOCOL_MIFARE_UL(SeCommonProtocol.PROTOCOL_MIFARE_UL,
-            ProtocolSetting.REGEX_PROTOCOL_MIFARE_UL),
+            "3B8F8001804F0CA0000003060300030000000068"),
 
     SETTING_PROTOCOL_MIFARE_CLASSIC(SeCommonProtocol.PROTOCOL_MIFARE_CLASSIC,
-            ProtocolSetting.REGEX_PROTOCOL_MIFARE_CLASSIC),
+            "3B8F8001804F0CA000000306030001000000006A"),
 
-    SETTING_PROTOCOL_MIFARE_DESFIRE(SeCommonProtocol.PROTOCOL_MIFARE_DESFIRE,
-            ProtocolSetting.REGEX_PROTOCOL_MIFARE_DESFIRE),
+    SETTING_PROTOCOL_MIFARE_DESFIRE(SeCommonProtocol.PROTOCOL_MIFARE_DESFIRE, "3B8180018080"),
 
     SETTING_PROTOCOL_MEMORY_ST25(SeCommonProtocol.PROTOCOL_MEMORY_ST25,
-            ProtocolSetting.REGEX_PROTOCOL_MEMORY_ST25);
+            "3B8F8001804F0CA000000306070007D0020C00B6"),
 
-    /**
-     * Regular expressions to match ATRs produced by PcSc readers
-     */
-    public interface ProtocolSetting {
-        public static String REGEX_PROTOCOL_ISO14443_4 =
-                "3B8880....................|3B8C800150.*|.*4F4D4141544C4153.*";
-
-        public static String REGEX_PROTOCOL_B_PRIME = "3B8F8001805A0A0103200311........829000..";
-
-        public static String REGEX_PROTOCOL_MIFARE_UL = "3B8F8001804F0CA0000003060300030000000068";
-
-        public static String REGEX_PROTOCOL_MIFARE_CLASSIC =
-                "3B8F8001804F0CA000000306030001000000006A";
-
-        public static String REGEX_PROTOCOL_MIFARE_DESFIRE = "3B8180018080";
-
-        public static String REGEX_PROTOCOL_MEMORY_ST25 =
-                "3B8F8001804F0CA000000306070007D0020C00B6";
-    }
+    SETTING_PROTOCOL_ISO7816_3(SeCommonProtocol.PROTOCOL_ISO7816_3, "3.*");
 
     /* the protocol flag */
     SeProtocol flag;

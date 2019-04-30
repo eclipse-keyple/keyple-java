@@ -396,7 +396,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
         // Determine which requests are matching the current ATR
         for (SeRequest request : requestSet.getRequests()) {
-            requestMatchesProtocol[requestIndex] = protocolFlagMatches(request.getProtocolFlag());
+            requestMatchesProtocol[requestIndex] =
+                    protocolFlagMatches(request.getSeSelector().getSeProtocol());
             requestIndex++;
         }
 

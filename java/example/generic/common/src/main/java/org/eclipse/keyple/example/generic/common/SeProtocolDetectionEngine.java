@@ -62,13 +62,10 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                     byte SFI_T2Usage = (byte) 0x1A;
                     byte SFI_T2Environment = (byte) 0x14;
 
-                    PoSelectionRequest poSelectionRequest =
-                            new PoSelectionRequest(
-                                    new SeSelector(
-                                            new SeSelector.AidSelector(
-                                                    ByteArrayUtil.fromHex(HoplinkAID), null),
-                                            null, "Hoplink selector"),
-                                    ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4);
+                    PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new SeSelector(
+                            SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                            new SeSelector.AidSelector(ByteArrayUtil.fromHex(HoplinkAID), null),
+                            "Hoplink selector"), ChannelState.KEEP_OPEN);
 
                     poSelectionRequest.preparePoCustomReadCmd("Standard Get Data",
                             new ApduRequest(ByteArrayUtil.fromHex("FFCA000000"), false));
@@ -91,9 +88,9 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                 default:
                     /* Add a generic selector */
                     seSelection.prepareSelection(new SeSelectionRequest(
-                            new SeSelector(null, new SeSelector.AtrFilter(".*"),
-                                    "Default selector"),
-                            ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4));
+                            new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4,
+                                    new SeSelector.AtrFilter(".*"), null, "Default selector"),
+                            ChannelState.KEEP_OPEN));
                     break;
             }
         }

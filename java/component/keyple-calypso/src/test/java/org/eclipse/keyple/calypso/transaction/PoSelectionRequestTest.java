@@ -49,9 +49,11 @@ public class PoSelectionRequestTest {
 
     @Before
     public void setUp() throws Exception {
-        poSelectionRequest = new PoSelectionRequest(
-                new PoSelector(null, new PoSelector.PoAtrFilter(".*"), "ATR: .*"),
-                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4);
+        poSelectionRequest =
+                new PoSelectionRequest(
+                        new PoSelector(SeCommonProtocol.PROTOCOL_ISO14443_4,
+                                new PoSelector.PoAtrFilter(".*"), null, "ATR: .*"),
+                        ChannelState.KEEP_OPEN);
     }
 
     @Test

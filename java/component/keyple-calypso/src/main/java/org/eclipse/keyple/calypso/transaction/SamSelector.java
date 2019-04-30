@@ -13,6 +13,7 @@ package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
 
 /**
  * The {@link SamSelector} class extends {@link SeSelector} to handle specific Calypso SAM needs
@@ -30,7 +31,7 @@ public class SamSelector extends SeSelector {
      * @param extraInfo information string (to be printed in logs)
      */
     public SamSelector(SamRevision samRevision, String serialNumber, String extraInfo) {
-        super(null, new AtrFilter(null), extraInfo);
+        super(SeCommonProtocol.PROTOCOL_ISO7816_3, new AtrFilter(null), null, extraInfo);
         String atrRegex;
         String snRegex;
         /* check if serialNumber is defined */

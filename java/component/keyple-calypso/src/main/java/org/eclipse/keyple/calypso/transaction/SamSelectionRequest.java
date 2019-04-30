@@ -15,16 +15,14 @@ import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.transaction.SeSelectionRequest;
 
 /**
  * Specialized selection request to manage the specific characteristics of Calypso SAMs
  */
 public class SamSelectionRequest extends SeSelectionRequest {
-    public SamSelectionRequest(SeSelector seSelector, ChannelState channelState,
-            SeProtocol protocolFlag) {
-        super(seSelector, channelState, protocolFlag);
+    public SamSelectionRequest(SeSelector seSelector, ChannelState channelState) {
+        super(seSelector, channelState);
     }
 
     /**

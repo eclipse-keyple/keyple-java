@@ -122,11 +122,11 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
          * make the selection and read additional information afterwards
          */
         PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                new PoSelector(
+                new PoSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
                         new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
                                 PoSelector.InvalidatedPo.REJECT),
-                        null, "AID: " + CalypsoClassicInfo.AID),
-                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ISO14443_4);
+                        "AID: " + CalypsoClassicInfo.AID),
+                ChannelState.KEEP_OPEN);
 
         /*
          * Prepare the reading order and keep the associated parser for later use once the selection

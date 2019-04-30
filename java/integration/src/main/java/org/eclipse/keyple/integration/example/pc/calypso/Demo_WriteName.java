@@ -67,8 +67,9 @@ public class Demo_WriteName {
         SeSelection samSelection = new SeSelection();
 
         SeSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
-                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY);
+                new SeSelector(SeCommonProtocol.PROTOCOL_ISO7816_3,
+                        new SeSelector.AtrFilter(SAM_ATR_REGEX), null, "SAM Selection"),
+                ChannelState.KEEP_OPEN);
 
         /* Prepare selector, ignore MatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
@@ -111,35 +112,40 @@ public class Demo_WriteName {
             String cdLightAid = "315449432E494341"; // AID of the Rev2.4 PO emulating CDLight
 
             // Add Audit C0 AID to the list
-            int auditC0SeIndex =
-                    seSelection
-                            .prepareSelection(
-                                    new PoSelectionRequest(
-                                            new SeSelector(new SeSelector.AidSelector(
-                                                    ByteArrayUtil.fromHex(
-                                                            PoFileStructureInfo.poAuditC0Aid),
-                                                    null), null, "Audit C0"),
-                                            ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
+            int auditC0SeIndex = seSelection.prepareSelection(new PoSelectionRequest(
+                    new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                            new SeSelector.AidSelector(
+                                    ByteArrayUtil.fromHex(PoFileStructureInfo.poAuditC0Aid), null),
+                            "Audit C0"),
+                    ChannelState.KEEP_OPEN));
 
             // Add CLAP AID to the list
             int clapSe =
                     seSelection
-                            .prepareSelection(new PoSelectionRequest(
-                                    new SeSelector(
-                                            new SeSelector.AidSelector(ByteArrayUtil
-                                                    .fromHex(PoFileStructureInfo.clapAid), null),
-                                            null, "CLAP"),
-                                    ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
+                            .prepareSelection(
+                                    new PoSelectionRequest(
+                                            new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4,
+                                                    null,
+                                                    new SeSelector.AidSelector(
+                                                            ByteArrayUtil.fromHex(
+                                                                    PoFileStructureInfo.clapAid),
+                                                            null),
+                                                    "CLAP"),
+                                            ChannelState.KEEP_OPEN));
 
             // Add cdLight AID to the list
             int cdLightSe =
                     seSelection
-                            .prepareSelection(new PoSelectionRequest(
-                                    new SeSelector(
-                                            new SeSelector.AidSelector(ByteArrayUtil
-                                                    .fromHex(PoFileStructureInfo.cdLightAid), null),
-                                            null, "CDLight"),
-                                    ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
+                            .prepareSelection(
+                                    new PoSelectionRequest(
+                                            new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4,
+                                                    null,
+                                                    new SeSelector.AidSelector(
+                                                            ByteArrayUtil.fromHex(
+                                                                    PoFileStructureInfo.cdLightAid),
+                                                            null),
+                                                    "CDLight"),
+                                            ChannelState.KEEP_OPEN));
 
             SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
             if (!selectionsResult.hasActiveSelection()) {

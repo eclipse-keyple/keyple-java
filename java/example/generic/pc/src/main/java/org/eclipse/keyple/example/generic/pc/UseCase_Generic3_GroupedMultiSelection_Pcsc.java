@@ -71,30 +71,30 @@ public class UseCase_Generic3_GroupedMultiSelection_Pcsc {
 
             /* AID based selection (1st selection, later indexed 0) */
             seSelection.prepareSelection(new SeSelectionRequest(
-                    new SeSelector(
+                    new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.FIRST,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
-                            null, "Initial selection #1"),
-                    ChannelState.CLOSE_AFTER, SeCommonProtocol.PROTOCOL_ISO14443_4));
+                            "Initial selection #1"),
+                    ChannelState.CLOSE_AFTER));
 
             /* next selection (2nd selection, later indexed 1) */
             seSelection.prepareSelection(new SeSelectionRequest(
-                    new SeSelector(
+                    new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
-                            null, "Next selection #2"),
-                    ChannelState.CLOSE_AFTER, SeCommonProtocol.PROTOCOL_ISO14443_4));
+                            "Next selection #2"),
+                    ChannelState.CLOSE_AFTER));
 
             /* next selection (3rd selection, later indexed 2) */
             seSelection.prepareSelection(new SeSelectionRequest(
-                    new SeSelector(
+                    new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
-                            null, "Next selection #3"),
-                    ChannelState.CLOSE_AFTER, SeCommonProtocol.PROTOCOL_ISO14443_4));
+                            "Next selection #3"),
+                    ChannelState.CLOSE_AFTER));
             /*
              * Actual SE communication: operate through a single request the SE selection
              */

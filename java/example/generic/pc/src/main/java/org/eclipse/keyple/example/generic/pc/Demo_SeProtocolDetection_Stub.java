@@ -12,8 +12,6 @@
 package org.eclipse.keyple.example.generic.pc;
 
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
@@ -21,8 +19,6 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
 import org.eclipse.keyple.example.generic.common.CustomProtocolSetting;
 import org.eclipse.keyple.example.generic.common.SeProtocolDetectionEngine;
@@ -85,9 +81,8 @@ Demo_SeProtocolDetection_Stub {
 
         // Protocol detection settings.
         // add 8 expected protocols with three different methods:
-        // - using addSeProtocolSetting
+        // - adding protocols individually
         // - using a custom enum
-        // - using a protocol map and addSeProtocolSetting
         // A real application should use only one method.
 
         // Method 1
@@ -95,27 +90,19 @@ Demo_SeProtocolDetection_Stub {
         poReader.addSeProtocolSetting(
                 new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_MEMORY_ST25));
 
-
         poReader.addSeProtocolSetting(
                 new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+
+        poReader.addSeProtocolSetting(
+                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_MIFARE_CLASSIC));
+
+        poReader.addSeProtocolSetting(
+                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_MIFARE_UL));
 
 
         // Method 2
         // add all settings at once with setting enum
         poReader.addSeProtocolSetting(new SeProtocolSetting(CustomProtocolSetting.values()));
-
-        // Method 3
-        // create and fill a protocol map
-        Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
-
-        protocolsMap.put(SeCommonProtocol.PROTOCOL_MIFARE_CLASSIC,
-                StubProtocolSetting.ProtocolSetting.REGEX_PROTOCOL_MIFARE_CLASSIC);
-
-        protocolsMap.put(SeCommonProtocol.PROTOCOL_MIFARE_UL,
-                StubProtocolSetting.ProtocolSetting.REGEX_PROTOCOL_MIFARE_UL);
-
-        // provide the reader with the map
-        poReader.addSeProtocolSetting(new SeProtocolSetting(protocolsMap));
 
         // Set terminal as Observer of the first reader
         ((ObservableReader) poReader).addObserver(observer);

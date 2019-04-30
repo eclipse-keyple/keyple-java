@@ -44,33 +44,26 @@ public class TestEngine {
         SeSelection seSelection = new SeSelection();
 
         // Add Audit C0 AID to the list
-        seSelection
-                .prepareSelection(
-                        new PoSelectionRequest(
-                                new SeSelector(
-                                        new SeSelector.AidSelector(ByteArrayUtil
-                                                .fromHex(PoFileStructureInfo.poAuditC0Aid), null),
-                                        null, "Audit C0"),
-                                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
+        seSelection.prepareSelection(
+                new PoSelectionRequest(new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                        new SeSelector.AidSelector(
+                                ByteArrayUtil.fromHex(PoFileStructureInfo.poAuditC0Aid), null),
+                        "Audit C0"), ChannelState.KEEP_OPEN));
 
         // Add CLAP AID to the list
-        seSelection
-                .prepareSelection(new PoSelectionRequest(
-                        new SeSelector(
-                                new SeSelector.AidSelector(
-                                        ByteArrayUtil.fromHex(PoFileStructureInfo.clapAid), null),
-                                null, "CLAP"),
-                        ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
+        seSelection.prepareSelection(new PoSelectionRequest(
+                new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                        new SeSelector.AidSelector(
+                                ByteArrayUtil.fromHex(PoFileStructureInfo.clapAid), null),
+                        "CLAP"),
+                ChannelState.KEEP_OPEN));
 
         // Add cdLight AID to the list
-        seSelection
-                .prepareSelection(
-                        new PoSelectionRequest(
-                                new SeSelector(
-                                        new SeSelector.AidSelector(ByteArrayUtil
-                                                .fromHex(PoFileStructureInfo.cdLightAid), null),
-                                        null, "CDLight"),
-                                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY));
+        seSelection.prepareSelection(
+                new PoSelectionRequest(new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
+                        new SeSelector.AidSelector(
+                                ByteArrayUtil.fromHex(PoFileStructureInfo.cdLightAid), null),
+                        "CDLight"), ChannelState.KEEP_OPEN));
 
         MatchingSelection matchingSelection =
                 seSelection.processExplicitSelection(poReader).getActiveSelection();
@@ -144,8 +137,9 @@ public class TestEngine {
         SeSelection samSelection = new SeSelection();
 
         SeSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
-                ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY);
+                new SeSelector(SeCommonProtocol.PROTOCOL_ISO7816_3,
+                        new SeSelector.AtrFilter(SAM_ATR_REGEX), null, "SAM Selection"),
+                ChannelState.KEEP_OPEN);
 
         /* Prepare selector, ignore MatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);

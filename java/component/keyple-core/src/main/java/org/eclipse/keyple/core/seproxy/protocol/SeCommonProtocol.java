@@ -35,9 +35,6 @@ public enum SeCommonProtocol implements SeProtocol {
 
     PROTOCOL_MEMORY_ST25("Memory ST25", PROPRIETARY, CONTACTLESS, NOT_NFC),
 
-    /* ------------ contactless wildcard protocol ------- */
-    PROTOCOL_ANY("Any contactless protocol", PROPRIETARY, CONTACTLESS, NFC),
-
     /* ------------ contacts standard ------------------- */
     PROTOCOL_ISO7816_3("ISO 7816-3", STANDARD, CONTACTS, NOT_NFC);
 

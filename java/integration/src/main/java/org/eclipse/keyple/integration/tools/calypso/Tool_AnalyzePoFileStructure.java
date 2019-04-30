@@ -213,10 +213,10 @@ public class Tool_AnalyzePoFileStructure {
             SeSelection seSelection = new SeSelection();
 
 
-            PoSelectionRequest poSelectionRequest1 = new PoSelectionRequest(
-                    new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(aid), null),
-                            null, "firstApplication"),
-                    ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY);
+            PoSelectionRequest poSelectionRequest1 =
+                    new PoSelectionRequest(new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4,
+                            null, new SeSelector.AidSelector(ByteArrayUtil.fromHex(aid), null),
+                            "firstApplication"), ChannelState.KEEP_OPEN);
 
             int firstApplicationIndex = seSelection.prepareSelection(poSelectionRequest1);
 
@@ -239,12 +239,12 @@ public class Tool_AnalyzePoFileStructure {
             seSelection = new SeSelection();
 
             PoSelectionRequest poSelectionRequest2 = new PoSelectionRequest(
-                    new SeSelector(
+                    new SeSelector(SeCommonProtocol.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(aid), null,
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
-                            null, "secondApplication"),
-                    ChannelState.KEEP_OPEN, SeCommonProtocol.PROTOCOL_ANY);
+                            "secondApplication"),
+                    ChannelState.KEEP_OPEN);
 
             int secondApplicationIndex = seSelection.prepareSelection(poSelectionRequest2);
 

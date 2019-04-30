@@ -19,43 +19,26 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSettingList;
  * These objects are used by the application to build the SeProtocolsMap
  */
 public enum StubProtocolSetting implements SeProtocolSettingList {
-
-    SETTING_PROTOCOL_ISO14443_4(SeCommonProtocol.PROTOCOL_ISO14443_4,
-            ProtocolSetting.REGEX_PROTOCOL_ISO14443_4),
-
-    SETTING_PROTOCOL_B_PRIME(SeCommonProtocol.PROTOCOL_B_PRIME,
-            ProtocolSetting.REGEX_PROTOCOL_B_PRIME),
-
-    SETTING_PROTOCOL_MIFARE_UL(SeCommonProtocol.PROTOCOL_MIFARE_UL,
-            ProtocolSetting.REGEX_PROTOCOL_MIFARE_UL),
-
-    SETTING_PROTOCOL_MIFARE_CLASSIC(SeCommonProtocol.PROTOCOL_MIFARE_CLASSIC,
-            ProtocolSetting.REGEX_PROTOCOL_MIFARE_CLASSIC),
-
-    SETTING_PROTOCOL_MIFARE_DESFIRE(SeCommonProtocol.PROTOCOL_MIFARE_DESFIRE,
-            ProtocolSetting.REGEX_PROTOCOL_MIFARE_DESFIRE),
-
-    SETTING_PROTOCOL_MEMORY_ST25(SeCommonProtocol.PROTOCOL_MEMORY_ST25,
-            ProtocolSetting.REGEX_PROTOCOL_MEMORY_ST25);
-
     /**
-     * Regular expressions to match ATRs produced by Stub readers
+     * Associates protocol names and regular expressions to match ATRs produced by Stub readers
      * <p>
      * To be compared with the StubSE protocol
      */
-    public interface ProtocolSetting {
-        public static String REGEX_PROTOCOL_ISO14443_4 = "PROTOCOL_ISO14443_4";
+    SETTING_PROTOCOL_ISO14443_4(SeCommonProtocol.PROTOCOL_ISO14443_4, "PROTOCOL_ISO14443_4"),
 
-        public static String REGEX_PROTOCOL_B_PRIME = "PROTOCOL_B_PRIME";
+    SETTING_PROTOCOL_B_PRIME(SeCommonProtocol.PROTOCOL_B_PRIME, "PROTOCOL_B_PRIME"),
 
-        public static String REGEX_PROTOCOL_MIFARE_UL = "PROTOCOL_MIFARE_UL";
+    SETTING_PROTOCOL_MIFARE_UL(SeCommonProtocol.PROTOCOL_MIFARE_UL, "PROTOCOL_MIFARE_UL"),
 
-        public static String REGEX_PROTOCOL_MIFARE_CLASSIC = "PROTOCOL_MIFARE_CLASSIC";
+    SETTING_PROTOCOL_MIFARE_CLASSIC(SeCommonProtocol.PROTOCOL_MIFARE_CLASSIC,
+            "PROTOCOL_MIFARE_CLASSIC"),
 
-        public static String REGEX_PROTOCOL_MIFARE_DESFIRE = "PROTOCOL_MIFARE_DESFIRE";
+    SETTING_PROTOCOL_MIFARE_DESFIRE(SeCommonProtocol.PROTOCOL_MIFARE_DESFIRE,
+            "PROTOCOL_MIFARE_DESFIRE"),
 
-        public static String REGEX_PROTOCOL_MEMORY_ST25 = "PROTOCOL_MEMORY_ST25";
-    }
+    SETTING_PROTOCOL_MEMORY_ST25(SeCommonProtocol.PROTOCOL_MEMORY_ST25, "PROTOCOL_MEMORY_ST25"),
+
+    SETTING_PROTOCOL_ISO7816_3(SeCommonProtocol.PROTOCOL_ISO7816_3, "PROTOCOL_ISO7816_3");
 
     /* the protocol flag */
     SeProtocol flag;

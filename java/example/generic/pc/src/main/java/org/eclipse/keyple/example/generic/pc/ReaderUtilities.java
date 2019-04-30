@@ -119,5 +119,9 @@ public class ReaderUtilities {
          * These two points will be addressed in a coming release of the Keyple PcSc reader plugin.
          */
         reader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
+
+        /* Set the SAM reader protocol flag */
+        reader.addSeProtocolSetting(
+                new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO7816_3));
     }
 }

@@ -96,6 +96,9 @@ public class UseCase_Calypso4_PoAuthentication_Stub {
             throw new IllegalStateException("Bad PO or SAM reader setup");
         }
 
+        samReader.addSeProtocolSetting(
+                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO7816_3));
+
         /* Create 'virtual' Calypso PO */
         StubSecureElement calypsoStubSe = new StubCalypsoClassic();
 
@@ -154,10 +157,10 @@ public class UseCase_Calypso4_PoAuthentication_Stub {
              * make the selection and read additional information afterwards
              */
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
+                    SeCommonProtocol.PROTOCOL_ISO14443_4, null,
                     new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
                             PoSelector.InvalidatedPo.REJECT),
-                    null, "AID: " + CalypsoClassicInfo.AID), ChannelState.KEEP_OPEN,
-                    SeCommonProtocol.PROTOCOL_ISO14443_4);
+                    "AID: " + CalypsoClassicInfo.AID), ChannelState.KEEP_OPEN);
 
             /*
              * Add the selection case to the current selection (we could have added other cases
