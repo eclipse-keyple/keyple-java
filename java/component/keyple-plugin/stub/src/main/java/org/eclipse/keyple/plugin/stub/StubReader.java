@@ -82,7 +82,7 @@ public final class StubReader extends AbstractThreadedLocalReader {
 
     @Override
     public byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
-        if(se == null) {
+        if (se == null) {
             throw new KeypleIOReaderException("No SE available.");
         }
         return se.processApdu(apduIn);
@@ -91,7 +91,7 @@ public final class StubReader extends AbstractThreadedLocalReader {
     @Override
     protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
         boolean result;
-        if(se == null) {
+        if (se == null) {
             throw new KeypleReaderException("No SE available.");
         }
         // Test protocolFlag to check if ATR based protocol filtering is required

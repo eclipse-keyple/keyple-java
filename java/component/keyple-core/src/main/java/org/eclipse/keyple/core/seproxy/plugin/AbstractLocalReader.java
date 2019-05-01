@@ -407,7 +407,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         // All requests without selector are considered matching
         for (SeRequest request : requestSet.getRequests()) {
             SeSelector seSelector = request.getSeSelector();
-            if(seSelector != null) {
+            if (seSelector != null) {
                 requestMatchesProtocol[requestIndex] =
                         protocolFlagMatches(request.getSeSelector().getSeProtocol());
             } else {
