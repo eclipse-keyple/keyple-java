@@ -32,7 +32,7 @@ import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
 import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
-import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -147,7 +147,7 @@ public class AndroidOmapiReaderTest {
         List<ApduRequest> poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
         // wrong protocol
-        SeRequest seRequest = new SeRequest(new SeSelector( SeCommonProtocol.PROTOCOL_MIFARE_UL, null,
+        SeRequest seRequest = new SeRequest(new SeSelector( SeCommonProtocols.PROTOCOL_MIFARE_UL, null,
                 new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid),null),null), poApduRequestList,
                 ChannelState.CLOSE_AFTER);
 
@@ -229,7 +229,7 @@ public class AndroidOmapiReaderTest {
 
         poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
-        SeRequest seRequest = new SeRequest(new SeSelector(SeCommonProtocol.PROTOCOL_ISO7816_3, null,
+        SeRequest seRequest = new SeRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                 new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null), poApduRequestList,
                 ChannelState.CLOSE_AFTER);
 
