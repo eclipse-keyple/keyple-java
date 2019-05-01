@@ -140,6 +140,11 @@ public class StubReaderTest {
         final CountDownLatch lock = new CountDownLatch(1);
         final String poAid = "A000000291A000000191";
 
+        // add Protocol flag
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
         // add observer
         reader.addObserver(new ObservableReader.ReaderObserver() {
             @Override
@@ -249,6 +254,11 @@ public class StubReaderTest {
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
 
+        // add Protocol flag
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
         // add observer
         reader.addObserver(new ObservableReader.ReaderObserver() {
             @Override
@@ -352,13 +362,14 @@ public class StubReaderTest {
         // init SE
         reader.insertSe(hoplinkSE());
 
-        // send the selection request
-        selectSe(reader);
-
         // add Protocol flag
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
                 StubProtocolSetting.STUB_PROTOCOL_SETTING
                         .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
+        // send the selection request
+        selectSe(reader);
+
         // test
         SeResponseSet seResponse = reader.transmitSet(requests);
 
