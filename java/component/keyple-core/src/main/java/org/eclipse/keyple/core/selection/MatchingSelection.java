@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
  * The MatchingSelection class holds the result of a single selection case.
  */
 public class MatchingSelection {
-    private final MatchingSe matchingSe;
+    private final AbstractMatchingSe matchingSe;
     private final AbstractSeSelectionRequest seSelectionRequest;
     private final SeResponse selectionSeResponse;
     private final int selectionIndex;
@@ -32,7 +32,7 @@ public class MatchingSelection {
      * @param selectionSeResponse
      */
     public MatchingSelection(int selectionIndex, AbstractSeSelectionRequest seSelectionRequest,
-            MatchingSe matchingSe, SeResponse selectionSeResponse) {
+            AbstractMatchingSe matchingSe, SeResponse selectionSeResponse) {
         this.selectionIndex = selectionIndex;
         this.seSelectionRequest = seSelectionRequest;
         this.matchingSe = matchingSe;
@@ -40,9 +40,9 @@ public class MatchingSelection {
     }
 
     /**
-     * @return the MatchingSe
+     * @return the AbstractMatchingSe
      */
-    public MatchingSe getMatchingSe() {
+    public AbstractMatchingSe getMatchingSe() {
         return matchingSe;
     }
 

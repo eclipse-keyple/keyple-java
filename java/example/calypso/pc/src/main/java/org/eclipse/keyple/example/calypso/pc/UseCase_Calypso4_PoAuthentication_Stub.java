@@ -23,7 +23,6 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
@@ -257,8 +256,7 @@ public class UseCase_Calypso4_PoAuthentication_Stub {
                 /*
                  * A ratification command will be sent (CONTACTLESS_MODE).
                  */
-                poProcessStatus = poTransaction.processClosing(TransmissionMode.CONTACTLESS,
-                        ChannelState.CLOSE_AFTER);
+                poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AFTER);
 
                 if (!poProcessStatus) {
                     throw new IllegalStateException("processClosing failure.");

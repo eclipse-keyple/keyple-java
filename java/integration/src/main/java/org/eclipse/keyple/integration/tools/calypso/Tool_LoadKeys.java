@@ -146,8 +146,16 @@ public class Tool_LoadKeys {
         ProxyReader poReader = (ProxyReader) DemoUtilities.getReader(seProxyService,
                 DemoUtilities.PO_READER_NAME_REGEX);
 
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
         ProxyReader samReader = (ProxyReader) DemoUtilities.getReader(seProxyService,
                 DemoUtilities.SAM_READER_NAME_REGEX);
+
+        samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO7816_3));
 
         /* Check if the readers exist */
         if (poReader == null || samReader == null) {
@@ -168,11 +176,11 @@ public class Tool_LoadKeys {
         SeSelection samSelection = new SeSelection();
 
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3,
                         new SeSelector.AtrFilter(SAM_ATR_REGEX), null, "SAM Selection"),
                 ChannelState.KEEP_OPEN);
 
-        /* Prepare selector, ignore MatchingSe here */
+        /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
 
         SelectionsResult samSelectionsResult;

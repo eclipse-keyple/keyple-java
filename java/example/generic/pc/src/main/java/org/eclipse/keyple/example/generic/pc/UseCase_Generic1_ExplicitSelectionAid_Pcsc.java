@@ -123,7 +123,8 @@ public class UseCase_Generic1_ExplicitSelectionAid_Pcsc {
              */
             SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
             if (selectionsResult.hasActiveSelection()) {
-                MatchingSe matchedSe = selectionsResult.getActiveSelection().getMatchingSe();
+                AbstractMatchingSe matchedSe =
+                        selectionsResult.getActiveSelection().getMatchingSe();
                 logger.info("The selection of the SE has succeeded.");
                 logger.info("Application FCI = {}", matchedSe.getSelectionStatus().getFci());
 

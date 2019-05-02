@@ -13,7 +13,7 @@ package org.eclipse.keyple.integration.calypso;
 
 
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.core.selection.MatchingSe;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 @SuppressWarnings("PMD.VariableNamingConventions")
@@ -38,7 +38,7 @@ public class PoFileStructureInfo {
 
     private EfData simulatedCountersFileData;
 
-    private MatchingSe matchingSe;
+    private AbstractMatchingSe matchingSe;
 
     private void setFileStructureForAuditC0() {
 
@@ -75,7 +75,7 @@ public class PoFileStructureInfo {
 
     }
 
-    public PoFileStructureInfo(MatchingSe matchingSe) {
+    public PoFileStructureInfo(AbstractMatchingSe matchingSe) {
 
         this.matchingSe = matchingSe;
 
@@ -128,7 +128,7 @@ public class PoFileStructureInfo {
         return simulatedCountersFileData;
     }
 
-    public MatchingSe getMatchingSe() {
+    public AbstractMatchingSe getMatchingSe() {
         return matchingSe;
     }
 }

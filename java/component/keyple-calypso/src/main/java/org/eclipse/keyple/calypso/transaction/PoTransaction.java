@@ -1701,8 +1701,8 @@ public final class PoTransaction {
         }
 
         /* Finally, close the session as requested */
-        seResponseClosing =
-                processAtomicClosing(poAtomicBuilderParserList, calypsoPo.getTransmissionMode(), channelState);
+        seResponseClosing = processAtomicClosing(poAtomicBuilderParserList,
+                calypsoPo.getTransmissionMode(), channelState);
 
         /* Update parsers */
         if (!createResponseParsers(seResponseClosing, poAtomicBuilderParserList)) {

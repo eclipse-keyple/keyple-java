@@ -86,13 +86,10 @@ public abstract class AbstractSeSelectionRequest {
     }
 
     /**
-     * Create a MatchingSe object containing the selection data received from the plugin
+     * Virtual parse method
      * 
      * @param seResponse the SE response received
-     * @return a {@link MatchingSe}
+     * @return a {@link AbstractMatchingSe}
      */
-    protected MatchingSe parse(SeResponse seResponse) {
-        return new MatchingSe(seResponse, seSelector.getSeProtocol().getTransmissionMode(),
-                seSelector.getExtraInfo());
-    }
+    protected abstract AbstractMatchingSe parse(SeResponse seResponse);
 }

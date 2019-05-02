@@ -14,8 +14,8 @@ package org.eclipse.keyple.plugin.remotese.integration;
 import static org.eclipse.keyple.plugin.stub.StubReaderTest.hoplinkSE;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
-import org.eclipse.keyple.core.selection.MatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
@@ -24,7 +24,9 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
@@ -43,8 +45,22 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
      * Create a new class extending AbstractSeSelectionRequest
      */
     private class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
+        TransmissionMode transmissionMode;
+
         public GenericSeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
             super(seSelector, channelState);
+            transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
+        }
+
+        @Override
+        protected AbstractMatchingSe parse(SeResponse seResponse) {
+            class GenericMatchingSe extends AbstractMatchingSe {
+                public GenericMatchingSe(SeResponse selectionResponse,
+                        TransmissionMode transmissionMode, String extraInfo) {
+                    super(selectionResponse, transmissionMode, extraInfo);
+                }
+            }
+            return new GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE");
         }
     }
 
@@ -353,14 +369,15 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                                 new SeSelector.AtrFilter("3B.*"), null, "Test " + "ATR"),
                         ChannelState.KEEP_OPEN);
 
-                /* Prepare selector, ignore MatchingSe here */
+                /* Prepare selector, ignore AbstractMatchingSe here */
                 seSelection.prepareSelection(genericSeSelectionRequest);
 
                 try {
                     SelectionsResult selectionsResult =
                             seSelection.processExplicitSelection(virtualReader);
 
-                    MatchingSe matchingSe = selectionsResult.getActiveSelection().getMatchingSe();
+                    AbstractMatchingSe matchingSe =
+                            selectionsResult.getActiveSelection().getMatchingSe();
 
                     Assert.assertNotNull(matchingSe);
 

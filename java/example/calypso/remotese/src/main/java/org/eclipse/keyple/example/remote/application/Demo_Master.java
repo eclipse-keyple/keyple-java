@@ -18,7 +18,7 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.core.selection.MatchingSe;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
@@ -242,7 +242,7 @@ public class Demo_Master implements Observable.Observer {
                     SelectionsResult selectionsResult = seSelection
                             .processDefaultSelection(event.getDefaultSelectionResponse());
                     if (selectionsResult.hasActiveSelection()) {
-                        MatchingSe selectedSe =
+                        AbstractMatchingSe selectedSe =
                                 selectionsResult.getActiveSelection().getMatchingSe();
 
                         logger.info(

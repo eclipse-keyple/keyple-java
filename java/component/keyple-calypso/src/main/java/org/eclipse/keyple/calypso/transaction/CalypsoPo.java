@@ -13,11 +13,10 @@ package org.eclipse.keyple.calypso.transaction;
 
 
 
-import javax.swing.*;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.core.selection.MatchingSe;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -34,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  * TODO Complete with other PO features from the FCI and/or ATR
  */
-public final class CalypsoPo extends MatchingSe {
+public final class CalypsoPo extends AbstractMatchingSe {
     private static final Logger logger = LoggerFactory.getLogger(CalypsoPo.class);
     private final byte bufferSizeIndicator;
     private final int bufferSizeValue;

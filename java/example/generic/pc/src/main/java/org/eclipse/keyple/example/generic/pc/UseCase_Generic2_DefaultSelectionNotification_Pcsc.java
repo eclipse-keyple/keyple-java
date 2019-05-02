@@ -148,7 +148,7 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
         switch (event.getEventType()) {
             case SE_MATCHED:
                 /* the selection has one target, get the result at index 0 */
-                MatchingSe selectedSe =
+                AbstractMatchingSe selectedSe =
                         seSelection.processDefaultSelection(event.getDefaultSelectionResponse())
                                 .getActiveSelection().getMatchingSe();
 

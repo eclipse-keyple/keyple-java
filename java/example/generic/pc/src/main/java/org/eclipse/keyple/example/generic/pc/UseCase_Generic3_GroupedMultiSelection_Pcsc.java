@@ -105,7 +105,7 @@ public class UseCase_Generic3_GroupedMultiSelection_Pcsc {
             if (selectionsResult.getMatchingSelections().size() > 0) {
                 for (MatchingSelection matchingSelection : selectionsResult
                         .getMatchingSelections()) {
-                    MatchingSe matchingSe = matchingSelection.getMatchingSe();
+                    AbstractMatchingSe matchingSe = matchingSelection.getMatchingSe();
                     logger.info(
                             "Selection status for selection \"{}\" (indexed {}): \n\t\tATR: {}\n\t\tFCI: {}",
                             matchingSelection.getExtraInfo(), matchingSelection.getSelectionIndex(),

@@ -21,8 +21,8 @@ import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
-import org.eclipse.keyple.core.selection.MatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
@@ -34,6 +34,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -92,8 +93,22 @@ public class StubReaderTest {
          * Create a new local class extending AbstractSeSelectionRequest
          */
         class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
+            TransmissionMode transmissionMode;
+
             public GenericSeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
                 super(seSelector, channelState);
+                transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
+            }
+
+            @Override
+            protected AbstractMatchingSe parse(SeResponse seResponse) {
+                class GenericMatchingSe extends AbstractMatchingSe {
+                    public GenericMatchingSe(SeResponse selectionResponse,
+                            TransmissionMode transmissionMode, String extraInfo) {
+                        super(selectionResponse, transmissionMode, extraInfo);
+                    }
+                }
+                return new GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE");
             }
         }
 
@@ -103,7 +118,7 @@ public class StubReaderTest {
                         new SeSelector.AtrFilter("3B.*"), null, "ATR selection"),
                 ChannelState.KEEP_OPEN);
 
-        /* Prepare selector, ignore MatchingSe here */
+        /* Prepare selector, ignore AbstractMatchingSe here */
         seSelection.prepareSelection(genericSeSelectionRequest);
 
         seSelection.processExplicitSelection(reader);
@@ -328,14 +343,15 @@ public class StubReaderTest {
                                 new SeSelector.AtrFilter("3B.*"), null, "Test" + " ATR"),
                         ChannelState.KEEP_OPEN);
 
-                /* Prepare selector, ignore MatchingSe here */
+                /* Prepare selector, ignore AbstractMatchingSe here */
                 seSelection.prepareSelection(poSelectionRequest);
 
                 try {
                     SelectionsResult selectionsResult =
                             seSelection.processExplicitSelection(reader);
 
-                    MatchingSe matchingSe = selectionsResult.getActiveSelection().getMatchingSe();
+                    AbstractMatchingSe matchingSe =
+                            selectionsResult.getActiveSelection().getMatchingSe();
 
                     Assert.assertNotNull(matchingSe);
 

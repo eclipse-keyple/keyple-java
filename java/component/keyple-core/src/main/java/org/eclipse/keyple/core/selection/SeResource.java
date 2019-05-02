@@ -14,7 +14,7 @@ package org.eclipse.keyple.core.selection;
 import org.eclipse.keyple.core.seproxy.SeReader;
 
 /**
- * The SeResource class groups a MatchingSe and its associated SeReader
+ * The SeResource class groups a AbstractMatchingSe and its associated SeReader
  */
 public class SeResource<T> {
     private final SeReader seReader;
@@ -24,7 +24,7 @@ public class SeResource<T> {
      * Constructor
      * 
      * @param seReader the {@link SeReader} with which the SE is communicating
-     * @param matchingSe the {@link MatchingSe} information structure
+     * @param matchingSe the {@link AbstractMatchingSe} information structure
      */
     public SeResource(SeReader seReader, T matchingSe) {
         this.seReader = seReader;
@@ -39,7 +39,7 @@ public class SeResource<T> {
     }
 
     /**
-     * @return the {@link MatchingSe}
+     * @return the {@link AbstractMatchingSe}
      */
     public T getMatchingSe() {
         return matchingSe;

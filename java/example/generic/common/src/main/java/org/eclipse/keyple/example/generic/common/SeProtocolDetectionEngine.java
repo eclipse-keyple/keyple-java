@@ -106,7 +106,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
     public void processSeMatch(SelectionResponse selectionResponse) {
         SelectionsResult selectionsResult = seSelection.processDefaultSelection(selectionResponse);
         /* get the SE that matches one of the two selection targets */
-        MatchingSe selectedSe = selectionsResult.getActiveSelection().getMatchingSe();
+        AbstractMatchingSe selectedSe = selectionsResult.getActiveSelection().getMatchingSe();
         if (selectedSe != null) {
             System.out.println("Selector: " + selectedSe.getSelectionExtraInfo()
                     + ", selection status = " + selectedSe.isSelected());

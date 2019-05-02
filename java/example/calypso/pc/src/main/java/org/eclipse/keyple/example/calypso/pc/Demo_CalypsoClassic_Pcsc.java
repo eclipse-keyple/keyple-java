@@ -108,6 +108,10 @@ public class Demo_CalypsoClassic_Pcsc {
         poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_B_PRIME,
                 PcscProtocolSetting.PCSC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_B_PRIME));
 
+        samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO7816_3));
+
         /* Assign the readers to the Calypso transaction engine */
         transactionEngine.setReaders(poReader, samReader);
 

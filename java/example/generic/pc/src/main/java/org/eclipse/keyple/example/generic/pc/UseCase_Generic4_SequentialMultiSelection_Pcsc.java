@@ -39,7 +39,8 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
             throws KeypleReaderException {
         SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
         if (selectionsResult.hasActiveSelection()) {
-            MatchingSe matchingSe = selectionsResult.getMatchingSelection(index).getMatchingSe();
+            AbstractMatchingSe matchingSe =
+                    selectionsResult.getMatchingSelection(index).getMatchingSe();
             logger.info("The SE matched the selection {}.", index);
 
             logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index,
@@ -78,7 +79,7 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
                         + "==================");
         logger.info("= SE Reader  NAME = {}", seReader.getName());
 
-        MatchingSe matchingSe;
+        AbstractMatchingSe matchingSe;
 
         /* Check if a SE is present in the reader */
         if (seReader.isSePresent()) {

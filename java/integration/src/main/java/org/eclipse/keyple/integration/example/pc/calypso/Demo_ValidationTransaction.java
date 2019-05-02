@@ -29,7 +29,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
@@ -185,7 +184,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         poTransaction.processPoCommandsInSession();
 
-        poTransaction.processClosing(TransmissionMode.CONTACTLESS, ChannelState.KEEP_OPEN);
+        poTransaction.processClosing(ChannelState.KEEP_OPEN);
 
         System.out.println("\nValidation Successful!");
         System.out.println(
@@ -252,7 +251,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
             System.out.println("No value present in the card. Initiating auto top-up...");
 
-            poTransaction.processClosing(TransmissionMode.CONTACTLESS, ChannelState.KEEP_OPEN);
+            poTransaction.processClosing(ChannelState.KEEP_OPEN);
 
             poTransaction = new PoTransaction(new PoResource(poReader, detectedPO), samResource,
                     new SecuritySettings());
@@ -288,7 +287,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         poTransaction.processPoCommandsInSession();
 
-        poTransaction.processClosing(TransmissionMode.CONTACTLESS, ChannelState.KEEP_OPEN);
+        poTransaction.processClosing(ChannelState.KEEP_OPEN);
 
         System.out.println("\nValidation Successful!");
         System.out.println(
@@ -400,9 +399,17 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         SeReader poReader =
                 DemoUtilities.getReader(seProxyService, DemoUtilities.PO_READER_NAME_REGEX);
+
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
         SeReader samReader =
                 DemoUtilities.getReader(seProxyService, DemoUtilities.SAM_READER_NAME_REGEX);
 
+        samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO7816_3));
 
         if (poReader == samReader || poReader == null || samReader == null) {
             throw new IllegalStateException("Bad PO/SAM setup");
@@ -432,7 +439,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                         new SeSelector.AtrFilter(SAM_ATR_REGEX), null, "SAM Selection"),
                 ChannelState.KEEP_OPEN);
 
-        /* Prepare selector, ignore MatchingSe here */
+        /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
 
         SamResource samResource;

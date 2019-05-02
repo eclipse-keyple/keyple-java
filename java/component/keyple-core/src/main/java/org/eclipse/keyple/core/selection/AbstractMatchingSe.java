@@ -16,10 +16,10 @@ import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
 /**
- * MatchingSe is the class to manage the elements of the result of a selection.
+ * AbstractMatchingSe is the class to manage the elements of the result of a selection.
  *
  */
-public class MatchingSe {
+public abstract class AbstractMatchingSe {
     private final SeResponse selectionResponse;
     private final TransmissionMode transmissionMode;
     private final SelectionStatus selectionStatus;
@@ -28,7 +28,7 @@ public class MatchingSe {
     /**
      * Constructor.
      */
-    public MatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode,
+    public AbstractMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode,
             String extraInfo) {
         this.selectionResponse = selectionResponse;
         this.transmissionMode = transmissionMode;
