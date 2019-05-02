@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.transaction;
+package org.eclipse.keyple.core.selection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +21,12 @@ import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 
 /**
- * The SeSelectionRequest class combines a SeSelector with additional helper methods useful to the
- * selection process done in {@link SeSelection}.
+ * The AbstractSeSelectionRequest class combines a SeSelector with additional helper methods useful
+ * to the selection process done in {@link SeSelection}.
  * <p>
  * This class may also be extended to add particular features specific to a SE family.
  */
-public class SeSelectionRequest {
+public abstract class AbstractSeSelectionRequest {
     protected SeSelector seSelector;
 
     /** optional apdu requests list to be executed following the selection process */
@@ -38,7 +38,7 @@ public class SeSelectionRequest {
      */
     protected final ChannelState channelState;
 
-    public SeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
+    public AbstractSeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
         this.seSelector = seSelector;
         this.channelState = channelState;
     }
@@ -93,11 +93,5 @@ public class SeSelectionRequest {
      */
     protected MatchingSe parse(SeResponse seResponse) {
         return new MatchingSe(seResponse, seSelector.getExtraInfo());
-    }
-
-    @Override
-    public String toString() {
-        // TODO
-        return "";
     }
 }

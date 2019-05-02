@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.transaction;
+package org.eclipse.keyple.core.selection;
 
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -36,7 +36,8 @@ public final class SeSelection {
      * list of target classes and selection requests used to build the MatchingSe list in return of
      * processSelection methods
      */
-    private List<SeSelectionRequest> seSelectionRequestList = new ArrayList<SeSelectionRequest>();
+    private List<AbstractSeSelectionRequest> seSelectionRequestList =
+            new ArrayList<AbstractSeSelectionRequest>();
     private SeRequestSet selectionRequestSet = new SeRequestSet(new LinkedHashSet<SeRequest>());
     private int selectionIndex;
 
@@ -55,7 +56,7 @@ public final class SeSelection {
      * @param seSelectionRequest the selector to prepare
      * @return the selection index giving the current selection position in the selection request.
      */
-    public int prepareSelection(SeSelectionRequest seSelectionRequest) {
+    public int prepareSelection(AbstractSeSelectionRequest seSelectionRequest) {
         if (logger.isTraceEnabled()) {
             logger.trace("SELECTORREQUEST = {}, EXTRAINFO = {}",
                     seSelectionRequest.getSelectionRequest(),

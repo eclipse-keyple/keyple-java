@@ -17,6 +17,7 @@ public enum SeCommonProtocols implements SeProtocol {
 
     /* ---- contactless standard / NFC compliant ------------- */
     PROTOCOL_ISO14443_4("ISO 14443-4", CONTACTLESS),
+
     PROTOCOL_ISO15693("ISO 15693 Type V", CONTACTLESS),
 
     /* ---- contactless proprietary NFC compliant ------------ */

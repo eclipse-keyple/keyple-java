@@ -20,24 +20,17 @@ import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode.*;
  * Custom protocol definitions to illustrate the extension of the Keyple SDK definitions
  */
 public enum CustomProtocols implements SeProtocol {
-    CUSTOM_PROTOCOL_B_PRIME("Custom Old Calypso B prime", ProtocolType.PROPRIETARY, CONTACTLESS,
-            NfcCompatibility.NOT_NFC),
+    CUSTOM_PROTOCOL_B_PRIME("Custom Old Calypso B prime", CONTACTLESS),
 
-    CUSTOM_PROTOCOL_MIFARE_DESFIRE("Custom Mifare DESFire", ProtocolType.PROPRIETARY, CONTACTLESS,
-            NfcCompatibility.NFC);
+    CUSTOM_PROTOCOL_MIFARE_DESFIRE("Custom Mifare DESFire", CONTACTLESS);
 
     /** The protocol name. */
     private final String name;
-    private final ProtocolType protocolType;
     private final TransmissionMode transmissionMode;
-    private final NfcCompatibility nfcCompatibility;
 
-    CustomProtocols(String name, ProtocolType protocolType, TransmissionMode transmissionMode,
-            NfcCompatibility nfcCompatibility) {
+    CustomProtocols(String name, TransmissionMode transmissionMode) {
         this.name = name;
-        this.protocolType = protocolType;
         this.transmissionMode = transmissionMode;
-        this.nfcCompatibility = nfcCompatibility;
     }
 
     @Override
@@ -46,17 +39,7 @@ public enum CustomProtocols implements SeProtocol {
     }
 
     @Override
-    public ProtocolType getProtocolType() {
-        return protocolType;
-    }
-
-    @Override
     public TransmissionMode getTransmissionMode() {
         return transmissionMode;
-    }
-
-    @Override
-    public NfcCompatibility getNfcCompatibility() {
-        return nfcCompatibility;
     }
 }

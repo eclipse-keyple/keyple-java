@@ -9,19 +9,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.calypso.transaction;
+package org.eclipse.keyple.example.generic.common;
 
-import org.eclipse.keyple.core.selection.SeResource;
-import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeSelector;
 
-public class PoResource extends SeResource<CalypsoPo> {
-    /**
-     * Constructor
-     *
-     * @param seReader the {@link SeReader} with which the SE is communicating
-     * @param calypsoPo the {@link CalypsoPo} information structure
-     */
-    public PoResource(SeReader seReader, CalypsoPo calypsoPo) {
-        super(seReader, calypsoPo);
+/**
+ * Create a new class extending AbstractSeSelectionRequest
+ */
+public class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
+    public GenericSeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
+        super(seSelector, channelState);
     }
 }

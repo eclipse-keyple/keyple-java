@@ -15,12 +15,14 @@ public interface SeProtocol {
 
     /**
      * Protocol name
+     * 
      * @return String
      */
     String getName();
 
     /**
      * Transmission mode: CONTACTS or CONTACTLESS
+     * 
      * @return a TransmissionMode enum value
      */
     public TransmissionMode getTransmissionMode();

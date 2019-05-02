@@ -20,6 +20,11 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
+import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
+import org.eclipse.keyple.core.selection.MatchingSe;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -29,10 +34,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.transaction.MatchingSe;
-import org.eclipse.keyple.core.transaction.SeSelection;
-import org.eclipse.keyple.core.transaction.SeSelectionRequest;
-import org.eclipse.keyple.core.transaction.SelectionsResult;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -87,14 +88,23 @@ public class StubReaderTest {
 
 
     static public void selectSe(SeReader reader) throws KeypleReaderException {
+        /**
+         * Create a new local class extending AbstractSeSelectionRequest
+         */
+        class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
+            public GenericSeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
+                super(seSelector, channelState);
+            }
+        }
+
         SeSelection seSelection = new SeSelection();
-        SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
+        GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                 new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                         new SeSelector.AtrFilter("3B.*"), null, "ATR selection"),
                 ChannelState.KEEP_OPEN);
 
         /* Prepare selector, ignore MatchingSe here */
-        seSelection.prepareSelection(seSelectionRequest);
+        seSelection.prepareSelection(genericSeSelectionRequest);
 
         seSelection.processExplicitSelection(reader);
     }
@@ -190,12 +200,12 @@ public class StubReaderTest {
 
         SeSelection seSelection = new SeSelection();
 
-        SeSelectionRequest seSelectionRequest =
-                new SeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+        PoSelectionRequest poSelectionRequest =
+                new PoSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
                         "AID: " + poAid), ChannelState.KEEP_OPEN);
 
-        seSelection.prepareSelection(seSelectionRequest);
+        seSelection.prepareSelection(poSelectionRequest);
 
         ((ObservableReader) reader).setDefaultSelectionRequest(seSelection.getSelectionOperation(),
                 ObservableReader.NotificationMode.MATCHED_ONLY);
@@ -229,12 +239,12 @@ public class StubReaderTest {
 
         SeSelection seSelection = new SeSelection();
 
-        SeSelectionRequest seSelectionRequest =
-                new SeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+        PoSelectionRequest poSelectionRequest =
+                new PoSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
                         "AID: " + poAid), ChannelState.KEEP_OPEN);
 
-        seSelection.prepareSelection(seSelectionRequest);
+        seSelection.prepareSelection(poSelectionRequest);
 
         ((ObservableReader) reader).setDefaultSelectionRequest(seSelection.getSelectionOperation(),
                 ObservableReader.NotificationMode.MATCHED_ONLY);
@@ -280,12 +290,12 @@ public class StubReaderTest {
 
         SeSelection seSelection = new SeSelection();
 
-        SeSelectionRequest seSelectionRequest =
-                new SeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+        PoSelectionRequest poSelectionRequest =
+                new PoSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
                         "AID: " + poAid), ChannelState.KEEP_OPEN);
 
-        seSelection.prepareSelection(seSelectionRequest);
+        seSelection.prepareSelection(poSelectionRequest);
 
         ((ObservableReader) reader).setDefaultSelectionRequest(seSelection.getSelectionOperation(),
                 ObservableReader.NotificationMode.ALWAYS);
@@ -313,13 +323,13 @@ public class StubReaderTest {
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
                 SeSelection seSelection = new SeSelection();
-                SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
+                PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
                         new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                                 new SeSelector.AtrFilter("3B.*"), null, "Test" + " ATR"),
                         ChannelState.KEEP_OPEN);
 
                 /* Prepare selector, ignore MatchingSe here */
-                seSelection.prepareSelection(seSelectionRequest);
+                seSelection.prepareSelection(poSelectionRequest);
 
                 try {
                     SelectionsResult selectionsResult =

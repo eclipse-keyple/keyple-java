@@ -13,7 +13,7 @@ package org.eclipse.keyple.integration.calypso;
 
 
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.core.transaction.MatchingSe;
+import org.eclipse.keyple.core.selection.MatchingSe;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 @SuppressWarnings("PMD.VariableNamingConventions")

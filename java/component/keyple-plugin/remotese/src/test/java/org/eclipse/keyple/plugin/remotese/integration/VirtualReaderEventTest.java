@@ -14,6 +14,10 @@ package org.eclipse.keyple.plugin.remotese.integration;
 import static org.eclipse.keyple.plugin.stub.StubReaderTest.hoplinkSE;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
+import org.eclipse.keyple.core.selection.MatchingSe;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -21,10 +25,6 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.transaction.MatchingSe;
-import org.eclipse.keyple.core.transaction.SeSelection;
-import org.eclipse.keyple.core.transaction.SeSelectionRequest;
-import org.eclipse.keyple.core.transaction.SelectionsResult;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
@@ -39,6 +39,14 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderEventTest.class);
 
+    /**
+     * Create a new class extending AbstractSeSelectionRequest
+     */
+    private class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
+        public GenericSeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
+            super(seSelector, channelState);
+        }
+    }
 
     /*
      * SE EVENTS
@@ -208,12 +216,12 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         SeSelection seSelection = new SeSelection();
 
-        SeSelectionRequest seSelectionRequest =
-                new SeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
+        GenericSeSelectionRequest genericSeSelectionRequest =
+                new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                        null, new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
                         "AID: " + poAid), ChannelState.KEEP_OPEN);
 
-        seSelection.prepareSelection(seSelectionRequest);
+        seSelection.prepareSelection(genericSeSelectionRequest);
 
         ((ObservableReader) virtualReader).setDefaultSelectionRequest(
                 seSelection.getSelectionOperation(),
@@ -252,12 +260,12 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         SeSelection seSelection = new SeSelection();
 
-        SeSelectionRequest seSelectionRequest =
-                new SeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
+        GenericSeSelectionRequest genericSeSelectionRequest =
+                new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                        null, new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
                         "AID: " + poAid), ChannelState.KEEP_OPEN);
 
-        seSelection.prepareSelection(seSelectionRequest);
+        seSelection.prepareSelection(genericSeSelectionRequest);
 
         ((ObservableReader) virtualReader).setDefaultSelectionRequest(
                 seSelection.getSelectionOperation(),
@@ -303,12 +311,12 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         SeSelection seSelection = new SeSelection();
 
-        SeSelectionRequest seSelectionRequest =
-                new SeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
+        GenericSeSelectionRequest genericSeSelectionRequest =
+                new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                        null, new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
                         "AID: " + poAid), ChannelState.KEEP_OPEN);
 
-        seSelection.prepareSelection(seSelectionRequest);
+        seSelection.prepareSelection(genericSeSelectionRequest);
 
         ((ObservableReader) virtualReader).setDefaultSelectionRequest(
                 seSelection.getSelectionOperation(), ObservableReader.NotificationMode.ALWAYS);
@@ -340,13 +348,13 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
                 SeSelection seSelection = new SeSelection();
-                SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
+                GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                         new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                                 new SeSelector.AtrFilter("3B.*"), null, "Test " + "ATR"),
                         ChannelState.KEEP_OPEN);
 
                 /* Prepare selector, ignore MatchingSe here */
-                seSelection.prepareSelection(seSelectionRequest);
+                seSelection.prepareSelection(genericSeSelectionRequest);
 
                 try {
                     SelectionsResult selectionsResult =
