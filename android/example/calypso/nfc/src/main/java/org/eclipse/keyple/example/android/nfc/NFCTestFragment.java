@@ -18,13 +18,10 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.plugin.android.nfc.AndroidNfcFragment;
-import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin;
-import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings;
-import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -34,11 +31,14 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcFragment;
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin;
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings;
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import android.graphics.Color;
@@ -117,8 +117,9 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
 
             // with this protocol settings we activate the nfc for ISO1443_4 protocol
-            ((ObservableReader) reader).addSeProtocolSetting(
-                    new SeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4));
+            ((ObservableReader) reader).addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                    AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING
+                            .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
             /*
              * Prepare a Calypso PO selection
@@ -137,10 +138,10 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
              * the selection and read additional information afterwards
              */
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                     new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
                             PoSelector.InvalidatedPo.REJECT),
-                    null, "AID: " + CalypsoClassicInfo.AID), ChannelState.KEEP_OPEN,
-                    ContactlessProtocols.PROTOCOL_ISO14443_4);
+                    "AID: " + CalypsoClassicInfo.AID), ChannelState.KEEP_OPEN);
 
             /*
              * Prepare the reading order and keep the associated parser for later use once the
@@ -298,7 +299,8 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
                         appendColoredText(mText, "\n\n2nd PO exchange:\n", Color.BLACK);
                         mText.append("* read the event log file");
-                        PoTransaction poTransaction = new PoTransaction(new PoResource(reader, calypsoPo));
+                        PoTransaction poTransaction =
+                                new PoTransaction(new PoResource(reader, calypsoPo));
 
                         /*
                          * Prepare the reading order and keep the associated parser for later use

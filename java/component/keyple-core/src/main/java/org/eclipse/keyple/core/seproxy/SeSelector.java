@@ -13,6 +13,7 @@ package org.eclipse.keyple.core.seproxy;
 
 import java.util.*;
 import java.util.regex.Pattern;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ public class SeSelector {
     /** logger */
     private static final Logger logger = LoggerFactory.getLogger(SeSelector.class);
 
+    private final SeProtocol seProtocol;
     private final AidSelector aidSelector;
     private final AtrFilter atrFilter;
     private final String extraInfo;
@@ -227,6 +229,13 @@ public class SeSelector {
     /**
      * Create a SeSelector to perform the SE selection
      * <p>
+     * if seProtocol is null, all protocols will match and the selection process will continue
+     *
+     * <p>
+     * if seProtocol is not null, the current SE protocol will checked and the selection process
+     * will continue only if the protocol matches.
+     *
+     * <p>
      * if aidSelector is null, no 'select application' command is generated. In this case the SE
      * must have a default application selected. (e.g. SAM or Rev1 Calypso cards)
      * <p>
@@ -239,11 +248,14 @@ public class SeSelector {
      * if atrFilter is not null, the ATR of the SE is compared with the regular expression provided
      * in the {@link AtrFilter} in order to determine if the SE match or not the expected ATR.
      *
-     * @param aidSelector the AID selection data
+     * @param seProtocol the SE communication protocol
      * @param atrFilter the ATR filter
+     * @param aidSelector the AID selection data
      * @param extraInfo information string (to be printed in logs)
      */
-    public SeSelector(AidSelector aidSelector, AtrFilter atrFilter, String extraInfo) {
+    public SeSelector(SeProtocol seProtocol, AtrFilter atrFilter, AidSelector aidSelector,
+            String extraInfo) {
+        this.seProtocol = seProtocol;
         this.aidSelector = aidSelector;
         this.atrFilter = atrFilter;
         if (extraInfo != null) {
@@ -261,11 +273,11 @@ public class SeSelector {
 
     /**
      * Getter
-     * 
-     * @return the {@link AidSelector} provided at construction time
+     *
+     * @return the {@link SeProtocol} provided at construction time
      */
-    public AidSelector getAidSelector() {
-        return aidSelector;
+    public SeProtocol getSeProtocol() {
+        return seProtocol;
     }
 
     /**
@@ -275,6 +287,15 @@ public class SeSelector {
      */
     public AtrFilter getAtrFilter() {
         return atrFilter;
+    }
+
+    /**
+     * Getter
+     *
+     * @return the {@link AidSelector} provided at construction time
+     */
+    public AidSelector getAidSelector() {
+        return aidSelector;
     }
 
     /**

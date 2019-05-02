@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.transaction.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
@@ -102,10 +102,10 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
          * Generic selection: configures a SeSelector with all the desired attributes to make the
          * selection
          */
-        SeSelectionRequest seSelector = new SeSelectionRequest(
-                new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAid), null), null,
-                        "AID: " + seAid),
-                ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
+        SeSelectionRequest seSelector =
+                new SeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAid), null),
+                        "AID: " + seAid), ChannelState.KEEP_OPEN);
 
         /*
          * Add the selection case to the current selection (we could have added other cases here)

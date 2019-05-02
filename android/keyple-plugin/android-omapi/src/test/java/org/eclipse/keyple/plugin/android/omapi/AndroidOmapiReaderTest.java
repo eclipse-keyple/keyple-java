@@ -32,8 +32,7 @@ import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
 import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.ContactsProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -148,9 +147,9 @@ public class AndroidOmapiReaderTest {
         List<ApduRequest> poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
         // wrong protocol
-        SeRequest seRequest = new SeRequest(new SeSelector(
-                new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid),null), null,null), poApduRequestList,
-                ChannelState.CLOSE_AFTER, ContactlessProtocols.PROTOCOL_MIFARE_UL);
+        SeRequest seRequest = new SeRequest(new SeSelector( SeCommonProtocols.PROTOCOL_MIFARE_UL, null,
+                new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid),null),null), poApduRequestList,
+                ChannelState.CLOSE_AFTER);
 
         // test
         SeResponseSet seResponse = proxyReader.transmitSet(new SeRequestSet(seRequest));
@@ -230,9 +229,9 @@ public class AndroidOmapiReaderTest {
 
         poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
-        SeRequest seRequest = new SeRequest(new SeSelector(
-                new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null, null), poApduRequestList,
-                ChannelState.CLOSE_AFTER, ContactsProtocols.PROTOCOL_ISO7816_3);
+        SeRequest seRequest = new SeRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
+                new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null), poApduRequestList,
+                ChannelState.CLOSE_AFTER);
 
         return new SeRequestSet(seRequest);
 

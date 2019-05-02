@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractStaticReader;
-import org.eclipse.keyple.core.seproxy.protocol.ContactsProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -278,6 +278,6 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
      */
     @Override
     protected boolean protocolFlagMatches(SeProtocol protocolFlag) {
-        return protocolFlag.equals(ContactsProtocols.PROTOCOL_ISO7816_3);
+        return protocolFlag.equals(SeCommonProtocols.PROTOCOL_ISO7816_3);
     }
 }

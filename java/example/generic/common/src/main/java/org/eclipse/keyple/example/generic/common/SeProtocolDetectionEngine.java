@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
 import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.transaction.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
@@ -54,7 +54,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
         seSelection = new SeSelection();
 
         // process SDK defined protocols
-        for (ContactlessProtocols protocol : ContactlessProtocols.values()) {
+        for (SeCommonProtocols protocol : SeCommonProtocols.values()) {
             switch (protocol) {
                 case PROTOCOL_ISO14443_4:
                     /* Add a Hoplink selector */
@@ -62,14 +62,10 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                     byte SFI_T2Usage = (byte) 0x1A;
                     byte SFI_T2Environment = (byte) 0x14;
 
-                    PoSelectionRequest poSelectionRequest =
-                            new PoSelectionRequest(
-                                    new SeSelector(
-                                            new SeSelector.AidSelector(
-                                                    ByteArrayUtil.fromHex(HoplinkAID), null),
-                                            null, "Hoplink selector"),
-                                    ChannelState.KEEP_OPEN,
-                                    ContactlessProtocols.PROTOCOL_ISO14443_4);
+                    PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new SeSelector(
+                            SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new SeSelector.AidSelector(ByteArrayUtil.fromHex(HoplinkAID), null),
+                            "Hoplink selector"), ChannelState.KEEP_OPEN);
 
                     poSelectionRequest.preparePoCustomReadCmd("Standard Get Data",
                             new ApduRequest(ByteArrayUtil.fromHex("FFCA000000"), false));
@@ -92,9 +88,9 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                 default:
                     /* Add a generic selector */
                     seSelection.prepareSelection(new SeSelectionRequest(
-                            new SeSelector(null, new SeSelector.AtrFilter(".*"),
-                                    "Default selector"),
-                            ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4));
+                            new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                                    new SeSelector.AtrFilter(".*"), null, "Default selector"),
+                            ChannelState.KEEP_OPEN));
                     break;
             }
         }

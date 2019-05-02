@@ -34,8 +34,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.Protocol;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SeSelectionRequest;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
@@ -162,8 +161,7 @@ public class Tool_LoadKeys {
         samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
         // provide the reader with the settings
-        poReader.addSeProtocolSetting(
-                new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        poReader.setSeProtocolSetting(PcscProtocolSetting.getAllSettings());
 
         // do the SAM selection to open the logical channel
         final String SAM_ATR_REGEX = "3B3F9600805A[0-9a-fA-F]{2}80[0-9a-fA-F]{16}829000";
@@ -171,8 +169,9 @@ public class Tool_LoadKeys {
         SeSelection samSelection = new SeSelection();
 
         SeSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                        new SeSelector.AtrFilter(SAM_ATR_REGEX), null, "SAM Selection"),
+                ChannelState.KEEP_OPEN);
 
         /* Prepare selector, ignore MatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
@@ -204,8 +203,10 @@ public class Tool_LoadKeys {
             SeSelection seSelection = new SeSelection();
 
             seSelection.prepareSelection(
-                    new PoSelectionRequest(new SeSelector(new SeSelector.AidSelector(aid, null),
-                            null, "Calypso Classic AID"), ChannelState.KEEP_OPEN, Protocol.ANY));
+                    new PoSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                            null, new SeSelector.AidSelector(aid, null),
+
+                            "Calypso Classic AID"), ChannelState.KEEP_OPEN));
 
             SelectionsResult poSelectionsResult = seSelection.processExplicitSelection(poReader);
 

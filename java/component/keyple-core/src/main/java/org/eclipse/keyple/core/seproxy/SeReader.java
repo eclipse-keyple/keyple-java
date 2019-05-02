@@ -12,8 +12,9 @@
 package org.eclipse.keyple.core.seproxy;
 
 
+import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.seproxy.util.Configurable;
 import org.eclipse.keyple.core.seproxy.util.Nameable;
@@ -40,8 +41,8 @@ public interface SeReader extends Nameable, Configurable, Comparable<SeReader> {
     boolean isSePresent() throws NoStackTraceThrowable;
 
     /**
-     * A protocol setting is a map that establish the link between a protocol identifier and a
-     * String that defines how a particular SE may match this protocol.
+     * A protocol setting is an association that establish the link between a protocol identifier
+     * and a String that defines how a particular SE may match this protocol.
      * <p>
      * For example:
      * <p>
@@ -56,9 +57,17 @@ public interface SeReader extends Nameable, Configurable, Comparable<SeReader> {
      * A reader plugin will handle a list of protocol settings in order to target multiple types of
      * SE.
      * 
-     * @param seProtocolSetting the protocol setting to be added to the plugin internal list
+     * @param seProtocol the protocol key identifier to be added to the plugin internal list
+     * @param protocolRule a string use to define how to identify the protocol
      */
-    void addSeProtocolSetting(SeProtocolSetting seProtocolSetting);
+    void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule);
+
+    /**
+     * Complete the current setting map with the provided map
+     * 
+     * @param protocolSetting
+     */
+    void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting);
 
     /**
      * @return the transmission mode in use with this SE reader

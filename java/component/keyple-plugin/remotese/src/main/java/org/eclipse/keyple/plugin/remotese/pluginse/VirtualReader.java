@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteReaderException;
@@ -146,9 +146,13 @@ public final class VirtualReader extends AbstractObservableReader {
 
 
     @Override
-    public void addSeProtocolSetting(SeProtocolSetting seProtocolSetting) {
+    public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {
         logger.error("addSeProtocolSetting is not implemented yet");
+    }
 
+    @Override
+    public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
+        logger.error("setSeProtocolSetting is not implemented yet");
     }
 
     /*
