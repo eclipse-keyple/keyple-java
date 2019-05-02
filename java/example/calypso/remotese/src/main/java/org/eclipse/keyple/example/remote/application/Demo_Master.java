@@ -18,6 +18,9 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -30,9 +33,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.util.Observable;
-import org.eclipse.keyple.core.transaction.MatchingSe;
-import org.eclipse.keyple.core.transaction.SeSelection;
-import org.eclipse.keyple.core.transaction.SelectionsResult;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
@@ -242,7 +242,7 @@ public class Demo_Master implements Observable.Observer {
                     SelectionsResult selectionsResult = seSelection
                             .processDefaultSelection(event.getDefaultSelectionResponse());
                     if (selectionsResult.hasActiveSelection()) {
-                        MatchingSe selectedSe =
+                        AbstractMatchingSe selectedSe =
                                 selectionsResult.getActiveSelection().getMatchingSe();
 
                         logger.info(

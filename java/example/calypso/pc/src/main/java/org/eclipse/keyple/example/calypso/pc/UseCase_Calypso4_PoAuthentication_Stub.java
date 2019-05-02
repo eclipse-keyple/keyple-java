@@ -15,15 +15,14 @@ package org.eclipse.keyple.example.calypso.pc;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.core.selection.MatchingSelection;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.core.transaction.MatchingSelection;
-import org.eclipse.keyple.core.transaction.SeSelection;
-import org.eclipse.keyple.core.transaction.SelectionsResult;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
@@ -257,8 +256,7 @@ public class UseCase_Calypso4_PoAuthentication_Stub {
                 /*
                  * A ratification command will be sent (CONTACTLESS_MODE).
                  */
-                poProcessStatus = poTransaction.processClosing(TransmissionMode.CONTACTLESS,
-                        ChannelState.CLOSE_AFTER);
+                poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AFTER);
 
                 if (!poProcessStatus) {
                     throw new IllegalStateException("processClosing failure.");

@@ -1594,11 +1594,14 @@ public final class PoTransaction {
      * the PO and made available with the getCommandParser method.</li>
      * </ul>
      *
-     * @param transmissionMode the communication mode. If the communication mode is CONTACTLESS, a
-     *        ratification command will be generated and sent to the PO after the Close Session
-     *        command; the ratification will not be requested in the Close Session command. On the
-     *        contrary, if the communication mode is CONTACTS, no ratification command will be sent
-     *        to the PO and ratification will be requested in the Close Session command
+     * <p>
+     * The communication mode is retrieved from CalypsoPO to manage the ratification process. If the
+     * communication mode is CONTACTLESS, a ratification command will be generated and sent to the
+     * PO after the Close Session command; the ratification will not be requested in the Close
+     * Session command. On the contrary, if the communication mode is CONTACTS, no ratification
+     * command will be sent to the PO and ratification will be requested in the Close Session
+     * command
+     * 
      * @param channelState indicates if the SE channel of the PO reader must be closed after the
      *        last command
      * @return true if all commands are successful
@@ -1608,8 +1611,7 @@ public final class PoTransaction {
      *         communication mode.</li>
      *         </ul>
      */
-    public boolean processClosing(TransmissionMode transmissionMode, ChannelState channelState)
-            throws KeypleReaderException {
+    public boolean processClosing(ChannelState channelState) throws KeypleReaderException {
         boolean poProcessSuccess = true;
         boolean atLeastOneReadCommand = false;
         boolean sessionPreviouslyClosed = false;
@@ -1699,8 +1701,8 @@ public final class PoTransaction {
         }
 
         /* Finally, close the session as requested */
-        seResponseClosing =
-                processAtomicClosing(poAtomicBuilderParserList, transmissionMode, channelState);
+        seResponseClosing = processAtomicClosing(poAtomicBuilderParserList,
+                calypsoPo.getTransmissionMode(), channelState);
 
         /* Update parsers */
         if (!createResponseParsers(seResponseClosing, poAtomicBuilderParserList)) {

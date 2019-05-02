@@ -24,6 +24,8 @@ import org.eclipse.keyple.calypso.command.sam.builder.security.SelectDiversifier
 import org.eclipse.keyple.calypso.command.sam.parser.security.CardGenerateKeyRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.calypso.transaction.CalypsoSam;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -35,9 +37,6 @@ import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.transaction.SeSelection;
-import org.eclipse.keyple.core.transaction.SeSelectionRequest;
-import org.eclipse.keyple.core.transaction.SelectionsResult;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.example.pc.calypso.DemoUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
@@ -147,8 +146,16 @@ public class Tool_LoadKeys {
         ProxyReader poReader = (ProxyReader) DemoUtilities.getReader(seProxyService,
                 DemoUtilities.PO_READER_NAME_REGEX);
 
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
         ProxyReader samReader = (ProxyReader) DemoUtilities.getReader(seProxyService,
                 DemoUtilities.SAM_READER_NAME_REGEX);
+
+        samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO7816_3));
 
         /* Check if the readers exist */
         if (poReader == null || samReader == null) {
@@ -168,12 +175,12 @@ public class Tool_LoadKeys {
 
         SeSelection samSelection = new SeSelection();
 
-        SeSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+        SamSelectionRequest samSelectionRequest = new SamSelectionRequest(
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3,
                         new SeSelector.AtrFilter(SAM_ATR_REGEX), null, "SAM Selection"),
                 ChannelState.KEEP_OPEN);
 
-        /* Prepare selector, ignore MatchingSe here */
+        /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
 
         SelectionsResult samSelectionsResult;

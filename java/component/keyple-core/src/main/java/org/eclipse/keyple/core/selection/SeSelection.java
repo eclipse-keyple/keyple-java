@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.transaction;
+package org.eclipse.keyple.core.selection;
 
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -33,10 +33,11 @@ public final class SeSelection {
     private static final Logger logger = LoggerFactory.getLogger(SeSelection.class);
 
     /*
-     * list of target classes and selection requests used to build the MatchingSe list in return of
-     * processSelection methods
+     * list of target classes and selection requests used to build the AbstractMatchingSe list in
+     * return of processSelection methods
      */
-    private List<SeSelectionRequest> seSelectionRequestList = new ArrayList<SeSelectionRequest>();
+    private List<AbstractSeSelectionRequest> seSelectionRequestList =
+            new ArrayList<AbstractSeSelectionRequest>();
     private SeRequestSet selectionRequestSet = new SeRequestSet(new LinkedHashSet<SeRequest>());
     private int selectionIndex;
 
@@ -55,7 +56,7 @@ public final class SeSelection {
      * @param seSelectionRequest the selector to prepare
      * @return the selection index giving the current selection position in the selection request.
      */
-    public int prepareSelection(SeSelectionRequest seSelectionRequest) {
+    public int prepareSelection(AbstractSeSelectionRequest seSelectionRequest) {
         if (logger.isTraceEnabled()) {
             logger.trace("SELECTORREQUEST = {}, EXTRAINFO = {}",
                     seSelectionRequest.getSelectionRequest(),
@@ -76,12 +77,12 @@ public final class SeSelection {
      * <p>
      * The responses from the {@link SeResponseSet} is parsed and checked.
      * <p>
-     * A {@link MatchingSe} list is build and returned. Non matching SE are signaled by a null
-     * element in the list
+     * A {@link AbstractMatchingSe} list is build and returned. Non matching SE are signaled by a
+     * null element in the list
      * 
      * @param selectionResponse the selection response
      * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
-     *         including {@link MatchingSe} and {@link SeResponse}.
+     *         including {@link AbstractMatchingSe} and {@link SeResponse}.
      */
     private SelectionsResult processSelection(SelectionResponse selectionResponse) {
         SelectionsResult selectionsResult = new SelectionsResult();
@@ -100,10 +101,10 @@ public final class SeSelection {
                 if (seResponse.getSelectionStatus() != null
                         && seResponse.getSelectionStatus().hasMatched()) {
                     /*
-                     * create a MatchingSe with the class deduced from the selection request during
-                     * the selection preparation
+                     * create a AbstractMatchingSe with the class deduced from the selection request
+                     * during the selection preparation
                      */
-                    MatchingSe matchingSe =
+                    AbstractMatchingSe matchingSe =
                             seSelectionRequestList.get(selectionIndex).parse(seResponse);
 
                     selectionsResult.addMatchingSelection(new MatchingSelection(selectionIndex,
@@ -117,13 +118,13 @@ public final class SeSelection {
 
     /**
      * Parses the response to a selection operation sent to a SE and return a list of
-     * {@link MatchingSe}
+     * {@link AbstractMatchingSe}
      * <p>
      * Selection cases that have not matched the current SE are set to null.
      *
      * @param selectionResponse the response from the reader to the {@link DefaultSelectionRequest}
      * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
-     *         including {@link MatchingSe} and {@link SeResponse}.
+     *         including {@link AbstractMatchingSe} and {@link SeResponse}.
      */
     public SelectionsResult processDefaultSelection(SelectionResponse selectionResponse) {
         if (logger.isTraceEnabled()) {
@@ -135,7 +136,7 @@ public final class SeSelection {
     }
 
     /**
-     * Execute the selection process and return a list of {@link MatchingSe}.
+     * Execute the selection process and return a list of {@link AbstractMatchingSe}.
      * <p>
      * Selection requests are transmitted to the SE through the supplied SeReader.
      * <p>
@@ -148,7 +149,7 @@ public final class SeSelection {
      *
      * @param seReader the SeReader on which the selection is made
      * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
-     *         including {@link MatchingSe} and {@link SeResponse}.
+     *         including {@link AbstractMatchingSe} and {@link SeResponse}.
      * @throws KeypleReaderException if the requests transmission failed
      */
     public SelectionsResult processExplicitSelection(SeReader seReader)

@@ -20,6 +20,8 @@ import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -27,11 +29,10 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.transaction.SeSelection;
-import org.eclipse.keyple.core.transaction.SelectionsResult;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.example.pc.calypso.DemoUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -284,6 +285,10 @@ public class Tool_AnalyzePoFileStructure {
 
         SeReader poReader =
                 DemoUtilities.getReader(seProxyService, DemoUtilities.PO_READER_NAME_REGEX);
+
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         /* Check if the reader exists */
         if (poReader == null) {

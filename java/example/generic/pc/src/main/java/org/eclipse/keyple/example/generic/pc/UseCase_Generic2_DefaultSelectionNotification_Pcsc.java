@@ -12,6 +12,7 @@
 package org.eclipse.keyple.example.generic.pc;
 
 
+import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -21,8 +22,8 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.transaction.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.example.generic.common.GenericSeSelectionRequest;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,9 +103,9 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
          * Generic selection: configures a SeSelector with all the desired attributes to make the
          * selection
          */
-        SeSelectionRequest seSelector =
-                new SeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAid), null),
+        GenericSeSelectionRequest seSelector =
+                new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                        null, new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAid), null),
                         "AID: " + seAid), ChannelState.KEEP_OPEN);
 
         /*
@@ -147,7 +148,7 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
         switch (event.getEventType()) {
             case SE_MATCHED:
                 /* the selection has one target, get the result at index 0 */
-                MatchingSe selectedSe =
+                AbstractMatchingSe selectedSe =
                         seSelection.processDefaultSelection(event.getDefaultSelectionResponse())
                                 .getActiveSelection().getMatchingSe();
 

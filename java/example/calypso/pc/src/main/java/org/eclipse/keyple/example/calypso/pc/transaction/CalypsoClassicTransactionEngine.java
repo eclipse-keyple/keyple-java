@@ -16,13 +16,12 @@ import org.eclipse.keyple.calypso.command.po.parser.AppendRecordRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
 import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.core.transaction.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.generic.common.AbstractReaderObserverEngine;
@@ -193,8 +192,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poProcessStatus = poTransaction.processClosing(TransmissionMode.CONTACTLESS,
-                    ChannelState.KEEP_OPEN);
+            poProcessStatus = poTransaction.processClosing(ChannelState.KEEP_OPEN);
 
         } else {
             /*
@@ -253,8 +251,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poProcessStatus = poTransaction.processClosing(TransmissionMode.CONTACTLESS,
-                    ChannelState.KEEP_OPEN);
+            poProcessStatus = poTransaction.processClosing(ChannelState.KEEP_OPEN);
 
             logger.info("Parsing Append EventLog file: " + ((AppendRecordRespPars) poTransaction
                     .getResponseParser(appendEventLogParserIndex)).toString());

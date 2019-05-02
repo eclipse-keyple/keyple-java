@@ -14,6 +14,7 @@ package org.eclipse.keyple.integration.example.pc.calypso;
 
 
 import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -22,11 +23,10 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.core.transaction.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +49,17 @@ public class Demo_WriteName {
 
         SeReader poReader =
                 DemoUtilities.getReader(seProxyService, DemoUtilities.PO_READER_NAME_REGEX);
+
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
         SeReader samReader =
                 DemoUtilities.getReader(seProxyService, DemoUtilities.SAM_READER_NAME_REGEX);
+
+        samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO7816_3));
 
         /* Check if the readers exists */
         if (poReader == null || samReader == null) {
@@ -66,12 +75,12 @@ public class Demo_WriteName {
 
         SeSelection samSelection = new SeSelection();
 
-        SeSelectionRequest samSelectionRequest = new SamSelectionRequest(
+        SamSelectionRequest samSelectionRequest = new SamSelectionRequest(
                 new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3,
                         new SeSelector.AtrFilter(SAM_ATR_REGEX), null, "SAM Selection"),
                 ChannelState.KEEP_OPEN);
 
-        /* Prepare selector, ignore MatchingSe here */
+        /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
         SelectionsResult samSelectionsResult;
         try {
@@ -190,8 +199,7 @@ public class Demo_WriteName {
             poTransaction.prepareUpdateRecordCmd(environmentSid, (byte) 0x01, name.getBytes(),
                     "Environment");
 
-            poProcessStatus = poTransaction.processClosing(TransmissionMode.CONTACTLESS,
-                    ChannelState.KEEP_OPEN);
+            poProcessStatus = poTransaction.processClosing(ChannelState.KEEP_OPEN);
 
             if (!poProcessStatus) {
                 throw new IllegalStateException("processClosing failure.");

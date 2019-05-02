@@ -17,6 +17,7 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 
@@ -24,7 +25,8 @@ public class SamSelectionRequestTest {
 
     @Test
     public void parse() {
-        SeSelector seSelector = new SeSelector(null, null, null, "Dummy SeSelector");
+        SeSelector seSelector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null, null,
+                "Dummy SeSelector");
         SamSelectionRequest samSelectionRequest =
                 new SamSelectionRequest(seSelector, ChannelState.KEEP_OPEN);
         SelectionStatus selectionStatus = new SelectionStatus(

@@ -15,12 +15,12 @@ package org.eclipse.keyple.example.generic.common;
 
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
 import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.transaction.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
@@ -87,7 +87,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                     break;
                 default:
                     /* Add a generic selector */
-                    seSelection.prepareSelection(new SeSelectionRequest(
+                    seSelection.prepareSelection(new GenericSeSelectionRequest(
                             new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                                     new SeSelector.AtrFilter(".*"), null, "Default selector"),
                             ChannelState.KEEP_OPEN));
@@ -106,7 +106,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
     public void processSeMatch(SelectionResponse selectionResponse) {
         SelectionsResult selectionsResult = seSelection.processDefaultSelection(selectionResponse);
         /* get the SE that matches one of the two selection targets */
-        MatchingSe selectedSe = selectionsResult.getActiveSelection().getMatchingSe();
+        AbstractMatchingSe selectedSe = selectionsResult.getActiveSelection().getMatchingSe();
         if (selectedSe != null) {
             System.out.println("Selector: " + selectedSe.getSelectionExtraInfo()
                     + ", selection status = " + selectedSe.isSelected());

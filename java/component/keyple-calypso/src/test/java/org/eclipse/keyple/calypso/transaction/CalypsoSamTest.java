@@ -18,6 +18,7 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Test;
 
@@ -34,7 +35,7 @@ public class CalypsoSamTest {
                 new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180D002030411223344829000")),
                 null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
-                "Dummy SeSlector");
+                TransmissionMode.CONTACTS, "Dummy SeSlector");
         assertEquals(S1D, calypsoSam.getSamRevision());
         assertEquals((byte) 0x80, calypsoSam.getApplicationType());
         assertEquals((byte) 0xD0, calypsoSam.getApplicationSubType());
@@ -55,7 +56,7 @@ public class CalypsoSamTest {
                 new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180D102030411223344829000")),
                 null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
-                "Dummy SeSlector");
+                TransmissionMode.CONTACTS, "Dummy SeSlector");
         assertEquals(S1D, calypsoSam.getSamRevision());
         assertEquals((byte) 0xD1, calypsoSam.getApplicationSubType());
     }
@@ -70,7 +71,7 @@ public class CalypsoSamTest {
                 new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180D202030411223344829000")),
                 null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
-                "Dummy SeSlector");
+                TransmissionMode.CONTACTS, "Dummy SeSlector");
         assertEquals(S1D, calypsoSam.getSamRevision());
         assertEquals((byte) 0xD2, calypsoSam.getApplicationSubType());
     }
@@ -85,7 +86,7 @@ public class CalypsoSamTest {
                 new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180C102030411223344829000")),
                 null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
-                "Dummy SeSlector");
+                TransmissionMode.CONTACTS, "Dummy SeSlector");
         assertEquals(C1, calypsoSam.getSamRevision());
         assertEquals((byte) 0xC1, calypsoSam.getApplicationSubType());
     }
@@ -100,7 +101,7 @@ public class CalypsoSamTest {
                 new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180E102030411223344829000")),
                 null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
-                "Dummy SeSlector");
+                TransmissionMode.CONTACTS, "Dummy SeSlector");
         assertEquals(S1E, calypsoSam.getSamRevision());
         assertEquals((byte) 0xE1, calypsoSam.getApplicationSubType());
     }
@@ -115,7 +116,7 @@ public class CalypsoSamTest {
                 new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180E202030411223344829000")),
                 null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
-                "Dummy SeSlector");
+                TransmissionMode.CONTACTS, "Dummy SeSlector");
     }
 
     /* Bad Calypso SAM ATR (0000 instead of 9000) */
@@ -128,7 +129,7 @@ public class CalypsoSamTest {
                 new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180E202030411223344820000")),
                 null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
-                "Dummy SeSlector");
+                TransmissionMode.CONTACTS, "Dummy SeSlector");
     }
 
     /* Bad Calypso SAM ATR (empty array) */
@@ -140,6 +141,6 @@ public class CalypsoSamTest {
         SelectionStatus selectionStatus =
                 new SelectionStatus(new AnswerToReset(ByteArrayUtil.fromHex("")), null, true);
         CalypsoSam calypsoSam = new CalypsoSam(new SeResponse(true, true, selectionStatus, null),
-                "Dummy SeSlector");
+                TransmissionMode.CONTACTS, "Dummy SeSlector");
     }
 }

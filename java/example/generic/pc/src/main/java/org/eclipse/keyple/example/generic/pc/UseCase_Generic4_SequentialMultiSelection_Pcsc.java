@@ -12,6 +12,7 @@
 package org.eclipse.keyple.example.generic.pc;
 
 import java.io.IOException;
+import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -20,8 +21,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.transaction.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.example.generic.common.GenericSeSelectionRequest;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,8 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
             throws KeypleReaderException {
         SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
         if (selectionsResult.hasActiveSelection()) {
-            MatchingSe matchingSe = selectionsResult.getMatchingSelection(index).getMatchingSe();
+            AbstractMatchingSe matchingSe =
+                    selectionsResult.getMatchingSelection(index).getMatchingSe();
             logger.info("The SE matched the selection {}.", index);
 
             logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index,
@@ -77,7 +79,7 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
                         + "==================");
         logger.info("= SE Reader  NAME = {}", seReader.getName());
 
-        MatchingSe matchingSe;
+        AbstractMatchingSe matchingSe;
 
         /* Check if a SE is present in the reader */
         if (seReader.isSePresent()) {
@@ -90,7 +92,7 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
             String seAidPrefix = "A000000404012509";
 
             /* AID based selection */
-            seSelection.prepareSelection(new SeSelectionRequest(
+            seSelection.prepareSelection(new GenericSeSelectionRequest(
                     new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.FIRST,
@@ -103,7 +105,7 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
             doAndAnalyseSelection(seReader, seSelection, 1);
 
             /* next selection */
-            seSelection.prepareSelection(new SeSelectionRequest(
+            seSelection.prepareSelection(new GenericSeSelectionRequest(
                     new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
@@ -116,7 +118,7 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
             doAndAnalyseSelection(seReader, seSelection, 2);
 
             /* next selection */
-            seSelection.prepareSelection(new SeSelectionRequest(
+            seSelection.prepareSelection(new GenericSeSelectionRequest(
                     new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.NEXT,

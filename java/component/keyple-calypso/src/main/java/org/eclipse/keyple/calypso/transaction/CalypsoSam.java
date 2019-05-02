@@ -15,13 +15,14 @@ import static org.eclipse.keyple.calypso.command.sam.SamRevision.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.transaction.MatchingSe;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CalypsoSam extends MatchingSe {
+public class CalypsoSam extends AbstractMatchingSe {
     private static final Logger logger = LoggerFactory.getLogger(CalypsoSam.class);
 
     private SamRevision samRevision;
@@ -37,10 +38,12 @@ public class CalypsoSam extends MatchingSe {
      * Constructor.
      * 
      * @param selectionResponse the selection response from the SAM
+     * @param transmissionMode the current {@link TransmissionMode} (contacts or contactless)
      * @param extraInfo textual information
      */
-    public CalypsoSam(SeResponse selectionResponse, String extraInfo) {
-        super(selectionResponse, extraInfo);
+    public CalypsoSam(SeResponse selectionResponse, TransmissionMode transmissionMode,
+            String extraInfo) {
+        super(selectionResponse, transmissionMode, extraInfo);
 
         String atrString =
                 ByteArrayUtil.toHex(selectionResponse.getSelectionStatus().getAtr().getBytes());
