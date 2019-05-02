@@ -18,6 +18,7 @@ import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;
@@ -87,7 +88,7 @@ public class CalypsoPoTest {
 
         SeResponse selectionData =
                 new SeResponse(true, false, new SelectionStatus(atr, fci, true), null);
-        CalypsoPo calypsoPo = new CalypsoPo(selectionData, null);
+        CalypsoPo calypsoPo = new CalypsoPo(selectionData, TransmissionMode.CONTACTLESS, null);
         return calypsoPo;
     }
 
@@ -169,7 +170,7 @@ public class CalypsoPoTest {
         ApduResponse fciData = new ApduResponse(null, null);
         SeResponse selectionData =
                 new SeResponse(true, false, new SelectionStatus(atr, fciData, true), null);
-        CalypsoPo calypsoPo = new CalypsoPo(selectionData, null);
+        CalypsoPo calypsoPo = new CalypsoPo(selectionData, TransmissionMode.CONTACTLESS, null);
     }
 
     @Test
@@ -178,7 +179,7 @@ public class CalypsoPoTest {
         ApduResponse fciData = new ApduResponse(null, null);
         SeResponse selectionData =
                 new SeResponse(true, false, new SelectionStatus(atr, fciData, true), null);
-        CalypsoPo calypsoPo = new CalypsoPo(selectionData, null);
+        CalypsoPo calypsoPo = new CalypsoPo(selectionData, TransmissionMode.CONTACTLESS, null);
 
         Assert.assertEquals(PoRevision.REV1_0, calypsoPo.getRevision());
         Assert.assertNull(calypsoPo.getDfName());

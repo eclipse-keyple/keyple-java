@@ -283,6 +283,7 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
      */
     @Override
     protected CalypsoPo parse(SeResponse seResponse) {
-        return new CalypsoPo(seResponse, seSelector.getExtraInfo());
+        return new CalypsoPo(seResponse, seSelector.getSeProtocol().getTransmissionMode(),
+                seSelector.getExtraInfo());
     }
 }

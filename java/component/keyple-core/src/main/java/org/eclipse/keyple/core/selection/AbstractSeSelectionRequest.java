@@ -92,6 +92,7 @@ public abstract class AbstractSeSelectionRequest {
      * @return a {@link MatchingSe}
      */
     protected MatchingSe parse(SeResponse seResponse) {
-        return new MatchingSe(seResponse, seSelector.getExtraInfo());
+        return new MatchingSe(seResponse, seSelector.getSeProtocol().getTransmissionMode(),
+                seSelector.getExtraInfo());
     }
 }

@@ -33,7 +33,8 @@ public class SamSelectionRequest extends AbstractSeSelectionRequest {
      */
     @Override
     protected CalypsoSam parse(SeResponse seResponse) {
-        return new CalypsoSam(seResponse, seSelector.getExtraInfo());
+        return new CalypsoSam(seResponse, seSelector.getSeProtocol().getTransmissionMode(),
+                seSelector.getExtraInfo());
     }
 
     @Override

@@ -13,12 +13,14 @@ package org.eclipse.keyple.calypso.transaction;
 
 
 
+import javax.swing.*;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.PoRevision;
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
 import org.eclipse.keyple.core.selection.MatchingSe;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,11 +61,14 @@ public final class CalypsoPo extends MatchingSe {
 
     /**
      * Constructor.
-     *
-     * @param extraInfo
+     * 
+     * @param selectionResponse the response to the selection application command
+     * @param transmissionMode the current {@link TransmissionMode} (contacts or contactless)
+     * @param extraInfo information string
      */
-    public CalypsoPo(SeResponse selectionResponse, String extraInfo) {
-        super(selectionResponse, extraInfo);
+    public CalypsoPo(SeResponse selectionResponse, TransmissionMode transmissionMode,
+            String extraInfo) {
+        super(selectionResponse, transmissionMode, extraInfo);
 
         poAtr = selectionResponse.getSelectionStatus().getAtr().getBytes();
 
