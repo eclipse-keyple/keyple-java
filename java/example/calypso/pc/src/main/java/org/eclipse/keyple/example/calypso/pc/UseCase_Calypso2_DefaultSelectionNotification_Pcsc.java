@@ -168,7 +168,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
         switch (event.getEventType()) {
             case SE_MATCHED:
                 MatchingSelection matchingSelection =
-                        seSelection.processDefaultSelection(event.getDefaultSelectionResponse())
+                        seSelection.processDefaultSelection(event.getDefaultSelectionsResponse())
                                 .getActiveSelection();
 
                 SeReader poReader = null;

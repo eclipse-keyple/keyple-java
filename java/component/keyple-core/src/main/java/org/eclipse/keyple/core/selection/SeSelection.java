@@ -13,8 +13,8 @@ package org.eclipse.keyple.core.selection;
 
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
-import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -80,22 +80,23 @@ public final class SeSelection {
      * A {@link AbstractMatchingSe} list is build and returned. Non matching SE are signaled by a
      * null element in the list
      * 
-     * @param selectionResponse the selection response
+     * @param defaultSelectionsResponse the selection response
      * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
      *         including {@link AbstractMatchingSe} and {@link SeResponse}.
      */
-    private SelectionsResult processSelection(SelectionResponse selectionResponse) {
+    private SelectionsResult processSelection(DefaultSelectionsResponse defaultSelectionsResponse) {
         SelectionsResult selectionsResult = new SelectionsResult();
 
         /* null pointer exception protection */
-        if (selectionResponse == null) {
-            logger.error("selectionResponse shouldn't be null in processSelection.");
+        if (defaultSelectionsResponse == null) {
+            logger.error("defaultSelectionsResponse shouldn't be null in processSelection.");
             return null;
         }
         int selectionIndex = 0;
 
         /* Check SeResponses */
-        for (SeResponse seResponse : selectionResponse.getSelectionSeResponseSet().getResponses()) {
+        for (SeResponse seResponse : defaultSelectionsResponse.getSelectionSeResponseSet()
+                .getResponses()) {
             if (seResponse != null) {
                 /* test if the selection is successful: we should have either a FCI or an ATR */
                 if (seResponse.getSelectionStatus() != null
@@ -122,17 +123,19 @@ public final class SeSelection {
      * <p>
      * Selection cases that have not matched the current SE are set to null.
      *
-     * @param selectionResponse the response from the reader to the {@link DefaultSelectionRequest}
+     * @param defaultSelectionsResponse the response from the reader to the
+     *        {@link DefaultSelectionsRequest}
      * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
      *         including {@link AbstractMatchingSe} and {@link SeResponse}.
      */
-    public SelectionsResult processDefaultSelection(SelectionResponse selectionResponse) {
+    public SelectionsResult processDefaultSelection(
+            DefaultSelectionsResponse defaultSelectionsResponse) {
         if (logger.isTraceEnabled()) {
             logger.trace("Process default SELECTIONRESPONSE ({} response(s))",
-                    selectionResponse.getSelectionSeResponseSet().getResponses().size());
+                    defaultSelectionsResponse.getSelectionSeResponseSet().getResponses().size());
         }
 
-        return processSelection(selectionResponse);
+        return processSelection(defaultSelectionsResponse);
     }
 
     /**
@@ -162,17 +165,17 @@ public final class SeSelection {
         /* Communicate with the SE to do the selection */
         SeResponseSet seResponseSet = ((ProxyReader) seReader).transmitSet(selectionRequestSet);
 
-        return processSelection(new SelectionResponse(seResponseSet));
+        return processSelection(new DefaultSelectionsResponse(seResponseSet));
     }
 
     /**
-     * The SelectionOperation is the DefaultSelectionRequest to process in ordered to select a SE
+     * The SelectionOperation is the DefaultSelectionsRequest to process in ordered to select a SE
      * among others through the selection process. This method is useful to build the prepared
      * selection to be executed by a reader just after a SE insertion.
      * 
-     * @return the {@link DefaultSelectionRequest} previously prepared with prepareSelection
+     * @return the {@link DefaultSelectionsRequest} previously prepared with prepareSelection
      */
-    public DefaultSelectionRequest getSelectionOperation() {
-        return new DefaultSelectionRequest(selectionRequestSet);
+    public DefaultSelectionsRequest getSelectionOperation() {
+        return new DefaultSelectionsRequest(selectionRequestSet);
     }
 }

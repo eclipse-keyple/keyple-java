@@ -28,7 +28,6 @@ import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
@@ -176,9 +175,7 @@ public class Tool_LoadKeys {
         SeSelection samSelection = new SeSelection();
 
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3,
-                        new SeSelector.AtrFilter(SAM_ATR_REGEX), null, "SAM Selection"),
-                ChannelState.KEEP_OPEN);
+                new SamSelector(SamRevision.C1, null, "SAM Selection"), ChannelState.KEEP_OPEN);
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
@@ -210,8 +207,8 @@ public class Tool_LoadKeys {
             SeSelection seSelection = new SeSelection();
 
             seSelection.prepareSelection(
-                    new PoSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                            null, new SeSelector.AidSelector(aid, null),
+                    new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                            null, new PoSelector.PoAidSelector(aid, null),
 
                             "Calypso Classic AID"), ChannelState.KEEP_OPEN));
 

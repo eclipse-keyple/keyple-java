@@ -29,7 +29,7 @@ public final class ReaderEvent {
     /**
      * The response to the selection request
      */
-    private final SelectionResponse defaultResponseSet;
+    private final DefaultSelectionsResponse defaultResponseSet;
 
     /**
      * The different types of reader event
@@ -78,15 +78,15 @@ public final class ReaderEvent {
      * @param pluginName the name of the current plugin
      * @param readerName the name of the current reader
      * @param eventType the type of event
-     * @param selectionResponse the response to the default {@link DefaultSelectionRequest} (may be
-     *        null)
+     * @param defaultSelectionsResponse the response to the default {@link DefaultSelectionsRequest}
+     *        (may be null)
      */
     public ReaderEvent(String pluginName, String readerName, EventType eventType,
-            SelectionResponse selectionResponse) {
+            DefaultSelectionsResponse defaultSelectionsResponse) {
         this.pluginName = pluginName;
         this.readerName = readerName;
         this.eventType = eventType;
-        this.defaultResponseSet = selectionResponse;
+        this.defaultResponseSet = defaultSelectionsResponse;
     }
 
 
@@ -102,7 +102,7 @@ public final class ReaderEvent {
         return eventType;
     }
 
-    public SelectionResponse getDefaultSelectionResponse() {
+    public DefaultSelectionsResponse getDefaultSelectionsResponse() {
         return defaultResponseSet;
     }
 }

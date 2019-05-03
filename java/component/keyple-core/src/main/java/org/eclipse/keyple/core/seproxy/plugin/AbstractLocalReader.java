@@ -13,10 +13,10 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
@@ -123,14 +123,14 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * <li>SE_MATCHED: if a default selection request was defined in any mode and a SE matched the
      * selection</li>
      * <li>SE_INSERTED: if a default selection request was defined in ALWAYS mode but no SE matched
-     * the selection (the SelectionResponse is however transmitted)</li>
+     * the selection (the DefaultSelectionsResponse is however transmitted)</li>
      * </ul>
      * <p>
      * It will do nothing if a default selection is defined in MATCHED_ONLY mode but no SE matched
      * the selection.
      */
     protected final void cardInserted() {
-        if (defaultSelectionRequest == null) {
+        if (defaultSelectionsRequest == null) {
             /* no default request is defined, just notify the SE insertion */
             notifyObservers(new ReaderEvent(this.pluginName, this.name,
                     ReaderEvent.EventType.SE_INSERTED, null));
@@ -143,7 +143,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             boolean aSeMatched = false;
             try {
                 SeResponseSet seResponseSet =
-                        processSeRequestSet(defaultSelectionRequest.getSelectionSeRequestSet());
+                        processSeRequestSet(defaultSelectionsRequest.getSelectionSeRequestSet());
 
                 for (SeResponse seResponse : seResponseSet.getResponses()) {
                     if (seResponse != null && seResponse.getSelectionStatus().hasMatched()) {
@@ -156,7 +156,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     if (aSeMatched) {
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_MATCHED,
-                                new SelectionResponse(seResponseSet)));
+                                new DefaultSelectionsResponse(seResponseSet)));
                         presenceNotified = true;
                     } else {
                         /* the SE did not match, close the logical channel */
@@ -167,7 +167,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                         /* The SE matched, notify an SE_MATCHED event with the received response */
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_MATCHED,
-                                new SelectionResponse(seResponseSet)));
+                                new DefaultSelectionsResponse(seResponseSet)));
                     } else {
                         /*
                          * The SE didn't match, notify an SE_INSERTED event with the received
@@ -175,7 +175,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                          */
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_INSERTED,
-                                new SelectionResponse(seResponseSet)));
+                                new DefaultSelectionsResponse(seResponseSet)));
                     }
                     presenceNotified = true;
                 }
@@ -776,13 +776,13 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * Depending on the notification mode, the observer will be notified whenever an SE is inserted,
      * regardless of the selection status, or only if the current SE matches the selection criteria.
      *
-     * @param defaultSelectionRequest the {@link DefaultSelectionRequest} to be executed when a SE
+     * @param defaultSelectionsRequest the {@link DefaultSelectionsRequest} to be executed when a SE
      *        is inserted
      * @param notificationMode the notification mode enum (ALWAYS or MATCHED_ONLY)
      */
-    public void setDefaultSelectionRequest(DefaultSelectionRequest defaultSelectionRequest,
+    public void setDefaultSelectionRequest(DefaultSelectionsRequest defaultSelectionsRequest,
             ObservableReader.NotificationMode notificationMode) {
-        this.defaultSelectionRequest = defaultSelectionRequest;
+        this.defaultSelectionsRequest = defaultSelectionsRequest;
         this.notificationMode = notificationMode;
     };
 }
