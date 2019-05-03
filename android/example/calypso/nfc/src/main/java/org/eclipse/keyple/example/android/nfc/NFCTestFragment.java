@@ -28,7 +28,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -229,7 +229,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
                 switch (event.getEventType()) {
                     case SE_MATCHED:
-                        runCalyspoTransaction(event.getDefaultSelectionResponse());
+                        runCalyspoTransaction(event.getDefaultSelectionsResponse());
                         break;
 
                     case SE_INSERTED:
@@ -256,9 +256,9 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
     /**
      * Run Calypso simple read transaction
      * 
-     * @param defaultSelectionResponse
+     * @param defaultSelectionsResponse
      */
-    private void runCalyspoTransaction(final SelectionResponse defaultSelectionResponse) {
+    private void runCalyspoTransaction(final DefaultSelectionsResponse defaultSelectionsResponse) {
         LOG.debug("Running Calypso Simple Read transaction");
         getActivity().runOnUiThread(new Runnable() {
             @Override
@@ -273,7 +273,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                     mText.append(((AndroidNfcReader) reader).printTagId());
                     mText.append("\n ---- \n");
                     SelectionsResult selectionsResult =
-                            seSelection.processDefaultSelection(defaultSelectionResponse);
+                            seSelection.processDefaultSelection(defaultSelectionsResponse);
                     if (selectionsResult.hasActiveSelection()) {
                         CalypsoPo calypsoPo =
                                 (CalypsoPo) selectionsResult.getActiveSelection().getMatchingSe();

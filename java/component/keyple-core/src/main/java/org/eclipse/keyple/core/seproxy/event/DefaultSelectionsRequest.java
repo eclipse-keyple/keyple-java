@@ -17,11 +17,11 @@ import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
  * Class containing the {@link SeRequestSet} used to make a default selection at the
  * {@link ObservableReader} level.
  */
-public class DefaultSelectionRequest {
+public class DefaultSelectionsRequest {
     /** The {@link SeRequestSet} */
     private final SeRequestSet selectionSeRequestSet;
 
-    public DefaultSelectionRequest(SeRequestSet selectionSeRequestSet) {
+    public DefaultSelectionsRequest(SeRequestSet selectionSeRequestSet) {
         this.selectionSeRequestSet = selectionSeRequestSet;
     }
 

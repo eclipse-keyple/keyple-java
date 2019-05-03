@@ -18,8 +18,8 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
-import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -50,7 +50,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
         this.poReader = poReader;
     }
 
-    public DefaultSelectionRequest prepareSeSelection() {
+    public DefaultSelectionsRequest prepareSeSelection() {
 
         seSelection = new SeSelection();
 
@@ -100,12 +100,13 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
 
     /**
      * This method is called when a SE is inserted (or presented to the reader's antenna). It
-     * executes a {@link DefaultSelectionRequest} and processes the {@link SelectionResponse}
-     * showing the APDUs exchanges
+     * executes a {@link DefaultSelectionsRequest} and processes the
+     * {@link DefaultSelectionsResponse} showing the APDUs exchanges
      */
     @Override
-    public void processSeMatch(SelectionResponse selectionResponse) {
-        SelectionsResult selectionsResult = seSelection.processDefaultSelection(selectionResponse);
+    public void processSeMatch(DefaultSelectionsResponse defaultSelectionsResponse) {
+        SelectionsResult selectionsResult =
+                seSelection.processDefaultSelection(defaultSelectionsResponse);
         /* get the SE that matches one of the two selection targets */
         AbstractMatchingSe selectedSe = selectionsResult.getActiveSelection().getMatchingSe();
         if (selectedSe != null) {

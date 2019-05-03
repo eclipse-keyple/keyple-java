@@ -178,10 +178,10 @@ public class StubReaderTest {
                 Assert.assertEquals(event.getReaderName(), reader.getName());
                 Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
                 Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
-                Assert.assertTrue(event.getDefaultSelectionResponse().getSelectionSeResponseSet()
+                Assert.assertTrue(event.getDefaultSelectionsResponse().getSelectionSeResponseSet()
                         .getSingleResponse().getSelectionStatus().hasMatched());
                 Assert.assertArrayEquals(
-                        event.getDefaultSelectionResponse().getSelectionSeResponseSet()
+                        event.getDefaultSelectionsResponse().getSelectionSeResponseSet()
                                 .getSingleResponse().getSelectionStatus().getAtr().getBytes(),
                         hoplinkSE().getATR());
 
@@ -204,7 +204,7 @@ public class StubReaderTest {
                 }
 
                 Assert.assertArrayEquals(
-                        event.getDefaultSelectionResponse().getSelectionSeResponseSet()
+                        event.getDefaultSelectionsResponse().getSelectionSeResponseSet()
                                 .getSingleResponse().getSelectionStatus().getFci().getBytes(),
                         fci);
 
@@ -296,7 +296,7 @@ public class StubReaderTest {
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
                 // card has not match
-                Assert.assertFalse(event.getDefaultSelectionResponse().getSelectionSeResponseSet()
+                Assert.assertFalse(event.getDefaultSelectionsResponse().getSelectionSeResponseSet()
                         .getSingleResponse().getSelectionStatus().hasMatched());
 
                 lock.countDown();// should be called

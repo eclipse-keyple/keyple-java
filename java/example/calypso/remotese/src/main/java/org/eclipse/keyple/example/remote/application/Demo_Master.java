@@ -231,12 +231,12 @@ public class Demo_Master implements Observable.Observer {
             ReaderEvent event = (ReaderEvent) o;
             logger.debug("{} UPDATE {} {} {} {}", node.getNodeId(), event.getEventType(),
                     event.getPluginName(), event.getReaderName(),
-                    event.getDefaultSelectionResponse());
+                    event.getDefaultSelectionsResponse());
             switch (event.getEventType()) {
 
                 case SE_MATCHED:
                     SelectionsResult selectionsResult = seSelection
-                            .processDefaultSelection(event.getDefaultSelectionResponse());
+                            .processDefaultSelection(event.getDefaultSelectionsResponse());
                     if (selectionsResult.hasActiveSelection()) {
                         AbstractMatchingSe selectedSe =
                                 selectionsResult.getActiveSelection().getMatchingSe();

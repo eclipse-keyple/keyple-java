@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -35,8 +35,8 @@ public class SampleFactory {
         return new KeypleReaderException("Keyple Reader Exception");
     }
 
-    public static DefaultSelectionRequest getSelectionRequest() {
-        return new DefaultSelectionRequest(getASeRequestSet_ISO14443_4());
+    public static DefaultSelectionsRequest getSelectionRequest() {
+        return new DefaultSelectionsRequest(getASeRequestSet_ISO14443_4());
     }
 
     public static ObservableReader.NotificationMode getNotificationMode() {

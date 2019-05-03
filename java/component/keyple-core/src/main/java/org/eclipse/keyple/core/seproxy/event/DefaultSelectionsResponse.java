@@ -17,11 +17,11 @@ import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
  * Class containing the {@link SeResponseSet} used from a default selection made at the
  * {@link ObservableReader} level.
  */
-public class SelectionResponse {
+public class DefaultSelectionsResponse {
     /** The {@link SeResponseSet} */
     private final SeResponseSet selectionSeResponseSet;
 
-    public SelectionResponse(SeResponseSet selectionSeResponseSet) {
+    public DefaultSelectionsResponse(SeResponseSet selectionSeResponseSet) {
         this.selectionSeResponseSet = selectionSeResponseSet;
     }
 
