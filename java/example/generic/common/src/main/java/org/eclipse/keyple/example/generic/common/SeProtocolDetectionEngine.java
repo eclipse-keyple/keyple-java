@@ -15,6 +15,7 @@ package org.eclipse.keyple.example.generic.common;
 
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
@@ -62,9 +63,9 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                     byte SFI_T2Usage = (byte) 0x1A;
                     byte SFI_T2Environment = (byte) 0x14;
 
-                    PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new SeSelector(
+                    PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
                             SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new SeSelector.AidSelector(ByteArrayUtil.fromHex(HoplinkAID), null),
+                            new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(HoplinkAID), null),
                             "Hoplink selector"), ChannelState.KEEP_OPEN);
 
                     poSelectionRequest.preparePoCustomReadCmd("Standard Get Data",
