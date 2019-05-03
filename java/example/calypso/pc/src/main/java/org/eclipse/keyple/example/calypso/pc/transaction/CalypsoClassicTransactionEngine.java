@@ -18,8 +18,8 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
-import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -35,7 +35,7 @@ import org.slf4j.profiler.Profiler;
  * <ol>
  * <li>Setting up a two-reader configuration and adding an observer method ({@link #update update})
  * <li>Starting a card operation when a PO presence is notified
- * ({@link #processSeMatch(SelectionResponse)} operateSeTransaction})
+ * ({@link #processSeMatch(DefaultSelectionsResponse)} operateSeTransaction})
  * <li>Opening a logical channel with the SAM (C1 SAM is expected) see
  * ({@link CalypsoClassicInfo#SAM_C1_ATR_REGEX SAM_C1_ATR_REGEX})
  * <li>Attempting to open a logical channel with the PO with 3 options:
@@ -44,7 +44,7 @@ import org.slf4j.profiler.Profiler;
  * <li>Selecting with the Calypso AID and reading the event log file
  * <li>Selecting with a fake AID (2)
  * </ul>
- * <li>Display {@link SelectionResponse} data
+ * <li>Display {@link DefaultSelectionsResponse} data
  * <li>If the Calypso selection succeeded, do a Calypso transaction
  * ({doCalypsoReadWriteTransaction(PoTransaction, ApduResponse, boolean)}
  * doCalypsoReadWriteTransaction}).
@@ -268,7 +268,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         }
     }
 
-    public DefaultSelectionRequest preparePoSelection() {
+    public DefaultSelectionsRequest preparePoSelection() {
         /*
          * Initialize the selection process
          */
@@ -331,9 +331,10 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
      * Do the PO selection and possibly go on with Calypso transactions.
      */
     @Override
-    public void processSeMatch(SelectionResponse selectionResponse) {
-        CalypsoPo calypsoPo = (CalypsoPo) seSelection.processDefaultSelection(selectionResponse)
-                .getActiveSelection().getMatchingSe();
+    public void processSeMatch(DefaultSelectionsResponse defaultSelectionsResponse) {
+        CalypsoPo calypsoPo =
+                (CalypsoPo) seSelection.processDefaultSelection(defaultSelectionsResponse)
+                        .getActiveSelection().getMatchingSe();
         if (calypsoPo != null) {
             try {
                 /* first time: check SAM */

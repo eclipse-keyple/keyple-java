@@ -14,17 +14,13 @@ package org.eclipse.keyple.example.remote.application;
 import java.io.IOException;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoResource;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -172,8 +168,8 @@ public class Demo_Master implements Observable.Observer {
                          */
                         PoSelectionRequest poSelectionRequest =
                                 new PoSelectionRequest(
-                                        new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                                new SeSelector.AidSelector(ByteArrayUtil
+                                        new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                                new PoSelector.PoAidSelector(ByteArrayUtil
                                                         .fromHex(CalypsoClassicInfo.AID), null),
                                                 "AID: " + CalypsoClassicInfo.AID),
                                         ChannelState.KEEP_OPEN);
@@ -235,12 +231,12 @@ public class Demo_Master implements Observable.Observer {
             ReaderEvent event = (ReaderEvent) o;
             logger.debug("{} UPDATE {} {} {} {}", node.getNodeId(), event.getEventType(),
                     event.getPluginName(), event.getReaderName(),
-                    event.getDefaultSelectionResponse());
+                    event.getDefaultSelectionsResponse());
             switch (event.getEventType()) {
 
                 case SE_MATCHED:
                     SelectionsResult selectionsResult = seSelection
-                            .processDefaultSelection(event.getDefaultSelectionResponse());
+                            .processDefaultSelection(event.getDefaultSelectionsResponse());
                     if (selectionsResult.hasActiveSelection()) {
                         AbstractMatchingSe selectedSe =
                                 selectionsResult.getActiveSelection().getMatchingSe();

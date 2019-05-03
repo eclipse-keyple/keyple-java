@@ -190,7 +190,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
         switch (event.getEventType()) {
             case SE_MATCHED:
                 MatchingSelection matchingSelection =
-                        seSelection.processDefaultSelection(event.getDefaultSelectionResponse())
+                        seSelection.processDefaultSelection(event.getDefaultSelectionsResponse())
                                 .getActiveSelection();
 
                 CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();

@@ -13,12 +13,12 @@ package org.eclipse.keyple.integration.example.pc.calypso;
 
 
 
+import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
@@ -76,9 +76,7 @@ public class Demo_WriteName {
         SeSelection samSelection = new SeSelection();
 
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3,
-                        new SeSelector.AtrFilter(SAM_ATR_REGEX), null, "SAM Selection"),
-                ChannelState.KEEP_OPEN);
+                new SamSelector(SamRevision.C1, null, "SAM Selection"), ChannelState.KEEP_OPEN);
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
@@ -122,8 +120,8 @@ public class Demo_WriteName {
 
             // Add Audit C0 AID to the list
             int auditC0SeIndex = seSelection.prepareSelection(new PoSelectionRequest(
-                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new SeSelector.AidSelector(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(
                                     ByteArrayUtil.fromHex(PoFileStructureInfo.poAuditC0Aid), null),
                             "Audit C0"),
                     ChannelState.KEEP_OPEN));
@@ -133,9 +131,9 @@ public class Demo_WriteName {
                     seSelection
                             .prepareSelection(
                                     new PoSelectionRequest(
-                                            new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                                                     null,
-                                                    new SeSelector.AidSelector(
+                                                    new PoSelector.PoAidSelector(
                                                             ByteArrayUtil.fromHex(
                                                                     PoFileStructureInfo.clapAid),
                                                             null),
@@ -147,9 +145,9 @@ public class Demo_WriteName {
                     seSelection
                             .prepareSelection(
                                     new PoSelectionRequest(
-                                            new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                                                     null,
-                                                    new SeSelector.AidSelector(
+                                                    new PoSelector.PoAidSelector(
                                                             ByteArrayUtil.fromHex(
                                                                     PoFileStructureInfo.cdLightAid),
                                                             null),

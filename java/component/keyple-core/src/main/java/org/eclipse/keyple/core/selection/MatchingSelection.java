@@ -31,7 +31,7 @@ public class MatchingSelection {
      * @param matchingSe
      * @param selectionSeResponse
      */
-    public MatchingSelection(int selectionIndex, AbstractSeSelectionRequest seSelectionRequest,
+    MatchingSelection(int selectionIndex, AbstractSeSelectionRequest seSelectionRequest,
             AbstractMatchingSe matchingSe, SeResponse selectionSeResponse) {
         this.selectionIndex = selectionIndex;
         this.seSelectionRequest = seSelectionRequest;

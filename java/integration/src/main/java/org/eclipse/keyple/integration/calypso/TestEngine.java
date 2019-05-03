@@ -15,10 +15,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.calypso.transaction.CalypsoSam;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.SamResource;
-import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
+import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.*;
@@ -43,23 +41,23 @@ public class TestEngine {
 
         // Add Audit C0 AID to the list
         seSelection.prepareSelection(
-                new PoSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(
+                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new PoSelector.PoAidSelector(
                                 ByteArrayUtil.fromHex(PoFileStructureInfo.poAuditC0Aid), null),
                         "Audit C0"), ChannelState.KEEP_OPEN));
 
         // Add CLAP AID to the list
         seSelection.prepareSelection(new PoSelectionRequest(
-                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(
+                new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new PoSelector.PoAidSelector(
                                 ByteArrayUtil.fromHex(PoFileStructureInfo.clapAid), null),
                         "CLAP"),
                 ChannelState.KEEP_OPEN));
 
         // Add cdLight AID to the list
         seSelection.prepareSelection(
-                new PoSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(
+                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new PoSelector.PoAidSelector(
                                 ByteArrayUtil.fromHex(PoFileStructureInfo.cdLightAid), null),
                         "CDLight"), ChannelState.KEEP_OPEN));
 
@@ -136,9 +134,7 @@ public class TestEngine {
         SeSelection samSelection = new SeSelection();
 
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3,
-                        new SeSelector.AtrFilter(SAM_ATR_REGEX), null, "SAM Selection"),
-                ChannelState.KEEP_OPEN);
+                new SamSelector(SamRevision.C1, null, "SAM Selection"), ChannelState.KEEP_OPEN);
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);

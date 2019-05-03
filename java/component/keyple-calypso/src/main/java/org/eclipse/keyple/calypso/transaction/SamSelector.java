@@ -27,7 +27,7 @@ public class SamSelector extends SeSelector {
      *
      * @param samRevision the expected SAM revision (subtype)
      * @param serialNumber the expected serial number as an hex string (padded with 0 on the left).
-     *        Can be a sub regex (e.g. "AEC0....")
+     *        Can be a sub regex (e.g. "AEC0....") or null to allow any serial number.
      * @param extraInfo information string (to be printed in logs)
      */
     public SamSelector(SamRevision samRevision, String serialNumber, String extraInfo) {

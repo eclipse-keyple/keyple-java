@@ -21,6 +21,7 @@ import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.selection.SeSelection;
@@ -177,10 +178,10 @@ public class StubReaderTest {
                 Assert.assertEquals(event.getReaderName(), reader.getName());
                 Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
                 Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
-                Assert.assertTrue(event.getDefaultSelectionResponse().getSelectionSeResponseSet()
+                Assert.assertTrue(event.getDefaultSelectionsResponse().getSelectionSeResponseSet()
                         .getSingleResponse().getSelectionStatus().hasMatched());
                 Assert.assertArrayEquals(
-                        event.getDefaultSelectionResponse().getSelectionSeResponseSet()
+                        event.getDefaultSelectionsResponse().getSelectionSeResponseSet()
                                 .getSingleResponse().getSelectionStatus().getAtr().getBytes(),
                         hoplinkSE().getATR());
 
@@ -203,7 +204,7 @@ public class StubReaderTest {
                 }
 
                 Assert.assertArrayEquals(
-                        event.getDefaultSelectionResponse().getSelectionSeResponseSet()
+                        event.getDefaultSelectionsResponse().getSelectionSeResponseSet()
                                 .getSingleResponse().getSelectionStatus().getFci().getBytes(),
                         fci);
 
@@ -216,8 +217,8 @@ public class StubReaderTest {
         SeSelection seSelection = new SeSelection();
 
         PoSelectionRequest poSelectionRequest =
-                new PoSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
+                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(poAid), null),
                         "AID: " + poAid), ChannelState.KEEP_OPEN);
 
         seSelection.prepareSelection(poSelectionRequest);
@@ -255,8 +256,8 @@ public class StubReaderTest {
         SeSelection seSelection = new SeSelection();
 
         PoSelectionRequest poSelectionRequest =
-                new PoSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
+                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(poAid), null),
                         "AID: " + poAid), ChannelState.KEEP_OPEN);
 
         seSelection.prepareSelection(poSelectionRequest);
@@ -295,7 +296,7 @@ public class StubReaderTest {
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
                 // card has not match
-                Assert.assertFalse(event.getDefaultSelectionResponse().getSelectionSeResponseSet()
+                Assert.assertFalse(event.getDefaultSelectionsResponse().getSelectionSeResponseSet()
                         .getSingleResponse().getSelectionStatus().hasMatched());
 
                 lock.countDown();// should be called
@@ -306,8 +307,8 @@ public class StubReaderTest {
         SeSelection seSelection = new SeSelection();
 
         PoSelectionRequest poSelectionRequest =
-                new PoSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null),
+                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(poAid), null),
                         "AID: " + poAid), ChannelState.KEEP_OPEN);
 
         seSelection.prepareSelection(poSelectionRequest);
@@ -339,8 +340,8 @@ public class StubReaderTest {
 
                 SeSelection seSelection = new SeSelection();
                 PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                        new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                                new SeSelector.AtrFilter("3B.*"), null, "Test" + " ATR"),
+                        new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                                new PoSelector.PoAtrFilter("3B.*"), null, "Test" + " ATR"),
                         ChannelState.KEEP_OPEN);
 
                 /* Prepare selector, ignore AbstractMatchingSe here */

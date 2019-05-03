@@ -149,7 +149,7 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
             case SE_MATCHED:
                 /* the selection has one target, get the result at index 0 */
                 AbstractMatchingSe selectedSe =
-                        seSelection.processDefaultSelection(event.getDefaultSelectionResponse())
+                        seSelection.processDefaultSelection(event.getDefaultSelectionsResponse())
                                 .getActiveSelection().getMatchingSe();
 
                 if (selectedSe != null) {

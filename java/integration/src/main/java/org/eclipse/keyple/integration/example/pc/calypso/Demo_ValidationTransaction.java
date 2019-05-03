@@ -19,6 +19,7 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
+import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
@@ -307,8 +308,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
             // Add Audit C0 AID to the list
             int auditC0SeIndex = seSelection.prepareSelection(new PoSelectionRequest(
-                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new SeSelector.AidSelector(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(
                                     ByteArrayUtil.fromHex(PoFileStructureInfo.poAuditC0Aid), null),
                             "Audit C0"),
                     ChannelState.KEEP_OPEN));
@@ -318,9 +319,9 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                     seSelection
                             .prepareSelection(
                                     new PoSelectionRequest(
-                                            new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                                                     null,
-                                                    new SeSelector.AidSelector(
+                                                    new PoSelector.PoAidSelector(
                                                             ByteArrayUtil.fromHex(
                                                                     PoFileStructureInfo.clapAid),
                                                             null),
@@ -332,9 +333,9 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                     seSelection
                             .prepareSelection(
                                     new PoSelectionRequest(
-                                            new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                                                     null,
-                                                    new SeSelector.AidSelector(
+                                                    new PoSelector.PoAidSelector(
                                                             ByteArrayUtil.fromHex(
                                                                     PoFileStructureInfo.cdLightAid),
                                                             null),
@@ -435,9 +436,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         SeSelection samSelection = new SeSelection();
 
         SamSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3,
-                        new SeSelector.AtrFilter(SAM_ATR_REGEX), null, "SAM Selection"),
-                ChannelState.KEEP_OPEN);
+                new SamSelector(SamRevision.C1, null, "SAM Selection"), ChannelState.KEEP_OPEN);
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);

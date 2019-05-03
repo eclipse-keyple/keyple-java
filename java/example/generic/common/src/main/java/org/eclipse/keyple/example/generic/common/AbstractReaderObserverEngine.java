@@ -12,9 +12,9 @@
 package org.eclipse.keyple.example.generic.common;
 
 
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
     private static Logger logger = LoggerFactory.getLogger(AbstractReaderObserverEngine.class);
 
 
-    protected abstract void processSeMatch(SelectionResponse selectionResponse);
+    protected abstract void processSeMatch(DefaultSelectionsResponse defaultSelectionsResponse);
 
     protected abstract void processSeInsertion(); // alternative AID selection
 
@@ -55,7 +55,7 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
 
             case SE_MATCHED:
                 currentlyProcessingSe = true;
-                processSeMatch(event.getDefaultSelectionResponse()); // to process the selected
+                processSeMatch(event.getDefaultSelectionsResponse()); // to process the selected
                 // application
                 currentlyProcessingSe = false;
                 break;
