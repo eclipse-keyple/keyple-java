@@ -24,7 +24,8 @@ import java.util.List;
  */
 public class SelectionsResult {
     private boolean hasActiveSelection = false;
-    private List<MatchingSelection> matchingSelectionList = new ArrayList<MatchingSelection>();
+    private final List<MatchingSelection> matchingSelectionList =
+            new ArrayList<MatchingSelection>();
 
     /**
      * Constructor

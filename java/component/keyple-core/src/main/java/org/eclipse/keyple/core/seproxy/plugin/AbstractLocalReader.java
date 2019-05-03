@@ -12,9 +12,9 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.*;
+import org.eclipse.keyple.core.selection.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.*;
@@ -776,11 +776,12 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * Depending on the notification mode, the observer will be notified whenever an SE is inserted,
      * regardless of the selection status, or only if the current SE matches the selection criteria.
      *
-     * @param defaultSelectionsRequest the {@link DefaultSelectionsRequest} to be executed when a SE
-     *        is inserted
+     * @param defaultSelectionsRequest the {@link AbstractDefaultSelectionsRequest} to be executed
+     *        when a SE is inserted
      * @param notificationMode the notification mode enum (ALWAYS or MATCHED_ONLY)
      */
-    public void setDefaultSelectionRequest(DefaultSelectionsRequest defaultSelectionsRequest,
+    public void setDefaultSelectionRequest(
+            AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             ObservableReader.NotificationMode notificationMode) {
         this.defaultSelectionsRequest = defaultSelectionsRequest;
         this.notificationMode = notificationMode;

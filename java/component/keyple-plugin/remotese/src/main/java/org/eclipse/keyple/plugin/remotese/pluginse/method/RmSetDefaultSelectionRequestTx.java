@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse.method;
 
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTx;
@@ -21,11 +21,11 @@ import com.google.gson.JsonObject;
 
 public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
 
-    private final DefaultSelectionsRequest defaultSelectionsRequest;
+    private final AbstractDefaultSelectionsRequest defaultSelectionsRequest;
     private final ObservableReader.NotificationMode notificationMode;
 
 
-    public RmSetDefaultSelectionRequestTx(DefaultSelectionsRequest defaultSelectionsRequest,
+    public RmSetDefaultSelectionRequestTx(AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             ObservableReader.NotificationMode notificationMode, String nativeReaderName,
             String virtualReaderName, String sessionId, String slaveNodeId,
             String requesterNodeId) {

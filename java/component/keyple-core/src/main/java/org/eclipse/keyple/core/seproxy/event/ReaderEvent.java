@@ -29,7 +29,7 @@ public final class ReaderEvent {
     /**
      * The response to the selection request
      */
-    private final DefaultSelectionsResponse defaultResponseSet;
+    private final AbstractDefaultSelectionsResponse defaultResponseSet;
 
     /**
      * The different types of reader event
@@ -82,7 +82,7 @@ public final class ReaderEvent {
      *        (may be null)
      */
     public ReaderEvent(String pluginName, String readerName, EventType eventType,
-            DefaultSelectionsResponse defaultSelectionsResponse) {
+            AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
         this.pluginName = pluginName;
         this.readerName = readerName;
         this.eventType = eventType;
@@ -102,7 +102,7 @@ public final class ReaderEvent {
         return eventType;
     }
 
-    public DefaultSelectionsResponse getDefaultSelectionsResponse() {
+    public AbstractDefaultSelectionsResponse getDefaultSelectionsResponse() {
         return defaultResponseSet;
     }
 }

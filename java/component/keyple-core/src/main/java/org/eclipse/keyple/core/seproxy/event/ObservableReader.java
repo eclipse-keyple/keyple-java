@@ -20,7 +20,7 @@ public interface ObservableReader extends SeReader {
     interface ReaderObserver extends Observable.Observer<ReaderEvent> {
     }
 
-    public enum NotificationMode {
+    enum NotificationMode {
         ALWAYS("always"), MATCHED_ONLY("matched_only");
 
         private String name;
@@ -69,6 +69,6 @@ public interface ObservableReader extends SeReader {
 
     void notifyObservers(ReaderEvent event);
 
-    void setDefaultSelectionRequest(DefaultSelectionsRequest defaultSelectionsRequest,
+    void setDefaultSelectionRequest(AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             NotificationMode notificationMode);
 }

@@ -26,7 +26,7 @@ public class SeResource<T> {
      * @param seReader the {@link SeReader} with which the SE is communicating
      * @param matchingSe the {@link AbstractMatchingSe} information structure
      */
-    public SeResource(SeReader seReader, T matchingSe) {
+    protected SeResource(SeReader seReader, T matchingSe) {
         this.seReader = seReader;
         this.matchingSe = matchingSe;
     }
