@@ -22,8 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Web service factory, get @{@link WsPRetrofitClientImpl} and {@link WsPServer} Optimized
- * for Android and Java
+ * Web service factory, get @{@link WsPRetrofitClientImpl} and {@link WsPServer} Optimized for
+ * Android and Java
  */
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class WsPollingRetrofitFactory extends TransportFactory {
