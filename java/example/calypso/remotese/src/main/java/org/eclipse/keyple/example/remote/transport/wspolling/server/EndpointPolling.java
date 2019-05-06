@@ -71,7 +71,7 @@ class EndpointPolling implements HttpHandler, DtoNode {
                     keypleDtoQueue = publishQueueManager.get(nodeId);
                 }
 
-                // getResponse a KeypleDto (blocking method)
+                // get a KeypleDto (blocking method)
                 KeypleDto keypleDto = keypleDtoQueue.get(10000);
                 if (keypleDto == null) {
                     // time elapsed

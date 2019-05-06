@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class RemoteMethodTx<T> {
 
-    //todo should add getMethodName()
+    // todo should add getMethodName()
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteMethodTx.class);
     protected final String sessionId;
@@ -79,8 +79,8 @@ public abstract class RemoteMethodTx<T> {
 
 
     /**
-     * Blocking method to getResponse results from the remote method call. To be called by the client (used
-     * internally by rmCommands, do not use)
+     * Blocking method to getResponse results from the remote method call. To be called by the
+     * client (used internally by rmCommands, do not use)
      * 
      * @return T : result of the command
      * @throws KeypleRemoteException : if an

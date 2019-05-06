@@ -56,7 +56,7 @@ class Demo_Slave {
      * At startup, create the {@link DtoNode} object, either a {@link ClientNode} or a
      * {@link ServerNode}
      * 
-     * @param transportFactory : factory to getResponse the type of transport needed (websocket,
+     * @param transportFactory : factory to get the type of transport needed (websocket,
      *        webservice...)
      * @param isServer : true if a Server is wanted
      */
@@ -162,7 +162,7 @@ class Demo_Slave {
 
         Thread.sleep(1000);
 
-        // getResponse the created proxy reader
+        // get the created proxy reader
         localReader = (StubReader) stubPlugin.getReader("stubClientSlave");
 
         localReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
