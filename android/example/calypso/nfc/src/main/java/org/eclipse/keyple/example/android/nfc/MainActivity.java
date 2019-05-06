@@ -11,8 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.android.nfc;
 
+import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin;
-import org.eclipse.keyple.seproxy.SeProxyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import android.os.Bundle;

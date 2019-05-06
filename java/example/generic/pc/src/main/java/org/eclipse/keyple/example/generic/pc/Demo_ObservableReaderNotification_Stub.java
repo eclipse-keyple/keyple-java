@@ -13,14 +13,14 @@ package org.eclipse.keyple.example.generic.pc;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.example.generic.common.ObservableReaderNotificationEngine;
 import org.eclipse.keyple.example.generic.pc.stub.se.StubSe1;
 import org.eclipse.keyple.example.generic.pc.stub.se.StubSe2;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
-import org.eclipse.keyple.seproxy.ReaderPlugin;
-import org.eclipse.keyple.seproxy.SeProxyService;
 
 
 public class Demo_ObservableReaderNotification_Stub {

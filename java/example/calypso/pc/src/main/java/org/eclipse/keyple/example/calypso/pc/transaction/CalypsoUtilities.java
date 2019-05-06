@@ -15,19 +15,15 @@ import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.EnumMap;
 import java.util.Properties;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.calypso.transaction.sam.SamSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.sam.SamSelector;
+import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.example.generic.pc.ReaderUtilities;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeReader;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.protocol.Protocol;
-import org.eclipse.keyple.transaction.SeSelection;
 
 public class CalypsoUtilities {
     private static Properties properties;
@@ -75,10 +71,10 @@ public class CalypsoUtilities {
      * Get the default reader for SAM communications
      * 
      * @param seProxyService the current ProxyService
-     * @return a SeReader object
+     * @return a {@link SamResource} object
      * @throws KeypleBaseException if an error occurred
      */
-    public static SeReader getDefaultSamReader(SeProxyService seProxyService)
+    public static SamResource getDefaultSamResource(SeProxyService seProxyService)
             throws KeypleBaseException {
         SeReader samReader = ReaderUtilities.getReaderByName(seProxyService,
                 properties.getProperty("sam.reader.regex"));
@@ -90,34 +86,24 @@ public class CalypsoUtilities {
          *
          * (We expect the right is inserted)
          */
-        checkSamAndOpenChannel(samReader);
+        SamResource samResource = checkSamAndOpenChannel(samReader);
 
-        return samReader;
+        return samResource;
     }
 
-    public static EnumMap<PoTransaction.SamSettings, Byte> getSamSettings() {
-        /* define the SAM parameters to provide when creating PoTransaction */
-        return new EnumMap<PoTransaction.SamSettings, Byte>(PoTransaction.SamSettings.class) {
-            {
-                put(PoTransaction.SamSettings.SAM_DEFAULT_KIF_PERSO,
-                        PoTransaction.DEFAULT_KIF_PERSO);
-                put(PoTransaction.SamSettings.SAM_DEFAULT_KIF_LOAD, PoTransaction.DEFAULT_KIF_LOAD);
-                put(PoTransaction.SamSettings.SAM_DEFAULT_KIF_DEBIT,
-                        PoTransaction.DEFAULT_KIF_DEBIT);
-                put(PoTransaction.SamSettings.SAM_DEFAULT_KEY_RECORD_NUMBER,
-                        PoTransaction.DEFAULT_KEY_RECORD_NUMER);
-            }
-        };
+    public static SecuritySettings getSecuritySettings() {
+        /* define the security parameters to provide when creating PoTransaction */
+        return new SecuritySettings();
     }
 
     /**
-     * Check SAM presence and consistency
+     * Check SAM presence and consistency and return a SamResource when everything is correct.
      * <p>
      * Throw an exception if the expected SAM is not available
      *
      * @param samReader the SAM reader
      */
-    public static void checkSamAndOpenChannel(SeReader samReader) {
+    public static SamResource checkSamAndOpenChannel(SeReader samReader) {
         /*
          * check the availability of the SAM doing a ATR based selection, open its physical and
          * logical channels and keep it open
@@ -126,18 +112,20 @@ public class CalypsoUtilities {
 
         SamSelector samSelector = new SamSelector(C1, null, "Selection SAM C1");
 
-        /* Prepare selector, ignore MatchingSe here */
-        samSelection.prepareSelection(
-                new SamSelectionRequest(samSelector, ChannelState.KEEP_OPEN, Protocol.ANY));
+        /* Prepare selector, ignore AbstractMatchingSe here */
+        samSelection.prepareSelection(new SamSelectionRequest(samSelector, ChannelState.KEEP_OPEN));
+        CalypsoSam calypsoSam;
 
         try {
-            if (!samSelection.processExplicitSelection(samReader).getActiveSelection()
-                    .getMatchingSe().isSelected()) {
+            calypsoSam = (CalypsoSam) samSelection.processExplicitSelection(samReader)
+                    .getActiveSelection().getMatchingSe();
+            if (!calypsoSam.isSelected()) {
                 throw new IllegalStateException("Unable to open a logical channel for SAM!");
             } else {
             }
         } catch (KeypleReaderException e) {
             throw new IllegalStateException("Reader exception: " + e.getMessage());
         }
+        return new SamResource(samReader, calypsoSam);
     }
 }

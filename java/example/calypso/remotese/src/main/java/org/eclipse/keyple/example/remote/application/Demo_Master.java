@@ -14,9 +14,22 @@ package org.eclipse.keyple.example.remote.application;
 import java.io.IOException;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.util.Observable;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
@@ -25,22 +38,6 @@ import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ClientNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ServerNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.ReaderPlugin;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeSelector;
-import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.event.PluginEvent;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.transaction.MatchingSe;
-import org.eclipse.keyple.transaction.SeSelection;
-import org.eclipse.keyple.transaction.SelectionsResult;
-import org.eclipse.keyple.util.ByteArrayUtils;
-import org.eclipse.keyple.util.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * delegates control of one of its native reader to the Master. In response a {@link VirtualReader}
  * is created and accessible via {@link RemoteSePlugin} like any local reader
  */
-public class Demo_Master implements org.eclipse.keyple.util.Observable.Observer {
+public class Demo_Master implements Observable.Observer {
 
     private static final Logger logger = LoggerFactory.getLogger(Demo_Master.class);
     private SeSelection seSelection;
@@ -171,12 +168,11 @@ public class Demo_Master implements org.eclipse.keyple.util.Observable.Observer 
                          */
                         PoSelectionRequest poSelectionRequest =
                                 new PoSelectionRequest(
-                                        new SeSelector(
-                                                new SeSelector.AidSelector(ByteArrayUtils
+                                        new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                                new PoSelector.PoAidSelector(ByteArrayUtil
                                                         .fromHex(CalypsoClassicInfo.AID), null),
-                                                null, "AID: " + CalypsoClassicInfo.AID),
-                                        ChannelState.KEEP_OPEN,
-                                        ContactlessProtocols.PROTOCOL_ISO14443_4);
+                                                "AID: " + CalypsoClassicInfo.AID),
+                                        ChannelState.KEEP_OPEN);
 
                         logger.info("{} Create a PoSelectionRequest", node.getNodeId());
 
@@ -235,14 +231,14 @@ public class Demo_Master implements org.eclipse.keyple.util.Observable.Observer 
             ReaderEvent event = (ReaderEvent) o;
             logger.debug("{} UPDATE {} {} {} {}", node.getNodeId(), event.getEventType(),
                     event.getPluginName(), event.getReaderName(),
-                    event.getDefaultSelectionResponse());
+                    event.getDefaultSelectionsResponse());
             switch (event.getEventType()) {
 
                 case SE_MATCHED:
                     SelectionsResult selectionsResult = seSelection
-                            .processDefaultSelection(event.getDefaultSelectionResponse());
+                            .processDefaultSelection(event.getDefaultSelectionsResponse());
                     if (selectionsResult.hasActiveSelection()) {
-                        MatchingSe selectedSe =
+                        AbstractMatchingSe selectedSe =
                                 selectionsResult.getActiveSelection().getMatchingSe();
 
                         logger.info(
@@ -262,7 +258,7 @@ public class Demo_Master implements org.eclipse.keyple.util.Observable.Observer 
 
                         /* Log the result */
                         logger.info("{} Environment file data: {}", node.getNodeId(),
-                                ByteArrayUtils.toHex(environmentAndHolder));
+                                ByteArrayUtil.toHex(environmentAndHolder));
 
                         /* Go on with the reading of the first record of the EventLog file */
                         logger.info(
@@ -274,7 +270,7 @@ public class Demo_Master implements org.eclipse.keyple.util.Observable.Observer 
                                 "==================================================================================");
 
                         PoTransaction poTransaction =
-                                new PoTransaction(poReader, (CalypsoPo) selectedSe);
+                                new PoTransaction(new PoResource(poReader, (CalypsoPo) selectedSe));
 
                         /*
                          * Prepare the reading order and keep the associated parser for later use
@@ -309,7 +305,7 @@ public class Demo_Master implements org.eclipse.keyple.util.Observable.Observer 
 
                                 /* Log the result */
                                 logger.info("{} EventLog file data: {} ", node.getNodeId(),
-                                        ByteArrayUtils.toHex(eventLog));
+                                        ByteArrayUtil.toHex(eventLog));
                             }
                         } catch (KeypleReaderException e) {
                             e.printStackTrace();

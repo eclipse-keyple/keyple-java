@@ -20,21 +20,23 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.builder.IncreaseCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.SeReader;
-import org.eclipse.keyple.seproxy.SeSelector;
-import org.eclipse.keyple.seproxy.event.*;
-import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
-import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.message.*;
-import org.eclipse.keyple.seproxy.protocol.Protocol;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.transaction.MatchingSe;
-import org.eclipse.keyple.transaction.SeSelection;
-import org.eclipse.keyple.transaction.SeSelectionRequest;
-import org.eclipse.keyple.transaction.SelectionsResult;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.PoSelector;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.event.*;
+import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -88,13 +90,37 @@ public class StubReaderTest {
 
 
     static public void selectSe(SeReader reader) throws KeypleReaderException {
-        SeSelection seSelection = new SeSelection();
-        SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
-                new SeSelector(null, new SeSelector.AtrFilter("3B.*"), "ATR selection"),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+        /**
+         * Create a new local class extending AbstractSeSelectionRequest
+         */
+        class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
+            TransmissionMode transmissionMode;
 
-        /* Prepare selector, ignore MatchingSe here */
-        seSelection.prepareSelection(seSelectionRequest);
+            public GenericSeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
+                super(seSelector, channelState);
+                transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
+            }
+
+            @Override
+            protected AbstractMatchingSe parse(SeResponse seResponse) {
+                class GenericMatchingSe extends AbstractMatchingSe {
+                    public GenericMatchingSe(SeResponse selectionResponse,
+                            TransmissionMode transmissionMode, String extraInfo) {
+                        super(selectionResponse, transmissionMode, extraInfo);
+                    }
+                }
+                return new GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE");
+            }
+        }
+
+        SeSelection seSelection = new SeSelection();
+        GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                        new SeSelector.AtrFilter("3B.*"), null, "ATR selection"),
+                ChannelState.KEEP_OPEN);
+
+        /* Prepare selector, ignore AbstractMatchingSe here */
+        seSelection.prepareSelection(genericSeSelectionRequest);
 
         seSelection.processExplicitSelection(reader);
     }
@@ -140,6 +166,11 @@ public class StubReaderTest {
         final CountDownLatch lock = new CountDownLatch(1);
         final String poAid = "A000000291A000000191";
 
+        // add Protocol flag
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
         // add observer
         reader.addObserver(new ObservableReader.ReaderObserver() {
             @Override
@@ -147,15 +178,15 @@ public class StubReaderTest {
                 Assert.assertEquals(event.getReaderName(), reader.getName());
                 Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
                 Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
-                Assert.assertTrue(event.getDefaultSelectionResponse().getSelectionSeResponseSet()
+                Assert.assertTrue(event.getDefaultSelectionsResponse().getSelectionSeResponseSet()
                         .getSingleResponse().getSelectionStatus().hasMatched());
                 Assert.assertArrayEquals(
-                        event.getDefaultSelectionResponse().getSelectionSeResponseSet()
+                        event.getDefaultSelectionsResponse().getSelectionSeResponseSet()
                                 .getSingleResponse().getSelectionStatus().getAtr().getBytes(),
                         hoplinkSE().getATR());
 
                 // retrieve the expected FCI from the Stub SE running the select application command
-                byte[] aid = ByteArrayUtils.fromHex(poAid);
+                byte[] aid = ByteArrayUtil.fromHex(poAid);
                 byte[] selectApplicationCommand = new byte[6 + aid.length];
                 selectApplicationCommand[0] = (byte) 0x00; // CLA
                 selectApplicationCommand[1] = (byte) 0xA4; // INS
@@ -173,7 +204,7 @@ public class StubReaderTest {
                 }
 
                 Assert.assertArrayEquals(
-                        event.getDefaultSelectionResponse().getSelectionSeResponseSet()
+                        event.getDefaultSelectionsResponse().getSelectionSeResponseSet()
                                 .getSingleResponse().getSelectionStatus().getFci().getBytes(),
                         fci);
 
@@ -185,12 +216,12 @@ public class StubReaderTest {
 
         SeSelection seSelection = new SeSelection();
 
-        SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
-                new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
-                        null, "AID: " + poAid),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+        PoSelectionRequest poSelectionRequest =
+                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(poAid), null),
+                        "AID: " + poAid), ChannelState.KEEP_OPEN);
 
-        seSelection.prepareSelection(seSelectionRequest);
+        seSelection.prepareSelection(poSelectionRequest);
 
         ((ObservableReader) reader).setDefaultSelectionRequest(seSelection.getSelectionOperation(),
                 ObservableReader.NotificationMode.MATCHED_ONLY);
@@ -224,12 +255,12 @@ public class StubReaderTest {
 
         SeSelection seSelection = new SeSelection();
 
-        SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
-                new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
-                        null, "AID: " + poAid),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+        PoSelectionRequest poSelectionRequest =
+                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(poAid), null),
+                        "AID: " + poAid), ChannelState.KEEP_OPEN);
 
-        seSelection.prepareSelection(seSelectionRequest);
+        seSelection.prepareSelection(poSelectionRequest);
 
         ((ObservableReader) reader).setDefaultSelectionRequest(seSelection.getSelectionOperation(),
                 ObservableReader.NotificationMode.MATCHED_ONLY);
@@ -249,6 +280,11 @@ public class StubReaderTest {
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
 
+        // add Protocol flag
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
         // add observer
         reader.addObserver(new ObservableReader.ReaderObserver() {
             @Override
@@ -260,7 +296,7 @@ public class StubReaderTest {
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
                 // card has not match
-                Assert.assertFalse(event.getDefaultSelectionResponse().getSelectionSeResponseSet()
+                Assert.assertFalse(event.getDefaultSelectionsResponse().getSelectionSeResponseSet()
                         .getSingleResponse().getSelectionStatus().hasMatched());
 
                 lock.countDown();// should be called
@@ -270,12 +306,12 @@ public class StubReaderTest {
 
         SeSelection seSelection = new SeSelection();
 
-        SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
-                new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null),
-                        null, "AID: " + poAid),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+        PoSelectionRequest poSelectionRequest =
+                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(poAid), null),
+                        "AID: " + poAid), ChannelState.KEEP_OPEN);
 
-        seSelection.prepareSelection(seSelectionRequest);
+        seSelection.prepareSelection(poSelectionRequest);
 
         ((ObservableReader) reader).setDefaultSelectionRequest(seSelection.getSelectionOperation(),
                 ObservableReader.NotificationMode.ALWAYS);
@@ -303,18 +339,20 @@ public class StubReaderTest {
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
                 SeSelection seSelection = new SeSelection();
-                SeSelectionRequest seSelectionRequest = new SeSelectionRequest(
-                        new SeSelector(null, new SeSelector.AtrFilter("3B.*"), "Test ATR"),
-                        ChannelState.KEEP_OPEN, Protocol.ANY);
+                PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
+                        new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                                new PoSelector.PoAtrFilter("3B.*"), null, "Test" + " ATR"),
+                        ChannelState.KEEP_OPEN);
 
-                /* Prepare selector, ignore MatchingSe here */
-                seSelection.prepareSelection(seSelectionRequest);
+                /* Prepare selector, ignore AbstractMatchingSe here */
+                seSelection.prepareSelection(poSelectionRequest);
 
                 try {
                     SelectionsResult selectionsResult =
                             seSelection.processExplicitSelection(reader);
 
-                    MatchingSe matchingSe = selectionsResult.getActiveSelection().getMatchingSe();
+                    AbstractMatchingSe matchingSe =
+                            selectionsResult.getActiveSelection().getMatchingSe();
 
                     Assert.assertNotNull(matchingSe);
 
@@ -351,12 +389,14 @@ public class StubReaderTest {
         // init SE
         reader.insertSe(hoplinkSE());
 
+        // add Protocol flag
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
         // send the selection request
         selectSe(reader);
 
-        // add Protocol flag
-        reader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
         // test
         SeResponseSet seResponse = reader.transmitSet(requests);
 
@@ -393,8 +433,9 @@ public class StubReaderTest {
         reader.insertSe(noApduResponseSE());
 
         // add Protocol flag
-        reader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // send the selection request
         selectSe(reader);
@@ -413,8 +454,9 @@ public class StubReaderTest {
         reader.insertSe(partialSE());
 
         // add Protocol flag
-        reader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // send the selection request
         selectSe(reader);
@@ -439,8 +481,9 @@ public class StubReaderTest {
         reader.insertSe(partialSE());
 
         // add Protocol flag
-        reader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // send the selection request
         selectSe(reader);
@@ -470,8 +513,9 @@ public class StubReaderTest {
         reader.insertSe(partialSE());
 
         // add Protocol flag
-        reader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // send the selection request
         selectSe(reader);
@@ -500,8 +544,9 @@ public class StubReaderTest {
         reader.insertSe(partialSE());
 
         // add Protocol flag
-        reader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // send the selection request
         selectSe(reader);
@@ -529,8 +574,9 @@ public class StubReaderTest {
         reader.insertSe(partialSE());
 
         // add Protocol flag
-        reader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // send the selection request
         selectSe(reader);
@@ -553,8 +599,9 @@ public class StubReaderTest {
         reader.insertSe(partialSE());
 
         // add Protocol flag
-        reader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // send the selection request
         selectSe(reader);
@@ -576,8 +623,9 @@ public class StubReaderTest {
         reader.insertSe(partialSE());
 
         // add Protocol flag
-        reader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // send the selection request
         selectSe(reader);
@@ -599,8 +647,9 @@ public class StubReaderTest {
         reader.insertSe(partialSE());
 
         // add Protocol flag
-        reader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // send the selection request
         selectSe(reader);
@@ -831,8 +880,8 @@ public class StubReaderTest {
                 break;
         }
 
-        SeSelector selector = new SeSelector(
-                new SeSelector.AidSelector(ByteArrayUtils.fromHex(poAid), null), null, null);
+        SeSelector selector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null);
 
         return new SeRequest(poApduRequestList, ChannelState.CLOSE_AFTER);
     }
@@ -858,7 +907,7 @@ public class StubReaderTest {
 
             @Override
             public byte[] getATR() {
-                return ByteArrayUtils
+                return ByteArrayUtil
                         .fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
             }
 
@@ -885,7 +934,7 @@ public class StubReaderTest {
 
             @Override
             public byte[] getATR() {
-                return ByteArrayUtils
+                return ByteArrayUtil
                         .fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
             }
 
@@ -914,7 +963,7 @@ public class StubReaderTest {
 
             @Override
             public byte[] getATR() {
-                return ByteArrayUtils
+                return ByteArrayUtil
                         .fromHex("3B 8E 80 01 80 31 80 66 40 90 89 12 08 02 83 01 90 00 0B");
             }
 
@@ -965,6 +1014,6 @@ public class StubReaderTest {
     }
 
     static public ApduRequest getApduSample() {
-        return new ApduRequest(ByteArrayUtils.fromHex("FEDCBA98 9005h"), false);
+        return new ApduRequest(ByteArrayUtil.fromHex("FEDCBA98 9005h"), false);
     }
 }

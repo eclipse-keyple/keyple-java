@@ -14,31 +14,27 @@ package org.eclipse.keyple.example.calypso.pc;
 
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.core.selection.MatchingSelection;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeReader;
-import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.event.ObservableReader.ReaderObserver;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.transaction.MatchingSelection;
-import org.eclipse.keyple.transaction.SeSelection;
-import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,8 +97,9 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
             throw new IllegalStateException("Bad PO reader setup");
         }
 
-        poReader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         logger.info(
                 "=============== UseCase Calypso #2: AID based default selection ===================");
@@ -125,11 +122,11 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
          * make the selection and read additional information afterwards
          */
         PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                new PoSelector(
-                        new PoSelector.PoAidSelector(ByteArrayUtils.fromHex(CalypsoClassicInfo.AID),
+                new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                        new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
                                 PoSelector.InvalidatedPo.REJECT),
-                        null, "AID: " + CalypsoClassicInfo.AID),
-                ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                        "AID: " + CalypsoClassicInfo.AID),
+                ChannelState.KEEP_OPEN);
 
         /*
          * Prepare the reading order and keep the associated parser for later use once the selection
@@ -193,7 +190,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
         switch (event.getEventType()) {
             case SE_MATCHED:
                 MatchingSelection matchingSelection =
-                        seSelection.processDefaultSelection(event.getDefaultSelectionResponse())
+                        seSelection.processDefaultSelection(event.getDefaultSelectionsResponse())
                                 .getActiveSelection();
 
                 CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
@@ -223,7 +220,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
 
                     /* Log the result */
                     logger.info("Environment file data: {}",
-                            ByteArrayUtils.toHex(environmentAndHolder));
+                            ByteArrayUtil.toHex(environmentAndHolder));
 
                     /* Go on with the reading of the first record of the EventLog file */
                     logger.info(
@@ -233,7 +230,8 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
                     logger.info(
                             "==================================================================================");
 
-                    PoTransaction poTransaction = new PoTransaction(poReader, calypsoPo);
+                    PoTransaction poTransaction =
+                            new PoTransaction(new PoResource(poReader, calypsoPo));
 
                     /*
                      * Prepare the reading order and keep the associated parser for later use once
@@ -263,7 +261,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
                                             .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
 
                             /* Log the result */
-                            logger.info("EventLog file data: {}", ByteArrayUtils.toHex(eventLog));
+                            logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
                         }
                     } catch (KeypleReaderException e) {
                         e.printStackTrace();

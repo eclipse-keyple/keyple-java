@@ -11,25 +11,35 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.generic.common;
 
-import org.eclipse.keyple.seproxy.protocol.SeProtocol;
+import static org.eclipse.keyple.core.seproxy.protocol.TransmissionMode.*;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode.*;
 
 /**
  * Custom protocol definitions to illustrate the extension of the Keyple SDK definitions
  */
 public enum CustomProtocols implements SeProtocol {
-    CUSTOM_PROTOCOL_B_PRIME("Custom Old Calypso B prime"),
+    CUSTOM_PROTOCOL_B_PRIME("Custom Old Calypso B prime", CONTACTLESS),
 
-    CUSTOM_PROTOCOL_MIFARE_DESFIRE("Custom Mifare DESFire");
+    CUSTOM_PROTOCOL_MIFARE_DESFIRE("Custom Mifare DESFire", CONTACTLESS);
 
     /** The protocol name. */
-    private String name;
+    private final String name;
+    private final TransmissionMode transmissionMode;
 
-    CustomProtocols(String name) {
+    CustomProtocols(String name, TransmissionMode transmissionMode) {
         this.name = name;
+        this.transmissionMode = transmissionMode;
     }
 
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public TransmissionMode getTransmissionMode() {
+        return transmissionMode;
     }
 }

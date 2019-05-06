@@ -15,7 +15,7 @@ package org.eclipse.keyple.calypso.util;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.OpenSession24RespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.OpenSession32RespPars;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -94,9 +94,9 @@ public class ResponseUtilsTest {
         // byte[] originalDataCaseTwo = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D, (byte)
         // 0x14,
         // (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
-        byte[] apduResponseCaseTwo = ByteArrayUtils.fromHex(
+        byte[] apduResponseCaseTwo = ByteArrayUtil.fromHex(
                 "7E 030D1453 9999 00112233445566778899AABBCCDDEEFF 00112233445566778899AABBCC");
-        byte[] originalDataCaseTwo = ByteArrayUtils.fromHex(
+        byte[] originalDataCaseTwo = ByteArrayUtil.fromHex(
                 "7E 030D1453 9999 00112233445566778899AABBCCDDEEFF 00112233445566778899AABBCC");
 
         AbstractOpenSessionRespPars.SecureSession SecureSessionExpectedCaseTwo =
@@ -121,9 +121,9 @@ public class ResponseUtilsTest {
         // byte[] originalDataCaseThree = new byte[] {(byte) 0x7E, (byte) 0x03, (byte) 0x0D,
         // (byte) 0x14, (byte) 0x53, (byte) 0xFF, 0x00, 0x04, 0x01, 0x02, 0x03, 0x04};
 
-        byte[] apduResponseCaseThree = ByteArrayUtils.fromHex(
+        byte[] apduResponseCaseThree = ByteArrayUtil.fromHex(
                 "7E 030D1453 9999 00112233445566778899AABBCCDDEEFF 00112233445566778899AABBCC");
-        byte[] originalDataCaseThree = ByteArrayUtils.fromHex(
+        byte[] originalDataCaseThree = ByteArrayUtil.fromHex(
                 "7E 030D1453 9999 00112233445566778899AABBCCDDEEFF 00112233445566778899AABBCC");
 
         AbstractOpenSessionRespPars.SecureSession SecureSessionExpectedCaseThree =

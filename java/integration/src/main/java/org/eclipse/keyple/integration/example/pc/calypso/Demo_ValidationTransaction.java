@@ -19,31 +19,28 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.*;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
-import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.message.*;
-import org.eclipse.keyple.seproxy.protocol.Protocol;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.transaction.SeSelection;
-import org.eclipse.keyple.transaction.SeSelectionRequest;
-import org.eclipse.keyple.transaction.SelectionsResult;
-import org.eclipse.keyple.util.ByteArrayUtils;
 
 @SuppressWarnings("PMD.VariableNamingConventions")
 public class Demo_ValidationTransaction implements ObservableReader.ReaderObserver {
 
-    private SeReader poReader, samReader;
+    private SeReader poReader;
+    protected SamResource samResource;
 
     @Override
     public void update(ReaderEvent event) {
@@ -160,7 +157,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         /*
          * System.out.println("Contract#" + (contractIndex+1) + ": " +
-         * ByteArrayUtils.toHex(dataReadInSession.getApduResponses().get(0).getDataOut()) +
+         * ByteArrayUtil.toHex(dataReadInSession.getApduResponses().get(0).getDataOut()) +
          * ", SW1SW2: " +
          * Integer.toHexString(dataReadInSession.getApduResponses().get(0).getStatusCode() &
          * 0xFFFF));
@@ -188,7 +185,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         poTransaction.processPoCommandsInSession();
 
-        poTransaction.processClosing(TransmissionMode.CONTACTLESS, ChannelState.KEEP_OPEN);
+        poTransaction.processClosing(ChannelState.KEEP_OPEN);
 
         System.out.println("\nValidation Successful!");
         System.out.println(
@@ -205,7 +202,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         byte contractsSfi = 0x29;
 
         SeResponse dataReadInSession;
-        PoTransaction poTransaction = new PoTransaction(poReader, detectedPO, samReader, null);
+        PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, detectedPO),
+                samResource, new SecuritySettings());
 
         int readEventParserIndex = poTransaction.prepareReadRecordsCmd(eventSfi,
                 ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, "Event");
@@ -254,9 +252,10 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
             System.out.println("No value present in the card. Initiating auto top-up...");
 
-            poTransaction.processClosing(TransmissionMode.CONTACTLESS, ChannelState.KEEP_OPEN);
+            poTransaction.processClosing(ChannelState.KEEP_OPEN);
 
-            poTransaction = new PoTransaction(poReader, detectedPO, samReader, null);
+            poTransaction = new PoTransaction(new PoResource(poReader, detectedPO), samResource,
+                    new SecuritySettings());
 
             poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
                     PoTransaction.SessionAccessLevel.SESSION_LVL_LOAD, (byte) 0x00, (byte) 0x00);
@@ -270,7 +269,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         /*
          * System.out.println("Contract#" + (contractIndex+1) + ": " +
-         * ByteArrayUtils.toHex(dataReadInSession.getApduResponses().get(0).getDataOut()) +
+         * ByteArrayUtil.toHex(dataReadInSession.getApduResponses().get(0).getDataOut()) +
          * ", SW1SW2: " +
          * Integer.toHexString(dataReadInSession.getApduResponses().get(0).getStatusCode() &
          * 0xFFFF));
@@ -289,7 +288,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         poTransaction.processPoCommandsInSession();
 
-        poTransaction.processClosing(TransmissionMode.CONTACTLESS, ChannelState.KEEP_OPEN);
+        poTransaction.processClosing(ChannelState.KEEP_OPEN);
 
         System.out.println("\nValidation Successful!");
         System.out.println(
@@ -308,38 +307,40 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
             SeSelection seSelection = new SeSelection();
 
             // Add Audit C0 AID to the list
-            int auditC0SeIndex =
-                    seSelection
-                            .prepareSelection(
-                                    new PoSelectionRequest(
-                                            new SeSelector(new SeSelector.AidSelector(
-                                                    ByteArrayUtils.fromHex(
-                                                            PoFileStructureInfo.poAuditC0Aid),
-                                                    null), null, "Audit C0"),
-                                            ChannelState.KEEP_OPEN, Protocol.ANY));
+            int auditC0SeIndex = seSelection.prepareSelection(new PoSelectionRequest(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(
+                                    ByteArrayUtil.fromHex(PoFileStructureInfo.poAuditC0Aid), null),
+                            "Audit C0"),
+                    ChannelState.KEEP_OPEN));
 
             // Add CLAP AID to the list
             int clapSeIndex =
                     seSelection
                             .prepareSelection(
                                     new PoSelectionRequest(
-                                            new SeSelector(
-                                                    new SeSelector.AidSelector(
-                                                            ByteArrayUtils.fromHex(
+                                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                                                    null,
+                                                    new PoSelector.PoAidSelector(
+                                                            ByteArrayUtil.fromHex(
                                                                     PoFileStructureInfo.clapAid),
                                                             null),
-                                                    null, "CLAP"),
-                                            ChannelState.KEEP_OPEN, Protocol.ANY));
+                                                    "CLAP"),
+                                            ChannelState.KEEP_OPEN));
 
             // Add cdLight AID to the list
             int cdLightSeIndex =
                     seSelection
-                            .prepareSelection(new PoSelectionRequest(
-                                    new SeSelector(
-                                            new SeSelector.AidSelector(ByteArrayUtils
-                                                    .fromHex(PoFileStructureInfo.cdLightAid), null),
-                                            null, "CDLight"),
-                                    ChannelState.KEEP_OPEN, Protocol.ANY));
+                            .prepareSelection(
+                                    new PoSelectionRequest(
+                                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                                                    null,
+                                                    new PoSelector.PoAidSelector(
+                                                            ByteArrayUtil.fromHex(
+                                                                    PoFileStructureInfo.cdLightAid),
+                                                            null),
+                                                    "CDLight"),
+                                            ChannelState.KEEP_OPEN));
 
             SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
 
@@ -356,15 +357,16 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                 CalypsoPo auditC0Se = (CalypsoPo) selectionsResult
                         .getMatchingSelection(auditC0SeIndex).getMatchingSe();
 
-                PoTransaction poTransaction =
-                        new PoTransaction(poReader, auditC0Se, samReader, null);
+                PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, auditC0Se),
+                        samResource, new SecuritySettings());
                 validateAuditC0(poTransaction);
 
             } else if (matchingSelectionIndex == clapSeIndex) {
                 CalypsoPo clapSe = (CalypsoPo) selectionsResult.getMatchingSelection(clapSeIndex)
                         .getMatchingSe();
 
-                PoTransaction poTransaction = new PoTransaction(poReader, clapSe, samReader, null);
+                PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, clapSe),
+                        samResource, new SecuritySettings());
                 validateClap(clapSe);
 
             } else if (matchingSelectionIndex == cdLightSeIndex) {
@@ -372,8 +374,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                 CalypsoPo cdLightSe = (CalypsoPo) selectionsResult
                         .getMatchingSelection(cdLightSeIndex).getMatchingSe();
 
-                PoTransaction poTransaction =
-                        new PoTransaction(poReader, cdLightSe, samReader, null);
+                PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, cdLightSe),
+                        samResource, new SecuritySettings());
                 validateAuditC0(poTransaction);
 
             } else {
@@ -398,9 +400,17 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         SeReader poReader =
                 DemoUtilities.getReader(seProxyService, DemoUtilities.PO_READER_NAME_REGEX);
+
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
         SeReader samReader =
                 DemoUtilities.getReader(seProxyService, DemoUtilities.SAM_READER_NAME_REGEX);
 
+        samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO7816_3));
 
         if (poReader == samReader || poReader == null || samReader == null) {
             throw new IllegalStateException("Bad PO/SAM setup");
@@ -416,26 +426,31 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
         samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
-        // provide the reader with the map
-        poReader.addSeProtocolSetting(
-                new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        // provide the reader with the protocol settings
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         final String SAM_ATR_REGEX = "3B3F9600805A[0-9a-fA-F]{2}80[0-9a-fA-F]{16}829000";
 
         SeSelection samSelection = new SeSelection();
 
-        SeSelectionRequest samSelectionRequest = new SeSelectionRequest(
-                new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+        SamSelectionRequest samSelectionRequest = new SamSelectionRequest(
+                new SamSelector(SamRevision.C1, null, "SAM Selection"), ChannelState.KEEP_OPEN);
 
-        /* Prepare selector, ignore MatchingSe here */
+        /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
 
+        SamResource samResource;
+
         try {
-            if (!samSelection.processExplicitSelection(samReader).hasActiveSelection()) {
+            SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
+            if (!selectionsResult.hasActiveSelection()) {
                 System.out.println("Unable to open a logical channel for SAM!");
                 throw new IllegalStateException("SAM channel opening failure");
             }
+            samResource = new SamResource(samReader,
+                    (CalypsoSam) selectionsResult.getActiveSelection().getMatchingSe());
         } catch (KeypleReaderException e) {
             throw new IllegalStateException("Reader exception: " + e.getMessage());
         }
@@ -443,7 +458,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         // Setting up ourselves as an observer
         Demo_ValidationTransaction observer = new Demo_ValidationTransaction();
         observer.poReader = poReader;
-        observer.samReader = samReader;
+        observer.samResource = samResource;
+
 
         System.out.println("\nReady for PO presentation!");
 

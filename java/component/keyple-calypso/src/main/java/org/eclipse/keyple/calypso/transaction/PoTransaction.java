@@ -29,15 +29,15 @@ import org.eclipse.keyple.calypso.command.sam.parser.security.DigestAuthenticate
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestCloseRespPars;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SamGetChallengeRespPars;
 import org.eclipse.keyple.calypso.transaction.exception.*;
-import org.eclipse.keyple.command.AbstractApduCommandBuilder;
-import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.SeReader;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.message.*;
-import org.eclipse.keyple.seproxy.message.ProxyReader;
-import org.eclipse.keyple.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.command.AbstractApduCommandBuilder;
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,14 +59,6 @@ public final class PoTransaction {
     public static final byte KEY_INDEX_LOAD = (byte) 0x02;
     /** The key index for debit and validation operations (validation key needed) */
     public static final byte KEY_INDEX_VALIDATION_DEBIT = (byte) 0x03;
-    /** The default KIF value for personalization */
-    public final static byte DEFAULT_KIF_PERSO = (byte) 0x21;
-    /** The default KIF value for loading */
-    public final static byte DEFAULT_KIF_LOAD = (byte) 0x27;
-    /** The default KIF value for debiting */
-    public final static byte DEFAULT_KIF_DEBIT = (byte) 0x30;
-    /** The default key record number */
-    public final static byte DEFAULT_KEY_RECORD_NUMER = (byte) 0x00;
 
     /* private constants */
     private final static byte KIF_UNDEFINED = (byte) 0xFF;
@@ -84,9 +76,9 @@ public final class PoTransaction {
     private final static int OFFSET_DATA = 5;
 
     /** Ratification command APDU for rev <= 2.4 */
-    private final static byte[] ratificationCmdApduLegacy = ByteArrayUtils.fromHex("94B2000000");
+    private final static byte[] ratificationCmdApduLegacy = ByteArrayUtil.fromHex("94B2000000");
     /** Ratification command APDU for rev > 2.4 */
-    private final static byte[] ratificationCmdApdu = ByteArrayUtils.fromHex("00B2000000");
+    private final static byte[] ratificationCmdApdu = ByteArrayUtil.fromHex("00B2000000");
 
     private static final Logger logger = LoggerFactory.getLogger(PoTransaction.class);
 
@@ -96,15 +88,14 @@ public final class PoTransaction {
     private ProxyReader samReader;
     /** The SAM default revision. */
     private final SamRevision samRevision = SamRevision.C1;
-    /** The SAM settings map. */
-    private final EnumMap<SamSettings, Byte> samSetting =
-            new EnumMap<SamSettings, Byte>(SamSettings.class);
+    /** The security settings. */
+    private SecuritySettings securitySettings;
     /** The PO serial number extracted from FCI */
     private final byte[] poCalypsoInstanceSerial;
     /** The current CalypsoPo */
     private final CalypsoPo calypsoPo;
     /** the type of the notified event. */
-    private SessionState currentState;
+    private SessionState sessionState;
     /** Selected AID of the Calypso PO. */
     private byte[] poCalypsoInstanceAid;
     /** The PO Calypso Revision. */
@@ -121,10 +112,6 @@ public final class PoTransaction {
     private byte[] openRecordDataRead;
     /** The list to contain the prepared commands and their parsers */
     private final List<PoBuilderParser> poBuilderParserList = new ArrayList<PoBuilderParser>();
-    /** The SAM settings status */
-    private boolean samSettingsDefined;
-    /** List of authorized KVCs */
-    private List<Byte> authorizedKvcList;
     /** The current secure session modification mode: ATOMIC or MULTIPLE */
     private ModificationMode currentModificationMode;
     /** The current secure session access level: PERSO, RELOAD, DEBIT */
@@ -144,19 +131,19 @@ public final class PoTransaction {
      * <li>A list of SAM parameters is provided as en EnumMap.</li>
      * </ul>
      *
-     * @param poReader the PO reader
-     * @param calypsoPO the CalypsoPo object obtained at the end of the selection step
-     * @param samReader the SAM reader
-     * @param samSetting a list of SAM related parameters. In the case this parameter is null,
-     *        default parameters are applied. The available setting keys are defined in
-     *        {@link SamSettings}
+     * @param poResource the PO resource (combination of {@link SeReader} and {@link CalypsoPo})
+     * @param samResource the SAM resource (combination of {@link SeReader} and {@link CalypsoSam})
+     * @param securitySettings a list of security settings ({@link SecuritySettings}) used in the
+     *        session (such as key identification)
      */
-    public PoTransaction(SeReader poReader, CalypsoPo calypsoPO, SeReader samReader,
-            EnumMap<SamSettings, Byte> samSetting) {
+    public PoTransaction(PoResource poResource, SamResource samResource,
+            SecuritySettings securitySettings) {
 
-        this(poReader, calypsoPO);
+        this(poResource);
 
-        setSamSettings(samReader, samSetting);
+        samReader = (ProxyReader) samResource.getSeReader();
+
+        this.securitySettings = securitySettings;
     }
 
     /**
@@ -165,85 +152,27 @@ public final class PoTransaction {
      * <li>Logical channels with PO could already be established or not.</li>
      * </ul>
      *
-     * @param poReader the PO reader
-     * @param calypsoPO the CalypsoPo object obtained at the end of the selection step
+     * @param poResource the PO resource (combination of {@link SeReader} and {@link CalypsoPo})
      */
-    public PoTransaction(SeReader poReader, CalypsoPo calypsoPO) {
-        this.poReader = (ProxyReader) poReader;
+    public PoTransaction(PoResource poResource) {
+        this.poReader = (ProxyReader) poResource.getSeReader();
 
-        this.calypsoPo = calypsoPO;
+        this.calypsoPo = poResource.getMatchingSe();
 
-        poRevision = calypsoPO.getRevision();
+        poRevision = calypsoPo.getRevision();
 
-        poCalypsoInstanceAid = calypsoPO.getDfName();
+        poCalypsoInstanceAid = calypsoPo.getDfName();
 
-        modificationsCounterIsInBytes = calypsoPO.isModificationsCounterInBytes();
+        modificationsCounterIsInBytes = calypsoPo.isModificationsCounterInBytes();
 
-        modificationsCounterMax = modificationsCounter = calypsoPO.getModificationsCounter();
+        modificationsCounterMax = modificationsCounter = calypsoPo.getModificationsCounter();
 
         /* Serial Number of the selected Calypso instance. */
-        poCalypsoInstanceSerial = calypsoPO.getApplicationSerialNumber();
+        poCalypsoInstanceSerial = calypsoPo.getApplicationSerialNumber();
 
-        currentState = SessionState.SESSION_CLOSED;
+        sessionState = SessionState.SESSION_UNINITIALIZED;
 
         preparedCommandsProcessed = true;
-    }
-
-    /**
-     * Sets the SAM parameters for Secure Session management
-     * 
-     * @param samReader the reader in which the SAM is present
-     * @param samSetting the SAM settings to be applied
-     */
-    public void setSamSettings(SeReader samReader, EnumMap<SamSettings, Byte> samSetting) {
-        this.samReader = (ProxyReader) samReader;
-
-        /* Initialize samSetting with provided settings */
-        if (samSetting != null) {
-            this.samSetting.putAll(samSetting);
-        }
-
-        /* Just work mode: we make sure that all the necessary parameters exist at least. */
-        if (!this.samSetting.containsKey(SamSettings.SAM_DEFAULT_KIF_PERSO)) {
-            this.samSetting.put(SamSettings.SAM_DEFAULT_KIF_PERSO, DEFAULT_KIF_PERSO);
-        }
-        if (!this.samSetting.containsKey(SamSettings.SAM_DEFAULT_KIF_LOAD)) {
-            this.samSetting.put(SamSettings.SAM_DEFAULT_KIF_LOAD, DEFAULT_KIF_LOAD);
-        }
-        if (!this.samSetting.containsKey(SamSettings.SAM_DEFAULT_KIF_DEBIT)) {
-            this.samSetting.put(SamSettings.SAM_DEFAULT_KIF_DEBIT, DEFAULT_KIF_DEBIT);
-        }
-        if (!this.samSetting.containsKey(SamSettings.SAM_DEFAULT_KEY_RECORD_NUMBER)) {
-            this.samSetting.put(SamSettings.SAM_DEFAULT_KEY_RECORD_NUMBER,
-                    DEFAULT_KEY_RECORD_NUMER);
-        }
-
-        logger.debug("Contructor => SAMSETTING = {}", this.samSetting);
-
-        samSettingsDefined = true;
-    }
-
-    /**
-     * Provides a list of authorized KVC
-     *
-     * If this method is not called, the list will remain empty and all KVCs will be accepted.
-     *
-     * If a list is provided and a PO with a KVC not belonging to this list is presented, a
-     * {@link KeypleCalypsoSecureSessionUnauthorizedKvcException} will be raised.
-     * 
-     * @param authorizedKvcList the list of authorized KVCs
-     */
-    public void setAuthorizedKvcList(List<Byte> authorizedKvcList) {
-        this.authorizedKvcList = authorizedKvcList;
-    }
-
-    /**
-     * Indicates whether or not the SAM settings have been defined
-     * 
-     * @return true if the SAM settings have been defined.
-     */
-    public boolean isSamSettingsDefined() {
-        return samSettingsDefined;
     }
 
     /**
@@ -299,8 +228,8 @@ public final class PoTransaction {
 
         if (logger.isDebugEnabled()) {
             logger.debug("processAtomicOpening => Identification: DFNAME = {}, SERIALNUMBER = {}",
-                    ByteArrayUtils.toHex(poCalypsoInstanceAid),
-                    ByteArrayUtils.toHex(poCalypsoInstanceSerial));
+                    ByteArrayUtil.toHex(poCalypsoInstanceAid),
+                    ByteArrayUtil.toHex(poCalypsoInstanceSerial));
         }
         /* diversify only if this has not already been done. */
         if (!isDiversificationDone) {
@@ -355,7 +284,7 @@ public final class PoTransaction {
             sessionTerminalChallenge = samChallengePars.getChallenge();
             if (logger.isDebugEnabled()) {
                 logger.debug("processAtomicOpening => identification: TERMINALCHALLENGE = {}",
-                        ByteArrayUtils.toHex(sessionTerminalChallenge));
+                        ByteArrayUtil.toHex(sessionTerminalChallenge));
             }
         } else {
             throw new KeypleCalypsoSecureSessionException("Invalid message received",
@@ -368,9 +297,9 @@ public final class PoTransaction {
 
         /* Build the PO Open Secure Session command */
         // TODO decide how to define the extraInfo field. Empty for the moment.
-        AbstractOpenSessionCmdBuild poOpenSession = AbstractOpenSessionCmdBuild.create(
-                getRevision(), (byte) (accessLevel.ordinal() + 1), sessionTerminalChallenge,
-                openingSfiToSelect, openingRecordNumberToRead, "");
+        AbstractOpenSessionCmdBuild poOpenSession = AbstractOpenSessionCmdBuild.create(poRevision,
+                (byte) (accessLevel.ordinal() + 1), sessionTerminalChallenge, openingSfiToSelect,
+                openingRecordNumberToRead, "");
 
         /* Add the resulting ApduRequest to the PO ApduRequest list */
         poApduRequestList.add(poOpenSession.getApduRequest());
@@ -438,11 +367,11 @@ public final class PoTransaction {
         if (logger.isDebugEnabled()) {
             logger.debug(
                     "processAtomicOpening => opening: CARDCHALLENGE = {}, POKIF = {}, POKVC = {}",
-                    ByteArrayUtils.toHex(sessionCardChallenge), String.format("%02X", poKif),
+                    ByteArrayUtil.toHex(sessionCardChallenge), String.format("%02X", poKif),
                     String.format("%02X", poKvc));
         }
 
-        if (authorizedKvcList != null && !authorizedKvcList.contains(poKvc)) {
+        if (!securitySettings.isAuthorizedKvc(poKvc)) {
             throw new KeypleCalypsoSecureSessionUnauthorizedKvcException(
                     String.format("PO KVC = %02X", poKvc));
         }
@@ -451,14 +380,17 @@ public final class PoTransaction {
         if (poKif == KIF_UNDEFINED) {
             switch (accessLevel) {
                 case SESSION_LVL_PERSO:
-                    kif = samSetting.get(SamSettings.SAM_DEFAULT_KIF_PERSO);
+                    kif = securitySettings
+                            .getKeyInfo(SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KIF_PERSO);
                     break;
                 case SESSION_LVL_LOAD:
-                    kif = samSetting.get(SamSettings.SAM_DEFAULT_KIF_LOAD);
+                    kif = securitySettings
+                            .getKeyInfo(SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KIF_LOAD);
                     break;
                 case SESSION_LVL_DEBIT:
                 default:
-                    kif = samSetting.get(SamSettings.SAM_DEFAULT_KIF_DEBIT);
+                    kif = securitySettings
+                            .getKeyInfo(SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KIF_DEBIT);
                     break;
             }
         } else {
@@ -476,8 +408,9 @@ public final class PoTransaction {
          */
         DigestProcessor.initialize(poRevision, samRevision, false, false,
                 poRevision.equals(PoRevision.REV3_2),
-                samSetting.get(SamSettings.SAM_DEFAULT_KEY_RECORD_NUMBER), kif, poKvc,
-                poApduResponseList.get(0).getDataOut());
+                securitySettings
+                        .getKeyInfo(SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KEY_RECORD_NUMBER),
+                kif, poKvc, poApduResponseList.get(0).getDataOut());
 
         /*
          * Add all commands data to the digest computation. The first command in the list is the
@@ -495,7 +428,7 @@ public final class PoTransaction {
             }
         }
 
-        currentState = SessionState.SESSION_OPEN;
+        sessionState = SessionState.SESSION_OPEN;
 
         /* Remove Open Secure Session response and create a new SeResponse */
         poApduResponseList.remove(0);
@@ -596,7 +529,7 @@ public final class PoTransaction {
          * Add all commands data to the digest computation if this method is called within a Secure
          * Session.
          */
-        if (currentState == SessionState.SESSION_OPEN) {
+        if (sessionState == SessionState.SESSION_OPEN) {
             for (int i = 0; i < poApduRequestList.size(); i++) { // The loop starts after the Open
                 /*
                  * Add requests and responses to the DigestProcessor
@@ -640,7 +573,7 @@ public final class PoTransaction {
                     null);
         }
 
-        if (currentState == SessionState.SESSION_OPEN
+        if (sessionState == SessionState.SESSION_OPEN
                 && !samSeResponse.wasChannelPreviouslyOpen()) {
             throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
                     KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
@@ -711,8 +644,8 @@ public final class PoTransaction {
             List<ApduResponse> poAnticipatedResponses, TransmissionMode transmissionMode,
             ChannelState channelState) throws KeypleReaderException {
 
-        if (currentState != SessionState.SESSION_OPEN) {
-            throw new IllegalStateException("Bad session state. Current: " + currentState.toString()
+        if (sessionState != SessionState.SESSION_OPEN) {
+            throw new IllegalStateException("Bad session state. Current: " + sessionState.toString()
                     + ", expected: " + SessionState.SESSION_OPEN.toString());
         }
 
@@ -789,7 +722,7 @@ public final class PoTransaction {
 
         if (logger.isDebugEnabled()) {
             logger.debug("processAtomicClosing => SIGNATURE = {}",
-                    ByteArrayUtils.toHex(sessionTerminalSignature));
+                    ByteArrayUtil.toHex(sessionTerminalSignature));
         }
 
         PoCustomReadCommandBuilder ratificationCommand;
@@ -937,7 +870,7 @@ public final class PoTransaction {
             throw new IllegalStateException("No response to Digest Authenticate.");
         }
 
-        currentState = SessionState.SESSION_CLOSED;
+        sessionState = SessionState.SESSION_CLOSED;
 
         /* Remove ratification response if any */
         if (!ratificationAsked) {
@@ -978,16 +911,6 @@ public final class PoTransaction {
     }
 
     /**
-     * Gets the PO Revision.
-     *
-     * @return the PoPlainSecureSession_OLD.poRevision
-     */
-    public PoRevision getRevision() {
-        // TODO checks if poRevision initialized
-        return poRevision;
-    }
-
-    /**
      * Get the Secure Session Status.
      * <ul>
      * <li>To check the result of a closed secure session, returns true if the SAM Digest
@@ -998,9 +921,9 @@ public final class PoTransaction {
      */
     public boolean isSuccessful() {
 
-        if (currentState != SessionState.SESSION_CLOSED) {
+        if (sessionState != SessionState.SESSION_CLOSED) {
             throw new IllegalStateException(
-                    "Session is not closed, state:" + currentState.toString() + ", expected: "
+                    "Session is not closed, state:" + sessionState.toString() + ", expected: "
                             + SessionState.SESSION_OPEN.toString());
         }
 
@@ -1008,20 +931,15 @@ public final class PoTransaction {
     }
 
     /**
-     * Get the PO KIF
-     * 
-     * @return the PO KIF byte
-     */
-    public byte getPoKif() {
-        return poKif;
-    }
-
-    /**
      * Get the ratification status obtained at Session Opening
      * 
      * @return true or false
+     * @throws IllegalStateException if no session has been initiated
      */
     public boolean wasRatified() {
+        if (sessionState == SessionState.SESSION_UNINITIALIZED) {
+            throw new IllegalStateException("No active session.");
+        }
         return wasRatified;
     }
 
@@ -1029,23 +947,13 @@ public final class PoTransaction {
      * Get the data read at Session Opening
      * 
      * @return a byte array containing the data
+     * @throws IllegalStateException if no session has been initiated
      */
     public byte[] getOpenRecordDataRead() {
+        if (sessionState == SessionState.SESSION_UNINITIALIZED) {
+            throw new IllegalStateException("No active session.");
+        }
         return openRecordDataRead;
-    }
-
-    /**
-     * List of SAM settings keys that can be provided when the secure session is created.
-     */
-    public enum SamSettings {
-        /** KIF for personalization used when not provided by the PO */
-        SAM_DEFAULT_KIF_PERSO,
-        /** KIF for load used when not provided by the PO */
-        SAM_DEFAULT_KIF_LOAD,
-        /** KIF for debit used when not provided by the PO */
-        SAM_DEFAULT_KIF_DEBIT,
-        /** Key record number to use when KIF/KVC is unavailable */
-        SAM_DEFAULT_KEY_RECORD_NUMBER
     }
 
     /**
@@ -1083,9 +991,11 @@ public final class PoTransaction {
      */
     public enum SessionState {
         /** Initial state of a PO transaction. The PO must have been previously selected. */
-        SESSION_CLOSED,
+        SESSION_UNINITIALIZED,
         /** The secure session is active. */
-        SESSION_OPEN
+        SESSION_OPEN,
+        /** The secure session is closed. */
+        SESSION_CLOSED
     }
 
     /**
@@ -1151,7 +1061,7 @@ public final class PoTransaction {
                 logger.debug(
                         "PoTransaction.DigestProcessor => initialize: KIF = {}, KVC {}, DIGESTDATA = {}",
                         String.format("%02X", workKeyKif), String.format("%02X", workKeyKVC),
-                        ByteArrayUtils.toHex(digestData));
+                        ByteArrayUtil.toHex(digestData));
             }
 
             /* Clear data cache */
@@ -1339,7 +1249,7 @@ public final class PoTransaction {
          * @return the anticipated responses.
          * @throws KeypleCalypsoSecureSessionException if an response can't be determined.
          */
-        public static List<ApduResponse> getResponses(List<PoBuilderParser> poBuilderParsers)
+        private static List<ApduResponse> getResponses(List<PoBuilderParser> poBuilderParsers)
                 throws KeypleCalypsoSecureSessionException {
             List<ApduResponse> apduResponses = new ArrayList<ApduResponse>();
             if (poBuilderParsers != null) {
@@ -1365,11 +1275,11 @@ public final class PoTransaction {
                              * number. Convert the 3-byte block indexed by the counter number to an
                              * int.
                              */
-                            int currentCounterValue = ByteArrayUtils.threeBytesToInt(
+                            int currentCounterValue = ByteArrayUtil.threeBytesToInt(
                                     commandResponse.getApduResponse().getBytes(),
                                     (counterNumber - 1) * 3);
                             /* Extract the add or subtract value from the modification request */
-                            int addSubtractValue = ByteArrayUtils
+                            int addSubtractValue = ByteArrayUtil
                                     .threeBytesToInt(modCounterApduRequest, OFFSET_DATA);
                             /* Build the response */
                             byte[] response = new byte[5];
@@ -1409,7 +1319,7 @@ public final class PoTransaction {
                         }
                     } else {
                         /* Append/Update/Write Record: response = 9000 */
-                        apduResponses.add(new ApduResponse(ByteArrayUtils.fromHex("9000"), null));
+                        apduResponses.add(new ApduResponse(ByteArrayUtil.fromHex("9000"), null));
                     }
                 }
             }
@@ -1555,7 +1465,7 @@ public final class PoTransaction {
     public boolean processPoCommands(ChannelState channelState) throws KeypleReaderException {
 
         /** This method should be called only if no session was previously open */
-        if (currentState == SessionState.SESSION_OPEN) {
+        if (sessionState == SessionState.SESSION_OPEN) {
             throw new IllegalStateException("A session is open");
         }
 
@@ -1593,7 +1503,7 @@ public final class PoTransaction {
     public boolean processPoCommandsInSession() throws KeypleReaderException {
 
         /** This method should be called only if a session was previously open */
-        if (currentState == SessionState.SESSION_CLOSED) {
+        if (sessionState != SessionState.SESSION_OPEN) {
             throw new IllegalStateException("No open session");
         }
 
@@ -1684,11 +1594,14 @@ public final class PoTransaction {
      * the PO and made available with the getCommandParser method.</li>
      * </ul>
      *
-     * @param transmissionMode the communication mode. If the communication mode is CONTACTLESS, a
-     *        ratification command will be generated and sent to the PO after the Close Session
-     *        command; the ratification will not be requested in the Close Session command. On the
-     *        contrary, if the communication mode is CONTACTS, no ratification command will be sent
-     *        to the PO and ratification will be requested in the Close Session command
+     * <p>
+     * The communication mode is retrieved from CalypsoPO to manage the ratification process. If the
+     * communication mode is CONTACTLESS, a ratification command will be generated and sent to the
+     * PO after the Close Session command; the ratification will not be requested in the Close
+     * Session command. On the contrary, if the communication mode is CONTACTS, no ratification
+     * command will be sent to the PO and ratification will be requested in the Close Session
+     * command
+     * 
      * @param channelState indicates if the SE channel of the PO reader must be closed after the
      *        last command
      * @return true if all commands are successful
@@ -1698,8 +1611,7 @@ public final class PoTransaction {
      *         communication mode.</li>
      *         </ul>
      */
-    public boolean processClosing(TransmissionMode transmissionMode, ChannelState channelState)
-            throws KeypleReaderException {
+    public boolean processClosing(ChannelState channelState) throws KeypleReaderException {
         boolean poProcessSuccess = true;
         boolean atLeastOneReadCommand = false;
         boolean sessionPreviouslyClosed = false;
@@ -1789,8 +1701,8 @@ public final class PoTransaction {
         }
 
         /* Finally, close the session as requested */
-        seResponseClosing =
-                processAtomicClosing(poAtomicBuilderParserList, transmissionMode, channelState);
+        seResponseClosing = processAtomicClosing(poAtomicBuilderParserList,
+                calypsoPo.getTransmissionMode(), channelState);
 
         /* Update parsers */
         if (!createResponseParsers(seResponseClosing, poAtomicBuilderParserList)) {
@@ -1846,7 +1758,7 @@ public final class PoTransaction {
          * session is now considered closed regardless the previous state or the result of the abort
          * session command sent to the PO.
          */
-        currentState = SessionState.SESSION_CLOSED;
+        sessionState = SessionState.SESSION_CLOSED;
 
         /* return the successful status of the abort session command */
         return poSeResponse.getApduResponses().get(0).isSuccessful();
@@ -1961,7 +1873,7 @@ public final class PoTransaction {
     public int prepareSelectFileCmd(byte[] path, String extraInfo) {
 
         if (logger.isTraceEnabled()) {
-            logger.trace("Select File: PATH = {}", ByteArrayUtils.toHex(path));
+            logger.trace("Select File: PATH = {}", ByteArrayUtil.toHex(path));
         }
 
         /*

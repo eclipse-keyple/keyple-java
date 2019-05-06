@@ -12,6 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
@@ -20,7 +21,6 @@ import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportFact
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
 import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.junit.*;
 import org.junit.rules.TestName;
 import org.slf4j.Logger;
@@ -100,8 +100,9 @@ public class VirtualReaderBaseTest {
     protected StubReader connectStubReader(String readerName, String nodeId) throws Exception {
         // configure native reader
         StubReader nativeReader = (StubReader) Integration.createStubReader(readerName);
-        nativeReader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        nativeReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
         this.slaveAPI.connectReader(nativeReader);
         return nativeReader;
     }

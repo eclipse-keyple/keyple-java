@@ -15,22 +15,21 @@ import static org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild.S
 import static org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild.SelectControl.FIRST;
 import static org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild.SelectControl.NEXT;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.example.pc.calypso.DemoUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeReader;
-import org.eclipse.keyple.seproxy.SeSelector;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.seproxy.protocol.Protocol;
-import org.eclipse.keyple.transaction.SeSelection;
-import org.eclipse.keyple.transaction.SelectionsResult;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,7 +111,7 @@ public class Tool_AnalyzePoFileStructure {
     private static void printApplicationInformation(SeReader poReader, CalypsoPo curApp) {
 
         try {
-            PoTransaction poTransaction = new PoTransaction(poReader, curApp);
+            PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, curApp));
 
             int selectCurrentDfIndex = poTransaction.prepareSelectFileCmd(CURRENT_DF, "CurrentDF");
 
@@ -130,7 +129,7 @@ public class Tool_AnalyzePoFileStructure {
                     "| AID                             | LID  | KVC1 | KVC2 | KVC3 | G0 | G1 | G2 | G3 |");
             logger.info("{}",
                     String.format("|%32s | %04X | %02X | %02X| %02X",
-                            ByteArrayUtils.toHex(curApp.getDfName()), selectCurrentDf.getLid(),
+                            ByteArrayUtil.toHex(curApp.getDfName()), selectCurrentDf.getLid(),
                             selectCurrentDf.getKvcInfo()[0], selectCurrentDf.getKvcInfo()[1],
                             selectCurrentDf.getKvcInfo()[2]));
 
@@ -148,7 +147,7 @@ public class Tool_AnalyzePoFileStructure {
     protected static void getApplicationFileData(SeReader poReader, CalypsoPo curApp) {
 
         try {
-            PoTransaction poTransaction = new PoTransaction(poReader, curApp);
+            PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, curApp));
             int currentFile;
 
             int selectFileParserFirstIndex = poTransaction.prepareSelectFileCmd(FIRST, "First EF");
@@ -212,10 +211,10 @@ public class Tool_AnalyzePoFileStructure {
             SeSelection seSelection = new SeSelection();
 
 
-            PoSelectionRequest poSelectionRequest1 = new PoSelectionRequest(
-                    new SeSelector(new SeSelector.AidSelector(ByteArrayUtils.fromHex(aid), null),
-                            null, "firstApplication"),
-                    ChannelState.KEEP_OPEN, Protocol.ANY);
+            PoSelectionRequest poSelectionRequest1 =
+                    new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                            null, new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(aid), null),
+                            "firstApplication"), ChannelState.KEEP_OPEN);
 
             int firstApplicationIndex = seSelection.prepareSelection(poSelectionRequest1);
 
@@ -237,14 +236,13 @@ public class Tool_AnalyzePoFileStructure {
 
             seSelection = new SeSelection();
 
-            PoSelectionRequest poSelectionRequest2 =
-                    new PoSelectionRequest(
-                            new SeSelector(
-                                    new SeSelector.AidSelector(ByteArrayUtils.fromHex(aid), null,
-                                            SeSelector.AidSelector.FileOccurrence.NEXT,
-                                            SeSelector.AidSelector.FileControlInformation.FCI),
-                                    null, "secondApplication"),
-                            ChannelState.KEEP_OPEN, Protocol.ANY);
+            PoSelectionRequest poSelectionRequest2 = new PoSelectionRequest(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(aid), null,
+                                    SeSelector.AidSelector.FileOccurrence.NEXT,
+                                    SeSelector.AidSelector.FileControlInformation.FCI),
+                            "secondApplication"),
+                    ChannelState.KEEP_OPEN);
 
             int secondApplicationIndex = seSelection.prepareSelection(poSelectionRequest2);
 
@@ -261,7 +259,7 @@ public class Tool_AnalyzePoFileStructure {
             logger.info(
                     "==================================================================================");
             logger.info("Selected application with AID:: "
-                    + ByteArrayUtils.toHex(secondApplication.getDfName()));
+                    + ByteArrayUtil.toHex(secondApplication.getDfName()));
 
             // additional selection
             getApplicationFileData(poReader, firstApplication);
@@ -284,6 +282,10 @@ public class Tool_AnalyzePoFileStructure {
 
         SeReader poReader =
                 DemoUtilities.getReader(seProxyService, DemoUtilities.PO_READER_NAME_REGEX);
+
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         /* Check if the reader exists */
         if (poReader == null) {

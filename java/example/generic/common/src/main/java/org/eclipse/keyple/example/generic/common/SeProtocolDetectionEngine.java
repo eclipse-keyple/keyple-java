@@ -15,13 +15,14 @@ package org.eclipse.keyple.example.generic.common;
 
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.event.DefaultSelectionRequest;
-import org.eclipse.keyple.seproxy.event.SelectionResponse;
-import org.eclipse.keyple.seproxy.message.ApduRequest;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.transaction.*;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.calypso.transaction.PoSelector;
+import org.eclipse.keyple.core.selection.*;
+import org.eclipse.keyple.core.seproxy.*;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
  * This code demonstrates the multi-protocols capability of the Keyple SeProxy
@@ -49,12 +50,12 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
         this.poReader = poReader;
     }
 
-    public DefaultSelectionRequest prepareSeSelection() {
+    public DefaultSelectionsRequest prepareSeSelection() {
 
         seSelection = new SeSelection();
 
         // process SDK defined protocols
-        for (ContactlessProtocols protocol : ContactlessProtocols.values()) {
+        for (SeCommonProtocols protocol : SeCommonProtocols.values()) {
             switch (protocol) {
                 case PROTOCOL_ISO14443_4:
                     /* Add a Hoplink selector */
@@ -62,17 +63,13 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                     byte SFI_T2Usage = (byte) 0x1A;
                     byte SFI_T2Environment = (byte) 0x14;
 
-                    PoSelectionRequest poSelectionRequest =
-                            new PoSelectionRequest(
-                                    new SeSelector(
-                                            new SeSelector.AidSelector(
-                                                    ByteArrayUtils.fromHex(HoplinkAID), null),
-                                            null, "Hoplink selector"),
-                                    ChannelState.KEEP_OPEN,
-                                    ContactlessProtocols.PROTOCOL_ISO14443_4);
+                    PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
+                            SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(HoplinkAID), null),
+                            "Hoplink selector"), ChannelState.KEEP_OPEN);
 
                     poSelectionRequest.preparePoCustomReadCmd("Standard Get Data",
-                            new ApduRequest(ByteArrayUtils.fromHex("FFCA000000"), false));
+                            new ApduRequest(ByteArrayUtil.fromHex("FFCA000000"), false));
 
                     poSelectionRequest.prepareReadRecordsCmd(SFI_T2Environment,
                             ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01,
@@ -91,10 +88,10 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                     break;
                 default:
                     /* Add a generic selector */
-                    seSelection.prepareSelection(new SeSelectionRequest(
-                            new SeSelector(null, new SeSelector.AtrFilter(".*"),
-                                    "Default selector"),
-                            ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4));
+                    seSelection.prepareSelection(new GenericSeSelectionRequest(
+                            new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                                    new SeSelector.AtrFilter(".*"), null, "Default selector"),
+                            ChannelState.KEEP_OPEN));
                     break;
             }
         }
@@ -103,14 +100,15 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
 
     /**
      * This method is called when a SE is inserted (or presented to the reader's antenna). It
-     * executes a {@link DefaultSelectionRequest} and processes the {@link SelectionResponse}
-     * showing the APDUs exchanges
+     * executes a {@link DefaultSelectionsRequest} and processes the
+     * {@link DefaultSelectionsResponse} showing the APDUs exchanges
      */
     @Override
-    public void processSeMatch(SelectionResponse selectionResponse) {
-        SelectionsResult selectionsResult = seSelection.processDefaultSelection(selectionResponse);
+    public void processSeMatch(DefaultSelectionsResponse defaultSelectionsResponse) {
+        SelectionsResult selectionsResult =
+                seSelection.processDefaultSelection(defaultSelectionsResponse);
         /* get the SE that matches one of the two selection targets */
-        MatchingSe selectedSe = selectionsResult.getActiveSelection().getMatchingSe();
+        AbstractMatchingSe selectedSe = selectionsResult.getActiveSelection().getMatchingSe();
         if (selectedSe != null) {
             System.out.println("Selector: " + selectedSe.getSelectionExtraInfo()
                     + ", selection status = " + selectedSe.isSelected());
