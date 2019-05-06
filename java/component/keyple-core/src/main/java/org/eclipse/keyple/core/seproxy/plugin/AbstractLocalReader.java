@@ -12,7 +12,6 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.*;
-import org.eclipse.keyple.core.selection.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;

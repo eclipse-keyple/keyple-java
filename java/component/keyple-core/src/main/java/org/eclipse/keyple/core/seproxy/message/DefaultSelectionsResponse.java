@@ -9,18 +9,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.selection;
+package org.eclipse.keyple.core.seproxy.message;
 
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 
 /**
- * Class containing the {@link SeResponseSet} used from a default selection made at the
- * {@link ObservableReader} level.
+ * Class containing the {@link org.eclipse.keyple.core.seproxy.message.SeResponseSet} used from a
+ * default selection made at the {@link ObservableReader} level.
  */
 public class DefaultSelectionsResponse extends AbstractDefaultSelectionsResponse {
-    /** The {@link SeResponseSet} */
+    /** The {@link org.eclipse.keyple.core.seproxy.message.SeResponseSet} */
     private final SeResponseSet selectionSeResponseSet;
 
     public DefaultSelectionsResponse(SeResponseSet selectionSeResponseSet) {
