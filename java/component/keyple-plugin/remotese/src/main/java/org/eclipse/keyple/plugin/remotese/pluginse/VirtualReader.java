@@ -107,8 +107,8 @@ public final class VirtualReader extends AbstractObservableReader {
                 new RmTransmitTx(seRequestSet, session.getSessionId(), this.getNativeReaderName(),
                         this.getName(), session.getMasterNodeId(), session.getSlaveNodeId());
         try {
-            rmTxEngine.register(transmit);
-            return transmit.get();
+            rmTxEngine.add(transmit);
+            return transmit.getResponse();
         } catch (KeypleRemoteException e) {
             e.printStackTrace();
             throw (KeypleReaderException) e.getCause();
@@ -204,8 +204,8 @@ public final class VirtualReader extends AbstractObservableReader {
                         session.getMasterNodeId());
 
         try {
-            rmTxEngine.register(setDefaultSelectionRequest);
-            setDefaultSelectionRequest.get();
+            rmTxEngine.add(setDefaultSelectionRequest);
+            setDefaultSelectionRequest.getResponse();
         } catch (KeypleRemoteException e) {
             logger.error(
                     "setDefaultSelectionRequest encounters an exception while communicating with slave",

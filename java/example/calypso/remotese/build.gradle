@@ -1,5 +1,5 @@
 
-project.version = '0.7.0-SNAPSHOT'
+project.version = '0.7.0'+'-'+ getDate()+ '-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin:'application'

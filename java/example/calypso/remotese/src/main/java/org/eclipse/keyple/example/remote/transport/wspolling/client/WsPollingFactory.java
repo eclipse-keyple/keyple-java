@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Web service factory, get {@link WsPClient} and {@link WsPServer}
+ * Web service factory, getResponse {@link WsPClient} and {@link WsPServer}
  */
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class WsPollingFactory extends TransportFactory {

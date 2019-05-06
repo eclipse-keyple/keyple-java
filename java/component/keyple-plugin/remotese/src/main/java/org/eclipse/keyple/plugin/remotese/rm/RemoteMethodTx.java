@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class RemoteMethodTx<T> {
 
+    //todo should add getMethodName()
+
     private static final Logger logger = LoggerFactory.getLogger(RemoteMethodTx.class);
     protected final String sessionId;
     protected final String nativeReaderName;
@@ -66,31 +68,31 @@ public abstract class RemoteMethodTx<T> {
 
 
     /**
-     * Non blocking method to get results from the remote method call
+     * Non blocking method to getResponse results from the remote method call
      * 
      * @param callback
      */
-    private void asyncGet(RemoteMethodTxCallback<T> callback) throws KeypleRemoteException {
+    public void send(RemoteMethodTxCallback<T> callback) throws KeypleRemoteException {
         this.callback = callback;
         sender.sendDTO(this.dto());
     }
 
 
     /**
-     * Blocking method to get results from the remote method call. To be called by the client (used
+     * Blocking method to getResponse results from the remote method call. To be called by the client (used
      * internally by rmCommands, do not use)
      * 
      * @return T : result of the command
      * @throws KeypleRemoteException : if an
      */
-    final public T get() throws KeypleRemoteException {
+    final public T getResponse() throws KeypleRemoteException {
         logger.debug("Blocking Get {}", this.getClass().getCanonicalName());
         final RemoteMethodTx thisInstance = this;
 
-        Thread asyncGet = new Thread() {
+        Thread asyncSend = new Thread() {
             public void run() {
                 try {
-                    asyncGet(new RemoteMethodTxCallback<T>() {
+                    send(new RemoteMethodTxCallback<T>() {
                         @Override
                         public void get(T response, KeypleRemoteException exception) {
                             logger.debug("release lock");
@@ -109,7 +111,7 @@ public abstract class RemoteMethodTx<T> {
             lock = new CountDownLatch(1);
             logger.trace("" + "" + "Set callback on RemoteMethodTx {} {}",
                     this.getClass().getCanonicalName(), this.hashCode());
-            asyncGet.start();
+            asyncSend.start();
             logger.trace("Lock {}, {}", this.getClass().getCanonicalName(), this.hashCode());
             lock.await();
             logger.trace("Unlock {}, {}", this.getClass().getCanonicalName(), this.hashCode());
@@ -131,7 +133,7 @@ public abstract class RemoteMethodTx<T> {
      * 
      * @param keypleDto
      */
-    void asyncSetResponse(KeypleDto keypleDto) {
+    void setResponse(KeypleDto keypleDto) {
         try {
             this.response = parseResponse(keypleDto);
             this.callback.get(response, null);

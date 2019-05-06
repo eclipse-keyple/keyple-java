@@ -59,7 +59,7 @@ public class RemoteMethodTxEngine implements DtoHandler {
         }
 
         // only one operation is allowed at the time
-        remoteMethodTx.asyncSetResponse(keypleDto);
+        remoteMethodTx.setResponse(keypleDto);
 
         // re init remoteMethod
         remoteMethodTx = null;
@@ -68,16 +68,14 @@ public class RemoteMethodTxEngine implements DtoHandler {
     }
 
     /**
-     * Execute RemoteMethodTx
+     * Add RemoteMethod to executing stack
      * 
      * @param rm : RemoteMethodTx to be executed
      */
-    public void register(final RemoteMethodTx rm) {
-
+    public void add(final RemoteMethodTx rm) {
         logger.debug("Register rm to engine : {}", rm);
-        remoteMethodTx = rm;
 
+        remoteMethodTx = rm;
         rm.setDtoSender(sender);
     }
-
 }
