@@ -114,7 +114,7 @@ class Integration {
 
         Thread.sleep(100);
 
-        // getResponse the created proxy reader
+        // Get the created proxy reader
         return (StubReader) stubPlugin.getReader(stubReaderName);
     }
 

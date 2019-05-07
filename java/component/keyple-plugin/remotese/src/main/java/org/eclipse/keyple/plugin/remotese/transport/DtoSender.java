@@ -36,7 +36,7 @@ public interface DtoSender {
     void sendDTO(KeypleDto message) throws KeypleRemoteException;
 
     /**
-     * getResponse nodeId of this DtoSender, must identify the terminal. ie : androidDevice2
+     * Get the nodeId of this DtoSender, must identify the terminal. ie : androidDevice2
      * 
      * @return : nodeId
      */
