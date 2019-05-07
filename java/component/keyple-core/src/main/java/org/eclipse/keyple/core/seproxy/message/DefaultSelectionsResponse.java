@@ -19,11 +19,9 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
  * default selection made at the {@link ObservableReader} level.
  */
 public class DefaultSelectionsResponse extends AbstractDefaultSelectionsResponse {
-    /** The {@link org.eclipse.keyple.core.seproxy.message.SeResponseSet} */
-    private final SeResponseSet selectionSeResponseSet;
 
     public DefaultSelectionsResponse(SeResponseSet selectionSeResponseSet) {
-        this.selectionSeResponseSet = selectionSeResponseSet;
+        super(selectionSeResponseSet);
     }
 
     @Override

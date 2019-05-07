@@ -12,6 +12,8 @@
 package org.eclipse.keyple.core.seproxy.event;
 
 
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
+
 /**
  * ReaderEvent used to notify changes at reader level
  */
@@ -29,7 +31,7 @@ public final class ReaderEvent {
     /**
      * The response to the selection request
      */
-    private final AbstractDefaultSelectionsResponse defaultResponseSet;
+    private final DefaultSelectionsResponse defaultResponseSet;
 
     /**
      * The different types of reader event
@@ -82,7 +84,7 @@ public final class ReaderEvent {
      *        (may be null)
      */
     public ReaderEvent(String pluginName, String readerName, EventType eventType,
-            AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
+            DefaultSelectionsResponse defaultSelectionsResponse) {
         this.pluginName = pluginName;
         this.readerName = readerName;
         this.eventType = eventType;

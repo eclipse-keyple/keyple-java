@@ -22,7 +22,7 @@ import java.util.List;
  * provides a set of methods to retrieve the active selection (getActiveSelection) or a particular
  * selection specified by its index.
  */
-public class SelectionsResult {
+public final class SelectionsResult {
     private boolean hasActiveSelection = false;
     private final List<MatchingSelection> matchingSelectionList =
             new ArrayList<MatchingSelection>();

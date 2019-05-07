@@ -17,7 +17,7 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 /**
  * The MatchingSelection class holds the result of a single selection case.
  */
-public class MatchingSelection {
+public final class MatchingSelection {
     private final AbstractMatchingSe matchingSe;
     private final AbstractSeSelectionRequest seSelectionRequest;
     private final SeResponse selectionSeResponse;
