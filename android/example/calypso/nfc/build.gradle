@@ -145,3 +145,7 @@ dependencies {
     androidTestImplementation "com.android.support.test.espresso:espresso-core:${android_support_espresso}"
 
 }
+
+def getDate() {
+    return new Date().format('yyyyMMdd')
+}
