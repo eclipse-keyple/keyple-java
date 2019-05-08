@@ -16,9 +16,9 @@ import java.util.Map;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.core.seproxy.util.Configurable;
-import org.eclipse.keyple.core.seproxy.util.Nameable;
-import org.eclipse.keyple.core.seproxy.util.Observable;
+import org.eclipse.keyple.core.util.Configurable;
+import org.eclipse.keyple.core.util.Nameable;
+import org.eclipse.keyple.core.util.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

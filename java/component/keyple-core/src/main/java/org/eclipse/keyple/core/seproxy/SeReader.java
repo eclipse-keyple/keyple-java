@@ -16,8 +16,8 @@ import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.core.seproxy.util.Configurable;
-import org.eclipse.keyple.core.seproxy.util.Nameable;
+import org.eclipse.keyple.core.util.Configurable;
+import org.eclipse.keyple.core.util.Nameable;
 
 
 /**
