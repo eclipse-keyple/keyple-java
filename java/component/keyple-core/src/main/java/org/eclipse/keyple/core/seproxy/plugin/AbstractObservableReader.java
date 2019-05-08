@@ -13,7 +13,6 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
@@ -47,7 +46,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     protected final String pluginName;
 
     /** The default DefaultSelectionsRequest to be executed upon SE insertion */
-    protected AbstractDefaultSelectionsRequest defaultSelectionsRequest;
+    protected DefaultSelectionsRequest defaultSelectionsRequest;
 
     /** Indicate if all SE detected should be notified or only matching SE */
     protected NotificationMode notificationMode;

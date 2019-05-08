@@ -86,8 +86,7 @@ public final class SeSelection {
      * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
      *         including {@link AbstractMatchingSe} and {@link SeResponse}.
      */
-    private SelectionsResult processSelection(
-            AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
+    private SelectionsResult processSelection(DefaultSelectionsResponse defaultSelectionsResponse) {
         SelectionsResult selectionsResult = new SelectionsResult();
 
         /* null pointer exception protection */
@@ -135,10 +134,11 @@ public final class SeSelection {
             AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
         if (logger.isTraceEnabled()) {
             logger.trace("Process default SELECTIONRESPONSE ({} response(s))",
-                    defaultSelectionsResponse.getSelectionSeResponseSet().getResponses().size());
+                    ((DefaultSelectionsResponse) defaultSelectionsResponse)
+                            .getSelectionSeResponseSet().getResponses().size());
         }
 
-        return processSelection(defaultSelectionsResponse);
+        return processSelection((DefaultSelectionsResponse) defaultSelectionsResponse);
     }
 
     /**

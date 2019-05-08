@@ -782,7 +782,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     public void setDefaultSelectionRequest(
             AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             ObservableReader.NotificationMode notificationMode) {
-        this.defaultSelectionsRequest = defaultSelectionsRequest;
+        this.defaultSelectionsRequest = (DefaultSelectionsRequest) defaultSelectionsRequest;
         this.notificationMode = notificationMode;
     };
 }

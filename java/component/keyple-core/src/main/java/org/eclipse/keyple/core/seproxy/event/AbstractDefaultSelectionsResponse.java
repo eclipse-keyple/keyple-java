@@ -21,5 +21,5 @@ public abstract class AbstractDefaultSelectionsResponse {
         this.selectionSeResponseSet = selectionSeResponseSet;
     }
 
-    public abstract SeResponseSet getSelectionSeResponseSet();
+    protected abstract SeResponseSet getSelectionSeResponseSet();
 }

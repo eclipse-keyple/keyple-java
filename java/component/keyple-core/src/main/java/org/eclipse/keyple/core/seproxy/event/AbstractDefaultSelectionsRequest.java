@@ -21,5 +21,5 @@ public abstract class AbstractDefaultSelectionsRequest {
         this.selectionSeRequestSet = selectionSeRequestSet;
     }
 
-    public abstract SeRequestSet getSelectionSeRequestSet();
+    protected abstract SeRequestSet getSelectionSeRequestSet();
 }
