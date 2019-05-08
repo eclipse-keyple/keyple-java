@@ -13,9 +13,10 @@ package org.eclipse.keyple.core.selection;
 
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
@@ -36,9 +37,10 @@ public final class SeSelection {
      * list of target classes and selection requests used to build the AbstractMatchingSe list in
      * return of processSelection methods
      */
-    private List<AbstractSeSelectionRequest> seSelectionRequestList =
+    private final List<AbstractSeSelectionRequest> seSelectionRequestList =
             new ArrayList<AbstractSeSelectionRequest>();
-    private SeRequestSet selectionRequestSet = new SeRequestSet(new LinkedHashSet<SeRequest>());
+    private final SeRequestSet selectionRequestSet =
+            new SeRequestSet(new LinkedHashSet<SeRequest>());
     private int selectionIndex;
 
     /**
@@ -84,7 +86,8 @@ public final class SeSelection {
      * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
      *         including {@link AbstractMatchingSe} and {@link SeResponse}.
      */
-    private SelectionsResult processSelection(DefaultSelectionsResponse defaultSelectionsResponse) {
+    private SelectionsResult processSelection(
+            AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
         SelectionsResult selectionsResult = new SelectionsResult();
 
         /* null pointer exception protection */
@@ -129,7 +132,7 @@ public final class SeSelection {
      *         including {@link AbstractMatchingSe} and {@link SeResponse}.
      */
     public SelectionsResult processDefaultSelection(
-            DefaultSelectionsResponse defaultSelectionsResponse) {
+            AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
         if (logger.isTraceEnabled()) {
             logger.trace("Process default SELECTIONRESPONSE ({} response(s))",
                     defaultSelectionsResponse.getSelectionSeResponseSet().getResponses().size());

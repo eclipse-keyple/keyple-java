@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -198,7 +198,8 @@ public final class VirtualReader extends AbstractObservableReader {
     }
 
     @Override
-    public void setDefaultSelectionRequest(DefaultSelectionsRequest defaultSelectionsRequest,
+    public void setDefaultSelectionRequest(
+            AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             NotificationMode notificationMode) {
 
         RmSetDefaultSelectionRequestTx setDefaultSelectionRequest =

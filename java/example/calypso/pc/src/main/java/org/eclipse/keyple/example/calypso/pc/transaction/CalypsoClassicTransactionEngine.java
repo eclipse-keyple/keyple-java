@@ -18,9 +18,10 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
@@ -35,7 +36,7 @@ import org.slf4j.profiler.Profiler;
  * <ol>
  * <li>Setting up a two-reader configuration and adding an observer method ({@link #update update})
  * <li>Starting a card operation when a PO presence is notified
- * ({@link #processSeMatch(DefaultSelectionsResponse)} operateSeTransaction})
+ * ({@link #processSeMatch(AbstractDefaultSelectionsResponse)} operateSeTransaction})
  * <li>Opening a logical channel with the SAM (C1 SAM is expected) see
  * ({@link CalypsoClassicInfo#SAM_C1_ATR_REGEX SAM_C1_ATR_REGEX})
  * <li>Attempting to open a logical channel with the PO with 3 options:
@@ -268,7 +269,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         }
     }
 
-    public DefaultSelectionsRequest preparePoSelection() {
+    public AbstractDefaultSelectionsRequest preparePoSelection() {
         /*
          * Initialize the selection process
          */
@@ -331,7 +332,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
      * Do the PO selection and possibly go on with Calypso transactions.
      */
     @Override
-    public void processSeMatch(DefaultSelectionsResponse defaultSelectionsResponse) {
+    public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
         CalypsoPo calypsoPo =
                 (CalypsoPo) seSelection.processDefaultSelection(defaultSelectionsResponse)
                         .getActiveSelection().getMatchingSe();

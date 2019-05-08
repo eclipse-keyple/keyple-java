@@ -18,9 +18,10 @@ import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
@@ -50,7 +51,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
         this.poReader = poReader;
     }
 
-    public DefaultSelectionsRequest prepareSeSelection() {
+    public AbstractDefaultSelectionsRequest prepareSeSelection() {
 
         seSelection = new SeSelection();
 
@@ -100,11 +101,11 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
 
     /**
      * This method is called when a SE is inserted (or presented to the reader's antenna). It
-     * executes a {@link DefaultSelectionsRequest} and processes the
+     * executes a {@link AbstractDefaultSelectionsResponse} and processes the
      * {@link DefaultSelectionsResponse} showing the APDUs exchanges
      */
     @Override
-    public void processSeMatch(DefaultSelectionsResponse defaultSelectionsResponse) {
+    public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
         SelectionsResult selectionsResult =
                 seSelection.processDefaultSelection(defaultSelectionsResponse);
         /* get the SE that matches one of the two selection targets */
