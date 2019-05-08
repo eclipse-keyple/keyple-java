@@ -2,7 +2,7 @@ plugins {
     id 'maven-publish'
 }
 
-project.version = '0.7.0-SNAPSHOT'
+project.version = '0.7.0'+'-'+ getDate()+ '-SNAPSHOT'
 apply plugin: 'java'
 sourceCompatibility = 1.6
 apply plugin: 'java-library'
@@ -53,7 +53,29 @@ publishing {
     }
 }
 
-jar.dependsOn copyLICENSE, copyNOTICE,copyVersionFile
+classes.dependsOn copyLICENSE, copyNOTICE,copyVersionFile
+
+task binJar(type: Jar, dependsOn : classes) {
+    from sourceSets.main.output
+}
+
+task sourcesJar(type: Jar, dependsOn : classes) {
+    classifier = 'sources'
+    from sourceSets.main.output, sourceSets.main.java
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+
+artifacts {
+    archives binJar
+    archives sourcesJar
+    archives javadocJar
+}
+
 
 dependencies {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api

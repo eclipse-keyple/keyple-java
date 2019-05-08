@@ -125,3 +125,7 @@ aggregatedJavadocs.doFirst {
     }
 
 }
+
+def getDate() {
+    return new Date().format('yyyyMMdd')
+}
