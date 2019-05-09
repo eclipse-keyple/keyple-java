@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.event;
 
-import java.io.Serializable;
+
 import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 
 public abstract class AbstractDefaultSelectionsResponse {
