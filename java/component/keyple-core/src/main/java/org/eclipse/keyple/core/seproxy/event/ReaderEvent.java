@@ -80,15 +80,15 @@ public final class ReaderEvent {
      * @param pluginName the name of the current plugin
      * @param readerName the name of the current reader
      * @param eventType the type of event
-     * @param defaultSelectionsResponse the response to the default {@link DefaultSelectionsRequest}
-     *        (may be null)
+     * @param defaultSelectionsResponse the response to the default DefaultSelectionsRequest (may be
+     *        null)
      */
     public ReaderEvent(String pluginName, String readerName, EventType eventType,
-            DefaultSelectionsResponse defaultSelectionsResponse) {
+            AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
         this.pluginName = pluginName;
         this.readerName = readerName;
         this.eventType = eventType;
-        this.defaultResponseSet = defaultSelectionsResponse;
+        this.defaultResponseSet = (DefaultSelectionsResponse) defaultSelectionsResponse;
     }
 
 

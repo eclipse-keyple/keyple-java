@@ -20,8 +20,6 @@ import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.message.ApduRequest;
-import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 
@@ -70,7 +68,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                             "Hoplink selector"), ChannelState.KEEP_OPEN);
 
                     poSelectionRequest.preparePoCustomReadCmd("Standard Get Data",
-                            new ApduRequest(ByteArrayUtil.fromHex("FFCA000000"), false));
+                            ByteArrayUtil.fromHex("FFCA000000"));
 
                     poSelectionRequest.prepareReadRecordsCmd(SFI_T2Environment,
                             ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01,
@@ -102,7 +100,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
     /**
      * This method is called when a SE is inserted (or presented to the reader's antenna). It
      * executes a {@link AbstractDefaultSelectionsResponse} and processes the
-     * {@link DefaultSelectionsResponse} showing the APDUs exchanges
+     * {@link AbstractDefaultSelectionsResponse} showing the APDUs exchanges
      */
     @Override
     public void processSeMatch(AbstractDefaultSelectionsResponse defaultSelectionsResponse) {

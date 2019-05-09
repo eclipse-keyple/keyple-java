@@ -13,6 +13,9 @@ package org.eclipse.keyple.core.seproxy.event;
 
 import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
 
+/**
+ * The {@link AbstractDefaultSelectionsRequest} class is dedicated to
+ */
 public abstract class AbstractDefaultSelectionsRequest {
     /** The {@link org.eclipse.keyple.core.seproxy.message.SeRequestSet} */
     protected final SeRequestSet selectionSeRequestSet;

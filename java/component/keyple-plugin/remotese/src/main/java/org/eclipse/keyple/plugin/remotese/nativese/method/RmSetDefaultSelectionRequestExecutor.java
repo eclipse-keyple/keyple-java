@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
@@ -54,8 +55,9 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
         logger.trace("DefaultSelectionsRequest : {}", selectionRequestJson.getAsString());
         logger.trace("Notification Mode : {}", notificationModeJson.getAsString());
 
-        DefaultSelectionsRequest defaultSelectionsRequest = JsonParser.getGson()
-                .fromJson(selectionRequestJson.getAsString(), DefaultSelectionsRequest.class);
+        AbstractDefaultSelectionsRequest defaultSelectionsRequest =
+                (AbstractDefaultSelectionsRequest) JsonParser.getGson().fromJson(
+                        selectionRequestJson.getAsString(), DefaultSelectionsRequest.class);
         ObservableReader.NotificationMode notificationMode =
                 ObservableReader.NotificationMode.get(notificationModeJson.getAsString());
 

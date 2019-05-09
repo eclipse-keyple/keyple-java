@@ -13,6 +13,7 @@ package org.eclipse.keyple.core.selection;
 
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
@@ -178,7 +179,8 @@ public final class SeSelection {
      * 
      * @return the {@link DefaultSelectionsRequest} previously prepared with prepareSelection
      */
-    public DefaultSelectionsRequest getSelectionOperation() {
-        return new DefaultSelectionsRequest(selectionRequestSet);
+    public AbstractDefaultSelectionsRequest getSelectionOperation() {
+        return (AbstractDefaultSelectionsRequest) (new DefaultSelectionsRequest(
+                selectionRequestSet));
     }
 }

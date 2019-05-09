@@ -21,7 +21,6 @@ import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
@@ -45,7 +44,7 @@ import org.slf4j.profiler.Profiler;
  * <li>Selecting with the Calypso AID and reading the event log file
  * <li>Selecting with a fake AID (2)
  * </ul>
- * <li>Display {@link DefaultSelectionsResponse} data
+ * <li>Display {@link AbstractDefaultSelectionsResponse} data
  * <li>If the Calypso selection succeeded, do a Calypso transaction
  * ({doCalypsoReadWriteTransaction(PoTransaction, ApduResponse, boolean)}
  * doCalypsoReadWriteTransaction}).
