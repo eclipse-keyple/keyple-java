@@ -214,10 +214,12 @@ public final class PoSelectionRequest extends AbstractSeSelectionRequest {
      * Prepare a custom read ApduRequest to be executed following the selection.
      * 
      * @param name the name of the command (will appear in the ApduRequest log)
-     * @param apduRequest the ApduRequest (the correct instruction byte must be provided)
+     * @param apdu the byte array corresponding to the command to be sent (the correct instruction
+     *        byte must be provided)
      * @return the command index indicating the order of the command in the command list
      */
-    public int preparePoCustomReadCmd(String name, ApduRequest apduRequest) {
+    public int preparePoCustomReadCmd(String name, byte[] apdu) {
+        ApduRequest apduRequest = new ApduRequest(apdu, false);
         addApduRequest(new PoCustomReadCommandBuilder(name, apduRequest).getApduRequest());
         if (logger.isTraceEnabled()) {
             logger.trace("CustomReadCommand: APDUREQUEST = {}", apduRequest);
