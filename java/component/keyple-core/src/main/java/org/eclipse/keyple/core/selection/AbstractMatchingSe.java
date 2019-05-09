@@ -28,7 +28,7 @@ public abstract class AbstractMatchingSe {
     /**
      * Constructor.
      */
-    public AbstractMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode,
+    protected AbstractMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode,
             String extraInfo) {
         this.selectionResponse = selectionResponse;
         this.transmissionMode = transmissionMode;

@@ -11,9 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.rm.json;
 
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
 import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
