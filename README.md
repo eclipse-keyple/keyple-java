@@ -50,7 +50,7 @@ Keyple features defined to support the Calypso solution:
 | Calypso PO & SAM commands' sets<ul><li>low level Calypso API, commands’ settings include technical parameters specific to Calypso PO revisions or Calypso SAM revisions</li></ul> | <ul><li>org.eclipse.keyple.calypso.**command**</li><li>org.eclipse.keyple.calypso.command.**po**</li><li>org.eclipse.keyple.calypso.command.**po.builder**</li><li>org.eclipse.keyple.calypso.command.**po.parser.session**</li><li>org.eclipse.keyple.calypso.command.**sam.parser.session**</li><li>org.eclipse.keyple.calypso.command.**sam.builder**</li><li>org.eclipse.keyple.calypso.command.**sam**</li></ul> |
 
 ## Keyple packages and corresponding usages
-Depending on the targetting usage: implementation of a ticketing <span style="color:blue">**application**</span>, a reader <font color="red">**plugin**</font>, or a <mark>**SE library**</mark>, only specific Keyple packages must be imported.
+Depending on the targetting usage: implementation of a ticketing **application** (blue circle), a reader **plugin** (red circle), or a **SE library** (green circle), only specific Keyple packages must be imported.
 
 - generic packages for any SE solution
 
