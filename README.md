@@ -5,7 +5,7 @@ This is the repository for the Java implementation of the 'Eclipse [Keyple](http
 
 ## Global Architecture of Keyple
 
-![global architecture](doc/20190424-Keyple-components.svg "keyple SDK global architecture")
+![global architecture](doc/Keyple-components.svg "keyple SDK global architecture")
 
 The API is currently divided in two major layers:
 - The ‘Keyple Core' : a Secure Element Proxy API which allows managing SE readers in a generic way, whaterver the reader driver or environment, and for standalone or distributed solution.
@@ -54,11 +54,11 @@ Depending on the targetting usage: implementation of a ticketing <span style="co
 
 - generic packages for any SE solution
 
-![generic packages](doc/20190510-KeyplePackages_Core.svg "Keyple generic packages")
+![generic packages](doc/KeyplePackages_Core.svg "Keyple generic packages")
 
 - specific packages for Calypso
 
-![Calypso packages](doc/20190510-KeyplePackages_Calypso.svg "Calypso packages")
+![Calypso packages](doc/KeyplePackages_Calypso.svg "Calypso packages")
 
 ## JARs
 The Eclipse Keyple Java artifacts are published on the Eclipse Keyple Project page [https://projects.eclipse.org/projects/iot.keyple/downloads] (may be soon also available on Maven).
