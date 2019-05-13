@@ -60,8 +60,8 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
                 ObservableReader.NotificationMode.get(notificationModeJson.getAsString());
 
         String nativeReaderName = keypleDto.getNativeReaderName();
-        logger.trace("Execute locally SetDefaultSelectionRequest : {} - {}", notificationMode,
-                defaultSelectionsRequest);
+        logger.debug("Execute locally SetDefaultSelectionRequest : {} - {}", notificationMode,
+                defaultSelectionsRequest.getSelectionSeRequestSet());
 
         try {
             // find native reader by name

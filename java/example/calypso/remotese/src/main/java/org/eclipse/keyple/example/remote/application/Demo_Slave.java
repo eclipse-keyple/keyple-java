@@ -102,7 +102,7 @@ class Demo_Slave {
             ((ClientNode) node).connect(new ClientNode.ConnectCallback() {
                 @Override
                 public void onConnectSuccess() {
-                    logger.info("Client connected");
+                    logger.info("{} onConnectSuccess ", slaveNodeId);
                 }
 
                 @Override
