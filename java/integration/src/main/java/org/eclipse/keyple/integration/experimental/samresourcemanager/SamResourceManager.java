@@ -15,15 +15,14 @@ import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
 import java.util.*;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.protocol.Protocol;
-import org.eclipse.keyple.core.transaction.SeSelection;
-import org.eclipse.keyple.core.transaction.SelectionsResult;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,8 +101,7 @@ public class SamResourceManager {
         SamSelector samSelector = new SamSelector(new SamIdentifier(AUTO, null, null), "SAM");
 
         /* Prepare selector, ignore MatchingSe here */
-        samSelection.prepareSelection(
-                new SamSelectionRequest(samSelector, ChannelState.KEEP_OPEN, Protocol.ANY));
+        samSelection.prepareSelection(new SamSelectionRequest(samSelector, ChannelState.KEEP_OPEN));
 
         SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
         if (!selectionsResult.hasActiveSelection()) {

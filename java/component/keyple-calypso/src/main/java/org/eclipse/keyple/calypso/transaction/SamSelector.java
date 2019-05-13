@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 
@@ -22,37 +23,36 @@ public class SamSelector extends SeSelector {
     /**
      * Create a SeSelector to perform the SAM selection
      * <p>
-     * Two optional parameters.
+     * Three optional parameters
      *
-     * @param samIdentifier the expected SAM identification: revision (subtype), serial number as an
-     *        hex string (padded with 0 on the left; can be a sub regex e.g. "AEC0....") and
-     *        groupReference (not needed here).
+     * @param samRevision the expected SAM revision (subtype)
+     * @param serialNumber the expected serial number as an hex string (padded with 0 on the left).
+     *        Can be a sub regex (e.g. "AEC0....") or null to allow any serial number.
      * @param extraInfo information string (to be printed in logs)
      */
-    public SamSelector(SamIdentifier samIdentifier, String extraInfo) {
+    public SamSelector(SamRevision samRevision, String serialNumber, String extraInfo) {
         super(SeCommonProtocols.PROTOCOL_ISO7816_3, new AtrFilter(null), null, extraInfo);
         String atrRegex;
         String snRegex;
         /* check if serialNumber is defined */
-        if (samIdentifier.getSerialNumber() == null || samIdentifier.getSerialNumber().isEmpty()) {
+        if (serialNumber == null || serialNumber.isEmpty()) {
             /* match all serial numbers */
             snRegex = ".{8}";
         } else {
             /* match the provided serial number (could be a regex substring) */
-            snRegex = samIdentifier.getSerialNumber();
+            snRegex = serialNumber;
         }
         /*
          * build the final Atr regex according to the SAM subtype and serial number if any.
          *
          * The header is starting with 3B, its total length is 4 or 6 bytes (8 or 10 hex digits)
          */
-        switch (samIdentifier.getSamRevision()) {
+        switch (samRevision) {
             case C1:
             case S1D:
             case S1E:
-                atrRegex = "3B(.{6}|.{10})805A..80"
-                        + samIdentifier.getSamRevision().getApplicationTypeMask() + "20.{4}"
-                        + snRegex + "829000";
+                atrRegex = "3B(.{6}|.{10})805A..80" + samRevision.getApplicationTypeMask()
+                        + "20.{4}" + snRegex + "829000";
                 break;
             case AUTO:
                 /* match any ATR */
@@ -62,5 +62,19 @@ public class SamSelector extends SeSelector {
                 throw new IllegalArgumentException("Unknown SAM subtype.");
         }
         this.getAtrFilter().setAtrRegex(atrRegex);
+    }
+
+    /**
+     * Create a SeSelector to perform the SAM selection
+     * <p>
+     * Two optional parameters.
+     *
+     * @param samIdentifier the expected SAM identification: revision (subtype), serial number as an
+     *        hex string (padded with 0 on the left; can be a sub regex e.g. "AEC0....") and
+     *        groupReference (not needed here).
+     * @param extraInfo information string (to be printed in logs)
+     */
+    public SamSelector(SamIdentifier samIdentifier, String extraInfo) {
+        this(samIdentifier.getSamRevision(), samIdentifier.getSerialNumber(), extraInfo);
     }
 }
