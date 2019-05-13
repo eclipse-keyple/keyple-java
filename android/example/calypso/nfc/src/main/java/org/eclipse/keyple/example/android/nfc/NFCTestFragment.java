@@ -28,7 +28,7 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -257,8 +257,9 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
      * Run Calypso simple read transaction
      * 
      * @param defaultSelectionsResponse
+
      */
-    private void runCalyspoTransaction(final DefaultSelectionsResponse defaultSelectionsResponse) {
+    private void runCalyspoTransaction(final AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
         LOG.debug("Running Calypso Simple Read transaction");
         getActivity().runOnUiThread(new Runnable() {
             @Override

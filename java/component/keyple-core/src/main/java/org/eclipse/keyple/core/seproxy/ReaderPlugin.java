@@ -14,8 +14,8 @@ package org.eclipse.keyple.core.seproxy;
 import java.util.SortedSet;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.util.Configurable;
-import org.eclipse.keyple.core.seproxy.util.Nameable;
+import org.eclipse.keyple.core.util.Configurable;
+import org.eclipse.keyple.core.util.Nameable;
 
 
 

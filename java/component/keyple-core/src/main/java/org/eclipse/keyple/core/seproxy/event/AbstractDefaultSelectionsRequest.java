@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -14,18 +14,15 @@ package org.eclipse.keyple.core.seproxy.event;
 import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
 
 /**
- * Class containing the {@link SeRequestSet} used to make a default selection at the
- * {@link ObservableReader} level.
+ * The {@link AbstractDefaultSelectionsRequest} class is dedicated to
  */
-public class DefaultSelectionsRequest {
-    /** The {@link SeRequestSet} */
-    private final SeRequestSet selectionSeRequestSet;
+public abstract class AbstractDefaultSelectionsRequest {
+    /** The {@link org.eclipse.keyple.core.seproxy.message.SeRequestSet} */
+    protected final SeRequestSet selectionSeRequestSet;
 
-    public DefaultSelectionsRequest(SeRequestSet selectionSeRequestSet) {
+    protected AbstractDefaultSelectionsRequest(SeRequestSet selectionSeRequestSet) {
         this.selectionSeRequestSet = selectionSeRequestSet;
     }
 
-    public SeRequestSet getSelectionSeRequestSet() {
-        return selectionSeRequestSet;
-    }
+    protected abstract SeRequestSet getSelectionSeRequestSet();
 }

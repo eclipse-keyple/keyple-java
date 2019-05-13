@@ -215,9 +215,8 @@ public class PoSelectionRequestTest {
 
     @Test
     public void preparePoCustomReadCmd() {
-        ApduRequest apduRequest = new ApduRequest(ByteArrayUtil.fromHex("FFCA000000"), false);
-        int readParserIndex1 =
-                poSelectionRequest.preparePoCustomReadCmd("Custom command read", apduRequest);
+        int readParserIndex1 = poSelectionRequest.preparePoCustomReadCmd("Custom command read",
+                ByteArrayUtil.fromHex("FFCA000000"));
         Assert.assertEquals(0, readParserIndex1);
     }
 

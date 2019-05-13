@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy.event;
 
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.util.Observable;
+import org.eclipse.keyple.core.util.Observable;
 
 public interface ObservablePlugin extends ReaderPlugin {
     interface PluginObserver extends Observable.Observer<PluginEvent> {

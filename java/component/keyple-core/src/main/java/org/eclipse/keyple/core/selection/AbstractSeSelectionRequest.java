@@ -27,16 +27,16 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
  * This class may also be extended to add particular features specific to a SE family.
  */
 public abstract class AbstractSeSelectionRequest {
-    protected SeSelector seSelector;
+    protected final SeSelector seSelector;
 
     /** optional apdu requests list to be executed following the selection process */
-    protected final List<ApduRequest> seSelectionApduRequestList = new ArrayList<ApduRequest>();
+    private final List<ApduRequest> seSelectionApduRequestList = new ArrayList<ApduRequest>();
 
     /**
      * the channelState may be accessed from derived classes. Let it with the protected access
      * level.
      */
-    protected final ChannelState channelState;
+    private final ChannelState channelState;
 
     public AbstractSeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
         this.seSelector = seSelector;
@@ -49,10 +49,8 @@ public abstract class AbstractSeSelectionRequest {
      *
      * @return the selection SeRequest
      */
-    protected final SeRequest getSelectionRequest() {
-        SeRequest seSelectionRequest = null;
-        seSelectionRequest = new SeRequest(seSelector, seSelectionApduRequestList, channelState);
-        return seSelectionRequest;
+    final SeRequest getSelectionRequest() {
+        return new SeRequest(seSelector, seSelectionApduRequestList, channelState);
     }
 
     public SeSelector getSeSelector() {
