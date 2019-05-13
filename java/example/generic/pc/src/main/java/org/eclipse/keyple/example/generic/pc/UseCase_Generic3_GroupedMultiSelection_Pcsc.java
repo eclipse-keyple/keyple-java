@@ -12,15 +12,16 @@
 package org.eclipse.keyple.example.generic.pc;
 
 import java.io.IOException;
+import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.core.transaction.*;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.example.generic.common.GenericSeSelectionRequest;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,31 +71,31 @@ public class UseCase_Generic3_GroupedMultiSelection_Pcsc {
             String seAidPrefix = "A000000404012509";
 
             /* AID based selection (1st selection, later indexed 0) */
-            seSelection.prepareSelection(new SeSelectionRequest(
-                    new SeSelector(
+            seSelection.prepareSelection(new GenericSeSelectionRequest(
+                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.FIRST,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
-                            null, "Initial selection #1"),
-                    ChannelState.CLOSE_AFTER, ContactlessProtocols.PROTOCOL_ISO14443_4));
+                            "Initial selection #1"),
+                    ChannelState.CLOSE_AFTER));
 
             /* next selection (2nd selection, later indexed 1) */
-            seSelection.prepareSelection(new SeSelectionRequest(
-                    new SeSelector(
+            seSelection.prepareSelection(new GenericSeSelectionRequest(
+                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
-                            null, "Next selection #2"),
-                    ChannelState.CLOSE_AFTER, ContactlessProtocols.PROTOCOL_ISO14443_4));
+                            "Next selection #2"),
+                    ChannelState.CLOSE_AFTER));
 
             /* next selection (3rd selection, later indexed 2) */
-            seSelection.prepareSelection(new SeSelectionRequest(
-                    new SeSelector(
+            seSelection.prepareSelection(new GenericSeSelectionRequest(
+                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                             new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
                                     SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
-                            null, "Next selection #3"),
-                    ChannelState.CLOSE_AFTER, ContactlessProtocols.PROTOCOL_ISO14443_4));
+                            "Next selection #3"),
+                    ChannelState.CLOSE_AFTER));
             /*
              * Actual SE communication: operate through a single request the SE selection
              */
@@ -104,7 +105,7 @@ public class UseCase_Generic3_GroupedMultiSelection_Pcsc {
             if (selectionsResult.getMatchingSelections().size() > 0) {
                 for (MatchingSelection matchingSelection : selectionsResult
                         .getMatchingSelections()) {
-                    MatchingSe matchingSe = matchingSelection.getMatchingSe();
+                    AbstractMatchingSe matchingSe = matchingSelection.getMatchingSe();
                     logger.info(
                             "Selection status for selection \"{}\" (indexed {}): \n\t\tATR: {}\n\t\tFCI: {}",
                             matchingSelection.getExtraInfo(), matchingSelection.getSelectionIndex(),

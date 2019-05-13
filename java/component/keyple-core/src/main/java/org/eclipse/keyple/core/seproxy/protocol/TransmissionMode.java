@@ -11,6 +11,11 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.protocol;
 
+/**
+ * Transmission mode.
+ * <p>
+ * The transmission mode indicates whether the communication is contactless or not.
+ */
 public enum TransmissionMode {
     CONTACTS, CONTACTLESS
 }

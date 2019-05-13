@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.transaction;
+package org.eclipse.keyple.core.selection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,16 +22,22 @@ import java.util.List;
  * provides a set of methods to retrieve the active selection (getActiveSelection) or a particular
  * selection specified by its index.
  */
-public class SelectionsResult {
+public final class SelectionsResult {
     private boolean hasActiveSelection = false;
-    private List<MatchingSelection> matchingSelectionList = new ArrayList<MatchingSelection>();
+    private final List<MatchingSelection> matchingSelectionList =
+            new ArrayList<MatchingSelection>();
+
+    /**
+     * Constructor
+     */
+    SelectionsResult() {}
 
     /**
      * Append a {@link MatchingSelection} to the internal list
      * 
      * @param matchingSelection the item to add
      */
-    public void addMatchingSelection(MatchingSelection matchingSelection) {
+    void addMatchingSelection(MatchingSelection matchingSelection) {
         matchingSelectionList.add(matchingSelection);
         /* test if the current selection is active */
         if (matchingSelection.getMatchingSe().isSelected()) {

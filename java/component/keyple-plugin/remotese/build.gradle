@@ -3,7 +3,7 @@ plugins {
 }
 apply plugin: 'java'
 sourceCompatibility = 1.6
-project.version = '0.7.0-SNAPSHOT'
+project.version = '0.7.0'+'-'+ getDate()+ '-SNAPSHOT'
 apply plugin: 'java-library'
 
 

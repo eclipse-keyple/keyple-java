@@ -14,13 +14,13 @@ package org.eclipse.keyple.core.seproxy.event;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.util.Observable;
+import org.eclipse.keyple.core.util.Observable;
 
 public interface ObservableReader extends SeReader {
     interface ReaderObserver extends Observable.Observer<ReaderEvent> {
     }
 
-    public enum NotificationMode {
+    enum NotificationMode {
         ALWAYS("always"), MATCHED_ONLY("matched_only");
 
         private String name;
@@ -69,6 +69,6 @@ public interface ObservableReader extends SeReader {
 
     void notifyObservers(ReaderEvent event);
 
-    void setDefaultSelectionRequest(DefaultSelectionRequest defaultSelectionRequest,
+    void setDefaultSelectionRequest(AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             NotificationMode notificationMode);
 }

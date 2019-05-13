@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.Map;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteReaderException;
@@ -107,8 +107,8 @@ public final class VirtualReader extends AbstractObservableReader {
                 new RmTransmitTx(seRequestSet, session.getSessionId(), this.getNativeReaderName(),
                         this.getName(), session.getMasterNodeId(), session.getSlaveNodeId());
         try {
-            rmTxEngine.register(transmit);
-            return transmit.get();
+            rmTxEngine.add(transmit);
+            return transmit.getResponse();
         } catch (KeypleRemoteException e) {
             e.printStackTrace();
             throw (KeypleReaderException) e.getCause();
@@ -146,9 +146,13 @@ public final class VirtualReader extends AbstractObservableReader {
 
 
     @Override
-    public void addSeProtocolSetting(SeProtocolSetting seProtocolSetting) {
+    public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {
         logger.error("addSeProtocolSetting is not implemented yet");
+    }
 
+    @Override
+    public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
+        logger.error("setSeProtocolSetting is not implemented yet");
     }
 
     /*
@@ -194,18 +198,19 @@ public final class VirtualReader extends AbstractObservableReader {
     }
 
     @Override
-    public void setDefaultSelectionRequest(DefaultSelectionRequest defaultSelectionRequest,
+    public void setDefaultSelectionRequest(
+            AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             NotificationMode notificationMode) {
 
         RmSetDefaultSelectionRequestTx setDefaultSelectionRequest =
-                new RmSetDefaultSelectionRequestTx(defaultSelectionRequest, notificationMode,
+                new RmSetDefaultSelectionRequestTx(defaultSelectionsRequest, notificationMode,
                         this.getNativeReaderName(), this.getName(),
                         this.getSession().getSessionId(), session.getSlaveNodeId(),
                         session.getMasterNodeId());
 
         try {
-            rmTxEngine.register(setDefaultSelectionRequest);
-            setDefaultSelectionRequest.get();
+            rmTxEngine.add(setDefaultSelectionRequest);
+            setDefaultSelectionRequest.getResponse();
         } catch (KeypleRemoteException e) {
             logger.error(
                     "setDefaultSelectionRequest encounters an exception while communicating with slave",

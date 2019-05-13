@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse.method;
 
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTx;
@@ -21,16 +21,16 @@ import com.google.gson.JsonObject;
 
 public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
 
-    private final DefaultSelectionRequest defaultSelectionRequest;
+    private final AbstractDefaultSelectionsRequest defaultSelectionsRequest;
     private final ObservableReader.NotificationMode notificationMode;
 
 
-    public RmSetDefaultSelectionRequestTx(DefaultSelectionRequest defaultSelectionRequest,
+    public RmSetDefaultSelectionRequestTx(AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             ObservableReader.NotificationMode notificationMode, String nativeReaderName,
             String virtualReaderName, String sessionId, String slaveNodeId,
             String requesterNodeId) {
         super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
-        this.defaultSelectionRequest = defaultSelectionRequest;
+        this.defaultSelectionsRequest = defaultSelectionsRequest;
         this.notificationMode = notificationMode;
 
     }
@@ -45,8 +45,8 @@ public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
     @Override
     public KeypleDto dto() {
         JsonObject body = new JsonObject();
-        body.addProperty("defaultSelectionRequest",
-                JsonParser.getGson().toJson(defaultSelectionRequest));
+        body.addProperty("defaultSelectionsRequest",
+                JsonParser.getGson().toJson(defaultSelectionsRequest));
         body.addProperty("notificationMode", notificationMode.getName());
 
         return new KeypleDto(RemoteMethod.DEFAULT_SELECTION_REQUEST.getName(),

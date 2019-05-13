@@ -15,8 +15,6 @@ import java.io.Serializable;
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.protocol.Protocol;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
  * List of APDU requests that will result in a {@link SeResponse}
@@ -39,11 +37,6 @@ public final class SeRequest implements Serializable {
 
 
     /**
-     * the protocol flag is used to target specific SE technologies for a given request
-     */
-    private SeProtocol protocolFlag = Protocol.ANY;
-
-    /**
      * the final logical channel status: the SE reader may kept active the logical channel of the SE
      * application after processing the group of APDU commands otherwise the SE reader will close
      * the logical channel of the SE application after processing the group of APDU commands (i.e.
@@ -62,15 +55,12 @@ public final class SeRequest implements Serializable {
      *        selection process
      * @param channelState the channel management parameter allowing to close or keep the channel
      *        open after the request execution
-     * @param protocolFlag the expected protocol for the SE (may be set to Protocol.ANY if no check
-     *        is needed)
      */
     public SeRequest(SeSelector seSelector, List<ApduRequest> apduRequests,
-            ChannelState channelState, SeProtocol protocolFlag) {
+            ChannelState channelState) {
         this.seSelector = seSelector;
         this.apduRequests = apduRequests;
         this.channelState = channelState;
-        this.protocolFlag = protocolFlag;
     }
 
     /**
@@ -83,7 +73,6 @@ public final class SeRequest implements Serializable {
         this.seSelector = null;
         this.apduRequests = apduRequests;
         this.channelState = channelState;
-        this.protocolFlag = Protocol.ANY;
     }
 
 
@@ -114,15 +103,6 @@ public final class SeRequest implements Serializable {
      */
     public boolean isKeepChannelOpen() {
         return channelState == ChannelState.KEEP_OPEN;
-    }
-
-    /**
-     * Gets the protocol flag of the request
-     * 
-     * @return protocolFlag
-     */
-    public SeProtocol getProtocolFlag() {
-        return protocolFlag;
     }
 
     @Override

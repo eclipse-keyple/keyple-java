@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -11,21 +11,16 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.event;
 
+
 import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 
-/**
- * Class containing the {@link SeResponseSet} used from a default selection made at the
- * {@link ObservableReader} level.
- */
-public class SelectionResponse {
-    /** The {@link SeResponseSet} */
-    private final SeResponseSet selectionSeResponseSet;
+public abstract class AbstractDefaultSelectionsResponse {
+    /** The {@link org.eclipse.keyple.core.seproxy.message.SeResponseSet} */
+    protected final SeResponseSet selectionSeResponseSet;
 
-    public SelectionResponse(SeResponseSet selectionSeResponseSet) {
+    protected AbstractDefaultSelectionsResponse(SeResponseSet selectionSeResponseSet) {
         this.selectionSeResponseSet = selectionSeResponseSet;
     }
 
-    public SeResponseSet getSelectionSeResponseSet() {
-        return selectionSeResponseSet;
-    }
+    protected abstract SeResponseSet getSelectionSeResponseSet();
 }

@@ -11,9 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.rm.json;
 
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
 import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
@@ -55,14 +55,14 @@ public class JsonParserTest {
 
     @Test
     public void testSelectionByAidRequest() {
-        DefaultSelectionRequest defaultSelectionRequest = SampleFactory.getSelectionRequest();
-        testSerializeDeserializeObj(defaultSelectionRequest, DefaultSelectionRequest.class);
+        DefaultSelectionsRequest defaultSelectionsRequest = SampleFactory.getSelectionRequest();
+        testSerializeDeserializeObj(defaultSelectionsRequest, DefaultSelectionsRequest.class);
     }
 
     @Test
     public void testSelectionByAtrRequest() {
-        DefaultSelectionRequest defaultSelectionRequest = SampleFactory.getSelectionRequest();
-        testSerializeDeserializeObj(defaultSelectionRequest, DefaultSelectionRequest.class);
+        DefaultSelectionsRequest defaultSelectionsRequest = SampleFactory.getSelectionRequest();
+        testSerializeDeserializeObj(defaultSelectionsRequest, DefaultSelectionsRequest.class);
     }
 
     @Test

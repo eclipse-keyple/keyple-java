@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.transaction;
+package org.eclipse.keyple.core.selection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,32 +19,28 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
- * The SeSelectionRequest class combines a SeSelector with additional helper methods useful to the
- * selection process done in {@link SeSelection}.
+ * The AbstractSeSelectionRequest class combines a SeSelector with additional helper methods useful
+ * to the selection process done in {@link SeSelection}.
  * <p>
  * This class may also be extended to add particular features specific to a SE family.
  */
-public class SeSelectionRequest {
-    protected SeSelector seSelector;
+public abstract class AbstractSeSelectionRequest {
+    protected final SeSelector seSelector;
 
     /** optional apdu requests list to be executed following the selection process */
-    protected final List<ApduRequest> seSelectionApduRequestList = new ArrayList<ApduRequest>();
+    private final List<ApduRequest> seSelectionApduRequestList = new ArrayList<ApduRequest>();
 
     /**
-     * the channelState and protocolFlag may be accessed from derived classes. Let them with the
-     * protected access level.
+     * the channelState may be accessed from derived classes. Let it with the protected access
+     * level.
      */
-    protected final ChannelState channelState;
-    protected final SeProtocol protocolFlag;
+    private final ChannelState channelState;
 
-    public SeSelectionRequest(SeSelector seSelector, ChannelState channelState,
-            SeProtocol protocolFlag) {
+    public AbstractSeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
         this.seSelector = seSelector;
         this.channelState = channelState;
-        this.protocolFlag = protocolFlag;
     }
 
     /**
@@ -53,11 +49,8 @@ public class SeSelectionRequest {
      *
      * @return the selection SeRequest
      */
-    protected final SeRequest getSelectionRequest() {
-        SeRequest seSelectionRequest = null;
-        seSelectionRequest =
-                new SeRequest(seSelector, seSelectionApduRequestList, channelState, protocolFlag);
-        return seSelectionRequest;
+    final SeRequest getSelectionRequest() {
+        return new SeRequest(seSelector, seSelectionApduRequestList, channelState);
     }
 
     public SeSelector getSeSelector() {
@@ -91,18 +84,10 @@ public class SeSelectionRequest {
     }
 
     /**
-     * Create a MatchingSe object containing the selection data received from the plugin
+     * Virtual parse method
      * 
      * @param seResponse the SE response received
-     * @return a {@link MatchingSe}
+     * @return a {@link AbstractMatchingSe}
      */
-    protected MatchingSe parse(SeResponse seResponse) {
-        return new MatchingSe(seResponse, seSelector.getExtraInfo());
-    }
-
-    @Override
-    public String toString() {
-        // TODO
-        return "";
-    }
+    protected abstract AbstractMatchingSe parse(SeResponse seResponse);
 }

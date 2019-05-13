@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.util;
+package org.eclipse.keyple.core.util;
 
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;

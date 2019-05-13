@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.android.nfc;
 import java.io.IOException;
 import java.util.Arrays;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,11 +46,11 @@ class TagProxy implements TagTechnology {
      */
     byte[] transceive(byte[] data) throws IOException {
 
-        if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC)) {
+        if (tech.equals(AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC))) {
             return ((MifareClassic) tagTechnology).transceive(data);
-        } else if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL)) {
+        } else if (tech.equals(AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_MIFARE_UL))) {
             return ((MifareUltralight) tagTechnology).transceive(data);
-        } else if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_ISODEP)) {
+        } else if (tech.equals(AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4))) {
             return ((IsoDep) tagTechnology).transceive(data);
         } else {
             return null;// can not happen
@@ -73,30 +74,30 @@ class TagProxy implements TagTechnology {
         LOG.info("Matching Tag Type : " + tag.toString());
 
         if (Arrays.asList(tag.getTechList())
-                .contains(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC)) {
+                .contains(AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC))) {
             LOG.debug("Tag embedded into MifareClassic");
             return new TagProxy(MifareClassic.get(tag),
-                    AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC);
+                    AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC));
         }
 
         if (Arrays.asList(tag.getTechList())
-                .contains(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL)) {
+                .contains(AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_MIFARE_UL))) {
             LOG.debug("Tag embedded into MifareUltralight");
             return new TagProxy(MifareUltralight.get(tag),
-                    AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL);
+                    AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_MIFARE_UL));
         }
 
         if (Arrays.asList(tag.getTechList())
-                .contains(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_ISODEP)) {
+                .contains(AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4))) {
             LOG.debug("Tag embedded into IsoDep");
             return new TagProxy(IsoDep.get(tag),
-                    AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_ISODEP);
+                    AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
         }
 
         throw new KeypleReaderException("Keyple Android Reader supports only : "
-                + AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC + ", "
-                + AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL + ", "
-                + AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_ISODEP
+                + AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC) + ", "
+                + AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_MIFARE_UL) + ", "
+                + AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4)
 
         );
     }
@@ -111,11 +112,11 @@ class TagProxy implements TagTechnology {
      */
     byte[] getATR() {
 
-        if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_CLASSIC)) {
+        if (tech.equals(AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC))) {
             return ByteArrayUtil.fromHex("3B8F8001804F0CA000000306030001000000006A");
-        } else if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_MIFARE_UL)) {
+        } else if (tech.equals(AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_MIFARE_UL))) {
             return ByteArrayUtil.fromHex("3B8F8001804F0CA0000003060300030000000068");
-        } else if (tech.equals(AndroidNfcProtocolSettings.ProtocolSetting.NFC_TAG_TYPE_ISODEP)) {
+        } else if (tech.equals(AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4))) {
             return ((IsoDep) tagTechnology).getHiLayerResponse() != null
                     ? ((IsoDep) tagTechnology).getHiLayerResponse()
                     : ((IsoDep) tagTechnology).getHistoricalBytes();

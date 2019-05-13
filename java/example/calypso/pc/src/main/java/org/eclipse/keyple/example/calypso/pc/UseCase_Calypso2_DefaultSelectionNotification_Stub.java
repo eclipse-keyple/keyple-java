@@ -15,6 +15,8 @@ package org.eclipse.keyple.example.calypso.pc;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.core.selection.MatchingSelection;
+import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -25,10 +27,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.core.transaction.MatchingSelection;
-import org.eclipse.keyple.core.transaction.SeSelection;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
@@ -98,8 +97,9 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
             throw new IllegalStateException("Bad PO reader setup");
         }
 
-        poReader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         logger.info(
                 "=============== UseCase Calypso #2: AID based default selection ===================");
@@ -122,11 +122,11 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
          * make the selection and read additional information afterwards
          */
         PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                new PoSelector(
+                new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
                                 PoSelector.InvalidatedPo.REJECT),
-                        null, "AID: " + CalypsoClassicInfo.AID),
-                ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                        "AID: " + CalypsoClassicInfo.AID),
+                ChannelState.KEEP_OPEN);
 
         /*
          * Prepare the reading order and keep the associated parser for later use once the selection
@@ -190,7 +190,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
         switch (event.getEventType()) {
             case SE_MATCHED:
                 MatchingSelection matchingSelection =
-                        seSelection.processDefaultSelection(event.getDefaultSelectionResponse())
+                        seSelection.processDefaultSelection(event.getDefaultSelectionsResponse())
                                 .getActiveSelection();
 
                 CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();

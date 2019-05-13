@@ -14,6 +14,7 @@ package org.eclipse.keyple.calypso.transaction;
 import java.util.HashSet;
 import java.util.Set;
 import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 
 /**
  * The {@link PoSelector} class extends {@link SeSelector} to handle specific PO features such as
@@ -32,13 +33,15 @@ public final class PoSelector extends SeSelector {
 
     /**
      * Create a PoSelector to perform the PO selection. See {@link SeSelector}
-     * 
-     * @param poAidSelector the AID selection data
+     *
+     * @param seProtocol the SE communication protocol
      * @param poAtrFilter the ATR filter
+     * @param poAidSelector the AID selection data
      * @param extraInfo information string (to be printed in logs)
      */
-    public PoSelector(PoAidSelector poAidSelector, PoAtrFilter poAtrFilter, String extraInfo) {
-        super(poAidSelector, poAtrFilter, extraInfo);
+    public PoSelector(SeProtocol seProtocol, PoAtrFilter poAtrFilter, PoAidSelector poAidSelector,
+            String extraInfo) {
+        super(seProtocol, poAtrFilter, poAidSelector, extraInfo);
     }
 
     /**

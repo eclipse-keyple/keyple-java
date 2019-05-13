@@ -11,9 +11,10 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
@@ -48,20 +49,21 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
         JsonObject jsonObject = JsonParser.getGson().fromJson(body, JsonObject.class);
 
         JsonPrimitive selectionRequestJson =
-                jsonObject.getAsJsonPrimitive("defaultSelectionRequest");
+                jsonObject.getAsJsonPrimitive("defaultSelectionsRequest");
         JsonPrimitive notificationModeJson = jsonObject.getAsJsonPrimitive("notificationMode");
 
-        logger.trace("DefaultSelectionRequest : {}", selectionRequestJson.getAsString());
+        logger.trace("DefaultSelectionsRequest : {}", selectionRequestJson.getAsString());
         logger.trace("Notification Mode : {}", notificationModeJson.getAsString());
 
-        DefaultSelectionRequest defaultSelectionRequest = JsonParser.getGson()
-                .fromJson(selectionRequestJson.getAsString(), DefaultSelectionRequest.class);
+        AbstractDefaultSelectionsRequest defaultSelectionsRequest =
+                (AbstractDefaultSelectionsRequest) JsonParser.getGson().fromJson(
+                        selectionRequestJson.getAsString(), DefaultSelectionsRequest.class);
         ObservableReader.NotificationMode notificationMode =
                 ObservableReader.NotificationMode.get(notificationModeJson.getAsString());
 
         String nativeReaderName = keypleDto.getNativeReaderName();
         logger.trace("Execute locally SetDefaultSelectionRequest : {} - {}", notificationMode,
-                defaultSelectionRequest);
+                defaultSelectionsRequest);
 
         try {
             // find native reader by name
@@ -70,7 +72,7 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
             if (reader instanceof ObservableReader) {
                 logger.debug(reader.getName()
                         + " is an ObservableReader, invoke setDefaultSelectionRequest on it");
-                ((ObservableReader) reader).setDefaultSelectionRequest(defaultSelectionRequest,
+                ((ObservableReader) reader).setDefaultSelectionRequest(defaultSelectionsRequest,
                         notificationMode);
 
                 // prepare response

@@ -11,8 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import org.eclipse.keyple.core.selection.SeResource;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.transaction.SeResource;
 
 public class PoResource extends SeResource<CalypsoPo> {
     /**

@@ -175,3 +175,7 @@ if (propFile.canRead()){
     println 'signing.properties not found'
     android.buildTypes.release.signingConfig = null
 }
+
+def getDate() {
+    return new Date().format('yyyyMMdd')
+}

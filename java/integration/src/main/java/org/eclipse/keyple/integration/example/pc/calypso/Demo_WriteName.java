@@ -13,20 +13,20 @@ package org.eclipse.keyple.integration.example.pc.calypso;
 
 
 
+import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.protocol.Protocol;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.core.transaction.*;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +49,17 @@ public class Demo_WriteName {
 
         SeReader poReader =
                 DemoUtilities.getReader(seProxyService, DemoUtilities.PO_READER_NAME_REGEX);
+
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
         SeReader samReader =
                 DemoUtilities.getReader(seProxyService, DemoUtilities.SAM_READER_NAME_REGEX);
+
+        samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO7816_3));
 
         /* Check if the readers exists */
         if (poReader == null || samReader == null) {
@@ -66,11 +75,10 @@ public class Demo_WriteName {
 
         SeSelection samSelection = new SeSelection();
 
-        SeSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+        SamSelectionRequest samSelectionRequest = new SamSelectionRequest(
+                new SamSelector(SamRevision.C1, null, "SAM Selection"), ChannelState.KEEP_OPEN);
 
-        /* Prepare selector, ignore MatchingSe here */
+        /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
         SelectionsResult samSelectionsResult;
         try {
@@ -111,38 +119,40 @@ public class Demo_WriteName {
             String cdLightAid = "315449432E494341"; // AID of the Rev2.4 PO emulating CDLight
 
             // Add Audit C0 AID to the list
-            int auditC0SeIndex =
-                    seSelection
-                            .prepareSelection(
-                                    new PoSelectionRequest(
-                                            new SeSelector(new SeSelector.AidSelector(
-                                                    ByteArrayUtil.fromHex(
-                                                            PoFileStructureInfo.poAuditC0Aid),
-                                                    null), null, "Audit C0"),
-                                            ChannelState.KEEP_OPEN, Protocol.ANY));
+            int auditC0SeIndex = seSelection.prepareSelection(new PoSelectionRequest(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(
+                                    ByteArrayUtil.fromHex(PoFileStructureInfo.poAuditC0Aid), null),
+                            "Audit C0"),
+                    ChannelState.KEEP_OPEN));
 
             // Add CLAP AID to the list
             int clapSe =
                     seSelection
                             .prepareSelection(
                                     new PoSelectionRequest(
-                                            new SeSelector(
-                                                    new SeSelector.AidSelector(
+                                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                                                    null,
+                                                    new PoSelector.PoAidSelector(
                                                             ByteArrayUtil.fromHex(
                                                                     PoFileStructureInfo.clapAid),
                                                             null),
-                                                    null, "CLAP"),
-                                            ChannelState.KEEP_OPEN, Protocol.ANY));
+                                                    "CLAP"),
+                                            ChannelState.KEEP_OPEN));
 
             // Add cdLight AID to the list
             int cdLightSe =
                     seSelection
-                            .prepareSelection(new PoSelectionRequest(
-                                    new SeSelector(
-                                            new SeSelector.AidSelector(ByteArrayUtil
-                                                    .fromHex(PoFileStructureInfo.cdLightAid), null),
-                                            null, "CDLight"),
-                                    ChannelState.KEEP_OPEN, Protocol.ANY));
+                            .prepareSelection(
+                                    new PoSelectionRequest(
+                                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                                                    null,
+                                                    new PoSelector.PoAidSelector(
+                                                            ByteArrayUtil.fromHex(
+                                                                    PoFileStructureInfo.cdLightAid),
+                                                            null),
+                                                    "CDLight"),
+                                            ChannelState.KEEP_OPEN));
 
             SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
             if (!selectionsResult.hasActiveSelection()) {
@@ -187,8 +197,7 @@ public class Demo_WriteName {
             poTransaction.prepareUpdateRecordCmd(environmentSid, (byte) 0x01, name.getBytes(),
                     "Environment");
 
-            poProcessStatus = poTransaction.processClosing(TransmissionMode.CONTACTLESS,
-                    ChannelState.KEEP_OPEN);
+            poProcessStatus = poTransaction.processClosing(ChannelState.KEEP_OPEN);
 
             if (!poProcessStatus) {
                 throw new IllegalStateException("processClosing failure.");

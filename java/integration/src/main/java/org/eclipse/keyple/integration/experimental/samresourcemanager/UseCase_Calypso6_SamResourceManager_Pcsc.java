@@ -31,7 +31,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.transaction.SeSelection;
 import org.eclipse.keyple.core.transaction.SelectionsResult;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -269,7 +268,7 @@ public class UseCase_Calypso6_SamResourceManager_Pcsc implements PluginObserver 
             switch (event.getEventType()) {
                 case SE_MATCHED:
                     SelectionsResult selectionsResult = seSelection
-                            .processDefaultSelection(event.getDefaultSelectionResponse());
+                            .processDefaultSelection(event.getDefaultSelectionsResponse());
                     if (selectionsResult.hasActiveSelection()) {
                         CalypsoPo calypsoPo =
                                 (CalypsoPo) selectionsResult.getActiveSelection().getMatchingSe();
@@ -335,8 +334,8 @@ public class UseCase_Calypso6_SamResourceManager_Pcsc implements PluginObserver 
                             /*
                              * A ratification command will be sent (CONTACTLESS_MODE).
                              */
-                            poProcessStatus = poTransaction.processClosing(
-                                    TransmissionMode.CONTACTLESS, ChannelState.CLOSE_AFTER);
+                            poProcessStatus =
+                                    poTransaction.processClosing(ChannelState.CLOSE_AFTER);
 
                             if (!poProcessStatus) {
                                 throw new IllegalStateException("processClosing failure.");

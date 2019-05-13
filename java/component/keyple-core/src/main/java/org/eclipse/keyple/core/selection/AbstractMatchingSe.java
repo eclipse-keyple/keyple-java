@@ -9,25 +9,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.transaction;
+package org.eclipse.keyple.core.selection;
 
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
 /**
- * MatchingSe is the class to manage the elements of the result of a selection.
+ * AbstractMatchingSe is the class to manage the elements of the result of a selection.
  *
  */
-public class MatchingSe {
+public abstract class AbstractMatchingSe {
     private final SeResponse selectionResponse;
+    private final TransmissionMode transmissionMode;
     private final SelectionStatus selectionStatus;
     private final String selectionExtraInfo;
 
     /**
      * Constructor.
      */
-    public MatchingSe(SeResponse selectionResponse, String extraInfo) {
+    protected AbstractMatchingSe(SeResponse selectionResponse, TransmissionMode transmissionMode,
+            String extraInfo) {
         this.selectionResponse = selectionResponse;
+        this.transmissionMode = transmissionMode;
         if (selectionResponse != null) {
             this.selectionStatus = selectionResponse.getSelectionStatus();
         } else {
@@ -57,6 +61,13 @@ public class MatchingSe {
      */
     public SelectionStatus getSelectionStatus() {
         return selectionStatus;
+    }
+
+    /**
+     * @return the SE {@link TransmissionMode} (contacts or contactless)
+     */
+    public TransmissionMode getTransmissionMode() {
+        return transmissionMode;
     }
 
     /**

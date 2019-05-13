@@ -9,14 +9,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.transaction;
+package org.eclipse.keyple.core.selection;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
 
 /**
- * The SeResource class groups a MatchingSe and its associated SeReader
+ * The SeResource class groups a AbstractMatchingSe and its associated SeReader
  */
-public class SeResource<T> {
+public class SeResource<T extends AbstractMatchingSe> {
     private final SeReader seReader;
     private final T matchingSe;
 
@@ -24,9 +24,9 @@ public class SeResource<T> {
      * Constructor
      * 
      * @param seReader the {@link SeReader} with which the SE is communicating
-     * @param matchingSe the {@link MatchingSe} information structure
+     * @param matchingSe the {@link AbstractMatchingSe} information structure
      */
-    public SeResource(SeReader seReader, T matchingSe) {
+    protected SeResource(SeReader seReader, T matchingSe) {
         this.seReader = seReader;
         this.matchingSe = matchingSe;
     }
@@ -39,7 +39,7 @@ public class SeResource<T> {
     }
 
     /**
-     * @return the {@link MatchingSe}
+     * @return the {@link AbstractMatchingSe}
      */
     public T getMatchingSe() {
         return matchingSe;

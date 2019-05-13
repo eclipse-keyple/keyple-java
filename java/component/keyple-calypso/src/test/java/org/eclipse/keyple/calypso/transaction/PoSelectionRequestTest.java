@@ -19,7 +19,7 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -49,9 +49,11 @@ public class PoSelectionRequestTest {
 
     @Before
     public void setUp() throws Exception {
-        poSelectionRequest = new PoSelectionRequest(
-                new PoSelector(null, new PoSelector.PoAtrFilter(".*"), "ATR: .*"),
-                ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
+        poSelectionRequest =
+                new PoSelectionRequest(
+                        new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                                new PoSelector.PoAtrFilter(".*"), null, "ATR: .*"),
+                        ChannelState.KEEP_OPEN);
     }
 
     @Test
@@ -213,9 +215,8 @@ public class PoSelectionRequestTest {
 
     @Test
     public void preparePoCustomReadCmd() {
-        ApduRequest apduRequest = new ApduRequest(ByteArrayUtil.fromHex("FFCA000000"), false);
-        int readParserIndex1 =
-                poSelectionRequest.preparePoCustomReadCmd("Custom command read", apduRequest);
+        int readParserIndex1 = poSelectionRequest.preparePoCustomReadCmd("Custom command read",
+                ByteArrayUtil.fromHex("FFCA000000"));
         Assert.assertEquals(0, readParserIndex1);
     }
 

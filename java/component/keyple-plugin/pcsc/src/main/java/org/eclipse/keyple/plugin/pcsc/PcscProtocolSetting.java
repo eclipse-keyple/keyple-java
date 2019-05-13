@@ -11,71 +11,72 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.pcsc;
 
-import org.eclipse.keyple.core.seproxy.protocol.ContactlessProtocols;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.core.seproxy.protocol.SeProtocolSettingList;
 
 /**
- * These objects are used by the application to build the SeProtocolsMap
+ * This class contains all the parameters to identify the communication protocols supported by PC/SC
+ * readers.
+ * <p>
+ * The application can choose to add all parameters or only a subset.
  */
-public enum PcscProtocolSetting implements SeProtocolSettingList {
+public class PcscProtocolSetting {
 
-    SETTING_PROTOCOL_ISO14443_4(ContactlessProtocols.PROTOCOL_ISO14443_4,
-            ProtocolSetting.REGEX_PROTOCOL_ISO14443_4),
-
-    SETTING_PROTOCOL_B_PRIME(ContactlessProtocols.PROTOCOL_B_PRIME,
-            ProtocolSetting.REGEX_PROTOCOL_B_PRIME),
-
-    SETTING_PROTOCOL_MIFARE_UL(ContactlessProtocols.PROTOCOL_MIFARE_UL,
-            ProtocolSetting.REGEX_PROTOCOL_MIFARE_UL),
-
-    SETTING_PROTOCOL_MIFARE_CLASSIC(ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC,
-            ProtocolSetting.REGEX_PROTOCOL_MIFARE_CLASSIC),
-
-    SETTING_PROTOCOL_MIFARE_DESFIRE(ContactlessProtocols.PROTOCOL_MIFARE_DESFIRE,
-            ProtocolSetting.REGEX_PROTOCOL_MIFARE_DESFIRE),
-
-    SETTING_PROTOCOL_MEMORY_ST25(ContactlessProtocols.PROTOCOL_MEMORY_ST25,
-            ProtocolSetting.REGEX_PROTOCOL_MEMORY_ST25);
+    public static final Map<SeProtocol, String> PCSC_PROTOCOL_SETTING;
 
     /**
-     * Regular expressions to match ATRs produced by PcSc readers
+     * Associates a protocol and a string defining how to identify it (here a regex to be applied on
+     * the ATR)
      */
-    public interface ProtocolSetting {
-        public static String REGEX_PROTOCOL_ISO14443_4 =
-                "3B8880....................|3B8C800150.*|.*4F4D4141544C4153.*";
+    static {
 
-        public static String REGEX_PROTOCOL_B_PRIME = "3B8F8001805A0A0103200311........829000..";
+        Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
 
-        public static String REGEX_PROTOCOL_MIFARE_UL = "3B8F8001804F0CA0000003060300030000000068";
+        map.put(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                "3B8880....................|3B8C800150.*|.*4F4D4141544C4153.*");
 
-        public static String REGEX_PROTOCOL_MIFARE_CLASSIC =
-                "3B8F8001804F0CA000000306030001000000006A";
+        map.put(SeCommonProtocols.PROTOCOL_B_PRIME, "3B8F8001805A0A0103200311........829000..");
 
-        public static String REGEX_PROTOCOL_MIFARE_DESFIRE = "3B8180018080";
+        map.put(SeCommonProtocols.PROTOCOL_MIFARE_UL, "3B8F8001804F0CA0000003060300030000000068");
 
-        public static String REGEX_PROTOCOL_MEMORY_ST25 =
-                "3B8F8001804F0CA000000306070007D0020C00B6";
+        map.put(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC,
+                "3B8F8001804F0CA000000306030001000000006A");
+
+        map.put(SeCommonProtocols.PROTOCOL_MIFARE_DESFIRE, "3B8180018080");
+
+        map.put(SeCommonProtocols.PROTOCOL_MEMORY_ST25, "3B8F8001804F0CA000000306070007D0020C00B6");
+
+        map.put(SeCommonProtocols.PROTOCOL_ISO7816_3, "3.*");
+
+        PCSC_PROTOCOL_SETTING = Collections.unmodifiableMap(map);
     }
 
-    /* the protocol flag */
-    SeProtocol flag;
+    /**
+     * Return a subset of the settings map
+     * 
+     * @param specificProtocols
+     * @return a settings map
+     */
+    public static Map<SeProtocol, String> getSpecificSettings(
+            EnumSet<SeCommonProtocols> specificProtocols) {
+        Map<SeProtocol, String> map = new HashMap<SeProtocol, String>();
+        for (SeCommonProtocols seCommonProtocols : specificProtocols) {
+            map.put(seCommonProtocols, PCSC_PROTOCOL_SETTING.get(seCommonProtocols));
+        }
+        return map;
 
-    /* the protocol setting value */
-    String value;
-
-    PcscProtocolSetting(SeProtocol flag, String value) {
-        this.flag = flag;
-        this.value = value;
     }
 
-    @Override
-    public SeProtocol getFlag() {
-        return this.flag;
-    }
-
-    @Override
-    public String getValue() {
-        return this.value;
+    /**
+     * Return the whole settings map
+     * 
+     * @return a settings map
+     */
+    public static Map<SeProtocol, String> getAllSettings() {
+        return PCSC_PROTOCOL_SETTING;
     }
 }

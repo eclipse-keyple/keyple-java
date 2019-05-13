@@ -9,22 +9,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.protocol;
+package org.eclipse.keyple.core.util;
 
 
-public enum Protocol implements SeProtocol {
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 
-    // Unspecified protocol
-    ANY("Any protocol");
-
-    /** The protocol name. */
-    private String name;
-
-    Protocol(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
+/**
+ * Allow {@link ProxyReader}s and {@link ReaderPlugin}s to be named.
+ */
+public interface Nameable {
+    /**
+     *
+     * @return the ‘unique’ name of the item
+     */
+    String getName();
 }

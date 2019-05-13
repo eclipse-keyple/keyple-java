@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.transaction;
+package org.eclipse.keyple.core.selection;
 
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -17,22 +17,22 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 /**
  * The MatchingSelection class holds the result of a single selection case.
  */
-public class MatchingSelection {
-    private final MatchingSe matchingSe;
-    private final SeSelectionRequest seSelectionRequest;
+public final class MatchingSelection {
+    private final AbstractMatchingSe matchingSe;
+    private final AbstractSeSelectionRequest seSelectionRequest;
     private final SeResponse selectionSeResponse;
     private final int selectionIndex;
 
     /**
      * Constructor
      *
-     * @param selectionIndex
-     * @param seSelectionRequest
-     * @param matchingSe
-     * @param selectionSeResponse
+     * @param selectionIndex the selection index
+     * @param seSelectionRequest the selection request
+     * @param matchingSe the matching SE
+     * @param selectionSeResponse the selection SeResponse
      */
-    public MatchingSelection(int selectionIndex, SeSelectionRequest seSelectionRequest,
-            MatchingSe matchingSe, SeResponse selectionSeResponse) {
+    MatchingSelection(int selectionIndex, AbstractSeSelectionRequest seSelectionRequest,
+            AbstractMatchingSe matchingSe, SeResponse selectionSeResponse) {
         this.selectionIndex = selectionIndex;
         this.seSelectionRequest = seSelectionRequest;
         this.matchingSe = matchingSe;
@@ -40,16 +40,16 @@ public class MatchingSelection {
     }
 
     /**
-     * @return the MatchingSe
+     * @return the AbstractMatchingSe
      */
-    public MatchingSe getMatchingSe() {
+    public AbstractMatchingSe getMatchingSe() {
         return matchingSe;
     }
 
     /**
      * Get the parser for the targeted response.
      * 
-     * @param commandIndex
+     * @param commandIndex the command index
      * @return a parser object
      */
     public AbstractApduResponseParser getResponseParser(int commandIndex) {

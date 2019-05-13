@@ -44,6 +44,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
     private final DtoNode dtoNode;// bind node
     private final SeProxyService seProxyService;
+
+
     private final RemoteMethodTxEngine rmTxEngine;// rm command processor
     private final String masterNodeId;// master node id to connect to
 
@@ -165,8 +167,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
         RmConnectReaderTx connect = new RmConnectReaderTx(null, localReader.getName(), null,
                 masterNodeId, localReader, dtoNode.getNodeId(), this);
         try {
-            rmTxEngine.register(connect);
-            return connect.get();
+            rmTxEngine.add(connect);
+            return connect.getResponse();
         } catch (KeypleRemoteException e) {
             throw new KeypleReaderException("An error occurred while calling connectReader", e);
         }
@@ -182,8 +184,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
                 dtoNode.getNodeId(), masterNodeId);
 
         try {
-            rmTxEngine.register(disconnect);
-            disconnect.get();
+            rmTxEngine.add(disconnect);
+            disconnect.getResponse();
             ProxyReader nativeReader = findLocalReader(nativeReaderName);
             if (nativeReader instanceof AbstractObservableReader) {
                 // stop propagating the local reader events
@@ -240,5 +242,10 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
         }
     }
 
+
+
+    public RemoteMethodTxEngine getRmTxEngine() {
+        return rmTxEngine;
+    }
 
 }

@@ -9,13 +9,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.transaction;
+package org.eclipse.keyple.core.selection;
 
 import java.util.*;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.DefaultSelectionRequest;
-import org.eclipse.keyple.core.seproxy.event.SelectionResponse;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
@@ -33,11 +35,13 @@ public final class SeSelection {
     private static final Logger logger = LoggerFactory.getLogger(SeSelection.class);
 
     /*
-     * list of target classes and selection requests used to build the MatchingSe list in return of
-     * processSelection methods
+     * list of target classes and selection requests used to build the AbstractMatchingSe list in
+     * return of processSelection methods
      */
-    private List<SeSelectionRequest> seSelectionRequestList = new ArrayList<SeSelectionRequest>();
-    private SeRequestSet selectionRequestSet = new SeRequestSet(new LinkedHashSet<SeRequest>());
+    private final List<AbstractSeSelectionRequest> seSelectionRequestList =
+            new ArrayList<AbstractSeSelectionRequest>();
+    private final SeRequestSet selectionRequestSet =
+            new SeRequestSet(new LinkedHashSet<SeRequest>());
     private int selectionIndex;
 
     /**
@@ -55,7 +59,7 @@ public final class SeSelection {
      * @param seSelectionRequest the selector to prepare
      * @return the selection index giving the current selection position in the selection request.
      */
-    public int prepareSelection(SeSelectionRequest seSelectionRequest) {
+    public int prepareSelection(AbstractSeSelectionRequest seSelectionRequest) {
         if (logger.isTraceEnabled()) {
             logger.trace("SELECTORREQUEST = {}, EXTRAINFO = {}",
                     seSelectionRequest.getSelectionRequest(),
@@ -76,34 +80,35 @@ public final class SeSelection {
      * <p>
      * The responses from the {@link SeResponseSet} is parsed and checked.
      * <p>
-     * A {@link MatchingSe} list is build and returned. Non matching SE are signaled by a null
-     * element in the list
+     * A {@link AbstractMatchingSe} list is build and returned. Non matching SE are signaled by a
+     * null element in the list
      * 
-     * @param selectionResponse the selection response
+     * @param defaultSelectionsResponse the selection response
      * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
-     *         including {@link MatchingSe} and {@link SeResponse}.
+     *         including {@link AbstractMatchingSe} and {@link SeResponse}.
      */
-    private SelectionsResult processSelection(SelectionResponse selectionResponse) {
+    private SelectionsResult processSelection(DefaultSelectionsResponse defaultSelectionsResponse) {
         SelectionsResult selectionsResult = new SelectionsResult();
 
         /* null pointer exception protection */
-        if (selectionResponse == null) {
-            logger.error("selectionResponse shouldn't be null in processSelection.");
+        if (defaultSelectionsResponse == null) {
+            logger.error("defaultSelectionsResponse shouldn't be null in processSelection.");
             return null;
         }
         int selectionIndex = 0;
 
         /* Check SeResponses */
-        for (SeResponse seResponse : selectionResponse.getSelectionSeResponseSet().getResponses()) {
+        for (SeResponse seResponse : defaultSelectionsResponse.getSelectionSeResponseSet()
+                .getResponses()) {
             if (seResponse != null) {
                 /* test if the selection is successful: we should have either a FCI or an ATR */
                 if (seResponse.getSelectionStatus() != null
                         && seResponse.getSelectionStatus().hasMatched()) {
                     /*
-                     * create a MatchingSe with the class deduced from the selection request during
-                     * the selection preparation
+                     * create a AbstractMatchingSe with the class deduced from the selection request
+                     * during the selection preparation
                      */
-                    MatchingSe matchingSe =
+                    AbstractMatchingSe matchingSe =
                             seSelectionRequestList.get(selectionIndex).parse(seResponse);
 
                     selectionsResult.addMatchingSelection(new MatchingSelection(selectionIndex,
@@ -117,25 +122,28 @@ public final class SeSelection {
 
     /**
      * Parses the response to a selection operation sent to a SE and return a list of
-     * {@link MatchingSe}
+     * {@link AbstractMatchingSe}
      * <p>
      * Selection cases that have not matched the current SE are set to null.
      *
-     * @param selectionResponse the response from the reader to the {@link DefaultSelectionRequest}
+     * @param defaultSelectionsResponse the response from the reader to the
+     *        {@link DefaultSelectionsRequest}
      * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
-     *         including {@link MatchingSe} and {@link SeResponse}.
+     *         including {@link AbstractMatchingSe} and {@link SeResponse}.
      */
-    public SelectionsResult processDefaultSelection(SelectionResponse selectionResponse) {
+    public SelectionsResult processDefaultSelection(
+            AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
         if (logger.isTraceEnabled()) {
             logger.trace("Process default SELECTIONRESPONSE ({} response(s))",
-                    selectionResponse.getSelectionSeResponseSet().getResponses().size());
+                    ((DefaultSelectionsResponse) defaultSelectionsResponse)
+                            .getSelectionSeResponseSet().getResponses().size());
         }
 
-        return processSelection(selectionResponse);
+        return processSelection((DefaultSelectionsResponse) defaultSelectionsResponse);
     }
 
     /**
-     * Execute the selection process and return a list of {@link MatchingSe}.
+     * Execute the selection process and return a list of {@link AbstractMatchingSe}.
      * <p>
      * Selection requests are transmitted to the SE through the supplied SeReader.
      * <p>
@@ -148,7 +156,7 @@ public final class SeSelection {
      *
      * @param seReader the SeReader on which the selection is made
      * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
-     *         including {@link MatchingSe} and {@link SeResponse}.
+     *         including {@link AbstractMatchingSe} and {@link SeResponse}.
      * @throws KeypleReaderException if the requests transmission failed
      */
     public SelectionsResult processExplicitSelection(SeReader seReader)
@@ -161,17 +169,18 @@ public final class SeSelection {
         /* Communicate with the SE to do the selection */
         SeResponseSet seResponseSet = ((ProxyReader) seReader).transmitSet(selectionRequestSet);
 
-        return processSelection(new SelectionResponse(seResponseSet));
+        return processSelection(new DefaultSelectionsResponse(seResponseSet));
     }
 
     /**
-     * The SelectionOperation is the DefaultSelectionRequest to process in ordered to select a SE
+     * The SelectionOperation is the DefaultSelectionsRequest to process in ordered to select a SE
      * among others through the selection process. This method is useful to build the prepared
      * selection to be executed by a reader just after a SE insertion.
      * 
-     * @return the {@link DefaultSelectionRequest} previously prepared with prepareSelection
+     * @return the {@link DefaultSelectionsRequest} previously prepared with prepareSelection
      */
-    public DefaultSelectionRequest getSelectionOperation() {
-        return new DefaultSelectionRequest(selectionRequestSet);
+    public AbstractDefaultSelectionsRequest getSelectionOperation() {
+        return (AbstractDefaultSelectionsRequest) (new DefaultSelectionsRequest(
+                selectionRequestSet));
     }
 }

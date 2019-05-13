@@ -15,23 +15,21 @@ import static org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild.S
 import static org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild.SelectControl.FIRST;
 import static org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild.SelectControl.NEXT;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoResource;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.protocol.Protocol;
-import org.eclipse.keyple.core.transaction.SeSelection;
-import org.eclipse.keyple.core.transaction.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.example.pc.calypso.DemoUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -213,10 +211,10 @@ public class Tool_AnalyzePoFileStructure {
             SeSelection seSelection = new SeSelection();
 
 
-            PoSelectionRequest poSelectionRequest1 = new PoSelectionRequest(
-                    new SeSelector(new SeSelector.AidSelector(ByteArrayUtil.fromHex(aid), null),
-                            null, "firstApplication"),
-                    ChannelState.KEEP_OPEN, Protocol.ANY);
+            PoSelectionRequest poSelectionRequest1 =
+                    new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                            null, new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(aid), null),
+                            "firstApplication"), ChannelState.KEEP_OPEN);
 
             int firstApplicationIndex = seSelection.prepareSelection(poSelectionRequest1);
 
@@ -238,14 +236,13 @@ public class Tool_AnalyzePoFileStructure {
 
             seSelection = new SeSelection();
 
-            PoSelectionRequest poSelectionRequest2 =
-                    new PoSelectionRequest(
-                            new SeSelector(
-                                    new SeSelector.AidSelector(ByteArrayUtil.fromHex(aid), null,
-                                            SeSelector.AidSelector.FileOccurrence.NEXT,
-                                            SeSelector.AidSelector.FileControlInformation.FCI),
-                                    null, "secondApplication"),
-                            ChannelState.KEEP_OPEN, Protocol.ANY);
+            PoSelectionRequest poSelectionRequest2 = new PoSelectionRequest(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(aid), null,
+                                    SeSelector.AidSelector.FileOccurrence.NEXT,
+                                    SeSelector.AidSelector.FileControlInformation.FCI),
+                            "secondApplication"),
+                    ChannelState.KEEP_OPEN);
 
             int secondApplicationIndex = seSelection.prepareSelection(poSelectionRequest2);
 
@@ -285,6 +282,10 @@ public class Tool_AnalyzePoFileStructure {
 
         SeReader poReader =
                 DemoUtilities.getReader(seProxyService, DemoUtilities.PO_READER_NAME_REGEX);
+
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         /* Check if the reader exists */
         if (poReader == null) {
