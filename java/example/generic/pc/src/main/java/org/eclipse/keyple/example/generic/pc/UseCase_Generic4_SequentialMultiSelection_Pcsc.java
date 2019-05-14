@@ -92,39 +92,39 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
             String seAidPrefix = "A000000404012509";
 
             /* AID based selection */
-            seSelection.prepareSelection(new GenericSeSelectionRequest(
-                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
-                                    SeSelector.AidSelector.FileOccurrence.FIRST,
-                                    SeSelector.AidSelector.FileControlInformation.FCI),
-                            "Initial selection #1"),
-                    ChannelState.KEEP_OPEN));
+            seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new SeSelector.AidSelector(
+                            new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
+                            null, SeSelector.AidSelector.FileOccurrence.FIRST,
+                            SeSelector.AidSelector.FileControlInformation.FCI),
+                    "Initial selection #1"), ChannelState.KEEP_OPEN));
 
             seSelection = new SeSelection();
 
             doAndAnalyseSelection(seReader, seSelection, 1);
 
             /* next selection */
-            seSelection.prepareSelection(new GenericSeSelectionRequest(
-                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
-                                    SeSelector.AidSelector.FileOccurrence.NEXT,
-                                    SeSelector.AidSelector.FileControlInformation.FCI),
-                            "Next selection #2"),
-                    ChannelState.KEEP_OPEN));
+            seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new SeSelector.AidSelector(
+                            new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
+                            null, SeSelector.AidSelector.FileOccurrence.NEXT,
+                            SeSelector.AidSelector.FileControlInformation.FCI),
+                    "Next selection #2"), ChannelState.KEEP_OPEN));
 
             seSelection = new SeSelection();
 
             doAndAnalyseSelection(seReader, seSelection, 2);
 
             /* next selection */
-            seSelection.prepareSelection(new GenericSeSelectionRequest(
-                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new SeSelector.AidSelector(ByteArrayUtil.fromHex(seAidPrefix), null,
-                                    SeSelector.AidSelector.FileOccurrence.NEXT,
-                                    SeSelector.AidSelector.FileControlInformation.FCI),
-                            "Next selection #3"),
-                    ChannelState.CLOSE_AFTER));
+            seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new SeSelector.AidSelector(
+                            new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
+                            null, SeSelector.AidSelector.FileOccurrence.NEXT,
+                            SeSelector.AidSelector.FileControlInformation.FCI),
+                    "Next selection #3"), ChannelState.CLOSE_AFTER));
 
             doAndAnalyseSelection(seReader, seSelection, 3);
 

@@ -148,7 +148,7 @@ public class AndroidOmapiReaderTest {
 
         // wrong protocol
         SeRequest seRequest = new SeRequest(new SeSelector( SeCommonProtocols.PROTOCOL_MIFARE_UL, null,
-                new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid),null),null), poApduRequestList,
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid),null),null), poApduRequestList,
                 ChannelState.CLOSE_AFTER);
 
         // test
@@ -230,7 +230,7 @@ public class AndroidOmapiReaderTest {
         poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
         SeRequest seRequest = new SeRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null), poApduRequestList,
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null), poApduRequestList,
                 ChannelState.CLOSE_AFTER);
 
         return new SeRequestSet(seRequest);

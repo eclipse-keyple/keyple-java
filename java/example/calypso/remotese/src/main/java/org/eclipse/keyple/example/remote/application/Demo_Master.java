@@ -21,6 +21,7 @@ import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -169,8 +170,10 @@ public class Demo_Master implements Observable.Observer {
                         PoSelectionRequest poSelectionRequest =
                                 new PoSelectionRequest(
                                         new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                                new PoSelector.PoAidSelector(ByteArrayUtil
-                                                        .fromHex(CalypsoClassicInfo.AID), null),
+                                                new PoSelector.PoAidSelector(
+                                                        new SeSelector.AidSelector.IsoAid(
+                                                                CalypsoClassicInfo.AID),
+                                                        null),
                                                 "AID: " + CalypsoClassicInfo.AID),
                                         ChannelState.KEEP_OPEN);
 

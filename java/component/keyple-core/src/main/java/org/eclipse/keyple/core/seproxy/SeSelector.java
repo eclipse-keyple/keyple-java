@@ -55,8 +55,69 @@ public class SeSelector {
             FCI, FCP, FMD, NO_RESPONSE
         }
 
-        public static final int AID_MIN_LENGTH = 5;
-        public static final int AID_MAX_LENGTH = 16;
+        public static class IsoAid {
+            public static final int AID_MIN_LENGTH = 5;
+            public static final int AID_MAX_LENGTH = 16;
+            private final byte[] value;
+
+            /**
+             * Build an IsoAid and check length from a byte array
+             * 
+             * @param aid byte array containing the AID value
+             * @throws IllegalArgumentException if the byte length array is not within the allowed
+             *         range.
+             */
+            public IsoAid(byte[] aid) {
+                if (aid.length < AID_MIN_LENGTH || aid.length > AID_MAX_LENGTH) {
+                    value = null;
+                    throw new IllegalArgumentException("Bad AID length: " + aid.length
+                            + ". The AID length should be " + "between 5 and 15.");
+                } else {
+                    value = aid;
+                }
+            }
+
+
+            /**
+             * Build an IsoAid and check length from an hex string
+             *
+             * @param aid hex string containing the AID value
+             * @throws IllegalArgumentException if the byte length array is not within the allowed
+             *         range.
+             */
+            public IsoAid(String aid) {
+                this(ByteArrayUtil.fromHex(aid));
+            }
+
+            /**
+             * @return the AID value as a byte array
+             */
+            public byte[] getValue() {
+                return value;
+            }
+
+            /**
+             * Compares two IsoAid objects.
+             * <p>
+             * Tells if the current AID starts with the value contained in the provided AID
+             * 
+             * @param aid an other AID
+             * @return true or false
+             */
+            public boolean startsWith(IsoAid aid) {
+                if (this.value.length > aid.getValue().length) {
+                    return false;
+                }
+
+                for (int i = 0; i < aid.getValue().length; i++) {
+                    if (this.value[i] != aid.getValue()[i]) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+
         private FileOccurrence fileOccurrence = FileOccurrence.FIRST;
         private FileControlInformation fileControlInformation = FileControlInformation.FCI;
 
@@ -68,7 +129,7 @@ public class SeSelector {
          * - Could be missing when operating SE which don’t support the Select Application command
          * (as it is the case for SAM).
          */
-        private byte[] aidToSelect;
+        private IsoAid aidToSelect;
 
         /**
          * List of status codes in response to the select application command that should be
@@ -87,17 +148,12 @@ public class SeSelector {
          * <p>
          * Refer to ISO7816-4.2 for detailed information about these parameters
          *
-         * @param aidToSelect byte array
+         * @param aidToSelect IsoAid
          * @param successfulSelectionStatusCodes list of successful status codes for the select
          *        application response
          */
-        public AidSelector(byte[] aidToSelect, Set<Integer> successfulSelectionStatusCodes,
+        public AidSelector(IsoAid aidToSelect, Set<Integer> successfulSelectionStatusCodes,
                 FileOccurrence fileOccurrence, FileControlInformation fileControlInformation) {
-            if (aidToSelect == null || aidToSelect.length < AID_MIN_LENGTH
-                    || aidToSelect.length > AID_MAX_LENGTH) {
-                throw new IllegalArgumentException("Bad AID value: must be between "
-                        + AID_MIN_LENGTH + " and " + AID_MIN_LENGTH + " bytes.");
-            }
             this.aidToSelect = aidToSelect;
             this.successfulSelectionStatusCodes = successfulSelectionStatusCodes;
             this.fileOccurrence = fileOccurrence;
@@ -111,11 +167,11 @@ public class SeSelector {
          * <p>
          * The fileControlInformation field is set by default to FCI
          *
-         * @param aidToSelect byte array
+         * @param aidToSelect IsoAid
          * @param successfulSelectionStatusCodes list of successful status codes for the select
          *        application response
          */
-        public AidSelector(byte[] aidToSelect, Set<Integer> successfulSelectionStatusCodes) {
+        public AidSelector(IsoAid aidToSelect, Set<Integer> successfulSelectionStatusCodes) {
             this(aidToSelect, successfulSelectionStatusCodes, FileOccurrence.FIRST,
                     FileControlInformation.FCI);
         }
@@ -125,17 +181,22 @@ public class SeSelector {
          *
          * @return byte array containing the AID
          */
-        public byte[] getAidToSelect() {
+        public IsoAid getAidToSelect() {
             return aidToSelect;
         }
 
         /**
-         * Indicates whether the selection command is targeting the first or the next occurrence
-         *
-         * @return true or false
+         * @return the file occurrence parameter
          */
-        public boolean isSelectNext() {
-            return fileOccurrence == FileOccurrence.NEXT;
+        public FileOccurrence getFileOccurrence() {
+            return fileOccurrence;
+        }
+
+        /**
+         * @return the file control information parameter
+         */
+        public FileControlInformation getFileControlInformation() {
+            return fileControlInformation;
         }
 
         /**
@@ -155,7 +216,7 @@ public class SeSelector {
          */
         public String toString() {
             return String.format("AID:%s, OCCURRENCE:%s",
-                    aidToSelect == null ? "null" : ByteArrayUtil.toHex(aidToSelect),
+                    aidToSelect == null ? "null" : ByteArrayUtil.toHex(aidToSelect.getValue()),
                     fileOccurrence);
         }
     }
@@ -266,7 +327,7 @@ public class SeSelector {
         if (logger.isTraceEnabled()) {
             logger.trace("Selection data: AID = {}, ATRREGEX = {}, EXTRAINFO = {}",
                     this.aidSelector == null ? "null"
-                            : ByteArrayUtil.toHex(this.aidSelector.getAidToSelect()),
+                            : ByteArrayUtil.toHex(this.aidSelector.getAidToSelect().getValue()),
                     this.atrFilter == null ? "null" : this.atrFilter.getAtrRegex(), extraInfo);
         }
     }
