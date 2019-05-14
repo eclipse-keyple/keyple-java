@@ -18,7 +18,7 @@ Dedicated reader’s plugins have to be implemented in order to interface the SE
 
 ## keyple-java repositories structure
 
-- Modules that are provide as artifacts
+- Modules that are provided as artifacts
   - keyple-core: source and unit tests for the SE Proxy module.
   - keyple-calypso: source and unit tests for the Calypso library.
   - keyple-plugin: source and unit tests for the different plugins: smartcard.io PC/SC, Stub, Android NFC, Android OMAPI, etc.
