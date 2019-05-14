@@ -110,104 +110,50 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
     }
 
     /**
-     * Operate a logical channel opening.
-     * <p>
-     * The channel opening is done according to the AidSelector and AtrFilter combination.
-     *
-     * @param seSelector the selection data
-     * @return the SelectionStatus
-     * @throws KeypleIOReaderException if an IOException occurs
+     * Open a logical channel by selecting the application
+     * @param aidSelector the selection parameters
+     * @return a ApduResponse built from the FCI data resulting from the application selection
+     * @throws KeypleIOReaderException
+     * @throws KeypleChannelStateException
+     * @throws KeypleApplicationSelectionException
      */
-    @Override
-    protected final SelectionStatus openLogicalChannel(SeSelector seSelector)
-            throws KeypleIOReaderException, KeypleChannelStateException, KeypleApplicationSelectionException {
-        ApduResponse fciResponse;
-        byte[] atr = getATR();
-        boolean selectionHasMatched = true;
-        SelectionStatus selectionStatus;
-
-        /** Perform ATR filtering if requested */
-        if (seSelector.getAtrFilter() != null) {
-            if (atr == null) {
-                throw new KeypleIOReaderException("Didn't get an ATR from the SE.");
-            }
-
-            if (logger.isTraceEnabled()) {
-                logger.trace("[{}] openLogicalChannel => ATR: {}", this.getName(),
-                        ByteArrayUtil.toHex(atr));
-            }
-            if (!seSelector.getAtrFilter().atrMatches(atr)) {
-                logger.trace("[{}] openLogicalChannel => ATR didn't match. SELECTOR = {}",
-                        this.getName(), seSelector);
-                selectionHasMatched = false;
-            }
+    protected ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector) throws KeypleIOReaderException, KeypleChannelStateException, KeypleApplicationSelectionException {
+        if(aidSelector.getAidToSelect() == null) {
             try {
                 openChannel = session.openBasicChannel(null);
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new KeypleIOReaderException("IOException while opening basic channel.");
             } catch (SecurityException e) {
-                throw new KeypleChannelStateException("Error while opening basic channel, SE_SELECTOR = " +  seSelector.toString(), e.getCause());
+                throw new KeypleChannelStateException("Error while opening basic channel, SE_SELECTOR = " +  aidSelector.toString(), e.getCause());
             }
 
             if (openChannel == null) {
                 throw new KeypleIOReaderException("Failed to open a basic channel.");
             }
-        }
-
-        /**
-         * Perform application selection if requested and if ATR filtering matched or was not
-         * requested
-         */
-        if (selectionHasMatched && seSelector.getAidSelector() != null) {
-            final SeSelector.AidSelector aidSelector = seSelector.getAidSelector();
-            final byte aid[] = aidSelector.getAidToSelect();
-            if (aid == null) {
-                throw new IllegalArgumentException("AID must not be null for an AidSelector.");
-            }
+        } else {
             if (logger.isTraceEnabled()) {
                 logger.trace("[{}] openLogicalChannel => Select Application with AID = {}",
-                        this.getName(), ByteArrayUtil.toHex(aid));
+                        this.getName(), ByteArrayUtil.toHex(aidSelector.getAidToSelect().getValue()));
             }
             try {
-                openChannel = session.openLogicalChannel(aid);
+                openChannel = session.openLogicalChannel(aidSelector.getAidToSelect().getValue());
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new KeypleIOReaderException("IOException while opening logical channel.");
             } catch (NoSuchElementException e) {
                 throw new KeypleApplicationSelectionException(
-                        "Error while selecting application : " + ByteArrayUtil.toHex(aid), e);
+                        "Error while selecting application : " + ByteArrayUtil.toHex(aidSelector.getAidToSelect().getValue()), e);
             } catch (SecurityException e) {
-                throw new KeypleChannelStateException("Error while opening logical channel, aid :" + ByteArrayUtil.toHex(aid), e.getCause());
+                throw new KeypleChannelStateException("Error while opening logical channel, aid :" + ByteArrayUtil.toHex(aidSelector.getAidToSelect().getValue()), e.getCause());
             }
 
             if (openChannel == null) {
                 throw new KeypleIOReaderException("Failed to open a logical channel.");
             }
-
-            /* get the FCI and build an ApduResponse */
-            fciResponse = new ApduResponse(openChannel.getSelectResponse(), aidSelector.getSuccessfulSelectionStatusCodes());
-
-            if (!fciResponse.isSuccessful()) {
-                logger.trace(
-                        "[{}] openLogicalChannel => Application Selection failed. SELECTOR = {}",
-                        this.getName(), aidSelector);
-            }
-            /*
-             * The ATR filtering matched or was not requested. The selection status is determined by
-             * the answer to the select application command.
-             */
-            selectionStatus = new SelectionStatus(new AnswerToReset(atr), fciResponse,
-                    fciResponse.isSuccessful());
-        } else {
-            /*
-             * The ATR filtering didn't match or no AidSelector was provided. The selection status
-             * is determined by the ATR filtering.
-             */
-            selectionStatus = new SelectionStatus(new AnswerToReset(atr),
-                    new ApduResponse(null, null), selectionHasMatched);
         }
-        return selectionStatus;
+        /* get the FCI and build an ApduResponse */
+        return new ApduResponse(openChannel.getSelectResponse(), aidSelector.getSuccessfulSelectionStatusCodes());
     }
 
     @Override
@@ -228,7 +174,6 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
             throw new KeypleChannelStateException("IOException while opening physical channel.");
         }
     }
-
 
     /**
      * Close session see {@link Session#close()}

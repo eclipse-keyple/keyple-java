@@ -41,7 +41,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     private boolean logicalChannelIsOpen = false;
 
     /** current AID if any */
-    private byte[] aidCurrentlySelected;
+    private SeSelector.AidSelector.IsoAid aidCurrentlySelected;
 
     /** current selection status */
     private SelectionStatus currentSelectionStatus;
@@ -225,6 +225,21 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      */
     protected abstract byte[] getATR();
 
+
+    /**
+     * This abstract method must be implemented by the derived class in order to proceed to the
+     * application selection
+     * <p>
+     * Gets application selection data according to
+     * {@link org.eclipse.keyple.core.seproxy.SeSelector.AidSelector} attributes.
+     *
+     * @return a ApduResponse containing the FCI or similar data output from selection application
+     * @throws KeypleIOReaderException if a reader error occurs
+     */
+    protected abstract ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
+            throws KeypleIOReaderException, KeypleChannelStateException,
+            KeypleApplicationSelectionException;
+
     /**
      * This abstract method must be implemented by the derived class in order to provide a selection
      * and ATR filtering mechanism.
@@ -233,12 +248,64 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * Selection and ATR matching process and build the resulting SelectionStatus.
      *
      * @param seSelector the SE selector
+     * @return the SelectionStatus
+     */
+    /** ==== ATR filtering and application selection by AID ================ */
+
+    /**
+     * Build a select application command, transmit it to the SE and deduct the SelectionStatus.
+     *
+     * @param seSelector the targeted application SE selector
      * @return the SelectionStatus containing the actual selection result (ATR and/or FCI and the
      *         matching status flag).
+     * @throws KeypleIOReaderException if a reader error occurs
      */
-    protected abstract SelectionStatus openLogicalChannel(SeSelector seSelector)
+    protected SelectionStatus openLogicalChannel(SeSelector seSelector)
             throws KeypleIOReaderException, KeypleChannelStateException,
-            KeypleApplicationSelectionException;
+            KeypleApplicationSelectionException {
+        byte[] atr = getATR();
+        boolean selectionHasMatched = true;
+        SelectionStatus selectionStatus;
+
+        /** Perform ATR filtering if requested */
+        if (seSelector.getAtrFilter() != null) {
+            if (atr == null) {
+                throw new KeypleIOReaderException("Didn't get an ATR from the SE.");
+            }
+
+            if (logger.isTraceEnabled()) {
+                logger.trace("[{}] openLogicalChannel => ATR = {}", this.getName(),
+                        ByteArrayUtil.toHex(atr));
+            }
+            if (!seSelector.getAtrFilter().atrMatches(atr)) {
+                logger.info("[{}] openLogicalChannel => ATR didn't match. SELECTOR = {}, ATR = {}",
+                        this.getName(), seSelector, ByteArrayUtil.toHex(atr));
+                selectionHasMatched = false;
+            }
+        }
+
+        /**
+         * Perform application selection if requested and if ATR filtering matched or was not
+         * requested
+         */
+        if (selectionHasMatched && seSelector.getAidSelector() != null) {
+            ApduResponse fciResponse = openChannelForAid(seSelector.getAidSelector());
+            /*
+             * The ATR filtering matched or was not requested. The selection status is determined by
+             * the answer to the select application command.
+             */
+            selectionStatus = new SelectionStatus(new AnswerToReset(atr), fciResponse,
+                    fciResponse.isSuccessful());
+        } else {
+            /*
+             * The ATR filtering didn't match or no AidSelector was provided. The selection status
+             * is determined by the ATR filtering.
+             */
+            selectionStatus = new SelectionStatus(new AnswerToReset(atr),
+                    new ApduResponse(null, null), selectionHasMatched);
+        }
+        return selectionStatus;
+    }
 
 
     /**
@@ -565,7 +632,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 if (aidCurrentlySelected == null) {
                     throw new IllegalStateException("AID currently selected shouldn't be null.");
                 }
-                if (seRequest.getSeSelector().getAidSelector().isSelectNext()) {
+                if (seRequest.getSeSelector().getAidSelector()
+                        .getFileOccurrence() == SeSelector.AidSelector.FileOccurrence.NEXT) {
                     if (logger.isTraceEnabled()) {
                         logger.trace(
                                 "[{}] processSeRequest => The current selection is a next selection, close the "
@@ -574,16 +642,14 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     }
                     /* close the channel (will reset the current selection status) */
                     closeLogicalChannel();
-                } else if (seRequest.getSeSelector().getAidSelector()
-                        .getAidToSelect().length >= aidCurrentlySelected.length
-                        || !aidCurrentlySelected.equals(Arrays.copyOfRange(
-                                seRequest.getSeSelector().getAidSelector().getAidToSelect(), 0,
-                                aidCurrentlySelected.length))) {
+                } else if (!aidCurrentlySelected
+                        .startsWith(seRequest.getSeSelector().getAidSelector().getAidToSelect())) {
                     // the AID changed (longer or different), close the logical channel
                     if (logger.isTraceEnabled()) {
                         logger.trace(
                                 "[{}] processSeRequest => The AID changed, close the logical channel. AID = {}, EXPECTEDAID = {}",
-                                this.getName(), ByteArrayUtil.toHex(aidCurrentlySelected),
+                                this.getName(),
+                                ByteArrayUtil.toHex(aidCurrentlySelected.getValue()),
                                 seRequest.getSeSelector());
                     }
                     /* close the channel (will reset the current selection status) */

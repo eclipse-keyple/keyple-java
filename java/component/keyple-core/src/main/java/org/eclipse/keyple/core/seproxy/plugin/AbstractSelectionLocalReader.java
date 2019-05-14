@@ -37,97 +37,57 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
         super(pluginName, readerName);
     }
 
-    /** ==== ATR filtering and application selection by AID ================ */
-
     /**
-     * Build a select application command, transmit it to the SE and deduct the SelectionStatus.
+     * Executes the selection application command and returns the requested data according to
+     * AidSelector attributes.
      * 
-     * @param seSelector the targeted application SE selector
-     * @return the SelectionStatus
+     * @param aidSelector the selection parameters
+     * @return the response to the select application command
      * @throws KeypleIOReaderException if a reader error occurs
      */
-    protected SelectionStatus openLogicalChannel(SeSelector seSelector)
+    @Override
+    protected ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
             throws KeypleIOReaderException {
         ApduResponse fciResponse;
-        byte[] atr = getATR();
-        boolean selectionHasMatched = true;
-        SelectionStatus selectionStatus;
-
-        /** Perform ATR filtering if requested */
-        if (seSelector.getAtrFilter() != null) {
-            if (atr == null) {
-                throw new KeypleIOReaderException("Didn't get an ATR from the SE.");
-            }
-
-            if (logger.isTraceEnabled()) {
-                logger.trace("[{}] openLogicalChannel => ATR = {}", this.getName(),
-                        ByteArrayUtil.toHex(atr));
-            }
-            if (!seSelector.getAtrFilter().atrMatches(atr)) {
-                logger.info("[{}] openLogicalChannel => ATR didn't match. SELECTOR = {}, ATR = {}",
-                        this.getName(), seSelector, ByteArrayUtil.toHex(atr));
-                selectionHasMatched = false;
-            }
+        final byte aid[] = aidSelector.getAidToSelect().getValue();
+        if (aid == null) {
+            throw new IllegalArgumentException("AID must not be null for an AidSelector.");
         }
-
-        /**
-         * Perform application selection if requested and if ATR filtering matched or was not
-         * requested
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] openLogicalChannel => Select Application with AID = {}",
+                    this.getName(), ByteArrayUtil.toHex(aid));
+        }
+        /*
+         * build a get response command the actual length expected by the SE in the get response
+         * command is handled in transmitApdu
          */
-        if (selectionHasMatched && seSelector.getAidSelector() != null) {
-            final SeSelector.AidSelector aidSelector = seSelector.getAidSelector();
-            final byte aid[] = aidSelector.getAidToSelect();
-            if (aid == null) {
-                throw new IllegalArgumentException("AID must not be null for an AidSelector.");
-            }
-            if (logger.isTraceEnabled()) {
-                logger.trace("[{}] openLogicalChannel => Select Application with AID = {}",
-                        this.getName(), ByteArrayUtil.toHex(aid));
-            }
-            /*
-             * build a get response command the actual length expected by the SE in the get response
-             * command is handled in transmitApdu
-             */
-            byte[] selectApplicationCommand = new byte[6 + aid.length];
-            selectApplicationCommand[0] = (byte) 0x00; // CLA
-            selectApplicationCommand[1] = (byte) 0xA4; // INS
-            selectApplicationCommand[2] = (byte) 0x04; // P1: select by name
-            if (!aidSelector.isSelectNext()) {
+        byte[] selectApplicationCommand = new byte[6 + aid.length];
+        selectApplicationCommand[0] = (byte) 0x00; // CLA
+        selectApplicationCommand[1] = (byte) 0xA4; // INS
+        selectApplicationCommand[2] = (byte) 0x04; // P1: select by name
+        switch (aidSelector.getFileOccurrence()) {
+            case FIRST:
                 selectApplicationCommand[3] = (byte) 0x00; // P2: requests the first occurrence
-            } else {
+                break;
+            case LAST:
                 selectApplicationCommand[3] = (byte) 0x02; // P2: requests the next occurrence
-            }
-            selectApplicationCommand[4] = (byte) (aid.length); // Lc
-            System.arraycopy(aid, 0, selectApplicationCommand, 5, aid.length); // data
-            selectApplicationCommand[5 + aid.length] = (byte) 0x00; // Le
-
-            /*
-             * we use here processApduRequest to manage case 4 hack. The successful status codes
-             * list for this command is provided.
-             */
-            fciResponse = processApduRequest(
-                    new ApduRequest("Internal Select Application", selectApplicationCommand, true,
-                            aidSelector.getSuccessfulSelectionStatusCodes()));
-
-            if (!fciResponse.isSuccessful()) {
-                logger.trace(
-                        "[{}] openLogicalChannel => Application Selection failed. SELECTOR = {}",
-                        this.getName(), aidSelector);
-            }
-            /*
-             * The ATR filtering matched or was not requested. The selection status is determined by
-             * the answer to the select application command.
-             */
-            selectionStatus = new SelectionStatus(new AnswerToReset(atr), fciResponse,
-                    fciResponse.isSuccessful());
-        } else {
-            /*
-             * The ATR filtering didn't match or no AidSelector was provided. The selection status
-             * is determined by the ATR filtering.
-             */
-            selectionStatus = new SelectionStatus(new AnswerToReset(atr),
-                    new ApduResponse(null, null), selectionHasMatched);
+                break;
         }
-        return selectionStatus;
+        selectApplicationCommand[4] = (byte) (aid.length); // Lc
+        System.arraycopy(aid, 0, selectApplicationCommand, 5, aid.length); // data
+        selectApplicationCommand[5 + aid.length] = (byte) 0x00; // Le
+
+        /*
+         * we use here processApduRequest to manage case 4 hack. The successful status codes list
+         * for this command is provided.
+         */
+        fciResponse = processApduRequest(new ApduRequest("Internal Select Application",
+                selectApplicationCommand, true, aidSelector.getSuccessfulSelectionStatusCodes()));
+
+        if (!fciResponse.isSuccessful()) {
+            logger.trace("[{}] openLogicalChannel => Application Selection failed. SELECTOR = {}",
+                    this.getName(), aidSelector);
+        }
+        return fciResponse;
     }
 }
