@@ -42,7 +42,7 @@ public class Demo_Webservice_MasterClient {
         master.boot();
 
         // execute slave scenario
-        slave.insertSE(new StubCalypsoClassic(), true);
+        slave.executeScenario(new StubCalypsoClassic(), true);
 
     }
 }

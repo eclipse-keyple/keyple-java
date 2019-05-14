@@ -227,7 +227,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      */
     @Override
     public void update(ReaderEvent event) {
-        logger.info("{} SlaveAPI listens for event from native Reader - Received Event {}",dtoNode.getNodeId(),
+        logger.info("{} SlaveAPI - reader event {}",dtoNode.getNodeId(),
                 event.getEventType());
 
         // construct json data

@@ -18,12 +18,14 @@ import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 
-class RmEventExecutor implements RemoteMethodExecutor {
+class RmReaderEventExecutor implements RemoteMethodExecutor {
 
-    private final RemoteSePlugin plugin;
+    private final VirtualReader virtualReader;
+    private final RemoteSePlugin remoteSePlugin;
 
-    public RmEventExecutor(RemoteSePlugin plugin) {
-        this.plugin = plugin;
+    public RmReaderEventExecutor(VirtualReader virtualReader, RemoteSePlugin remoteSePlugin) {
+        this.virtualReader = virtualReader;
+        this.remoteSePlugin = remoteSePlugin;
     }
 
     @Override
@@ -33,8 +35,12 @@ class RmEventExecutor implements RemoteMethodExecutor {
         // parseResponse body
         ReaderEvent event = JsonParser.getGson().fromJson(keypleDto.getBody(), ReaderEvent.class);
 
+        //substitute native reader name by virtual reader name
+
+        ReaderEvent virtualEvent = new ReaderEvent(remoteSePlugin.getName(),virtualReader.getName(), event.getEventType(), event.getDefaultSelectionsResponse());
+
         // dispatch reader event
-        plugin.onReaderEvent(event, keypleDto.getSessionId());
+        virtualReader.onRemoteReaderEvent(virtualEvent);
 
         // chain response if needed
         // try {

@@ -9,9 +9,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.remote.application;
+package org.eclipse.keyple.example.remote.application.multi;
 
 import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
+import org.eclipse.keyple.example.remote.application.Demo_Slave;
 import org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPollingRetrofitFactory;
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 
@@ -19,32 +20,34 @@ import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
  * Demo Web Service with Retrofit http client library (Android friendly) The master device uses the
  * websocket master whereas the slave device uses the websocket client
  */
-public class Demo_WebserviceWithRetrofit_MasterServer {
+public class Demo_WebserviceWithRetrofit_MasterServer_Client1 {
 
 
     public static void main(String[] args) throws Exception {
 
 
-        final String CLIENT_NODE_ID = "Demo_WebserviceWithRetrofit_MasterServerClient1";
-        final String SERVER_NODE_ID = "Demo_WebserviceWithRetrofit_MasterServer1";
+        final String CLIENT_NODE_ID = "Demo_WebserviceWithRetrofit_MasterServer_MultiClient1";
+        final String CLIENT_NODE_ID2 = "Demo_WebserviceWithRetrofit_MasterServer_MultiClient2";
 
+        final String SERVER_NODE_ID = "Demo_WebserviceWithRetrofit_MasterServer_MultiClientServer1";
 
-        // Create a HTTP Web Polling factory with retrofit Client
-        TransportFactory factory = new WsPollingRetrofitFactory(SERVER_NODE_ID);
-
-
-        // Launch the Server thread
-        // Server is Master
-        Demo_Master master = new Demo_Master(factory, true, null);
-        master.boot();
-
-        Thread.sleep(1000);
+        // Create the procotol factory
+        TransportFactory factory = new WsPollingRetrofitFactory(SERVER_NODE_ID, protocol, hostname, port);
 
         // Launch the client thread
         // Client is Slave
         Demo_Slave slave = new Demo_Slave(factory, false, CLIENT_NODE_ID, SERVER_NODE_ID);
 
         // execute slave scenario
-        slave.executeScenario(new StubCalypsoClassic(), true);
+        slave.insertSE(new StubCalypsoClassic(), false);
+
+
+        // Launch the client thread
+        // Client is Slave
+        Demo_Slave slave2 = new Demo_Slave(factory, false, CLIENT_NODE_ID2, SERVER_NODE_ID);
+
+        // execute slave scenario
+        slave2.insertSE(new StubCalypsoClassic(), false);
+
     }
 }

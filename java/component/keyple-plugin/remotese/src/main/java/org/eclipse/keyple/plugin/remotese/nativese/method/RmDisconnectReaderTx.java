@@ -55,6 +55,6 @@ public class RmDisconnectReaderTx extends RemoteMethodTx<Boolean> {
 
         return new KeypleDto(RemoteMethod.READER_DISCONNECT.getName(),
                 JsonParser.getGson().toJson(body, JsonObject.class), true, null, nativeReaderName,
-                null, "", targetNodeId);
+                null, requesterNodeId, targetNodeId);
     }
 }

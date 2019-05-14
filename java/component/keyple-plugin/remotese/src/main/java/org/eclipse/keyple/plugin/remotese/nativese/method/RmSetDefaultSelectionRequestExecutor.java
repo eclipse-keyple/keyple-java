@@ -55,8 +55,8 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
         logger.trace("DefaultSelectionsRequest : {}", selectionRequestJson.getAsString());
         logger.trace("Notification Mode : {}", notificationModeJson.getAsString());
 
-        AbstractDefaultSelectionsRequest defaultSelectionsRequest =
-                (AbstractDefaultSelectionsRequest) JsonParser.getGson().fromJson(
+        DefaultSelectionsRequest defaultSelectionsRequest =
+                (DefaultSelectionsRequest) JsonParser.getGson().fromJson(
                         selectionRequestJson.getAsString(), DefaultSelectionsRequest.class);
         ObservableReader.NotificationMode notificationMode =
                 ObservableReader.NotificationMode.get(notificationModeJson.getAsString());

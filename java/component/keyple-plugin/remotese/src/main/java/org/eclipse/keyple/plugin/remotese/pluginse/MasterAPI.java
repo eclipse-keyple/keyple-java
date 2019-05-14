@@ -102,6 +102,7 @@ public class MasterAPI implements DtoHandler {
                     throw new IllegalStateException(
                             "a READER_CONNECT response has been received by MasterAPI");
                 }
+
             case READER_DISCONNECT:
                 if (keypleDTO.isRequest()) {
                     return new RmDisconnectReaderExecutor(this.plugin).execute(transportDto);
@@ -110,7 +111,24 @@ public class MasterAPI implements DtoHandler {
                             "a READER_DISCONNECT response has been received by MasterAPI");
                 }
             case READER_EVENT:
-                return new RmEventExecutor(plugin).execute(transportDto);
+                try {
+                    // find reader by sessionId
+                    VirtualReader reader = (VirtualReader) getPlugin().getReader(RemoteSePlugin.generateReaderName(keypleDTO.getNativeReaderName(), keypleDTO.getRequesterNodeId()));
+
+                    // process response with the reader rm method engine
+                    return new RmReaderEventExecutor(reader, plugin).execute(transportDto);
+
+                } catch (KeypleReaderNotFoundException e) {
+                    // reader not found;
+                    throw new IllegalStateException(
+                            "Virtual Reader was not found while processing a reader event",
+                            e);
+                } catch (KeypleReaderException e) {
+                    // reader not found;
+                    throw new IllegalStateException("Virtual Reader with sessionId "+keypleDTO.getSessionId()+"was not found", e);
+                }
+
+
             case READER_TRANSMIT:
                 // can be more general
                 if (keypleDTO.isRequest()) {

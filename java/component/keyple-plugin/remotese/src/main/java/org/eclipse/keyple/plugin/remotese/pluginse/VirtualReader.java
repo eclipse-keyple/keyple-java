@@ -39,6 +39,7 @@ public final class VirtualReader extends AbstractObservableReader {
     private final VirtualReaderSession session;
     private final String nativeReaderName;
     private final RemoteMethodTxEngine rmTxEngine;
+    private final String slaveNodeId;
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReader.class);
 
@@ -49,12 +50,13 @@ public final class VirtualReader extends AbstractObservableReader {
      * @param nativeReaderName local name of the native reader on slave side
      */
     VirtualReader(VirtualReaderSession session, String nativeReaderName,
-            RemoteMethodTxEngine rmTxEngine) {
-        super(RemoteSePlugin.PLUGIN_NAME, "remote-" + nativeReaderName);
+            RemoteMethodTxEngine rmTxEngine, String slaveNodeId) {
+        super(RemoteSePlugin.PLUGIN_NAME, RemoteSePlugin.generateReaderName(nativeReaderName, slaveNodeId));
         this.session = session;
         this.nativeReaderName = nativeReaderName;
         this.rmTxEngine = rmTxEngine;
-        logger.info("A new virtual reader was created with session {}", session);
+        this.slaveNodeId = slaveNodeId;
+        logger.debug("A new virtual reader was created with session {}", session);
     }
 
     /**
@@ -147,7 +149,7 @@ public final class VirtualReader extends AbstractObservableReader {
 
     @Override
     public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {
-        logger.error("addSeProtocolSetting is not implemented yet");
+        logger.error("{} addSeProtocolSetting is not implemented yet", this.getName());
     }
 
     @Override
@@ -167,7 +169,7 @@ public final class VirtualReader extends AbstractObservableReader {
     void onRemoteReaderEvent(final ReaderEvent event) {
         final VirtualReader thisReader = this;
 
-        logger.debug(" EVENT {} ", event.getEventType());
+        logger.debug("{} EVENT {} ", this.getName(), event.getEventType());
 
         if (thisReader.countObservers() > 0) {
             thisReader.notifyObservers(event);

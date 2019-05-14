@@ -44,6 +44,6 @@ public class Demo_Websocket_MasterClient {
         master.boot();
 
         // execute slave scenario
-        slave.insertSE(new StubCalypsoClassic(), true);
+        slave.executeScenario(new StubCalypsoClassic(), true);
     }
 }

@@ -42,6 +42,6 @@ public class Demo_Webservice_MasterServer {
         Demo_Slave slave = new Demo_Slave(factory, false, CLIENT_NODE_ID, SERVER_NODE_ID);
 
         // execute slave scenario
-        slave.insertSE(new StubCalypsoClassic(), true);
+        slave.executeScenario(new StubCalypsoClassic(), true);
     }
 }
