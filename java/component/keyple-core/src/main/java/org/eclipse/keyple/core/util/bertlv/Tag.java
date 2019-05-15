@@ -42,11 +42,14 @@ public class Tag {
      * @param tagType constructed or primitive
      */
     public Tag(int tagNumber, byte tagClass, TagType tagType) {
+        if (tagType == null) {
+            throw new IllegalArgumentException("TLV Tag: type is null.");
+        }
+        if (tagClass < 0 || tagClass > PRIVATE) {
+            throw new IllegalArgumentException("TLV Tag: unknown tag class.");
+        }
         this.tagNumber = tagNumber;
         this.tagClass = tagClass;
-        if (tagClass < 0 || tagClass > PRIVATE) {
-            throw new IllegalArgumentException("Unknown tag class..");
-        }
         this.tagType = tagType;
         if (tagNumber < 0x1F) {
             size = 1;
@@ -67,8 +70,9 @@ public class Tag {
      * 
      * @param binary the byte array containing the TLV data
      * @param offset the start offset in the byte array
+     * @throws IndexOutOfBoundsException if the offset is too large
      */
-    public Tag(byte[] binary, int offset) {
+    public Tag(byte[] binary, int offset) throws IndexOutOfBoundsException {
         /* the 2 first bits (b7b6) of the first byte defines the class */
         tagClass = (byte) ((binary[offset] & 0xC0) >>> 6);
 

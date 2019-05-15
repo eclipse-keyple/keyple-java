@@ -33,6 +33,19 @@ public class TLVTest {
         Assert.assertFalse(tlv.parse(tag2, 0));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void parse_tag_null() {
+        TLV tlv = new TLV(ByteArrayUtil.fromHex("84050011223344"));
+        Assert.assertTrue(tlv.parse(null, 0));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void parse_too_large_index() {
+        Tag tag = new Tag(0x04, Tag.CONTEXT, PRIMITIVE);
+        TLV tlv = new TLV(ByteArrayUtil.fromHex("84050011223344"));
+        Assert.assertTrue(tlv.parse(null, 20));
+    }
+
     @Test
     public void getValue() {
         Tag tag1 = new Tag(0x04, Tag.CONTEXT, PRIMITIVE);

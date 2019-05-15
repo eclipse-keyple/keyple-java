@@ -48,7 +48,14 @@ public class TLV {
      * @return true or false according to the presence of the provided tag
      */
     public boolean parse(Tag tag, int offset) {
-        this.tag = new Tag(binary, offset);
+        if (tag == null) {
+            throw new IllegalArgumentException("TLV parsing: tag can't be null.");
+        }
+        try {
+            this.tag = new Tag(binary, offset);
+        } catch (IndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("TLV parsing: index is too large.");
+        }
         length = 0;
         if (tag.equals(this.tag)) {
             offset += this.tag.getSize();
