@@ -56,9 +56,9 @@ import org.slf4j.LoggerFactory;
 public class Demo_Master implements Observable.Observer {
 
     private static final Logger logger = LoggerFactory.getLogger(Demo_Master.class);
-    //private SeSelection seSelection;
-    //private VirtualReader poReader;
-    //private int readEnvironmentParserIndex;
+    // private SeSelection seSelection;
+    // private VirtualReader poReader;
+    // private int readEnvironmentParserIndex;
     private SamResource samResource;
     private MasterAPI masterAPI;
 
@@ -264,9 +264,7 @@ public class Demo_Master implements Observable.Observer {
         // ReaderEvent
         else if (o instanceof ReaderEvent) {
             ReaderEvent event = (ReaderEvent) o;
-            logger.info("{} UPDATE {} {} {} {}",
-                    node.getNodeId(),
-                    event.getEventType(),
+            logger.info("{} UPDATE {} {} {} {}", node.getNodeId(), event.getEventType(),
                     event.getPluginName(), event.getReaderName(),
                     event.getDefaultSelectionsResponse());
 
@@ -274,8 +272,8 @@ public class Demo_Master implements Observable.Observer {
 
                 case SE_MATCHED:
 
-                    //executeReadEventLog(selectionsResult);
-                    executeCalypso4_PoAuthentication(samResource,event.getReaderName());
+                    // executeReadEventLog(selectionsResult);
+                    executeCalypso4_PoAuthentication(samResource, event.getReaderName());
 
                     break;
                 case SE_INSERTED:
@@ -304,13 +302,13 @@ public class Demo_Master implements Observable.Observer {
 
         if (selectionsResult.hasActiveSelection()) {
             try {
-                VirtualReader poReader = (VirtualReader) masterAPI.getPlugin().getReader(virtualReaderName);
+                VirtualReader poReader =
+                        (VirtualReader) masterAPI.getPlugin().getReader(virtualReaderName);
 
                 AbstractMatchingSe selectedSe =
                         selectionsResult.getActiveSelection().getMatchingSe();
 
-                logger.info(
-                        "{} Observer notification: the selection of the PO has succeeded.",
+                logger.info("{} Observer notification: the selection of the PO has succeeded.",
                         node.getNodeId());
 
                 /* Go on with the reading of the first record of the EventLog file */
@@ -326,33 +324,29 @@ public class Demo_Master implements Observable.Observer {
                         new PoTransaction(new PoResource(poReader, (CalypsoPo) selectedSe));
 
                 /*
-                 * Prepare the reading order and keep the associated parser for later use
-                 * once the transaction has been processed.
+                 * Prepare the reading order and keep the associated parser for later use once the
+                 * transaction has been processed.
                  */
-                int readEventLogParserIndex =
-                        poTransaction.prepareReadRecordsCmd(CalypsoClassicInfo.SFI_EventLog,
-                                ReadDataStructure.SINGLE_RECORD_DATA,
-                                CalypsoClassicInfo.RECORD_NUMBER_1,
-                                String.format("EventLog (SFI=%02X, recnbr=%d))",
-                                        CalypsoClassicInfo.SFI_EventLog,
-                                        CalypsoClassicInfo.RECORD_NUMBER_1));
+                int readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
+                        CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
+                        CalypsoClassicInfo.RECORD_NUMBER_1,
+                        String.format("EventLog (SFI=%02X, recnbr=%d))",
+                                CalypsoClassicInfo.SFI_EventLog,
+                                CalypsoClassicInfo.RECORD_NUMBER_1));
 
                 /*
-                 * Actual PO communication: send the prepared read order, then close the
-                 * channel with the PO
+                 * Actual PO communication: send the prepared read order, then close the channel
+                 * with the PO
                  */
 
                 if (poTransaction.processPoCommands(ChannelState.CLOSE_AFTER)) {
-                    logger.info("{} The reading of the EventLog has succeeded.",
-                            node.getNodeId());
+                    logger.info("{} The reading of the EventLog has succeeded.", node.getNodeId());
 
                     /*
-                     * Retrieve the data read from the parser updated during the
-                     * transaction process
+                     * Retrieve the data read from the parser updated during the transaction process
                      */
-                    ReadRecordsRespPars readEventLogParser =
-                            (ReadRecordsRespPars) poTransaction
-                                    .getResponseParser(readEventLogParserIndex);
+                    ReadRecordsRespPars readEventLogParser = (ReadRecordsRespPars) poTransaction
+                            .getResponseParser(readEventLogParserIndex);
                     byte eventLog[] = (readEventLogParser.getRecords())
                             .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
 
@@ -378,10 +372,12 @@ public class Demo_Master implements Observable.Observer {
     }
 
 
-    private void executeCalypso4_PoAuthentication(SamResource samResource, String virtualReaderName) {
+    private void executeCalypso4_PoAuthentication(SamResource samResource,
+            String virtualReaderName) {
 
         try {
-            VirtualReader poReader = (VirtualReader) masterAPI.getPlugin().getReader(virtualReaderName);
+            VirtualReader poReader =
+                    (VirtualReader) masterAPI.getPlugin().getReader(virtualReaderName);
 
             logger.info(
                     "==================================================================================");
@@ -492,7 +488,7 @@ public class Demo_Master implements Observable.Observer {
                  */
                 byte eventLog[] = (((ReadRecordsRespPars) poTransaction
                         .getResponseParser(readEventLogParserIndexBis)).getRecords())
-                        .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+                                .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
 
                 /* Log the result */
                 logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));

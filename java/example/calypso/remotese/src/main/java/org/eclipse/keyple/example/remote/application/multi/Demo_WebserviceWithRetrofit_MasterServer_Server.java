@@ -11,9 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.remote.application.multi;
 
-import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
 import org.eclipse.keyple.example.remote.application.Demo_Master;
-import org.eclipse.keyple.example.remote.application.Demo_Slave;
 import org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPollingRetrofitFactory;
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 
@@ -33,7 +31,8 @@ public class Demo_WebserviceWithRetrofit_MasterServer_Server {
         final String protocol = "http://";
 
         // Create the procotol factory
-        TransportFactory factory = new WsPollingRetrofitFactory(SERVER_NODE_ID, protocol, hostname, port);
+        TransportFactory factory =
+                new WsPollingRetrofitFactory(SERVER_NODE_ID, protocol, hostname, port);
 
         // Launch the Server thread
         // Server is Master

@@ -51,7 +51,8 @@ public final class VirtualReader extends AbstractObservableReader {
      */
     VirtualReader(VirtualReaderSession session, String nativeReaderName,
             RemoteMethodTxEngine rmTxEngine, String slaveNodeId) {
-        super(RemoteSePlugin.PLUGIN_NAME, RemoteSePlugin.generateReaderName(nativeReaderName, slaveNodeId));
+        super(RemoteSePlugin.PLUGIN_NAME,
+                RemoteSePlugin.generateReaderName(nativeReaderName, slaveNodeId));
         this.session = session;
         this.nativeReaderName = nativeReaderName;
         this.rmTxEngine = rmTxEngine;

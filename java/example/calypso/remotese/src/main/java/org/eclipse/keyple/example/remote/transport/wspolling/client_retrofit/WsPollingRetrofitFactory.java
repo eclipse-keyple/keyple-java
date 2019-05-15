@@ -42,8 +42,8 @@ public class WsPollingRetrofitFactory extends TransportFactory {
         this.serverNodeId = serverNodeId;
     }
 
-    public WsPollingRetrofitFactory(String serverNodeId, String protocol ,  String hostname,Integer port
-            ) {
+    public WsPollingRetrofitFactory(String serverNodeId, String protocol, String hostname,
+            Integer port) {
         this.port = port;
         this.serverNodeId = serverNodeId;
         this.hostname = hostname;
@@ -69,9 +69,8 @@ public class WsPollingRetrofitFactory extends TransportFactory {
     public ClientNode getClient(String clientNodeId) {
 
         String baseUrl = protocol + hostname + ":" + port;
-        logger.info("Create RETROFIT Ws Polling Client to {}",baseUrl);
-        return new WsPRetrofitClientImpl(baseUrl, clientNodeId,
-                serverNodeId);
+        logger.info("Create RETROFIT Ws Polling Client to {}", baseUrl);
+        return new WsPRetrofitClientImpl(baseUrl, clientNodeId, serverNodeId);
     }
 
 
@@ -79,7 +78,7 @@ public class WsPollingRetrofitFactory extends TransportFactory {
     @Override
     public ServerNode getServer() throws IOException {
 
-        logger.info("Create Ws Polling Server at {}:{}", hostname,port);
+        logger.info("Create Ws Polling Server at {}:{}", hostname, port);
         return new WsPServer(hostname, port, keypleUrl, pollingUrl, serverNodeId);
 
     }

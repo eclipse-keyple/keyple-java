@@ -185,8 +185,7 @@ public class Demo_Slave {
      * @throws KeypleReaderException
      * @throws InterruptedException
      */
-    public String connectPoReader()
-            throws KeypleReaderException {
+    public String connectPoReader() throws KeypleReaderException {
 
         // connect a reader to Remote Plugin
         logger.info(
@@ -220,7 +219,7 @@ public class Demo_Slave {
 
     public void removeSe() {
 
-                logger.info("{} remove SE ", node.getNodeId());
+        logger.info("{} remove SE ", node.getNodeId());
         logger.info(
                 "*****************************************************************************");
 
@@ -231,7 +230,7 @@ public class Demo_Slave {
     public void disconnect(String sessionId, String nativeReaderName)
             throws KeypleReaderException, KeypleRemoteException {
 
-               logger.info("{} Disconnect native reader ", node.getNodeId());
+        logger.info("{} Disconnect native reader ", node.getNodeId());
         logger.info(
                 "*****************************************************************************");
 
@@ -241,16 +240,16 @@ public class Demo_Slave {
     public void executeScenario(final StubSecureElement se, final Boolean killAtEnd)
             throws KeypleReaderNotFoundException, InterruptedException, KeypleReaderException,
             KeypleRemoteException {
-        //logger.info("------------------------");
+        // logger.info("------------------------");
         logger.info("{} Connect Reader to Master", node.getNodeId());
-        //logger.info("------------------------");
+        // logger.info("------------------------");
 
         Thread.sleep(2000);
         String sessionId = this.connectPoReader();
-        //logger.info("--------------------------------------------------");
+        // logger.info("--------------------------------------------------");
         logger.info("{} Session created on server {}", node.getNodeId(), sessionId);
         // logger.info("Wait 2 seconds, then insert SE");
-        //logger.info("--------------------------------------------------");
+        // logger.info("--------------------------------------------------");
         logger.info("{} Inserting SE", node.getNodeId());
         this.insertStubSe(se);
         logger.info("{} Wait 2 seconds, then remove SE", node.getNodeId());

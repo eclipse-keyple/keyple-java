@@ -35,9 +35,11 @@ class RmReaderEventExecutor implements RemoteMethodExecutor {
         // parseResponse body
         ReaderEvent event = JsonParser.getGson().fromJson(keypleDto.getBody(), ReaderEvent.class);
 
-        //substitute native reader name by virtual reader name
+        // substitute native reader name by virtual reader name
 
-        ReaderEvent virtualEvent = new ReaderEvent(remoteSePlugin.getName(),virtualReader.getName(), event.getEventType(), event.getDefaultSelectionsResponse());
+        ReaderEvent virtualEvent =
+                new ReaderEvent(remoteSePlugin.getName(), virtualReader.getName(),
+                        event.getEventType(), event.getDefaultSelectionsResponse());
 
         // dispatch reader event
         virtualReader.onRemoteReaderEvent(virtualEvent);

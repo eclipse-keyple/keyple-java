@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
@@ -58,14 +57,15 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
      * Retrieve a reader by its native reader name and slave Node Id
      *
      * @param remoteName : name of the reader on its native device
-     *                   @param slaveNodeId : slave node Id of the reader to disconnect
+     * @param slaveNodeId : slave node Id of the reader to disconnect
      * @return corresponding Virtual reader if exists
      * @throws KeypleReaderNotFoundException if no virtual reader match the native reader name
      */
     public VirtualReader getReaderByRemoteName(String remoteName, String slaveNodeId)
             throws KeypleReaderNotFoundException {
         for (AbstractObservableReader virtualReader : readers) {
-            if (((VirtualReader) virtualReader).getName().equals(RemoteSePlugin.generateReaderName(remoteName,slaveNodeId))) {
+            if (((VirtualReader) virtualReader).getName()
+                    .equals(RemoteSePlugin.generateReaderName(remoteName, slaveNodeId))) {
                 return (VirtualReader) virtualReader;
             }
         }
@@ -101,8 +101,8 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
         // Create virtual reader with a remote method engine so the reader can send dto
         // with a session
         // and the provided name
-        final VirtualReader virtualReader =
-                new VirtualReader(session, nativeReaderName, new RemoteMethodTxEngine(sender), slaveNodeId);
+        final VirtualReader virtualReader = new VirtualReader(session, nativeReaderName,
+                new RemoteMethodTxEngine(sender), slaveNodeId);
         readers.add(virtualReader);
 
         // notify that a new reader is connected in a separated thread
@@ -121,14 +121,17 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
      * 
      * @param nativeReaderName name of the virtual reader to be deleted
      */
-    void disconnectRemoteReader(String nativeReaderName, String slaveNodeId) throws KeypleReaderNotFoundException {
+    void disconnectRemoteReader(String nativeReaderName, String slaveNodeId)
+            throws KeypleReaderNotFoundException {
 
-        //logger.debug("Disconnect Virtual reader {}", nativeReaderName);
+        // logger.debug("Disconnect Virtual reader {}", nativeReaderName);
 
         // retrieve virtual reader to delete
-        final VirtualReader virtualReader = this.getReaderByRemoteName(nativeReaderName,slaveNodeId);
+        final VirtualReader virtualReader =
+                this.getReaderByRemoteName(nativeReaderName, slaveNodeId);
 
-        logger.info("Disconnect VirtualReader with name {} with slaveNodeId {}", nativeReaderName, slaveNodeId);
+        logger.info("Disconnect VirtualReader with name {} with slaveNodeId {}", nativeReaderName,
+                slaveNodeId);
 
         // remove observers of reader
         virtualReader.clearObservers();
@@ -151,20 +154,15 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
      * @param sessionId : not used yet
      */
     /*
-    void onReaderEvent(ReaderEvent event, String sessionId) {
-        logger.debug("OnReaderEvent {}", event);
-        logger.debug("Dispatch ReaderEvent to the appropriate Reader : {} sessionId : {}",
-                event.getReaderName(), sessionId);
-        try {
-            VirtualReader virtualReader = getReaderByRemoteName(event.getReaderName());
-            virtualReader.onRemoteReaderEvent(event);
-
-        } catch (KeypleReaderNotFoundException e) {
-            e.printStackTrace();
-        }
-
-    }
-    */
+     * void onReaderEvent(ReaderEvent event, String sessionId) { logger.debug("OnReaderEvent {}",
+     * event); logger.debug("Dispatch ReaderEvent to the appropriate Reader : {} sessionId : {}",
+     * event.getReaderName(), sessionId); try { VirtualReader virtualReader =
+     * getReaderByRemoteName(event.getReaderName()); virtualReader.onRemoteReaderEvent(event);
+     * 
+     * } catch (KeypleReaderNotFoundException e) { e.printStackTrace(); }
+     * 
+     * }
+     */
 
 
     /**
@@ -205,7 +203,7 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
         parameters.put(key, value);
     }
 
-    static String generateReaderName(String nativeReaderName, String slaveNodeId){
+    static String generateReaderName(String nativeReaderName, String slaveNodeId) {
         return "remote-" + nativeReaderName + "-" + slaveNodeId;
     }
 

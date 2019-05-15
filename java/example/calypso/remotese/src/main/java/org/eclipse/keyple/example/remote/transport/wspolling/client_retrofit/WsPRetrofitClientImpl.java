@@ -105,7 +105,8 @@ public class WsPRetrofitClientImpl implements ClientNode {
                                 t.getMessage());
                         poll(clientNodeId);// recursive call to restart polling
                     } else {
-                        logger.error("Unexpected error when poll() : {} , {}", t.getMessage(), t.getCause());
+                        logger.error("Unexpected error when poll() : {} , {}", t.getMessage(),
+                                t.getCause());
                         poll(clientNodeId);// recursive call to restart polling
                         if (thisClient.connectCallback != null) {
                             thisClient.connectCallback.onConnectFailure();
