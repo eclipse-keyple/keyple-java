@@ -190,7 +190,7 @@ public class AndroidOmapiReaderTest {
 
         when(omapiReader.getName()).thenReturn("SIM1");
         when(omapiReader.isSecureElementPresent()).thenReturn(true);
-        when(session.openLogicalChannel(ByteArrayUtil.fromHex(poAid))).thenReturn(channel);
+        when(session.openLogicalChannel(ByteArrayUtil.fromHex(poAid), (byte)0x00)).thenReturn(channel);
         when(omapiReader.openSession()).thenReturn(session);
         when(session.getATR()).thenReturn(null);
         when(channel.getSelectResponse()).thenReturn(ByteArrayUtil.fromHex(poAidResponse));
@@ -212,7 +212,7 @@ public class AndroidOmapiReaderTest {
         when(omapiReader.getName()).thenReturn("SIM1");
         when(omapiReader.isSecureElementPresent()).thenReturn(true);
         when(omapiReader.openSession()).thenReturn(session);
-        when(session.openLogicalChannel(ByteArrayUtil.fromHex(poAid)))
+        when(session.openLogicalChannel(ByteArrayUtil.fromHex(poAid), (byte)0x00))
                 .thenThrow(new NoSuchElementException(""));
 
         return omapiReader;
