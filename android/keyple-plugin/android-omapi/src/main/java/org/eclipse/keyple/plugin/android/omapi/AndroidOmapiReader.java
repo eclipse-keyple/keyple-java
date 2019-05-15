@@ -137,7 +137,9 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
                         this.getName(), ByteArrayUtil.toHex(aidSelector.getAidToSelect().getValue()));
             }
             try {
-                openChannel = session.openLogicalChannel(aidSelector.getAidToSelect().getValue());
+                openChannel = session.openLogicalChannel(aidSelector.getAidToSelect().getValue(),
+                        (byte)(aidSelector.getFileOccurrence().getIsoBitMask()
+                                | aidSelector.getFileControlInformation().getIsoBitMask()));
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new KeypleIOReaderException("IOException while opening logical channel.");
