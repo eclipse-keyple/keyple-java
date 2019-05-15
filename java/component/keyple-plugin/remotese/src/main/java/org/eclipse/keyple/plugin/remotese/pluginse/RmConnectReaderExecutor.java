@@ -61,15 +61,17 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
             // build transport DTO with body
             return transportDto.nextTransportDTO(new KeypleDto(keypleDto.getAction(),
                     respBody.toString(), false, virtualReader.getSession().getSessionId(),
-                    nativeReaderName, virtualReader.getName(), transportDto.getKeypleDTO().getTargetNodeId(), slaveNodeId));
+                    nativeReaderName, virtualReader.getName(),
+                    transportDto.getKeypleDTO().getTargetNodeId(), slaveNodeId));
 
         } catch (KeypleReaderException e) {
             // virtual reader for remote reader already exists
             logger.warn("Virtual reader already exists for reader " + nativeReaderName, e);
 
             // send the exception inside the dto
-            return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(),
-                    e, null, nativeReaderName, null, transportDto.getKeypleDTO().getTargetNodeId(), slaveNodeId));
+            return transportDto.nextTransportDTO(
+                    KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(), e, null, nativeReaderName,
+                            null, transportDto.getKeypleDTO().getTargetNodeId(), slaveNodeId));
 
         }
     }

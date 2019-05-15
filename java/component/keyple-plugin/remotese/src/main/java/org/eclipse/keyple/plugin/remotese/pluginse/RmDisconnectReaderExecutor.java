@@ -51,13 +51,14 @@ class RmDisconnectReaderExecutor implements RemoteMethodExecutor {
             return transportDto
                     .nextTransportDTO(new KeypleDto(RemoteMethod.READER_DISCONNECT.getName(),
                             JsonParser.getGson().toJson(body, JsonObject.class), false, null,
-                            nativeReaderName, null, keypleDto.getTargetNodeId(),keypleDto.getRequesterNodeId()));
+                            nativeReaderName, null, keypleDto.getTargetNodeId(),
+                            keypleDto.getRequesterNodeId()));
         } catch (KeypleReaderNotFoundException e) {
             logger.error("Impossible to disconnect reader " + nativeReaderName, e);
-            return transportDto.nextTransportDTO(
-                    KeypleDtoHelper.ExceptionDTO(RemoteMethod.READER_DISCONNECT.getName(), e,
-                            keypleDto.getSessionId(), keypleDto.getNativeReaderName(),
-                            keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(), keypleDto.getRequesterNodeId()));
+            return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(
+                    RemoteMethod.READER_DISCONNECT.getName(), e, keypleDto.getSessionId(),
+                    keypleDto.getNativeReaderName(), keypleDto.getVirtualReaderName(),
+                    keypleDto.getTargetNodeId(), keypleDto.getRequesterNodeId()));
         }
 
     }
