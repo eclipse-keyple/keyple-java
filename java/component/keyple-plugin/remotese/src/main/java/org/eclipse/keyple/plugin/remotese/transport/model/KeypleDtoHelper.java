@@ -33,13 +33,13 @@ public class KeypleDtoHelper {
     }
 
     static public KeypleDto NoResponse() {
-        return new KeypleDto("", "", false, "", "", "", "");
+        return new KeypleDto("", "", false, "", "", "", "", "");
     }
 
     static public KeypleDto ExceptionDTO(String action, Throwable exception, String sessionId,
-            String nativeReaderName, String virtualReaderName, String clientNodeId) {
+            String nativeReaderName, String virtualReaderName, String requesterNodeId,String targetNodeId) {
         return new KeypleDto(action, JsonParser.getGson().toJson(exception), false, sessionId,
-                nativeReaderName, virtualReaderName, clientNodeId);
+                nativeReaderName, virtualReaderName, requesterNodeId,targetNodeId);
     }
 
     static public Boolean isNoResponse(KeypleDto dto) {

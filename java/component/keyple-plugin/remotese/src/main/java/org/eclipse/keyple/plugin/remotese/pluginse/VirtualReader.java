@@ -23,7 +23,6 @@ import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
-import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteReaderException;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmSetDefaultSelectionRequestTx;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmTransmitTx;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
@@ -32,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Virtual Reader Behaves like the Remote Reader it emulates
+ * Virtual Reader is a proxy to a Native Reader on the slave terminal
  */
 public final class VirtualReader extends AbstractObservableReader {
 
@@ -79,7 +78,7 @@ public final class VirtualReader extends AbstractObservableReader {
         return nativeReaderName;
     }
 
-    public VirtualReaderSession getSession() {
+    VirtualReaderSession getSession() {
         return session;
     }
 
@@ -131,7 +130,7 @@ public final class VirtualReader extends AbstractObservableReader {
             throws IllegalArgumentException, KeypleReaderException {
         try {
             return this.processSeRequestSet(new SeRequestSet(seRequest)).getSingleResponse();
-        } catch (KeypleRemoteReaderException e) {
+        } catch (KeypleReaderException e) {
             // throw the cause of the RemoteReaderException (a KeypleReaderException)
             throw (KeypleReaderException) e.getCause();
         }

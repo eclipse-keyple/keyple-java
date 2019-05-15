@@ -22,6 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
+/**
+ * Handle the Disconnect Reader keypleDTO serialization and deserialization
+ */
 public class RmDisconnectReaderTx extends RemoteMethodTx<Boolean> {
 
     private static final Logger logger = LoggerFactory.getLogger(RmDisconnectReaderTx.class);

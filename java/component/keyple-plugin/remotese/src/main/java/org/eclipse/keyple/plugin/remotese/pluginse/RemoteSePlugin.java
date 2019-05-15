@@ -203,8 +203,17 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
         parameters.put(key, value);
     }
 
+    /**
+     * Generate the name for the virtual reader based on the NativeReader name and its node Id.
+     * Bijective function
+     * 
+     * @param nativeReaderName
+     * @param slaveNodeId
+     * @return
+     */
     static String generateReaderName(String nativeReaderName, String slaveNodeId) {
         return "remote-" + nativeReaderName + "-" + slaveNodeId;
     }
+
 
 }

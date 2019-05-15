@@ -18,6 +18,9 @@ import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 
+/**
+ * Transform and propagate the reader event to the virtual reader
+ */
 class RmReaderEventExecutor implements RemoteMethodExecutor {
 
     private final VirtualReader virtualReader;

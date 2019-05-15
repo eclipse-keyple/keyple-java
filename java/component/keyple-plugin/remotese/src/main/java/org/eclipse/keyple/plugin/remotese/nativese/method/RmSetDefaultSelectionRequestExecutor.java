@@ -27,6 +27,9 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+/**
+ * Execute the Default Selection Request on Native Reader
+ */
 public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecutor {
 
     private static final Logger logger =
@@ -79,7 +82,7 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
                 return transportDto.nextTransportDTO(
                         new KeypleDto(RemoteMethod.DEFAULT_SELECTION_REQUEST.getName(), parseBody,
                                 false, keypleDto.getSessionId(), nativeReaderName,
-                                keypleDto.getVirtualReaderName(), keypleDto.getRequesterNodeId()));
+                                keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),keypleDto.getRequesterNodeId()));
             } else {
                 throw new KeypleReaderException(
                         "Reader is not observable, can not invoke SetDefaultSelectionRequest on "
@@ -92,7 +95,7 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
             return transportDto.nextTransportDTO(
                     KeypleDtoHelper.ExceptionDTO(RemoteMethod.DEFAULT_SELECTION_REQUEST.getName(),
                             e, keypleDto.getSessionId(), nativeReaderName,
-                            keypleDto.getVirtualReaderName(), keypleDto.getRequesterNodeId()));
+                            keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),keypleDto.getRequesterNodeId()));
         }
     }
 }
