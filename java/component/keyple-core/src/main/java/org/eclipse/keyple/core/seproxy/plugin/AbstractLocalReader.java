@@ -40,6 +40,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /** logical channel status flag */
     private boolean logicalChannelIsOpen = false;
 
+    private boolean forceGetDataFlag = false;
+
     /** current AID if any */
     private SeSelector.AidSelector.IsoAid aidCurrentlySelected;
 
@@ -240,6 +242,62 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             throws KeypleIOReaderException, KeypleChannelStateException,
             KeypleApplicationSelectionException;
 
+
+    /**
+     * This method is dedicated to the case where no FCI data is available in return for the select
+     * command.
+     * <p>
+     * We force here selection without response and proceed to a get data command to get the
+     * expected FCI.
+     * 
+     * @param aidSelector
+     * @return a ApduResponse containing the FCI
+     */
+    private ApduResponse openChannelForAidHackGetData(SeSelector.AidSelector aidSelector)
+            throws KeypleApplicationSelectionException, KeypleIOReaderException,
+            KeypleChannelStateException {
+        SeSelector.AidSelector noResponseAidSelector = new SeSelector.AidSelector(
+                aidSelector.getAidToSelect(), aidSelector.getSuccessfulSelectionStatusCodes(),
+                aidSelector.getFileOccurrence(),
+                SeSelector.AidSelector.FileControlInformation.NO_RESPONSE);
+        ApduResponse fciResponse = openChannelForAid(noResponseAidSelector);
+        if (fciResponse.isSuccessful()) {
+            byte[] getDataCommand = new byte[4];
+            getDataCommand[0] = (byte) 0x00; // CLA
+            getDataCommand[1] = (byte) 0xCA; // INS
+            getDataCommand[2] = (byte) 0x00; // P1: always 0
+            getDataCommand[3] = (byte) 0x6F; // P2: 0x6F FCI for the current DF
+
+            /*
+             * The successful status codes list for this command is provided.
+             */
+            fciResponse = processApduRequest(new ApduRequest("Internal Get Data", getDataCommand,
+                    false, aidSelector.getSuccessfulSelectionStatusCodes()));
+
+            if (!fciResponse.isSuccessful()) {
+                logger.trace("[{}] openChannelForAidHackGetData => Get data failed. SELECTOR = {}",
+                        this.getName(), aidSelector);
+            }
+        }
+        return fciResponse;
+    }
+
+
+    /**
+     * Set the flag that enables the execution of the Get Data hack to get the FCI
+     * <p>
+     * This method should called by the reader plugins that need this specific behavior (ex. OMAPI)
+     *
+     * <p>
+     * The default value for the forceGetDataFlag is false, thus only specific readers plugins
+     * should call this method.
+     * 
+     * @param forceGetDataFlag true or false
+     */
+    protected void setForceGetDataFlag(boolean forceGetDataFlag) {
+        this.forceGetDataFlag = forceGetDataFlag;
+    }
+
     /**
      * This abstract method must be implemented by the derived class in order to provide a selection
      * and ATR filtering mechanism.
@@ -289,7 +347,13 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
          * requested
          */
         if (selectionHasMatched && seSelector.getAidSelector() != null) {
-            ApduResponse fciResponse = openChannelForAid(seSelector.getAidSelector());
+            ApduResponse fciResponse;
+            if (!forceGetDataFlag) {
+                fciResponse = openChannelForAid(seSelector.getAidSelector());
+            } else {
+                fciResponse = openChannelForAidHackGetData(seSelector.getAidSelector());
+            }
+
             /*
              * The ATR filtering matched or was not requested. The selection status is determined by
              * the answer to the select application command.

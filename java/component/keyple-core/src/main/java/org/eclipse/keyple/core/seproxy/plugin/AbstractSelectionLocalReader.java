@@ -65,14 +65,10 @@ public abstract class AbstractSelectionLocalReader extends AbstractLocalReader
         selectApplicationCommand[0] = (byte) 0x00; // CLA
         selectApplicationCommand[1] = (byte) 0xA4; // INS
         selectApplicationCommand[2] = (byte) 0x04; // P1: select by name
-        switch (aidSelector.getFileOccurrence()) {
-            case FIRST:
-                selectApplicationCommand[3] = (byte) 0x00; // P2: requests the first occurrence
-                break;
-            case LAST:
-                selectApplicationCommand[3] = (byte) 0x02; // P2: requests the next occurrence
-                break;
-        }
+        // P2: b0,b1 define the File occurrence, b2,b3 define the File control information
+        // we use the bitmask defined in the respective enums
+        selectApplicationCommand[3] = (byte) (aidSelector.getFileOccurrence().getIsoBitMask()
+                | aidSelector.getFileControlInformation().getIsoBitMask());
         selectApplicationCommand[4] = (byte) (aid.length); // Lc
         System.arraycopy(aid, 0, selectApplicationCommand, 5, aid.length); // data
         selectApplicationCommand[5 + aid.length] = (byte) 0x00; // Le

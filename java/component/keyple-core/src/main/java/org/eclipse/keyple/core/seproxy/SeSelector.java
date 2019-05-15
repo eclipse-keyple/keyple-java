@@ -40,19 +40,42 @@ public class SeSelector {
          * FileOccurrence indicates how to carry out the file occurrence in accordance with
          * ISO7816-4
          * <p>
-         * For now only FIRST and NEXT options are supported
+         * The getIsoBitMask method provides the bit mask to be used to set P2 in the select command
+         * (ISO/IEC 7816-4.2)
          */
         public enum FileOccurrence {
-            FIRST, LAST, NEXT, PREVIOUS
+
+            FIRST((byte) 0x00), LAST((byte) 0x01), NEXT((byte) 0x02), PREVIOUS((byte) 0x03);
+
+            private final byte isoBitMask;
+
+            FileOccurrence(byte isoBitMask) {
+                this.isoBitMask = isoBitMask;
+            }
+
+            public byte getIsoBitMask() {
+                return isoBitMask;
+            }
         }
 
         /**
          * FileOccurrence indicates how to which template is expected in accordance with ISO7816-4
          * <p>
-         * For now only FCI option is supported
+         * The getIsoBitMask method provides the bit mask to be used to set P2 in the select command
+         * (ISO/IEC 7816-4.2)
          */
         public enum FileControlInformation {
-            FCI, FCP, FMD, NO_RESPONSE
+            FCI(((byte) 0x00)), FCP(((byte) 0x04)), FMD(((byte) 0x08)), NO_RESPONSE(((byte) 0x0C));
+
+            private final byte isoBitMask;
+
+            FileControlInformation(byte isoBitMask) {
+                this.isoBitMask = isoBitMask;
+            }
+
+            public byte getIsoBitMask() {
+                return isoBitMask;
+            }
         }
 
         public static class IsoAid {
