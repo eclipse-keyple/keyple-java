@@ -41,7 +41,7 @@ public class Demo_Webservice_MasterServer {
         // Client is Slave
         Demo_Slave slave = new Demo_Slave(factory, false, CLIENT_NODE_ID, SERVER_NODE_ID);
 
-        // execute slave scenario
+        // execute Calypso Transaction Scenario
         slave.executeScenario(new StubCalypsoClassic(), true);
     }
 }

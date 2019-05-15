@@ -106,7 +106,7 @@ public class Demo_Master implements Observable.Observer {
             /*
              * // start client in a new thread new Thread() {
              * 
-             * @Override public void run() { // Master is client, connectAReader to Slave Server }
+             * @Override public void run() { // Master is client, connectPoReader to Slave Server }
              * }.start();
              */
         }

@@ -38,11 +38,11 @@ public class Demo_WebserviceWithRetrofit_MasterServer_Client2 {
         TransportFactory factory = new WsPollingRetrofitFactory(SERVER_NODE_ID, protocol, hostname, port);
 
 
-           // Launch the client 2 thread
+       // Launch the client 2
         Demo_Slave slave2 = new Demo_Slave(factory, false, CLIENT_NODE_ID2, SERVER_NODE_ID);
 
         for( int i=0 ; i<10; i++){
-            // execute slave scenario
+            // execute Calypso Transaction Scenario
             slave2.executeScenario(new StubCalypsoClassic(), false);
             Thread.sleep(5000);
         }

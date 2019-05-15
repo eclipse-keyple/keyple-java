@@ -58,7 +58,6 @@ public class Demo_WebserviceWithRetrofit_MasterServer_AllinOne {
 
         Thread.sleep(1000);
 
-
         /*
          *  Launch Client 2 (slave)
          */
@@ -67,7 +66,7 @@ public class Demo_WebserviceWithRetrofit_MasterServer_AllinOne {
         Thread.sleep(2000);
 
         for( int i=0 ; i<10; i++){
-            // execute slave scenario
+            // execute Calypso Transaction Scenario
             slave.executeScenario(new StubCalypsoClassic(), false);
             slave2.executeScenario(new StubCalypsoClassic(), false);
             Thread.sleep(10000);

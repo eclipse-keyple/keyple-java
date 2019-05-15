@@ -26,28 +26,26 @@ public class Demo_WebserviceWithRetrofit_MasterServer_Client1 {
     public static void main(String[] args) throws Exception {
 
 
-        final String CLIENT_NODE_ID = "Demo_WebserviceWithRetrofit_MasterServer_MultiClient1";
-        final String CLIENT_NODE_ID2 = "Demo_WebserviceWithRetrofit_MasterServer_MultiClient2";
+        final String SERVER_NODE_ID = "RSEServer1";
+        final String CLIENT_NODE_ID2 = "RSEClient1";
 
-        final String SERVER_NODE_ID = "Demo_WebserviceWithRetrofit_MasterServer_MultiClientServer1";
+
+        final Integer port = 8888;
+        final String hostname = "0.0.0.0";
+        final String protocol = "http://";
 
         // Create the procotol factory
         TransportFactory factory = new WsPollingRetrofitFactory(SERVER_NODE_ID, protocol, hostname, port);
 
-        // Launch the client thread
-        // Client is Slave
-        Demo_Slave slave = new Demo_Slave(factory, false, CLIENT_NODE_ID, SERVER_NODE_ID);
 
-        // execute slave scenario
-        slave.insertSE(new StubCalypsoClassic(), false);
+        // Launch the client 1
+        Demo_Slave slave = new Demo_Slave(factory, false, CLIENT_NODE_ID2, SERVER_NODE_ID);
 
-
-        // Launch the client thread
-        // Client is Slave
-        Demo_Slave slave2 = new Demo_Slave(factory, false, CLIENT_NODE_ID2, SERVER_NODE_ID);
-
-        // execute slave scenario
-        slave2.insertSE(new StubCalypsoClassic(), false);
+        for( int i=0 ; i<10; i++){
+            // execute Calypso Transaction Scenario
+            slave.executeScenario(new StubCalypsoClassic(), false);
+            Thread.sleep(5000);
+        }
 
     }
 }

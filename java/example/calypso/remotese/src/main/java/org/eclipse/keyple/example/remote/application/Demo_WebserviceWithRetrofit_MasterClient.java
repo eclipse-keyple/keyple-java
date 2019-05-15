@@ -44,7 +44,7 @@ public class Demo_WebserviceWithRetrofit_MasterClient {
         master.boot();
 
 
-        // execute slave scenario
+        // execute Calypso Transaction Scenario
         slave.executeScenario(new StubCalypsoClassic(), true);
     }
 }

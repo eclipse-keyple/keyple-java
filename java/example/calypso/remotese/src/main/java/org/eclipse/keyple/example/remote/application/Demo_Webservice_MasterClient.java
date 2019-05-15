@@ -41,7 +41,7 @@ public class Demo_Webservice_MasterClient {
         Demo_Master master = new Demo_Master(factory, false, CLIENT_NODE_ID);
         master.boot();
 
-        // execute slave scenario
+        // execute Calypso Transaction Scenario
         slave.executeScenario(new StubCalypsoClassic(), true);
 
     }
