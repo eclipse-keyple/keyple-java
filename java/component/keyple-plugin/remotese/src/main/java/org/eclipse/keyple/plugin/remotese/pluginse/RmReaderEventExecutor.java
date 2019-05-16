@@ -12,6 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
@@ -23,11 +24,9 @@ import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
  */
 class RmReaderEventExecutor implements RemoteMethodExecutor {
 
-    private final VirtualReader virtualReader;
     private final RemoteSePlugin remoteSePlugin;
 
-    public RmReaderEventExecutor(VirtualReader virtualReader, RemoteSePlugin remoteSePlugin) {
-        this.virtualReader = virtualReader;
+    public RmReaderEventExecutor(RemoteSePlugin remoteSePlugin) {
         this.remoteSePlugin = remoteSePlugin;
     }
 
@@ -39,39 +38,21 @@ class RmReaderEventExecutor implements RemoteMethodExecutor {
         ReaderEvent event = JsonParser.getGson().fromJson(keypleDto.getBody(), ReaderEvent.class);
 
         // substitute native reader name by virtual reader name
-
-        ReaderEvent virtualEvent =
-                new ReaderEvent(remoteSePlugin.getName(), virtualReader.getName(),
-                        event.getEventType(), event.getDefaultSelectionsResponse());
+        ReaderEvent virtualEvent = new ReaderEvent(remoteSePlugin.getName(),
+                RemoteSePlugin.generateReaderName(event.getReaderName(),
+                        keypleDto.getRequesterNodeId()),
+                event.getEventType(), event.getDefaultSelectionsResponse());
 
         // dispatch reader event
-        virtualReader.onRemoteReaderEvent(virtualEvent);
+        try {
+            remoteSePlugin.onReaderEvent(virtualEvent);
 
-        // chain response if needed
-        // try {
-        // VirtualReader virtualReader =
-        // (VirtualReader) plugin.getReaderByRemoteName(keypleDto.getNativeReaderName());
-        //
-        // // chain response with a seRequest if needed
-        // if ((virtualReader.getSession()).hasSeRequestSet()) {
-        //
-        // // send back seRequestSet
-        // return transportDto
-        // .nextTransportDTO(new KeypleDto(RemoteMethod.READER_TRANSMIT.getName(),
-        // JsonParser.getGson()
-        // .toJson((virtualReader.getSession()).getSeRequestSet()),
-        // true, virtualReader.getSession().getSessionId()));
-        // } else {
-        // return transportDto.nextTransportDTO(KeypleDtoHelper.NoResponse());
-        // }
-        //
-        // } catch (KeypleReaderNotFoundException e) {
-        // return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(),
-        // e, keypleDto.getSessionId(), keypleDto.getNativeReaderName(),
-        // keypleDto.getVirtualReaderName(), keypleDto.getRequesterNodeId()));
-        // }
-
-        return transportDto.nextTransportDTO(KeypleDtoHelper.NoResponse());
+            return transportDto.nextTransportDTO(KeypleDtoHelper.NoResponse());
+        } catch (KeypleReaderNotFoundException e) {
+            // reader not found;
+            throw new IllegalStateException(
+                    "Virtual Reader was not found while processing a reader event", e);
+        }
 
     }
 }

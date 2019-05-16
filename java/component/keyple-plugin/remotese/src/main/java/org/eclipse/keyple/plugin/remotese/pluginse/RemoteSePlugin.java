@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
@@ -151,18 +152,15 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
      * Propagate a received event from slave device (internal method)
      * 
      * @param event : Reader Event to be propagated
-     * @param sessionId : not used yet
      */
-    /*
-     * void onReaderEvent(ReaderEvent event, String sessionId) { logger.debug("OnReaderEvent {}",
-     * event); logger.debug("Dispatch ReaderEvent to the appropriate Reader : {} sessionId : {}",
-     * event.getReaderName(), sessionId); try { VirtualReader virtualReader =
-     * getReaderByRemoteName(event.getReaderName()); virtualReader.onRemoteReaderEvent(event);
-     * 
-     * } catch (KeypleReaderNotFoundException e) { e.printStackTrace(); }
-     * 
-     * }
-     */
+
+    void onReaderEvent(ReaderEvent event) throws KeypleReaderNotFoundException {
+        logger.debug("Dispatch ReaderEvent to the appropriate Reader : {}", event.getReaderName());
+
+        VirtualReader virtualReader = (VirtualReader) getReader(event.getReaderName());
+        virtualReader.onRemoteReaderEvent(event);
+
+    }
 
 
     /**
