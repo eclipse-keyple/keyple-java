@@ -12,6 +12,7 @@
 package org.eclipse.keyple.calypso.transaction;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.CalypsoBuilderParser;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.builder.*;
@@ -21,7 +22,6 @@ import org.eclipse.keyple.calypso.command.po.parser.*;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPars;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
-import org.eclipse.keyple.calypso.command.sam.SamBuilderParser;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.builder.security.DigestAuthenticateCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.builder.security.SelectDiversifierCmdBuild;
@@ -81,7 +81,7 @@ public final class PoTransaction {
     /** The SAM default revision. */
     private final SamRevision samRevision = SamRevision.C1;
     /** The security settings. */
-    private SecuritySettings securitySettings;
+    private TransactionSettings transactionSettings;
     /** The PO serial number extracted from FCI */
     private final byte[] poCalypsoInstanceSerial;
     /** The current CalypsoPo */
@@ -120,22 +120,34 @@ public final class PoTransaction {
      * PoTransaction with PO and SAM readers.
      * <ul>
      * <li>Logical channels with PO &amp; SAM could already be established or not.</li>
-     * <li>A list of SAM parameters is provided as en EnumMap.</li>
+     * <li>A {@link TransactionSettings} object providing security settings and other transaction
+     * parameters such as PO serial number filtering. .</li>
      * </ul>
      *
      * @param poResource the PO resource (combination of {@link SeReader} and {@link CalypsoPo})
-     * @param samResource the SAM resource (combination of {@link SeReader} and {@link CalypsoSam})
-     * @param securitySettings a list of security settings ({@link SecuritySettings}) used in the
-     *        session (such as key identification)
+     * @param transactionSettings a set of settings ({@link TransactionSettings}) used in the
+     *        transaction process ({@link SamResource}, default key settings, PO filtering)
+     * @throws KeypleCalypsoTransactionSerialNumberNotMatching if the PO filter is set and the
+     *         current serial number doesn't match.
      */
-    public PoTransaction(PoResource poResource, SamResource samResource,
-            SecuritySettings securitySettings) {
+    public PoTransaction(PoResource poResource, TransactionSettings transactionSettings)
+            throws KeypleCalypsoTransactionSerialNumberNotMatching {
 
         this(poResource);
 
-        samReader = (ProxyReader) samResource.getSeReader();
+        /* check serial number if filter is set */
+        String poFilter = transactionSettings.getPoSerialNumberFilter();
+        if (poFilter != null) {
+            Pattern p = Pattern.compile(poFilter);
+            if (!p.matcher(ByteArrayUtil.toHex(poCalypsoInstanceSerial)).matches()) {
+                throw new KeypleCalypsoTransactionSerialNumberNotMatching("S/N: "
+                        + ByteArrayUtil.toHex(poCalypsoInstanceSerial) + ", filter: " + poFilter);
+            }
+        }
 
-        this.securitySettings = securitySettings;
+        samReader = (ProxyReader) transactionSettings.getSamResource().getSeReader();
+
+        this.transactionSettings = transactionSettings;
     }
 
     /**
@@ -363,28 +375,20 @@ public final class PoTransaction {
                     String.format("%02X", poKvc));
         }
 
-        if (!securitySettings.isAuthorizedKvc(poKvc)) {
+        if (!transactionSettings.isAuthorizedKvc(poKvc)) {
             throw new KeypleCalypsoSecureSessionUnauthorizedKvcException(
                     String.format("PO KVC = %02X", poKvc));
         }
 
+
+        if (!transactionSettings.isAuthorizedKvc(poKif)) {
+            throw new KeypleCalypsoSecureSessionUnauthorizedKifException(
+                    String.format("PO KIF = %02X", poKif));
+        }
+
         byte kif;
         if (poKif == KIF_UNDEFINED) {
-            switch (accessLevel) {
-                case SESSION_LVL_PERSO:
-                    kif = securitySettings
-                            .getKeyInfo(SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KIF_PERSO);
-                    break;
-                case SESSION_LVL_LOAD:
-                    kif = securitySettings
-                            .getKeyInfo(SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KIF_LOAD);
-                    break;
-                case SESSION_LVL_DEBIT:
-                default:
-                    kif = securitySettings
-                            .getKeyInfo(SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KIF_DEBIT);
-                    break;
-            }
+            kif = transactionSettings.getDefaultKif(accessLevel);
         } else {
             kif = poKif;
         }
@@ -400,9 +404,8 @@ public final class PoTransaction {
          */
         DigestProcessor.initialize(poRevision, samRevision, false, false,
                 poRevision.equals(PoRevision.REV3_2),
-                securitySettings
-                        .getKeyInfo(SecuritySettings.DefaultKeyInfo.SAM_DEFAULT_KEY_RECORD_NUMBER),
-                kif, poKvc, poApduResponseList.get(0).getDataOut());
+                transactionSettings.getDefaultKeyRecordNumber(accessLevel), kif, poKvc,
+                poApduResponseList.get(0).getDataOut());
 
         /*
          * Add all commands data to the digest computation. The first command in the list is the
@@ -544,38 +547,38 @@ public final class PoTransaction {
      * @return SeResponse all sam responses
      * @throws KeypleReaderException if a reader error occurs
      */
-    public SeResponse processSamCommands(List<SamBuilderParser> samBuilderParsers)
-            throws KeypleReaderException {
-
-        /* Init SAM ApduRequest List - for the first SAM exchange */
-        List<ApduRequest> samApduRequestList =
-                this.getApduRequestsToSendInSession(samBuilderParsers);
-
-        /* SeRequest from the command list */
-        SeRequest samSeRequest = new SeRequest(samApduRequestList, ChannelState.KEEP_OPEN);
-
-        logger.debug("processSamCommands => SAMSEREQUEST = {}", samSeRequest);
-
-        /* Transmit SeRequest and get SeResponse */
-        SeResponse samSeResponse = samReader.transmit(samSeRequest);
-
-        if (samSeResponse == null) {
-            throw new KeypleCalypsoSecureSessionException("Null response received",
-                    KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
-                    null);
-        }
-
-        if (sessionState == SessionState.SESSION_OPEN
-                && !samSeResponse.wasChannelPreviouslyOpen()) {
-            throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
-                    KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
-                    null);
-        }
-        // TODO check if the wasChannelPreviouslyOpen should be done in the case where the session
-        // is closed
-
-        return samSeResponse;
-    }
+    // public SeResponse processSamCommands(List<SamBuilderParser> samBuilderParsers)
+    // throws KeypleReaderException {
+    //
+    // /* Init SAM ApduRequest List - for the first SAM exchange */
+    // List<ApduRequest> samApduRequestList =
+    // this.getApduRequestsToSendInSession(samBuilderParsers);
+    //
+    // /* SeRequest from the command list */
+    // SeRequest samSeRequest = new SeRequest(samApduRequestList, ChannelState.KEEP_OPEN);
+    //
+    // logger.debug("processSamCommands => SAMSEREQUEST = {}", samSeRequest);
+    //
+    // /* Transmit SeRequest and get SeResponse */
+    // SeResponse samSeResponse = samReader.transmit(samSeRequest);
+    //
+    // if (samSeResponse == null) {
+    // throw new KeypleCalypsoSecureSessionException("Null response received",
+    // KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
+    // null);
+    // }
+    //
+    // if (sessionState == SessionState.SESSION_OPEN
+    // && !samSeResponse.wasChannelPreviouslyOpen()) {
+    // throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
+    // KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
+    // null);
+    // }
+    // // TODO check if the wasChannelPreviouslyOpen should be done in the case where the session
+    // // is closed
+    //
+    // return samSeResponse;
+    // }
 
     /**
      * Close the Secure Session.
