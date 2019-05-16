@@ -2,7 +2,7 @@
 
 This is the temporary repository for the Java implementation of the 'Eclipse [Keyple](https://keyple.org/)' API.
 - The Eclipse Foundation is currently checking the IP of these elements.
-- In March 2019, the Java source code of Keyple will be transfered to the repository manage by the Eclipse foundation https://github.com/eclipse/keyple-java.
+- In March 2019, the Java source code of Keyple will be transfered to the repository manage by the Eclipse foundation https://github.com/eclipse/keyple-java
 
 ## Global Architecture of Keyple
 
