@@ -136,7 +136,6 @@ public class SlaveAPITest {
         // should throw a DTO with an exception in master side KeypleReaderException
         spySlaveAPI.connectReader(nativeReader);
 
-
     }
 
     /**
