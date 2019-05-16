@@ -3,6 +3,7 @@
 This is the repository for the Java implementation of the 'Eclipse [Keyple](https://keyple.org/)' API.
 (In September 2019, the C++ implementation will be hosted on https://github.com/eclipse/keyple-cpp)
 
+
 ## Global Architecture of Keyple
 
 ![global architecture](doc/Keyple-components.svg "keyple SDK global architecture")

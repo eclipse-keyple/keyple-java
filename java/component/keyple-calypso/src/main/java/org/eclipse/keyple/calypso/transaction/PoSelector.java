@@ -67,7 +67,7 @@ public final class PoSelector extends SeSelector {
          * @param fileControlInformation the ISO7816-4 file control information parameter (see
          *        {@link FileControlInformation})
          */
-        public PoAidSelector(byte[] aidToSelect, InvalidatedPo invalidatedPo,
+        public PoAidSelector(IsoAid aidToSelect, InvalidatedPo invalidatedPo,
                 FileOccurrence fileOccurrence, FileControlInformation fileControlInformation) {
             super(aidToSelect,
                     invalidatedPo == InvalidatedPo.ACCEPT ? successfulSelectionStatusCodes : null,
@@ -82,7 +82,7 @@ public final class PoSelector extends SeSelector {
          * @param invalidatedPo an enum value to indicate if an invalidated PO should be accepted or
          *        not
          */
-        public PoAidSelector(byte[] aidToSelect, InvalidatedPo invalidatedPo) {
+        public PoAidSelector(IsoAid aidToSelect, InvalidatedPo invalidatedPo) {
             super(aidToSelect,
                     invalidatedPo == InvalidatedPo.ACCEPT ? successfulSelectionStatusCodes : null);
         }

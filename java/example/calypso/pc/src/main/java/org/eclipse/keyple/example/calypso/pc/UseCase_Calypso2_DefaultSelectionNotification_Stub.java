@@ -20,6 +20,7 @@ import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -123,7 +124,8 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
          */
         PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
                 new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
+                        new PoSelector.PoAidSelector(
+                                new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
                                 PoSelector.InvalidatedPo.REJECT),
                         "AID: " + CalypsoClassicInfo.AID),
                 ChannelState.KEEP_OPEN);

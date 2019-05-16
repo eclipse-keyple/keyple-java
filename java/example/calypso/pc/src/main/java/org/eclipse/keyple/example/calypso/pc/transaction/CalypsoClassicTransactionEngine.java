@@ -283,7 +283,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
          */
         seSelection.prepareSelection(new PoSelectionRequest(
                 new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(poFakeAid1),
+                        new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poFakeAid1),
                                 PoSelector.InvalidatedPo.REJECT),
                         "Selector with fake AID1"),
                 ChannelState.KEEP_OPEN));
@@ -295,7 +295,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
          */
         PoSelectionRequest poSelectionRequestCalypsoAid = new PoSelectionRequest(
                 new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
+                        new PoSelector.PoAidSelector(
+                                new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
                                 PoSelector.InvalidatedPo.ACCEPT),
                         "Calypso selector"),
                 ChannelState.KEEP_OPEN);
@@ -311,7 +312,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
          */
         seSelection.prepareSelection(new PoSelectionRequest(
                 new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME, null,
-                        new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(poFakeAid2),
+                        new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poFakeAid2),
                                 PoSelector.InvalidatedPo.REJECT),
                         "Selector with fake AID2"),
                 ChannelState.KEEP_OPEN));
