@@ -161,7 +161,7 @@ public class VirtualPluginEventTest extends VirtualReaderBaseTest {
         // connect twice
         nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID);
 
-        // a KeypleReaderException exception is thrown
+        // Expect a KeypleReaderException exception to be thrown
     }
 
     /**
@@ -182,7 +182,7 @@ public class VirtualPluginEventTest extends VirtualReaderBaseTest {
         });
         this.disconnectStubReader("anysession", "A_NOT_CONNECTED_READER", CLIENT_NODE_ID);
 
-        // a KeypleReaderException exception is thrown
+        // Expect a KeypleReaderException exception to be thrown
     }
 
 
