@@ -219,10 +219,10 @@ public class StubReaderTest {
 
         SeSelection seSelection = new SeSelection();
 
-        PoSelectionRequest poSelectionRequest =
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(poAid), null),
-                        "AID: " + poAid), ChannelState.KEEP_OPEN);
+        PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
+                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
+                "AID: " + poAid), ChannelState.KEEP_OPEN);
 
         seSelection.prepareSelection(poSelectionRequest);
 
@@ -258,10 +258,10 @@ public class StubReaderTest {
 
         SeSelection seSelection = new SeSelection();
 
-        PoSelectionRequest poSelectionRequest =
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(poAid), null),
-                        "AID: " + poAid), ChannelState.KEEP_OPEN);
+        PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
+                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
+                "AID: " + poAid), ChannelState.KEEP_OPEN);
 
         seSelection.prepareSelection(poSelectionRequest);
 
@@ -311,10 +311,10 @@ public class StubReaderTest {
 
         SeSelection seSelection = new SeSelection();
 
-        PoSelectionRequest poSelectionRequest =
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(poAid), null),
-                        "AID: " + poAid), ChannelState.KEEP_OPEN);
+        PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
+                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(poAid), null),
+                "AID: " + poAid), ChannelState.KEEP_OPEN);
 
         seSelection.prepareSelection(poSelectionRequest);
 
@@ -886,7 +886,9 @@ public class StubReaderTest {
         }
 
         SeSelector selector = new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid), null), null);
+                new SeSelector.AidSelector(
+                        new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(poAid)), null),
+                null);
 
         return new SeRequest(poApduRequestList, ChannelState.CLOSE_AFTER);
     }

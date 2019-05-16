@@ -24,7 +24,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -40,26 +39,31 @@ public class TestEngine {
         SeSelection seSelection = new SeSelection();
 
         // Add Audit C0 AID to the list
-        seSelection.prepareSelection(
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.PoAidSelector(
-                                ByteArrayUtil.fromHex(PoFileStructureInfo.poAuditC0Aid), null),
-                        "Audit C0"), ChannelState.KEEP_OPEN));
+        seSelection
+                .prepareSelection(new PoSelectionRequest(
+                        new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                        PoFileStructureInfo.poAuditC0Aid), null),
+                                "Audit C0"),
+                        ChannelState.KEEP_OPEN));
 
         // Add CLAP AID to the list
-        seSelection.prepareSelection(new PoSelectionRequest(
-                new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.PoAidSelector(
-                                ByteArrayUtil.fromHex(PoFileStructureInfo.clapAid), null),
-                        "CLAP"),
-                ChannelState.KEEP_OPEN));
+        seSelection
+                .prepareSelection(new PoSelectionRequest(
+                        new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                        PoFileStructureInfo.clapAid), null),
+                                "CLAP"),
+                        ChannelState.KEEP_OPEN));
 
         // Add cdLight AID to the list
-        seSelection.prepareSelection(
-                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                        new PoSelector.PoAidSelector(
-                                ByteArrayUtil.fromHex(PoFileStructureInfo.cdLightAid), null),
-                        "CDLight"), ChannelState.KEEP_OPEN));
+        seSelection
+                .prepareSelection(new PoSelectionRequest(
+                        new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                        PoFileStructureInfo.cdLightAid), null),
+                                "CDLight"),
+                        ChannelState.KEEP_OPEN));
 
         MatchingSelection matchingSelection =
                 seSelection.processExplicitSelection(poReader).getActiveSelection();

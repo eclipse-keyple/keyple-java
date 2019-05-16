@@ -19,11 +19,11 @@ import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
@@ -121,38 +121,27 @@ public class Demo_WriteName {
             // Add Audit C0 AID to the list
             int auditC0SeIndex = seSelection.prepareSelection(new PoSelectionRequest(
                     new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.PoAidSelector(
-                                    ByteArrayUtil.fromHex(PoFileStructureInfo.poAuditC0Aid), null),
+                            new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                    PoFileStructureInfo.poAuditC0Aid), null),
                             "Audit C0"),
                     ChannelState.KEEP_OPEN));
 
             // Add CLAP AID to the list
             int clapSe =
-                    seSelection
-                            .prepareSelection(
-                                    new PoSelectionRequest(
-                                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                                                    null,
-                                                    new PoSelector.PoAidSelector(
-                                                            ByteArrayUtil.fromHex(
-                                                                    PoFileStructureInfo.clapAid),
-                                                            null),
-                                                    "CLAP"),
-                                            ChannelState.KEEP_OPEN));
+                    seSelection.prepareSelection(new PoSelectionRequest(
+                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                    new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                            PoFileStructureInfo.clapAid), null),
+                                    "CLAP"),
+                            ChannelState.KEEP_OPEN));
 
             // Add cdLight AID to the list
-            int cdLightSe =
-                    seSelection
-                            .prepareSelection(
-                                    new PoSelectionRequest(
-                                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                                                    null,
-                                                    new PoSelector.PoAidSelector(
-                                                            ByteArrayUtil.fromHex(
-                                                                    PoFileStructureInfo.cdLightAid),
-                                                            null),
-                                                    "CDLight"),
-                                            ChannelState.KEEP_OPEN));
+            int cdLightSe = seSelection.prepareSelection(new PoSelectionRequest(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                    PoFileStructureInfo.cdLightAid), null),
+                            "CDLight"),
+                    ChannelState.KEEP_OPEN));
 
             SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
             if (!selectionsResult.hasActiveSelection()) {

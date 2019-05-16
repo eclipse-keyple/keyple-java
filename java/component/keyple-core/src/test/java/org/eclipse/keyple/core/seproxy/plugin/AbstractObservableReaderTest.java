@@ -20,7 +20,7 @@ import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.junit.Assert;
@@ -158,7 +158,8 @@ public class AbstractObservableReaderTest extends CoreBaseTest {
             }
 
             @Override
-            protected SelectionStatus openLogicalChannel(SeSelector selector) {
+            protected ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
+                    throws KeypleIOReaderException {
                 return null;
             }
 

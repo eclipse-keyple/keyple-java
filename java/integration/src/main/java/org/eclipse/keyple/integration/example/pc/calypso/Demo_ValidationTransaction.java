@@ -30,7 +30,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
@@ -309,38 +308,27 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
             // Add Audit C0 AID to the list
             int auditC0SeIndex = seSelection.prepareSelection(new PoSelectionRequest(
                     new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.PoAidSelector(
-                                    ByteArrayUtil.fromHex(PoFileStructureInfo.poAuditC0Aid), null),
+                            new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                    PoFileStructureInfo.poAuditC0Aid), null),
                             "Audit C0"),
                     ChannelState.KEEP_OPEN));
 
             // Add CLAP AID to the list
             int clapSeIndex =
-                    seSelection
-                            .prepareSelection(
-                                    new PoSelectionRequest(
-                                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                                                    null,
-                                                    new PoSelector.PoAidSelector(
-                                                            ByteArrayUtil.fromHex(
-                                                                    PoFileStructureInfo.clapAid),
-                                                            null),
-                                                    "CLAP"),
-                                            ChannelState.KEEP_OPEN));
+                    seSelection.prepareSelection(new PoSelectionRequest(
+                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                    new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                            PoFileStructureInfo.clapAid), null),
+                                    "CLAP"),
+                            ChannelState.KEEP_OPEN));
 
             // Add cdLight AID to the list
-            int cdLightSeIndex =
-                    seSelection
-                            .prepareSelection(
-                                    new PoSelectionRequest(
-                                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                                                    null,
-                                                    new PoSelector.PoAidSelector(
-                                                            ByteArrayUtil.fromHex(
-                                                                    PoFileStructureInfo.cdLightAid),
-                                                            null),
-                                                    "CDLight"),
-                                            ChannelState.KEEP_OPEN));
+            int cdLightSeIndex = seSelection.prepareSelection(new PoSelectionRequest(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                    PoFileStructureInfo.cdLightAid), null),
+                            "CDLight"),
+                    ChannelState.KEEP_OPEN));
 
             SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
 
