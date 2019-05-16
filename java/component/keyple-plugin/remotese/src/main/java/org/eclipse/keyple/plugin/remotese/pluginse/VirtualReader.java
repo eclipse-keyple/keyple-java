@@ -112,8 +112,14 @@ public final class VirtualReader extends AbstractObservableReader {
             rmTxEngine.add(transmit);
             return transmit.getResponse();
         } catch (KeypleRemoteException e) {
-            e.printStackTrace();
-            throw (KeypleReaderException) e.getCause();
+            if (e.getCause() != null) {
+                // KeypleReaderException is inside the KeypleRemoteException
+                throw (KeypleReaderException) e.getCause();
+
+            } else {
+                // create a new KeypleReaderException
+                throw new KeypleReaderException(e.getMessage());
+            }
         }
     }
 

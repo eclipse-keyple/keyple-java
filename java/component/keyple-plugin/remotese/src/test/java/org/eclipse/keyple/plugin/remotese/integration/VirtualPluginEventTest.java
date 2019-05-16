@@ -143,7 +143,7 @@ public class VirtualPluginEventTest extends VirtualReaderBaseTest {
                 // to 1
                 if (1 != lock.getCount()) {
                     throw new IllegalStateException();
-                } ;
+                }
                 Assert.assertNotNull(event.getReaderNames().first());
                 Assert.assertEquals(1, event.getReaderNames().size());
                 Assert.assertEquals(remoteSePlugin.getName(), event.getPluginName());

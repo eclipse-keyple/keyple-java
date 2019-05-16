@@ -49,6 +49,9 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     private final RemoteMethodTxEngine rmTxEngine;// rm command processor
     private final String masterNodeId;// master node id to connect to
 
+    public static final long DEFAULT_RPC_TIMEOUT = 10000;
+
+
     /**
      * Constructor
      * 
@@ -57,10 +60,22 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     public SlaveAPI(SeProxyService seProxyService, DtoNode dtoNode, String masterNodeId) {
         this.seProxyService = seProxyService;
         this.dtoNode = dtoNode;
-        this.rmTxEngine = new RemoteMethodTxEngine(dtoNode);
+        this.rmTxEngine = new RemoteMethodTxEngine(dtoNode, DEFAULT_RPC_TIMEOUT);
         this.masterNodeId = masterNodeId;
+        this.bindDtoEndpoint(dtoNode);
+    }
 
-
+    /**
+     * Constructor
+     *
+     * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
+     */
+    public SlaveAPI(SeProxyService seProxyService, DtoNode dtoNode, String masterNodeId,
+            long timeout) {
+        this.seProxyService = seProxyService;
+        this.dtoNode = dtoNode;
+        this.rmTxEngine = new RemoteMethodTxEngine(dtoNode, timeout);
+        this.masterNodeId = masterNodeId;
         this.bindDtoEndpoint(dtoNode);
     }
 
