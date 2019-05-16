@@ -405,12 +405,13 @@ public class Demo_Master implements Observable.Observer {
              * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
              * make the selection and read additional information afterwards
              */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                    new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
-                            PoSelector.InvalidatedPo.REJECT),
-                    "AID: " + CalypsoClassicInfo.AID), ChannelState.KEEP_OPEN);
-
+            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(
+                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
+                                    PoSelector.InvalidatedPo.REJECT),
+                            "AID: " + CalypsoClassicInfo.AID),
+                    ChannelState.KEEP_OPEN);
             /*
              * Add the selection case to the current selection (we could have added other cases
              * here)
