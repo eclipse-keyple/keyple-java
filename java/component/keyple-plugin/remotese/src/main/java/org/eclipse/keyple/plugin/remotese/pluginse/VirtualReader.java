@@ -128,12 +128,9 @@ public final class VirtualReader extends AbstractObservableReader {
     @Override
     protected SeResponse processSeRequest(SeRequest seRequest)
             throws IllegalArgumentException, KeypleReaderException {
-        try {
-            return this.processSeRequestSet(new SeRequestSet(seRequest)).getSingleResponse();
-        } catch (KeypleReaderException e) {
-            // throw the cause of the RemoteReaderException (a KeypleReaderException)
-            throw (KeypleReaderException) e.getCause();
-        }
+
+        return this.processSeRequestSet(new SeRequestSet(seRequest)).getSingleResponse();
+
     }
 
     @Override

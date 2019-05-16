@@ -47,9 +47,7 @@ public class Demo_Slave {
     // DtoNode used as to send and receive KeypleDto to Master
     private DtoNode node;
 
-    // private String slaveNodeId;
-
-    // NativeReaderServiceImpl, used to connectPoReader and disconnect readers
+    // SlaveAPI, used to connect PoReader and disconnect readers
     private SlaveAPI slaveAPI;
 
     private String nativeReaderName;
@@ -135,7 +133,7 @@ public class Demo_Slave {
      * @throws KeypleReaderException
      * @throws InterruptedException
      */
-    public void initPoReader() {
+    final private void initPoReader() {
 
         try {
             logger.info("{} Boot DemoSlave LocalReader ", node.getNodeId());
