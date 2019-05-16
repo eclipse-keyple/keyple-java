@@ -989,7 +989,7 @@ public final class PoTransaction {
     /**
      * The PO Transaction State defined with the elements: ‘IOError’, ‘SEInserted’ and ‘SERemoval’.
      */
-    public enum SessionState {
+    private enum SessionState {
         /** Initial state of a PO transaction. The PO must have been previously selected. */
         SESSION_UNINITIALIZED,
         /** The secure session is active. */
