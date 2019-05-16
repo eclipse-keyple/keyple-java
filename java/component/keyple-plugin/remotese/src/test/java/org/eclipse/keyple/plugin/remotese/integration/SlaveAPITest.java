@@ -133,10 +133,6 @@ public class SlaveAPITest {
         // first connectReader is successful
         String sessionId = spySlaveAPI.connectReader(nativeReader);
 
-        // assert an exception will be contained into keypleDto response
-        // doAnswer(Integration.assertContainsException()).when(slaveAPI)
-        // .onDTO(ArgumentMatchers.<TransportDto>any());
-
         // should throw a DTO with an exception in master side KeypleReaderException
         spySlaveAPI.connectReader(nativeReader);
 
