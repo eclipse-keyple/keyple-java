@@ -90,7 +90,12 @@ public class RmConnectReaderTx extends RemoteMethodTx<String> {
 
     @Override
     public KeypleDto dto() {
-        return new KeypleDto(RemoteMethod.READER_CONNECT.getName(), "{}", true, null,
+
+        // create response
+        JsonObject body = new JsonObject();
+        body.addProperty("transmissionMode", localReader.getTransmissionMode().name());
+
+        return new KeypleDto(RemoteMethod.READER_CONNECT.getName(), body.toString(), true, null,
                 localReader.getName(), null, requesterNodeId, targetNodeId);
     }
 }

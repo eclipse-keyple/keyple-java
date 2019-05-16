@@ -22,6 +22,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservablePlugin;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 import org.slf4j.Logger;
@@ -75,7 +76,7 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
      * Create a virtual reader (internal method)
      */
     ProxyReader createVirtualReader(String slaveNodeId, String nativeReaderName,
-            DtoSender dtoSender) throws KeypleReaderException {
+            DtoSender dtoSender, TransmissionMode transmissionMode) throws KeypleReaderException {
         logger.debug("createVirtualReader for slaveNodeId {} and reader {}", slaveNodeId,
                 nativeReaderName);
 
@@ -100,8 +101,8 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
         // Create virtual reader with a remote method engine so the reader can send dto
         // with a session
         // and the provided name
-        final VirtualReader virtualReader =
-                new VirtualReader(session, nativeReaderName, new RemoteMethodTxEngine(sender));
+        final VirtualReader virtualReader = new VirtualReader(session, nativeReaderName,
+                new RemoteMethodTxEngine(sender), transmissionMode);
         readers.add(virtualReader);
 
         // notify that a new reader is connected in a separated thread

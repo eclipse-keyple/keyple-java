@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
@@ -77,7 +78,8 @@ public class MasterAPITest {
         nativeReaderSpy =
                 Integration.bindSlaveSpy(factory.getClient(CLIENT_NODE_ID), SERVER_NODE_ID);
 
-        nativeReader = Integration.createStubReader(NATIVE_READER_NAME);
+        nativeReader =
+                Integration.createStubReader(NATIVE_READER_NAME, TransmissionMode.CONTACTLESS);
 
     }
 

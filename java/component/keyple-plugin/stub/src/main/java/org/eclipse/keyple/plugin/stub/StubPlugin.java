@@ -17,6 +17,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,15 +61,28 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
         parameters.put(key, value);
     }
 
-
     /**
      * Plug a Stub Reader
-     * 
+     *
      * @param name : name of the created reader
      * @param synchronous : should the stubreader added synchronously (without waiting for the
      *        observation thread)
      */
     public void plugStubReader(String name, Boolean synchronous) {
+        plugStubReader(name, TransmissionMode.CONTACTLESS, synchronous);
+    }
+
+
+    /**
+     * Plug a Stub Reader
+     *
+     * @param name : name of the created reader
+     * @param transmissionMode : transmissionMode of the created reader
+     * @param synchronous : should the stubreader added synchronously (without waiting for the
+     *        observation thread)
+     */
+    public void plugStubReader(String name, TransmissionMode transmissionMode,
+            Boolean synchronous) {
 
         logger.info("Plugging a new reader with name " + name);
         /* add the native reader to the native readers list */
