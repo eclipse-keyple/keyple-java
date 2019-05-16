@@ -170,7 +170,7 @@ public class Demo_WriteName {
             CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveSelection().getMatchingSe();
 
             PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
-                    samResource, new SecuritySettings());
+                    new TransactionSettings(samResource));
 
             String name = "CNA Keyple Demo";
 

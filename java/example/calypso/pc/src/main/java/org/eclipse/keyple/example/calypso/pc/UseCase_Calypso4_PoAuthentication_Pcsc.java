@@ -154,7 +154,7 @@ public class UseCase_Calypso4_PoAuthentication_Pcsc {
                         "==================================================================================");
 
                 PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
-                        samResource, CalypsoUtilities.getSecuritySettings());
+                        new TransactionSettings(samResource));
 
                 /*
                  * Prepare the reading order and keep the associated parser for later use once the

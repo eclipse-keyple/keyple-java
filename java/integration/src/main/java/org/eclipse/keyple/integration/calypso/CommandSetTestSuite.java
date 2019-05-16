@@ -22,7 +22,7 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
-import org.eclipse.keyple.calypso.transaction.SecuritySettings;
+import org.eclipse.keyple.calypso.transaction.TransactionSettings;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -65,7 +65,7 @@ public class CommandSetTestSuite {
 
         PoTransaction poTransaction =
                 new PoTransaction(new PoResource(TestEngine.poReader, calypsoPo),
-                        TestEngine.samResource, new SecuritySettings());
+                        new TransactionSettings(TestEngine.samResource));
 
         int readRecordsRespParsIndex = poTransaction.prepareReadRecordsCmd(fileSfi,
                 readDataStructureValue, (byte) recordNumber,
@@ -92,7 +92,7 @@ public class CommandSetTestSuite {
 
         PoTransaction poTransaction =
                 new PoTransaction(new PoResource(TestEngine.poReader, calypsoPo),
-                        TestEngine.samResource, new SecuritySettings());
+                        new TransactionSettings(TestEngine.samResource));
 
         poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
                 PoTransaction.SessionAccessLevel.SESSION_LVL_LOAD, (byte) 0x00, (byte) 0x00);
@@ -110,7 +110,7 @@ public class CommandSetTestSuite {
 
         PoTransaction poTransaction =
                 new PoTransaction(new PoResource(TestEngine.poReader, calypsoPo),
-                        TestEngine.samResource, new SecuritySettings());
+                        new TransactionSettings(TestEngine.samResource));
 
         poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
                 PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0x00, (byte) 0x00);
@@ -129,7 +129,7 @@ public class CommandSetTestSuite {
 
         PoTransaction poTransaction =
                 new PoTransaction(new PoResource(TestEngine.poReader, calypsoPo),
-                        TestEngine.samResource, new SecuritySettings());
+                        new TransactionSettings(TestEngine.samResource));
 
         poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
                 PoTransaction.SessionAccessLevel.SESSION_LVL_LOAD, (byte) 0x00, (byte) 0x00);
@@ -148,7 +148,7 @@ public class CommandSetTestSuite {
 
         PoTransaction poTransaction =
                 new PoTransaction(new PoResource(TestEngine.poReader, calypsoPo),
-                        TestEngine.samResource, new SecuritySettings());
+                        new TransactionSettings(TestEngine.samResource));
 
         poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
                 PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0x00, (byte) 0x00);
@@ -431,7 +431,7 @@ public class CommandSetTestSuite {
 
             PoTransaction poTransaction = new PoTransaction(
                     new PoResource(TestEngine.poReader, (CalypsoPo) poData.getMatchingSe()),
-                    TestEngine.samResource, new SecuritySettings());
+                    new TransactionSettings(TestEngine.samResource));
 
             String genericCounterData =
                     "00000A 000100 000B00 010000 0C0000 0000B0 00C000 0F0000 00000D 0000";
@@ -480,7 +480,7 @@ public class CommandSetTestSuite {
 
             PoTransaction poTransaction = new PoTransaction(
                     new PoResource(TestEngine.poReader, (CalypsoPo) poData.getMatchingSe()),
-                    TestEngine.samResource, new SecuritySettings());
+                    new TransactionSettings(TestEngine.samResource));
 
             String genericCounterData =
                     "0A0000 000100 000B00 010000 0C0000 0000B0 00C000 0F0000 00000D 0000";
@@ -529,7 +529,7 @@ public class CommandSetTestSuite {
 
             PoTransaction poTransaction = new PoTransaction(
                     new PoResource(TestEngine.poReader, (CalypsoPo) poData.getMatchingSe()),
-                    TestEngine.samResource, new SecuritySettings());
+                    new TransactionSettings(TestEngine.samResource));
 
             byte[] recordData = new byte[poData.getEventFileData().getRecSize()];
             Arrays.fill(recordData, (byte) (0x01));
@@ -584,7 +584,7 @@ public class CommandSetTestSuite {
 
             PoTransaction poTransaction = new PoTransaction(
                     new PoResource(TestEngine.poReader, (CalypsoPo) poData.getMatchingSe()),
-                    TestEngine.samResource, new SecuritySettings());
+                    new TransactionSettings(TestEngine.samResource));
 
             byte[] recordData = new byte[poData.getEventFileData().getRecSize()];
             Arrays.fill(recordData, (byte) (0xA5));
@@ -603,7 +603,7 @@ public class CommandSetTestSuite {
 
             poTransaction = new PoTransaction(
                     new PoResource(TestEngine.poReader, (CalypsoPo) poData.getMatchingSe()),
-                    TestEngine.samResource, new SecuritySettings());
+                    new TransactionSettings(TestEngine.samResource));
 
             poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
                     PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT,
@@ -634,7 +634,7 @@ public class CommandSetTestSuite {
 
             PoTransaction poTransaction = new PoTransaction(
                     new PoResource(TestEngine.poReader, (CalypsoPo) poData.getMatchingSe()),
-                    TestEngine.samResource, new SecuritySettings());
+                    new TransactionSettings(TestEngine.samResource));
 
             byte[] recordData = new byte[poData.getEventFileData().getRecSize()];
             Arrays.fill(recordData, (byte) (0xA9));
@@ -651,7 +651,7 @@ public class CommandSetTestSuite {
 
             poTransaction = new PoTransaction(
                     new PoResource(TestEngine.poReader, (CalypsoPo) poData.getMatchingSe()),
-                    TestEngine.samResource, new SecuritySettings());
+                    new TransactionSettings(TestEngine.samResource));
 
             poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
                     PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT,

@@ -91,11 +91,6 @@ public class CalypsoUtilities {
         return samResource;
     }
 
-    public static SecuritySettings getSecuritySettings() {
-        /* define the security parameters to provide when creating PoTransaction */
-        return new SecuritySettings();
-    }
-
     /**
      * Check SAM presence and consistency and return a SamResource when everything is correct.
      * <p>

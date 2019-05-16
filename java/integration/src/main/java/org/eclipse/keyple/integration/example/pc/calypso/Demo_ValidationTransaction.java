@@ -202,7 +202,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         SeResponse dataReadInSession;
         PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, detectedPO),
-                samResource, new SecuritySettings());
+                new TransactionSettings(samResource));
 
         int readEventParserIndex = poTransaction.prepareReadRecordsCmd(eventSfi,
                 ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, "Event");
@@ -253,8 +253,8 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
             poTransaction.processClosing(ChannelState.KEEP_OPEN);
 
-            poTransaction = new PoTransaction(new PoResource(poReader, detectedPO), samResource,
-                    new SecuritySettings());
+            poTransaction = new PoTransaction(new PoResource(poReader, detectedPO),
+                    new TransactionSettings(samResource));
 
             poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
                     PoTransaction.SessionAccessLevel.SESSION_LVL_LOAD, (byte) 0x00, (byte) 0x00);
@@ -346,7 +346,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                         .getMatchingSelection(auditC0SeIndex).getMatchingSe();
 
                 PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, auditC0Se),
-                        samResource, new SecuritySettings());
+                        new TransactionSettings(samResource));
                 validateAuditC0(poTransaction);
 
             } else if (matchingSelectionIndex == clapSeIndex) {
@@ -354,7 +354,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                         .getMatchingSe();
 
                 PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, clapSe),
-                        samResource, new SecuritySettings());
+                        new TransactionSettings(samResource));
                 validateClap(clapSe);
 
             } else if (matchingSelectionIndex == cdLightSeIndex) {
@@ -363,7 +363,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                         .getMatchingSelection(cdLightSeIndex).getMatchingSe();
 
                 PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, cdLightSe),
-                        samResource, new SecuritySettings());
+                        new TransactionSettings(samResource));
                 validateAuditC0(poTransaction);
 
             } else {

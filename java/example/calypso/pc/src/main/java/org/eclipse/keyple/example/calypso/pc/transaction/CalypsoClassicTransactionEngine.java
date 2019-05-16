@@ -62,7 +62,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
     private static Logger logger = LoggerFactory.getLogger(CalypsoClassicTransactionEngine.class);
 
     /* define the SAM parameters to provide when creating PoTransaction */
-    private final SecuritySettings securitySettings = new SecuritySettings();
+    private TransactionSettings transactionSettings;
     private SeReader poReader, samReader;
     private SamResource samResource = null;
 
@@ -343,6 +343,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                     /* the following method will throw an exception if the SAM is not available. */
                     samResource = CalypsoUtilities.checkSamAndOpenChannel(samReader);
                     this.samChannelOpen = true;
+                    transactionSettings = new TransactionSettings(samResource);
                 }
 
                 Profiler profiler = new Profiler("Entire transaction");
@@ -352,8 +353,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
 
                 profiler.start("Calypso1");
 
-                PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
-                        samResource, securitySettings);
+                PoTransaction poTransaction =
+                        new PoTransaction(new PoResource(poReader, calypsoPo), transactionSettings);
 
                 doCalypsoReadWriteTransaction(poTransaction, true);
 

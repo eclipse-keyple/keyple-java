@@ -164,7 +164,7 @@ public class UseCase_Calypso5_MultipleSession_Pcsc {
                         "==================================================================================");
 
                 PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
-                        samResource, CalypsoUtilities.getSecuritySettings());
+                        new TransactionSettings(samResource));
 
                 /*
                  * Open Session for the debit key
