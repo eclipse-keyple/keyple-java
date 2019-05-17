@@ -26,7 +26,6 @@ import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmSetDefaultSelectionRequestTx;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmTransmitTx;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
-import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,34 +38,39 @@ public final class VirtualReader extends AbstractObservableReader {
     private final String nativeReaderName;
     private final RemoteMethodTxEngine rmTxEngine;
     private final String slaveNodeId;
+    private final TransmissionMode transmissionMode;
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReader.class);
 
     /**
-     * Creates a new virtual reader Called by {@link RemoteSePlugin}
+     * Create a new Virtual Reader (only called by @{@link RemoteSePlugin})
      * 
-     * @param session Reader Session that helps communicate with {@link DtoNode}
-     * @param nativeReaderName local name of the native reader on slave side
+     * @param session : session associated to the reader
+     * @param nativeReaderName : native reader name on slave terminal
+     * @param rmTxEngine : processor for remote method
+     * @param transmissionMode : transmission mode of the native reader on slave terminal
      */
     VirtualReader(VirtualReaderSession session, String nativeReaderName,
-            RemoteMethodTxEngine rmTxEngine, String slaveNodeId) {
+            RemoteMethodTxEngine rmTxEngine, String slaveNodeId,
+            TransmissionMode transmissionMode) {
         super(RemoteSePlugin.PLUGIN_NAME,
                 RemoteSePlugin.generateReaderName(nativeReaderName, slaveNodeId));
         this.session = session;
         this.nativeReaderName = nativeReaderName;
         this.rmTxEngine = rmTxEngine;
         this.slaveNodeId = slaveNodeId;
-        logger.debug("A new virtual reader was created with session {}", session);
+
+        this.transmissionMode = transmissionMode;
+        logger.info(
+                "A new virtual reader was created with name:{}, sessionId:{}, transmissionMode:{}",
+                name, session, transmissionMode);
     }
 
     /**
-     * TODO change this to handle the right transmission mode
-     *
      * @return the current transmission mode
      */
     public TransmissionMode getTransmissionMode() {
-        logger.error("getTransmissionMode is not implemented yet");
-        return null;
+        return transmissionMode;
     }
 
     /**
