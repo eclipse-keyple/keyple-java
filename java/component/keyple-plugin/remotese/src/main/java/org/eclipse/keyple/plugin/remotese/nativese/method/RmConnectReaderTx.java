@@ -103,7 +103,7 @@ public class RmConnectReaderTx extends RemoteMethodTx<String> {
         JsonObject body = new JsonObject();
         body.addProperty("transmissionMode", localReader.getTransmissionMode().name());
 
-        return new KeypleDto(RemoteMethod.READER_CONNECT.getName(), body.toString(), true, null,
+        return new KeypleDto(getMethodName().getName(), body.toString(), true, null,
                 localReader.getName(), null, requesterNodeId, targetNodeId);
     }
 }

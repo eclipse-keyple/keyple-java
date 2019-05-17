@@ -57,7 +57,7 @@ public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
                 JsonParser.getGson().toJson(defaultSelectionsRequest));
         body.addProperty("notificationMode", notificationMode.getName());
 
-        return new KeypleDto(RemoteMethod.DEFAULT_SELECTION_REQUEST.getName(),
+        return new KeypleDto(getMethodName().getName(),
                 JsonParser.getGson().toJson(body, JsonObject.class), true, sessionId,
                 nativeReaderName, virtualReaderName, requesterNodeId, targetNodeId);
 
