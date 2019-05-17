@@ -82,8 +82,9 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
             logger.warn("Transmission mode is illegal " + nativeReaderName, e);
 
             // send the exception inside the dto
-            return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(),
-                    e, null, nativeReaderName, null, slaveNodeId));
+            return transportDto.nextTransportDTO(
+                    KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(), e, null, nativeReaderName,
+                            null, keypleDto.getTargetNodeId(), keypleDto.getRequesterNodeId()));
 
         }
     }
