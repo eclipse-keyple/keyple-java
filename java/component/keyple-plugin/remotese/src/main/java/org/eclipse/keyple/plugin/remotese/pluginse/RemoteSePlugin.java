@@ -104,7 +104,7 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
         // with a session
         // and the provided name
         final VirtualReader virtualReader = new VirtualReader(session, nativeReaderName,
-                new RemoteMethodTxEngine(sender), transmissionMode);
+                new RemoteMethodTxEngine(sender), slaveNodeId,transmissionMode);
         readers.add(virtualReader);
 
         // notify that a new reader is connected in a separated thread
