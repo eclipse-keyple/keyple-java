@@ -28,6 +28,11 @@ public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
     private final ObservableReader.NotificationMode notificationMode;
 
 
+    @Override
+    public RemoteMethod getMethodName() {
+        return RemoteMethod.DEFAULT_SELECTION_REQUEST;
+    }
+
     public RmSetDefaultSelectionRequestTx(AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             ObservableReader.NotificationMode notificationMode, String nativeReaderName,
             String virtualReaderName, String sessionId, String slaveNodeId,

@@ -36,6 +36,11 @@ public class RmConnectReaderTx extends RemoteMethodTx<String> {
     private final ProxyReader localReader;
     private final INativeReaderService slaveAPI;
 
+    @Override
+    public RemoteMethod getMethodName() {
+        return RemoteMethod.READER_CONNECT;
+    }
+
 
     public RmConnectReaderTx(String sessionId, String nativeReaderName, String virtualReaderName,
             String masterNodeId, ProxyReader localReader, String slaveNodeId,

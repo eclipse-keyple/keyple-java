@@ -29,6 +29,11 @@ public class RmDisconnectReaderTx extends RemoteMethodTx<Boolean> {
 
     private static final Logger logger = LoggerFactory.getLogger(RmDisconnectReaderTx.class);
 
+    @Override
+    public RemoteMethod getMethodName() {
+        return RemoteMethod.READER_DISCONNECT;
+    }
+
 
     public RmDisconnectReaderTx(String sessionId, String nativeReaderName, String slaveNodeId,
             String targetNodeId) {

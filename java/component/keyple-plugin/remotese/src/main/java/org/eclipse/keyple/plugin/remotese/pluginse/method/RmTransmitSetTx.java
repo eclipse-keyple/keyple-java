@@ -32,6 +32,10 @@ public class RmTransmitSetTx extends RemoteMethodTx<SeResponseSet> {
 
     private final SeRequestSet seRequestSet;
 
+    @Override
+    public RemoteMethod getMethodName() {
+        return RemoteMethod.READER_TRANSMIT_SET;
+    }
 
     public RmTransmitSetTx(SeRequestSet seRequestSet, String sessionId, String nativeReaderName,
             String virtualReaderName, String requesterNodeId, String slaveNodeId) {

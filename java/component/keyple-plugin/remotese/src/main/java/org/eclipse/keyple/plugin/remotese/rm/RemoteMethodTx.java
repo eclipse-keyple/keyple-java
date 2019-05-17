@@ -26,8 +26,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class RemoteMethodTx<T> {
 
-    // todo should add getMethodName()
-
     private static final Logger logger = LoggerFactory.getLogger(RemoteMethodTx.class);
     protected final String sessionId;
     protected final String nativeReaderName;
@@ -66,6 +64,12 @@ public abstract class RemoteMethodTx<T> {
      */
     protected abstract T parseResponse(KeypleDto keypleDto) throws KeypleRemoteException;
 
+    /**
+     * Return name of the Remote Method
+     * 
+     * @return : name of the remote method
+     */
+    public abstract RemoteMethod getMethodName();
 
     /**
      * Non blocking method to getResponse results from the remote method call
