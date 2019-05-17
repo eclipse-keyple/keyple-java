@@ -29,7 +29,6 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
 import org.junit.*;
 import org.slf4j.Logger;
@@ -106,8 +105,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         virtualReader.addObserver(new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
-                Assert.assertEquals(event.getReaderName(), nativeReader.getName());
-                Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                Assert.assertEquals(event.getReaderName(), virtualReader.getName());
+                Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
                 logger.debug("Reader Event is correct, release lock");
                 lock.countDown();
@@ -148,8 +147,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 } else {
                     // the next event should be SE_REMOVAL
                     Assert.assertEquals(1, lock.getCount());
-                    Assert.assertEquals(event.getReaderName(), nativeReader.getName());
-                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(event.getReaderName(), virtualReader.getName());
+                    Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
                     Assert.assertEquals(ReaderEvent.EventType.SE_REMOVAL, event.getEventType());
                     logger.debug("Reader Event is correct, release lock");
                     lock.countDown();
@@ -191,8 +190,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         virtualReader.addObserver(new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
-                Assert.assertEquals(event.getReaderName(), nativeReader.getName());
-                Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                Assert.assertEquals(event.getReaderName(), virtualReader.getName());
+                Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
                 Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
                 Assert.assertTrue(((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
                         .getSelectionSeResponseSet().getSingleResponse().getSelectionStatus()
@@ -316,8 +315,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         virtualReader.addObserver(new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
-                Assert.assertEquals(event.getReaderName(), nativeReader.getName());
-                Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                Assert.assertEquals(event.getReaderName(), virtualReader.getName());
+                Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
 
                 // an SE_INSERTED event is thrown
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());

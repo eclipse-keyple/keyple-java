@@ -27,6 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
+/**
+ * Handle the Connect Reader keypleDTO serialization and deserialization
+ */
 public class RmConnectReaderTx extends RemoteMethodTx<String> {
 
 

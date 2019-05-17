@@ -33,7 +33,7 @@ public class KeypleDtoHelperTest {
         Exception ex = new KeypleReaderException("keyple Reader Exception message",
                 new IOException("error io"));
         KeypleDto dtoWithException =
-                KeypleDtoHelper.ExceptionDTO("any", ex, "any", "any", "any", "any");
+                KeypleDtoHelper.ExceptionDTO("any", ex, "any", "any", "any", "any", "any");
         logger.debug(KeypleDtoHelper.toJson(dtoWithException));
         assert KeypleDtoHelper.containsException(dtoWithException);
 

@@ -49,10 +49,12 @@ public class PublishQueue<T> {
     }
 
     public void publish(T state) {
-        logger.debug("Publish new state : " + state);
+        logger.trace("Publish new item : " + state);
         try {
             if (q.size() > 0) {
-                logger.warn("Warning call init() before publishing");
+
+                logger.error("publish(), Queue is not empty, unconsumed element {}", q.take());
+
             }
             q.put(state);
         } catch (InterruptedException e) {

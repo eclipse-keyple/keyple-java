@@ -62,7 +62,7 @@ dependencies {
     //implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-remotese-transport-api', version: '0.+'
     //implementation project(path:':java:component:keyple-plugin:keyple-plugin-remotese-transport-api')
 
-    //implementation project(path: ':java:example:calypso:example-calypso-pc')
+    implementation project(path: ':java:example:calypso:example-calypso-pc')
     //implementation group: 'org.eclipse.keyple', name: 'example-calypso-pc', version: '1.+'
 
     implementation project(path: ':java:example:calypso:example-calypso-common')

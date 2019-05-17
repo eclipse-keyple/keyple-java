@@ -25,6 +25,9 @@ import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Execute the Transmit on Native Reader
+ */
 public class RmTransmitExecutor implements RemoteMethodExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(RmTransmitExecutor.class);
@@ -56,17 +59,17 @@ public class RmTransmitExecutor implements RemoteMethodExecutor {
 
             // prepare response
             String parseBody = JsonParser.getGson().toJson(seResponseSet, SeResponseSet.class);
-            out = transportDto
-                    .nextTransportDTO(new KeypleDto(RemoteMethod.READER_TRANSMIT.getName(),
-                            parseBody, false, keypleDto.getSessionId(), nativeReaderName,
-                            keypleDto.getVirtualReaderName(), keypleDto.getRequesterNodeId()));
+            out = transportDto.nextTransportDTO(new KeypleDto(
+                    RemoteMethod.READER_TRANSMIT.getName(), parseBody, false,
+                    keypleDto.getSessionId(), nativeReaderName, keypleDto.getVirtualReaderName(),
+                    keypleDto.getTargetNodeId(), keypleDto.getRequesterNodeId()));
 
         } catch (KeypleReaderException e) {
             // if an exception occurs, send it into a keypleDto to the Master
-            out = transportDto.nextTransportDTO(
-                    KeypleDtoHelper.ExceptionDTO(RemoteMethod.READER_TRANSMIT.getName(), e,
-                            keypleDto.getSessionId(), nativeReaderName,
-                            keypleDto.getVirtualReaderName(), keypleDto.getRequesterNodeId()));
+            out = transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(
+                    RemoteMethod.READER_TRANSMIT.getName(), e, keypleDto.getSessionId(),
+                    nativeReaderName, keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
+                    keypleDto.getRequesterNodeId()));
         }
 
         return out;
