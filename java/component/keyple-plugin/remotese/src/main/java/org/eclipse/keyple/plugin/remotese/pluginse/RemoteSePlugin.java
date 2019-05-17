@@ -22,6 +22,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservablePlugin;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 import org.slf4j.Logger;
@@ -77,7 +78,7 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
      * Create a virtual reader (internal method)
      */
     ProxyReader createVirtualReader(String slaveNodeId, String nativeReaderName,
-            DtoSender dtoSender) throws KeypleReaderException {
+            DtoSender dtoSender, TransmissionMode transmissionMode) throws KeypleReaderException {
         logger.debug("createVirtualReader for slaveNodeId {} and reader {}", slaveNodeId,
                 nativeReaderName);
 
@@ -103,7 +104,7 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
         // with a session
         // and the provided name
         final VirtualReader virtualReader = new VirtualReader(session, nativeReaderName,
-                new RemoteMethodTxEngine(sender), slaveNodeId);
+                new RemoteMethodTxEngine(sender), slaveNodeId, transmissionMode);
         readers.add(virtualReader);
 
         // notify that a new reader is connected in a separated thread
@@ -204,7 +205,7 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
     /**
      * Generate the name for the virtual reader based on the NativeReader name and its node Id.
      * Bijective function
-     * 
+     *
      * @param nativeReaderName
      * @param slaveNodeId
      * @return

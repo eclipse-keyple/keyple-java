@@ -76,7 +76,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         initKeypleServices();
 
         // configure and connect a Stub Native reader
-        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID);
+        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID,
+                TransmissionMode.CONTACTLESS);
 
         // test virtual reader
         virtualReader = getVirtualReader();

@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -51,8 +52,13 @@ public class StubPluginTest extends BaseStubTest {
         final String READER_NAME = "testA_PlugOneReaderCount";
 
         // connect reader
-        stubPlugin.plugStubReader(READER_NAME, true);
+        stubPlugin.plugStubReader(READER_NAME, TransmissionMode.CONTACTLESS, true);
+        StubReader stubReader = (StubReader) stubPlugin.getReaders().first();
+
         Assert.assertEquals(1, stubPlugin.getReaders().size());
+        Assert.assertEquals(READER_NAME, stubReader.getName());
+        Assert.assertEquals(TransmissionMode.CONTACTLESS, stubReader.getTransmissionMode());
+
     }
 
 

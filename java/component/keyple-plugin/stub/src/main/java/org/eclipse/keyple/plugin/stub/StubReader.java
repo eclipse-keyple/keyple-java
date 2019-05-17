@@ -56,6 +56,11 @@ public final class StubReader extends AbstractThreadedLocalReader {
         threadWaitTimeout = 5000;
     }
 
+    public StubReader(String name, TransmissionMode transmissionMode) {
+        this(name);
+        this.transmissionMode = transmissionMode;
+    }
+
     @Override
     protected byte[] getATR() {
         return se.getATR();
