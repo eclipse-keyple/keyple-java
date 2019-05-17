@@ -19,6 +19,9 @@ import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import com.google.gson.JsonObject;
 
+/**
+ * Handle the DefautSelectionRequest keypleDTO serialization and deserialization
+ */
 public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
 
     private final AbstractDefaultSelectionsRequest defaultSelectionsRequest;

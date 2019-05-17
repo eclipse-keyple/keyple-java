@@ -24,6 +24,9 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+/**
+ * Execute the Connect Reader on Remote Se plugin
+ */
 class RmConnectReaderExecutor implements RemoteMethodExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(RmConnectReaderExecutor.class);
@@ -62,15 +65,17 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
             // build transport DTO with body
             return transportDto.nextTransportDTO(new KeypleDto(keypleDto.getAction(),
                     respBody.toString(), false, virtualReader.getSession().getSessionId(),
-                    nativeReaderName, virtualReader.getName(), slaveNodeId));
+                    nativeReaderName, virtualReader.getName(),
+                    transportDto.getKeypleDTO().getTargetNodeId(), slaveNodeId));
 
         } catch (KeypleReaderException e) {
             // virtual reader for remote reader already exists
             logger.warn("Virtual reader already exists for reader " + nativeReaderName, e);
 
             // send the exception inside the dto
-            return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(),
-                    e, null, nativeReaderName, null, slaveNodeId));
+            return transportDto.nextTransportDTO(
+                    KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(), e, null, nativeReaderName,
+                            null, transportDto.getKeypleDTO().getTargetNodeId(), slaveNodeId));
 
         } catch (IllegalArgumentException e) {
             // virtual reader for remote reader already exists

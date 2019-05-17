@@ -94,6 +94,11 @@ public class MasterAPI implements DtoHandler {
 
 
         switch (method) {
+
+            /*
+             * Requests from slave
+             */
+
             case READER_CONNECT:
                 if (keypleDTO.isRequest()) {
                     return new RmConnectReaderExecutor(this.plugin, this.dtoTransportNode)
@@ -102,6 +107,7 @@ public class MasterAPI implements DtoHandler {
                     throw new IllegalStateException(
                             "a READER_CONNECT response has been received by MasterAPI");
                 }
+
             case READER_DISCONNECT:
                 if (keypleDTO.isRequest()) {
                     return new RmDisconnectReaderExecutor(this.plugin).execute(transportDto);
@@ -109,8 +115,20 @@ public class MasterAPI implements DtoHandler {
                     throw new IllegalStateException(
                             "a READER_DISCONNECT response has been received by MasterAPI");
                 }
+
+
+                /*
+                 * Notifications from slave
+                 */
+
             case READER_EVENT:
-                return new RmEventExecutor(plugin).execute(transportDto);
+                // process response with the Event Reader RmMethod
+                return new RmReaderEventExecutor(plugin).execute(transportDto);
+
+            /*
+             * Response from slave
+             */
+
             case READER_TRANSMIT:
                 // can be more general
                 if (keypleDTO.isRequest()) {

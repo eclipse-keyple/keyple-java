@@ -22,7 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
-
+/**
+ * Execute the disconnect Reader on Remote Se plugin
+ */
 class RmDisconnectReaderExecutor implements RemoteMethodExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(RmDisconnectReaderExecutor.class);
@@ -40,24 +42,23 @@ class RmDisconnectReaderExecutor implements RemoteMethodExecutor {
         KeypleDto keypleDto = transportDto.getKeypleDTO();
 
         String nativeReaderName = keypleDto.getNativeReaderName();
-        String clientNodeId = keypleDto.getRequesterNodeId();
-        String sessionId = keypleDto.getSessionId();
 
         try {
-            // todo use sessionId is present
-            plugin.disconnectRemoteReader(nativeReaderName);
+            plugin.disconnectRemoteReader(nativeReaderName,
+                    transportDto.getKeypleDTO().getRequesterNodeId());
             JsonObject body = new JsonObject();
             body.addProperty("status", true);
             return transportDto
                     .nextTransportDTO(new KeypleDto(RemoteMethod.READER_DISCONNECT.getName(),
                             JsonParser.getGson().toJson(body, JsonObject.class), false, null,
-                            nativeReaderName, null, clientNodeId));
+                            nativeReaderName, null, keypleDto.getTargetNodeId(),
+                            keypleDto.getRequesterNodeId()));
         } catch (KeypleReaderNotFoundException e) {
             logger.error("Impossible to disconnect reader " + nativeReaderName, e);
-            return transportDto.nextTransportDTO(
-                    KeypleDtoHelper.ExceptionDTO(RemoteMethod.READER_DISCONNECT.getName(), e,
-                            keypleDto.getSessionId(), keypleDto.getNativeReaderName(),
-                            keypleDto.getVirtualReaderName(), keypleDto.getRequesterNodeId()));
+            return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(
+                    RemoteMethod.READER_DISCONNECT.getName(), e, keypleDto.getSessionId(),
+                    keypleDto.getNativeReaderName(), keypleDto.getVirtualReaderName(),
+                    keypleDto.getTargetNodeId(), keypleDto.getRequesterNodeId()));
         }
 
     }

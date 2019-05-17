@@ -122,8 +122,8 @@ public class MasterAPITest {
         String sessionId = nativeReaderSpy.connectReader(nativeReader);
 
         // assert that a virtual reader has been created
-        VirtualReader virtualReader =
-                (VirtualReader) masterAPI.getPlugin().getReaderByRemoteName(NATIVE_READER_NAME);
+        VirtualReader virtualReader = (VirtualReader) masterAPI.getPlugin()
+                .getReaderByRemoteName(NATIVE_READER_NAME, CLIENT_NODE_ID);
 
         Assert.assertEquals(NATIVE_READER_NAME, virtualReader.getNativeReaderName());
         Assert.assertEquals(1, nativeReader.countObservers());
@@ -185,8 +185,8 @@ public class MasterAPITest {
         // connect
         String sessionId = nativeReaderSpy.connectReader(nativeReader);
 
-        VirtualReader virtualReader =
-                (VirtualReader) masterAPI.getPlugin().getReaderByRemoteName(NATIVE_READER_NAME);
+        VirtualReader virtualReader = (VirtualReader) masterAPI.getPlugin()
+                .getReaderByRemoteName(NATIVE_READER_NAME, CLIENT_NODE_ID);
 
         Assert.assertEquals(NATIVE_READER_NAME, virtualReader.getNativeReaderName());
 
