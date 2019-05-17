@@ -10,8 +10,15 @@ apply plugin: 'java-library'
 task copyVersionFile {
     //generate properties file META-INF/keyple.properties with version number
     def props = new Properties()
+    def dirs = file "src/main/resources/META-INF/"
+    dirs.mkdirs()
+
     def propertyFile = file "src/main/resources/META-INF/keyple-core.properties"
-    props.load(propertyFile.newDataInputStream())
+
+    if(propertyFile.exists()){
+        props.load(propertyFile.newDataInputStream())
+    }
+    
     if(project.version !="unspecified" && project.version != props.getProperty("version")){
         logger.info('Version of keyple core have changed, overwriting src/main/resources/META-INF/keyple-core.properties')
         props.setProperty("version", project.version)
