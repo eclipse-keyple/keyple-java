@@ -39,6 +39,8 @@ public class MasterAPI implements DtoHandler {
     private final DtoNode dtoTransportNode;
     private final RemoteSePlugin plugin;
 
+    public static final long DEFAULT_RPC_TIMEOUT = 10000;
+
     /**
      * Build a new MasterAPI, Entry point for incoming DTO in Master Manages RemoteSePlugin
      * lifecycle Manages Master Session Dispatch KeypleDTO
@@ -53,7 +55,30 @@ public class MasterAPI implements DtoHandler {
         VirtualReaderSessionFactory sessionManager = new VirtualReaderSessionFactory();
 
         // Instantiate Plugin
-        this.plugin = new RemoteSePlugin(sessionManager, dtoNode);
+        this.plugin = new RemoteSePlugin(sessionManager, dtoNode, DEFAULT_RPC_TIMEOUT);
+        seProxyService.addPlugin(this.plugin);
+
+        // Set this service as the Dto Handler for the node
+        this.bindDtoEndpoint(dtoNode);
+    }
+
+    /**
+     * Build a new MasterAPI, Entry point for incoming DTO in Master Manages RemoteSePlugin
+     * lifecycle Manages Master Session Dispatch KeypleDTO
+     *
+     * @param seProxyService : SeProxyService
+     * @param dtoNode : outgoing node to send Dto to Slave
+     * @param rpc_timeout : timeout in milliseconds to wait for an answer from slave before throwing
+     *        an exception
+     */
+    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpc_timeout) {
+        this.dtoTransportNode = dtoNode;
+
+        // Instantiate Session Manager
+        VirtualReaderSessionFactory sessionManager = new VirtualReaderSessionFactory();
+
+        // Instantiate Plugin
+        this.plugin = new RemoteSePlugin(sessionManager, dtoNode, rpc_timeout);
         seProxyService.addPlugin(this.plugin);
 
         // Set this service as the Dto Handler for the node
@@ -94,6 +119,11 @@ public class MasterAPI implements DtoHandler {
 
 
         switch (method) {
+
+            /*
+             * Requests from slave
+             */
+
             case READER_CONNECT:
                 if (keypleDTO.isRequest()) {
                     return new RmConnectReaderExecutor(this.plugin, this.dtoTransportNode)
@@ -102,6 +132,7 @@ public class MasterAPI implements DtoHandler {
                     throw new IllegalStateException(
                             "a READER_CONNECT response has been received by MasterAPI");
                 }
+
             case READER_DISCONNECT:
                 if (keypleDTO.isRequest()) {
                     return new RmDisconnectReaderExecutor(this.plugin).execute(transportDto);
@@ -109,8 +140,20 @@ public class MasterAPI implements DtoHandler {
                     throw new IllegalStateException(
                             "a READER_DISCONNECT response has been received by MasterAPI");
                 }
+
+
+                /*
+                 * Notifications from slave
+                 */
+
             case READER_EVENT:
-                return new RmEventExecutor(plugin).execute(transportDto);
+                // process response with the Event Reader RmMethod
+                return new RmReaderEventExecutor(plugin).execute(transportDto);
+
+            /*
+             * Response from slave
+             */
+
             case READER_TRANSMIT:
                 // can be more general
                 if (keypleDTO.isRequest()) {

@@ -27,7 +27,7 @@ public class Demo_Webservice_MasterServer {
         final String CLIENT_NODE_ID = "Demo_Webservice_MasterServerClient1";
         final String SERVER_NODE_ID = "Demo_Webservice_MasterServer1";
 
-        // Create a HTTP Web Polling factory
+        // Create a HTTP Web Polling kfactory
         TransportFactory factory = new WsPollingFactory(SERVER_NODE_ID);
 
         // Launch the Server thread
@@ -41,7 +41,7 @@ public class Demo_Webservice_MasterServer {
         // Client is Slave
         Demo_Slave slave = new Demo_Slave(factory, false, CLIENT_NODE_ID, SERVER_NODE_ID);
 
-        // execute slave scenario
-        slave.insertSE(new StubCalypsoClassic(), true);
+        // execute Calypso Transaction Scenario
+        slave.executeScenario(new StubCalypsoClassic(), true);
     }
 }

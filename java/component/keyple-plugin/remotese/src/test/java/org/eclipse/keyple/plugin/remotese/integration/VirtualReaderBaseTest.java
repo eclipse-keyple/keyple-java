@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
@@ -38,7 +39,6 @@ public class VirtualReaderBaseTest {
 
     // Real objects
     private TransportFactory factory;
-    private SlaveAPI slaveAPI;
     StubReader nativeReader;
     VirtualReader virtualReader;
 
@@ -47,7 +47,10 @@ public class VirtualReaderBaseTest {
     final String SERVER_NODE_ID = "testServerNodeId";
 
     // Spy Object
-    MasterAPI masterAPI;
+    protected MasterAPI masterAPI;
+    // Spy Object
+    protected SlaveAPI slaveAPI;
+
 
     protected void initKeypleServices() throws Exception {
         logger.info("------------------------------");
@@ -63,14 +66,13 @@ public class VirtualReaderBaseTest {
         factory = new LocalTransportFactory(SERVER_NODE_ID);
 
         logger.info("*** Bind Master Services");
+
         // bind Master services to server
         masterAPI = Integration.bindMaster(factory.getServer());
 
         logger.info("*** Bind Slave Services");
         // bind Slave services to client
         slaveAPI = Integration.bindSlave(factory.getClient(CLIENT_NODE_ID), SERVER_NODE_ID);
-
-
 
     }
 
@@ -86,20 +88,16 @@ public class VirtualReaderBaseTest {
             nativeReader.clearObservers();
         }
 
-
-
-        // stubPlugin.removeObserver(stubPluginObserver);
-
-        // Thread.sleep(500);
-
         logger.info("End of cleaning of the stub plugin");
     }
 
 
 
-    protected StubReader connectStubReader(String readerName, String nodeId) throws Exception {
+    protected StubReader connectStubReader(String readerName, String nodeId,
+            TransmissionMode transmissionMode) throws Exception {
         // configure native reader
-        StubReader nativeReader = (StubReader) Integration.createStubReader(readerName);
+        StubReader nativeReader =
+                (StubReader) Integration.createStubReader(readerName, transmissionMode);
         nativeReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
                 StubProtocolSetting.STUB_PROTOCOL_SETTING
                         .get(SeCommonProtocols.PROTOCOL_ISO14443_4));

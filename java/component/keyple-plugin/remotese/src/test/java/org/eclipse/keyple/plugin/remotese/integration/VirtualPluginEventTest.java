@@ -16,6 +16,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.Observable;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
 import org.junit.After;
@@ -69,7 +70,8 @@ public class VirtualPluginEventTest extends VirtualReaderBaseTest {
         });
 
         // connect a Stub Native reader
-        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID);
+        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID,
+                TransmissionMode.CONTACTLESS);
 
         // wait 5 seconds
         lock.await(5, TimeUnit.SECONDS);
@@ -111,7 +113,8 @@ public class VirtualPluginEventTest extends VirtualReaderBaseTest {
         });
 
         // connect a Stub Native reader
-        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID);
+        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID,
+                TransmissionMode.CONTACTLESS);
 
         // wait 1 second
         Thread.sleep(1000);
@@ -143,7 +146,7 @@ public class VirtualPluginEventTest extends VirtualReaderBaseTest {
                 // to 1
                 if (1 != lock.getCount()) {
                     throw new IllegalStateException();
-                } ;
+                }
                 Assert.assertNotNull(event.getReaderNames().first());
                 Assert.assertEquals(1, event.getReaderNames().size());
                 Assert.assertEquals(remoteSePlugin.getName(), event.getPluginName());
@@ -153,15 +156,17 @@ public class VirtualPluginEventTest extends VirtualReaderBaseTest {
         });
 
         // connect a Stub Native reader
-        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID);
+        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID,
+                TransmissionMode.CONTACTLESS);
 
         // wait 2 seconds
         lock.await(2, TimeUnit.SECONDS);
 
         // connect twice
-        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID);
+        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID,
+                TransmissionMode.CONTACTLESS);
 
-        // a KeypleReaderException exception is thrown
+        // Expect a KeypleReaderException exception to be thrown
     }
 
     /**
@@ -182,7 +187,7 @@ public class VirtualPluginEventTest extends VirtualReaderBaseTest {
         });
         this.disconnectStubReader("anysession", "A_NOT_CONNECTED_READER", CLIENT_NODE_ID);
 
-        // a KeypleReaderException exception is thrown
+        // Expect a KeypleReaderException exception to be thrown
     }
 
 

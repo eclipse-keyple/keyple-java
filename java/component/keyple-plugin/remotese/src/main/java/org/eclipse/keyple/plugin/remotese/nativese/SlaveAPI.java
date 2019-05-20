@@ -49,6 +49,9 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     private final RemoteMethodTxEngine rmTxEngine;// rm command processor
     private final String masterNodeId;// master node id to connect to
 
+    public static final long DEFAULT_RPC_TIMEOUT = 10000;
+
+
     /**
      * Constructor
      * 
@@ -57,10 +60,22 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     public SlaveAPI(SeProxyService seProxyService, DtoNode dtoNode, String masterNodeId) {
         this.seProxyService = seProxyService;
         this.dtoNode = dtoNode;
-        this.rmTxEngine = new RemoteMethodTxEngine(dtoNode);
+        this.rmTxEngine = new RemoteMethodTxEngine(dtoNode, DEFAULT_RPC_TIMEOUT);
         this.masterNodeId = masterNodeId;
+        this.bindDtoEndpoint(dtoNode);
+    }
 
-
+    /**
+     * Constructor
+     *
+     * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
+     */
+    public SlaveAPI(SeProxyService seProxyService, DtoNode dtoNode, String masterNodeId,
+            long timeout) {
+        this.seProxyService = seProxyService;
+        this.dtoNode = dtoNode;
+        this.rmTxEngine = new RemoteMethodTxEngine(dtoNode, timeout);
+        this.masterNodeId = masterNodeId;
         this.bindDtoEndpoint(dtoNode);
     }
 
@@ -86,10 +101,11 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
         KeypleDto keypleDTO = transportDto.getKeypleDTO();
         TransportDto out;
 
-        logger.trace("onDto {}", KeypleDtoHelper.toJson(keypleDTO));
+        logger.trace("{} onDto {}", dtoNode.getNodeId(), KeypleDtoHelper.toJson(keypleDTO));
 
         RemoteMethod method = RemoteMethod.get(keypleDTO.getAction());
-        logger.debug("Remote Method called : {} - isRequest : {}", method, keypleDTO.isRequest());
+        logger.debug("{} Remote Method called : {} - isRequest : {}", dtoNode.getNodeId(), method,
+                keypleDTO.isRequest());
 
         switch (method) {
             case READER_CONNECT:
@@ -147,7 +163,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
                         "a  ERROR - UNRECOGNIZED request has been received by SlaveAPI");
         }
 
-        logger.trace("onDto response to be sent {}", KeypleDtoHelper.toJson(out.getKeypleDTO()));
+        logger.trace("{} onDto response to be sent {}", dtoNode.getNodeId(),
+                KeypleDtoHelper.toJson(out.getKeypleDTO()));
         return out;
 
 
@@ -162,7 +179,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     @Override
     public String connectReader(ProxyReader localReader) throws KeypleReaderException {
 
-        logger.info("connectReader {} from device {}", localReader.getName(), dtoNode.getNodeId());
+        logger.info("{} connectReader {} from device {}", dtoNode.getNodeId(),
+                localReader.getName(), dtoNode.getNodeId());
 
         RmConnectReaderTx connect = new RmConnectReaderTx(null, localReader.getName(), null,
                 masterNodeId, localReader, dtoNode.getNodeId(), this);
@@ -178,7 +196,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     @Override
     public void disconnectReader(String sessionId, String nativeReaderName)
             throws KeypleReaderException {
-        logger.info("disconnectReader {} from device {}", nativeReaderName, dtoNode.getNodeId());
+        logger.info("{} disconnectReader {} from device {}", dtoNode.getNodeId(), nativeReaderName,
+                dtoNode.getNodeId());
 
         RmDisconnectReaderTx disconnect = new RmDisconnectReaderTx(sessionId, nativeReaderName,
                 dtoNode.getNodeId(), masterNodeId);
@@ -227,8 +246,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      */
     @Override
     public void update(ReaderEvent event) {
-        logger.info("SlaveAPI listens for event from native Reader - Received Event {}",
-                event.getEventType());
+        logger.info("{} SlaveAPI - reader event {}", dtoNode.getNodeId(), event.getEventType());
 
         // construct json data
         String data = JsonParser.getGson().toJson(event);

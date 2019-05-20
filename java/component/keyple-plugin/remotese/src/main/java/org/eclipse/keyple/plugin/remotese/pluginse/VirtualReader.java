@@ -23,48 +23,54 @@ import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
-import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteReaderException;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmSetDefaultSelectionRequestTx;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmTransmitTx;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
-import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Virtual Reader Behaves like the Remote Reader it emulates
+ * Virtual Reader is a proxy to a Native Reader on the slave terminal
  */
 public final class VirtualReader extends AbstractObservableReader {
 
     private final VirtualReaderSession session;
     private final String nativeReaderName;
     private final RemoteMethodTxEngine rmTxEngine;
+    private final String slaveNodeId;
+    private final TransmissionMode transmissionMode;
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReader.class);
 
     /**
-     * Creates a new virtual reader Called by {@link RemoteSePlugin}
+     * Create a new Virtual Reader (only called by @{@link RemoteSePlugin})
      * 
-     * @param session Reader Session that helps communicate with {@link DtoNode}
-     * @param nativeReaderName local name of the native reader on slave side
+     * @param session : session associated to the reader
+     * @param nativeReaderName : native reader name on slave terminal
+     * @param rmTxEngine : processor for remote method
+     * @param transmissionMode : transmission mode of the native reader on slave terminal
      */
     VirtualReader(VirtualReaderSession session, String nativeReaderName,
-            RemoteMethodTxEngine rmTxEngine) {
-        super(RemoteSePlugin.PLUGIN_NAME, "remote-" + nativeReaderName);
+            RemoteMethodTxEngine rmTxEngine, String slaveNodeId,
+            TransmissionMode transmissionMode) {
+        super(RemoteSePlugin.PLUGIN_NAME,
+                RemoteSePlugin.generateReaderName(nativeReaderName, slaveNodeId));
         this.session = session;
         this.nativeReaderName = nativeReaderName;
         this.rmTxEngine = rmTxEngine;
-        logger.info("A new virtual reader was created with session {}", session);
+        this.slaveNodeId = slaveNodeId;
+
+        this.transmissionMode = transmissionMode;
+        logger.info(
+                "A new virtual reader was created with name:{}, sessionId:{}, transmissionMode:{}",
+                name, session, transmissionMode);
     }
 
     /**
-     * TODO change this to handle the right transmission mode
-     *
      * @return the current transmission mode
      */
     public TransmissionMode getTransmissionMode() {
-        logger.error("getTransmissionMode is not implemented yet");
-        return null;
+        return transmissionMode;
     }
 
     /**
@@ -76,7 +82,7 @@ public final class VirtualReader extends AbstractObservableReader {
         return nativeReaderName;
     }
 
-    public VirtualReaderSession getSession() {
+    VirtualReaderSession getSession() {
         return session;
     }
 
@@ -110,8 +116,14 @@ public final class VirtualReader extends AbstractObservableReader {
             rmTxEngine.add(transmit);
             return transmit.getResponse();
         } catch (KeypleRemoteException e) {
-            e.printStackTrace();
-            throw (KeypleReaderException) e.getCause();
+            if (e.getCause() != null) {
+                // KeypleReaderException is inside the KeypleRemoteException
+                throw (KeypleReaderException) e.getCause();
+
+            } else {
+                // create a new KeypleReaderException
+                throw new KeypleReaderException(e.getMessage());
+            }
         }
     }
 
@@ -126,12 +138,9 @@ public final class VirtualReader extends AbstractObservableReader {
     @Override
     protected SeResponse processSeRequest(SeRequest seRequest)
             throws IllegalArgumentException, KeypleReaderException {
-        try {
-            return this.processSeRequestSet(new SeRequestSet(seRequest)).getSingleResponse();
-        } catch (KeypleRemoteReaderException e) {
-            // throw the cause of the RemoteReaderException (a KeypleReaderException)
-            throw (KeypleReaderException) e.getCause();
-        }
+
+        return this.processSeRequestSet(new SeRequestSet(seRequest)).getSingleResponse();
+
     }
 
     @Override
@@ -147,7 +156,7 @@ public final class VirtualReader extends AbstractObservableReader {
 
     @Override
     public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {
-        logger.error("addSeProtocolSetting is not implemented yet");
+        logger.error("{} addSeProtocolSetting is not implemented yet", this.getName());
     }
 
     @Override
@@ -167,7 +176,7 @@ public final class VirtualReader extends AbstractObservableReader {
     void onRemoteReaderEvent(final ReaderEvent event) {
         final VirtualReader thisReader = this;
 
-        logger.debug(" EVENT {} ", event.getEventType());
+        logger.debug("{} EVENT {} ", this.getName(), event.getEventType());
 
         if (thisReader.countObservers() > 0) {
             thisReader.notifyObservers(event);
