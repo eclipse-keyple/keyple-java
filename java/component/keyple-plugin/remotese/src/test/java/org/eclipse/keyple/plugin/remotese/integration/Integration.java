@@ -12,14 +12,16 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
+import org.eclipse.keyple.plugin.remotese.transport.DtoHandler;
 import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportDto;
+import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
@@ -31,13 +33,13 @@ import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class Integration {
+public class Integration {
 
     private static final Logger logger = LoggerFactory.getLogger(Integration.class);
 
 
     /**
-     * Create a Virtual Reader Service
+     * Create a Spy MasterAPI
      * 
      * @param node
      * @return
@@ -46,17 +48,11 @@ class Integration {
         // Create Master services : masterAPI
         MasterAPI masterAPI = new MasterAPI(SeProxyService.getInstance(), node);
 
-        // observe remote se plugin for events
-        ReaderPlugin rsePlugin = masterAPI.getPlugin();
-
-        // Binds masterAPI to a
-        // masterAPI.bindDtoEndpoint(node);
-
-        return masterAPI;
+        return Mockito.spy(masterAPI);
     }
 
     /**
-     * Create a Native Reader Service
+     * Create a Spy SlaveAPI
      * 
      * @param node
      * @return
@@ -65,10 +61,8 @@ class Integration {
         // Binds node for outgoing KeypleDto
         SlaveAPI slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId);
 
-        // Binds node for incoming KeypleDTo
-        // slaveAPI.bindDtoEndpoint(node);
 
-        return slaveAPI;
+        return Mockito.spy(slaveAPI);
     }
 
     /**
@@ -134,6 +128,30 @@ class Integration {
                 // assert that returning dto DOES contain an exception
                 Assert.assertTrue(KeypleDtoHelper.containsException(transportDto.getKeypleDTO()));
                 return new LocalTransportDto(KeypleDtoHelper.NoResponse(), null);
+            }
+        };
+    }
+
+    public static DtoNode getFakeDtoNode() {
+        return new DtoNode() {
+            @Override
+            public void setDtoHandler(DtoHandler handler) {
+
+            }
+
+            @Override
+            public void sendDTO(TransportDto message) throws KeypleRemoteException {
+
+            }
+
+            @Override
+            public void sendDTO(KeypleDto message) throws KeypleRemoteException {
+
+            }
+
+            @Override
+            public String getNodeId() {
+                return "";
             }
         };
     }

@@ -20,11 +20,13 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Executor of RemoteMethodTx It manages : - send Dto - Parse Dto Responses
+ * Manages the transaction (request/response) for remote method invocation It holds
+ * the @{@link RemoteMethodTx} untils the answer is received
  */
 public class RemoteMethodTxEngine implements DtoHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteMethodTxEngine.class);
+
 
     // waiting transaction, supports only one at the time
     private RemoteMethodTx remoteMethodTx;
@@ -32,9 +34,18 @@ public class RemoteMethodTxEngine implements DtoHandler {
     // Dto Sender
     private final DtoSender sender;
 
-    public RemoteMethodTxEngine(DtoSender sender) {
+    // timeout to wait for the answer, in milliseconds
+    private final long timeout;
+
+    /**
+     *
+     * @param sender : dtosender used to send the keypleDto
+     * @param timeout : timeout to wait for the answer, in milliseconds
+     */
+    public RemoteMethodTxEngine(DtoSender sender, long timeout) {
         // this.queue = new LinkedList<RemoteMethodTx>();
         this.sender = sender;
+        this.timeout = timeout;
     }
 
 
@@ -77,5 +88,6 @@ public class RemoteMethodTxEngine implements DtoHandler {
 
         remoteMethodTx = rm;
         rm.setDtoSender(sender);
+        rm.setTimeout(timeout);
     }
 }

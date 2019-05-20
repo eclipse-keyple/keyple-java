@@ -39,7 +39,6 @@ public class VirtualReaderBaseTest {
 
     // Real objects
     private TransportFactory factory;
-    private SlaveAPI slaveAPI;
     StubReader nativeReader;
     VirtualReader virtualReader;
 
@@ -48,7 +47,10 @@ public class VirtualReaderBaseTest {
     final String SERVER_NODE_ID = "testServerNodeId";
 
     // Spy Object
-    MasterAPI masterAPI;
+    protected MasterAPI masterAPI;
+    // Spy Object
+    protected SlaveAPI slaveAPI;
+
 
     protected void initKeypleServices() throws Exception {
         logger.info("------------------------------");
@@ -64,6 +66,7 @@ public class VirtualReaderBaseTest {
         factory = new LocalTransportFactory(SERVER_NODE_ID);
 
         logger.info("*** Bind Master Services");
+
         // bind Master services to server
         masterAPI = Integration.bindMaster(factory.getServer());
 
@@ -84,12 +87,6 @@ public class VirtualReaderBaseTest {
             stubPlugin.unplugStubReader(nativeReader.getName(), true);
             nativeReader.clearObservers();
         }
-
-
-
-        // stubPlugin.removeObserver(stubPluginObserver);
-
-        // Thread.sleep(500);
 
         logger.info("End of cleaning of the stub plugin");
     }

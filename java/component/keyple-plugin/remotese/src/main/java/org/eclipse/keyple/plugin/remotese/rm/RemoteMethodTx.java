@@ -12,6 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.rm;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
@@ -44,6 +45,7 @@ public abstract class RemoteMethodTx<T> {
     // blocking mechanism
     private CountDownLatch lock;
     private RemoteMethodTxCallback<T> callback;
+    private long timeout;
 
     private DtoSender sender;
 
@@ -61,6 +63,10 @@ public abstract class RemoteMethodTx<T> {
         this.sender = sender;
     }
 
+    void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
+
     /**
      * Internal method to set manually the keypleDto response To be called by the tx manager
      */
@@ -69,7 +75,7 @@ public abstract class RemoteMethodTx<T> {
 
     /**
      * Non blocking method to getResponse results from the remote method call
-     * 
+     *
      * @param callback
      */
     public void send(RemoteMethodTxCallback<T> callback) throws KeypleRemoteException {
@@ -81,7 +87,7 @@ public abstract class RemoteMethodTx<T> {
     /**
      * Blocking method to getResponse results from the remote method call. To be called by the
      * client (used internally by rmCommands, do not use)
-     * 
+     *
      * @return T : result of the command
      * @throws KeypleRemoteException : if an
      */
@@ -113,16 +119,26 @@ public abstract class RemoteMethodTx<T> {
                     this.getClass().getCanonicalName(), this.hashCode());
             asyncSend.start();
             logger.trace("Lock {}, {}", this.getClass().getCanonicalName(), this.hashCode());
-            lock.await();
-            logger.trace("Unlock {}, {}", this.getClass().getCanonicalName(), this.hashCode());
-            if (this.remoteException != null) {
-                throw remoteException;
+            boolean responseReceived = lock.await(timeout, TimeUnit.MILLISECONDS);
+
+            if (responseReceived) {
+                logger.trace("Unlock {}, {}", this.getClass().getCanonicalName(), this.hashCode());
+                if (this.remoteException != null) {
+                    throw remoteException;
+                } else {
+                    return response;
+                }
             } else {
-                return response;
+                /*
+                 * timeout, no answer has been received
+                 */
+                throw new KeypleRemoteException(
+                        "Waiting time elapsed, no answer received from the other node for method "
+                                + this.getClass().getCanonicalName());
             }
 
+
         } catch (InterruptedException e) {
-            e.printStackTrace();
             throw new IllegalStateException(
                     "Thread locking in blocking transmitSet has encountered an exception", e);
         }
@@ -130,7 +146,7 @@ public abstract class RemoteMethodTx<T> {
 
     /**
      * Set the response contained in the keypleDto Response Call the callback of the RmMethod
-     * 
+     *
      * @param keypleDto
      */
     void setResponse(KeypleDto keypleDto) {
