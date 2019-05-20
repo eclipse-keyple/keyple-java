@@ -64,6 +64,7 @@ classes.dependsOn copyLICENSE, copyNOTICE,copyVersionFile
 
 task binJar(type: Jar, dependsOn : classes) {
     from sourceSets.main.output
+
 }
 
 task sourcesJar(type: Jar, dependsOn : classes) {
