@@ -12,8 +12,10 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
 import org.eclipse.keyple.plugin.remotese.transport.*;
+import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
@@ -22,6 +24,9 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+/**
+ * Execute the Connect Reader on Remote Se plugin
+ */
 class RmConnectReaderExecutor implements RemoteMethodExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(RmConnectReaderExecutor.class);
@@ -40,33 +45,46 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
     public TransportDto execute(TransportDto transportDto) {
         KeypleDto keypleDto = transportDto.getKeypleDTO();
 
+        JsonObject body = JsonParser.getGson().fromJson(keypleDto.getBody(), JsonObject.class);
+
         // parseResponse msg
         String nativeReaderName = keypleDto.getNativeReaderName();
         String slaveNodeId = keypleDto.getRequesterNodeId();
+        String tranmissionMode = body.get("transmissionMode").getAsString();
 
         VirtualReader virtualReader = null;
         try {
             // create a virtual Reader
             virtualReader = (VirtualReader) this.plugin.createVirtualReader(slaveNodeId,
-                    nativeReaderName, this.dtoSender);
+                    nativeReaderName, this.dtoSender, TransmissionMode.valueOf(tranmissionMode));
 
             // create response
             JsonObject respBody = new JsonObject();
-            respBody.add("statusCode", new JsonPrimitive(0));
             respBody.add("sessionId", new JsonPrimitive(virtualReader.getSession().getSessionId()));
 
             // build transport DTO with body
             return transportDto.nextTransportDTO(new KeypleDto(keypleDto.getAction(),
                     respBody.toString(), false, virtualReader.getSession().getSessionId(),
-                    nativeReaderName, virtualReader.getName(), slaveNodeId));
+                    nativeReaderName, virtualReader.getName(),
+                    transportDto.getKeypleDTO().getTargetNodeId(), slaveNodeId));
 
         } catch (KeypleReaderException e) {
             // virtual reader for remote reader already exists
             logger.warn("Virtual reader already exists for reader " + nativeReaderName, e);
 
             // send the exception inside the dto
-            return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(),
-                    e, null, nativeReaderName, null, slaveNodeId));
+            return transportDto.nextTransportDTO(
+                    KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(), e, null, nativeReaderName,
+                            null, transportDto.getKeypleDTO().getTargetNodeId(), slaveNodeId));
+
+        } catch (IllegalArgumentException e) {
+            // virtual reader for remote reader already exists
+            logger.warn("Transmission mode is illegal " + nativeReaderName, e);
+
+            // send the exception inside the dto
+            return transportDto.nextTransportDTO(
+                    KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(), e, null, nativeReaderName,
+                            null, keypleDto.getTargetNodeId(), keypleDto.getRequesterNodeId()));
 
         }
     }

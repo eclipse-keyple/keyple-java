@@ -20,6 +20,7 @@ import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -156,11 +157,13 @@ public class UseCase_Calypso4_PoAuthentication_Stub {
              * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
              * make the selection and read additional information afterwards
              */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                    new PoSelector.PoAidSelector(ByteArrayUtil.fromHex(CalypsoClassicInfo.AID),
-                            PoSelector.InvalidatedPo.REJECT),
-                    "AID: " + CalypsoClassicInfo.AID), ChannelState.KEEP_OPEN);
+            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(
+                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
+                                    PoSelector.InvalidatedPo.REJECT),
+                            "AID: " + CalypsoClassicInfo.AID),
+                    ChannelState.KEEP_OPEN);
 
             /*
              * Add the selection case to the current selection (we could have added other cases

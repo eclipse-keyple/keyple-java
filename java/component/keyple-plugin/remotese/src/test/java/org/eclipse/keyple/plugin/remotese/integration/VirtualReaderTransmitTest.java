@@ -19,6 +19,7 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.rm.json.SampleFactory;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
 import org.junit.After;
@@ -44,7 +45,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
         initKeypleServices();
 
         // configure and connect a Stub Native reader
-        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID);
+        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID,
+                TransmissionMode.CONTACTLESS);
 
         // test virtual reader
         virtualReader = getVirtualReader();

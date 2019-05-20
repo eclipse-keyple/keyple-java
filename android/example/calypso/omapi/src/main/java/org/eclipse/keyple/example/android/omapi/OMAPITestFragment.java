@@ -190,8 +190,8 @@ public class OMAPITestFragment extends Fragment {
                     SeRequest seRequest =
                             new SeRequest(
                                     new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                                            new SeSelector.AidSelector(ByteArrayUtil.fromHex(poAid),
-                                                    null),
+                                            new SeSelector.AidSelector(
+                                                    new SeSelector.AidSelector.IsoAid(poAid), null),
                                             "AID = " + poAid),
                                     poApduRequestList, ChannelState.CLOSE_AFTER);
 

@@ -13,6 +13,9 @@ package org.eclipse.keyple.plugin.remotese.exception;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 
+/**
+ * seems deprecated
+ */
 public class KeypleRemoteReaderException extends KeypleReaderException {
 
     public KeypleRemoteReaderException(String message, Throwable cause) {

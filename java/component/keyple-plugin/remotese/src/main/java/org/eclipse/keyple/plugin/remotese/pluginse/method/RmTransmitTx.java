@@ -23,6 +23,9 @@ import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Handle the Transmit keypleDTO serialization and deserialization
+ */
 public class RmTransmitTx extends RemoteMethodTx<SeResponseSet> {
 
     private static final Logger logger = LoggerFactory.getLogger(RmTransmitTx.class);

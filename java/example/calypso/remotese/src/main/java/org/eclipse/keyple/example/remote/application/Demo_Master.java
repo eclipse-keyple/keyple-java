@@ -16,11 +16,13 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -31,6 +33,8 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.core.util.Observable;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
+import org.eclipse.keyple.example.calypso.common.stub.se.StubSamCalypsoClassic;
+import org.eclipse.keyple.example.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
@@ -38,6 +42,10 @@ import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ClientNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ServerNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
+import org.eclipse.keyple.plugin.stub.StubPlugin;
+import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
+import org.eclipse.keyple.plugin.stub.StubReader;
+import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,10 +57,11 @@ import org.slf4j.LoggerFactory;
 public class Demo_Master implements Observable.Observer {
 
     private static final Logger logger = LoggerFactory.getLogger(Demo_Master.class);
-    private SeSelection seSelection;
-    private VirtualReader poReader;
-    private int readEnvironmentParserIndex;
-
+    // private SeSelection seSelection;
+    // private VirtualReader poReader;
+    // private int readEnvironmentParserIndex;
+    private SamResource samResource;
+    private MasterAPI masterAPI;
 
     // DtoNode used as to send and receive KeypleDto to Slaves
     private DtoNode node;
@@ -98,7 +107,7 @@ public class Demo_Master implements Observable.Observer {
             /*
              * // start client in a new thread new Thread() {
              * 
-             * @Override public void run() { // Master is client, connectAReader to Slave Server }
+             * @Override public void run() { // Master is client, connectPoReader to Slave Server }
              * }.start();
              */
         }
@@ -114,13 +123,49 @@ public class Demo_Master implements Observable.Observer {
         // Create masterAPI with a DtoSender
         // Dto Sender is required so masterAPI can send KeypleDTO to Slave
         // In this case, node is used as the dtosender (can be client or server)
-        MasterAPI masterAPI = new MasterAPI(SeProxyService.getInstance(), node);
+        masterAPI = new MasterAPI(SeProxyService.getInstance(), node);
 
         // observe remote se plugin for events
         logger.info("{} Observe SeRemotePlugin for Plugin Events and Reader Events",
                 node.getNodeId());
         ReaderPlugin rsePlugin = masterAPI.getPlugin();
         ((Observable) rsePlugin).addObserver(this);
+
+        /*
+         * Plug a stub SAM Reader
+         */
+
+        /* Get the instance of the Stub plugin */
+        StubPlugin stubPlugin = StubPlugin.getInstance();
+
+        /* Plug the SAM stub reader. */
+        stubPlugin.plugStubReader("samReader", true);
+
+        try {
+            StubReader samReader = (StubReader) (stubPlugin.getReader("samReader"));
+
+            samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3,
+                    StubProtocolSetting.STUB_PROTOCOL_SETTING
+                            .get(SeCommonProtocols.PROTOCOL_ISO7816_3));
+
+            /* Create 'virtual' Calypso SAM */
+            StubSecureElement calypsoSamStubSe = new StubSamCalypsoClassic();
+
+            samReader.insertSe(calypsoSamStubSe);
+            logger.info("Stub SAM inserted");
+
+            /*
+             * Open logical channel for the SAM inserted in the reader
+             *
+             * (We expect the right is inserted)
+             */
+            samResource = CalypsoUtilities.checkSamAndOpenChannel(samReader);
+
+
+        } catch (KeypleReaderNotFoundException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -142,17 +187,19 @@ public class Demo_Master implements Observable.Observer {
                     event.getPluginName(), event.getReaderNames().first());
             switch (event.getEventType()) {
                 case READER_CONNECTED:
+
                     // a new virtual reader is connected, let's configure it
                     try {
                         RemoteSePlugin remoteSEPlugin = (RemoteSePlugin) SeProxyService
                                 .getInstance().getPlugin("RemoteSePlugin");
-                        poReader = (VirtualReader) remoteSEPlugin
+
+                        VirtualReader poReader = (VirtualReader) remoteSEPlugin
                                 .getReader(event.getReaderNames().first());
 
                         logger.info("{} Configure SeSelection", node.getNodeId());
 
                         /* set default selection request */
-                        seSelection = new SeSelection();
+                        SeSelection seSelection = new SeSelection();
 
                         /*
                          * Setting of an AID based selection of a Calypso REV3 PO
@@ -169,23 +216,14 @@ public class Demo_Master implements Observable.Observer {
                         PoSelectionRequest poSelectionRequest =
                                 new PoSelectionRequest(
                                         new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                                new PoSelector.PoAidSelector(ByteArrayUtil
-                                                        .fromHex(CalypsoClassicInfo.AID), null),
+                                                new PoSelector.PoAidSelector(
+                                                        new SeSelector.AidSelector.IsoAid(
+                                                                CalypsoClassicInfo.AID),
+                                                        null),
                                                 "AID: " + CalypsoClassicInfo.AID),
                                         ChannelState.KEEP_OPEN);
 
                         logger.info("{} Create a PoSelectionRequest", node.getNodeId());
-
-                        /*
-                         * Prepare the reading order and keep the associated parser for later use
-                         * once the selection has been made.
-                         */
-                        readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
-                                CalypsoClassicInfo.SFI_EnvironmentAndHolder,
-                                ReadDataStructure.SINGLE_RECORD_DATA,
-                                CalypsoClassicInfo.RECORD_NUMBER_1,
-                                String.format("EnvironmentAndHolder (SFI=%02X))",
-                                        CalypsoClassicInfo.SFI_EnvironmentAndHolder));
 
                         /*
                          * Add the selection case to the current selection (we could have added
@@ -206,7 +244,7 @@ public class Demo_Master implements Observable.Observer {
 
 
                         // observe reader events
-                        logger.info("{} Add Master Thread as a Observer of virtual reader {}",
+                        logger.info("{} Add Master Thread as Observer of Virtual Reader {}",
                                 node.getNodeId(), poReader.getName());
                         poReader.addObserver(masterThread);
 
@@ -229,99 +267,17 @@ public class Demo_Master implements Observable.Observer {
         // ReaderEvent
         else if (o instanceof ReaderEvent) {
             ReaderEvent event = (ReaderEvent) o;
-            logger.debug("{} UPDATE {} {} {} {}", node.getNodeId(), event.getEventType(),
+            logger.info("{} UPDATE {} {} {} {}", node.getNodeId(), event.getEventType(),
                     event.getPluginName(), event.getReaderName(),
                     event.getDefaultSelectionsResponse());
+
             switch (event.getEventType()) {
 
                 case SE_MATCHED:
-                    SelectionsResult selectionsResult = seSelection
-                            .processDefaultSelection(event.getDefaultSelectionsResponse());
-                    if (selectionsResult.hasActiveSelection()) {
-                        AbstractMatchingSe selectedSe =
-                                selectionsResult.getActiveSelection().getMatchingSe();
 
-                        logger.info(
-                                "{} Observer notification: the selection of the PO has succeeded.",
-                                node.getNodeId());
+                    // executeReadEventLog(selectionsResult);
+                    executeCalypso4_PoAuthentication(samResource, event.getReaderName());
 
-                        /*
-                         * Retrieve the data read from the parser updated during the selection
-                         * process
-                         */
-                        ReadRecordsRespPars readEnvironmentParser =
-                                (ReadRecordsRespPars) selectionsResult.getActiveSelection()
-                                        .getResponseParser(readEnvironmentParserIndex);
-
-                        byte environmentAndHolder[] = (readEnvironmentParser.getRecords())
-                                .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
-
-                        /* Log the result */
-                        logger.info("{} Environment file data: {}", node.getNodeId(),
-                                ByteArrayUtil.toHex(environmentAndHolder));
-
-                        /* Go on with the reading of the first record of the EventLog file */
-                        logger.info(
-                                "==================================================================================");
-                        logger.info(
-                                "{} = 2nd PO exchange: reading transaction of the EventLog file.                     =",
-                                node.getNodeId());
-                        logger.info(
-                                "==================================================================================");
-
-                        PoTransaction poTransaction =
-                                new PoTransaction(new PoResource(poReader, (CalypsoPo) selectedSe));
-
-                        /*
-                         * Prepare the reading order and keep the associated parser for later use
-                         * once the transaction has been processed.
-                         */
-                        int readEventLogParserIndex =
-                                poTransaction.prepareReadRecordsCmd(CalypsoClassicInfo.SFI_EventLog,
-                                        ReadDataStructure.SINGLE_RECORD_DATA,
-                                        CalypsoClassicInfo.RECORD_NUMBER_1,
-                                        String.format("EventLog (SFI=%02X, recnbr=%d))",
-                                                CalypsoClassicInfo.SFI_EventLog,
-                                                CalypsoClassicInfo.RECORD_NUMBER_1));
-
-                        /*
-                         * Actual PO communication: send the prepared read order, then close the
-                         * channel with the PO
-                         */
-                        try {
-                            if (poTransaction.processPoCommands(ChannelState.CLOSE_AFTER)) {
-                                logger.info("{} The reading of the EventLog has succeeded.",
-                                        node.getNodeId());
-
-                                /*
-                                 * Retrieve the data read from the parser updated during the
-                                 * transaction process
-                                 */
-                                ReadRecordsRespPars readEventLogParser =
-                                        (ReadRecordsRespPars) poTransaction
-                                                .getResponseParser(readEventLogParserIndex);
-                                byte eventLog[] = (readEventLogParser.getRecords())
-                                        .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
-
-                                /* Log the result */
-                                logger.info("{} EventLog file data: {} ", node.getNodeId(),
-                                        ByteArrayUtil.toHex(eventLog));
-                            }
-                        } catch (KeypleReaderException e) {
-                            e.printStackTrace();
-                        }
-                        logger.info(
-                                "==================================================================================");
-                        logger.info(
-                                "{} = End of the Calypso PO processing.                                              =",
-                                node.getNodeId());
-                        logger.info(
-                                "==================================================================================");
-                    } else {
-                        logger.error(
-                                "{} The selection of the PO has failed. Should not have occurred due to the MATCHED_ONLY selection mode.",
-                                node.getNodeId());
-                    }
                     break;
                 case SE_INSERTED:
                     logger.info("{} SE_INSERTED {} {}", node.getNodeId(), event.getPluginName(),
@@ -340,6 +296,239 @@ public class Demo_Master implements Observable.Observer {
                             event.getReaderName());
                     break;
             }
+        }
+    }
+
+
+    private void executeReadEventLog(SelectionsResult selectionsResult, String virtualReaderName) {
+
+
+        if (selectionsResult.hasActiveSelection()) {
+            try {
+                VirtualReader poReader =
+                        (VirtualReader) masterAPI.getPlugin().getReader(virtualReaderName);
+
+                AbstractMatchingSe selectedSe =
+                        selectionsResult.getActiveSelection().getMatchingSe();
+
+                logger.info("{} Observer notification: the selection of the PO has succeeded.",
+                        node.getNodeId());
+
+                /* Go on with the reading of the first record of the EventLog file */
+                logger.info(
+                        "==================================================================================");
+                logger.info(
+                        "{} = 2nd PO exchange: reading transaction of the EventLog file.                     =",
+                        node.getNodeId());
+                logger.info(
+                        "==================================================================================");
+
+                PoTransaction poTransaction =
+                        new PoTransaction(new PoResource(poReader, (CalypsoPo) selectedSe));
+
+                /*
+                 * Prepare the reading order and keep the associated parser for later use once the
+                 * transaction has been processed.
+                 */
+                int readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
+                        CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
+                        CalypsoClassicInfo.RECORD_NUMBER_1,
+                        String.format("EventLog (SFI=%02X, recnbr=%d))",
+                                CalypsoClassicInfo.SFI_EventLog,
+                                CalypsoClassicInfo.RECORD_NUMBER_1));
+
+                /*
+                 * Actual PO communication: send the prepared read order, then close the channel
+                 * with the PO
+                 */
+
+                if (poTransaction.processPoCommands(ChannelState.CLOSE_AFTER)) {
+                    logger.info("{} The reading of the EventLog has succeeded.", node.getNodeId());
+
+                    /*
+                     * Retrieve the data read from the parser updated during the transaction process
+                     */
+                    ReadRecordsRespPars readEventLogParser = (ReadRecordsRespPars) poTransaction
+                            .getResponseParser(readEventLogParserIndex);
+                    byte eventLog[] = (readEventLogParser.getRecords())
+                            .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+
+                    /* Log the result */
+                    logger.info("{} EventLog file data: {} ", node.getNodeId(),
+                            ByteArrayUtil.toHex(eventLog));
+                }
+            } catch (KeypleReaderException e) {
+                e.printStackTrace();
+            }
+            logger.info(
+                    "==================================================================================");
+            logger.info(
+                    "{} = End of the Calypso PO processing.                                              =",
+                    node.getNodeId());
+            logger.info(
+                    "==================================================================================");
+        } else {
+            logger.error(
+                    "{} The selection of the PO has failed. Should not have occurred due to the MATCHED_ONLY selection mode.",
+                    node.getNodeId());
+        }
+    }
+
+
+    private void executeCalypso4_PoAuthentication(SamResource samResource,
+            String virtualReaderName) {
+
+        try {
+            VirtualReader poReader =
+                    (VirtualReader) masterAPI.getPlugin().getReader(virtualReaderName);
+
+            logger.info(
+                    "==================================================================================");
+            logger.info(
+                    "= 1st PO exchange: AID based selection with reading of Environment file.         =");
+            logger.info(
+                    "==================================================================================");
+
+            /*
+             * Prepare a Calypso PO selection
+             */
+            SeSelection seSelection = new SeSelection();
+
+            /*
+             * Setting of an AID based selection of a Calypso REV3 PO
+             *
+             * Select the first application matching the selection AID whatever the SE communication
+             * protocol keep the logical channel open after the selection
+             */
+
+            /*
+             * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
+             * make the selection and read additional information afterwards
+             */
+            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(
+                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
+                                    PoSelector.InvalidatedPo.REJECT),
+                            "AID: " + CalypsoClassicInfo.AID),
+                    ChannelState.KEEP_OPEN);
+            /*
+             * Add the selection case to the current selection (we could have added other cases
+             * here)
+             */
+            seSelection.prepareSelection(poSelectionRequest);
+
+            /*
+             * Actual PO communication: operate through a single request the Calypso PO selection
+             * and the file read
+             */
+            SelectionsResult selectionsResult = null;
+
+            /*
+             * Process selection
+             */
+            selectionsResult = seSelection.processExplicitSelection(poReader);
+
+
+            if (selectionsResult.hasActiveSelection()) {
+                MatchingSelection matchingSelection = selectionsResult.getActiveSelection();
+
+                CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
+                logger.info("The selection of the PO has succeeded.");
+
+                /* Go on with the reading of the first record of the EventLog file */
+                logger.info(
+                        "==================================================================================");
+                logger.info(
+                        "= 2nd PO exchange: open and close a secure session to perform authentication.    =");
+                logger.info(
+                        "==================================================================================");
+
+                PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
+                        samResource, CalypsoUtilities.getSecuritySettings());
+
+                /*
+                 * Prepare the reading order and keep the associated parser for later use once the
+                 * transaction has been processed.
+                 */
+                int readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
+                        CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
+                        CalypsoClassicInfo.RECORD_NUMBER_1,
+                        String.format("EventLog (SFI=%02X, recnbr=%d))",
+                                CalypsoClassicInfo.SFI_EventLog,
+                                CalypsoClassicInfo.RECORD_NUMBER_1));
+
+
+                /*
+                 * Open Session for the debit key
+                 */
+                boolean poProcessStatus = poTransaction.processOpening(
+                        PoTransaction.ModificationMode.ATOMIC,
+                        PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0, (byte) 0);
+
+                if (!poProcessStatus) {
+                    throw new IllegalStateException("processingOpening failure.");
+                }
+
+                if (!poTransaction.wasRatified()) {
+                    logger.info(
+                            "========= Previous Secure Session was not ratified. =====================");
+                }
+                /*
+                 * Prepare the reading order and keep the associated parser for later use once the
+                 * transaction has been processed.
+                 */
+                int readEventLogParserIndexBis = poTransaction.prepareReadRecordsCmd(
+                        CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
+                        CalypsoClassicInfo.RECORD_NUMBER_1,
+                        String.format("EventLog (SFI=%02X, recnbr=%d))",
+                                CalypsoClassicInfo.SFI_EventLog,
+                                CalypsoClassicInfo.RECORD_NUMBER_1));
+
+                poProcessStatus = poTransaction.processPoCommandsInSession();
+
+                /*
+                 * Retrieve the data read from the parser updated during the transaction process
+                 */
+                byte eventLog[] = (((ReadRecordsRespPars) poTransaction
+                        .getResponseParser(readEventLogParserIndexBis)).getRecords())
+                                .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
+
+                /* Log the result */
+                logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
+
+                if (!poProcessStatus) {
+                    throw new IllegalStateException("processPoCommandsInSession failure.");
+                }
+
+                /*
+                 * Close the Secure Session.
+                 */
+                if (logger.isInfoEnabled()) {
+                    logger.info(
+                            "================= PO Calypso session ======= Closing ============================");
+                }
+
+                /*
+                 * A ratification command will be sent (CONTACTLESS_MODE).
+                 */
+                poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AFTER);
+
+                if (!poProcessStatus) {
+                    throw new IllegalStateException("processClosing failure.");
+                }
+
+                logger.info(
+                        "==================================================================================");
+                logger.info(
+                        "= End of the Calypso PO processing.                                              =");
+                logger.info(
+                        "==================================================================================");
+            } else {
+                logger.error("The selection of the PO has failed.");
+            }
+        } catch (KeypleReaderException e) {
+            e.printStackTrace();
         }
     }
 
