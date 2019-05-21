@@ -102,7 +102,7 @@ task binJar(type: Jar, dependsOn : classes) {
 tasks.signArchives.doFirst {
     print "Signing variables"
     print ext."signing.keyId"
-    print ext."signing.password"
+    //print ext."signing.password"
     print ext."signing.secretKeyRingFile"
 }
 
