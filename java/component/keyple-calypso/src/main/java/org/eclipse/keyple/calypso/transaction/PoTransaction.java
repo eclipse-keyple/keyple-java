@@ -23,8 +23,7 @@ import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSession
 import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPars;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.calypso.command.sam.builder.security.DigestAuthenticateCmdBuild;
-import org.eclipse.keyple.calypso.command.sam.builder.security.SelectDiversifierCmdBuild;
+import org.eclipse.keyple.calypso.command.sam.builder.security.*;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestAuthenticateRespPars;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestCloseRespPars;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SamGetChallengeRespPars;
@@ -254,8 +253,7 @@ public final class PoTransaction {
                 : CHALLENGE_LENGTH_REV_INF_32;
 
         AbstractSamCommandBuilder samGetChallenge =
-                new org.eclipse.keyple.calypso.command.sam.builder.security.SamGetChallengeCmdBuild(
-                        this.samRevision, challengeLength);
+                new SamGetChallengeCmdBuild(this.samRevision, challengeLength);
 
         samApduRequestList.add(samGetChallenge.getApduRequest());
 
@@ -1141,10 +1139,8 @@ public final class PoTransaction {
              * Build and append Digest Init command as first ApduRequest of the digest computation
              * process
              */
-            samApduRequestList.add(
-                    new org.eclipse.keyple.calypso.command.sam.builder.security.DigestInitCmdBuild(
-                            samRevision, verification, revMode, keyRecordNumber, keyKIF, keyKVC,
-                            poDigestDataCache.get(0)).getApduRequest());
+            samApduRequestList.add(new DigestInitCmdBuild(samRevision, verification, revMode,
+                    keyRecordNumber, keyKIF, keyKVC, poDigestDataCache.get(0)).getApduRequest());
 
             /*
              * Build and append Digest Update commands
@@ -1153,19 +1149,16 @@ public final class PoTransaction {
              */
             for (int i = 1; i < poDigestDataCache.size(); i++) {
                 samApduRequestList.add(
-                        new org.eclipse.keyple.calypso.command.sam.builder.security.DigestUpdateCmdBuild(
-                                samRevision, encryption, poDigestDataCache.get(i))
-                                        .getApduRequest());
+                        new DigestUpdateCmdBuild(samRevision, encryption, poDigestDataCache.get(i))
+                                .getApduRequest());
             }
 
             /*
              * Build and append Digest Close command
              */
-            samApduRequestList.add(
-                    (new org.eclipse.keyple.calypso.command.sam.builder.security.DigestCloseCmdBuild(
-                            samRevision,
-                            poRevision.equals(PoRevision.REV3_2) ? SIGNATURE_LENGTH_REV32
-                                    : SIGNATURE_LENGTH_REV_INF_32).getApduRequest()));
+            samApduRequestList.add((new DigestCloseCmdBuild(samRevision,
+                    poRevision.equals(PoRevision.REV3_2) ? SIGNATURE_LENGTH_REV32
+                            : SIGNATURE_LENGTH_REV_INF_32).getApduRequest()));
 
 
             return new SeRequest(samApduRequestList, ChannelState.KEEP_OPEN);
