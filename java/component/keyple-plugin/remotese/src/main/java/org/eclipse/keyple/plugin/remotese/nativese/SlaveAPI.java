@@ -108,29 +108,24 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
                 keypleDTO.isRequest());
 
         switch (method) {
+
+            /*
+             * Response from Master
+             */
             case READER_CONNECT:
-                // process READER_CONNECT response
-                if (keypleDTO.isRequest()) {
-                    throw new IllegalStateException(
-                            "a READER_CONNECT request has been received by SlaveAPI");
-                } else {
-                    // send DTO to TxEngine
-                    out = this.rmTxEngine.onDTO(transportDto);
-                }
-                break;
-
             case READER_DISCONNECT:
-                // process READER_DISCONNECT response
                 if (keypleDTO.isRequest()) {
-                    throw new IllegalStateException(
-                            "a READER_DISCONNECT request has been received by SlaveAPI");
+                    throw new IllegalStateException("a " + keypleDTO.getAction()
+                            + " request has been received by SlaveAPI");
                 } else {
                     // send DTO to TxEngine
                     out = this.rmTxEngine.onDTO(transportDto);
                 }
                 break;
 
-
+            /*
+             * Request from Master
+             */
             case READER_TRANSMIT:
                 // must be a request
                 if (keypleDTO.isRequest()) {
@@ -139,6 +134,17 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
                 } else {
                     throw new IllegalStateException(
                             "a READER_TRANSMIT response has been received by SlaveAPI");
+                }
+                break;
+
+            case READER_TRANSMIT_SET:
+                // must be a request
+                if (keypleDTO.isRequest()) {
+                    RemoteMethodExecutor rmTransmitSet = new RmTransmitSetExecutor(this);
+                    out = rmTransmitSet.execute(transportDto);
+                } else {
+                    throw new IllegalStateException(
+                            "a READER_TRANSMIT_SET response has been received by SlaveAPI");
                 }
                 break;
 

@@ -24,13 +24,15 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmSetDefaultSelectionRequestTx;
+import org.eclipse.keyple.plugin.remotese.pluginse.method.RmTransmitSetTx;
 import org.eclipse.keyple.plugin.remotese.pluginse.method.RmTransmitTx;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Virtual Reader is a proxy to a Native Reader on the slave terminal
+ * Virtual Reader is a proxy to a Native Reader on the slave terminal Use it like a local reader,
+ * all API call will be transferred to the Native Reader with a RPC session
  */
 public final class VirtualReader extends AbstractObservableReader {
 
@@ -100,8 +102,8 @@ public final class VirtualReader extends AbstractObservableReader {
     /**
      * Blocking TransmitSet
      * 
-     * @param seRequestSet : SeRequestSet to be transmitted
-     * @return seResponseSet : SeResponseSet
+     * @param seRequestSet : SeRequestSet to be transmitted to SE
+     * @return seResponseSet : SeResponseSet from SE
      * @throws IllegalArgumentException
      * @throws KeypleReaderException
      */
@@ -109,9 +111,9 @@ public final class VirtualReader extends AbstractObservableReader {
     protected SeResponseSet processSeRequestSet(SeRequestSet seRequestSet)
             throws IllegalArgumentException, KeypleReaderException {
 
-        RmTransmitTx transmit =
-                new RmTransmitTx(seRequestSet, session.getSessionId(), this.getNativeReaderName(),
-                        this.getName(), session.getMasterNodeId(), session.getSlaveNodeId());
+        RmTransmitSetTx transmit = new RmTransmitSetTx(seRequestSet, session.getSessionId(),
+                this.getNativeReaderName(), this.getName(), session.getMasterNodeId(),
+                session.getSlaveNodeId());
         try {
             rmTxEngine.add(transmit);
             return transmit.getResponse();
@@ -130,8 +132,8 @@ public final class VirtualReader extends AbstractObservableReader {
     /**
      * Blocking Transmit
      * 
-     * @param seRequest
-     * @return seResponse
+     * @param seRequest : SeRequest to be transmitted to SE
+     * @return seResponse : SeResponse from SE
      * @throws IllegalArgumentException
      * @throws KeypleReaderException
      */
@@ -139,7 +141,16 @@ public final class VirtualReader extends AbstractObservableReader {
     protected SeResponse processSeRequest(SeRequest seRequest)
             throws IllegalArgumentException, KeypleReaderException {
 
-        return this.processSeRequestSet(new SeRequestSet(seRequest)).getSingleResponse();
+        RmTransmitTx transmit =
+                new RmTransmitTx(seRequest, session.getSessionId(), this.getNativeReaderName(),
+                        this.getName(), session.getMasterNodeId(), session.getSlaveNodeId());
+        try {
+            rmTxEngine.add(transmit);
+            return transmit.getResponse();
+        } catch (KeypleRemoteException e) {
+            e.printStackTrace();
+            throw (KeypleReaderException) e.getCause();
+        }
 
     }
 

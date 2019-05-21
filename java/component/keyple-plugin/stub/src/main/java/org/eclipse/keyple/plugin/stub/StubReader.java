@@ -34,7 +34,6 @@ public final class StubReader extends AbstractThreadedLocalReader {
     private static final Logger logger = LoggerFactory.getLogger(StubReader.class);
 
     private StubSecureElement se;
-
     private boolean sePresent;
 
     private Map<String, String> parameters = new HashMap<String, String>();
@@ -45,13 +44,11 @@ public final class StubReader extends AbstractThreadedLocalReader {
     public static final String CONTACTS_PARAMETER = "contacts";
 
     static final String pluginName = "StubPlugin";
-    String readerName = "StubReader";
 
     TransmissionMode transmissionMode = TransmissionMode.CONTACTLESS;
 
     public StubReader(String name) {
         super(pluginName, name);
-        readerName = name;
         sePresent = false;
         threadWaitTimeout = 5000;
     }

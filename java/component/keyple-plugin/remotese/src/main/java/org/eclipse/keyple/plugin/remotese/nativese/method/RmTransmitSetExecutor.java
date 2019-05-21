@@ -12,7 +12,9 @@
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
+import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
@@ -26,13 +28,13 @@ import org.slf4j.LoggerFactory;
 /**
  * Execute the Transmit on Native Reader
  */
-public class RmTransmitExecutor implements RemoteMethodExecutor {
+public class RmTransmitSetExecutor implements RemoteMethodExecutor {
 
-    private static final Logger logger = LoggerFactory.getLogger(RmTransmitExecutor.class);
+    private static final Logger logger = LoggerFactory.getLogger(RmTransmitSetExecutor.class);
 
     private final SlaveAPI slaveAPI;
 
-    public RmTransmitExecutor(SlaveAPI slaveAPI) {
+    public RmTransmitSetExecutor(SlaveAPI slaveAPI) {
         this.slaveAPI = slaveAPI;
     }
 
@@ -40,31 +42,32 @@ public class RmTransmitExecutor implements RemoteMethodExecutor {
     public TransportDto execute(TransportDto transportDto) {
         KeypleDto keypleDto = transportDto.getKeypleDTO();
         TransportDto out = null;
-        SeResponse seResponse = null;
+        SeResponseSet seResponseSet = null;
 
         // Extract info from keypleDto
-        SeRequest seRequest = JsonParser.getGson().fromJson(keypleDto.getBody(), SeRequest.class);
+        SeRequestSet seRequestSet =
+                JsonParser.getGson().fromJson(keypleDto.getBody(), SeRequestSet.class);
         String nativeReaderName = keypleDto.getNativeReaderName();
-        logger.trace("Execute locally seRequest : {}", seRequest);
+        logger.trace("Execute locally seRequestSet : {}", seRequestSet);
 
         try {
             // find native reader by name
             ProxyReader reader = slaveAPI.findLocalReader(nativeReaderName);
 
             // execute transmitSet
-            seResponse = reader.transmit(seRequest);
+            seResponseSet = reader.transmitSet(seRequestSet);
 
             // prepare response
-            String parseBody = JsonParser.getGson().toJson(seResponse, SeResponse.class);
+            String parseBody = JsonParser.getGson().toJson(seResponseSet, SeResponseSet.class);
             out = transportDto.nextTransportDTO(new KeypleDto(
-                    RemoteMethod.READER_TRANSMIT.getName(), parseBody, false,
+                    RemoteMethod.READER_TRANSMIT_SET.getName(), parseBody, false,
                     keypleDto.getSessionId(), nativeReaderName, keypleDto.getVirtualReaderName(),
                     keypleDto.getTargetNodeId(), keypleDto.getRequesterNodeId()));
 
         } catch (KeypleReaderException e) {
             // if an exception occurs, send it into a keypleDto to the Master
             out = transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(
-                    RemoteMethod.READER_TRANSMIT.getName(), e, keypleDto.getSessionId(),
+                    RemoteMethod.READER_TRANSMIT_SET.getName(), e, keypleDto.getSessionId(),
                     nativeReaderName, keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
                     keypleDto.getRequesterNodeId()));
         }
