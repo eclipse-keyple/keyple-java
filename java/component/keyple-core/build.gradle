@@ -99,6 +99,13 @@ task binJar(type: Jar, dependsOn : classes) {
 
 }*/
 
+tasks.signArchives.doFirst {
+    print "Signing variables"
+    print ext."signing.keyId"
+    print ext."signing.password"
+    print ext."signing.secretKeyRingFile"
+}
+
 task sourcesJar(type: Jar, dependsOn : classes) {
     classifier = 'sources'
     from sourceSets.main.output, sourceSets.main.java
