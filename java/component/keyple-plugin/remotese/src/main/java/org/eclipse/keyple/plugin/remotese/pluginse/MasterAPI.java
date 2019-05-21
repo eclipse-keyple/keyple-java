@@ -141,7 +141,6 @@ public class MasterAPI implements DtoHandler {
                             "a READER_DISCONNECT response has been received by MasterAPI");
                 }
 
-
                 /*
                  * Notifications from slave
                  */
@@ -155,34 +154,11 @@ public class MasterAPI implements DtoHandler {
              */
 
             case READER_TRANSMIT:
-                // can be more general
-                if (keypleDTO.isRequest()) {
-                    throw new IllegalStateException(
-                            "a READER_TRANSMIT request has been received by MasterAPI");
-                } else {
-                    // dispatch dto to the appropriate reader
-                    try {
-                        // find reader by sessionId
-                        VirtualReader reader = getReaderBySessionId(keypleDTO.getSessionId());
-
-                        // process response with the reader rm method engine
-                        return reader.getRmTxEngine().onDTO(transportDto);
-
-                    } catch (KeypleReaderNotFoundException e) {
-                        // reader not found;
-                        throw new IllegalStateException(
-                                "Virtual Reader was not found while receiving a transmitSet response",
-                                e);
-                    } catch (KeypleReaderException e) {
-                        // reader not found;
-                        throw new IllegalStateException("Readers list has not been initiated", e);
-                    }
-                }
-
+            case READER_TRANSMIT_SET:
             case DEFAULT_SELECTION_REQUEST:
                 if (keypleDTO.isRequest()) {
-                    throw new IllegalStateException(
-                            "a READER_TRANSMIT request has been received by MasterAPI");
+                    throw new IllegalStateException("a " + keypleDTO.getAction()
+                            + " request has been received by MasterAPI");
                 } else {
                     // dispatch dto to the appropriate reader
                     try {
@@ -195,7 +171,8 @@ public class MasterAPI implements DtoHandler {
                     } catch (KeypleReaderNotFoundException e) {
                         // reader not found;
                         throw new IllegalStateException(
-                                "Virtual Reader was not found while receiving a transmitSet response",
+                                "Virtual Reader was not found while receiving a "
+                                        + keypleDTO.getAction() + " response",
                                 e);
                     } catch (KeypleReaderException e) {
                         // reader not found;
