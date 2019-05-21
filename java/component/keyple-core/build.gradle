@@ -18,6 +18,8 @@ if (false) {
 */
 
 apply plugin: 'signing'
+ext."signing.keyId" = "0C140E36"
+//other properties are defined in the gradle.properties
 signing {
     sign configurations.archives
 }
