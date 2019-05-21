@@ -21,9 +21,6 @@ apply plugin: 'signing'
 ext."signing.keyId" = "0C140E36"
 //other properties are defined in the gradle.properties
 signing {
-    //def signingKey = "0C140E36"
-    //def signingPassword = ext."signing.password"
-    //useInMemoryPgpKeys(signingKey, signingPassword)
     sign configurations.archives
 }
 
@@ -100,10 +97,10 @@ task binJar(type: Jar, dependsOn : classes) {
 }*/
 
 tasks.signArchives.doFirst {
-    print "Signing variables"
-    print ext."signing.keyId"
+    println "Signing variables"
+    //println ext."signing.keyId"
     //print ext."signing.password"
-    print ext."signing.secretKeyRingFile"
+    //print ext."signing.secretKeyRingFile"
 }
 
 task sourcesJar(type: Jar, dependsOn : classes) {
