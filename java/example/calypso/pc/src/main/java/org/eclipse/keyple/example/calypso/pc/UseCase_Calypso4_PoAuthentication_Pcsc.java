@@ -119,13 +119,14 @@ public class UseCase_Calypso4_PoAuthentication_Pcsc {
              * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
              * make the selection and read additional information afterwards
              */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.PoAidSelector(
-                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                                    PoSelector.InvalidatedPo.REJECT),
-                            "AID: " + CalypsoClassicInfo.AID),
-                    ChannelState.KEEP_OPEN);
+            PoSelectionRequest poSelectionRequest =
+                    new PoSelectionRequest(
+                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                    new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                            CalypsoClassicInfo.calypsoRev31Ticketing.getAid()),
+                                            PoSelector.InvalidatedPo.REJECT),
+                                    "AID: " + CalypsoClassicInfo.calypsoRev31Ticketing.getAid()),
+                            ChannelState.KEEP_OPEN);
 
             /*
              * Add the selection case to the current selection (we could have added other cases
@@ -154,7 +155,8 @@ public class UseCase_Calypso4_PoAuthentication_Pcsc {
                         "==================================================================================");
 
                 PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
-                        new TransactionSettings(samResource));
+                        new TransactionSettings(CalypsoClassicInfo.calypsoRev31Ticketing,
+                                samResource));
 
                 /*
                  * Prepare the reading order and keep the associated parser for later use once the

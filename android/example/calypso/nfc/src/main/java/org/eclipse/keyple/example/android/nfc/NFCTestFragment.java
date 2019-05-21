@@ -141,9 +141,9 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
                     new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                             new PoSelector.PoAidSelector(
-                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
+                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.calypsoRev31Ticketing.getAid()),
                                     PoSelector.InvalidatedPo.REJECT),
-                            "AID: " + CalypsoClassicInfo.AID),
+                            "AID: " + CalypsoClassicInfo.calypsoRev31Ticketing.getAid()),
                     ChannelState.KEEP_OPEN);
 
             /*
@@ -286,7 +286,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                         mText.append("\nCalypso PO selection: ");
                         appendColoredText(mText, "SUCCESS\n", Color.GREEN);
                         mText.append("AID: ");
-                        appendHexBuffer(mText, ByteArrayUtil.fromHex(CalypsoClassicInfo.AID));
+                        appendHexBuffer(mText, ByteArrayUtil.fromHex(CalypsoClassicInfo.calypsoRev31Ticketing.getAid()));
 
                         /*
                          * Retrieve the data read from the parser updated during the selection

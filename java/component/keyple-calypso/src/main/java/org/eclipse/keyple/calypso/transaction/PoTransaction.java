@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.transaction;
 
+import static org.eclipse.keyple.calypso.transaction.ApplicationType.GENERAL_USE;
 import java.util.*;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.CalypsoBuilderParser;
@@ -39,7 +40,6 @@ import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * Portable Object Secure Session.
@@ -135,7 +135,7 @@ public final class PoTransaction {
         this(poResource);
 
         /* check serial number if filter is set */
-        String poFilter = transactionSettings.getPoSerialNumberFilter();
+        String poFilter = transactionSettings.getPoApplicationSettings().getPoSerialNumberFilter();
         if (poFilter != null) {
             Pattern p = Pattern.compile(poFilter);
             if (!p.matcher(ByteArrayUtil.toHex(poCalypsoInstanceSerial)).matches()) {
@@ -373,20 +373,21 @@ public final class PoTransaction {
                     String.format("%02X", poKvc));
         }
 
-        if (!transactionSettings.isAuthorizedKvc(poKvc)) {
+        if (!transactionSettings.getPoApplicationSettings().isAuthorizedKvc(poKvc)) {
             throw new KeypleCalypsoSecureSessionUnauthorizedKvcException(
                     String.format("PO KVC = %02X", poKvc));
         }
 
 
-        if (!transactionSettings.isAuthorizedKvc(poKif)) {
+        if (!transactionSettings.getPoApplicationSettings().isAuthorizedKvc(poKif)) {
             throw new KeypleCalypsoSecureSessionUnauthorizedKifException(
                     String.format("PO KIF = %02X", poKif));
         }
 
         byte kif;
         if (poKif == KIF_UNDEFINED) {
-            kif = transactionSettings.getDefaultKif(accessLevel);
+            kif = transactionSettings.getPoApplicationSettings()
+                    .getKeyDescriptor(GENERAL_USE, accessLevel).getKif();
         } else {
             kif = poKif;
         }
@@ -402,8 +403,9 @@ public final class PoTransaction {
          */
         DigestProcessor.initialize(poRevision, samRevision, false, false,
                 poRevision.equals(PoRevision.REV3_2),
-                transactionSettings.getDefaultKeyRecordNumber(accessLevel), kif, poKvc,
-                poApduResponseList.get(0).getDataOut());
+                transactionSettings.getPoApplicationSettings()
+                        .getKeyDescriptor(GENERAL_USE, accessLevel).getRecordNumber(),
+                kif, poKvc, poApduResponseList.get(0).getDataOut());
 
         /*
          * Add all commands data to the digest computation. The first command in the list is the
@@ -1372,6 +1374,12 @@ public final class PoTransaction {
      */
     public boolean processOpening(ModificationMode modificationMode, SessionAccessLevel accessLevel,
             byte openingSfiToSelect, byte openingRecordNumberToRead) throws KeypleReaderException {
+
+        /** This method should be called only if a SAM reader is available */
+        if (samReader == null) {
+            throw new IllegalStateException("No SAM reader available.");
+        }
+
         currentModificationMode = modificationMode;
         currentAccessLevel = accessLevel;
         byte localOpeningRecordNumberToRead = openingRecordNumberToRead;
@@ -1616,6 +1624,11 @@ public final class PoTransaction {
      *         </ul>
      */
     public boolean processClosing(ChannelState channelState) throws KeypleReaderException {
+        /** This method should be called only if a SAM reader is available */
+        if (samReader == null) {
+            throw new IllegalStateException("No SAM reader available.");
+        }
+
         boolean poProcessSuccess = true;
         boolean atLeastOneReadCommand = false;
         boolean sessionPreviouslyClosed = false;

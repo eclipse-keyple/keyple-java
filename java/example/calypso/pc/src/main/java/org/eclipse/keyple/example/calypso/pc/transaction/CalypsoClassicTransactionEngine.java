@@ -296,7 +296,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         PoSelectionRequest poSelectionRequestCalypsoAid = new PoSelectionRequest(
                 new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new PoSelector.PoAidSelector(
-                                new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
+                                new SeSelector.AidSelector.IsoAid(
+                                        CalypsoClassicInfo.calypsoRev31Ticketing.getAid()),
                                 PoSelector.InvalidatedPo.ACCEPT),
                         "Calypso selector"),
                 ChannelState.KEEP_OPEN);
@@ -343,7 +344,8 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                     /* the following method will throw an exception if the SAM is not available. */
                     samResource = CalypsoUtilities.checkSamAndOpenChannel(samReader);
                     this.samChannelOpen = true;
-                    transactionSettings = new TransactionSettings(samResource);
+                    transactionSettings = new TransactionSettings(
+                            CalypsoClassicInfo.calypsoRev31Ticketing, samResource);
                 }
 
                 Profiler profiler = new Profiler("Entire transaction");

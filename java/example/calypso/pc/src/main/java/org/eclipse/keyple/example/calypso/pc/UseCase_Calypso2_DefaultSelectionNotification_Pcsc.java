@@ -115,9 +115,10 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
         PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
                 new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new PoSelector.PoAidSelector(
-                                new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
+                                new SeSelector.AidSelector.IsoAid(
+                                        CalypsoClassicInfo.calypsoRev31Ticketing.getAid()),
                                 PoSelector.InvalidatedPo.REJECT),
-                        "AID: " + CalypsoClassicInfo.AID),
+                        "AID: " + CalypsoClassicInfo.calypsoRev31Ticketing.getAid()),
                 ChannelState.KEEP_OPEN);
 
         /*

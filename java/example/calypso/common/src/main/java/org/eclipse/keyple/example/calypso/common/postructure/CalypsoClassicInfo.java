@@ -12,6 +12,7 @@
 package org.eclipse.keyple.example.calypso.common.postructure;
 
 
+import org.eclipse.keyple.example.calypso.common.applications.CalypsoRev31Ticketing;
 
 /**
  * Helper class to provide specific elements to handle Calypso cards.
@@ -29,8 +30,8 @@ package org.eclipse.keyple.example.calypso.common.postructure;
  * </ul>
  */
 public class CalypsoClassicInfo {
-    /** AID: Keyple test kit profile 1, Application 2 */
-    public final static String AID = "315449432E49434131";
+    /** Application information Keyple test kit profile 1, Application 2 */
+    public static final CalypsoRev31Ticketing calypsoRev31Ticketing = new CalypsoRev31Ticketing();
     /// ** 1TIC.ICA AID */
     // public final static String AID = "315449432E494341";
     /** SAM C1 regular expression: platform, version and serial number values are ignored */

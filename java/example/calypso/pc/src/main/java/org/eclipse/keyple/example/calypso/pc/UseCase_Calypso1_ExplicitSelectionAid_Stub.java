@@ -125,13 +125,14 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Stub {
              * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
              * make the selection and read additional information afterwards
              */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.PoAidSelector(
-                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                                    PoSelector.InvalidatedPo.REJECT),
-                            "AID: " + CalypsoClassicInfo.AID),
-                    ChannelState.KEEP_OPEN);
+            PoSelectionRequest poSelectionRequest =
+                    new PoSelectionRequest(
+                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                    new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                            CalypsoClassicInfo.calypsoRev31Ticketing.getAid()),
+                                            PoSelector.InvalidatedPo.REJECT),
+                                    "AID: " + CalypsoClassicInfo.calypsoRev31Ticketing.getAid()),
+                            ChannelState.KEEP_OPEN);
 
             /*
              * Prepare the reading order and keep the associated parser for later use once the

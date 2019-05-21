@@ -24,6 +24,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.integration.calypso.CalypsoRev31AuditC0;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
@@ -170,7 +171,7 @@ public class Demo_WriteName {
             CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveSelection().getMatchingSe();
 
             PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
-                    new TransactionSettings(samResource));
+                    new TransactionSettings(new CalypsoRev31AuditC0(), samResource));
 
             String name = "CNA Keyple Demo";
 

@@ -30,6 +30,9 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.integration.calypso.CalypsoRev31AuditC0;
+import org.eclipse.keyple.integration.calypso.CalypsoRev31CDLight;
+import org.eclipse.keyple.integration.calypso.CalypsoRev31Clap;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
@@ -202,7 +205,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         SeResponse dataReadInSession;
         PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, detectedPO),
-                new TransactionSettings(samResource));
+                new TransactionSettings(new CalypsoRev31Clap(), samResource));
 
         int readEventParserIndex = poTransaction.prepareReadRecordsCmd(eventSfi,
                 ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, "Event");
@@ -254,7 +257,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
             poTransaction.processClosing(ChannelState.KEEP_OPEN);
 
             poTransaction = new PoTransaction(new PoResource(poReader, detectedPO),
-                    new TransactionSettings(samResource));
+                    new TransactionSettings(new CalypsoRev31Clap(), samResource));
 
             poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
                     PoTransaction.SessionAccessLevel.SESSION_LVL_LOAD, (byte) 0x00, (byte) 0x00);
@@ -346,7 +349,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                         .getMatchingSelection(auditC0SeIndex).getMatchingSe();
 
                 PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, auditC0Se),
-                        new TransactionSettings(samResource));
+                        new TransactionSettings(new CalypsoRev31AuditC0(), samResource));
                 validateAuditC0(poTransaction);
 
             } else if (matchingSelectionIndex == clapSeIndex) {
@@ -354,7 +357,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                         .getMatchingSe();
 
                 PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, clapSe),
-                        new TransactionSettings(samResource));
+                        new TransactionSettings(new CalypsoRev31Clap(), samResource));
                 validateClap(clapSe);
 
             } else if (matchingSelectionIndex == cdLightSeIndex) {
@@ -363,7 +366,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                         .getMatchingSelection(cdLightSeIndex).getMatchingSe();
 
                 PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, cdLightSe),
-                        new TransactionSettings(samResource));
+                        new TransactionSettings(new CalypsoRev31CDLight(), samResource));
                 validateAuditC0(poTransaction);
 
             } else {
