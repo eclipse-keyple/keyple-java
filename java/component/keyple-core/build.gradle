@@ -22,7 +22,7 @@ ext."signing.keyId" = "0C140E36"
 //other properties are defined in the gradle.properties
 signing {
     def signingKey = "0C140E36"
-    def signingPassword = ext."signing.password"
+    def signingPassword = signing.password
     useInMemoryPgpKeys(signingKey, signingPassword)
     sign configurations.archives
 }
