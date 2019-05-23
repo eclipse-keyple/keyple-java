@@ -2,7 +2,12 @@ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
+        google()
         jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        //classpath 'digital.wup:android-maven-publish:3.4.0'
     }
 }
 
@@ -15,16 +20,14 @@ project.ext {
 }
 
 subprojects {
+
     group 'org.eclipse.keyple'
+
+
 }
 
 
 allprojects {
-
-    configurations.all {
-        // check for updates every build
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    }
 
     repositories {
         mavenLocal()
@@ -34,6 +37,12 @@ allprojects {
     }
 
     apply plugin: 'pmd'
+
+    configurations.all {
+        // check for updates every build
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+
 
     pmd {
         ruleSets = [

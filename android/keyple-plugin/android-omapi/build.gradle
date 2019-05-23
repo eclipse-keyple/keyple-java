@@ -1,23 +1,12 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        google()
-        jcenter()
-
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
-        classpath 'digital.wup:android-maven-publish:3.4.0'
-    }
-}
-
 
 
 group 'org.eclipse.keyple'
 project.version = '0.7.0'+'-'+ getDate()+ '-SNAPSHOT'
 
-apply plugin: 'pmd'
+
+apply plugin: 'maven'
 apply plugin: 'com.android.library'
+
 
 pmd {
     ruleSets = [
@@ -103,9 +92,8 @@ android {
 
 }
 
+/*
 apply plugin: 'digital.wup.android-maven-publish'
-
-//assemble.finalizedBy publishToMavenLocal
 
 publishing {
     publications {
@@ -114,7 +102,7 @@ publishing {
         }
     }
 }
-
+*/
 
 repositories {
     mavenLocal()
@@ -132,9 +120,7 @@ dependencies {
 
     implementation "org.slf4j:slf4j-api:${slf4japi_version}"
 
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '1.0.0-RC4'
     implementation project(path:":java:component:keyple-core")
-
 
     compileOnly files('libs/org.simalliance.openmobileapi.jar')
     /*
