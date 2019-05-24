@@ -27,7 +27,7 @@ subprojects{
         }
 
         /* from https://central.sonatype.org/pages/gradle.html */
-        uploadArchives {
+        task uploadJar(type: Upload)  {
             repositories {
                 mavenDeployer {
                     beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
