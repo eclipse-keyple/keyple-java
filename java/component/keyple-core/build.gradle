@@ -1,37 +1,4 @@
-/*
-plugins {
-    id 'maven-publish'
-}
-*/
-
-apply plugin: 'maven'
-apply plugin: 'java'
-apply plugin: 'java-library'
-
-/*
-if (false) {
-    apply plugin: 'signing'
-    signing {
-        sign configurations.archives
-    }
-}
-*/
-
-apply plugin: 'signing'
-ext."signing.keyId" = "0C140E36"
-//other properties are defined in the gradle.properties
-signing {
-    sign configurations.archives
-}
-
-//Maven POM
-group = project.group
-archivesBaseName = project.name
-version = project.version
-
-
-project.version = '0.7.0'+'-'+ getDate()+ '-SNAPSHOT'
-sourceCompatibility = 1.6
+project.version = '0.7.0'+'-'+ timestamp + '-SNAPSHOT'
 
 task copyVersionFile {
     //generate properties file META-INF/keyple.properties with version number
@@ -54,17 +21,7 @@ task copyVersionFile {
     }
 }
 
-//copy license file from root folder to each generated artifact
-task copyLICENSE(type: Copy) {
-    from file("${projectDir}/../../../LICENSE")
-    into file("${buildDir}/resources/main/META-INF/")
-}
 
-//copy notice file from root folder to each generated artifact
-task copyNOTICE(type: Copy) {
-    from file("${projectDir}/../../../NOTICE.md")
-    into file("${buildDir}/resources/main/META-INF/")
-}
 
 
 jar {
@@ -74,34 +31,10 @@ jar {
     }
 }
 
-/*
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId = project.group
-            artifactId = project.name
-            version = project.version
-
-            from components.java
-        }
-    }
-}
-*/
 
 classes.dependsOn copyLICENSE, copyNOTICE,copyVersionFile
 
-/*
-task binJar(type: Jar, dependsOn : classes) {
-    from sourceSets.main.output
 
-}*/
-
-tasks.signArchives.doFirst {
-    println "Signing variables"
-    //println ext."signing.keyId"
-    //print ext."signing.password"
-    //print ext."signing.secretKeyRingFile"
-}
 
 task sourcesJar(type: Jar, dependsOn : classes) {
     classifier = 'sources'
@@ -118,66 +51,22 @@ artifacts {
     archives sourcesJar, javadocJar
 }
 
-/* from https://central.sonatype.org/pages/gradle.html */
 
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-
-            pom.project {
-                name project.name
-                packaging "jar"
-                // optionally artifactId can be defined here
-                description "Keyple Core component"
-                url 'https://projects.eclipse.org/projects/iot.keyple'
-
-                scm {
-                    connection 'scm:git:git://github.com/eclipse/keyple-java.git'
-                    developerConnection 'scm:git:https://github.com/eclipse/keyple-java.git'
-                    url 'http://github.com/eclipse/keyple-java/tree/master'
-                }
-
-
-                licenses {
-                    license {
-                        name 'Eclipse Public License - v 2.0'
-                        url 'https://www.eclipse.org/legal/epl-2.0/'
-                    }
-                }
-
-                developers {
-                    developer {
-                        name 'Olivier Delcroix'
-                        email 'odelcroi@gmail.com'
-                        organization 'Eclipse Keyple'
-                        organizationUrl 'https://projects.eclipse.org/projects/iot.keyple'
-                    }
-                }
-            }
-        }
-    }
-}
 
 
 dependencies {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     api "org.slf4j:slf4j-api:${slf4japi_version}"
-    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+
     testImplementation "junit:junit:${junit_version}"
+
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
     testImplementation "org.mockito:mockito-core:${mockitocore_version}"
+
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
     testImplementation "junit:junit:${junit_version}"
+
     //add slf4j simple logger implementation
     testImplementation "org.slf4j:slf4j-simple:${slf4jsimple_version}"
 }

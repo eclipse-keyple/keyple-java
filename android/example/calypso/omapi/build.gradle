@@ -19,6 +19,7 @@ project.version = '0.7.0-SNAPSHOT'
 
 
 apply plugin: 'com.android.application'
+apply from:'../../../../common.gradle'
 
 allprojects {
 
@@ -176,6 +177,3 @@ if (propFile.canRead()){
     android.buildTypes.release.signingConfig = null
 }
 
-def getDate() {
-    return new Date().format('yyyyMMdd')
-}

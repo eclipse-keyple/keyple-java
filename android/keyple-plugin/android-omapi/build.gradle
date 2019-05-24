@@ -1,11 +1,10 @@
+apply plugin: 'com.android.library'
 
 
 group 'org.eclipse.keyple'
-project.version = '0.7.0'+'-'+ getDate()+ '-SNAPSHOT'
+project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
 
 
-apply plugin: 'maven'
-apply plugin: 'com.android.library'
 
 
 pmd {

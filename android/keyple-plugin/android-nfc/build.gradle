@@ -1,17 +1,8 @@
-project.group 'org.eclipse.keyple'
-project.version = '0.7.0'+'-'+ getDate()+ '-SNAPSHOT'
-
-
-apply plugin: 'maven'
 apply plugin: 'com.android.library'
 
 
-pmd {
-    ruleSets = [
-            "java-basic",
-            "java-braces",
-    ]
-}
+project.group 'org.eclipse.keyple'
+project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
 
 
 android {
@@ -102,6 +93,7 @@ publishing {
 }
 */
 
+
 task androidSourcesJar(type: Jar) {
     classifier = 'sources'
     from android.sourceSets.main.java.sourceFiles
@@ -109,78 +101,6 @@ task androidSourcesJar(type: Jar) {
 
 artifacts {
     archives androidSourcesJar
-}
-
-if (project.getProperties().containsKey("doSign") && doSign=="true") {
-    apply plugin: 'signing'
-
-
-    ext."signing.keyId" = "0C140E36"
-    //other properties are defined in the gradle.properties
-    signing {
-        sign configurations.archives
-    }
-
-    /* from https://central.sonatype.org/pages/gradle.html */
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                pom.project {
-                    name project.name
-                    packaging "aar"
-                    // optionally artifactId can be defined here
-                    description project.description
-                    url 'https://projects.eclipse.org/projects/iot.keyple'
-
-                    scm {
-                        connection 'scm:git:git://github.com/eclipse/keyple-java.git'
-                        developerConnection 'scm:git:https://github.com/eclipse/keyple-java.git'
-                        url 'http://github.com/eclipse/keyple-java/tree/master'
-                    }
-
-
-                    licenses {
-                        license {
-                            name 'Eclipse Public License - v 2.0'
-                            url 'https://www.eclipse.org/legal/epl-2.0/'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            name 'Olivier Delcroix'
-                            email 'odelcroi@gmail.com'
-                            organization 'Eclipse Keyple'
-                            organizationUrl 'https://projects.eclipse.org/projects/iot.keyple'
-                        }
-                        developer {
-                            name 'Jean-Pierre Fortune'
-                            email 'jean-pierre.fortune@ialto.com'
-                            organization 'Eclipse Keyple'
-                            organizationUrl 'https://projects.eclipse.org/projects/iot.keyple'
-                        }
-                        developer {
-                            name 'Pierre Terrée'
-                            email 'pierre.terree@calypsonet.org'
-                            organization 'Eclipse Keyple'
-                            organizationUrl 'https://projects.eclipse.org/projects/iot.keyple'
-                        }
-                    }
-                }
-            }
-        }
-    }
-
 }
 
 

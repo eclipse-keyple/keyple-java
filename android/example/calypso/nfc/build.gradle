@@ -16,6 +16,7 @@ plugins {
 }
 
 apply plugin: 'com.android.application'
+apply from:'../../../../common.gradle'
 
 project.group 'org.eclipse.keyple'
 project.version = '0.7.0-SNAPSHOT'
@@ -144,8 +145,4 @@ dependencies {
     androidTestImplementation "com.android.support.test:runner:${android_support_test}"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:${android_support_espresso}"
 
-}
-
-def getDate() {
-    return new Date().format('yyyyMMdd')
 }

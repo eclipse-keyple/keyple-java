@@ -1,12 +1,6 @@
-plugins {
-    id 'maven-publish'
-}
-apply plugin: 'java'
-sourceCompatibility = 1.6
-project.version = '0.7.0'+'-'+ getDate()+ '-SNAPSHOT'
-apply plugin: 'java-library'
+project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
 
-
+/*
 //Create jar for Native Reader Client
 task nativeJar(type: Jar, group: 'build') {
 
@@ -71,7 +65,9 @@ task transportJar(type: Jar, group: 'build') {
     }
 
 }
+*/
 
+/*
 //copy license file from root folder to each generated artifact
 task copyLICENSE(type: Copy) {
     from file("${projectDir}/../../../../LICENSE")
@@ -83,24 +79,26 @@ task copyNOTICE(type: Copy) {
     from file("${projectDir}/../../../../NOTICE.md")
     into file("${buildDir}/resources/main/META-INF/")
 }
+*/
 
-pluginJar.dependsOn copyLICENSE, copyNOTICE
-transportJar.dependsOn copyLICENSE, copyNOTICE
-nativeJar.dependsOn copyLICENSE, copyNOTICE
+//pluginJar.dependsOn copyLICENSE, copyNOTICE
+//transportJar.dependsOn copyLICENSE, copyNOTICE
+//nativeJar.dependsOn copyLICENSE, copyNOTICE
+jar.dependsOn copyLICENSEplugin, copyNOTICEplugin
 
 
 configurations {
-    nativeJarArtifact.extendsFrom runtime
-    pluginJarArtifact.extendsFrom runtime
-    transportJarArtifact.extendsFrom runtime
+    //nativeJarArtifact.extendsFrom runtime
+    //pluginJarArtifact.extendsFrom runtime
+    //transportJarArtifact.extendsFrom runtime
 }
 artifacts {
-    nativeJarArtifact nativeJar
-    pluginJarArtifact pluginJar
-    transportJarArtifact transportJar
+    //nativeJarArtifact nativeJar
+    //pluginJarArtifact pluginJar
+    //transportJarArtifact transportJar
 }
 
-
+/*
 publishing {
     //publish Native SE Client
     publications {
@@ -174,20 +172,20 @@ publishing {
         }
     }
 }
-
+*/
 
 dependencies {
     //use java library : keyple core
-    //implementation 'org.eclipse.keyple:keyple-core:1.+'
     implementation project(path:':java:component:keyple-core')
 
-
     implementation "com.google.code.gson:gson:${gson_version}"
+
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     api "org.slf4j:slf4j-api:${slf4japi_version}"
+
     /*
-        Tests
-         */
+    Tests
+     */
     //add slf4j simple logger implementation
     testImplementation "org.slf4j:slf4j-simple:${slf4jsimple_version}"
     // https://mvnrepository.com/artifact/junit/junit

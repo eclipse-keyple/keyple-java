@@ -1,41 +1,26 @@
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        google()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
-        //classpath 'digital.wup:android-maven-publish:3.4.0'
-    }
-}
-
-plugins {
-    id "com.diffplug.gradle.spotless" version "3.14.0"
-}
-
-apply from: '../common.gradle'
+apply from: '../../common.gradle'
+apply plugin: 'com.diffplug.gradle.spotless'
 
 
-subprojects {
+subprojects{
 
-    group 'org.eclipse.keyple'
     apply plugin: 'maven'
-    apply plugin: 'pmd'
-    
-    pmd {
-        ruleSets = [
-                "java-basic",
-                "java-braces",
-        ]
-    }
+    apply plugin: 'java'
+    apply plugin: 'java-library'
+
+    sourceCompatibility = 1.6
+
+    //Maven POM
+    /*
+    group = project.group
+    archivesBaseName = project.name
+    version = project.version
+    */
 
     if (project.getProperties().containsKey("doSign") && doSign=="true") {
         apply plugin: 'signing'
 
-
-        ext."signing.keyId" = "0C140E36"
+        //ext."signing.keyId" = "0C140E36"
         //other properties are defined in the gradle.properties
         signing {
             sign configurations.archives
@@ -57,7 +42,7 @@ subprojects {
 
                     pom.project {
                         name project.name
-                        packaging "aar"
+                        packaging "jar"
                         // optionally artifactId can be defined here
                         description project.description
                         url 'https://projects.eclipse.org/projects/iot.keyple'
@@ -101,85 +86,61 @@ subprojects {
             }
         }
 
+        tasks.signArchives.doFirst {
+            println "Signing variables"
+            //println ext."signing.keyId"
+            //print ext."signing.password"
+            //print ext."signing.secretKeyRingFile"
+        }
+
     }
 
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        google()
-        jcenter()
+    //copy license file from root folder to each generated artifact
+    task copyLICENSE(type: Copy) {
+        from file("${projectDir}/../../../LICENSE")
+        into file("${buildDir}/resources/main/META-INF/")
     }
 
-
-    configurations.all {
-        // check for updates every build
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    //copy notice file from root folder to each generated artifact
+    task copyNOTICE(type: Copy) {
+        from file("${projectDir}/../../../NOTICE.md")
+        into file("${buildDir}/resources/main/META-INF/")
     }
 
-
-    pmd {
-        ruleSets = [
-                "java-basic",
-                "java-braces",
-                // "java-strings",
-                // "java-imports",
-                // "java-unnecessary",
-                // "java-unusedcode",
-                //"java-metrics",
-                // "java-empty",
-                // "java-codesize",
-                // "java-clone",
-                // "java-typeresolution",
-                // "java-strictexception",
-                // "java-finalizers",
-                // "java-migrating",
-                // "java-logging-java",
-                // "java-controversial"  // 8 issues
-                // "java-sunsecure"      // 1 issue
-                // "java-junit"          // 1 issue
-                // "java-optimizations"  // 44 issues
-                // "java-naming",        // 9 issues
-                // "java-coupling"       // 2 issues
-                // "java-design"         // 19 issues
-                // "java-comments"       // 87 issues --> Kind of conflicting with spotless
-        ]
+    //copy license file from root folder to each generated artifact
+    task copyLICENSEplugin(type: Copy) {
+        from file("${projectDir}/../../../../LICENSE")
+        into file("${buildDir}/resources/main/META-INF/")
     }
 
+    //copy notice file from root folder to each generated artifact
+    task copyNOTICEplugin(type: Copy) {
+        from file("${projectDir}/../../../../NOTICE.md")
+        into file("${buildDir}/resources/main/META-INF/")
+    }
 }
-
-
-allprojects {
-
-    
-}
-
 
 
 spotless {
     java {
-        target '**/*.java'
-
-        licenseHeaderFile '../.build/spotless.license.txt'
-
+        target 'java/**/*.java'
+        licenseHeaderFile '../../.build/spotless.license.txt'
         importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
-
         removeUnusedImports()
-
-        eclipse().configFile '../.build/spotless.eclipseformat.xml'
+        eclipse().configFile '../../.build/spotless.eclipseformat.xml'
     }
 
     format 'misc', {
-        target '**/*.java', '**/*.gradle', '**/*.yml', '**/*.md'
+        target 'java/**/*.java', 'java/**/*.gradle', 'java/**/*.yml', 'java/**/*.md'
 
         indentWithSpaces()
         endWithNewline()
     }
 }
 
-
-//create task for to agragate javadoc
+//create task to agregate javadoc
 task aggregatedJavadocs(type: Javadoc, description: 'Generate javadocs from all child projects as if it was a single project', group: 'Documentation') {
-    println 'Create a aggregated javadoc Task to : ' + "$buildDir/docs/javadoc"
+    //println 'Create a aggregated javadoc Task to : ' + "$buildDir/docs/javadoc"
     destinationDir = file("$buildDir/docs/javadoc")
     title = "$project.name " +  project(":java:component:keyple-core").version + " version API"
     options.author true
@@ -197,20 +158,20 @@ task aggregatedJavadocs(type: Javadoc, description: 'Generate javadocs from all 
 //dynamically configure the source
 aggregatedJavadocs.doFirst {
 
-    //exclude the init file
-    excludes += "README.MD"
+    //println "DoFirst in task  : aggregatedJavadocs"
 
-    //add Android modules javadoc
-    def aggregatedAndroidProjects = [
-                                  project(":keyple-plugin:keyple-plugin-android-nfc"),
-                                  project(":keyple-plugin:keyple-plugin-android-omapi")]
+    //add Java modules javadoc
+    def aggregatedJavaProjects = [project(":java:component:keyple-core"),
+                                  project(":java:component:keyple-calypso"),
+                                  project(":java:component:keyple-plugin:keyple-plugin-pcsc"),
+                                  project(":java:component:keyple-plugin:keyple-plugin-stub"),
+                                  project(":java:component:keyple-plugin:keyple-plugin-remotese")]
 
-    aggregatedAndroidProjects.each { aggregatedAndroidProject ->
-            source += aggregatedAndroidProject.generateDebugJavadoc.source
-            classpath += aggregatedAndroidProject.generateDebugJavadoc.classpath
-            excludes += aggregatedAndroidProject.generateDebugJavadoc.excludes
-            includes += aggregatedAndroidProject.generateDebugJavadoc.includes
+    aggregatedJavaProjects.each { aggregatedJavaProject ->
+        source += aggregatedJavaProject.javadoc.source
+        classpath += aggregatedJavaProject.javadoc.classpath
+        excludes += aggregatedJavaProject.javadoc.excludes
+        includes += aggregatedJavaProject.javadoc.includes
 
     }
-
 }
