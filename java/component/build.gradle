@@ -20,14 +20,14 @@ subprojects{
     if (project.getProperties().containsKey("doSign") && doSign=="true") {
         apply plugin: 'signing'
 
-        //ext."signing.keyId" = "0C140E36"
+        ext."signing.keyId" = "0C140E36"
         //other properties are defined in the gradle.properties
         signing {
             sign configurations.archives
         }
 
         /* from https://central.sonatype.org/pages/gradle.html */
-        task uploadJar(type: Upload)  {
+        uploadArchives {
             repositories {
                 mavenDeployer {
                     beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
