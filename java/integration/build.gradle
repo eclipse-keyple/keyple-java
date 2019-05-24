@@ -9,19 +9,12 @@ jar {
     }
 }
 
-//build.dependsOn ":keyple-core:build" // build and install keyple-core if needed
-//build.dependsOn ":keyple-calypso:build" // build and install keyple-calypso if needed
-//build.dependsOn ":keyple-plugin:keyple-plugin-pcsc:build" // build and install keyple-keyple-plugin-pcsc if needed
-
 dependencies {
 
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '1.+'
     implementation project(path:':java:component:keyple-core')
 
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.+'
     implementation project(path:':java:component:keyple-calypso')
 
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc', version: '1.+'
     implementation project(path:':java:component:keyple-plugin:keyple-plugin-pcsc')
 
     implementation project(path: ':java:example:calypso:example-calypso-pc')

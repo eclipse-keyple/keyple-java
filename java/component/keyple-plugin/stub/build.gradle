@@ -1,13 +1,6 @@
-plugins {
-    id 'maven-publish'
-}
+project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
 
-project.version = '0.7.0'+'-'+ getDate()+ '-SNAPSHOT'
-apply plugin: 'java'
-sourceCompatibility = 1.6
-apply plugin: 'java-library'
-
-
+/*
 //copy license file from root folder to each generated artifact
 task copyLICENSE(type: Copy) {
     from file("${projectDir}/../../../../LICENSE")
@@ -19,8 +12,9 @@ task copyNOTICE(type: Copy) {
     from file("${projectDir}/../../../../NOTICE.md")
     into file("${buildDir}/resources/main/META-INF/")
 }
+*/
 
-jar.dependsOn copyLICENSE, copyNOTICE
+jar.dependsOn copyLICENSEplugin, copyNOTICEplugin
 
 jar {
     manifest {
@@ -29,21 +23,6 @@ jar {
     }
 }
 
-
-/*
-*/
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId = project.group
-            artifactId = project.name
-            version = project.version
-
-            from components.java
-        }
-    }
-}
 
 /*
 Required to share unit tests
@@ -60,17 +39,11 @@ task testJar(type: Jar) {
 artifacts {
     testArtifacts testJar
 }
-/*
-end of Required to share unit tests
- */
 
-//build.dependsOn ":keyple-core:build" //refresh keyple-core if needed
-publishToMavenLocal.dependsOn ":java:component:keyple-core:publishToMavenLocal"
 
 dependencies {
 
     //use java library : core
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '1.0.0-RC4'
     implementation project(path:':java:component:keyple-core')
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
@@ -82,7 +55,6 @@ dependencies {
      */
 
     //use java library :  calypso
-    //testImplementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.0.0-RC4'
     testImplementation  project(path:':java:component:keyple-calypso')
 
     // https://mvnrepository.com/artifact/junit/junit

@@ -1,0 +1,177 @@
+apply from: '../../common.gradle'
+apply plugin: 'com.diffplug.gradle.spotless'
+
+
+subprojects{
+
+    apply plugin: 'maven'
+    apply plugin: 'java'
+    apply plugin: 'java-library'
+
+    sourceCompatibility = 1.6
+
+    //Maven POM
+    /*
+    group = project.group
+    archivesBaseName = project.name
+    version = project.version
+    */
+
+    if (project.getProperties().containsKey("doSign") && doSign=="true") {
+        apply plugin: 'signing'
+
+        ext."signing.keyId" = "0C140E36"
+        //other properties are defined in the gradle.properties
+        signing {
+            sign configurations.archives
+        }
+
+        /* from https://central.sonatype.org/pages/gradle.html */
+        uploadArchives {
+            repositories {
+                mavenDeployer {
+                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                    repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                        authentication(userName: ossrhUsername, password: ossrhPassword)
+                    }
+
+                    snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                        authentication(userName: ossrhUsername, password: ossrhPassword)
+                    }
+
+                    pom.project {
+                        name project.name
+                        packaging "jar"
+                        // optionally artifactId can be defined here
+                        description project.description
+                        url 'https://projects.eclipse.org/projects/iot.keyple'
+
+                        scm {
+                            connection 'scm:git:git://github.com/eclipse/keyple-java.git'
+                            developerConnection 'scm:git:https://github.com/eclipse/keyple-java.git'
+                            url 'http://github.com/eclipse/keyple-java/tree/master'
+                        }
+
+
+                        licenses {
+                            license {
+                                name 'Eclipse Public License - v 2.0'
+                                url 'https://www.eclipse.org/legal/epl-2.0/'
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                name 'Olivier Delcroix'
+                                email 'odelcroi@gmail.com'
+                                organization 'Eclipse Keyple'
+                                organizationUrl 'https://projects.eclipse.org/projects/iot.keyple'
+                            }
+                            developer {
+                                name 'Jean-Pierre Fortune'
+                                email 'jean-pierre.fortune@ialto.com'
+                                organization 'Eclipse Keyple'
+                                organizationUrl 'https://projects.eclipse.org/projects/iot.keyple'
+                            }
+                            developer {
+                                name 'Pierre Terrée'
+                                email 'pierre.terree@calypsonet.org'
+                                organization 'Eclipse Keyple'
+                                organizationUrl 'https://projects.eclipse.org/projects/iot.keyple'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        tasks.signArchives.doFirst {
+            println "Signing variables"
+            //println ext."signing.keyId"
+            //print ext."signing.password"
+            //print ext."signing.secretKeyRingFile"
+        }
+
+    }
+
+    //copy license file from root folder to each generated artifact
+    task copyLICENSE(type: Copy) {
+        from file("${projectDir}/../../../LICENSE")
+        into file("${buildDir}/resources/main/META-INF/")
+    }
+
+    //copy notice file from root folder to each generated artifact
+    task copyNOTICE(type: Copy) {
+        from file("${projectDir}/../../../NOTICE.md")
+        into file("${buildDir}/resources/main/META-INF/")
+    }
+
+    //copy license file from root folder to each generated artifact
+    task copyLICENSEplugin(type: Copy) {
+        from file("${projectDir}/../../../../LICENSE")
+        into file("${buildDir}/resources/main/META-INF/")
+    }
+
+    //copy notice file from root folder to each generated artifact
+    task copyNOTICEplugin(type: Copy) {
+        from file("${projectDir}/../../../../NOTICE.md")
+        into file("${buildDir}/resources/main/META-INF/")
+    }
+}
+
+
+spotless {
+    java {
+        target 'java/**/*.java'
+        licenseHeaderFile '../../.build/spotless.license.txt'
+        importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
+        removeUnusedImports()
+        eclipse().configFile '../../.build/spotless.eclipseformat.xml'
+    }
+
+    format 'misc', {
+        target 'java/**/*.java', 'java/**/*.gradle', 'java/**/*.yml', 'java/**/*.md'
+
+        indentWithSpaces()
+        endWithNewline()
+    }
+}
+
+//create task to agregate javadoc
+task aggregatedJavadocs(type: Javadoc, description: 'Generate javadocs from all child projects as if it was a single project', group: 'Documentation') {
+    //println 'Create a aggregated javadoc Task to : ' + "$buildDir/docs/javadoc"
+    destinationDir = file("$buildDir/docs/javadoc")
+    title = "$project.name " +  project(":java:component:keyple-core").version + " version API"
+    options.author true
+    options.links  'http://docs.oracle.com/javase/6/docs/api/',
+            "http://d.android.com/reference/",
+            'http://seek-for-android.github.io/javadoc/V4.0.0/'
+
+
+    options.addStringOption 'Xdoclint:none', '-quiet'
+
+    //init source to whatever file to avoid NO-SOURCE
+    source = 'README.MD'
+}
+
+//dynamically configure the source
+aggregatedJavadocs.doFirst {
+
+    //println "DoFirst in task  : aggregatedJavadocs"
+
+    //add Java modules javadoc
+    def aggregatedJavaProjects = [project(":java:component:keyple-core"),
+                                  project(":java:component:keyple-calypso"),
+                                  project(":java:component:keyple-plugin:keyple-plugin-pcsc"),
+                                  project(":java:component:keyple-plugin:keyple-plugin-stub"),
+                                  project(":java:component:keyple-plugin:keyple-plugin-remotese")]
+
+    aggregatedJavaProjects.each { aggregatedJavaProject ->
+        source += aggregatedJavaProject.javadoc.source
+        classpath += aggregatedJavaProject.javadoc.classpath
+        excludes += aggregatedJavaProject.javadoc.excludes
+        includes += aggregatedJavaProject.javadoc.includes
+
+    }
+}
