@@ -52,14 +52,6 @@ import org.slf4j.LoggerFactory;
  */
 public final class PoTransaction {
 
-    /* public constants */
-    /** The key index for personalization operations (issuer key needed) */
-    public static final byte KEY_INDEX_PERSONALIZATION = (byte) 0x01;
-    /** The key index for reloading operations (loading key needed) */
-    public static final byte KEY_INDEX_LOAD = (byte) 0x02;
-    /** The key index for debit and validation operations (validation key needed) */
-    public static final byte KEY_INDEX_VALIDATION_DEBIT = (byte) 0x03;
-
     /* private constants */
     private final static byte KIF_UNDEFINED = (byte) 0xFF;
 
@@ -298,7 +290,7 @@ public final class PoTransaction {
         /* Build the PO Open Secure Session command */
         // TODO decide how to define the extraInfo field. Empty for the moment.
         AbstractOpenSessionCmdBuild poOpenSession = AbstractOpenSessionCmdBuild.create(poRevision,
-                (byte) (accessLevel.ordinal() + 1), sessionTerminalChallenge, openingSfiToSelect,
+                accessLevel.getSessionKey(), sessionTerminalChallenge, openingSfiToSelect,
                 openingRecordNumberToRead, "");
 
         /* Add the resulting ApduRequest to the PO ApduRequest list */
@@ -961,11 +953,27 @@ public final class PoTransaction {
      */
     public enum SessionAccessLevel {
         /** Session Access Level used for personalization purposes. */
-        SESSION_LVL_PERSO,
+        SESSION_LVL_PERSO("perso", (byte) 0x01),
         /** Session Access Level used for reloading purposes. */
-        SESSION_LVL_LOAD,
+        SESSION_LVL_LOAD("load", (byte) 0x02),
         /** Session Access Level used for validating and debiting purposes. */
-        SESSION_LVL_DEBIT
+        SESSION_LVL_DEBIT("debit", (byte) 0x03);
+
+        private final String name;
+        private final byte sessionKey;
+
+        SessionAccessLevel(String name, byte sessionKey) {
+            this.name = name;
+            this.sessionKey = sessionKey;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public byte getSessionKey() {
+            return sessionKey;
+        }
     }
 
     /**
