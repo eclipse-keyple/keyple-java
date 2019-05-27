@@ -21,7 +21,6 @@ import org.eclipse.keyple.calypso.command.po.parser.*;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPars;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
-import org.eclipse.keyple.calypso.command.sam.SamBuilderParser;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.builder.security.DigestAuthenticateCmdBuild;
 import org.eclipse.keyple.calypso.command.sam.builder.security.SelectDiversifierCmdBuild;
@@ -544,38 +543,38 @@ public final class PoTransaction {
      * @return SeResponse all sam responses
      * @throws KeypleReaderException if a reader error occurs
      */
-    public SeResponse processSamCommands(List<SamBuilderParser> samBuilderParsers)
-            throws KeypleReaderException {
-
-        /* Init SAM ApduRequest List - for the first SAM exchange */
-        List<ApduRequest> samApduRequestList =
-                this.getApduRequestsToSendInSession(samBuilderParsers);
-
-        /* SeRequest from the command list */
-        SeRequest samSeRequest = new SeRequest(samApduRequestList, ChannelState.KEEP_OPEN);
-
-        logger.debug("processSamCommands => SAMSEREQUEST = {}", samSeRequest);
-
-        /* Transmit SeRequest and get SeResponse */
-        SeResponse samSeResponse = samReader.transmit(samSeRequest);
-
-        if (samSeResponse == null) {
-            throw new KeypleCalypsoSecureSessionException("Null response received",
-                    KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
-                    null);
-        }
-
-        if (sessionState == SessionState.SESSION_OPEN
-                && !samSeResponse.wasChannelPreviouslyOpen()) {
-            throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
-                    KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
-                    null);
-        }
-        // TODO check if the wasChannelPreviouslyOpen should be done in the case where the session
-        // is closed
-
-        return samSeResponse;
-    }
+    // public SeResponse processSamCommands(List<SamBuilderParser> samBuilderParsers)
+    // throws KeypleReaderException {
+    //
+    // /* Init SAM ApduRequest List - for the first SAM exchange */
+    // List<ApduRequest> samApduRequestList =
+    // this.getApduRequestsToSendInSession(samBuilderParsers);
+    //
+    // /* SeRequest from the command list */
+    // SeRequest samSeRequest = new SeRequest(samApduRequestList, ChannelState.KEEP_OPEN);
+    //
+    // logger.debug("processSamCommands => SAMSEREQUEST = {}", samSeRequest);
+    //
+    // /* Transmit SeRequest and get SeResponse */
+    // SeResponse samSeResponse = samReader.transmit(samSeRequest);
+    //
+    // if (samSeResponse == null) {
+    // throw new KeypleCalypsoSecureSessionException("Null response received",
+    // KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
+    // null);
+    // }
+    //
+    // if (sessionState == SessionState.SESSION_OPEN
+    // && !samSeResponse.wasChannelPreviouslyOpen()) {
+    // throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
+    // KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
+    // null);
+    // }
+    // // TODO check if the wasChannelPreviouslyOpen should be done in the case where the session
+    // // is closed
+    //
+    // return samSeResponse;
+    // }
 
     /**
      * Close the Secure Session.
