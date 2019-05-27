@@ -2,7 +2,12 @@ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
+        google()
         jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        //classpath 'digital.wup:android-maven-publish:3.4.0'
     }
 }
 
@@ -10,21 +15,22 @@ plugins {
     id "com.diffplug.gradle.spotless" version "3.14.0"
 }
 
-project.ext {
-    enableMavenLocalRepo = false
-}
+apply from: '../common.gradle'
+
 
 subprojects {
+
     group 'org.eclipse.keyple'
-}
+    apply plugin: 'pmd'
 
-
-allprojects {
-
-    configurations.all {
-        // check for updates every build
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    pmd {
+        ruleSets = [
+                "java-basic",
+                "java-braces",
+        ]
     }
+
+    
 
     repositories {
         mavenLocal()
@@ -33,7 +39,12 @@ allprojects {
         jcenter()
     }
 
-    apply plugin: 'pmd'
+
+    configurations.all {
+        // check for updates every build
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+
 
     pmd {
         ruleSets = [
@@ -62,6 +73,13 @@ allprojects {
                 // "java-comments"       // 87 issues --> Kind of conflicting with spotless
         ]
     }
+
+}
+
+
+allprojects {
+
+
 }
 
 
@@ -124,8 +142,4 @@ aggregatedJavadocs.doFirst {
 
     }
 
-}
-
-def getDate() {
-    return new Date().format('yyyyMMdd')
 }

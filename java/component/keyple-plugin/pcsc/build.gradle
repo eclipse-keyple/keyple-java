@@ -1,12 +1,6 @@
-plugins {
-    id 'maven-publish'
-}
+project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
 
-project.version = '0.7.0'+'-'+ getDate()+ '-SNAPSHOT'
-apply plugin: 'java'
-sourceCompatibility = 1.6
-apply plugin: 'java-library'
-
+/*
 //copy license file from root folder to each generated artifact
 task copyLICENSE(type: Copy) {
     from file("${projectDir}/../../../../LICENSE")
@@ -18,8 +12,9 @@ task copyNOTICE(type: Copy) {
     from file("${projectDir}/../../../../NOTICE.md")
     into file("${buildDir}/resources/main/META-INF/")
 }
+*/
 
-jar.dependsOn copyLICENSE, copyNOTICE
+jar.dependsOn copyLICENSEplugin, copyNOTICEplugin
 
 jar {
     manifest {
@@ -28,17 +23,6 @@ jar {
     }
 }
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId = project.group
-            artifactId = project.name
-            version = project.version
-
-            from components.java
-        }
-    }
-}
 
 dependencies {
 
