@@ -21,10 +21,8 @@ import org.eclipse.keyple.calypso.command.po.parser.*;
 import org.eclipse.keyple.calypso.command.po.parser.security.AbstractOpenSessionRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPars;
 import org.eclipse.keyple.calypso.command.sam.AbstractSamCommandBuilder;
-import org.eclipse.keyple.calypso.command.sam.SamBuilderParser;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
-import org.eclipse.keyple.calypso.command.sam.builder.security.DigestAuthenticateCmdBuild;
-import org.eclipse.keyple.calypso.command.sam.builder.security.SelectDiversifierCmdBuild;
+import org.eclipse.keyple.calypso.command.sam.builder.security.*;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestAuthenticateRespPars;
 import org.eclipse.keyple.calypso.command.sam.parser.security.DigestCloseRespPars;
 import org.eclipse.keyple.calypso.command.sam.parser.security.SamGetChallengeRespPars;
@@ -51,14 +49,6 @@ import org.slf4j.LoggerFactory;
  * @author Calypso Networks Association
  */
 public final class PoTransaction {
-
-    /* public constants */
-    /** The key index for personalization operations (issuer key needed) */
-    public static final byte KEY_INDEX_PERSONALIZATION = (byte) 0x01;
-    /** The key index for reloading operations (loading key needed) */
-    public static final byte KEY_INDEX_LOAD = (byte) 0x02;
-    /** The key index for debit and validation operations (validation key needed) */
-    public static final byte KEY_INDEX_VALIDATION_DEBIT = (byte) 0x03;
 
     /* private constants */
     private final static byte KIF_UNDEFINED = (byte) 0xFF;
@@ -250,8 +240,7 @@ public final class PoTransaction {
                 : CHALLENGE_LENGTH_REV_INF_32;
 
         AbstractSamCommandBuilder samGetChallenge =
-                new org.eclipse.keyple.calypso.command.sam.builder.security.SamGetChallengeCmdBuild(
-                        this.samRevision, challengeLength);
+                new SamGetChallengeCmdBuild(this.samRevision, challengeLength);
 
         samApduRequestList.add(samGetChallenge.getApduRequest());
 
@@ -298,7 +287,7 @@ public final class PoTransaction {
         /* Build the PO Open Secure Session command */
         // TODO decide how to define the extraInfo field. Empty for the moment.
         AbstractOpenSessionCmdBuild poOpenSession = AbstractOpenSessionCmdBuild.create(poRevision,
-                (byte) (accessLevel.ordinal() + 1), sessionTerminalChallenge, openingSfiToSelect,
+                accessLevel.getSessionKey(), sessionTerminalChallenge, openingSfiToSelect,
                 openingRecordNumberToRead, "");
 
         /* Add the resulting ApduRequest to the PO ApduRequest list */
@@ -552,38 +541,38 @@ public final class PoTransaction {
      * @return SeResponse all sam responses
      * @throws KeypleReaderException if a reader error occurs
      */
-    public SeResponse processSamCommands(List<SamBuilderParser> samBuilderParsers)
-            throws KeypleReaderException {
-
-        /* Init SAM ApduRequest List - for the first SAM exchange */
-        List<ApduRequest> samApduRequestList =
-                this.getApduRequestsToSendInSession(samBuilderParsers);
-
-        /* SeRequest from the command list */
-        SeRequest samSeRequest = new SeRequest(samApduRequestList, ChannelState.KEEP_OPEN);
-
-        logger.debug("processSamCommands => SAMSEREQUEST = {}", samSeRequest);
-
-        /* Transmit SeRequest and get SeResponse */
-        SeResponse samSeResponse = samReader.transmit(samSeRequest);
-
-        if (samSeResponse == null) {
-            throw new KeypleCalypsoSecureSessionException("Null response received",
-                    KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
-                    null);
-        }
-
-        if (sessionState == SessionState.SESSION_OPEN
-                && !samSeResponse.wasChannelPreviouslyOpen()) {
-            throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
-                    KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
-                    null);
-        }
-        // TODO check if the wasChannelPreviouslyOpen should be done in the case where the session
-        // is closed
-
-        return samSeResponse;
-    }
+    // public SeResponse processSamCommands(List<SamBuilderParser> samBuilderParsers)
+    // throws KeypleReaderException {
+    //
+    // /* Init SAM ApduRequest List - for the first SAM exchange */
+    // List<ApduRequest> samApduRequestList =
+    // this.getApduRequestsToSendInSession(samBuilderParsers);
+    //
+    // /* SeRequest from the command list */
+    // SeRequest samSeRequest = new SeRequest(samApduRequestList, ChannelState.KEEP_OPEN);
+    //
+    // logger.debug("processSamCommands => SAMSEREQUEST = {}", samSeRequest);
+    //
+    // /* Transmit SeRequest and get SeResponse */
+    // SeResponse samSeResponse = samReader.transmit(samSeRequest);
+    //
+    // if (samSeResponse == null) {
+    // throw new KeypleCalypsoSecureSessionException("Null response received",
+    // KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
+    // null);
+    // }
+    //
+    // if (sessionState == SessionState.SESSION_OPEN
+    // && !samSeResponse.wasChannelPreviouslyOpen()) {
+    // throw new KeypleCalypsoSecureSessionException("The logical channel was not open",
+    // KeypleCalypsoSecureSessionException.Type.SAM, samSeRequest.getApduRequests(),
+    // null);
+    // }
+    // // TODO check if the wasChannelPreviouslyOpen should be done in the case where the session
+    // // is closed
+    //
+    // return samSeResponse;
+    // }
 
     /**
      * Close the Secure Session.
@@ -961,11 +950,27 @@ public final class PoTransaction {
      */
     public enum SessionAccessLevel {
         /** Session Access Level used for personalization purposes. */
-        SESSION_LVL_PERSO,
+        SESSION_LVL_PERSO("perso", (byte) 0x01),
         /** Session Access Level used for reloading purposes. */
-        SESSION_LVL_LOAD,
+        SESSION_LVL_LOAD("load", (byte) 0x02),
         /** Session Access Level used for validating and debiting purposes. */
-        SESSION_LVL_DEBIT
+        SESSION_LVL_DEBIT("debit", (byte) 0x03);
+
+        private final String name;
+        private final byte sessionKey;
+
+        SessionAccessLevel(String name, byte sessionKey) {
+            this.name = name;
+            this.sessionKey = sessionKey;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public byte getSessionKey() {
+            return sessionKey;
+        }
     }
 
     /**
@@ -989,7 +994,7 @@ public final class PoTransaction {
     /**
      * The PO Transaction State defined with the elements: ‘IOError’, ‘SEInserted’ and ‘SERemoval’.
      */
-    public enum SessionState {
+    private enum SessionState {
         /** Initial state of a PO transaction. The PO must have been previously selected. */
         SESSION_UNINITIALIZED,
         /** The secure session is active. */
@@ -1130,10 +1135,8 @@ public final class PoTransaction {
              * Build and append Digest Init command as first ApduRequest of the digest computation
              * process
              */
-            samApduRequestList.add(
-                    new org.eclipse.keyple.calypso.command.sam.builder.security.DigestInitCmdBuild(
-                            samRevision, verification, revMode, keyRecordNumber, keyKIF, keyKVC,
-                            poDigestDataCache.get(0)).getApduRequest());
+            samApduRequestList.add(new DigestInitCmdBuild(samRevision, verification, revMode,
+                    keyRecordNumber, keyKIF, keyKVC, poDigestDataCache.get(0)).getApduRequest());
 
             /*
              * Build and append Digest Update commands
@@ -1142,19 +1145,16 @@ public final class PoTransaction {
              */
             for (int i = 1; i < poDigestDataCache.size(); i++) {
                 samApduRequestList.add(
-                        new org.eclipse.keyple.calypso.command.sam.builder.security.DigestUpdateCmdBuild(
-                                samRevision, encryption, poDigestDataCache.get(i))
-                                        .getApduRequest());
+                        new DigestUpdateCmdBuild(samRevision, encryption, poDigestDataCache.get(i))
+                                .getApduRequest());
             }
 
             /*
              * Build and append Digest Close command
              */
-            samApduRequestList.add(
-                    (new org.eclipse.keyple.calypso.command.sam.builder.security.DigestCloseCmdBuild(
-                            samRevision,
-                            poRevision.equals(PoRevision.REV3_2) ? SIGNATURE_LENGTH_REV32
-                                    : SIGNATURE_LENGTH_REV_INF_32).getApduRequest()));
+            samApduRequestList.add((new DigestCloseCmdBuild(samRevision,
+                    poRevision.equals(PoRevision.REV3_2) ? SIGNATURE_LENGTH_REV32
+                            : SIGNATURE_LENGTH_REV_INF_32).getApduRequest()));
 
 
             return new SeRequest(samApduRequestList, ChannelState.KEEP_OPEN);
