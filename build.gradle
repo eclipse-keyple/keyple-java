@@ -13,10 +13,13 @@ plugins {
     id "com.diffplug.gradle.spotless" version "3.14.0"
 }
 
+apply from: 'common.gradle'
+
+
 allprojects {
 
     group 'org.eclipse.keyple'
-    
+
     configurations.all {
         // check for updates every build
         resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
@@ -75,7 +78,7 @@ allprojects {
 
 spotless {
     java {
-        target 'java/**/*.java'
+        target "java/**/*.java"
         licenseHeaderFile '.build/spotless.license.txt'
         importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
         removeUnusedImports()
@@ -91,6 +94,7 @@ spotless {
 }
 
 
+/*
 //create task to agregate javadoc
 task aggregatedJavadocs(type: Javadoc, description: 'Generate javadocs from all child projects as if it was a single project', group: 'Documentation') {
     //println 'Create a aggregated javadoc Task to : ' + "$buildDir/docs/javadoc"
@@ -128,7 +132,4 @@ aggregatedJavadocs.doFirst {
 
     }
 }
-
-def getDate() {
-    return new Date().format('yyyyMMdd')
-}
+*/

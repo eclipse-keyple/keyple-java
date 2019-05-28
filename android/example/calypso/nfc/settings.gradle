@@ -1,5 +1,8 @@
 rootProject.name = 'example-android-nfc'
 
+include ':java:component'
+project(':java:component').projectDir = new File("../../../../java/component")
+
 include ':keyple-plugin:android-nfc'
 project(':keyple-plugin:android-nfc').projectDir = new File("../../../keyple-plugin/android-nfc")
 

@@ -1,23 +1,12 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        google()
-        jcenter()
-
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
-        classpath 'digital.wup:android-maven-publish:3.4.0'
-    }
-}
-
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
 
 
 group 'org.eclipse.keyple'
-project.version = '0.7.0'+'-'+ getDate()+ '-SNAPSHOT'
+project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
 
-apply plugin: 'pmd'
-apply plugin: 'com.android.library'
+
+
 
 pmd {
     ruleSets = [
@@ -103,17 +92,88 @@ android {
 
 }
 
-apply plugin: 'digital.wup.android-maven-publish'
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.sourceFiles
+}
 
-//assemble.finalizedBy publishToMavenLocal
+artifacts {
+    archives androidSourcesJar
+}
 
-publishing {
-    publications {
-        mavenAar(MavenPublication) {
-            from components.android
+
+if (project.getProperties().containsKey("doSign") && doSign=="true") {
+    apply plugin: 'signing'
+
+
+    ext."signing.keyId" = "0C140E36"
+    //other properties are defined in the gradle.properties
+    signing {
+        sign configurations.archives
+    }
+
+    /* from https://central.sonatype.org/pages/gradle.html */
+    uploadArchives  {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                pom.project {
+                    name project.name
+                    packaging "aar"
+                    // optionally artifactId can be defined here
+                    description project.description
+                    url 'https://projects.eclipse.org/projects/iot.keyple'
+
+                    scm {
+                        connection 'scm:git:git://github.com/eclipse/keyple-java.git'
+                        developerConnection 'scm:git:https://github.com/eclipse/keyple-java.git'
+                        url 'http://github.com/eclipse/keyple-java/tree/master'
+                    }
+
+
+                    licenses {
+                        license {
+                            name 'Eclipse Public License - v 2.0'
+                            url 'https://www.eclipse.org/legal/epl-2.0/'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            name 'Olivier Delcroix'
+                            email 'odelcroi@gmail.com'
+                            organization 'Eclipse Keyple'
+                            organizationUrl 'https://projects.eclipse.org/projects/iot.keyple'
+                        }
+                        developer {
+                            name 'Jean-Pierre Fortune'
+                            email 'jean-pierre.fortune@ialto.com'
+                            organization 'Eclipse Keyple'
+                            organizationUrl 'https://projects.eclipse.org/projects/iot.keyple'
+                        }
+                        developer {
+                            name 'Pierre Terrée'
+                            email 'pierre.terree@calypsonet.org'
+                            organization 'Eclipse Keyple'
+                            organizationUrl 'https://projects.eclipse.org/projects/iot.keyple'
+                        }
+                    }
+                }
+            }
         }
     }
+
 }
+
 
 
 repositories {
@@ -132,9 +192,7 @@ dependencies {
 
     implementation "org.slf4j:slf4j-api:${slf4japi_version}"
 
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '1.0.0-RC4'
     implementation project(path:":java:component:keyple-core")
-
 
     compileOnly files('libs/org.simalliance.openmobileapi.jar')
     /*

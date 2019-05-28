@@ -2,7 +2,7 @@ apply plugin: 'java'
 
 sourceCompatibility = 1.6
 
-project.version = '0.7.0'+'-'+ getDate()+ '-SNAPSHOT'
+project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
 
 jar {
     manifest {
@@ -13,18 +13,15 @@ jar {
 
 dependencies {
     //use keyple library : calypso
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.0.0-RC4'
     implementation project(path:':java:component:keyple-calypso')
 
+    //use keyple library : core
     implementation project(path:':java:component:keyple-core')
 
-
     //use keyple library : plugin stub
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-stub', version: '1.0.0-RC4'
     implementation project(path:':java:component:keyple-plugin:keyple-plugin-stub')
 
     //use keyple library : plugin pcsc
-    //implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc', version: '1.0.0-RC4'
     implementation project(path:':java:component:keyple-plugin:keyple-plugin-pcsc')
 
     //use keyple example : generic-common
@@ -33,6 +30,7 @@ dependencies {
     //use keyple example : generic-pc
     implementation project(path: ':java:example:generic:example-generic-pc')
 
+    //use keyple example : calypso common
     implementation project(path: ':java:example:calypso:example-calypso-common')
     
     //https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
