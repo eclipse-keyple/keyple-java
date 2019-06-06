@@ -17,6 +17,9 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 
+import java.util.Map;
+import java.util.Set;
+
 public interface INativeReaderService {
 
 
@@ -24,7 +27,12 @@ public interface INativeReaderService {
      * Connect Physical Local Reader to Remote SE Creates a Session to exchange data with this
      * Reader with an option to duplex connection
      */
-    String connectReader(ProxyReader localReader) throws KeypleReaderException;
+    String connectReader(SeReader localReader) throws KeypleReaderException;
+
+    /**
+     * Same than connec
+     */
+    String connectReader(SeReader localReader, Map<String, String> options) throws KeypleReaderException;
 
     /**
      * Disconnect Physical Local Reader from Remote Se Master Server

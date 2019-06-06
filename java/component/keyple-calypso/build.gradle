@@ -14,7 +14,6 @@ task copyNOTICE(type: Copy) {
 }
 */
 
-jar.dependsOn copyLICENSE, copyNOTICE
 
 jar {
     manifest {
@@ -22,6 +21,8 @@ jar {
                 'Implementation-Version': project.version
     }
 }
+
+jar.dependsOn copyLICENSE, copyNOTICE
 
 
 dependencies {

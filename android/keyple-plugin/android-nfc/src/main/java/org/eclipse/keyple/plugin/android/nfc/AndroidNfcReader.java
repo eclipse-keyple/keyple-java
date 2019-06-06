@@ -20,6 +20,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractSelectionLocalReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
@@ -164,7 +165,16 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
     public void onTagDiscovered(Tag tag) {
         LOG.info("Received Tag Discovered event");
         try {
+
             tagProxy = TagProxy.getTagProxy(tag);
+
+            //hack
+            closeLogicalChannel();
+
+            //Force reconnect to tag
+            openPhysicalChannel();
+
+
             cardInserted();
         } catch (KeypleReaderException e) {
             // print and do nothing
@@ -235,7 +245,7 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
     @Override
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         // Initialization
-        LOG.debug("Send " + apduIn.length + " bytes to tag : " + ByteArrayUtil.toHex(apduIn));
+        LOG.debug("Send " + apduIn.length + " bytes to tag : " +tagProxy.getTag().getId());
         byte[] dataOut = null;
         try {
             dataOut = tagProxy.transceive(apduIn);
@@ -269,40 +279,54 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
         this.onTagDiscovered(tag);
     }
 
-    public String printTagId() {
-
-        if (tagProxy != null && tagProxy.getTag() != null) {
-            StringBuilder techList = new StringBuilder();
-
-            // build a user friendly TechList
-            String[] techs = tagProxy.getTag().getTechList();
-            for (int i = 0; i < techs.length; i++) {
-                // append a userfriendly Tech
-                techList.append(techs[i].replace("android.nfc.tech.", ""));
-                // if not last tech, append separator
-                if (i + 1 < techs.length)
-                    techList.append(", ");
-            }
-
-
-
-            // build a hexa TechId
-            StringBuilder tagId = new StringBuilder();
-            for (byte b : tagProxy.getTag().getId()) {
-                tagId.append(String.format("%02X ", b));
-            }
-
-            return tagId + " - " + techList;
-        } else {
-            return "no-tag";
+    /*
+     * Enable NFC Reader Mode
+     */
+    void enableNFCReaderMode(Activity activity) {
+        if (nfcAdapter == null) {
+            nfcAdapter = NfcAdapter.getDefaultAdapter(activity);
         }
+
+        int flags = getFlags();
+
+        Bundle options = getOptions();
+        LOG.info("Enabling Read Write Mode with flags : " + flags + " and options : "
+                + options.toString());
+
+        // Reader mode for NFC reader allows to listen to NFC events without the Intent mechanism.
+        // It is active only when the activity thus the fragment is active.
+        nfcAdapter.enableReaderMode(activity, this, flags, options);
+    }
+
+    void disableNFCReaderMode(Activity activity) {
+        nfcAdapter.disableReaderMode(activity);
+
     }
 
 
+    /*
+     * HELPERS
+     */
+
+
+    /**
+     * Build Reader Mode options Bundle from parameters
+     *
+     * @return options
+     */
+    Bundle getOptions() {
+        Bundle options = new Bundle(1);
+        if (parameters.containsKey(AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY)) {
+            Integer delay = Integer
+                    .parseInt(parameters.get(AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY));
+            options.putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, delay.intValue());
+        }
+        return options;
+    }
 
     /**
      * Build Reader Mode flags Integer from parameters
-     * 
+     *
      * @return flags Integer
      */
     int getFlags() {
@@ -334,41 +358,33 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
         return flags;
     }
 
-    /**
-     * Build Reader Mode options Bundle from parameters
-     * 
-     * @return options
-     */
-    Bundle getOptions() {
-        Bundle options = new Bundle(1);
-        if (parameters.containsKey(AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY)) {
-            Integer delay = Integer
-                    .parseInt(parameters.get(AndroidNfcReader.FLAG_READER_PRESENCE_CHECK_DELAY));
-            options.putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, delay.intValue());
+    public String printTagId() {
+
+        if (tagProxy != null && tagProxy.getTag() != null) {
+            StringBuilder techList = new StringBuilder();
+
+            // build a user friendly TechList
+            String[] techs = tagProxy.getTag().getTechList();
+            for (int i = 0; i < techs.length; i++) {
+                // append a userfriendly Tech
+                techList.append(techs[i].replace("android.nfc.tech.", ""));
+                // if not last tech, append separator
+                if (i + 1 < techs.length)
+                    techList.append(", ");
+            }
+
+
+
+            // build a hexa TechId
+            StringBuilder tagId = new StringBuilder();
+            for (byte b : tagProxy.getTag().getId()) {
+                tagId.append(String.format("%02X ", b));
+            }
+
+            return tagId + " - " + techList;
+        } else {
+            return "no-tag";
         }
-        return options;
     }
 
-    void enableNFCReaderMode(Activity activity) {
-        if (nfcAdapter == null) {
-            nfcAdapter = NfcAdapter.getDefaultAdapter(activity);
-        }
-
-        int flags = getFlags();
-
-        Bundle options = getOptions();
-
-
-        LOG.info("Enabling Read Write Mode with flags : " + flags + " and options : "
-                + options.toString());
-
-        // Reader mode for NFC reader allows to listen to NFC events without the Intent mechanism.
-        // It is active only when the activity thus the fragment is active.
-        nfcAdapter.enableReaderMode(activity, this, flags, options);
-    }
-
-    void disableNFCReaderMode(Activity activity) {
-        nfcAdapter.disableReaderMode(activity);
-
-    }
 }

@@ -75,10 +75,10 @@ class EndpointPolling implements HttpHandler, DtoNode {
                 KeypleDto keypleDto = keypleDtoQueue.get(10000);
                 if (keypleDto == null) {
                     // time elapsed
-                    logger.trace("No keypleDto received during elapsed time");
+                    logger.trace("No keypleDto to be sent");
                     setNoContent(t);
                 } else {
-                    logger.trace("Set keypleDto in response {}", keypleDto);
+                    logger.trace("Send keypleDto by polling {}", keypleDto);
                     setHttpResponse(t, keypleDto);
                 }
 

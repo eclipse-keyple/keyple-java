@@ -458,7 +458,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /**
      * Close the logical channel.
      */
-    private void closeLogicalChannel() {
+    protected void closeLogicalChannel() {
         logger.trace("[{}] closeLogicalChannel => Closing of the logical channel.", this.getName());
         logicalChannelIsOpen = false;
         aidCurrentlySelected = null;

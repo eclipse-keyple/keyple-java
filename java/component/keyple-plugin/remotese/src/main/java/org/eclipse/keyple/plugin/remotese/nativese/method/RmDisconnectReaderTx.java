@@ -44,14 +44,14 @@ public class RmDisconnectReaderTx extends RemoteMethodTx<Boolean> {
     public Boolean parseResponse(KeypleDto keypleDto) throws KeypleRemoteException {
         // if reader connection thrown an exception
         if (KeypleDtoHelper.containsException(keypleDto)) {
-            logger.trace("KeypleDto contains an exception: {}", keypleDto);
+            //logger.trace("KeypleDto contains an exception: {}", keypleDto);
             KeypleReaderException ex =
                     JsonParser.getGson().fromJson(keypleDto.getBody(), KeypleReaderException.class);
             throw new KeypleRemoteException(
                     "An exception occurs while calling the remote method disconnectReader", ex);
         } else {
             JsonObject body = JsonParser.getGson().fromJson(keypleDto.getBody(), JsonObject.class);
-            return body.get("status").getAsBoolean();
+            return body.has("status") && body.get("status").getAsBoolean();
         }
 
     }
