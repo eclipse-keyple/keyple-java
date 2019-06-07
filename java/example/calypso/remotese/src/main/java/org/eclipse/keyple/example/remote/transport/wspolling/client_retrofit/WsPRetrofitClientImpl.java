@@ -53,7 +53,7 @@ public class WsPRetrofitClientImpl extends Observable implements ClientNode {
         this.clientNodeId = clientNodeId;
         this.serverNodeId = serverNodeId;
         this.pollActivated = false;
-        this.isPolling = false;
+        this.isPolling = true; //presume it will work
     }
 
 
@@ -68,7 +68,7 @@ public class WsPRetrofitClientImpl extends Observable implements ClientNode {
     }
 
     private void poll(final String clientNodeId) {
-        logger.debug("Polling from node {}", clientNodeId);
+        //logger.debug("Polling from node {}", clientNodeId);
         final WsPRetrofitClientImpl thisClient = this;
         // if poll is activated
         if (this.pollActivated) {
@@ -76,9 +76,7 @@ public class WsPRetrofitClientImpl extends Observable implements ClientNode {
             call.enqueue(new Callback<KeypleDto>() {
                 @Override
                 public void onResponse(Call<KeypleDto> call, Response<KeypleDto> response) {
-                    if (thisClient.connectCallback != null) {
-                        thisClient.connectCallback.onConnectSuccess();
-                    }
+
                     if(!isPolling){
                         logger.trace("Polling state changed, polling is ON now");
                         setChanged();
@@ -96,6 +94,12 @@ public class WsPRetrofitClientImpl extends Observable implements ClientNode {
                     } else {
                         // 204 : no response
                     }
+
+                    // if a callback is set, call it
+                    if (thisClient.connectCallback != null) {
+                        thisClient.connectCallback.onConnectSuccess();
+                    }
+
                     poll(clientNodeId);// recursive call to restart polling
                 }
 
@@ -114,6 +118,8 @@ public class WsPRetrofitClientImpl extends Observable implements ClientNode {
                         logger.error("Connection refused to server : {} , {}", t.getMessage(),
                                 t.getCause());
                         thisClient.stopPollingWorker();
+
+                        // if a callback is set, call it
                         if (thisClient.connectCallback != null) {
                             thisClient.connectCallback.onConnectFailure();
                         }
@@ -124,10 +130,14 @@ public class WsPRetrofitClientImpl extends Observable implements ClientNode {
                     } else {
                         logger.error("Unexpected error when poll() : {} , {}", t.getMessage(),
                                 t.getCause());
-                        poll(clientNodeId);// recursive call to restart polling
+
+                        // if a callback is set, call it, will it be called?
                         if (thisClient.connectCallback != null) {
                             thisClient.connectCallback.onConnectFailure();
                         }
+                        poll(clientNodeId);// recursive call to restart polling
+
+
                     }
                 }
             });

@@ -52,7 +52,7 @@ class EndpointPolling implements HttpHandler, DtoNode {
 
     @Override
     public void handle(HttpExchange t) {
-        logger.trace("Incoming Polling Request {} - {} ", t.getRequestMethod(), t.toString());
+        //logger.trace("Incoming Polling Request {} - {} ", t.getRequestMethod(), t.toString());
         String requestMethod = t.getRequestMethod();
 
         if (requestMethod.equals("GET")) {
