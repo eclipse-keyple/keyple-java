@@ -48,51 +48,53 @@ public class CalypsoSam extends AbstractMatchingSe {
         String atrString =
                 ByteArrayUtil.toHex(selectionResponse.getSelectionStatus().getAtr().getBytes());
         if (atrString.isEmpty()) {
-            throw new IllegalStateException("ATR should not be empty.");
-        }
-        /* extract the historical bytes from T3 to T12 */
-        String extractRegex = "3B(.{6}|.{10})805A(.{20})829000";
-        Pattern pattern = Pattern.compile(extractRegex);
-        Matcher matcher = pattern.matcher(atrString);
-        if (matcher.find(0)) {
-            byte[] atrSubElements = ByteArrayUtil.fromHex(matcher.group(2));
-            platform = atrSubElements[0];
-            applicationType = atrSubElements[1];
-            applicationSubType = atrSubElements[2];
-
-            // determine SAM revision from Application Subtype
-            switch (applicationSubType) {
-                case (byte) 0xC1:
-                    samRevision = C1;
-                    break;
-                case (byte) 0xD0:
-                case (byte) 0xD1:
-                case (byte) 0xD2:
-                    samRevision = S1D;
-                    break;
-                case (byte) 0xE1:
-                    samRevision = S1E;
-                    break;
-                default:
-                    throw new IllegalStateException(String.format(
-                            "Unknown SAM revision (unrecognized application subtype 0x%02X)",
-                            applicationSubType));
-            }
-
-            softwareIssuer = atrSubElements[3];
-            softwareVersion = atrSubElements[4];
-            softwareRevision = atrSubElements[5];
-            System.arraycopy(atrSubElements, 6, serialNumber, 0, 4);
-            if (logger.isTraceEnabled()) {
-                logger.trace(String.format(
-                        "SAM %s PLATFORM = %02X, APPTYPE = %02X, APPSUBTYPE = %02X, SWISSUER = %02X, SWVERSION = "
-                                + "%02X, SWREVISION = %02X",
-                        samRevision.getName(), platform, applicationType, applicationSubType,
-                        softwareIssuer, softwareVersion, softwareRevision));
-                logger.trace("SAM SERIALNUMBER = {}", ByteArrayUtil.toHex(serialNumber));
-            }
+            this.samRevision = SamRevision.C1;
+            // TODO throw new IllegalStateException("ATR should not be empty.");
         } else {
-            throw new IllegalStateException("Unrecognized ATR structure: " + atrString);
+            /* extract the historical bytes from T3 to T12 */
+            String extractRegex = "3B(.{6}|.{10})805A(.{20})829000";
+            Pattern pattern = Pattern.compile(extractRegex);
+            Matcher matcher = pattern.matcher(atrString);
+            if (matcher.find(0)) {
+                byte[] atrSubElements = ByteArrayUtil.fromHex(matcher.group(2));
+                platform = atrSubElements[0];
+                applicationType = atrSubElements[1];
+                applicationSubType = atrSubElements[2];
+
+                // determine SAM revision from Application Subtype
+                switch (applicationSubType) {
+                    case (byte) 0xC1:
+                        samRevision = C1;
+                        break;
+                    case (byte) 0xD0:
+                    case (byte) 0xD1:
+                    case (byte) 0xD2:
+                        samRevision = S1D;
+                        break;
+                    case (byte) 0xE1:
+                        samRevision = S1E;
+                        break;
+                    default:
+                        throw new IllegalStateException(String.format(
+                                "Unknown SAM revision (unrecognized application subtype 0x%02X)",
+                                applicationSubType));
+                }
+
+                softwareIssuer = atrSubElements[3];
+                softwareVersion = atrSubElements[4];
+                softwareRevision = atrSubElements[5];
+                System.arraycopy(atrSubElements, 6, serialNumber, 0, 4);
+                if (logger.isTraceEnabled()) {
+                    logger.trace(String.format(
+                            "SAM %s PLATFORM = %02X, APPTYPE = %02X, APPSUBTYPE = %02X, SWISSUER = %02X, SWVERSION = "
+                                    + "%02X, SWREVISION = %02X",
+                            samRevision.getName(), platform, applicationType, applicationSubType,
+                            softwareIssuer, softwareVersion, softwareRevision));
+                    logger.trace("SAM SERIALNUMBER = {}", ByteArrayUtil.toHex(serialNumber));
+                }
+            } else {
+                throw new IllegalStateException("Unrecognized ATR structure: " + atrString);
+            }
         }
     }
 
