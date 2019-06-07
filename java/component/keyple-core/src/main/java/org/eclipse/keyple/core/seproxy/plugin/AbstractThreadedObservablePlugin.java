@@ -129,6 +129,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                         /* notify disconnections if any and update the reader list */
                         if (changedReaderNames.size() > 0) {
                             /* grouped notification */
+                            logger.trace("Notifying disconnection(s): {}", changedReaderNames);
                             notifyObservers(new PluginEvent(this.pluginName, changedReaderNames,
                                     PluginEvent.EventType.READER_DISCONNECTED));
                             /* list update */
@@ -164,6 +165,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                         }
                         /* notify connections if any */
                         if (changedReaderNames.size() > 0) {
+                            logger.trace("Notifying connection(s): {}", changedReaderNames);
                             notifyObservers(new PluginEvent(this.pluginName, changedReaderNames,
                                     PluginEvent.EventType.READER_CONNECTED));
                         }

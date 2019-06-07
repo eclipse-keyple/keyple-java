@@ -61,7 +61,8 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
 
     public void addObserver(final Observer<T> observer) {
 
-        logger.trace("[{}][{}] addObserver => Adding an observer.", this.getClass(),
+        logger.trace("[{}] addObserver => Adding '{}' as an observer of '{}'.",
+                this.getClass().getSimpleName(), observer.getClass().getSimpleName(),
                 this.getName());
 
         super.addObserver(observer);
