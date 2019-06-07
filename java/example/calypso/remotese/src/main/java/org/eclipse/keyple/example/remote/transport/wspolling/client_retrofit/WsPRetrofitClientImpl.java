@@ -53,7 +53,7 @@ public class WsPRetrofitClientImpl extends Observable implements ClientNode {
         this.clientNodeId = clientNodeId;
         this.serverNodeId = serverNodeId;
         this.pollActivated = false;
-        this.isPolling = true; //presume it will work
+        this.isPolling = false; //presume it will work
     }
 
 
@@ -67,6 +67,10 @@ public class WsPRetrofitClientImpl extends Observable implements ClientNode {
         poll(clientNodeId);
     }
 
+    /**
+     * Poll for keyple DTOs
+     * @param clientNodeId
+     */
     private void poll(final String clientNodeId) {
         //logger.debug("Polling from node {}", clientNodeId);
         final WsPRetrofitClientImpl thisClient = this;

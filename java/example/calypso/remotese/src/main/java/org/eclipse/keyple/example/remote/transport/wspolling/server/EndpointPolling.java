@@ -31,6 +31,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 class EndpointPolling implements HttpHandler, DtoNode {
 
+    private static long TIMEOUT_POLLING = 5000;//ms
 
     private final Logger logger = LoggerFactory.getLogger(EndpointPolling.class);
 
@@ -72,7 +73,7 @@ class EndpointPolling implements HttpHandler, DtoNode {
                 }
 
                 // get a KeypleDto (blocking method)
-                KeypleDto keypleDto = keypleDtoQueue.get(10000);
+                KeypleDto keypleDto = keypleDtoQueue.get(TIMEOUT_POLLING);
                 if (keypleDto == null) {
                     // time elapsed
                     logger.trace("No keypleDto to be sent");
