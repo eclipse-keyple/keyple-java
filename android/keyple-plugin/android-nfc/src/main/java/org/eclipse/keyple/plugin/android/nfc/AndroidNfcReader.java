@@ -168,10 +168,10 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
 
             tagProxy = TagProxy.getTagProxy(tag);
 
-            //hack
+            //force closeLogical Channel in Reader
             closeLogicalChannel();
 
-            //Force reconnect to tag
+            //force reconnect to tag
             openPhysicalChannel();
 
 
