@@ -174,7 +174,6 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
             //force reconnect to tag
             openPhysicalChannel();
 
-
             cardInserted();
         } catch (KeypleReaderException e) {
             // print and do nothing
@@ -213,6 +212,7 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
             try {
                 LOG.debug("Connect to tag..");
                 tagProxy.connect();
+
                 LOG.info("Tag connected successfully : " + printTagId());
 
             } catch (IOException e) {
@@ -245,7 +245,7 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
     @Override
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         // Initialization
-        LOG.debug("Send " + apduIn.length + " bytes to tag : " +tagProxy.getTag().getId());
+        LOG.debug("Send " + apduIn.length + " bytes");
         byte[] dataOut = null;
         try {
             dataOut = tagProxy.transceive(apduIn);
