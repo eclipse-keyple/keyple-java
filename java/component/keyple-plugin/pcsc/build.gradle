@@ -1,20 +1,24 @@
 project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
 
-/*
+apply plugin: 'java'
+apply plugin: 'java-library'
+
+sourceCompatibility = 1.6
+
 //copy license file from root folder to each generated artifact
-task copyLICENSE(type: Copy) {
+task copyLICENSEplugin(type: Copy) {
     from file("${projectDir}/../../../../LICENSE")
     into file("${buildDir}/resources/main/META-INF/")
 }
 
 //copy notice file from root folder to each generated artifact
-task copyNOTICE(type: Copy) {
+task copyNOTICEplugin(type: Copy) {
     from file("${projectDir}/../../../../NOTICE.md")
     into file("${buildDir}/resources/main/META-INF/")
 }
-*/
 
-jar.dependsOn copyLICENSEplugin, copyNOTICEplugin
+
+classes.dependsOn copyLICENSEplugin, copyNOTICEplugin
 
 jar {
     manifest {
