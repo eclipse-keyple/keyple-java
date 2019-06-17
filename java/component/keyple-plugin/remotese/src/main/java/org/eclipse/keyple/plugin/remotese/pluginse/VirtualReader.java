@@ -45,7 +45,7 @@ public final class VirtualReader extends AbstractObservableReader {
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReader.class);
 
-    private  Map<String, String> parameters = new HashMap<String, String>();
+    private Map<String, String> parameters = new HashMap<String, String>();
 
     /**
      * Create a new Virtual Reader (only called by @{@link RemoteSePlugin})
@@ -56,8 +56,8 @@ public final class VirtualReader extends AbstractObservableReader {
      * @param transmissionMode : transmission mode of the native reader on slave terminal
      */
     VirtualReader(VirtualReaderSession session, String nativeReaderName,
-            RemoteMethodTxEngine rmTxEngine, String slaveNodeId,
-            TransmissionMode transmissionMode, Map<String, String> options) {
+            RemoteMethodTxEngine rmTxEngine, String slaveNodeId, TransmissionMode transmissionMode,
+            Map<String, String> options) {
         super(RemoteSePlugin.PLUGIN_NAME,
                 RemoteSePlugin.generateReaderName(nativeReaderName, slaveNodeId));
         this.session = session;
@@ -216,7 +216,7 @@ public final class VirtualReader extends AbstractObservableReader {
 
     @Override
     public void setParameter(String key, String value) throws IllegalArgumentException {
-        parameters.put(key,value);
+        parameters.put(key, value);
     }
 
     @Override

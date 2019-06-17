@@ -12,13 +12,10 @@
 package org.eclipse.keyple.plugin.remotese.nativese;
 
 
+import java.util.Map;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-
-import java.util.Map;
-import java.util.Set;
 
 public interface INativeReaderService {
 
@@ -32,7 +29,8 @@ public interface INativeReaderService {
     /**
      * Same than connec
      */
-    String connectReader(SeReader localReader, Map<String, String> options) throws KeypleReaderException;
+    String connectReader(SeReader localReader, Map<String, String> options)
+            throws KeypleReaderException;
 
     /**
      * Disconnect Physical Local Reader from Remote Se Master Server

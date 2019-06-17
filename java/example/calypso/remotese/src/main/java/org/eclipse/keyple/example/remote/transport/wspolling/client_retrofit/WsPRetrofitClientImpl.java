@@ -53,7 +53,7 @@ public class WsPRetrofitClientImpl extends Observable implements ClientNode {
         this.clientNodeId = clientNodeId;
         this.serverNodeId = serverNodeId;
         this.pollActivated = false;
-        this.isPolling = false; //presume it will work
+        this.isPolling = false; // presume it will work
     }
 
 
@@ -69,10 +69,11 @@ public class WsPRetrofitClientImpl extends Observable implements ClientNode {
 
     /**
      * Poll for keyple DTOs
+     * 
      * @param clientNodeId
      */
     private void poll(final String clientNodeId) {
-        //logger.debug("Polling from node {}", clientNodeId);
+        // logger.debug("Polling from node {}", clientNodeId);
         final WsPRetrofitClientImpl thisClient = this;
         // if poll is activated
         if (this.pollActivated) {
@@ -81,7 +82,7 @@ public class WsPRetrofitClientImpl extends Observable implements ClientNode {
                 @Override
                 public void onResponse(Call<KeypleDto> call, Response<KeypleDto> response) {
 
-                    if(!isPolling){
+                    if (!isPolling) {
                         logger.trace("Polling state changed, polling is ON now");
                         setChanged();
                         notifyObservers(true);
@@ -111,7 +112,7 @@ public class WsPRetrofitClientImpl extends Observable implements ClientNode {
                 public void onFailure(Call<KeypleDto> call, Throwable t) {
                     logger.trace("Receive exception : {} , {}", t.getMessage(), t.getClass());
 
-                    if(isPolling){
+                    if (isPolling) {
                         logger.trace("Polling state changed, polling is OFF now");
                         setChanged();
                         notifyObservers(false);

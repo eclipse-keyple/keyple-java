@@ -133,14 +133,16 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
-            logger.debug("[{}] transmit => SEREQUESTSET channel failure. elapsed {}", this.getName(), elapsedMs);
+            logger.debug("[{}] transmit => SEREQUESTSET channel failure. elapsed {}",
+                    this.getName(), elapsedMs);
             /* Throw an exception with the responses collected so far. */
             throw ex;
         } catch (KeypleIOReaderException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
-            logger.debug("[{}] transmit => SEREQUESTSET IO failure. elapsed {}", this.getName(), elapsedMs);
+            logger.debug("[{}] transmit => SEREQUESTSET IO failure. elapsed {}", this.getName(),
+                    elapsedMs);
             /* Throw an exception with the responses collected so far. */
             throw ex;
         }

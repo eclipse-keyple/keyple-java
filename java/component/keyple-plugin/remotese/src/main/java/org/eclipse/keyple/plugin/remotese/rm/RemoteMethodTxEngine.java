@@ -65,11 +65,11 @@ public class RemoteMethodTxEngine implements DtoHandler {
         }
         if (remoteMethodTx == null) {
             /*
-             * Should not happen, response received does not match a request.
-             * Ignore it
+             * Should not happen, response received does not match a request. Ignore it
              */
-            logger.error("RemoteMethodTxEngine receives a KeypleDto response but no remoteMethodTx are defined : "
-                    + message.getKeypleDTO());
+            logger.error(
+                    "RemoteMethodTxEngine receives a KeypleDto response but no remoteMethodTx are defined : "
+                            + message.getKeypleDTO());
             return message.nextTransportDTO(KeypleDtoHelper.NoResponse());
         }
 

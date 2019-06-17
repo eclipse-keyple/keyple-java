@@ -12,6 +12,8 @@
 package org.eclipse.keyple.plugin.remotese.nativese;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -33,10 +35,6 @@ import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -189,7 +187,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      */
     @Override
     public String connectReader(SeReader localReader) throws KeypleReaderException {
-        return connectReader(localReader, new HashMap<String,String>());
+        return connectReader(localReader, new HashMap<String, String>());
     }
 
     /**
@@ -199,9 +197,10 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      * @param options : options will be set as parameters of virtual reader
      */
     @Override
-    public String connectReader(SeReader localReader, Map<String, String> options) throws KeypleReaderException {
+    public String connectReader(SeReader localReader, Map<String, String> options)
+            throws KeypleReaderException {
 
-        if(options == null){
+        if (options == null) {
             options = new HashMap<String, String>();
         }
 
@@ -209,7 +208,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
                 localReader.getName(), dtoNode.getNodeId());
 
         RmConnectReaderTx connect = new RmConnectReaderTx(null, localReader.getName(), null,
-                masterNodeId, localReader, dtoNode.getNodeId(), this,options);
+                masterNodeId, localReader, dtoNode.getNodeId(), this, options);
         try {
             rmTxEngine.add(connect);
             return connect.getResponse();
@@ -239,7 +238,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
         } catch (KeypleRemoteException e) {
             throw new KeypleReaderException("An error occurred while calling connectReader", e);
         } catch (KeypleReaderNotFoundException e) {
-            logger.warn("SlaveAPI#disconnectReader() : reader with name was not found",nativeReaderName);
+            logger.warn("SlaveAPI#disconnectReader() : reader with name was not found",
+                    nativeReaderName);
         }
     }
 

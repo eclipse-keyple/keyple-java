@@ -12,6 +12,8 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -29,9 +31,6 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Test Slave API methods : connectReader and DisconnectReader
@@ -141,7 +140,7 @@ public class SlaveAPITest {
         Map<String, String> options = new HashMap<String, String>();
         options.put(KEY, VALUE);
 
-        String sessionId = spySlaveAPI.connectReader(nativeReader,options);
+        String sessionId = spySlaveAPI.connectReader(nativeReader, options);
 
         // assert that a virtual reader has been created
         VirtualReader virtualReader = (VirtualReader) masterAPI.getPlugin()

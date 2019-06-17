@@ -31,7 +31,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 class EndpointPolling implements HttpHandler, DtoNode {
 
-    private static long TIMEOUT_POLLING = 5000;//ms
+    private static long TIMEOUT_POLLING = 5000;// ms
 
     private final Logger logger = LoggerFactory.getLogger(EndpointPolling.class);
 
@@ -53,7 +53,7 @@ class EndpointPolling implements HttpHandler, DtoNode {
 
     @Override
     public void handle(HttpExchange t) {
-        //logger.trace("Incoming Polling Request {} - {} ", t.getRequestMethod(), t.toString());
+        // logger.trace("Incoming Polling Request {} - {} ", t.getRequestMethod(), t.toString());
         String requestMethod = t.getRequestMethod();
 
         if (requestMethod.equals("GET")) {

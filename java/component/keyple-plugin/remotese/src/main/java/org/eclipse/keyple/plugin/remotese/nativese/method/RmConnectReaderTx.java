@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
+import java.util.Map;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -27,8 +28,6 @@ import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
-
-import java.util.Map;
 
 /**
  * Handle the Connect Reader keypleDTO serialization and deserialization
@@ -47,8 +46,8 @@ public class RmConnectReaderTx extends RemoteMethodTx<String> {
 
 
     public RmConnectReaderTx(String sessionId, String nativeReaderName, String virtualReaderName,
-                             String masterNodeId, SeReader localReader, String slaveNodeId,
-                             INativeReaderService slaveAPI, Map<String, String> options) {
+            String masterNodeId, SeReader localReader, String slaveNodeId,
+            INativeReaderService slaveAPI, Map<String, String> options) {
         super(sessionId, nativeReaderName, virtualReaderName, masterNodeId, slaveNodeId);
         this.localReader = localReader;
         this.slaveAPI = slaveAPI;
