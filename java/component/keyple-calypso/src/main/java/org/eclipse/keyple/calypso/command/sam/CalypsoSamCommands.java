@@ -52,7 +52,10 @@ public enum CalypsoSamCommands implements CommandsTable {
 
     /** The sam digest authenticate. */
     CARD_GENERATE_KEY("Card Generate Key", (byte) 0x12, CardGenerateKeyCmdBuild.class,
-            CardGenerateKeyRespPars.class);
+            CardGenerateKeyRespPars.class),
+
+    /** The sam unlock. */
+    UNLOCK("Unlock", (byte) 0x20, UnlockCmdBuild.class, UnlockRespPars.class);
 
     /** The name. */
     private final String name;
