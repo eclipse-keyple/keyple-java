@@ -52,17 +52,17 @@ class RmDisconnectReaderExecutor implements RemoteMethodExecutor {
                     transportDto.getKeypleDTO().getRequesterNodeId());
             JsonObject body = new JsonObject();
             body.addProperty("status", true);
-            return transportDto
-                    .nextTransportDTO(KeypleDtoHelper.buildResponse(getMethodName().getName(),
-                            JsonParser.getGson().toJson(body, JsonObject.class), null,
-                            nativeReaderName, null, keypleDto.getTargetNodeId(),
-                            keypleDto.getRequesterNodeId(),keypleDto.getId()));
+            return transportDto.nextTransportDTO(KeypleDtoHelper.buildResponse(
+                    getMethodName().getName(), JsonParser.getGson().toJson(body, JsonObject.class),
+                    null, nativeReaderName, null, keypleDto.getTargetNodeId(),
+                    keypleDto.getRequesterNodeId(), keypleDto.getId()));
         } catch (KeypleReaderNotFoundException e) {
             logger.error("Impossible to disconnect reader " + nativeReaderName, e);
-            return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(
-                    getMethodName().getName(), e, keypleDto.getSessionId(),
-                    keypleDto.getNativeReaderName(), keypleDto.getVirtualReaderName(),
-                    keypleDto.getTargetNodeId(), keypleDto.getRequesterNodeId(),keypleDto.getId()));
+            return transportDto
+                    .nextTransportDTO(KeypleDtoHelper.ExceptionDTO(getMethodName().getName(), e,
+                            keypleDto.getSessionId(), keypleDto.getNativeReaderName(),
+                            keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
+                            keypleDto.getRequesterNodeId(), keypleDto.getId()));
         }
 
     }

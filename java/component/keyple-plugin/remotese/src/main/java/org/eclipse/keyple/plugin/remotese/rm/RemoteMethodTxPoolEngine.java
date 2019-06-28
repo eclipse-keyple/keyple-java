@@ -11,6 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.rm;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.keyple.plugin.remotese.transport.DtoHandler;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
@@ -18,10 +20,6 @@ import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -34,7 +32,7 @@ public class RemoteMethodTxPoolEngine implements DtoHandler {
 
 
     // rm id, rm
-    private Map<String,RemoteMethodTx> queue;
+    private Map<String, RemoteMethodTx> queue;
 
     // Dto Sender
     private final DtoSender sender;
@@ -75,7 +73,7 @@ public class RemoteMethodTxPoolEngine implements DtoHandler {
                             + keypleDto);
         }
 
-        //set response in rm request
+        // set response in rm request
         queue.get(keypleDto.getId()).setResponse(keypleDto);
 
         // remove rm

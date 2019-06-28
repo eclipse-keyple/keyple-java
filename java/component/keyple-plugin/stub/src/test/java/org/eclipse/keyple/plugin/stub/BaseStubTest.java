@@ -11,14 +11,13 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.stub;
 
+
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.TreeSet;
 
 public class BaseStubTest {
 

@@ -50,7 +50,8 @@ public class RemoteSePlugin extends AbstractObservablePlugin {
     /**
      * Only {@link MasterAPI} can instanciate a RemoteSePlugin
      */
-    RemoteSePlugin(VirtualReaderSessionFactory sessionManager, DtoSender dtoSender, long rpc_timeout) {
+    RemoteSePlugin(VirtualReaderSessionFactory sessionManager, DtoSender dtoSender,
+            long rpc_timeout) {
         super(PLUGIN_NAME);
         this.sessionManager = sessionManager;
         logger.info("Init RemoteSePlugin");
@@ -108,7 +109,8 @@ public class RemoteSePlugin extends AbstractObservablePlugin {
         // with a session
         // and the provided name
         final VirtualReader virtualReader = new VirtualReader(session, nativeReaderName,
-                new RemoteMethodTxEngine(this.dtoSender, rpc_timeout), slaveNodeId, transmissionMode);
+                new RemoteMethodTxEngine(this.dtoSender, rpc_timeout), slaveNodeId,
+                transmissionMode);
         readers.add(virtualReader);
 
         // notify that a new reader is connected in a separated thread

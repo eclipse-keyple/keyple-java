@@ -54,7 +54,7 @@ public class KeypleDto {
      */
     public KeypleDto(String action, String body, Boolean isRequest, String sessionId,
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
-            String targetNodeId,String id) {
+            String targetNodeId, String id) {
 
         this.sessionId = sessionId;
         this.action = action;

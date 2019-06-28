@@ -12,17 +12,12 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 
+
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.core.util.Observable;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
-import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePoolPlugin;
-import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportFactory;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPoolPlugin;
@@ -33,9 +28,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 /**
  * Test RemoteSePoolPluginTest
  */
@@ -43,13 +35,13 @@ public class RemoteSePoolPluginTest {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteSePoolPluginTest.class);
 
-    //input
+    // input
     private LocalTransportFactory factory;
     private MasterAPI masterAPI;
     private StubPoolPlugin stubPoolPlugin;
     private SlaveAPI slaveAPI;
 
-    //created by masterAPI
+    // created by masterAPI
     private RemoteSePoolPlugin remoteSePoolPlugin;
 
     final String CLIENT_NODE_ID = "testClientNodeId";
@@ -57,25 +49,25 @@ public class RemoteSePoolPluginTest {
     final String SERVER_NODE_ID = "testServerNodeId";
 
     /**
-     * Slave is Server with StubPoolPlugin
-     * Master is Client with RemoteSePoolPlugin
+     * Slave is Server with StubPoolPlugin Master is Client with RemoteSePoolPlugin
      */
     @Before
     public void setUp() throws Exception {
-        assert  StubPlugin.getInstance().getReaders().size() == 0;
+        assert StubPlugin.getInstance().getReaders().size() == 0;
 
-        //create local transportfactory
+        // create local transportfactory
         factory = new LocalTransportFactory(SERVER_NODE_ID);
 
-        //create stub pool plugin
+        // create stub pool plugin
         stubPoolPlugin = Integration.createStubPoolPlugin();
 
-        //configure Slave with Stub Pool plugin and local server node
+        // configure Slave with Stub Pool plugin and local server node
         slaveAPI = new SlaveAPI(SeProxyService.getInstance(), factory.getServer(), "");
         slaveAPI.registerReaderPoolPlugin(stubPoolPlugin);
 
-        //configure Master with RemoteSe Pool plugin and client node
-        masterAPI = new MasterAPI(SeProxyService.getInstance(),  factory.getClient(CLIENT_NODE_ID), 10000, MasterAPI.PLUGIN_TYPE_POOL);
+        // configure Master with RemoteSe Pool plugin and client node
+        masterAPI = new MasterAPI(SeProxyService.getInstance(), factory.getClient(CLIENT_NODE_ID),
+                10000, MasterAPI.PLUGIN_TYPE_POOL);
 
         remoteSePoolPlugin = (RemoteSePoolPlugin) masterAPI.getPlugin();
 
@@ -94,11 +86,11 @@ public class RemoteSePoolPluginTest {
     public void testAllocate_success() throws Exception {
         String REF_GROUP1 = "REF_GROUP1";
 
-        //allocate reader
+        // allocate reader
         remoteSePoolPlugin.bind(SERVER_NODE_ID);
         SeReader seReader = remoteSePoolPlugin.allocateReader(REF_GROUP1);
 
-        //check results
+        // check results
         Assert.assertTrue(seReader.getName().contains(REF_GROUP1));
         Assert.assertEquals(1, masterAPI.getPlugin().getReaders().size());
 
@@ -108,8 +100,7 @@ public class RemoteSePoolPluginTest {
      * Test allocate FAIL
      */
     @Test
-    public void testAllocate_fail() throws Exception {
-    }
+    public void testAllocate_fail() throws Exception {}
 
     /**
      * Test release SUCCESS
@@ -118,14 +109,14 @@ public class RemoteSePoolPluginTest {
     public void testRelease_success() throws Exception {
         String REF_GROUP1 = "REF_GROUP1";
 
-        //allocate reader
+        // allocate reader
         remoteSePoolPlugin.bind(SERVER_NODE_ID);
         SeReader seReader = remoteSePoolPlugin.allocateReader(REF_GROUP1);
 
-        //release reader
-        ((RemoteSePoolPlugin)masterAPI.getPlugin()).releaseReader(seReader);
+        // release reader
+        ((RemoteSePoolPlugin) masterAPI.getPlugin()).releaseReader(seReader);
 
-        //check results
+        // check results
         Assert.assertEquals(0, masterAPI.getPlugin().getReaders().size());
 
     }
@@ -134,7 +125,6 @@ public class RemoteSePoolPluginTest {
      * Test release FAIL
      */
     @Test
-    public void testRelease_fail() throws Exception {
-    }
+    public void testRelease_fail() throws Exception {}
 
 }

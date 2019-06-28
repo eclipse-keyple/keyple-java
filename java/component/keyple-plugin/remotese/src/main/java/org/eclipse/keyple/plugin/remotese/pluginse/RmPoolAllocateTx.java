@@ -1,6 +1,16 @@
+/********************************************************************************
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import com.google.gson.JsonObject;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -13,6 +23,7 @@ import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.JsonObject;
 
 public class RmPoolAllocateTx extends RemoteMethodTx<SeReader> {
 
@@ -23,16 +34,9 @@ public class RmPoolAllocateTx extends RemoteMethodTx<SeReader> {
     RemoteSePoolPlugin virtualPoolPlugin;
     DtoSender dtoSender;
 
-    public RmPoolAllocateTx(String groupReference,
-                            RemoteSePoolPlugin virtualPoolPlugin,
-                            DtoSender dtoSender,
-                            String slaveNodeId,
-                            String requesterNodeId){
-        super(null,
-                null,
-                null,
-                slaveNodeId,
-                requesterNodeId);
+    public RmPoolAllocateTx(String groupReference, RemoteSePoolPlugin virtualPoolPlugin,
+            DtoSender dtoSender, String slaveNodeId, String requesterNodeId) {
+        super(null, null, null, slaveNodeId, requesterNodeId);
         this.groupReference = groupReference;
         this.dtoSender = dtoSender;
         this.virtualPoolPlugin = virtualPoolPlugin;
@@ -48,15 +52,8 @@ public class RmPoolAllocateTx extends RemoteMethodTx<SeReader> {
         JsonObject body = new JsonObject();
         body.addProperty("groupReference", groupReference);
 
-        return KeypleDtoHelper.buildRequest(
-                getMethodName().getName(),
-                body.toString(),
-                null,
-                null,
-                null,
-                requesterNodeId,
-                targetNodeId,
-                id);
+        return KeypleDtoHelper.buildRequest(getMethodName().getName(), body.toString(), null, null,
+                null, requesterNodeId, targetNodeId, id);
     }
 
 
@@ -79,8 +76,10 @@ public class RmPoolAllocateTx extends RemoteMethodTx<SeReader> {
 
             // create the Virtual Reader related to the Reader Allocation
             try {
-                VirtualReader virtualReader = (VirtualReader) this.virtualPoolPlugin.createVirtualReader(slaveNodeId,
-                        nativeReaderName, this.dtoSender, TransmissionMode.valueOf(transmissionMode));
+                VirtualReader virtualReader =
+                        (VirtualReader) this.virtualPoolPlugin.createVirtualReader(slaveNodeId,
+                                nativeReaderName, this.dtoSender,
+                                TransmissionMode.valueOf(transmissionMode));
 
                 return virtualReader;
 

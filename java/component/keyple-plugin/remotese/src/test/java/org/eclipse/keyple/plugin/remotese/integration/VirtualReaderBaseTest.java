@@ -12,6 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 
+import java.util.Set;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -28,8 +29,6 @@ import org.junit.*;
 import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Set;
 
 /**
  * Test Virtual Reader Service with stub plugin and hoplink SE
@@ -95,7 +94,7 @@ public class VirtualReaderBaseTest {
         logger.info("Remove all readers from stub plugin");
         StubPlugin stubPlugin = StubPlugin.getInstance();
         Set<AbstractObservableReader> readers = stubPlugin.getReaders();
-        for(AbstractObservableReader reader : readers){
+        for (AbstractObservableReader reader : readers) {
             reader.clearObservers();
         }
         stubPlugin.unplugStubReaders(stubPlugin.getReaderNames(), true);

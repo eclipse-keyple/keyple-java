@@ -54,7 +54,7 @@ public class MasterAPI implements DtoHandler {
      * @param dtoNode : outgoing node to send Dto to Slave
      */
     public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode) {
-        this(seProxyService,dtoNode, DEFAULT_RPC_TIMEOUT);
+        this(seProxyService, dtoNode, DEFAULT_RPC_TIMEOUT);
     }
 
     /**
@@ -79,20 +79,22 @@ public class MasterAPI implements DtoHandler {
      * @param rpcTimeout : timeout in milliseconds to wait for an answer from slave before throwing
      *        an exception
      */
-    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpcTimeout, int pluginType) {
+    public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpcTimeout,
+            int pluginType) {
         this.dtoTransportNode = dtoNode;
         this.pluginType = pluginType;
 
         // Instantiate Session Manager
         VirtualReaderSessionFactory sessionManager = new VirtualReaderSessionFactory();
 
-        if(pluginType==PLUGIN_TYPE_DEFAULT){
+        if (pluginType == PLUGIN_TYPE_DEFAULT) {
             // Instantiate Plugin
             this.plugin = new RemoteSePlugin(sessionManager, dtoNode, rpcTimeout);
-        }else if(pluginType==PLUGIN_TYPE_POOL){
+        } else if (pluginType == PLUGIN_TYPE_POOL) {
             this.plugin = new RemoteSePoolPlugin(sessionManager, dtoNode, rpcTimeout);
-        }else{
-            throw new IllegalArgumentException("plugin type is not recognized, use static properties defined in MasterAPI#PLUGIN_TYPE_DEFAULT or MasterAPI#PLUGIN_TYPE_POOL");
+        } else {
+            throw new IllegalArgumentException(
+                    "plugin type is not recognized, use static properties defined in MasterAPI#PLUGIN_TYPE_DEFAULT or MasterAPI#PLUGIN_TYPE_POOL");
         }
         seProxyService.addPlugin(this.plugin);
 
@@ -154,9 +156,9 @@ public class MasterAPI implements DtoHandler {
                             "a READER_DISCONNECT response has been received by MasterAPI");
                 }
 
-            /*
-             * Notifications from slave
-             */
+                /*
+                 * Notifications from slave
+                 */
 
             case READER_EVENT:
                 // process response with the Event Reader RmMethod
@@ -199,7 +201,7 @@ public class MasterAPI implements DtoHandler {
                     throw new IllegalStateException("a " + keypleDTO.getAction()
                             + " request has been received by MasterAPI");
                 }
-                if(pluginType!=PLUGIN_TYPE_POOL){
+                if (pluginType != PLUGIN_TYPE_POOL) {
                     throw new IllegalStateException("a " + keypleDTO.getAction()
                             + " request has been received by MasterAPI but plugin is not pool compatible");
                 }
@@ -207,7 +209,7 @@ public class MasterAPI implements DtoHandler {
                 /*
                  * dispatch message to plugin
                  */
-                return ((RemoteSePoolPlugin)plugin).getRmTxEngine().onDTO(transportDto);
+                return ((RemoteSePoolPlugin) plugin).getRmTxEngine().onDTO(transportDto);
 
             default:
                 logger.error("Receive a KeypleDto with no recognised action");

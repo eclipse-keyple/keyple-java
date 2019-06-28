@@ -83,9 +83,9 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
 
                 // prepare response
                 String parseBody = "{}";
-                return transportDto.nextTransportDTO(
-                        KeypleDtoHelper.buildResponse(getMethodName().getName(), parseBody,
-                                keypleDto.getSessionId(), nativeReaderName,
+                return transportDto
+                        .nextTransportDTO(KeypleDtoHelper.buildResponse(getMethodName().getName(),
+                                parseBody, keypleDto.getSessionId(), nativeReaderName,
                                 keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
                                 keypleDto.getRequesterNodeId(), keypleDto.getId()));
             } else {
@@ -98,9 +98,9 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
         } catch (KeypleReaderException e) {
             // if an exception occurs, send it into a keypleDto to the Master
             return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(
-                    getMethodName().getName(), e, keypleDto.getSessionId(),
-                    nativeReaderName, keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
-                    keypleDto.getRequesterNodeId(),keypleDto.getId()));
+                    getMethodName().getName(), e, keypleDto.getSessionId(), nativeReaderName,
+                    keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
+                    keypleDto.getRequesterNodeId(), keypleDto.getId()));
         }
     }
 }

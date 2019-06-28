@@ -58,7 +58,7 @@ public abstract class RemoteMethodTx<T> {
         this.targetNodeId = targetNodeId;
         this.requesterNodeId = requesterNodeId;
 
-        //generate id
+        // generate id
         this.id = UUID.randomUUID().toString();
 
     }
@@ -102,8 +102,9 @@ public abstract class RemoteMethodTx<T> {
      * @throws KeypleRemoteException : if an
      */
     final public T getResponse() throws KeypleRemoteException {
-        if(!isRegistered){
-            throw new IllegalStateException("RemoteMethodTx#getResponse() can not be used until RemoteMethod is isRegistered in a RemoteMethodEngine, please call RemoteMethodEngine#register");
+        if (!isRegistered) {
+            throw new IllegalStateException(
+                    "RemoteMethodTx#getResponse() can not be used until RemoteMethod is isRegistered in a RemoteMethodEngine, please call RemoteMethodEngine#register");
         }
         logger.debug("Blocking Get {}", this.getClass().getCanonicalName());
         final RemoteMethodTx thisInstance = this;
@@ -185,7 +186,6 @@ public abstract class RemoteMethodTx<T> {
      * @return keypleDto
      */
     protected abstract KeypleDto dto();
-
 
 
 

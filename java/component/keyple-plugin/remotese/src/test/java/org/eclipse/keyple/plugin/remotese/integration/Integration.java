@@ -12,7 +12,8 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -34,9 +35,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 public class Integration {
 
@@ -131,7 +129,8 @@ public class Integration {
 
                 // assert that returning dto DOES contain an exception
                 Assert.assertTrue(KeypleDtoHelper.containsException(transportDto.getKeypleDTO()));
-                return new LocalTransportDto(KeypleDtoHelper.NoResponse(transportDto.getKeypleDTO().getId()), null);
+                return new LocalTransportDto(
+                        KeypleDtoHelper.NoResponse(transportDto.getKeypleDTO().getId()), null);
             }
         };
     }

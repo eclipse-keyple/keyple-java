@@ -68,31 +68,28 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
 
             // build transport DTO with body
             return transportDto.nextTransportDTO(
-                    KeypleDtoHelper.buildResponse(keypleDto.getAction(),
-                    respBody.toString(),
-                    virtualReader.getSession().getSessionId(),
-                    nativeReaderName,
-                    virtualReader.getName(),
-                    transportDto.getKeypleDTO().getTargetNodeId(),
-                    slaveNodeId,keypleDto.getId()));
+                    KeypleDtoHelper.buildResponse(keypleDto.getAction(), respBody.toString(),
+                            virtualReader.getSession().getSessionId(), nativeReaderName,
+                            virtualReader.getName(), transportDto.getKeypleDTO().getTargetNodeId(),
+                            slaveNodeId, keypleDto.getId()));
 
         } catch (KeypleReaderException e) {
             // virtual reader for remote reader already exists
             logger.warn("Virtual reader already exists for reader " + nativeReaderName, e);
 
             // send the exception inside the dto
-            return transportDto.nextTransportDTO(
-                    KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(), e, null, nativeReaderName,
-                            null, transportDto.getKeypleDTO().getTargetNodeId(), slaveNodeId,keypleDto.getId()));
+            return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(),
+                    e, null, nativeReaderName, null, transportDto.getKeypleDTO().getTargetNodeId(),
+                    slaveNodeId, keypleDto.getId()));
 
         } catch (IllegalArgumentException e) {
             // virtual reader for remote reader already exists
             logger.warn("Transmission mode is illegal " + nativeReaderName, e);
 
             // send the exception inside the dto
-            return transportDto.nextTransportDTO(
-                    KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(), e, null, nativeReaderName,
-                            null, keypleDto.getTargetNodeId(), keypleDto.getRequesterNodeId(),keypleDto.getId()));
+            return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(),
+                    e, null, nativeReaderName, null, keypleDto.getTargetNodeId(),
+                    keypleDto.getRequesterNodeId(), keypleDto.getId()));
 
         }
     }

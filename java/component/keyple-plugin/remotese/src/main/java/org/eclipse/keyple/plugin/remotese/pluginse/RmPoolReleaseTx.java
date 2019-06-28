@@ -1,9 +1,17 @@
+/********************************************************************************
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
-import com.google.gson.JsonObject;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTx;
@@ -13,6 +21,7 @@ import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.JsonObject;
 
 public class RmPoolReleaseTx extends RemoteMethodTx<Boolean> {
 
@@ -21,17 +30,10 @@ public class RmPoolReleaseTx extends RemoteMethodTx<Boolean> {
     RemoteSePoolPlugin virtualPoolPlugin;
     DtoSender dtoSender;
 
-    public RmPoolReleaseTx(String nativeReaderName,
-                           String virtualReaderName,
-                           RemoteSePoolPlugin virtualPoolPlugin,
-                           DtoSender dtoSender,
-                           String slaveNodeId,
-                           String requesterNodeId){
-        super(null,
-                nativeReaderName,
-                virtualReaderName,
-                slaveNodeId,
-                requesterNodeId);
+    public RmPoolReleaseTx(String nativeReaderName, String virtualReaderName,
+            RemoteSePoolPlugin virtualPoolPlugin, DtoSender dtoSender, String slaveNodeId,
+            String requesterNodeId) {
+        super(null, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
         this.dtoSender = dtoSender;
         this.virtualPoolPlugin = virtualPoolPlugin;
     }
@@ -46,15 +48,8 @@ public class RmPoolReleaseTx extends RemoteMethodTx<Boolean> {
         JsonObject body = new JsonObject();
         body.addProperty("nativeReaderName", nativeReaderName);
 
-        return KeypleDtoHelper.buildRequest(
-                getMethodName().getName(),
-                body.toString(),
-                null,
-                nativeReaderName,
-                virtualReaderName,
-                requesterNodeId,
-                targetNodeId,
-                id);
+        return KeypleDtoHelper.buildRequest(getMethodName().getName(), body.toString(), null,
+                nativeReaderName, virtualReaderName, requesterNodeId, targetNodeId, id);
     }
 
 
@@ -75,7 +70,8 @@ public class RmPoolReleaseTx extends RemoteMethodTx<Boolean> {
 
             // create the Virtual Reader related to the Reader Allocation
             try {
-                this.virtualPoolPlugin.disconnectRemoteReader(nativeReaderName,keypleDto.getRequesterNodeId());
+                this.virtualPoolPlugin.disconnectRemoteReader(nativeReaderName,
+                        keypleDto.getRequesterNodeId());
                 return true;
             } catch (KeypleReaderException e) {
                 throw new KeypleRemoteException(e.getMessage());

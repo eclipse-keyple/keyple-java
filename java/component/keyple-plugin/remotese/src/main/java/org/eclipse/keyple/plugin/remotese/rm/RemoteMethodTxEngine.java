@@ -60,7 +60,7 @@ public class RemoteMethodTxEngine implements DtoHandler {
     public TransportDto onDTO(TransportDto message) {
 
         /*
-         Extract KeypleDto
+         * Extract KeypleDto
          */
         KeypleDto keypleDto = message.getKeypleDTO();
 
@@ -69,7 +69,7 @@ public class RemoteMethodTxEngine implements DtoHandler {
          */
         if (message.getKeypleDTO().isRequest()) {
             throw new IllegalArgumentException(
-                    "RemoteMethodTxEngine expects a KeypleDto response. " +keypleDto);
+                    "RemoteMethodTxEngine expects a KeypleDto response. " + keypleDto);
         }
         /*
          * Check that a request has been made previously

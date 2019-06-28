@@ -1,7 +1,16 @@
+/********************************************************************************
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -11,6 +20,7 @@ import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
+import com.google.gson.JsonObject;
 
 public class RmPoolAllocateExecutor implements RemoteMethodExecutor {
 
@@ -20,7 +30,7 @@ public class RmPoolAllocateExecutor implements RemoteMethodExecutor {
         return RemoteMethod.POOL_ALLOCATE_READER;
     }
 
-    public RmPoolAllocateExecutor(ReaderPoolPlugin poolPlugin){
+    public RmPoolAllocateExecutor(ReaderPoolPlugin poolPlugin) {
         this.poolPlugin = poolPlugin;
     }
 
@@ -38,20 +48,14 @@ public class RmPoolAllocateExecutor implements RemoteMethodExecutor {
         // Execute Remote Method
         SeReader seReader = poolPlugin.allocateReader(groupReference);
 
-        //Build Response
+        // Build Response
         JsonObject bodyResp = new JsonObject();
         bodyResp.addProperty("nativeReaderName", seReader.getName());
         bodyResp.addProperty("transmissionMode", seReader.getTransmissionMode().name());
 
-        out = transportDto.nextTransportDTO(KeypleDtoHelper.buildResponse(
-                getMethodName().getName(),
-                bodyResp.toString(),
-                null,
-                seReader.getName(),
-                null,
-                keypleDto.getTargetNodeId(),
-                keypleDto.getRequesterNodeId(),
-                keypleDto.getId()));
+        out = transportDto.nextTransportDTO(KeypleDtoHelper.buildResponse(getMethodName().getName(),
+                bodyResp.toString(), null, seReader.getName(), null, keypleDto.getTargetNodeId(),
+                keypleDto.getRequesterNodeId(), keypleDto.getId()));
 
         return out;
     }

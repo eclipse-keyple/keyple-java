@@ -49,7 +49,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     private final RemoteMethodTxEngine rmTxEngine;// rm command processor
     private final String masterNodeId;// master node id used for connect, disconnect, and events
 
-    //used in case of a poolPlugin architecture
+    // used in case of a poolPlugin architecture
     private ReaderPoolPlugin readerPoolPlugin;
 
     public static final long DEFAULT_RPC_TIMEOUT = 10000;
@@ -164,10 +164,10 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
                 break;
 
             case POOL_ALLOCATE_READER:
-                
+
                 // must be a request
                 if (keypleDTO.isRequest()) {
-                    //executor
+                    // executor
                     RmPoolAllocateExecutor rmPoolAllocateExecutor =
                             new RmPoolAllocateExecutor(this.readerPoolPlugin);
                     out = rmPoolAllocateExecutor.execute(transportDto);
@@ -287,8 +287,9 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
         String data = JsonParser.getGson().toJson(event);
 
         try {
-            dtoNode.sendDTO(KeypleDtoHelper.buildNotification(RemoteMethod.READER_EVENT.getName(), data, null,
-                    event.getReaderName(), null, this.dtoNode.getNodeId(), masterNodeId));
+            dtoNode.sendDTO(KeypleDtoHelper.buildNotification(RemoteMethod.READER_EVENT.getName(),
+                    data, null, event.getReaderName(), null, this.dtoNode.getNodeId(),
+                    masterNodeId));
         } catch (KeypleRemoteException e) {
             logger.error("Event " + event.toString()
                     + " could not be sent though Remote Service Interface", e);
@@ -296,12 +297,10 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     }
 
     /*
-    public RemoteMethodTxEngine getRmTxEngine() {
-        return rmTxEngine;
-    }
-    */
+     * public RemoteMethodTxEngine getRmTxEngine() { return rmTxEngine; }
+     */
 
-    public void registerReaderPoolPlugin(ReaderPoolPlugin readerPoolPlugin){
+    public void registerReaderPoolPlugin(ReaderPoolPlugin readerPoolPlugin) {
         this.readerPoolPlugin = readerPoolPlugin;
     }
 

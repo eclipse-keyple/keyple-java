@@ -12,24 +12,15 @@
 package org.eclipse.keyple.plugin.stub;
 
 
+import java.util.TreeSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 @RunWith(MockitoJUnitRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -53,14 +44,14 @@ public class StubPoolPluginTest extends BaseStubTest {
      */
     @Test
     public void testAllocate_success() throws InterruptedException, KeypleReaderException {
-        //init stubPoolPlugin
+        // init stubPoolPlugin
         StubPoolPlugin stubPoolPlugin = new StubPoolPlugin(new TreeSet<String>());
 
-        //allocate Reader
+        // allocate Reader
         String groupReference = "GROUP_REF1";
         SeReader seReader = stubPoolPlugin.allocateReader(groupReference);
 
-        //check
+        // check
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         Assert.assertTrue(seReader.getName().startsWith(groupReference));
     }
@@ -70,17 +61,17 @@ public class StubPoolPluginTest extends BaseStubTest {
      */
     @Test
     public void testRelease_success() throws InterruptedException, KeypleReaderException {
-        //init stubPoolPlugin
+        // init stubPoolPlugin
         StubPoolPlugin stubPoolPlugin = new StubPoolPlugin(new TreeSet<String>());
 
-        //allocate Reader
+        // allocate Reader
         String groupReference = "GROUP_REF1";
         SeReader seReader = stubPoolPlugin.allocateReader(groupReference);
 
-        //deallocate Reader
+        // deallocate Reader
         stubPoolPlugin.releaseReader(seReader);
 
-        //check
+        // check
         Assert.assertEquals(0, stubPlugin.getReaders().size());
 
     }
