@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.nativese;
 
 
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -45,9 +46,11 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     private final DtoNode dtoNode;// bind node
     private final SeProxyService seProxyService;
 
-
     private final RemoteMethodTxEngine rmTxEngine;// rm command processor
     private final String masterNodeId;// master node id to connect to
+
+    //used in case of a poolPlugin architecture
+    private ReaderPoolPlugin readerPoolPlugin;
 
     public static final long DEFAULT_RPC_TIMEOUT = 10000;
 
@@ -160,6 +163,31 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
                 }
                 break;
 
+            case POOL_ALLOCATE_READER:
+                
+                // must be a request
+                if (keypleDTO.isRequest()) {
+                    //executor
+                    RmPoolAllocateExecutor rmPoolAllocateExecutor =
+                            new RmPoolAllocateExecutor(this.readerPoolPlugin);
+                    out = rmPoolAllocateExecutor.execute(transportDto);
+                } else {
+                    throw new IllegalStateException(
+                            "a POOL_ALLOCATE_READER response has been received by SlaveAPI");
+                }
+                break;
+
+            case POOL_RELEASE_READER:
+                // must be a request
+                if (keypleDTO.isRequest()) {
+                    //executor
+                    out = null;
+                } else {
+                    throw new IllegalStateException(
+                            "a POOL_RELEASE_READER response has been received by SlaveAPI");
+                }
+                break;
+
             default:
                 logger.warn("**** ERROR - UNRECOGNIZED ****");
                 logger.warn("Receive unrecognized message action : {} {} {} {}",
@@ -258,7 +286,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
         String data = JsonParser.getGson().toJson(event);
 
         try {
-            dtoNode.sendDTO(new KeypleDto(RemoteMethod.READER_EVENT.getName(), data, true, null,
+            dtoNode.sendDTO(KeypleDtoHelper.buildNotification(RemoteMethod.READER_EVENT.getName(), data, null,
                     event.getReaderName(), null, this.dtoNode.getNodeId(), masterNodeId));
         } catch (KeypleRemoteException e) {
             logger.error("Event " + event.toString()
@@ -266,10 +294,15 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
         }
     }
 
-
-
+    /*
     public RemoteMethodTxEngine getRmTxEngine() {
         return rmTxEngine;
     }
+    */
+
+    public void registerReaderPoolPlugin(ReaderPoolPlugin readerPoolPlugin){
+        this.readerPoolPlugin = readerPoolPlugin;
+    }
+
 
 }

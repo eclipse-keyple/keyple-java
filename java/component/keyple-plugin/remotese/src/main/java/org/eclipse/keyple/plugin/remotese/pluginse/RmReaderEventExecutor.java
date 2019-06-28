@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
@@ -25,6 +26,10 @@ import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 class RmReaderEventExecutor implements RemoteMethodExecutor {
 
     private final RemoteSePlugin remoteSePlugin;
+
+    public RemoteMethod getMethodName() {
+        return RemoteMethod.READER_EVENT;
+    }
 
     public RmReaderEventExecutor(RemoteSePlugin remoteSePlugin) {
         this.remoteSePlugin = remoteSePlugin;
@@ -47,7 +52,7 @@ class RmReaderEventExecutor implements RemoteMethodExecutor {
         try {
             remoteSePlugin.onReaderEvent(virtualEvent);
 
-            return transportDto.nextTransportDTO(KeypleDtoHelper.NoResponse());
+            return transportDto.nextTransportDTO(KeypleDtoHelper.NoResponse(null));
         } catch (KeypleReaderNotFoundException e) {
             // reader not found;
             throw new IllegalStateException(

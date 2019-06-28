@@ -68,11 +68,11 @@ public class VirtualReaderBaseTest {
         logger.info("*** Bind Master Services");
 
         // bind Master services to server
-        masterAPI = Integration.bindMaster(factory.getServer());
+        masterAPI = Integration.bindMasterSpy(factory.getServer());
 
         logger.info("*** Bind Slave Services");
         // bind Slave services to client
-        slaveAPI = Integration.bindSlave(factory.getClient(CLIENT_NODE_ID), SERVER_NODE_ID);
+        slaveAPI = Integration.bindSlaveSpy(factory.getClient(CLIENT_NODE_ID), SERVER_NODE_ID);
 
     }
 

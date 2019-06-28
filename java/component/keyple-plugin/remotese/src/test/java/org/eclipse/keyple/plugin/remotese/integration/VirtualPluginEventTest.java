@@ -52,7 +52,7 @@ public class VirtualPluginEventTest extends VirtualReaderBaseTest {
      * @throws Exception
      */
     @Test
-    public void testConnectOneReader() throws Exception {
+    public void testEvent_READER_CONNECTED() throws Exception {
         // lock test until message is received
         final CountDownLatch lock = new CountDownLatch(1);
 
@@ -70,7 +70,7 @@ public class VirtualPluginEventTest extends VirtualReaderBaseTest {
         });
 
         // connect a Stub Native reader
-        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID,
+        nativeReader = remoteSePlugin.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID,
                 TransmissionMode.CONTACTLESS);
 
         // wait 5 seconds
@@ -86,7 +86,7 @@ public class VirtualPluginEventTest extends VirtualReaderBaseTest {
      * @throws Exception
      */
     @Test
-    public void testDisconnectEvent() throws Exception {
+    public void testEvent_READER_DISCONNECTED() throws Exception {
         // lock test until two messages are received
         final CountDownLatch lock = new CountDownLatch(2);
 

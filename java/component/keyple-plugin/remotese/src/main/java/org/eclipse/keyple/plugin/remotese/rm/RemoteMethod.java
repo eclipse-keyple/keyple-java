@@ -16,9 +16,16 @@ import java.util.Map;
 
 public enum RemoteMethod {
 
-    READER_TRANSMIT_SET("reader_transmitSet"), READER_TRANSMIT("reader_transmit"), READER_CONNECT(
-            "reader_connect"), READER_DISCONNECT("reader_disconnect"), READER_EVENT(
-                    "reader_event"), DEFAULT_SELECTION_REQUEST("default_selection_request");
+    READER_TRANSMIT_SET("reader_transmitSet"),
+    READER_TRANSMIT("reader_transmit"),
+    READER_CONNECT(
+            "reader_connect"),
+    READER_DISCONNECT("reader_disconnect"),
+    READER_EVENT(
+                    "reader_event"),
+    DEFAULT_SELECTION_REQUEST("default_selection_request"),
+    POOL_ALLOCATE_READER("pool_allocate_reader"),
+    POOL_RELEASE_READER("pool_release_reader");
 
     private String name;
 

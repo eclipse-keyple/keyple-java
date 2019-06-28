@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.rm;
 
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
@@ -33,6 +34,8 @@ public abstract class RemoteMethodTx<T> {
     protected final String virtualReaderName;
     protected final String targetNodeId;
     protected final String requesterNodeId;
+    protected final String id;
+    protected Boolean isRegistered;
 
     // response
     private T response;
@@ -54,8 +57,11 @@ public abstract class RemoteMethodTx<T> {
         this.virtualReaderName = virtualReaderName;
         this.targetNodeId = targetNodeId;
         this.requesterNodeId = requesterNodeId;
-    }
 
+        //generate id
+        this.id = UUID.randomUUID().toString();
+
+    }
 
     void setDtoSender(DtoSender sender) {
         this.sender = sender;
@@ -96,6 +102,9 @@ public abstract class RemoteMethodTx<T> {
      * @throws KeypleRemoteException : if an
      */
     final public T getResponse() throws KeypleRemoteException {
+        if(!isRegistered){
+            throw new IllegalStateException("RemoteMethodTx#getResponse() can not be used until RemoteMethod is isRegistered in a RemoteMethodEngine, please call RemoteMethodEngine#register");
+        }
         logger.debug("Blocking Get {}", this.getClass().getCanonicalName());
         final RemoteMethodTx thisInstance = this;
 
@@ -164,11 +173,20 @@ public abstract class RemoteMethodTx<T> {
     }
 
     /**
+     * Marks this rm has registered
+     */
+    public void setRegistered(Boolean registered) {
+        isRegistered = registered;
+    }
+
+    /**
      * Generates a Request Dto for this Rm Method call
      * 
      * @return keypleDto
      */
     protected abstract KeypleDto dto();
+
+
 
 
 }

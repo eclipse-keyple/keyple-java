@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
 import org.eclipse.keyple.plugin.remotese.transport.*;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
@@ -31,6 +32,9 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(RmConnectReaderExecutor.class);
 
+    public RemoteMethod getMethodName() {
+        return RemoteMethod.READER_DISCONNECT;
+    }
 
     private final RemoteSePlugin plugin;
     private final DtoSender dtoSender;
@@ -50,23 +54,27 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
         // parseResponse msg
         String nativeReaderName = keypleDto.getNativeReaderName();
         String slaveNodeId = keypleDto.getRequesterNodeId();
-        String tranmissionMode = body.get("transmissionMode").getAsString();
+        String transmissionMode = body.get("transmissionMode").getAsString();
 
         VirtualReader virtualReader = null;
         try {
             // create a virtual Reader
             virtualReader = (VirtualReader) this.plugin.createVirtualReader(slaveNodeId,
-                    nativeReaderName, this.dtoSender, TransmissionMode.valueOf(tranmissionMode));
+                    nativeReaderName, this.dtoSender, TransmissionMode.valueOf(transmissionMode));
 
             // create response
             JsonObject respBody = new JsonObject();
             respBody.add("sessionId", new JsonPrimitive(virtualReader.getSession().getSessionId()));
 
             // build transport DTO with body
-            return transportDto.nextTransportDTO(new KeypleDto(keypleDto.getAction(),
-                    respBody.toString(), false, virtualReader.getSession().getSessionId(),
-                    nativeReaderName, virtualReader.getName(),
-                    transportDto.getKeypleDTO().getTargetNodeId(), slaveNodeId));
+            return transportDto.nextTransportDTO(
+                    KeypleDtoHelper.buildResponse(keypleDto.getAction(),
+                    respBody.toString(),
+                    virtualReader.getSession().getSessionId(),
+                    nativeReaderName,
+                    virtualReader.getName(),
+                    transportDto.getKeypleDTO().getTargetNodeId(),
+                    slaveNodeId,keypleDto.getId()));
 
         } catch (KeypleReaderException e) {
             // virtual reader for remote reader already exists
@@ -75,7 +83,7 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
             // send the exception inside the dto
             return transportDto.nextTransportDTO(
                     KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(), e, null, nativeReaderName,
-                            null, transportDto.getKeypleDTO().getTargetNodeId(), slaveNodeId));
+                            null, transportDto.getKeypleDTO().getTargetNodeId(), slaveNodeId,keypleDto.getId()));
 
         } catch (IllegalArgumentException e) {
             // virtual reader for remote reader already exists
@@ -84,7 +92,7 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
             // send the exception inside the dto
             return transportDto.nextTransportDTO(
                     KeypleDtoHelper.ExceptionDTO(keypleDto.getAction(), e, null, nativeReaderName,
-                            null, keypleDto.getTargetNodeId(), keypleDto.getRequesterNodeId()));
+                            null, keypleDto.getTargetNodeId(), keypleDto.getRequesterNodeId(),keypleDto.getId()));
 
         }
     }

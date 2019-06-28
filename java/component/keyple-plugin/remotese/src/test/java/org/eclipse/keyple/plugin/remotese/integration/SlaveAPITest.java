@@ -70,7 +70,7 @@ public class SlaveAPITest {
 
         logger.info("*** Bind Master Services");
         // bind Master services to server
-        masterAPI = Integration.bindMaster(factory.getServer());
+        masterAPI = Integration.bindMasterSpy(factory.getServer());
 
         logger.info("*** Bind Slave Services");
         // bind Slave services to client
