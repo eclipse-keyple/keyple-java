@@ -61,7 +61,6 @@ public class RemoteSePoolPlugin extends RemoteSePlugin implements ReaderPoolPlug
     public SeReader allocateReader(String groupReference) {
 
         if(slaveNodeId==null){
-            logger.error("RemoteSePluginPool is not bind to any Slave Node, invoke RemoteSePluginPool#bind()");
             throw new IllegalStateException("RemoteSePluginPool is not bind to any Slave Node, invoke RemoteSePluginPool#bind()");
         }
 
@@ -81,13 +80,31 @@ public class RemoteSePoolPlugin extends RemoteSePlugin implements ReaderPoolPlug
     public void releaseReader(SeReader seReader) {
         //call remote method for releaseReader
         if(slaveNodeId==null){
-            logger.error("RemoteSePluginPool is not bind to any Slave Node, invoke RemoteSePluginPool#bind()");
-            throw new IllegalStateException("RemoteSePluginPool is not bind to any Slave Node, invoke RemoteSePluginPool#bind()");
+            throw new IllegalStateException("RemoteSePluginPool is not bind to any Slave Node, invoke RemoteSePluginPool#bind() first");
+        }
+
+        if(!(seReader instanceof VirtualReader)){
+            throw new IllegalStateException("RemoteSePluginPool can release only VirtualReader, seReader is type of "+ seReader.getClass().getSimpleName());
+        }
+
+        VirtualReader virtualReader = (VirtualReader) seReader;
+
+        //call remote method for allocateReader
+        RmPoolReleaseTx releaseTx =
+                new RmPoolReleaseTx(virtualReader.getNativeReaderName(),virtualReader.getName(),this,this.dtoSender, slaveNodeId, dtoSender.getNodeId());
+        this.rmTxEngine.add(releaseTx);
+
+        try {
+            releaseTx.getResponse();
+        } catch (KeypleRemoteException e) {
+            logger.error("Impossible to release reader {} {}", virtualReader.getName(), virtualReader.getNativeReaderName());
         }
     }
 
     RemoteMethodTxPoolEngine getRmTxEngine() {
         return rmTxEngine;
     }
+
+
 
 }

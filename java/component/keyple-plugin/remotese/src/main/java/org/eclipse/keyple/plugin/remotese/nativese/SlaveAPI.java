@@ -180,8 +180,9 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
             case POOL_RELEASE_READER:
                 // must be a request
                 if (keypleDTO.isRequest()) {
-                    //executor
-                    out = null;
+                    RmPoolReleaseExecutor rmPoolReleaseExecutor =
+                            new RmPoolReleaseExecutor(this.readerPoolPlugin);
+                    out = rmPoolReleaseExecutor.execute(transportDto);
                 } else {
                     throw new IllegalStateException(
                             "a POOL_RELEASE_READER response has been received by SlaveAPI");
