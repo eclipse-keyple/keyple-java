@@ -47,7 +47,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     private final SeProxyService seProxyService;
 
     private final RemoteMethodTxEngine rmTxEngine;// rm command processor
-    private final String masterNodeId;// master node id to connect to
+    private final String masterNodeId;// master node id used for connect, disconnect, and events
 
     //used in case of a poolPlugin architecture
     private ReaderPoolPlugin readerPoolPlugin;

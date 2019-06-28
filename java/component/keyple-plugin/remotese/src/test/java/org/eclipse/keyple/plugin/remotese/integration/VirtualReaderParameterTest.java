@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,18 +28,19 @@ import org.slf4j.LoggerFactory;
 public class VirtualReaderParameterTest extends VirtualReaderBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderParameterTest.class);
+    private VirtualReader virtualReader;
 
     @Before
     public void setUp() throws Exception {
         // restore plugin state
-        clearStubpluginReaders();
+        clearStubpluginReader();
 
         initKeypleServices();
     }
 
     @After
     public void tearDown() throws Exception {
-        clearStubpluginReaders();
+        clearStubpluginReader();
     }
 
     @Test

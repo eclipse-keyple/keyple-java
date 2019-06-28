@@ -1,7 +1,6 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import com.google.gson.JsonObject;
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -21,11 +20,11 @@ public class RmPoolAllocateTx extends RemoteMethodTx<SeReader> {
 
 
     String groupReference;
-    RemoteSePluginPool virtualPoolPlugin;
+    RemoteSePoolPlugin virtualPoolPlugin;
     DtoSender dtoSender;
 
     public RmPoolAllocateTx(String groupReference,
-                            RemoteSePluginPool virtualPoolPlugin,
+                            RemoteSePoolPlugin virtualPoolPlugin,
                             DtoSender dtoSender,
                             String slaveNodeId,
                             String requesterNodeId){
@@ -76,6 +75,7 @@ public class RmPoolAllocateTx extends RemoteMethodTx<SeReader> {
             JsonObject body = JsonParser.getGson().fromJson(keypleDto.getBody(), JsonObject.class);
             String transmissionMode = body.get("transmissionMode").getAsString();
             String slaveNodeId = keypleDto.getRequesterNodeId();
+            String nativeReaderName = keypleDto.getNativeReaderName();
 
             // create the Virtual Reader related to the Reader Allocation
             try {

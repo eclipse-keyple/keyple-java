@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * {@link DtoHandler}.
  *
  */
-public class MasterAPI<T> implements DtoHandler {
+public class MasterAPI implements DtoHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(MasterAPI.class);
 
@@ -90,7 +90,7 @@ public class MasterAPI<T> implements DtoHandler {
             // Instantiate Plugin
             this.plugin = new RemoteSePlugin(sessionManager, dtoNode, rpcTimeout);
         }else if(pluginType==PLUGIN_TYPE_POOL){
-            this.plugin = new RemoteSePluginPool(sessionManager, dtoNode, rpcTimeout);
+            this.plugin = new RemoteSePoolPlugin(sessionManager, dtoNode, rpcTimeout);
         }else{
             throw new IllegalArgumentException("plugin type is not recognized, use static properties defined in MasterAPI#PLUGIN_TYPE_DEFAULT or MasterAPI#PLUGIN_TYPE_POOL");
         }
@@ -207,7 +207,7 @@ public class MasterAPI<T> implements DtoHandler {
                 /*
                  * dispatch message to plugin
                  */
-                return ((RemoteSePluginPool)plugin).getRmTxEngine().onDTO(transportDto);
+                return ((RemoteSePoolPlugin)plugin).getRmTxEngine().onDTO(transportDto);
 
             default:
                 logger.error("Receive a KeypleDto with no recognised action");

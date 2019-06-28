@@ -52,7 +52,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Allocate one reader and count if created
      */
     @Test
-    public void allocateOneReader() throws InterruptedException, KeypleReaderException {
+    public void testAllocate_success() throws InterruptedException, KeypleReaderException {
         //init stubPoolPlugin
         StubPoolPlugin stubPoolPlugin = new StubPoolPlugin(new TreeSet<String>());
 
@@ -69,7 +69,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Release one reader and count if created
      */
     @Test
-    public void releaseOneReader() throws InterruptedException, KeypleReaderException {
+    public void testRelease_success() throws InterruptedException, KeypleReaderException {
         //init stubPoolPlugin
         StubPoolPlugin stubPoolPlugin = new StubPoolPlugin(new TreeSet<String>());
 

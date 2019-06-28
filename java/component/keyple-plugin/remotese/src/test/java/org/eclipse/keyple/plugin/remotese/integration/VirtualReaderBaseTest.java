@@ -12,6 +12,8 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
@@ -27,6 +29,8 @@ import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
+
 /**
  * Test Virtual Reader Service with stub plugin and hoplink SE
  */
@@ -40,7 +44,6 @@ public class VirtualReaderBaseTest {
     // Real objects
     private TransportFactory factory;
     StubReader nativeReader;
-    VirtualReader virtualReader;
 
     final String NATIVE_READER_NAME = "testStubReader";
     final String CLIENT_NODE_ID = "testClientNodeId";
@@ -76,19 +79,26 @@ public class VirtualReaderBaseTest {
 
     }
 
-    protected void clearStubpluginReaders() throws Exception {
-
-        logger.info("Cleaning of the stub plugin");
-
+    @Deprecated
+    protected void clearStubpluginNativeReader() throws Exception {
+        logger.info("Remove nativeReader from stub plugin");
         StubPlugin stubPlugin = StubPlugin.getInstance();
-
         // if nativeReader was initialized during test, unplug it
         if (nativeReader != null) {
             stubPlugin.unplugStubReader(nativeReader.getName(), true);
             nativeReader.clearObservers();
         }
+    }
 
-        logger.info("End of cleaning of the stub plugin");
+
+    static public void clearStubpluginReader() throws KeypleReaderException {
+        logger.info("Remove all readers from stub plugin");
+        StubPlugin stubPlugin = StubPlugin.getInstance();
+        Set<AbstractObservableReader> readers = stubPlugin.getReaders();
+        for(AbstractObservableReader reader : readers){
+            reader.clearObservers();
+        }
+        stubPlugin.unplugStubReaders(stubPlugin.getReaderNames(), true);
     }
 
 

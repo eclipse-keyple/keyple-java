@@ -27,23 +27,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Test VirtualPlugin event READER_CONNECTED and READER_DISCONNECTED
+ * Test RemoteSePlugin event READER_CONNECTED and READER_DISCONNECTED
  */
-public class VirtualPluginEventTest extends VirtualReaderBaseTest {
+public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(VirtualPluginEventTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginEventTest.class);
 
     @Before
     public void setUp() throws Exception {
         // restore plugin state
-        clearStubpluginReaders();
+        clearStubpluginReader();
 
         initKeypleServices();
     }
 
     @After
     public void tearDown() throws Exception {
-        clearStubpluginReaders();
+        clearStubpluginReader();
     }
 
     /**

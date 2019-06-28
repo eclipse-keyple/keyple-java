@@ -108,7 +108,7 @@ public class Integration {
      * @throws InterruptedException
      * @throws KeypleReaderNotFoundException
      */
-    public static ReaderPoolPlugin createReaderPoolStub()
+    public static StubPoolPlugin createStubPoolPlugin()
             throws InterruptedException, KeypleReaderNotFoundException {
 
         SortedSet<String> groupReferences = new TreeSet<String>();

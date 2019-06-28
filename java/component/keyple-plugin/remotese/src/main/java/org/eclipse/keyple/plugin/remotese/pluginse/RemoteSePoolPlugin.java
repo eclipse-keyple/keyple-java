@@ -13,9 +13,7 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
-import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxPoolEngine;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 import org.slf4j.Logger;
@@ -28,9 +26,9 @@ import java.util.SortedSet;
  * Remote SE Plugin Creates a virtual reader when a remote readers connect Manages the dispatch of
  * events received from remote readers
  */
-public class RemoteSePluginPool extends RemoteSePlugin implements ReaderPoolPlugin {
+public class RemoteSePoolPlugin extends RemoteSePlugin implements ReaderPoolPlugin {
 
-    private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginPool.class);
+    private static final Logger logger = LoggerFactory.getLogger(RemoteSePoolPlugin.class);
 
 
     //Slave Node where the ReaderPluginPool is located
@@ -40,14 +38,14 @@ public class RemoteSePluginPool extends RemoteSePlugin implements ReaderPoolPlug
     /**
      * Only {@link MasterAPI} can instanciate a RemoteSePlugin
      */
-    RemoteSePluginPool(VirtualReaderSessionFactory sessionManager, DtoSender sender, long rpcTimeout) {
+    RemoteSePoolPlugin(VirtualReaderSessionFactory sessionManager, DtoSender sender, long rpcTimeout) {
         super(sessionManager, sender,rpcTimeout);
 
         //allocate a rmTxPoolEngine
         rmTxEngine = new RemoteMethodTxPoolEngine(sender, rpcTimeout);
     }
 
-    void bind(String slaveNodeId){
+    public void bind(String slaveNodeId){
         this.slaveNodeId = slaveNodeId;
     }
 
