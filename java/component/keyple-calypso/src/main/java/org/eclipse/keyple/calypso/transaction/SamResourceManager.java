@@ -145,7 +145,8 @@ public class SamResourceManager {
      */
     public SamResource allocateSamResource(AllocationMode allocationMode,
             SamIdentifier samIdentifier) throws InterruptedException, KeypleReaderException {
-        int timeout = MAX_BLOCKING_TIME;
+        long maxBlockingDate = System.currentTimeMillis() + MAX_BLOCKING_TIME;
+        boolean noSamResourceLogged = false;
         logger.debug("Allocating SAM reader channel...");
         while (true) {
             if (dynamicAllocationPlugin) {
@@ -176,14 +177,13 @@ public class SamResourceManager {
                 logger.trace("No SAM resources available at the moment.");
                 break;
             } else {
-                // don't hog CPU resources (TODO add exit timeout)
-                if (timeout == MAX_BLOCKING_TIME) {
+                if (!noSamResourceLogged) {
                     /* log once the first time */
                     logger.trace("No SAM resources available at the moment.");
+                    noSamResourceLogged = true;
                 }
                 Thread.sleep(10);
-                timeout--;
-                if (timeout == 0) {
+                if (System.currentTimeMillis() >= maxBlockingDate) {
                     logger.error("The allocation process failed. Timeout {} sec exceeded .",
                             (MAX_BLOCKING_TIME / 100.0));
                     return null;
