@@ -149,7 +149,7 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
      * @throws KeypleReaderException in case of a reader exception
      */
     public void unplugStubReader(String name, Boolean synchronous)
-            throws KeypleReaderException, InterruptedException {
+            throws KeypleReaderException {
 
         if (!connectedStubNames.contains(name)) {
             logger.warn("unplugStubReader() No reader found with name {}", name);

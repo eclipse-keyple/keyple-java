@@ -70,7 +70,7 @@ public class VirtualPluginEventTest extends VirtualReaderBaseTest {
         });
 
         // connect a Stub Native reader
-        nativeReader = remoteSePlugin.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID,
+        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID,
                 TransmissionMode.CONTACTLESS);
 
         // wait 5 seconds
