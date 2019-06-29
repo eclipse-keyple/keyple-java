@@ -38,8 +38,8 @@ public class RemoteSePoolPlugin extends RemoteSePlugin implements ReaderPoolPlug
      * Only {@link MasterAPI} can instanciate a RemoteSePlugin
      */
     RemoteSePoolPlugin(VirtualReaderSessionFactory sessionManager, DtoSender sender,
-            long rpcTimeout) {
-        super(sessionManager, sender, rpcTimeout);
+            long rpcTimeout, String pluginName) {
+        super(sessionManager, sender, rpcTimeout, pluginName);
 
         // allocate a rmTxPoolEngine
         rmTxEngine = new RemoteMethodTxPoolEngine(sender, rpcTimeout);

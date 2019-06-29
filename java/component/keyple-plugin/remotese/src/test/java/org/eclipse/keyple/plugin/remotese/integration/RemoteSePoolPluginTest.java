@@ -67,7 +67,7 @@ public class RemoteSePoolPluginTest {
 
         // configure Master with RemoteSe Pool plugin and client node
         masterAPI = new MasterAPI(SeProxyService.getInstance(), factory.getClient(CLIENT_NODE_ID),
-                10000, MasterAPI.PLUGIN_TYPE_POOL);
+                10000, MasterAPI.PLUGIN_TYPE_POOL, "REMOTESE_POOL_PLUGIN1");
 
         remoteSePoolPlugin = (RemoteSePoolPlugin) masterAPI.getPlugin();
 

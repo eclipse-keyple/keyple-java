@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
+
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -67,7 +68,8 @@ public class MasterAPI implements DtoHandler {
      *        an exception
      */
     public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpc_timeout) {
-        this(seProxyService, dtoNode, rpc_timeout, PLUGIN_TYPE_DEFAULT);
+        this(seProxyService, dtoNode, rpc_timeout, PLUGIN_TYPE_DEFAULT,
+                RemoteSePlugin.DEFAULT_PLUGIN_NAME);
     }
 
     /**
@@ -78,9 +80,13 @@ public class MasterAPI implements DtoHandler {
      * @param dtoNode : outgoing node to send Dto to Slave
      * @param rpcTimeout : timeout in milliseconds to wait for an answer from slave before throwing
      *        an exception
+     * @param pluginType : either a default plugin or readerPool plugin, use
+     *        {@link #PLUGIN_TYPE_DEFAULT} or @PLUGIN_TYPE_POOL
+     * @param pluginName : specify a name for remoteseplugin
+     *
      */
     public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpcTimeout,
-            int pluginType) {
+            int pluginType, String pluginName) {
         this.dtoTransportNode = dtoNode;
         this.pluginType = pluginType;
 
@@ -89,9 +95,11 @@ public class MasterAPI implements DtoHandler {
 
         if (pluginType == PLUGIN_TYPE_DEFAULT) {
             // Instantiate Plugin
-            this.plugin = new RemoteSePlugin(sessionManager, dtoNode, rpcTimeout);
+            this.plugin = new RemoteSePlugin(sessionManager, dtoNode, rpcTimeout,
+                    RemoteSePlugin.DEFAULT_PLUGIN_NAME);
         } else if (pluginType == PLUGIN_TYPE_POOL) {
-            this.plugin = new RemoteSePoolPlugin(sessionManager, dtoNode, rpcTimeout);
+            this.plugin = new RemoteSePoolPlugin(sessionManager, dtoNode, rpcTimeout,
+                    RemoteSePlugin.DEFAULT_PLUGIN_NAME + "_POOL");
         } else {
             throw new IllegalArgumentException(
                     "plugin type is not recognized, use static properties defined in MasterAPI#PLUGIN_TYPE_DEFAULT or MasterAPI#PLUGIN_TYPE_POOL");

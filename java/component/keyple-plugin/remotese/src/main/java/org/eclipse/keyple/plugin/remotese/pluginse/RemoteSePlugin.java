@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public class RemoteSePlugin extends AbstractObservablePlugin {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteSePlugin.class);
-    public static final String PLUGIN_NAME = "RemoteSePlugin";
+    public static final String DEFAULT_PLUGIN_NAME = "RemoteSePlugin";
 
     // in milliseconds, throw an exception if slave hasn't answer during this time
     public final long rpc_timeout;
@@ -51,8 +51,8 @@ public class RemoteSePlugin extends AbstractObservablePlugin {
      * Only {@link MasterAPI} can instanciate a RemoteSePlugin
      */
     RemoteSePlugin(VirtualReaderSessionFactory sessionManager, DtoSender dtoSender,
-            long rpc_timeout) {
-        super(PLUGIN_NAME);
+            long rpc_timeout, String pluginName) {
+        super(pluginName);
         this.sessionManager = sessionManager;
         logger.info("Init RemoteSePlugin");
         this.dtoSender = dtoSender;
