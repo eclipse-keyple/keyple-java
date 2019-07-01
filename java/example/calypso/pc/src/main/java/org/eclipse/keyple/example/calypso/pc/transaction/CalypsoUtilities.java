@@ -111,7 +111,7 @@ public class CalypsoUtilities {
         SeSelection samSelection = new SeSelection();
 
         SamSelector samSelector =
-                new SamSelector(new SamIdentifier(C1, ".*", ""), "Selection SAM C1");
+                new SamSelector(C1, ".*", "Selection SAM C1");
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(new SamSelectionRequest(samSelector, ChannelState.KEEP_OPEN));
