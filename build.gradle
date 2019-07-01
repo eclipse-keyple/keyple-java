@@ -7,14 +7,17 @@ buildscript {
             url 'https://repo.eclipse.org/service/local/repositories/maven_central/content'
         }
     }
+
+    dependencies {
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.14.0"
+    }
 }
 
-plugins {
-    id "com.diffplug.gradle.spotless" version "3.14.0"
-}
 
 apply from: 'common.gradle'
 
+
+apply plugin: "com.diffplug.gradle.spotless"
 
 allprojects {
 

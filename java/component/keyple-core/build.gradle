@@ -1,5 +1,10 @@
 project.version = '0.7.0'+'-'+ timestamp + '-SNAPSHOT'
 
+apply plugin: 'java'
+apply plugin: 'java-library'
+
+sourceCompatibility = 1.6
+
 task copyVersionFile {
     //generate properties file META-INF/keyple.properties with version number
     def props = new Properties()
@@ -21,7 +26,17 @@ task copyVersionFile {
     }
 }
 
+//copy license file from root folder to each generated artifact
+task copyLICENSE(type: Copy) {
+    from file("${projectDir}/../../../LICENSE")
+    into file("${buildDir}/resources/main/META-INF/")
+}
 
+//copy notice file from root folder to each generated artifact
+task copyNOTICE(type: Copy) {
+    from file("${projectDir}/../../../NOTICE.md")
+    into file("${buildDir}/resources/main/META-INF/")
+}
 
 
 jar {

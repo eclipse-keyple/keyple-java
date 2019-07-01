@@ -75,7 +75,10 @@ public class RemoteMethodTxEngine implements DtoHandler {
          * Check that a request has been made previously
          */
         if (remoteMethodTx == null) {
-            throw new IllegalStateException(
+            /*
+             * Should not happen, response received does not match a request. Ignore it
+             */
+            logger.error(
                     "RemoteMethodTxEngine receives a KeypleDto response but no remoteMethodTx are defined : "
                             + keypleDto);
         }
