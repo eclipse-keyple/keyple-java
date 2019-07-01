@@ -15,6 +15,7 @@ package org.eclipse.keyple.plugin.stub;
 import java.util.TreeSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -29,9 +30,11 @@ public class StubPoolPluginTest extends BaseStubTest {
     Logger logger = LoggerFactory.getLogger(StubPoolPluginTest.class);
 
 
+
     @Before
     public void setupStub() throws Exception {
         super.setupStub();
+
     }
 
     @After
@@ -39,41 +42,98 @@ public class StubPoolPluginTest extends BaseStubTest {
         super.clearStub();
     }
 
+
+    /**
+     * Plug a pool reader and count
+     */
+    @Test
+    public void plugStubPoolReader_success() throws InterruptedException, KeypleReaderException, NoStackTraceThrowable {
+        StubPoolPlugin stubPoolPlugin = new StubPoolPlugin();
+
+        SeReader seReader = stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName",stubSe);
+
+        Assert.assertEquals(1, stubPoolPlugin.getReaders().size());
+        Assert.assertEquals(true, seReader.isSePresent());
+        Assert.assertEquals(1, stubPoolPlugin.getReaderGroupReferences().size());
+    }
+
+    /**
+     * Plug a pool reader and count
+     */
+    @Test
+    public void unplugStubPoolReader_success() throws InterruptedException, KeypleReaderException {
+        StubPoolPlugin stubPoolPlugin = new StubPoolPlugin();
+
+        //plug a reader
+        stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName",stubSe);
+
+        //unplug the reader
+        stubPoolPlugin.unplugStubPoolReader("anyGroup");
+
+        Assert.assertEquals(0, stubPoolPlugin.getReaders().size());
+        Assert.assertEquals(0, stubPoolPlugin.getReaderGroupReferences().size());
+
+
+    }
+
     /**
      * Allocate one reader and count if created
      */
     @Test
-    public void testAllocate_success() throws InterruptedException, KeypleReaderException {
+    public void allocate_success() throws InterruptedException, KeypleReaderException {
         // init stubPoolPlugin
-        StubPoolPlugin stubPoolPlugin = new StubPoolPlugin(new TreeSet<String>());
+        StubPoolPlugin stubPoolPlugin = new StubPoolPlugin();
+
+        //plug readers
+        stubPoolPlugin.plugStubPoolReader("group1", "stub1",stubSe);
+        stubPoolPlugin.plugStubPoolReader("group2", "stub2",stubSe);
 
         // allocate Reader
-        String groupReference = "GROUP_REF1";
-        SeReader seReader = stubPoolPlugin.allocateReader(groupReference);
+        SeReader seReader = stubPoolPlugin.allocateReader("group1");
 
-        // check
-        Assert.assertEquals(1, stubPlugin.getReaders().size());
-        Assert.assertTrue(seReader.getName().startsWith(groupReference));
+        // check allocate result is correct
+        Assert.assertTrue(seReader.getName().startsWith("stub1"));
+
+        // check allocate list is correct
+        Assert.assertTrue(stubPoolPlugin.listAllocatedReaders().containsKey("stub1"));
+        Assert.assertEquals(1, stubPoolPlugin.listAllocatedReaders().size());
+
     }
 
     /**
      * Release one reader and count if created
      */
     @Test
-    public void testRelease_success() throws InterruptedException, KeypleReaderException {
+    public void release_success() throws InterruptedException, KeypleReaderException {
         // init stubPoolPlugin
-        StubPoolPlugin stubPoolPlugin = new StubPoolPlugin(new TreeSet<String>());
+        StubPoolPlugin stubPoolPlugin = new StubPoolPlugin();
+
+        //plug readers
+        stubPoolPlugin.plugStubPoolReader("group1", "stub1",stubSe);
+        stubPoolPlugin.plugStubPoolReader("group2", "stub2",stubSe);
 
         // allocate Reader
-        String groupReference = "GROUP_REF1";
-        SeReader seReader = stubPoolPlugin.allocateReader(groupReference);
+        SeReader seReader = stubPoolPlugin.allocateReader("group1");
 
-        // deallocate Reader
+        //release reader
         stubPoolPlugin.releaseReader(seReader);
 
-        // check
-        Assert.assertEquals(0, stubPlugin.getReaders().size());
+        //assert no reader is allocated
+        Assert.assertEquals(0, stubPoolPlugin.listAllocatedReaders().size());
 
     }
+
+    final static private StubSecureElement stubSe = new StubSecureElement() {
+        @Override
+        public byte[] getATR() {
+            return new byte[0];
+        }
+
+        @Override
+        public String getSeProcotol() {
+            return null;
+        }
+    };
+
 
 }

@@ -11,9 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.stub;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.SortedSet;
+import java.util.*;
+
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -27,13 +26,16 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 public class StubPoolPlugin implements ReaderPoolPlugin {
 
     StubPlugin stubPlugin;
-    SortedSet<String> groupReferences;
+    Map<String,SeReader> readerPool; //groupReference, seReader = limitation each groupReference can have only one reader
+    Map<String, String> allocatedReader;//readerName,groupReference
 
     static public String PREFIX_NAME = "POOL_";
 
-    public StubPoolPlugin(SortedSet<String> groupReferences) {
+    public StubPoolPlugin() {
         this.stubPlugin = StubPlugin.getInstance();
-        this.groupReferences = groupReferences;
+        this.readerPool = new HashMap<String, SeReader>();
+        this.allocatedReader = new HashMap<String, String>();
+
     }
 
     @Override
@@ -43,11 +45,61 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
 
     @Override
     public SortedSet<String> getReaderGroupReferences() {
-        return groupReferences;
+        return new TreeSet<String>(readerPool.keySet());
     }
 
     /**
-     * Allocate a reader (in stub, it creates a new reader)
+     * Plug a new reader in Pool with groupReference
+     */
+    public SeReader plugStubPoolReader(String groupReference, String readerName, StubSecureElement se){
+        try {
+            //create new reader
+            stubPlugin.plugStubReader(readerName, true);
+
+            //get new reader
+            StubReader newReader = (StubReader) stubPlugin.getReader(readerName);
+
+            newReader.insertSe(se);
+
+            //map reader to groupReference
+            readerPool.put(groupReference, newReader);
+
+            return newReader;
+        } catch (KeypleReaderNotFoundException e) {
+            throw new IllegalStateException(
+                    "Impossible to allocateReader, stubplugin failed to create a reader");
+        }
+    }
+
+    /**
+     * Unplug a new reader by groupReference
+     * @param groupReference
+     */
+    public void unplugStubPoolReader(String groupReference){
+        try {
+            //get reader
+            SeReader stubReader = readerPool.get(groupReference);
+
+            //remove reader from pool
+            readerPool.remove(groupReference);
+
+            //remove reader from plugin
+            stubPlugin.unplugStubReader(stubReader.getName(),true);
+
+        } catch (KeypleReaderException e) {
+            throw new IllegalStateException(
+                    "Impossible to release reader, reader with groupReference was not found in stubplugin : "
+                            + groupReference);
+        }
+    }
+
+
+
+
+
+
+    /**
+     * Allocate a reader
      * 
      * @param groupReference the reference of the group to which the reader belongs (may be null
      *        depending on the implementation made)
@@ -56,35 +108,24 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
      */
     @Override
     public SeReader allocateReader(String groupReference) {
-        /*
-         * Plug a new reader in stubPlugin with name groupeReference+timestamp
-         */
-        String readerName = groupReference + new Date().getTime();
-        stubPlugin.plugStubReader(readerName, true);
-
-        try {
-            return stubPlugin.getReader(readerName);
-        } catch (KeypleReaderNotFoundException e) {
-            throw new IllegalStateException(
-                    "Impossible to allocateReader, stubplugin failed to create a reader");
-        }
+        SeReader seReader = readerPool.get(groupReference);
+        allocatedReader.put(seReader.getName(), groupReference);
+        return seReader;
     }
 
     /**
-     * Deallocate a reader (in stub, it creates a new reader)
+     * Release a reader
      * 
      * @param seReader the SeReader to be released.
      * @throws KeypleReaderException
      */
     @Override
     public void releaseReader(SeReader seReader) {
-        try {
-            stubPlugin.unplugStubReader(seReader.getName(), true);
-        } catch (KeypleReaderException e) {
-            throw new IllegalStateException(
-                    "Impossible to release reader, reader with name was not found in stubplugin : "
-                            + seReader.getName());
-        }
+        allocatedReader.remove(seReader.getName());
+    }
+
+    public Map<String,String > listAllocatedReaders(){
+        return allocatedReader;
     }
 
 
