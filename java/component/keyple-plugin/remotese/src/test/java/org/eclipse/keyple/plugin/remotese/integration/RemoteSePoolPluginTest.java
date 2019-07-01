@@ -21,6 +21,7 @@ import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePoolPlugin;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportFactory;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPoolPlugin;
+import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -48,6 +49,8 @@ public class RemoteSePoolPluginTest {
     final String CLIENT_NODE_ID_2 = "testClientNodeId2";
     final String SERVER_NODE_ID = "testServerNodeId";
 
+    String REF_GROUP1 = "REF_GROUP1";
+
     /**
      * Slave is Server with StubPoolPlugin Master is Client with RemoteSePoolPlugin
      */
@@ -60,6 +63,10 @@ public class RemoteSePoolPluginTest {
 
         // create stub pool plugin
         stubPoolPlugin = Integration.createStubPoolPlugin();
+
+        // plug readers
+        stubPoolPlugin.plugStubPoolReader(REF_GROUP1, "stub1", stubSe);
+
 
         // configure Slave with Stub Pool plugin and local server node
         slaveAPI = new SlaveAPI(SeProxyService.getInstance(), factory.getServer(), "");
@@ -83,16 +90,14 @@ public class RemoteSePoolPluginTest {
      * Test allocate SUCCESS
      */
     @Test
-    public void testAllocate_success() throws Exception {
-        String REF_GROUP1 = "REF_GROUP1";
+    public void allocate_success() throws Exception {
 
         // allocate reader
         remoteSePoolPlugin.bind(SERVER_NODE_ID);
         SeReader seReader = remoteSePoolPlugin.allocateReader(REF_GROUP1);
 
         // check results
-        Assert.assertTrue(seReader.getName().contains(REF_GROUP1));
-        Assert.assertEquals(1, masterAPI.getPlugin().getReaders().size());
+        Assert.assertNotNull(seReader);
 
     }
 
@@ -100,14 +105,13 @@ public class RemoteSePoolPluginTest {
      * Test allocate FAIL
      */
     @Test
-    public void testAllocate_fail() throws Exception {}
+    public void allocate_fail() throws Exception {}
 
     /**
      * Test release SUCCESS
      */
     @Test
-    public void testRelease_success() throws Exception {
-        String REF_GROUP1 = "REF_GROUP1";
+    public void release_success() throws Exception {
 
         // allocate reader
         remoteSePoolPlugin.bind(SERVER_NODE_ID);
@@ -116,15 +120,28 @@ public class RemoteSePoolPluginTest {
         // release reader
         ((RemoteSePoolPlugin) masterAPI.getPlugin()).releaseReader(seReader);
 
+        // re allocate reader
+        SeReader seReader2 = remoteSePoolPlugin.allocateReader(REF_GROUP1);
+
         // check results
-        Assert.assertEquals(0, masterAPI.getPlugin().getReaders().size());
+        Assert.assertNotNull(seReader2);
 
     }
 
+
     /**
-     * Test release FAIL
+     * Stub Secure Element
      */
-    @Test
-    public void testRelease_fail() throws Exception {}
+    final static private StubSecureElement stubSe = new StubSecureElement() {
+        @Override
+        public byte[] getATR() {
+            return new byte[0];
+        }
+
+        @Override
+        public String getSeProcotol() {
+            return null;
+        }
+    };
 
 }
