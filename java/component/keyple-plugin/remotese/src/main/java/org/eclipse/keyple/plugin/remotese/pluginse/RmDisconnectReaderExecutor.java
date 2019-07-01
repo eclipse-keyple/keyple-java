@@ -29,6 +29,10 @@ class RmDisconnectReaderExecutor implements RemoteMethodExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(RmDisconnectReaderExecutor.class);
 
+    public RemoteMethod getMethodName() {
+        return RemoteMethod.READER_DISCONNECT;
+    }
+
 
     private final RemoteSePlugin plugin;
 
@@ -48,17 +52,17 @@ class RmDisconnectReaderExecutor implements RemoteMethodExecutor {
                     transportDto.getKeypleDTO().getRequesterNodeId());
             JsonObject body = new JsonObject();
             body.addProperty("status", true);
-            return transportDto
-                    .nextTransportDTO(new KeypleDto(RemoteMethod.READER_DISCONNECT.getName(),
-                            JsonParser.getGson().toJson(body, JsonObject.class), false, null,
-                            nativeReaderName, null, keypleDto.getTargetNodeId(),
-                            keypleDto.getRequesterNodeId()));
+            return transportDto.nextTransportDTO(KeypleDtoHelper.buildResponse(
+                    getMethodName().getName(), JsonParser.getGson().toJson(body, JsonObject.class),
+                    null, nativeReaderName, null, keypleDto.getTargetNodeId(),
+                    keypleDto.getRequesterNodeId(), keypleDto.getId()));
         } catch (KeypleReaderNotFoundException e) {
             logger.error("Impossible to disconnect reader " + nativeReaderName, e);
-            return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(
-                    RemoteMethod.READER_DISCONNECT.getName(), e, keypleDto.getSessionId(),
-                    keypleDto.getNativeReaderName(), keypleDto.getVirtualReaderName(),
-                    keypleDto.getTargetNodeId(), keypleDto.getRequesterNodeId()));
+            return transportDto
+                    .nextTransportDTO(KeypleDtoHelper.ExceptionDTO(getMethodName().getName(), e,
+                            keypleDto.getSessionId(), keypleDto.getNativeReaderName(),
+                            keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
+                            keypleDto.getRequesterNodeId(), keypleDto.getId()));
         }
 
     }

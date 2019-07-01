@@ -45,9 +45,9 @@ public class RmTransmitTx extends RemoteMethodTx<SeResponse> {
 
     @Override
     public KeypleDto dto() {
-        return new KeypleDto(getMethodName().getName(),
-                JsonParser.getGson().toJson(seRequest, SeRequest.class), true, this.sessionId,
-                this.nativeReaderName, this.virtualReaderName, requesterNodeId, targetNodeId);
+        return KeypleDtoHelper.buildRequest(getMethodName().getName(),
+                JsonParser.getGson().toJson(seRequest, SeRequest.class), this.sessionId,
+                this.nativeReaderName, this.virtualReaderName, requesterNodeId, targetNodeId, id);
     }
 
 

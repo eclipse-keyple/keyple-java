@@ -11,7 +11,10 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.rm;
 
-import org.eclipse.keyple.plugin.remotese.transport.*;
+import java.util.HashMap;
+import java.util.Map;
+import org.eclipse.keyple.plugin.remotese.transport.DtoHandler;
+import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
@@ -23,13 +26,13 @@ import org.slf4j.LoggerFactory;
  * Manages the transaction (request/response) for remote method invocation It holds
  * the @{@link RemoteMethodTx} untils the answer is received
  */
-public class RemoteMethodTxEngine implements DtoHandler {
+public class RemoteMethodTxPoolEngine implements DtoHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(RemoteMethodTxEngine.class);
+    private static final Logger logger = LoggerFactory.getLogger(RemoteMethodTxPoolEngine.class);
 
 
-    // waiting transaction, supports only one at the time
-    private RemoteMethodTx remoteMethodTx;
+    // rm id, rm
+    private Map<String, RemoteMethodTx> queue;
 
     // Dto Sender
     private final DtoSender sender;
@@ -42,8 +45,8 @@ public class RemoteMethodTxEngine implements DtoHandler {
      * @param sender : dtosender used to send the keypleDto
      * @param timeout : timeout to wait for the answer, in milliseconds
      */
-    public RemoteMethodTxEngine(DtoSender sender, long timeout) {
-        // this.queue = new LinkedList<RemoteMethodTx>();
+    public RemoteMethodTxPoolEngine(DtoSender sender, long timeout) {
+        this.queue = new HashMap<String, RemoteMethodTx>();
         this.sender = sender;
         this.timeout = timeout;
     }
@@ -58,36 +61,23 @@ public class RemoteMethodTxEngine implements DtoHandler {
      */
     @Override
     public TransportDto onDTO(TransportDto message) {
-
-        /*
-         * Extract KeypleDto
-         */
         KeypleDto keypleDto = message.getKeypleDTO();
 
-        /*
-         * Check that KeypleDto is a Response
-         */
-        if (message.getKeypleDTO().isRequest()) {
+        if (keypleDto.isRequest()) {
             throw new IllegalArgumentException(
                     "RemoteMethodTxEngine expects a KeypleDto response. " + keypleDto);
         }
-        /*
-         * Check that a request has been made previously
-         */
-        if (remoteMethodTx == null) {
-            /*
-             * Should not happen, response received does not match a request. Ignore it
-             */
-            logger.error(
+        if (!queue.containsKey(keypleDto.getId())) {
+            throw new IllegalStateException(
                     "RemoteMethodTxEngine receives a KeypleDto response but no remoteMethodTx are defined : "
                             + keypleDto);
         }
 
-        // only one operation is allowed at the time
-        remoteMethodTx.setResponse(keypleDto);
+        // set response in rm request
+        queue.get(keypleDto.getId()).setResponse(keypleDto);
 
-        // re init remoteMethod
-        remoteMethodTx = null;
+        // remove rm
+        queue.remove(keypleDto.getId());
 
         return message.nextTransportDTO(KeypleDtoHelper.NoResponse(keypleDto.getId()));
     }
@@ -100,7 +90,7 @@ public class RemoteMethodTxEngine implements DtoHandler {
     public void add(final RemoteMethodTx rm) {
         logger.debug("Register rm to engine : {}", rm);
         rm.setRegistered(true);
-        remoteMethodTx = rm;
+        queue.put(rm.id, rm);
         rm.setDtoSender(sender);
         rm.setTimeout(timeout);
     }

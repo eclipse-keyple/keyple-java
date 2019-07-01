@@ -85,14 +85,14 @@ public class UseCase_Calypso5_MultipleSession_Pcsc {
          * Get a PO reader ready to work with Calypso PO. Use the getReader helper method from the
          * CalypsoUtilities class.
          */
-        SeReader poReader = CalypsoUtilities.getDefaultPoReader(seProxyService);
+        SeReader poReader = CalypsoUtilities.getDefaultPoReader();
 
 
         /*
          * Get a SAM reader ready to work with Calypso PO. Use the getReader helper method from the
          * CalypsoUtilities class.
          */
-        SamResource samResource = CalypsoUtilities.getDefaultSamResource(seProxyService);
+        SamResource samResource = CalypsoUtilities.getDefaultSamResource();
 
         /* Check if the readers exists */
         if (poReader == null || samResource == null) {

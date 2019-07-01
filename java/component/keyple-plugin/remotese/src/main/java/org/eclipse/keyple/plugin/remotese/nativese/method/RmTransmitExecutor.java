@@ -32,12 +32,18 @@ public class RmTransmitExecutor implements RemoteMethodExecutor {
 
     private final SlaveAPI slaveAPI;
 
+    public RemoteMethod getMethodName() {
+        return RemoteMethod.READER_TRANSMIT;
+    }
+
+
     public RmTransmitExecutor(SlaveAPI slaveAPI) {
         this.slaveAPI = slaveAPI;
     }
 
     @Override
     public TransportDto execute(TransportDto transportDto) {
+
         KeypleDto keypleDto = transportDto.getKeypleDTO();
         TransportDto out = null;
         SeResponse seResponse = null;
@@ -56,17 +62,17 @@ public class RmTransmitExecutor implements RemoteMethodExecutor {
 
             // prepare response
             String parseBody = JsonParser.getGson().toJson(seResponse, SeResponse.class);
-            out = transportDto.nextTransportDTO(new KeypleDto(
-                    RemoteMethod.READER_TRANSMIT.getName(), parseBody, false,
-                    keypleDto.getSessionId(), nativeReaderName, keypleDto.getVirtualReaderName(),
-                    keypleDto.getTargetNodeId(), keypleDto.getRequesterNodeId()));
+            out = transportDto.nextTransportDTO(KeypleDtoHelper.buildResponse(
+                    getMethodName().getName(), parseBody, keypleDto.getSessionId(),
+                    nativeReaderName, keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
+                    keypleDto.getRequesterNodeId(), keypleDto.getId()));
 
         } catch (KeypleReaderException e) {
             // if an exception occurs, send it into a keypleDto to the Master
             out = transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(
-                    RemoteMethod.READER_TRANSMIT.getName(), e, keypleDto.getSessionId(),
-                    nativeReaderName, keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
-                    keypleDto.getRequesterNodeId()));
+                    getMethodName().getName(), e, keypleDto.getSessionId(), nativeReaderName,
+                    keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
+                    keypleDto.getRequesterNodeId(), keypleDto.getId()));
         }
 
         return out;

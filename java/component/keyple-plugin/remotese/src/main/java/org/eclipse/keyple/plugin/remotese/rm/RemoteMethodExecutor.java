@@ -17,6 +17,7 @@ import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 public interface RemoteMethodExecutor {
 
 
+    RemoteMethod getMethodName();
 
     TransportDto execute(TransportDto transportDto);
 

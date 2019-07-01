@@ -26,15 +26,13 @@ public class ReaderUtilities {
     /**
      * Get the terminal which names match the expected pattern
      *
-     * @param seProxyService SE Proxy service
      * @param pattern Pattern
      * @return SeReader
      * @throws KeypleReaderException Readers are not initialized
      */
-    public static SeReader getReaderByName(SeProxyService seProxyService, String pattern)
-            throws KeypleReaderException {
+    public static SeReader getReaderByName(String pattern) throws KeypleReaderException {
         Pattern p = Pattern.compile(pattern);
-        for (ReaderPlugin plugin : seProxyService.getPlugins()) {
+        for (ReaderPlugin plugin : SeProxyService.getInstance().getPlugins()) {
             for (SeReader reader : plugin.getReaders()) {
                 if (p.matcher(reader.getName()).matches()) {
                     return reader;
@@ -47,15 +45,13 @@ public class ReaderUtilities {
     /**
      * Get a fully configured contactless proxy reader
      * 
-     * @param seProxyService the current SeProxyService
      * @return the targeted SeReader to do contactless communications
      * @throws KeypleBaseException in case of an error while retrieving the reader or setting its
      *         parameters
      */
-    public static SeReader getDefaultContactLessSeReader(SeProxyService seProxyService)
-            throws KeypleBaseException {
-        SeReader seReader = ReaderUtilities.getReaderByName(seProxyService,
-                PcscReadersSettings.PO_READER_NAME_REGEX);
+    public static SeReader getDefaultContactLessSeReader() throws KeypleBaseException {
+        SeReader seReader =
+                ReaderUtilities.getReaderByName(PcscReadersSettings.PO_READER_NAME_REGEX);
 
         ReaderUtilities.setContactlessSettings(seReader);
 

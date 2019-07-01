@@ -34,6 +34,10 @@ public class RmTransmitSetExecutor implements RemoteMethodExecutor {
 
     private final SlaveAPI slaveAPI;
 
+    public RemoteMethod getMethodName() {
+        return RemoteMethod.READER_TRANSMIT_SET;
+    }
+
     public RmTransmitSetExecutor(SlaveAPI slaveAPI) {
         this.slaveAPI = slaveAPI;
     }
@@ -59,17 +63,17 @@ public class RmTransmitSetExecutor implements RemoteMethodExecutor {
 
             // prepare response
             String parseBody = JsonParser.getGson().toJson(seResponseSet, SeResponseSet.class);
-            out = transportDto.nextTransportDTO(new KeypleDto(
-                    RemoteMethod.READER_TRANSMIT_SET.getName(), parseBody, false,
-                    keypleDto.getSessionId(), nativeReaderName, keypleDto.getVirtualReaderName(),
-                    keypleDto.getTargetNodeId(), keypleDto.getRequesterNodeId()));
+            out = transportDto.nextTransportDTO(KeypleDtoHelper.buildResponse(
+                    getMethodName().getName(), parseBody, keypleDto.getSessionId(),
+                    nativeReaderName, keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
+                    keypleDto.getRequesterNodeId(), keypleDto.getId()));
 
         } catch (KeypleReaderException e) {
             // if an exception occurs, send it into a keypleDto to the Master
             out = transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(
-                    RemoteMethod.READER_TRANSMIT_SET.getName(), e, keypleDto.getSessionId(),
-                    nativeReaderName, keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
-                    keypleDto.getRequesterNodeId()));
+                    getMethodName().getName(), e, keypleDto.getSessionId(), nativeReaderName,
+                    keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
+                    keypleDto.getRequesterNodeId(), keypleDto.getId()));
         }
 
         return out;

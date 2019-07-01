@@ -35,6 +35,10 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
     private static final Logger logger =
             LoggerFactory.getLogger(RmSetDefaultSelectionRequestExecutor.class);
 
+    public RemoteMethod getMethodName() {
+        return RemoteMethod.DEFAULT_SELECTION_REQUEST;
+    }
+
     private final SlaveAPI slaveAPI;
 
     public RmSetDefaultSelectionRequestExecutor(SlaveAPI slaveAPI) {
@@ -79,11 +83,11 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
 
                 // prepare response
                 String parseBody = "{}";
-                return transportDto.nextTransportDTO(
-                        new KeypleDto(RemoteMethod.DEFAULT_SELECTION_REQUEST.getName(), parseBody,
-                                false, keypleDto.getSessionId(), nativeReaderName,
+                return transportDto
+                        .nextTransportDTO(KeypleDtoHelper.buildResponse(getMethodName().getName(),
+                                parseBody, keypleDto.getSessionId(), nativeReaderName,
                                 keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
-                                keypleDto.getRequesterNodeId()));
+                                keypleDto.getRequesterNodeId(), keypleDto.getId()));
             } else {
                 throw new KeypleReaderException(
                         "Reader is not observable, can not invoke SetDefaultSelectionRequest on "
@@ -94,9 +98,9 @@ public class RmSetDefaultSelectionRequestExecutor implements RemoteMethodExecuto
         } catch (KeypleReaderException e) {
             // if an exception occurs, send it into a keypleDto to the Master
             return transportDto.nextTransportDTO(KeypleDtoHelper.ExceptionDTO(
-                    RemoteMethod.DEFAULT_SELECTION_REQUEST.getName(), e, keypleDto.getSessionId(),
-                    nativeReaderName, keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
-                    keypleDto.getRequesterNodeId()));
+                    getMethodName().getName(), e, keypleDto.getSessionId(), nativeReaderName,
+                    keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),
+                    keypleDto.getRequesterNodeId(), keypleDto.getId()));
         }
     }
 }

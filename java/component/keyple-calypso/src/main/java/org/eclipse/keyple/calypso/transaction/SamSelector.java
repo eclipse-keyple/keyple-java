@@ -23,7 +23,7 @@ public class SamSelector extends SeSelector {
     /**
      * Create a SeSelector to perform the SAM selection
      * <p>
-     * Two optional parameters
+     * Three optional parameters
      *
      * @param samRevision the expected SAM revision (subtype)
      * @param serialNumber the expected serial number as an hex string (padded with 0 on the left).
@@ -62,5 +62,19 @@ public class SamSelector extends SeSelector {
                 throw new IllegalArgumentException("Unknown SAM subtype.");
         }
         this.getAtrFilter().setAtrRegex(atrRegex);
+    }
+
+    /**
+     * Create a SeSelector to perform the SAM selection
+     * <p>
+     * Two optional parameters.
+     *
+     * @param samIdentifier the expected SAM identification: revision (subtype), serial number as an
+     *        hex string (padded with 0 on the left; can be a sub regex e.g. "AEC0....") and
+     *        groupReference (not needed here).
+     * @param extraInfo information string (to be printed in logs)
+     */
+    public SamSelector(SamIdentifier samIdentifier, String extraInfo) {
+        this(samIdentifier.getSamRevision(), samIdentifier.getSerialNumber(), extraInfo);
     }
 }

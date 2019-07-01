@@ -17,6 +17,7 @@ import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTx;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
+import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import com.google.gson.JsonObject;
 
 /**
@@ -43,7 +44,9 @@ public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
 
     }
 
-
+    /*
+     * No response is expected from this Rm calls
+     */
     @Override
     public Object parseResponse(KeypleDto keypleDto) {
         return new Object();
@@ -57,9 +60,9 @@ public class RmSetDefaultSelectionRequestTx extends RemoteMethodTx {
                 JsonParser.getGson().toJson(defaultSelectionsRequest));
         body.addProperty("notificationMode", notificationMode.getName());
 
-        return new KeypleDto(getMethodName().getName(),
-                JsonParser.getGson().toJson(body, JsonObject.class), true, sessionId,
-                nativeReaderName, virtualReaderName, requesterNodeId, targetNodeId);
+        return KeypleDtoHelper.buildRequest(getMethodName().getName(),
+                JsonParser.getGson().toJson(body, JsonObject.class), sessionId, nativeReaderName,
+                virtualReaderName, requesterNodeId, targetNodeId, id);
 
     }
 }

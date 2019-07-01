@@ -76,7 +76,7 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
          * Get a SE reader ready to work with contactless SE. Use the getReader helper method from
          * the ReaderUtilities class.
          */
-        SeReader seReader = ReaderUtilities.getDefaultContactLessSeReader(seProxyService);
+        SeReader seReader = ReaderUtilities.getDefaultContactLessSeReader();
 
         /* Check if the reader exists */
         if (seReader == null) {

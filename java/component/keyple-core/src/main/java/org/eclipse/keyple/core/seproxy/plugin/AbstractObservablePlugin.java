@@ -137,7 +137,7 @@ public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<
     public final void addObserver(ObservablePlugin.PluginObserver observer) {
         super.addObserver(observer);
         if (super.countObservers() == 1) {
-            logger.debug("Start the plugin monitoring.");
+            logger.debug("Start monitoring the plugin {}", this.getName());
             startObservation();
         }
     }

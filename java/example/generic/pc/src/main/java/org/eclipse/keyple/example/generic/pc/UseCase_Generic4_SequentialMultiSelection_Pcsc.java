@@ -67,7 +67,7 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
          * Get a SE reader ready to work with generic SE. Use the getReader helper method from the
          * ReaderUtilities class.
          */
-        SeReader seReader = ReaderUtilities.getDefaultContactLessSeReader(seProxyService);
+        SeReader seReader = ReaderUtilities.getDefaultContactLessSeReader();
 
         /* Check if the reader exists */
         if (seReader == null) {

@@ -35,13 +35,13 @@ public class StubPluginTest extends BaseStubTest {
     Logger logger = LoggerFactory.getLogger(StubPluginTest.class);
 
     @Before
-    public void setUp() throws Exception {
-        super.setUp();
+    public void setupStub() throws Exception {
+        super.setupStub();
     }
 
     @After
-    public void tearDown() throws InterruptedException, KeypleReaderException {
-        super.tearDown();
+    public void clearStub() throws InterruptedException, KeypleReaderException {
+        super.clearStub();
     }
 
     /**

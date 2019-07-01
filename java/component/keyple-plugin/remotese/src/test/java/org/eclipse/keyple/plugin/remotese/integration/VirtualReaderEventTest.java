@@ -29,6 +29,7 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
 import org.junit.*;
 import org.slf4j.Logger;
@@ -40,6 +41,8 @@ import org.slf4j.LoggerFactory;
 public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderEventTest.class);
+
+    private VirtualReader virtualReader;
 
     /**
      * Create a new class extending AbstractSeSelectionRequest
@@ -71,7 +74,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     @Before
     public void setUp() throws Exception {
         // restore plugin state
-        clearStubpluginReaders();
+        clearStubpluginReader();
 
         initKeypleServices();
 
@@ -86,7 +89,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     @After
     public void tearDown() throws Exception {
-        clearStubpluginReaders();
+        clearStubpluginReader();
     }
 
 
@@ -97,7 +100,6 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
      */
     @Test
     public void testInsert() throws Exception {
-
 
         // lock test until message is received
         final CountDownLatch lock = new CountDownLatch(1);

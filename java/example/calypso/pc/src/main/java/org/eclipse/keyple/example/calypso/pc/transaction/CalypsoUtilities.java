@@ -19,7 +19,6 @@ import java.util.Properties;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -53,14 +52,12 @@ public class CalypsoUtilities {
     /**
      * Get the default reader for PO communications
      * 
-     * @param seProxyService the current ProxyService
      * @return a SeReader object
      * @throws KeypleBaseException if an error occurred
      */
-    public static SeReader getDefaultPoReader(SeProxyService seProxyService)
-            throws KeypleBaseException {
-        SeReader poReader = ReaderUtilities.getReaderByName(seProxyService,
-                properties.getProperty("po.reader.regex"));
+    public static SeReader getDefaultPoReader() throws KeypleBaseException {
+        SeReader poReader =
+                ReaderUtilities.getReaderByName(properties.getProperty("po.reader.regex"));
 
         ReaderUtilities.setContactlessSettings(poReader);
 
@@ -70,14 +67,12 @@ public class CalypsoUtilities {
     /**
      * Get the default reader for SAM communications
      * 
-     * @param seProxyService the current ProxyService
      * @return a {@link SamResource} object
      * @throws KeypleBaseException if an error occurred
      */
-    public static SamResource getDefaultSamResource(SeProxyService seProxyService)
-            throws KeypleBaseException {
-        SeReader samReader = ReaderUtilities.getReaderByName(seProxyService,
-                properties.getProperty("sam.reader.regex"));
+    public static SamResource getDefaultSamResource() throws KeypleBaseException {
+        SeReader samReader =
+                ReaderUtilities.getReaderByName(properties.getProperty("sam.reader.regex"));
 
         ReaderUtilities.setContactsSettings(samReader);
 
@@ -110,7 +105,7 @@ public class CalypsoUtilities {
          */
         SeSelection samSelection = new SeSelection();
 
-        SamSelector samSelector = new SamSelector(C1, null, "Selection SAM C1");
+        SamSelector samSelector = new SamSelector(C1, ".*", "Selection SAM C1");
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(new SamSelectionRequest(samSelector, ChannelState.KEEP_OPEN));

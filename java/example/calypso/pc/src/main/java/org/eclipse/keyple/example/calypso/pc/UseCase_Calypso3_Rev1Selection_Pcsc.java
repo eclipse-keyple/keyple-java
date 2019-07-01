@@ -78,7 +78,7 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
          * Get a PO reader ready to work with Calypso PO. Use the getReader helper method from the
          * CalypsoUtilities class.
          */
-        SeReader poReader = CalypsoUtilities.getDefaultPoReader(seProxyService);
+        SeReader poReader = CalypsoUtilities.getDefaultPoReader();
 
         /* Check if the reader exists */
         if (poReader == null) {

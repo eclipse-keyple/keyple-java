@@ -33,10 +33,10 @@ import org.slf4j.LoggerFactory;
  * Remote SE Plugin Creates a virtual reader when a remote readers connect Manages the dispatch of
  * events received from remote readers
  */
-public final class RemoteSePlugin extends AbstractObservablePlugin {
+public class RemoteSePlugin extends AbstractObservablePlugin {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteSePlugin.class);
-    public static final String PLUGIN_NAME = "RemoteSePlugin";
+    public static final String DEFAULT_PLUGIN_NAME = "RemoteSePlugin";
 
     // in milliseconds, throw an exception if slave hasn't answer during this time
     public final long rpc_timeout;
@@ -44,17 +44,18 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
     // private final VirtualReaderSessionFactory sessionManager;
 
     private final VirtualReaderSessionFactory sessionManager;
-    private final DtoSender sender;
+    protected final DtoSender dtoSender;
     private final Map<String, String> parameters;
 
     /**
      * Only {@link MasterAPI} can instanciate a RemoteSePlugin
      */
-    RemoteSePlugin(VirtualReaderSessionFactory sessionManager, DtoSender sender, long rpc_timeout) {
-        super(PLUGIN_NAME);
+    RemoteSePlugin(VirtualReaderSessionFactory sessionManager, DtoSender dtoSender,
+            long rpc_timeout, String pluginName) {
+        super(pluginName);
         this.sessionManager = sessionManager;
         logger.info("Init RemoteSePlugin");
-        this.sender = sender;
+        this.dtoSender = dtoSender;
         this.parameters = new HashMap<String, String>();
         this.rpc_timeout = rpc_timeout;
     }
@@ -109,7 +110,7 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
         // with a session
         // and the provided name
         final VirtualReader virtualReader = new VirtualReader(session, nativeReaderName,
-                new RemoteMethodTxEngine(sender, rpc_timeout), slaveNodeId, transmissionMode,
+                new RemoteMethodTxEngine(dtoSender, rpc_timeout), slaveNodeId, transmissionMode,
                 options);
         readers.add(virtualReader);
 
@@ -132,8 +133,6 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
     void disconnectRemoteReader(String nativeReaderName, String slaveNodeId)
             throws KeypleReaderNotFoundException {
 
-        // logger.debug("Disconnect Virtual reader {}", nativeReaderName);
-
         // retrieve virtual reader to delete
         final VirtualReader virtualReader =
                 this.getReaderByRemoteName(nativeReaderName, slaveNodeId);
@@ -152,7 +151,6 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
 
         notifyObservers(new PluginEvent(getName(), virtualReader.getName(),
                 PluginEvent.EventType.READER_DISCONNECTED));
-
     }
 
     /**
@@ -188,14 +186,20 @@ public final class RemoteSePlugin extends AbstractObservablePlugin {
                 "fetchNativeReader is not used in this plugin, did you meant to use getReader?");
     }
 
+    /**
+     * Not used
+     */
     @Override
     protected void startObservation() {
-
+        logger.warn("RemoteSePlugin#startObservation is not used in this plugin");
     }
 
+    /**
+     * Not used
+     */
     @Override
     protected void stopObservation() {
-
+        logger.warn("RemoteSePlugin#stopObservation is not used in this plugin");
     }
 
     @Override

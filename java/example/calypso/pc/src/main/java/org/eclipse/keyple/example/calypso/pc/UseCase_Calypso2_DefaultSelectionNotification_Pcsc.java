@@ -85,7 +85,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
          * Get a PO reader ready to work with Calypso PO. Use the getReader helper method from the
          * CalypsoUtilities class.
          */
-        SeReader poReader = CalypsoUtilities.getDefaultPoReader(seProxyService);
+        SeReader poReader = CalypsoUtilities.getDefaultPoReader();
 
         /* Check if the reader exists */
         if (poReader == null) {

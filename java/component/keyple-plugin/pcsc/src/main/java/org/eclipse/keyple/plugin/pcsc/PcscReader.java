@@ -198,8 +198,9 @@ public final class PcscReader extends AbstractThreadedLocalReader {
             String atr = ByteArrayUtil.toHex(card.getATR().getBytes());
             if (!p.matcher(atr).matches()) {
                 if (logging) {
-                    logger.trace("[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}",
-                            this.getName(), protocolFlag);
+                    logger.trace(
+                            "[{}] protocolFlagMatches => unmatching SE. PROTOCOLFLAG = {}, ATR = {}, MASK = {}",
+                            this.getName(), protocolFlag, atr, selectionMask);
                 }
                 result = false;
             } else {

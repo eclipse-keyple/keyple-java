@@ -20,6 +20,7 @@ import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.remotese.rm.json.SampleFactory;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
 import org.junit.After;
@@ -36,11 +37,13 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderTransmitTest.class);
 
+    private VirtualReader virtualReader;
+
 
     @Before
     public void setUp() throws Exception {
         // restore plugin state
-        clearStubpluginReaders();
+        clearStubpluginReader();
 
         initKeypleServices();
 
@@ -55,7 +58,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
     @After
     public void tearDown() throws Exception {
-        clearStubpluginReaders();
+        clearStubpluginReader();
     }
 
     /*
