@@ -12,8 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 
-import java.util.SortedSet;
-import java.util.TreeSet;
+
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -109,8 +108,7 @@ public class Integration {
     public static StubPoolPlugin createStubPoolPlugin()
             throws InterruptedException, KeypleReaderNotFoundException {
 
-        SortedSet<String> groupReferences = new TreeSet<String>();
-        StubPoolPlugin poolPlugin = new StubPoolPlugin(groupReferences);
+        StubPoolPlugin poolPlugin = new StubPoolPlugin();
         SeProxyService.getInstance().addPlugin(poolPlugin);
         return poolPlugin;
     }

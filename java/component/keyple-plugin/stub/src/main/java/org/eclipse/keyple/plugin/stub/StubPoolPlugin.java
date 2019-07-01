@@ -12,7 +12,6 @@
 package org.eclipse.keyple.plugin.stub;
 
 import java.util.*;
-
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -21,13 +20,16 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 
 /**
- * Wraps a stubplugin to add ReaderPoolPlugin methods
+ * Simulates a Pool Plugin with {@link StubReader} and {@link StubSecureElement} Manages allocation
+ * readers by group reference, Limitations : - each group can contain only one StubReader thus one
+ * StubSecureElement
  */
 public class StubPoolPlugin implements ReaderPoolPlugin {
 
     StubPlugin stubPlugin;
-    Map<String,SeReader> readerPool; //groupReference, seReader = limitation each groupReference can have only one reader
-    Map<String, String> allocatedReader;//readerName,groupReference
+    Map<String, SeReader> readerPool; // groupReference, seReader = limitation each groupReference
+                                      // can have only one reader
+    Map<String, String> allocatedReader;// readerName,groupReference
 
     static public String PREFIX_NAME = "POOL_";
 
@@ -49,19 +51,20 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
     }
 
     /**
-     * Plug a new reader in Pool with groupReference
+     * Plug a new reader in Pool with groupReference and a StubSE
      */
-    public SeReader plugStubPoolReader(String groupReference, String readerName, StubSecureElement se){
+    public SeReader plugStubPoolReader(String groupReference, String readerName,
+            StubSecureElement se) {
         try {
-            //create new reader
+            // create new reader
             stubPlugin.plugStubReader(readerName, true);
 
-            //get new reader
+            // get new reader
             StubReader newReader = (StubReader) stubPlugin.getReader(readerName);
 
             newReader.insertSe(se);
 
-            //map reader to groupReference
+            // map reader to groupReference
             readerPool.put(groupReference, newReader);
 
             return newReader;
@@ -73,18 +76,19 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
 
     /**
      * Unplug a new reader by groupReference
+     * 
      * @param groupReference
      */
-    public void unplugStubPoolReader(String groupReference){
+    public void unplugStubPoolReader(String groupReference) {
         try {
-            //get reader
+            // get reader
             SeReader stubReader = readerPool.get(groupReference);
 
-            //remove reader from pool
+            // remove reader from pool
             readerPool.remove(groupReference);
 
-            //remove reader from plugin
-            stubPlugin.unplugStubReader(stubReader.getName(),true);
+            // remove reader from plugin
+            stubPlugin.unplugStubReader(stubReader.getName(), true);
 
         } catch (KeypleReaderException e) {
             throw new IllegalStateException(
@@ -95,22 +99,24 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
 
 
 
-
-
-
     /**
      * Allocate a reader
      * 
      * @param groupReference the reference of the group to which the reader belongs (may be null
      *        depending on the implementation made)
-     * @return
+     * @return seReader if available, null otherwise
      * @throws KeypleReaderException
      */
     @Override
     public SeReader allocateReader(String groupReference) {
         SeReader seReader = readerPool.get(groupReference);
-        allocatedReader.put(seReader.getName(), groupReference);
-        return seReader;
+        if (allocatedReader.containsKey(seReader.getName())) {
+            return null;
+        } else {
+            allocatedReader.put(seReader.getName(), groupReference);
+            return seReader;
+        }
+
     }
 
     /**
@@ -124,7 +130,7 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
         allocatedReader.remove(seReader.getName());
     }
 
-    public Map<String,String > listAllocatedReaders(){
+    public Map<String, String> listAllocatedReaders() {
         return allocatedReader;
     }
 

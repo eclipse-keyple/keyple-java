@@ -12,7 +12,7 @@
 package org.eclipse.keyple.plugin.stub;
 
 
-import java.util.TreeSet;
+
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
@@ -29,8 +29,6 @@ public class StubPoolPluginTest extends BaseStubTest {
 
     Logger logger = LoggerFactory.getLogger(StubPoolPluginTest.class);
 
-
-
     @Before
     public void setupStub() throws Exception {
         super.setupStub();
@@ -44,13 +42,14 @@ public class StubPoolPluginTest extends BaseStubTest {
 
 
     /**
-     * Plug a pool reader and count
+     * Plug a pool reader
      */
     @Test
-    public void plugStubPoolReader_success() throws InterruptedException, KeypleReaderException, NoStackTraceThrowable {
+    public void plugStubPoolReader_success()
+            throws InterruptedException, KeypleReaderException, NoStackTraceThrowable {
         StubPoolPlugin stubPoolPlugin = new StubPoolPlugin();
 
-        SeReader seReader = stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName",stubSe);
+        SeReader seReader = stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubSe);
 
         Assert.assertEquals(1, stubPoolPlugin.getReaders().size());
         Assert.assertEquals(true, seReader.isSePresent());
@@ -58,16 +57,16 @@ public class StubPoolPluginTest extends BaseStubTest {
     }
 
     /**
-     * Plug a pool reader and count
+     * Unplug a pool reader
      */
     @Test
     public void unplugStubPoolReader_success() throws InterruptedException, KeypleReaderException {
         StubPoolPlugin stubPoolPlugin = new StubPoolPlugin();
 
-        //plug a reader
-        stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName",stubSe);
+        // plug a reader
+        stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubSe);
 
-        //unplug the reader
+        // unplug the reader
         stubPoolPlugin.unplugStubPoolReader("anyGroup");
 
         Assert.assertEquals(0, stubPoolPlugin.getReaders().size());
@@ -77,16 +76,16 @@ public class StubPoolPluginTest extends BaseStubTest {
     }
 
     /**
-     * Allocate one reader and count if created
+     * Allocate one reader
      */
     @Test
     public void allocate_success() throws InterruptedException, KeypleReaderException {
         // init stubPoolPlugin
         StubPoolPlugin stubPoolPlugin = new StubPoolPlugin();
 
-        //plug readers
-        stubPoolPlugin.plugStubPoolReader("group1", "stub1",stubSe);
-        stubPoolPlugin.plugStubPoolReader("group2", "stub2",stubSe);
+        // plug readers
+        stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
+        stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubSe);
 
         // allocate Reader
         SeReader seReader = stubPoolPlugin.allocateReader("group1");
@@ -101,28 +100,51 @@ public class StubPoolPluginTest extends BaseStubTest {
     }
 
     /**
-     * Release one reader and count if created
+     * Allocate twice the same reader, it does throw any error as no concurrency is managed
+     */
+    @Test
+    public void allocate_twice() throws InterruptedException, KeypleReaderException {
+        // init stubPoolPlugin
+        StubPoolPlugin stubPoolPlugin = new StubPoolPlugin();
+
+        // plug readers
+        stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
+        stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubSe);
+
+        // allocate Reader
+        SeReader seReader = stubPoolPlugin.allocateReader("group1");
+        SeReader seReader2 = stubPoolPlugin.allocateReader("group1");
+
+        // check reader has been allocated twice
+        Assert.assertNull(seReader2);
+    }
+
+    /**
+     * Release one reader
      */
     @Test
     public void release_success() throws InterruptedException, KeypleReaderException {
         // init stubPoolPlugin
         StubPoolPlugin stubPoolPlugin = new StubPoolPlugin();
 
-        //plug readers
-        stubPoolPlugin.plugStubPoolReader("group1", "stub1",stubSe);
-        stubPoolPlugin.plugStubPoolReader("group2", "stub2",stubSe);
+        // plug readers
+        stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
+        stubPoolPlugin.plugStubPoolReader("group2", "stub2", stubSe);
 
         // allocate Reader
         SeReader seReader = stubPoolPlugin.allocateReader("group1");
 
-        //release reader
+        // release reader
         stubPoolPlugin.releaseReader(seReader);
 
-        //assert no reader is allocated
+        // assert no reader is allocated
         Assert.assertEquals(0, stubPoolPlugin.listAllocatedReaders().size());
 
     }
 
+    /**
+     * Stub Secure Element
+     */
     final static private StubSecureElement stubSe = new StubSecureElement() {
         @Override
         public byte[] getATR() {
