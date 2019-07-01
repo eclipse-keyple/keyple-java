@@ -11,6 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -76,10 +78,13 @@ public class RmPoolAllocateTx extends RemoteMethodTx<SeReader> {
 
             // create the Virtual Reader related to the Reader Allocation
             try {
+                // options are not supported in this mode
+                Map<String, String> options = new HashMap<String, String>();
+
                 VirtualReader virtualReader =
                         (VirtualReader) this.virtualPoolPlugin.createVirtualReader(slaveNodeId,
                                 nativeReaderName, this.dtoSender,
-                                TransmissionMode.valueOf(transmissionMode));
+                                TransmissionMode.valueOf(transmissionMode), options);
 
                 return virtualReader;
 
