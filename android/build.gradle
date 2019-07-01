@@ -7,30 +7,23 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
-        //classpath 'digital.wup:android-maven-publish:3.4.0'
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.14.0"
     }
 }
 
-plugins {
-    id "com.diffplug.gradle.spotless" version "3.14.0"
-}
 
 apply from: '../common.gradle'
 
-
 subprojects {
+    /*
+    plugins {
+        id "com.diffplug.gradle.spotless" version "3.14.0"
+    }
+    */
 
     group 'org.eclipse.keyple'
     apply plugin: 'pmd'
 
-    pmd {
-        ruleSets = [
-                "java-basic",
-                "java-braces",
-        ]
-    }
-
-    
 
     repositories {
         mavenLocal()
@@ -38,7 +31,6 @@ subprojects {
         google()
         jcenter()
     }
-
 
     configurations.all {
         // check for updates every build
@@ -50,29 +42,52 @@ subprojects {
         ruleSets = [
                 "java-basic",
                 "java-braces",
-                // "java-strings",
-                // "java-imports",
-                // "java-unnecessary",
-                // "java-unusedcode",
-                //"java-metrics",
-                // "java-empty",
-                // "java-codesize",
-                // "java-clone",
-                // "java-typeresolution",
-                // "java-strictexception",
-                // "java-finalizers",
-                // "java-migrating",
-                // "java-logging-java",
-                // "java-controversial"  // 8 issues
-                // "java-sunsecure"      // 1 issue
-                // "java-junit"          // 1 issue
-                // "java-optimizations"  // 44 issues
-                // "java-naming",        // 9 issues
-                // "java-coupling"       // 2 issues
-                // "java-design"         // 19 issues
-                // "java-comments"       // 87 issues --> Kind of conflicting with spotless
+                "java-strings",
+                "java-imports",
+                "java-unnecessary",
+                "java-unusedcode",
+//                "java-metrics",
+                "java-empty",
+                "java-codesize",
+                "java-clone",
+                "java-typeresolution",
+                "java-strictexception",
+                "java-finalizers",
+                "java-migrating",
+                "java-logging-java",
+//                 "java-controversial",
+                "java-sunsecure",
+                "java-junit",
+                "java-optimizations",
+//                "java-naming",
+                "java-coupling",
+                "java-design",
+                "java-comments"
         ]
     }
+
+
+//    spotless {
+//        java {
+//            target '**/*.java'
+//
+//            licenseHeaderFile '../.build/spotless.license.txt'
+//
+//            importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
+//
+//            removeUnusedImports()
+//
+//            eclipse().configFile '../.build/spotless.eclipseformat.xml'
+//        }
+//
+//        format 'misc', {
+//            target '**/*.java', '**/*.gradle', '**/*.yml', '**/*.md'
+//
+//            indentWithSpaces()
+//            endWithNewline()
+//        }
+//    }
+
 
 }
 
@@ -80,29 +95,6 @@ subprojects {
 allprojects {
 
 
-}
-
-
-
-spotless {
-    java {
-        target '**/*.java'
-
-        licenseHeaderFile '../.build/spotless.license.txt'
-
-        importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
-
-        removeUnusedImports()
-
-        eclipse().configFile '../.build/spotless.eclipseformat.xml'
-    }
-
-    format 'misc', {
-        target '**/*.java', '**/*.gradle', '**/*.yml', '**/*.md'
-
-        indentWithSpaces()
-        endWithNewline()
-    }
 }
 
 

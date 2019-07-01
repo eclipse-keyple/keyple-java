@@ -5,10 +5,12 @@ apply plugin: 'com.diffplug.gradle.spotless'
 subprojects{
 
     apply plugin: 'maven'
+/*
+defined in each artefact is better for importing from other projects
     apply plugin: 'java'
     apply plugin: 'java-library'
-
     sourceCompatibility = 1.6
+*/
 
     //Maven POM
     /*
@@ -95,48 +97,25 @@ subprojects{
 
     }
 
-    //copy license file from root folder to each generated artifact
-    task copyLICENSE(type: Copy) {
-        from file("${projectDir}/../../../LICENSE")
-        into file("${buildDir}/resources/main/META-INF/")
-    }
-
-    //copy notice file from root folder to each generated artifact
-    task copyNOTICE(type: Copy) {
-        from file("${projectDir}/../../../NOTICE.md")
-        into file("${buildDir}/resources/main/META-INF/")
-    }
-
-    //copy license file from root folder to each generated artifact
-    task copyLICENSEplugin(type: Copy) {
-        from file("${projectDir}/../../../../LICENSE")
-        into file("${buildDir}/resources/main/META-INF/")
-    }
-
-    //copy notice file from root folder to each generated artifact
-    task copyNOTICEplugin(type: Copy) {
-        from file("${projectDir}/../../../../NOTICE.md")
-        into file("${buildDir}/resources/main/META-INF/")
-    }
 }
 
 
-spotless {
-    java {
-        target 'java/**/*.java'
-        licenseHeaderFile '../../.build/spotless.license.txt'
-        importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
-        removeUnusedImports()
-        eclipse().configFile '../../.build/spotless.eclipseformat.xml'
-    }
-
-    format 'misc', {
-        target 'java/**/*.java', 'java/**/*.gradle', 'java/**/*.yml', 'java/**/*.md'
-
-        indentWithSpaces()
-        endWithNewline()
-    }
-}
+//spotless {
+//    java {
+//        target 'java/**/*.java'
+//        licenseHeaderFile '../../.build/spotless.license.txt'
+//        importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
+//        removeUnusedImports()
+//        eclipse().configFile '../../.build/spotless.eclipseformat.xml'
+//    }
+//
+//    format 'misc', {
+//        target 'java/**/*.java', 'java/**/*.gradle', 'java/**/*.yml', 'java/**/*.md'
+//
+//        indentWithSpaces()
+//        endWithNewline()
+//    }
+//}
 
 //create task to agregate javadoc
 task aggregatedJavadocs(type: Javadoc, description: 'Generate javadocs from all child projects as if it was a single project', group: 'Documentation') {

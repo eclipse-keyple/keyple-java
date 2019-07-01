@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
+import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
@@ -51,12 +52,22 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
         String nativeReaderName = keypleDto.getNativeReaderName();
         String slaveNodeId = keypleDto.getRequesterNodeId();
         String tranmissionMode = body.get("transmissionMode").getAsString();
+        Map<String, String> options =
+                JsonParser.getGson().fromJson(body.get("options").getAsString(), Map.class);
+
 
         VirtualReader virtualReader = null;
         try {
             // create a virtual Reader
-            virtualReader = (VirtualReader) this.plugin.createVirtualReader(slaveNodeId,
-                    nativeReaderName, this.dtoSender, TransmissionMode.valueOf(tranmissionMode));
+            virtualReader =
+                    (VirtualReader) this.plugin.createVirtualReader(slaveNodeId, nativeReaderName,
+                            this.dtoSender, TransmissionMode.valueOf(tranmissionMode), options);
+
+            /*
+             * for(String key : options.keySet()){
+             * logger.debug("Setting parameter from options {}:{}", key, options.get(key));
+             * virtualReader.setParameter(key, options.get(key)); }
+             */
 
             // create response
             JsonObject respBody = new JsonObject();

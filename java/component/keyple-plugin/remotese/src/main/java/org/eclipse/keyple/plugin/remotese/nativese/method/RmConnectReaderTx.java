@@ -11,6 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
+import java.util.Map;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
@@ -33,8 +35,9 @@ import com.google.gson.JsonObject;
 public class RmConnectReaderTx extends RemoteMethodTx<String> {
 
 
-    private final ProxyReader localReader;
+    private final SeReader localReader;
     private final INativeReaderService slaveAPI;
+    private final Map<String, String> options;
 
     @Override
     public RemoteMethod getMethodName() {
@@ -43,11 +46,12 @@ public class RmConnectReaderTx extends RemoteMethodTx<String> {
 
 
     public RmConnectReaderTx(String sessionId, String nativeReaderName, String virtualReaderName,
-            String masterNodeId, ProxyReader localReader, String slaveNodeId,
-            INativeReaderService slaveAPI) {
+            String masterNodeId, SeReader localReader, String slaveNodeId,
+            INativeReaderService slaveAPI, Map<String, String> options) {
         super(sessionId, nativeReaderName, virtualReaderName, masterNodeId, slaveNodeId);
         this.localReader = localReader;
         this.slaveAPI = slaveAPI;
+        this.options = options;
     }
 
     private static final Logger logger = LoggerFactory.getLogger(RmConnectReaderTx.class);
@@ -62,7 +66,7 @@ public class RmConnectReaderTx extends RemoteMethodTx<String> {
             KeypleReaderException ex =
                     JsonParser.getGson().fromJson(keypleDto.getBody(), KeypleReaderException.class);
             throw new KeypleRemoteException(
-                    "An exception occurs while calling the remote method connecReader", ex);
+                    "An exception occurs while calling the remote method connectReader", ex);
         } else {
             // if dto does not contain an exception
             try {
@@ -102,6 +106,7 @@ public class RmConnectReaderTx extends RemoteMethodTx<String> {
         // create response
         JsonObject body = new JsonObject();
         body.addProperty("transmissionMode", localReader.getTransmissionMode().name());
+        body.addProperty("options", JsonParser.getGson().toJson(options));
 
         return new KeypleDto(getMethodName().getName(), body.toString(), true, null,
                 localReader.getName(), null, requesterNodeId, targetNodeId);

@@ -235,7 +235,7 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
     @Override
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         // Initialization
-        LOG.debug("Send " + apduIn.length + " bytes to tag : " + ByteArrayUtil.toHex(apduIn));
+        LOG.debug("Send " + apduIn.length + " bytes");
         byte[] dataOut = null;
         try {
             dataOut = tagProxy.transceive(apduIn);
@@ -302,7 +302,7 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
 
     /**
      * Build Reader Mode flags Integer from parameters
-     * 
+     *
      * @return flags Integer
      */
     int getFlags() {
@@ -336,7 +336,7 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
 
     /**
      * Build Reader Mode options Bundle from parameters
-     * 
+     *
      * @return options
      */
     Bundle getOptions() {

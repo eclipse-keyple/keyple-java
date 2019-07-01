@@ -88,7 +88,8 @@ public class AndroidNfcReaderTest {
     public void transmitSuccessfull() throws KeypleBaseException, IOException {
 
         // config
-        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4, AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // input
         SeRequestSet requests = getRequestIsoDepSetSample();
@@ -202,7 +203,8 @@ public class AndroidNfcReaderTest {
     public void transmitUnkownCard() throws KeypleBaseException, IOException {
 
         // config reader with Isodep protocols
-        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4, AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // input
         SeRequestSet requests = getRequestIsoDepSetSample();
@@ -417,7 +419,6 @@ public class AndroidNfcReaderTest {
         byte[] in = new byte[] {(byte) 0x90, 0x00};
         byte[] out = new byte[] {(byte) 0x90, 0x00};
         when(tagProxy.transceive(in)).thenReturn(out);
-
         // test
         byte[] outBB = reader.transmitApdu(in);
 

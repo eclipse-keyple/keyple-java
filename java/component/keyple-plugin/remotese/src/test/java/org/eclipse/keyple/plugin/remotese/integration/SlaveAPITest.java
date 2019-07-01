@@ -12,6 +12,8 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -120,6 +122,35 @@ public class SlaveAPITest {
         Assert.assertEquals(1, nativeReader.countObservers());
         Assert.assertEquals(0, virtualReader.countObservers());
         Assert.assertNotNull(sessionId);
+
+
+    }
+
+    /**
+     * Connect successfully a reader with parameters
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testOKConnectWithParameter() throws Exception {
+
+        String KEY = "keyTest";
+        String VALUE = "valueTest";
+
+        Map<String, String> options = new HashMap<String, String>();
+        options.put(KEY, VALUE);
+
+        String sessionId = spySlaveAPI.connectReader(nativeReader, options);
+
+        // assert that a virtual reader has been created
+        VirtualReader virtualReader = (VirtualReader) masterAPI.getPlugin()
+                .getReaderByRemoteName(NATIVE_READER_NAME, CLIENT_NODE_ID);
+
+        Assert.assertEquals(NATIVE_READER_NAME, virtualReader.getNativeReaderName());
+        Assert.assertEquals(1, nativeReader.countObservers());
+        Assert.assertEquals(0, virtualReader.countObservers());
+        Assert.assertNotNull(sessionId);
+        Assert.assertEquals(virtualReader.getParameters().get(KEY), VALUE);
 
 
     }

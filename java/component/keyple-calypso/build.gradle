@@ -1,6 +1,10 @@
 project.version = '0.7.0'+'-'+ timestamp + '-SNAPSHOT'
 
-/*
+apply plugin: 'java'
+apply plugin: 'java-library'
+
+sourceCompatibility = 1.6
+
 //copy license file from root folder to each generated artifact
 task copyLICENSE(type: Copy) {
     from file("${projectDir}/../../../LICENSE")
@@ -12,9 +16,8 @@ task copyNOTICE(type: Copy) {
     from file("${projectDir}/../../../NOTICE.md")
     into file("${buildDir}/resources/main/META-INF/")
 }
-*/
 
-jar.dependsOn copyLICENSE, copyNOTICE
+
 
 jar {
     manifest {
@@ -22,6 +25,8 @@ jar {
                 'Implementation-Version': project.version
     }
 }
+
+classes.dependsOn copyLICENSE, copyNOTICE
 
 
 dependencies {
