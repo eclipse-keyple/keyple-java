@@ -51,8 +51,8 @@ public class Demo_SeProtocolDetection_Pcsc {
         seProxyService.addPlugin(pcscPlugin);
 
         /* attempt to get the SeReader (the right reader should be ready here) */
-        SeReader poReader = ReaderUtilities.getReaderByName(seProxyService,
-                PcscReadersSettings.PO_READER_NAME_REGEX);
+        SeReader poReader =
+                ReaderUtilities.getReaderByName(PcscReadersSettings.PO_READER_NAME_REGEX);
 
         if (poReader == null) {
             throw new IllegalStateException("Bad PO/SAM setup");

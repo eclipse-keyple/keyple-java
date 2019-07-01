@@ -62,10 +62,8 @@ public class Demo_CalypsoClassic_Pcsc {
          */
         SeReader poReader = null, samReader = null;
         try {
-            poReader = ReaderUtilities.getReaderByName(seProxyService,
-                    PcscReadersSettings.PO_READER_NAME_REGEX);
-            samReader = ReaderUtilities.getReaderByName(seProxyService,
-                    PcscReadersSettings.SAM_READER_NAME_REGEX);
+            poReader = ReaderUtilities.getReaderByName(PcscReadersSettings.PO_READER_NAME_REGEX);
+            samReader = ReaderUtilities.getReaderByName(PcscReadersSettings.SAM_READER_NAME_REGEX);
         } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
         }
