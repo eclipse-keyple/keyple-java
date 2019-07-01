@@ -316,9 +316,11 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
         }
     }
 
-    /*
-     * public RemoteMethodTxEngine getRmTxEngine() { return rmTxEngine; }
-     */
+
+    public RemoteMethodTxEngine getRmTxEngine() {
+        return rmTxEngine;
+    }
+
 
     public void registerReaderPoolPlugin(ReaderPoolPlugin readerPoolPlugin) {
         this.readerPoolPlugin = readerPoolPlugin;
