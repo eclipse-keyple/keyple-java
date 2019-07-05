@@ -28,15 +28,15 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 public class StubPoolPlugin implements ReaderPoolPlugin {
 
     StubPlugin stubPlugin;
-    Map<String, SeReader> readerPool; // groupReference, seReader = limitation each groupReference
-                                      // can have only one reader
+    Map<String, StubReader> readerPool; // groupReference, seReader = limitation each groupReference
+                                        // can have only one reader
     Map<String, String> allocatedReader;// readerName,groupReference
 
     static public String PREFIX_NAME = "POOL_";
 
     public StubPoolPlugin() {
         this.stubPlugin = StubPlugin.getInstance();
-        this.readerPool = new HashMap<String, SeReader>();
+        this.readerPool = new HashMap<String, StubReader>();
         this.allocatedReader = new HashMap<String, String>();
 
     }
@@ -118,7 +118,7 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
     @Override
     public SeReader allocateReader(String groupReference) {
         // find the reader in the readerPool
-        SeReader seReader = readerPool.get(groupReference);
+        StubReader seReader = readerPool.get(groupReference);
 
         // check if the reader is available
         if (seReader == null || allocatedReader.containsKey(seReader.getName())) {
@@ -138,7 +138,26 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
      */
     @Override
     public void releaseReader(SeReader seReader) {
+        if (seReader == null) {
+            throw new IllegalArgumentException("Could not release seReader, seReader is null");
+        }
+        if (!(seReader instanceof StubReader)) {
+            throw new IllegalArgumentException(
+                    "Can not release seReader, SeReader should be of type StubReader");
+        }
+
+        /**
+         * Remove and Re-insert SE to reset logical channel
+         */
+        StubReader stubReader = ((StubReader) seReader);
+        if (stubReader.checkSePresence()) {
+            StubSecureElement se = stubReader.getSe();
+            stubReader.removeSe();
+            stubReader.insertSe(se);
+        }
+
         allocatedReader.remove(seReader.getName());
+
     }
 
     public Map<String, String> listAllocatedReaders() {

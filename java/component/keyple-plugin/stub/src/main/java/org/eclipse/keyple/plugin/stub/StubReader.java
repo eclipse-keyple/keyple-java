@@ -54,7 +54,7 @@ public final class StubReader extends AbstractThreadedLocalReader {
     StubReader(String name) {
         super(pluginName, name);
         sePresent = false;
-        threadWaitTimeout = 5000;
+        threadWaitTimeout = 100; // time between two events
     }
 
     StubReader(String name, TransmissionMode transmissionMode) {
@@ -204,6 +204,15 @@ public final class StubReader extends AbstractThreadedLocalReader {
     public void removeSe() {
         se = null;
         sePresent = false;
+    }
+
+    /**
+     * Get inserted SE
+     * 
+     * @return se, can be null if no Se inserted
+     */
+    public StubSecureElement getSe() {
+        return se;
     }
 
     /**

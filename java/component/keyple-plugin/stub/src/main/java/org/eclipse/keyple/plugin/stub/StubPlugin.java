@@ -44,9 +44,9 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
 
         /*
          * Monitoring is not handled by a lower layer (as in PC/SC), reduce the threading period to
-         * 50 ms to speed up responsiveness.
+         * 10 ms to speed up responsiveness.
          */
-        threadWaitTimeout = 50;
+        threadWaitTimeout = 10;
     }
 
     /**
