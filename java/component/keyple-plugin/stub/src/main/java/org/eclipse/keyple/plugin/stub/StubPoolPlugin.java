@@ -117,10 +117,10 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
      */
     @Override
     public SeReader allocateReader(String groupReference) {
-        //find the reader in the readerPool
+        // find the reader in the readerPool
         SeReader seReader = readerPool.get(groupReference);
 
-        //check if the reader is available
+        // check if the reader is available
         if (seReader == null || allocatedReader.containsKey(seReader.getName())) {
             return null;
         } else {

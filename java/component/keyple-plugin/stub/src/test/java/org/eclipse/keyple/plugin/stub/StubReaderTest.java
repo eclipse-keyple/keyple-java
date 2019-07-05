@@ -90,7 +90,6 @@ public class StubReaderTest {
 
 
 
-
     /*
      * TRANSMIT
      */
@@ -984,7 +983,7 @@ public class StubReaderTest {
             protected AbstractMatchingSe parse(SeResponse seResponse) {
                 class GenericMatchingSe extends AbstractMatchingSe {
                     public GenericMatchingSe(SeResponse selectionResponse,
-                                             TransmissionMode transmissionMode, String extraInfo) {
+                            TransmissionMode transmissionMode, String extraInfo) {
                         super(selectionResponse, transmissionMode, extraInfo);
                     }
                 }
