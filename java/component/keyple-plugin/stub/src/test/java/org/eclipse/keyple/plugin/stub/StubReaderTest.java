@@ -89,41 +89,7 @@ public class StubReaderTest {
     }
 
 
-    static public void selectSe(SeReader reader) throws KeypleReaderException {
-        /**
-         * Create a new local class extending AbstractSeSelectionRequest
-         */
-        class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
-            TransmissionMode transmissionMode;
 
-            public GenericSeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
-                super(seSelector, channelState);
-                transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
-            }
-
-            @Override
-            protected AbstractMatchingSe parse(SeResponse seResponse) {
-                class GenericMatchingSe extends AbstractMatchingSe {
-                    public GenericMatchingSe(SeResponse selectionResponse,
-                            TransmissionMode transmissionMode, String extraInfo) {
-                        super(selectionResponse, transmissionMode, extraInfo);
-                    }
-                }
-                return new GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE");
-            }
-        }
-
-        SeSelection seSelection = new SeSelection();
-        GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
-                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                        new SeSelector.AtrFilter("3B.*"), null, "ATR selection"),
-                ChannelState.KEEP_OPEN);
-
-        /* Prepare selector, ignore AbstractMatchingSe here */
-        seSelection.prepareSelection(genericSeSelectionRequest);
-
-        seSelection.processExplicitSelection(reader);
-    }
 
     /*
      * TRANSMIT
@@ -707,25 +673,6 @@ public class StubReaderTest {
     }
 
 
-    /**
-     * AbstractObservableReader methods test
-     *
-     * @throws Exception
-     */
-
-
-    ObservableReader.ReaderObserver obs1 = new ObservableReader.ReaderObserver() {
-        @Override
-        public void update(ReaderEvent readerEvent) {}
-    };
-
-    ObservableReader.ReaderObserver obs2 = new ObservableReader.ReaderObserver() {
-        @Override
-        public void update(ReaderEvent readerEvent) {}
-    };
-
-
-
     /*
      * HELPER METHODS
      */
@@ -953,10 +900,7 @@ public class StubReaderTest {
     }
 
     static public StubSecureElement partialSE() {
-
-
         return new StubSecureElement() {
-
             @Override
             public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
 
@@ -1022,5 +966,41 @@ public class StubReaderTest {
 
     static public ApduRequest getApduSample() {
         return new ApduRequest(ByteArrayUtil.fromHex("FEDCBA98 9005h"), false);
+    }
+
+    static public void selectSe(SeReader reader) throws KeypleReaderException {
+        /**
+         * Create a new local class extending AbstractSeSelectionRequest
+         */
+        class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
+            TransmissionMode transmissionMode;
+
+            public GenericSeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
+                super(seSelector, channelState);
+                transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
+            }
+
+            @Override
+            protected AbstractMatchingSe parse(SeResponse seResponse) {
+                class GenericMatchingSe extends AbstractMatchingSe {
+                    public GenericMatchingSe(SeResponse selectionResponse,
+                                             TransmissionMode transmissionMode, String extraInfo) {
+                        super(selectionResponse, transmissionMode, extraInfo);
+                    }
+                }
+                return new GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE");
+            }
+        }
+
+        SeSelection seSelection = new SeSelection();
+        GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                        new SeSelector.AtrFilter("3B.*"), null, "ATR selection"),
+                ChannelState.KEEP_OPEN);
+
+        /* Prepare selector, ignore AbstractMatchingSe here */
+        seSelection.prepareSelection(genericSeSelectionRequest);
+
+        seSelection.processExplicitSelection(reader);
     }
 }
