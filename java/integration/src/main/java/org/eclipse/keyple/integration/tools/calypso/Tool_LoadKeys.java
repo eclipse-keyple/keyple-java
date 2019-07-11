@@ -38,7 +38,7 @@ import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.integration.example.pc.calypso.DemoUtilities;
+import org.eclipse.keyple.integration.IntegrationUtils;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
@@ -172,15 +172,15 @@ public class Tool_LoadKeys {
         /* Assign PcscPlugin to the SeProxyService */
         seProxyService.addPlugin(pcscPlugin);
 
-        ProxyReader poReader = (ProxyReader) DemoUtilities.getReader(seProxyService,
-                DemoUtilities.PO_READER_NAME_REGEX);
+        ProxyReader poReader = (ProxyReader) IntegrationUtils.getReader(seProxyService,
+                IntegrationUtils.PO_READER_NAME_REGEX);
 
         poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
                 PcscProtocolSetting.PCSC_PROTOCOL_SETTING
                         .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
-        ProxyReader samReader = (ProxyReader) DemoUtilities.getReader(seProxyService,
-                DemoUtilities.SAM_READER_NAME_REGEX);
+        ProxyReader samReader = (ProxyReader) IntegrationUtils.getReader(seProxyService,
+                IntegrationUtils.SAM_READER_NAME_REGEX);
 
         samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3,
                 PcscProtocolSetting.PCSC_PROTOCOL_SETTING
