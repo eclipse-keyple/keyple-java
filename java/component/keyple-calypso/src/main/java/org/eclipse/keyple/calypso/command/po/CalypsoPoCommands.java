@@ -55,7 +55,10 @@ public enum CalypsoPoCommands implements CommandsTable {
     SELECT_FILE("Select File", (byte) 0xA4),
 
     /* The po change key */
-    CHANGE_KEY("Change Key", (byte) 0xD8);
+    CHANGE_KEY("Change Key", (byte) 0xD8),
+
+    /* The po get data for traceability */
+    GET_DATA_TRACE("Get Data'Trace'", (byte) 0xCA);
 
     /** The name. */
     private final String name;

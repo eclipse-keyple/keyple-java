@@ -14,9 +14,19 @@ package org.eclipse.keyple.integration.tools.calypso;
 import static org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild.SelectControl.CURRENT_DF;
 import static org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild.SelectControl.FIRST;
 import static org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild.SelectControl.NEXT;
+import java.io.FileWriter;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import org.eclipse.keyple.calypso.command.po.builder.GetDataTraceCmdBuild;
+import org.eclipse.keyple.calypso.command.po.builder.security.PoGetChallengeCmdBuild;
+import org.eclipse.keyple.calypso.command.po.parser.GetDataTraceRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
+import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
+import org.eclipse.keyple.calypso.command.po.parser.security.PoGetChallengeRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
-import org.eclipse.keyple.calypso.transaction.exception.KeypleCalypsoSecureSessionException;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
@@ -25,92 +35,101 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.core.seproxy.message.SeRequest;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.integration.example.pc.calypso.DemoUtilities;
+import org.eclipse.keyple.integration.IntegrationUtils;
+import org.eclipse.keyple.integration.poData.*;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.*;
 
 public class Tool_AnalyzePoFileStructure {
 
     private static final Logger logger = LoggerFactory.getLogger(Tool_AnalyzePoFileStructure.class);
 
-    // private PoStructure poStructure = null;
+    private static PoStructureData poStructureData = null;
 
-    private static String getEfTypeName(int inEfType) {
-
-        switch (inEfType) {
-            case SelectFileRespPars.EF_TYPE_BINARY: {
-                return "Bin ";
-            }
-
-            case SelectFileRespPars.EF_TYPE_LINEAR: {
-                return "Lin ";
-            }
-
-            case SelectFileRespPars.EF_TYPE_CYCLIC: {
-                return "Cycl";
-            }
-
-            case SelectFileRespPars.EF_TYPE_SIMULATED_COUNTERS: {
-                return "SimC";
-            }
-
-            case SelectFileRespPars.EF_TYPE_COUNTERS: {
-                return "Cnt ";
-            }
-        }
-
-        return "--";
-    }
-
-    private static String getAcName(byte inAcValue, byte inKeyLevel) {
-
-        switch (inAcValue) {
-
-            case 0x1F: {
-                return "AA";
-            }
-
-            case 0x00: {
-                return "NN";
-            }
-
-            case 0x10: {
-                return "S" + inKeyLevel;
-            }
-
-            case 0x01: {
-                return "PN";
-            }
-        }
-
-        return "--";
-    }
-
-    private static void printFileInformation(SelectFileRespPars inFileInformation) {
-
-
-        logger.info("{}",
-                String.format("|%04X | %s | %02X  | %2d | %4d | %s | %s | %s | %s |",
-                        inFileInformation.getLid(), getEfTypeName(inFileInformation.getEfType()),
-                        inFileInformation.getSfi(), inFileInformation.getNumRec(),
-                        inFileInformation.getRecSize(),
-                        getAcName(inFileInformation.getAccessConditions()[0],
-                                inFileInformation.getKeyIndexes()[0]),
-                        getAcName(inFileInformation.getAccessConditions()[1],
-                                inFileInformation.getKeyIndexes()[1]),
-                        getAcName(inFileInformation.getAccessConditions()[2],
-                                inFileInformation.getKeyIndexes()[2]),
-                        getAcName(inFileInformation.getAccessConditions()[3],
-                                inFileInformation.getKeyIndexes()[3])));
-    }
-
-    private static void printApplicationInformation(SeReader poReader, CalypsoPo curApp) {
+    private static long getTransactionCounter(SeReader poReader, CalypsoPo calypsoPo) {
 
         try {
+
+            PoResource poResource = new PoResource(poReader, calypsoPo);
+
+            // create an apdu requests list to handle PO and SAM commands
+            List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
+
+            // get the challenge from the PO
+            apduRequests.add(new PoGetChallengeCmdBuild(poResource.getMatchingSe().getPoClass())
+                    .getApduRequest());
+
+            SeRequest seRequest = new SeRequest(apduRequests, ChannelState.KEEP_OPEN);
+
+            SeResponse seResponse = ((ProxyReader) poResource.getSeReader()).transmit(seRequest);
+
+            if (seResponse == null || !seResponse.getApduResponses().get(0).isSuccessful()) {
+                throw new IllegalStateException("PO get challenge command failed.");
+            }
+
+            PoGetChallengeRespPars poGetChallengeRespPars =
+                    new PoGetChallengeRespPars(seResponse.getApduResponses().get(0));
+
+            byte[] poChallenge = poGetChallengeRespPars.getPoChallenge();
+            return IntegrationUtils.bytesToLong(poChallenge, 3);
+
+        } catch (Exception e) {
+            logger.error("Exception: " + e.getCause());
+            return 0;
+        }
+    }
+
+
+    private static void getFileData(PoTransaction poTransaction,
+            SelectFileRespPars inFileInformation) {
+
+        try {
+            PoFileData fileData = new PoFileData(inFileInformation);
+
+            if (inFileInformation.getFileType() == SelectFileRespPars.FILE_TYPE_EF
+                    && inFileInformation.getEfType() != SelectFileRespPars.EF_TYPE_BINARY
+                    && inFileInformation.getAccessConditions()[0] != 0x01) {
+
+                for (int i = 0; i < inFileInformation.getNumRec(); i++) {
+
+                    int readRecordParserIndex = poTransaction.prepareReadRecordsCmd(
+                            inFileInformation.getSfi(), ReadDataStructure.SINGLE_RECORD_DATA,
+                            (byte) (i + 1), inFileInformation.getRecSize(), "");
+
+                    poTransaction.processPoCommands(ChannelState.KEEP_OPEN);
+
+                    fileData.getRecordData()
+                            .add((new RecordData(i + 1,
+                                    ((ReadRecordsRespPars) poTransaction
+                                            .getResponseParser(readRecordParserIndex)).getRecords()
+                                                    .get(i + 1))));
+                }
+            }
+
+            PoApplicationData applicationData = poStructureData.getApplicationList()
+                    .get(poStructureData.getApplicationList().size() - 1);
+            applicationData.getFileList().add(fileData);
+
+        } catch (Exception e) {
+            logger.error("Exception: " + e.getCause());
+        }
+
+    }
+
+
+    private static void getApplicationData(SeReader poReader, CalypsoPo curApp) {
+
+        try {
+
+            // Get and fill the Application file information
             PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, curApp));
 
             int selectCurrentDfIndex = poTransaction.prepareSelectFileCmd(CURRENT_DF, "CurrentDF");
@@ -123,31 +142,35 @@ public class Tool_AnalyzePoFileStructure {
             if (!selectCurrentDf.isSelectionSuccessful()) {
                 return;
             }
-            logger.info(
-                    "===================================================================================");
-            logger.info(
-                    "| AID                             | LID  | KVC1 | KVC2 | KVC3 | G0 | G1 | G2 | G3 |");
-            logger.info("{}",
-                    String.format("|%32s | %04X | %02X | %02X| %02X",
-                            ByteArrayUtil.toHex(curApp.getDfName()), selectCurrentDf.getLid(),
-                            selectCurrentDf.getKvcInfo()[0], selectCurrentDf.getKvcInfo()[1],
-                            selectCurrentDf.getKvcInfo()[2]));
 
+            if (poStructureData == null) {
 
-            logger.info(
-                    "===================================================================================");
-        } catch (KeypleCalypsoSecureSessionException e) {
-            // SW1SW2 is in:: e.getResponses().get(0).getStatusCode();
-        } catch (Exception e) {
-            logger.error("Exception: " + e.getCause());
-        }
-    }
+                PoResource poResource = new PoResource(poReader, curApp);
+                List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
 
+                apduRequests.add(new GetDataTraceCmdBuild(poResource.getMatchingSe().getPoClass())
+                        .getApduRequest());
+                SeRequest seRequest = new SeRequest(apduRequests, ChannelState.KEEP_OPEN);
 
-    protected static void getApplicationFileData(SeReader poReader, CalypsoPo curApp) {
+                SeResponse seResponse =
+                        ((ProxyReader) poResource.getSeReader()).transmit(seRequest);
 
-        try {
-            PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, curApp));
+                GetDataTraceRespPars traceInfo =
+                        new GetDataTraceRespPars(seResponse.getApduResponses().get(0));
+
+                poStructureData = new PoStructureData(traceInfo.getApduResponse().getDataOut(),
+                        "AnalyzePoFileStructure", new Date(), 1, "Keyple");
+
+            }
+
+            long transactionCounter = getTransactionCounter(poReader, curApp);
+
+            PoApplicationData appToAdd =
+                    new PoApplicationData(selectCurrentDf, curApp, transactionCounter);
+
+            poStructureData.getApplicationList().add(appToAdd);
+
+            // Iterate on all the files present in the application
             int currentFile;
 
             int selectFileParserFirstIndex = poTransaction.prepareSelectFileCmd(FIRST, "First EF");
@@ -160,10 +183,7 @@ public class Tool_AnalyzePoFileStructure {
                 return;
             }
 
-            logger.info("|LID  | Type | SID | #R | Size | G0 | G1 | G2 | G3 |");
-            logger.info("----------------------------------------------------");
-
-            printFileInformation(selectFileParserFirst);
+            getFileData(poTransaction, selectFileParserFirst);
             currentFile = selectFileParserFirst.getLid();
 
             int selectFileParserNextIndex = poTransaction.prepareSelectFileCmd(NEXT, "Next EF");
@@ -175,7 +195,7 @@ public class Tool_AnalyzePoFileStructure {
                 return;
             }
 
-            printFileInformation(selectFileParserNext);
+            getFileData(poTransaction, selectFileParserNext);
 
             while (selectFileParserNext.isSelectionSuccessful()
                     && selectFileParserNext.getLid() != currentFile) {
@@ -192,24 +212,19 @@ public class Tool_AnalyzePoFileStructure {
                     return;
                 }
 
-                printFileInformation(selectFileParserNext);
+                getFileData(poTransaction, selectFileParserNext);
             }
 
-        } catch (KeypleCalypsoSecureSessionException e) {
-            // SW1SW2 is in:: e.getResponses().get(0).getStatusCode();
         } catch (Exception e) {
-            logger.error("Exception: " + e.getCause());
-        } finally {
-            logger.info("----------------------------------------------------");
+            // Do nothing because when we reach the end of the list we always generate an exception
         }
     }
 
 
-    protected static void getApplicationData(String aid, SeReader poReader) {
+    protected static void getApplicationsData(String aid, SeReader poReader) {
 
         try {
             SeSelection seSelection = new SeSelection();
-
 
             PoSelectionRequest poSelectionRequest1 = new PoSelectionRequest(new PoSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
@@ -227,12 +242,8 @@ public class Tool_AnalyzePoFileStructure {
 
             CalypsoPo firstApplication =
                     (CalypsoPo) selectionsResult.getActiveSelection().getMatchingSe();
-            printApplicationInformation(poReader, firstApplication);
 
-            // additional selection
-            getApplicationFileData(poReader, firstApplication);
-
-            // logger.info("Searching for 2nd application with AID::" + aid);
+            getApplicationData(poReader, firstApplication);
 
             seSelection = new SeSelection();
 
@@ -256,18 +267,14 @@ public class Tool_AnalyzePoFileStructure {
             CalypsoPo secondApplication =
                     (CalypsoPo) selectionsResult.getActiveSelection().getMatchingSe();
 
-            logger.info(
-                    "==================================================================================");
-            logger.info("Selected application with AID:: "
-                    + ByteArrayUtil.toHex(secondApplication.getDfName()));
+            getApplicationData(poReader, secondApplication);
 
-            // additional selection
-            getApplicationFileData(poReader, firstApplication);
 
         } catch (Exception e) {
-            logger.error("Exception: " + e.getCause());
+            logger.error("Exception(getApplicationsData): " + e.getCause());
         }
     }
+
 
     public static void main(String[] args) throws KeypleBaseException, NoStackTraceThrowable {
 
@@ -280,8 +287,10 @@ public class Tool_AnalyzePoFileStructure {
         /* Assign PcscPlugin to the SeProxyService */
         seProxyService.addPlugin(pcscPlugin);
 
+        poStructureData = null;
+
         SeReader poReader =
-                DemoUtilities.getReader(seProxyService, DemoUtilities.PO_READER_NAME_REGEX);
+                IntegrationUtils.getReader(seProxyService, IntegrationUtils.PO_READER_NAME_REGEX);
 
         poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
                 PcscProtocolSetting.PCSC_PROTOCOL_SETTING
@@ -303,22 +312,48 @@ public class Tool_AnalyzePoFileStructure {
             String poStoredValueAid = "304554502E";
             String nfcNdefAid = "D276000085";
 
-            getApplicationData(poMasterFileAid, poReader);
+            getApplicationsData(poMasterFileAid, poReader);
 
-            getApplicationData(poTransportFileAid, poReader);
+            getApplicationsData(poTransportFileAid, poReader);
 
-            getApplicationData(poHoplinkAid, poReader);
+            getApplicationsData(poHoplinkAid, poReader);
 
-            getApplicationData(poStoredValueAid, poReader);
+            getApplicationsData(poStoredValueAid, poReader);
 
-            getApplicationData(nfcNdefAid, poReader);
+            getApplicationsData(nfcNdefAid, poReader);
+
+            try {
+                Gson gson =
+                        new GsonBuilder()
+                                .registerTypeHierarchyAdapter(byte[].class,
+                                        new IntegrationUtils.HexTypeAdapter())
+                                .setPrettyPrinting().create();
+
+                String dateString = new SimpleDateFormat("yyyyMMdd").format(new Date());
+
+                String fileName = new String(dateString + "_PoData_"
+                        + poStructureData.getApplicationList().get(0).getCsnDec() + ".json");
+
+                poStructureData.setId(fileName);
+
+                String jsonToPrint = gson.toJson(poStructureData);
+
+                FileWriter fw = new FileWriter(fileName);
+                fw.write(jsonToPrint);
+                fw.close();
+
+            } catch (Exception e) {
+                logger.error("Exception while writing the report: " + e.getCause());
+            }
+
+            poStructureData.print(logger);
 
             logger.info(
-                    "==================================================================================");
+                    "========================================================================================================");
             logger.info(
-                    "= End of the Calypso PO Analysis.                                                =");
+                    "= End of the Calypso PO Analysis.                                                                      =");
             logger.info(
-                    "==================================================================================");
+                    "========================================================================================================");
         } else {
             logger.error("No PO were detected.");
         }
