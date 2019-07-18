@@ -37,7 +37,8 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
     private final Map<String, String> parameters = new HashMap<String, String>();
 
     // simulated list of real-time connected stubReader
-    private static SortedSet<String> connectedStubNames = new ConcurrentSkipListSet<String>();
+    private static SortedSet<String> connectedStubNames =
+            Collections.synchronizedSortedSet(new ConcurrentSkipListSet<String>());
 
     private StubPlugin() {
         super("StubPlugin");
