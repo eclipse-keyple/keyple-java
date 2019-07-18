@@ -203,9 +203,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
         logger.trace("{} onDto response to be sent {}", dtoNode.getNodeId(),
                 KeypleDtoHelper.toJson(out.getKeypleDTO()));
+
         return out;
-
-
     }
 
 
@@ -240,6 +239,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
                 masterNodeId, localReader, dtoNode.getNodeId(), this, options);
         try {
             rmTxEngine.add(connect);
+
+            // blocking call
             return connect.getResponse();
         } catch (KeypleRemoteException e) {
             throw new KeypleReaderException("An error occurred while calling connectReader", e);
@@ -258,6 +259,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
         try {
             rmTxEngine.add(disconnect);
+
+            // blocking call
             disconnect.getResponse();
             ProxyReader nativeReader = findLocalReader(nativeReaderName);
             if (nativeReader instanceof AbstractObservableReader) {

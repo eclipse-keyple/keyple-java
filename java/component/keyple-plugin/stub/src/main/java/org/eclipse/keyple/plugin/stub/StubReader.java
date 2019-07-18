@@ -33,7 +33,6 @@ public final class StubReader extends AbstractThreadedLocalReader {
     private static final Logger logger = LoggerFactory.getLogger(StubReader.class);
 
     private StubSecureElement se;
-    private boolean sePresent;
 
     private Map<String, String> parameters = new HashMap<String, String>();
 
@@ -53,8 +52,7 @@ public final class StubReader extends AbstractThreadedLocalReader {
      */
     StubReader(String name) {
         super(pluginName, name);
-        sePresent = false;
-        threadWaitTimeout = 100; // time between two events
+        threadWaitTimeout = 2000; // time between two events
     }
 
     StubReader(String name, TransmissionMode transmissionMode) {
@@ -130,7 +128,7 @@ public final class StubReader extends AbstractThreadedLocalReader {
 
 
     @Override
-    protected boolean checkSePresence() {
+    protected synchronized boolean checkSePresence() {
         return se != null;
     }
 
@@ -183,7 +181,8 @@ public final class StubReader extends AbstractThreadedLocalReader {
      * 
      * @param _se stub secure element to be inserted in the reader
      */
-    public void insertSe(StubSecureElement _se) {
+    public synchronized void insertSe(StubSecureElement _se) {
+        // logger.info("Insert SE {}", _se);
         /* clean channels status */
         if (isPhysicalChannelOpen()) {
             try {
@@ -194,16 +193,14 @@ public final class StubReader extends AbstractThreadedLocalReader {
         }
         if (_se != null) {
             se = _se;
-            sePresent = true;
         }
     }
 
     /**
      * Remove se from reader if any
      */
-    public void removeSe() {
+    public synchronized void removeSe() {
         se = null;
-        sePresent = false;
     }
 
     /**
@@ -225,8 +222,8 @@ public final class StubReader extends AbstractThreadedLocalReader {
     @Override
     protected boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable {
         for (int i = 0; i < timeout / 10; i++) {
-            if (sePresent) {
-                break;
+            if (checkSePresence()) {
+                return true;
             }
             try {
                 Thread.sleep(10);
@@ -234,7 +231,8 @@ public final class StubReader extends AbstractThreadedLocalReader {
                 logger.debug("Sleep was interrupted");
             }
         }
-        return sePresent;
+        logger.trace("[{}] no card was inserted", this.getName());
+        return false;
     }
 
     /**
@@ -247,8 +245,9 @@ public final class StubReader extends AbstractThreadedLocalReader {
     @Override
     protected boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable {
         for (int i = 0; i < timeout / 10; i++) {
-            if (!sePresent) {
-                break;
+            if (!checkSePresence()) {
+                logger.trace("[{}] card removed", this.getName());
+                return true;
             }
             try {
                 Thread.sleep(10);
@@ -256,6 +255,7 @@ public final class StubReader extends AbstractThreadedLocalReader {
                 logger.debug("Sleep was interrupted");
             }
         }
-        return !sePresent;
+        logger.trace("[{}] no card was removed", this.getName());
+        return false;
     }
 }
