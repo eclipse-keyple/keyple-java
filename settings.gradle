@@ -9,7 +9,7 @@
 
 
 rootProject.name = 'keyple-java'
-println '** ' + rootProject.name + ' initialization phase.'
+//println '** ' + rootProject.name + ' initialization phase.'
 
 
 include ':java:component:keyple-core'
@@ -40,7 +40,7 @@ include ':java:integration'
 
 include ':java:example:generic:common'
 project(':java:example:generic:common').name = "example-generic-common"
-//
+// 
 include ':java:example:generic:pc'
 project(':java:example:generic:pc').name = "example-generic-pc"
 //
@@ -54,4 +54,4 @@ include ':java:example:calypso:remotese'
 project(':java:example:calypso:remotese').name = "example-remotese"
 
 
-println "rootProject : " + startParameter
+//println "rootProject : " + startParameter
