@@ -42,27 +42,6 @@ subprojects {
         ruleSets = [
                 "java-basic",
                 "java-braces",
-                "java-strings",
-                "java-imports",
-                "java-unnecessary",
-                "java-unusedcode",
-//                "java-metrics",
-                "java-empty",
-                "java-codesize",
-                "java-clone",
-                "java-typeresolution",
-                "java-strictexception",
-                "java-finalizers",
-                "java-migrating",
-                "java-logging-java",
-//                 "java-controversial",
-                "java-sunsecure",
-                "java-junit",
-                "java-optimizations",
-//                "java-naming",
-                "java-coupling",
-                "java-design",
-                "java-comments"
         ]
     }
 

@@ -60,8 +60,8 @@ public class SamResource extends SeResource<CalypsoSam> {
     /**
      * Indicates whether the SamResource matches the provided SAM identifier.
      * <p>
-     * The test includes the {@link SamRevision}, serial number and group reference provided by the
-     * {@link SamIdentifier}.
+     * The test includes the {@link org.eclipse.keyple.calypso.command.sam.SamRevision}, serial
+     * number and group reference provided by the {@link SamIdentifier}.
      * <p>
      * The SAM serial number can be null or empty, in this case all serial numbers are accepted. It
      * can also be a regular expression target one or more specific serial numbers.

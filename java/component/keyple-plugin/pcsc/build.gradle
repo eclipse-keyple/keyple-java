@@ -5,6 +5,9 @@ apply plugin: 'java-library'
 
 sourceCompatibility = 1.6
 
+project.description ='Keyple Plugin Pcsc'
+
+
 //copy license file from root folder to each generated artifact
 task copyLICENSEplugin(type: Copy) {
     from file("${projectDir}/../../../../LICENSE")
@@ -17,21 +20,37 @@ task copyNOTICEplugin(type: Copy) {
     into file("${buildDir}/resources/main/META-INF/")
 }
 
-
 classes.dependsOn copyLICENSEplugin, copyNOTICEplugin
 
+//declare manifest
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Keyple Plugin Pcsc',
+        attributes 'Implementation-Title': project.description,
                 'Implementation-Version': project.version
     }
 }
 
+//generate sources jar
+task sourcesJar(type: Jar, dependsOn : classes) {
+    classifier = 'sources'
+    from sourceSets.main.output, sourceSets.main.java
+}
+
+//generate javadoc jar
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+//publish javadoc, sources and jar
+artifacts {
+    archives sourcesJar, javadocJar
+}
 
 dependencies {
 
     //use keyple library : core
-    implementation project(path:':java:component:keyple-core')
+    api project(path:':java:component:keyple-core')
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     api "org.slf4j:slf4j-api:${slf4japi_version}"

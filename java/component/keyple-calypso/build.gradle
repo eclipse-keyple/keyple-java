@@ -5,6 +5,8 @@ apply plugin: 'java-library'
 
 sourceCompatibility = 1.6
 
+project.description = 'Keyple Calypso'
+
 //copy license file from root folder to each generated artifact
 task copyLICENSE(type: Copy) {
     from file("${projectDir}/../../../LICENSE")
@@ -17,20 +19,35 @@ task copyNOTICE(type: Copy) {
     into file("${buildDir}/resources/main/META-INF/")
 }
 
-
-
+//declare manifest
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Keyple Calypso',
+        attributes 'Implementation-Title': project.description,
                 'Implementation-Version': project.version
     }
 }
 
 classes.dependsOn copyLICENSE, copyNOTICE
 
+//generate sources jar
+task sourcesJar(type: Jar, dependsOn : classes) {
+    classifier = 'sources'
+    from sourceSets.main.output, sourceSets.main.java
+}
+
+//generate javadoc jar
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+//publish javadoc, sources and jar
+artifacts {
+    archives sourcesJar, javadocJar
+}
 
 dependencies {
-    implementation project(path: ':java:component:keyple-core')
+    api project(path: ':java:component:keyple-core')
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     api "org.slf4j:slf4j-api:${slf4japi_version}"

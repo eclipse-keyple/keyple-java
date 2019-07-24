@@ -4,9 +4,7 @@ apply plugin: 'maven'
 
 group 'org.eclipse.keyple'
 project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
-
-
-
+project.description = 'Keyple Plugin Android OMAPI'
 
 pmd {
     ruleSets = [

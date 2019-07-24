@@ -4,7 +4,7 @@ apply plugin: 'maven'
 
 project.group 'org.eclipse.keyple'
 project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
-
+project.description = 'Keyple Plugin Android Nfc'
 
 android {
     compileSdkVersion 26

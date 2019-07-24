@@ -5,6 +5,9 @@ apply plugin: 'java-library'
 
 sourceCompatibility = 1.6
 
+project.description ='Keyple Core'
+
+
 task copyVersionFile {
     //generate properties file META-INF/keyple.properties with version number
     def props = new Properties()
@@ -38,37 +41,32 @@ task copyNOTICE(type: Copy) {
     into file("${buildDir}/resources/main/META-INF/")
 }
 
-
+//declare manifest
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Keyple Core',
+        attributes 'Implementation-Title': project.description,
         'Implementation-Version': project.version
     }
 }
 
-
 classes.dependsOn copyLICENSE, copyNOTICE,copyVersionFile
 
-
-
+//generate sources jar
 task sourcesJar(type: Jar, dependsOn : classes) {
     classifier = 'sources'
     from sourceSets.main.output, sourceSets.main.java
 }
 
+//generate javadoc jar
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
 
-
+//publish javadoc, sources and jar
 artifacts {
     archives sourcesJar, javadocJar
 }
-
-
-
-
 
 dependencies {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
