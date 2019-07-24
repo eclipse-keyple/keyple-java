@@ -30,6 +30,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.integration.IntegrationUtils;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
@@ -387,14 +388,14 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         seProxyService.setPlugins(pluginsSet);
 
         SeReader poReader =
-                DemoUtilities.getReader(seProxyService, DemoUtilities.PO_READER_NAME_REGEX);
+                IntegrationUtils.getReader(seProxyService, IntegrationUtils.PO_READER_NAME_REGEX);
 
         poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
                 PcscProtocolSetting.PCSC_PROTOCOL_SETTING
                         .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         SeReader samReader =
-                DemoUtilities.getReader(seProxyService, DemoUtilities.SAM_READER_NAME_REGEX);
+                IntegrationUtils.getReader(seProxyService, IntegrationUtils.SAM_READER_NAME_REGEX);
 
         samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3,
                 PcscProtocolSetting.PCSC_PROTOCOL_SETTING
