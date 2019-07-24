@@ -20,22 +20,23 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 
 /**
- * Simulates a Pool Plugin with {@link StubReader} and {@link StubSecureElement} Manages allocation
- * readers by group reference, Limitations : - each group can contain only one StubReader thus one
- * StubSecureElement
+ * Simulates a @{@link ReaderPoolPlugin} with {@link StubReader} and {@link StubSecureElement}
+ * Manages allocation readers by group reference, Limitations : - each group can contain only one
+ * StubReader thus one StubSecureElement This class uses internally @{@link StubPlugin} which is a
+ * singleton.
  */
 public class StubPoolPlugin implements ReaderPoolPlugin {
 
     StubPlugin stubPlugin;
-    Map<String, SeReader> readerPool; // groupReference, seReader = limitation each groupReference
-                                      // can have only one reader
+    Map<String, StubReader> readerPool; // groupReference, seReader = limitation each groupReference
+                                        // can have only one reader
     Map<String, String> allocatedReader;// readerName,groupReference
 
     static public String PREFIX_NAME = "POOL_";
 
     public StubPoolPlugin() {
         this.stubPlugin = StubPlugin.getInstance();
-        this.readerPool = new HashMap<String, SeReader>();
+        this.readerPool = new HashMap<String, StubReader>();
         this.allocatedReader = new HashMap<String, String>();
 
     }
@@ -51,7 +52,13 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
     }
 
     /**
-     * Plug a new reader in Pool with groupReference and a StubSE
+     * Plug synchronously a new @{@link StubReader} in Pool with groupReference and a StubSE. A
+     * READER_CONNECTED event will be raised.
+     * 
+     * @param groupReference : group refence of the new stub reader
+     * @param readerName : name of the new stub reader
+     * @param se : insert a se at creation (can be null)
+     * @return created StubReader
      */
     public SeReader plugStubPoolReader(String groupReference, String readerName,
             StubSecureElement se) {
@@ -75,9 +82,10 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
     }
 
     /**
-     * Unplug a new reader by groupReference
+     * Unplug synchronously a new reader by groupReference. A READER_DISCONNECTED event will be
+     * raised.
      * 
-     * @param groupReference
+     * @param groupReference groupReference of the reader to be unplugged
      */
     public void unplugStubPoolReader(String groupReference) {
         try {
@@ -100,7 +108,7 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
 
 
     /**
-     * Allocate a reader
+     * Allocate a reader if available by groupReference
      * 
      * @param groupReference the reference of the group to which the reader belongs (may be null
      *        depending on the implementation made)
@@ -109,8 +117,11 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
      */
     @Override
     public SeReader allocateReader(String groupReference) {
-        SeReader seReader = readerPool.get(groupReference);
-        if (allocatedReader.containsKey(seReader.getName())) {
+        // find the reader in the readerPool
+        StubReader seReader = readerPool.get(groupReference);
+
+        // check if the reader is available
+        if (seReader == null || allocatedReader.containsKey(seReader.getName())) {
             return null;
         } else {
             allocatedReader.put(seReader.getName(), groupReference);
@@ -127,7 +138,26 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
      */
     @Override
     public void releaseReader(SeReader seReader) {
+        if (seReader == null) {
+            throw new IllegalArgumentException("Could not release seReader, seReader is null");
+        }
+        if (!(seReader instanceof StubReader)) {
+            throw new IllegalArgumentException(
+                    "Can not release seReader, SeReader should be of type StubReader");
+        }
+
+        /**
+         * Remove and Re-insert SE to reset logical channel
+         */
+        StubReader stubReader = ((StubReader) seReader);
+        if (stubReader.checkSePresence()) {
+            StubSecureElement se = stubReader.getSe();
+            stubReader.removeSe();
+            stubReader.insertSe(se);
+        }
+
         allocatedReader.remove(seReader.getName());
+
     }
 
     public Map<String, String> listAllocatedReaders() {

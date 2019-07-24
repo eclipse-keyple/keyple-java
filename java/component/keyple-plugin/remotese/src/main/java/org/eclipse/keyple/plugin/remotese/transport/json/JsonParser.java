@@ -25,7 +25,8 @@ public class JsonParser {
     static public Gson getGson() {
         final GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(SeProtocol.class, new GsonSeProtocolTypeAdapter());
-        gsonBuilder.setPrettyPrinting();
+        gsonBuilder.registerTypeAdapter(byte[].class, new HexTypeAdapter());
+        // gsonBuilder.setPrettyPrinting(); disable pretty printing for inline json
         return gsonBuilder.create();
     }
 

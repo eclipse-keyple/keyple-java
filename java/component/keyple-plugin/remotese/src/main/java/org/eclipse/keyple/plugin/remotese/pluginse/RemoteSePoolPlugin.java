@@ -68,8 +68,10 @@ public class RemoteSePoolPlugin extends RemoteSePlugin implements ReaderPoolPlug
         // call remote method for allocateReader
         RmPoolAllocateTx allocate = new RmPoolAllocateTx(groupReference, this, this.dtoSender,
                 slaveNodeId, dtoSender.getNodeId());
-        this.rmTxEngine.add(allocate);
         try {
+            this.rmTxEngine.add(allocate);
+
+            // blocking call
             return allocate.getResponse();
         } catch (KeypleRemoteException e) {
             return null;// todo throw exception here
@@ -96,9 +98,11 @@ public class RemoteSePoolPlugin extends RemoteSePlugin implements ReaderPoolPlug
         // call remote method for allocateReader
         RmPoolReleaseTx releaseTx = new RmPoolReleaseTx(virtualReader.getNativeReaderName(),
                 virtualReader.getName(), this, this.dtoSender, slaveNodeId, dtoSender.getNodeId());
-        this.rmTxEngine.add(releaseTx);
 
         try {
+            this.rmTxEngine.add(releaseTx);
+
+            // blocking call
             releaseTx.getResponse();
         } catch (KeypleRemoteException e) {
             logger.error("Impossible to release reader {} {}", virtualReader.getName(),
