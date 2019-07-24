@@ -12,6 +12,10 @@ rootProject.name = 'keyple-java'
 //println '** ' + rootProject.name + ' initialization phase.'
 
 
+/*
+ * Published projects
+ */
+
 include ':java:component:keyple-core'
 include ':java:component:keyple-calypso'
 
@@ -23,13 +27,6 @@ project(':java:component:keyple-plugin:stub').name = "keyple-plugin-stub"
 
 include ':java:component:keyple-plugin:remotese'
 project(':java:component:keyple-plugin:remotese').name = "keyple-plugin-remotese"
-
-
-/*
- * Published projects
- */
-
-//include ':java:component'
 
 
 /*

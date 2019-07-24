@@ -63,7 +63,6 @@ public class StubPluginTest extends BaseStubTest {
 
 
 
-
     /**
      * Plug one reader synchronously Check: Event thrown
      */

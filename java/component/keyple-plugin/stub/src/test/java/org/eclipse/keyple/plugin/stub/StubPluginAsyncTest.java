@@ -12,6 +12,11 @@
 package org.eclipse.keyple.plugin.stub;
 
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -22,12 +27,6 @@ import org.junit.runners.MethodSorters;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 @RunWith(MockitoJUnitRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -70,7 +69,6 @@ public class StubPluginAsyncTest extends BaseStubTest {
         lock.await(2, TimeUnit.SECONDS);
         Assert.assertEquals(0, lock.getCount());
     }
-
 
 
 
