@@ -50,7 +50,7 @@ android {
     libraryVariants.all { variant ->
         task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
             description "Generates Javadoc for variant ${variant.name.capitalize()}"
-            println "Create Javadoc Task for variant ${variant.name.capitalize()}"
+            //println "Create Javadoc Task for variant ${variant.name.capitalize()}"
 
             source = variant.javaCompile.source
             options.links("http://docs.oracle.com/javase/6/docs/api/")
@@ -82,14 +82,29 @@ android {
 
 }
 
+//build javadoc
+task javadoc(type: Javadoc) {
+    failOnError false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+}
 
+// build a jar with javadoc
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+//build source jar
 task androidSourcesJar(type: Jar) {
     classifier = 'sources'
     from android.sourceSets.main.java.sourceFiles
 }
 
+//declare javadoc and sources jar as artifacts also
 artifacts {
-    archives androidSourcesJar
+    archives androidSourcesJar, javadocJar
 }
 
 //sign if needed (based on the doSign variable)

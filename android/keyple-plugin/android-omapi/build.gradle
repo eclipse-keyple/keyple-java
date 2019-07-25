@@ -56,7 +56,7 @@ android {
     libraryVariants.all { variant ->
         task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
             description "Generates Javadoc for variant ${variant.name.capitalize()}"
-            println "Generates Javadoc for variant ${variant.name.capitalize()}"
+           // println "Generates Javadoc task for variant ${variant.name.capitalize()}"
 
             source = variant.javaCompile.source
             options.links("http://docs.oracle.com/javase/6/docs/api/")
@@ -87,13 +87,29 @@ android {
 
 }
 
+
+//build javadoc
+task javadoc(type: Javadoc) {
+    failOnError false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+}
+
+// build a jar with javadoc
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+//build sources jar
 task androidSourcesJar(type: Jar) {
     classifier = 'sources'
     from android.sourceSets.main.java.sourceFiles
 }
 
 artifacts {
-    archives androidSourcesJar
+    archives androidSourcesJar, javadocJar
 }
 
 //sign if needed (based on the doSign variable)
@@ -141,7 +157,7 @@ uploadArchives  {
                     developerConnection 'scm:git:https://github.com/eclipse/keyple-java.git'
                     url 'http://github.com/eclipse/keyple-java/tree/master'
                 }
-                
+
                 licenses {
                     license {
                         name 'Eclipse Public License - v 2.0'
