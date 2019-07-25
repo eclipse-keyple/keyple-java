@@ -21,7 +21,6 @@ import com.google.gson.JsonObject;
 public class KeypleDtoHelper {
 
 
-
     static private KeypleDto build(String action, String body, boolean isRequest, String sessionId,
             String nativeReaderName, String virtualReaderName, String requesterNodeId,
             String targetNodeId, String id) {

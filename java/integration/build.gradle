@@ -24,6 +24,8 @@ dependencies {
     implementation "org.slf4j:slf4j-ext:${slf4jext_version}"
     implementation "com.google.code.gson:gson:${gson_version}"
 
+    implementation "com.google.code.gson:gson:${gson_version}"
+
     //https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
     compile "org.junit.jupiter:junit-jupiter-api:${jupiter_version}"
 }

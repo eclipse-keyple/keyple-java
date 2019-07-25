@@ -119,6 +119,8 @@ public final class VirtualReader extends AbstractObservableReader {
                 session.getSlaveNodeId());
         try {
             rmTxEngine.add(transmit);
+
+            // blocking call
             return transmit.getResponse();
         } catch (KeypleRemoteException e) {
             if (e.getCause() != null) {
@@ -149,6 +151,8 @@ public final class VirtualReader extends AbstractObservableReader {
                         this.getName(), session.getMasterNodeId(), session.getSlaveNodeId());
         try {
             rmTxEngine.add(transmit);
+
+            // blocking call
             return transmit.getResponse();
         } catch (KeypleRemoteException e) {
             e.printStackTrace();
@@ -232,6 +236,8 @@ public final class VirtualReader extends AbstractObservableReader {
 
         try {
             rmTxEngine.add(setDefaultSelectionRequest);
+
+            // blocking call
             setDefaultSelectionRequest.getResponse();
         } catch (KeypleRemoteException e) {
             logger.error(

@@ -48,90 +48,52 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("PMD.SignatureDeclareThrowsException")
 @RunWith(MockitoJUnitRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class StubReaderTest {
+public class StubReaderTest extends BaseStubTest {
 
-    StubReader reader;
-
-    StubReader spyReader;
 
     Logger logger = LoggerFactory.getLogger(StubReaderTest.class);
 
     // init before each test
     @Before
-    public void SetUp() throws InterruptedException, KeypleReaderException {
+    public void SetUp() throws Exception {
         // clear observers from others tests as StubPlugin is a singleton
 
-        StubPlugin stubPlugin = StubPlugin.getInstance();
+        this.setupStub();
 
-        // add an observer to start the plugin monitoring thread
-        stubPlugin.addObserver(new ObservablePlugin.PluginObserver() {
-            @Override
-            public void update(PluginEvent event) {}
-        });
-
-        logger.info("Stubplugin readers size {}", stubPlugin.getReaders().size());
-        Assert.assertEquals(0, stubPlugin.getReaders().size());
-
-        logger.info("Stubplugin observers size {}", stubPlugin.countObservers());
-        Assert.assertEquals(1, stubPlugin.countObservers());
-
-        stubPlugin.plugStubReader("StubReaderTest", true);
-
-        reader = (StubReader) stubPlugin.getReader("StubReaderTest");
     }
 
     @After
-    public void tearDown() throws InterruptedException, KeypleReaderException {
-        StubPlugin stubPlugin = StubPlugin.getInstance();
+    public void tearDown() throws KeypleReaderException {
+
+        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         stubPlugin.clearObservers();
         reader.clearObservers();
         stubPlugin.getInstance().unplugStubReader("StubReaderTest", true);
     }
 
 
-    static public void selectSe(SeReader reader) throws KeypleReaderException {
-        /**
-         * Create a new local class extending AbstractSeSelectionRequest
-         */
-        class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
-            TransmissionMode transmissionMode;
-
-            public GenericSeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
-                super(seSelector, channelState);
-                transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
-            }
-
-            @Override
-            protected AbstractMatchingSe parse(SeResponse seResponse) {
-                class GenericMatchingSe extends AbstractMatchingSe {
-                    public GenericMatchingSe(SeResponse selectionResponse,
-                            TransmissionMode transmissionMode, String extraInfo) {
-                        super(selectionResponse, transmissionMode, extraInfo);
-                    }
-                }
-                return new GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE");
-            }
-        }
-
-        SeSelection seSelection = new SeSelection();
-        GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
-                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                        new SeSelector.AtrFilter("3B.*"), null, "ATR selection"),
-                ChannelState.KEEP_OPEN);
-
-        /* Prepare selector, ignore AbstractMatchingSe here */
-        seSelection.prepareSelection(genericSeSelectionRequest);
-
-        seSelection.processExplicitSelection(reader);
-    }
 
     /*
-     * TRANSMIT
+     * TEST
+     *
+     * EVENT
+     *
      */
 
 
+    /**
+     * Insert SE check : event and se presence
+     * 
+     * @throws InterruptedException
+     */
     @Test
-    public void testInsert() throws InterruptedException {
+    public void testInsert() throws Exception {
+
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+
+        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        Assert.assertEquals(false, reader.checkSePresence());
 
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
@@ -155,12 +117,263 @@ public class StubReaderTest {
         // lock thread for 2 seconds max to wait for the event
         lock.await(2, TimeUnit.SECONDS);
         Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
-        // observer
+        Assert.assertTrue(reader.checkSePresence());
+
+
+    }
+
+    /**
+     * Remove SE check : event and se presence
+     * 
+     * @throws InterruptedException
+     */
+    @Test
+    public void testRemove() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+
+        // CountDown lock
+        final CountDownLatch insertLock = new CountDownLatch(1);
+        final CountDownLatch removeLock = new CountDownLatch(1);
+
+        // add observer
+        reader.addObserver(new ObservableReader.ReaderObserver() {
+            int event_i = 1;
+
+            @Override
+            public void update(ReaderEvent event) {
+                logger.info("event {}", event.getEventType());
+                // first event
+                if (event_i == 1) {
+                    Assert.assertEquals(event.getReaderName(), reader.getName());
+                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+                    insertLock.countDown();
+                }
+
+                // analyze the second event, should be a SE_REMOVED
+                if (event_i == 2) {
+                    Assert.assertEquals(event.getReaderName(), reader.getName());
+                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_REMOVAL, event.getEventType());
+                    removeLock.countDown();
+                }
+                event_i++;
+            }
+        });
+        // test
+        reader.insertSe(hoplinkSE());
+
+        // lock thread for 2 seconds max to wait for the event SE_INSERTED
+        insertLock.await(2, TimeUnit.SECONDS);
+
+        Assert.assertEquals(0, insertLock.getCount()); // should be 0 because insertLock is
+                                                       // countDown by obs
+
+        reader.removeSe();
+
+        // lock thread for 2 seconds max to wait for the event SE_REMOVAL
+        removeLock.await(2, TimeUnit.SECONDS);
+
+        Assert.assertEquals(0, removeLock.getCount()); // should be 0 because removeLock is
+                                                       // countDown by obs
+
+        Assert.assertFalse(reader.checkSePresence());
+
+    }
+
+    /**
+     * Remove SE check : event and se presence
+     * 
+     * @throws InterruptedException
+     */
+    @Test
+    public void A_testInsertRemoveTwice() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+
+        // CountDown lock
+        final CountDownLatch firstInsertLock = new CountDownLatch(1);
+        final CountDownLatch firstRemoveLock = new CountDownLatch(1);
+        final CountDownLatch secondInsertLock = new CountDownLatch(1);
+        final CountDownLatch secondRemoveLock = new CountDownLatch(1);
+
+        // add observer
+        reader.addObserver(new ObservableReader.ReaderObserver() {
+            int event_i = 1;
+
+            @Override
+            public void update(ReaderEvent event) {
+                logger.info("event {}", event.getEventType());
+                // first event
+                if (event_i == 1) {
+                    Assert.assertEquals(event.getReaderName(), reader.getName());
+                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+                    firstInsertLock.countDown();
+                }
+
+                // analyze the second event, should be a SE_REMOVED
+                if (event_i == 2) {
+                    Assert.assertEquals(event.getReaderName(), reader.getName());
+                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_REMOVAL, event.getEventType());
+                    firstRemoveLock.countDown();
+                }
+                if (event_i == 3) {
+                    Assert.assertEquals(event.getReaderName(), reader.getName());
+                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+                    secondInsertLock.countDown();
+                }
+                if (event_i == 4) {
+                    Assert.assertEquals(event.getReaderName(), reader.getName());
+                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_REMOVAL, event.getEventType());
+                    secondRemoveLock.countDown();
+                }
+                event_i++;
+            }
+        });
+        // test first sequence
+        reader.insertSe(hoplinkSE());
+
+        Thread.sleep(1000);
+
+        // lock thread for 2 seconds max to wait for the event SE_INSERTED
+        firstInsertLock.await(2, TimeUnit.SECONDS);
+        Assert.assertEquals(0, firstInsertLock.getCount()); // should be 0 because insertLock is
+                                                            // countDown by obs
+        Thread.sleep(1000);
+
+        reader.removeSe();
+
+        // lock thread for 2 seconds max to wait for the event SE_REMOVAL
+        firstRemoveLock.await(2, TimeUnit.SECONDS);
+        Assert.assertEquals(0, firstRemoveLock.getCount()); // should be 0 because removeLock is
+                                                            // countDown by obs
+
+        // BUG, insert event is not throw without (1)
+        // BUG (1) make thread sleep
+        // BUG, solved by setting a lower threadWaitTimeout (100ms)
+        Thread.sleep(1000);
+
+        // test second sequence
+        reader.insertSe(hoplinkSE());
+
+        // lock thread for 2 seconds max to wait for the event SE_INSERTED
+        secondInsertLock.await(2, TimeUnit.SECONDS);
+
+        Assert.assertEquals(0, secondInsertLock.getCount()); // should be 0 because insertLock is
+                                                             // countDown by obs
+        Thread.sleep(1000);
+        reader.removeSe();
+
+        // lock thread for 2 seconds max to wait for the event SE_REMOVAL
+        secondRemoveLock.await(2, TimeUnit.SECONDS);
+        Assert.assertEquals(0, secondRemoveLock.getCount()); // should be 0 because removeLock is
+                                                             // countDown by obs
+
+        Assert.assertFalse(reader.checkSePresence());
+
+    }
+
+    // @Test
+    // Is unstable
+    public void A_testInsertRemoveTwiceFast() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+
+        // CountDown lock
+        final CountDownLatch firstInsertLock = new CountDownLatch(1);
+        final CountDownLatch firstRemoveLock = new CountDownLatch(1);
+        final CountDownLatch secondInsertLock = new CountDownLatch(1);
+        final CountDownLatch secondRemoveLock = new CountDownLatch(1);
+
+        // add observer
+        reader.addObserver(new ObservableReader.ReaderObserver() {
+            int event_i = 1;
+
+            @Override
+            public void update(ReaderEvent event) {
+                logger.info("event {}", event.getEventType());
+                // first event
+                if (event_i == 1) {
+                    Assert.assertEquals(event.getReaderName(), reader.getName());
+                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+                    firstInsertLock.countDown();
+                }
+
+                // analyze the second event, should be a SE_REMOVED
+                if (event_i == 2) {
+                    Assert.assertEquals(event.getReaderName(), reader.getName());
+                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_REMOVAL, event.getEventType());
+                    firstRemoveLock.countDown();
+                }
+                if (event_i == 3) {
+                    Assert.assertEquals(event.getReaderName(), reader.getName());
+                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+                    secondInsertLock.countDown();
+                }
+                if (event_i == 4) {
+                    Assert.assertEquals(event.getReaderName(), reader.getName());
+                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_REMOVAL, event.getEventType());
+                    secondRemoveLock.countDown();
+                }
+                event_i++;
+            }
+        });
+        // test first sequence
+        reader.insertSe(hoplinkSE());
+
+        // lock thread for 2 seconds max to wait for the event SE_INSERTED
+        firstInsertLock.await(2, TimeUnit.SECONDS);
+        Assert.assertEquals(0, firstInsertLock.getCount()); // should be 0 because insertLock is
+        // countDown by obs
+
+
+        reader.removeSe();
+
+        // lock thread for 2 seconds max to wait for the event SE_REMOVAL
+        firstRemoveLock.await(2, TimeUnit.SECONDS);
+        Assert.assertEquals(0, firstRemoveLock.getCount()); // should be 0 because removeLock is
+        // countDown by obs
+
+        // BUG, insert event is not throw without (1)
+        // BUG (1) make thread sleep
+        // BUG, solved by setting a lower threadWaitTimeout (100ms)
+
+        // test second sequence
+        reader.insertSe(hoplinkSE());
+
+        // lock thread for 2 seconds max to wait for the event SE_INSERTED
+        secondInsertLock.await(2, TimeUnit.SECONDS);
+
+        Assert.assertEquals(0, secondInsertLock.getCount()); // should be 0 because insertLock is
+        // countDown by obs
+        reader.removeSe();
+
+        // lock thread for 2 seconds max to wait for the event SE_REMOVAL
+        secondRemoveLock.await(2, TimeUnit.SECONDS);
+        Assert.assertEquals(0, secondRemoveLock.getCount()); // should be 0 because removeLock is
+        // countDown by obs
+
+        Assert.assertFalse(reader.checkSePresence());
 
     }
 
     @Test
-    public void testInsertMatchingSe() throws InterruptedException {
+    public void testInsertMatchingSe() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
@@ -241,7 +454,10 @@ public class StubReaderTest {
 
 
     @Test
-    public void testInsertNotMatching_MatchedOnly() throws InterruptedException {
+    public void testInsertNotMatching_MatchedOnly() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
@@ -278,7 +494,10 @@ public class StubReaderTest {
     }
 
     @Test
-    public void testInsertNotMatching_Always() throws InterruptedException {
+    public void testInsertNotMatching_Always() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
@@ -331,7 +550,10 @@ public class StubReaderTest {
     }
 
     @Test
-    public void testATR() throws InterruptedException {
+    public void testATR() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
@@ -378,8 +600,18 @@ public class StubReaderTest {
     }
 
 
+    /*
+     * TEST
+     *
+     * TRANSMIT
+     *
+     */
+
     @Test(expected = IllegalArgumentException.class)
     public void transmit_Hoplink_null() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         reader.insertSe(hoplinkSE());
         reader.transmitSet((SeRequestSet) null);
 
@@ -387,7 +619,10 @@ public class StubReaderTest {
     }
 
     @Test
-    public void transmit_Hoplink_Successful() throws KeypleReaderException, InterruptedException {
+    public void transmit_Hoplink_Successful() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequestSet requests = getRequestIsoDepSetSample();
 
@@ -430,7 +665,10 @@ public class StubReaderTest {
 
 
     @Test(expected = KeypleReaderException.class)
-    public void transmit_no_response() throws KeypleReaderException, InterruptedException {
+    public void transmit_no_response() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequestSet requests = getNoResponseRequest();
 
@@ -450,8 +688,10 @@ public class StubReaderTest {
     }
 
     @Test
-    public void transmit_partial_response_set_0()
-            throws KeypleReaderException, InterruptedException {
+    public void transmit_partial_response_set_0() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequestSet seRequestSet = getPartialRequestSet(0);
 
@@ -477,8 +717,10 @@ public class StubReaderTest {
     }
 
     @Test
-    public void transmit_partial_response_set_1()
-            throws KeypleReaderException, InterruptedException {
+    public void transmit_partial_response_set_1() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequestSet seRequestSet = getPartialRequestSet(1);
 
@@ -509,8 +751,10 @@ public class StubReaderTest {
 
 
     @Test
-    public void transmit_partial_response_set_2()
-            throws KeypleReaderException, InterruptedException {
+    public void transmit_partial_response_set_2() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequestSet seRequestSet = getPartialRequestSet(2);
 
@@ -540,8 +784,10 @@ public class StubReaderTest {
     }
 
     @Test
-    public void transmit_partial_response_set_3()
-            throws KeypleReaderException, InterruptedException {
+    public void transmit_partial_response_set_3() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequestSet seRequestSet = getPartialRequestSet(3);
 
@@ -571,7 +817,10 @@ public class StubReaderTest {
     }
 
     @Test
-    public void transmit_partial_response_0() throws KeypleReaderException, InterruptedException {
+    public void transmit_partial_response_0() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequest seRequest = getPartialRequest(0);
 
@@ -596,7 +845,10 @@ public class StubReaderTest {
 
 
     @Test
-    public void transmit_partial_response_1() throws KeypleReaderException, InterruptedException {
+    public void transmit_partial_response_1() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequest seRequest = getPartialRequest(1);
 
@@ -620,7 +872,10 @@ public class StubReaderTest {
     }
 
     @Test
-    public void transmit_partial_response_2() throws KeypleReaderException, InterruptedException {
+    public void transmit_partial_response_2() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequest seRequest = getPartialRequest(2);
 
@@ -644,7 +899,10 @@ public class StubReaderTest {
     }
 
     @Test
-    public void transmit_partial_response_3() throws KeypleReaderException, InterruptedException {
+    public void transmit_partial_response_3() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequest seRequest = getPartialRequest(3);
 
@@ -673,19 +931,28 @@ public class StubReaderTest {
      */
 
     @Test
-    public void testGetName() {
+    public void testGetName() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         Assert.assertNotNull(reader.getName());
     }
 
     // Set wrong parameter
     @Test(expected = KeypleReaderException.class)
     public void testSetWrongParameter() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         reader.setParameter("WRONG_PARAMETER", "a");
     }
 
     // Set wrong parameters
     @Test(expected = KeypleReaderException.class)
     public void testSetWrongParameters() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("WRONG_PARAMETER", "d");
         parameters.put(StubReader.ALLOWED_PARAMETER_1, "a");
@@ -695,6 +962,10 @@ public class StubReaderTest {
     // Set correct parameters
     @Test
     public void testSetParameters() throws Exception {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+
         Map<String, String> p1 = new HashMap<String, String>();
         p1.put(StubReader.ALLOWED_PARAMETER_1, "a");
         p1.put(StubReader.ALLOWED_PARAMETER_2, "a");
@@ -702,28 +973,7 @@ public class StubReaderTest {
         reader.setParameters(p1);
         Map<String, String> p2 = reader.getParameters();
         assert (p1.equals(p2));
-
-
     }
-
-
-    /**
-     * AbstractObservableReader methods test
-     *
-     * @throws Exception
-     */
-
-
-    ObservableReader.ReaderObserver obs1 = new ObservableReader.ReaderObserver() {
-        @Override
-        public void update(ReaderEvent readerEvent) {}
-    };
-
-    ObservableReader.ReaderObserver obs2 = new ObservableReader.ReaderObserver() {
-        @Override
-        public void update(ReaderEvent readerEvent) {}
-    };
-
 
 
     /*
@@ -953,10 +1203,7 @@ public class StubReaderTest {
     }
 
     static public StubSecureElement partialSE() {
-
-
         return new StubSecureElement() {
-
             @Override
             public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
 
@@ -1022,5 +1269,41 @@ public class StubReaderTest {
 
     static public ApduRequest getApduSample() {
         return new ApduRequest(ByteArrayUtil.fromHex("FEDCBA98 9005h"), false);
+    }
+
+    static public void selectSe(SeReader reader) throws KeypleReaderException {
+        /**
+         * Create a new local class extending AbstractSeSelectionRequest
+         */
+        class GenericSeSelectionRequest extends AbstractSeSelectionRequest {
+            TransmissionMode transmissionMode;
+
+            public GenericSeSelectionRequest(SeSelector seSelector, ChannelState channelState) {
+                super(seSelector, channelState);
+                transmissionMode = seSelector.getSeProtocol().getTransmissionMode();
+            }
+
+            @Override
+            protected AbstractMatchingSe parse(SeResponse seResponse) {
+                class GenericMatchingSe extends AbstractMatchingSe {
+                    public GenericMatchingSe(SeResponse selectionResponse,
+                            TransmissionMode transmissionMode, String extraInfo) {
+                        super(selectionResponse, transmissionMode, extraInfo);
+                    }
+                }
+                return new GenericMatchingSe(seResponse, transmissionMode, "Generic Matching SE");
+            }
+        }
+
+        SeSelection seSelection = new SeSelection();
+        GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                        new SeSelector.AtrFilter("3B.*"), null, "ATR selection"),
+                ChannelState.KEEP_OPEN);
+
+        /* Prepare selector, ignore AbstractMatchingSe here */
+        seSelection.prepareSelection(genericSeSelectionRequest);
+
+        seSelection.processExplicitSelection(reader);
     }
 }

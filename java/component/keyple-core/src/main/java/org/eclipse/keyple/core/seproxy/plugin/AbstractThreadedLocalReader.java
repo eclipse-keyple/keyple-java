@@ -99,6 +99,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
          */
         private final String readerName;
 
+
         /**
          * If the thread should be kept a alive
          */
@@ -130,12 +131,14 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                 // First thing we'll do is to notify that a card was inserted if one is already
                 // present.
                 if (isSePresent()) {
+                    logger.trace("[{}] Card is already present in reader", readerName);
                     cardInserted();
                 }
 
                 while (running) {
                     // If we have a card,
                     if (isSePresent()) {
+                        logger.trace("[{}] Observe card removal", readerName);
                         // we will wait for it to disappear
                         if (waitForCardAbsent(threadWaitTimeout)) {
                             // and notify about it.
@@ -145,6 +148,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                     }
                     // If we don't,
                     else {
+                        logger.trace("[{}] observe card insertion", readerName);
                         // we will wait for it to appear
                         if (waitForCardPresent(threadWaitTimeout)) {
                             cardInserted();

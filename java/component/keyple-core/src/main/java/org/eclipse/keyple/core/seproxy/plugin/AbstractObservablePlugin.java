@@ -159,6 +159,12 @@ public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<
         }
     }
 
+    @Override
+    public void clearObservers() {
+        super.clearObservers();
+        stopObservation();
+    }
+
     /**
      * Compare the name of the current ReaderPlugin to the name of the ReaderPlugin provided in
      * argument
