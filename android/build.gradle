@@ -15,11 +15,6 @@ buildscript {
 apply from: '../common.gradle'
 
 subprojects {
-    /*
-    plugins {
-        id "com.diffplug.gradle.spotless" version "3.14.0"
-    }
-    */
 
     group 'org.eclipse.keyple'
     apply plugin: 'pmd'
@@ -44,37 +39,9 @@ subprojects {
                 "java-braces",
         ]
     }
-
-
-//    spotless {
-//        java {
-//            target '**/*.java'
-//
-//            licenseHeaderFile '../.build/spotless.license.txt'
-//
-//            importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
-//
-//            removeUnusedImports()
-//
-//            eclipse().configFile '../.build/spotless.eclipseformat.xml'
-//        }
-//
-//        format 'misc', {
-//            target '**/*.java', '**/*.gradle', '**/*.yml', '**/*.md'
-//
-//            indentWithSpaces()
-//            endWithNewline()
-//        }
-//    }
-
-
+    
 }
 
-
-allprojects {
-
-
-}
 
 
 //create task for to agragate javadoc
