@@ -38,8 +38,9 @@ import org.slf4j.LoggerFactory;
 import android.util.Log;
 
 /**
- * Communicates with Android readers throught the Open Mobile API see {@link Reader} Instances of
- * this class represent SE readers supported by this device. These readers can be physical devices
+ * Communicates with Android readers throught the Open Mobile API see org.simalliance.openmobileapi.Reader
+ *
+ * Instances of this class represent SE readers supported by this device. These readers can be physical devices
  * or virtual devices. They can be removable or not. They can contain one SE that can or cannot be
  * removed.
  */
@@ -85,12 +86,10 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
 
     /**
      * Check if a SE is present in this reader. see {@link Reader#isSecureElementPresent()}
-     * 
      * @return True if the SE is present, false otherwise
-     * @throws KeypleReaderException
      */
     @Override
-    protected boolean checkSePresence() throws NoStackTraceThrowable {
+    protected boolean checkSePresence() {
         return omapiReader.isSecureElementPresent();
     }
 
@@ -178,9 +177,7 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
     }
 
     /**
-     * Close session see {@link Session#close()}
-     * 
-     * @throws KeypleReaderException
+     * Close session see org.simalliance.openmobileapi.Session#close()
      */
     @Override
     protected void closePhysicalChannel() {
@@ -192,11 +189,11 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
     }
 
     /**
-     * Transmit an APDU command (as per ISO/IEC 7816) to the SE see {@link Channel#transmit(byte[])}
+     * Transmit an APDU command (as per ISO/IEC 7816) to the SE see org.simalliance.openmobileapi.Channel#transmit(byte[])
      * 
      * @param apduIn byte buffer containing the ingoing data
-     * @return
-     * @throws KeypleReaderException
+     * @return apduOut response
+     * @throws KeypleIOReaderException if error while sending or receiving bytes
      */
     @Override
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
@@ -217,11 +214,9 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
     }
 
     /**
-     * The only protocol Fla
-     * 
+     * Check that protocolFlag is PROTOCOL_ISO7816_3
      * @param protocolFlag
-     * @return true
-     * @throws KeypleReaderException
+     * @return true if match PROTOCOL_ISO7816_3
      */
     @Override
     protected boolean protocolFlagMatches(SeProtocol protocolFlag) {
