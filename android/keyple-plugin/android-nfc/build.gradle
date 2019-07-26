@@ -1,9 +1,17 @@
+def version = "0.7.0"
+
+if(project.getProperties().containsKey("release") && release=="true"){
+    project.version = version
+}else{
+    project.version = version+'-'+ timestamp+ '-SNAPSHOT'
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
+archivesBaseName = "keyple-android-plugin-nfc"
 
 project.group 'org.eclipse.keyple'
-project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
 project.description = 'Keyple Plugin Android Nfc'
 
 android {
@@ -18,7 +26,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled  false
         }
     }
 
@@ -138,7 +146,7 @@ uploadArchives  {
             }
 
             pom.project {
-                name project.name
+                name project.description
                 description project.description
                 packaging "aar"
 

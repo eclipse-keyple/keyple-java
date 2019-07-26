@@ -1,11 +1,17 @@
-project.version = '0.7.0'+'-'+ timestamp + '-SNAPSHOT'
+def version = "0.7.0"
+
+if(project.getProperties().containsKey("release") && release=="true"){
+    project.version = version
+}else{
+    project.version = version+'-'+ timestamp+ '-SNAPSHOT'
+}
 
 apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'maven'
 
 sourceCompatibility = 1.6
-
+archivesBaseName = "keyple-java-calypso"
 project.description = 'Keyple Calypso'
 
 //copy license file from root folder to each generated artifact
@@ -20,6 +26,9 @@ task copyNOTICE(type: Copy) {
     into file("${buildDir}/resources/main/META-INF/")
 }
 
+classes.dependsOn copyLICENSE, copyNOTICE
+
+
 //declare manifest
 jar {
     manifest {
@@ -27,8 +36,6 @@ jar {
                 'Implementation-Version': project.version
     }
 }
-
-classes.dependsOn copyLICENSE, copyNOTICE
 
 //generate sources jar
 task sourcesJar(type: Jar, dependsOn : classes) {
@@ -85,7 +92,7 @@ uploadArchives {
     repositories {
         mavenDeployer {
             pom.project {
-                name project.name
+                name project.description
                 description project.description
 
                 organization("Eclipse Keyple"){
