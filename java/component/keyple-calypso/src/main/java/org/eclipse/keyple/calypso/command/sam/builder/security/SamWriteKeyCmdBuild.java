@@ -43,7 +43,7 @@ public class SamWriteKeyCmdBuild extends AbstractSamCommandBuilder {
         }
 
         if (keyData.length < 48 && keyData.length > 80) {
-            throw new IllegalArgumentException("Key data should be between 48 and 80 bytes long!");
+            throw new IllegalArgumentException("Key data should be between 40 and 80 bytes long!");
         }
 
         request = setApduRequest(cla, command, writingMode, keyReference, keyData, null);
