@@ -1,13 +1,18 @@
-project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
+def version = "0.7.0"
+
+if(project.getProperties().containsKey("release") && release=="true"){
+    project.version = version
+}else{
+    project.version = version+'-'+ timestamp+ '-SNAPSHOT'
+}
 
 apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'maven'
 
 sourceCompatibility = 1.6
-
+archivesBaseName = "keyple-java-plugin-pcsc"
 project.description ='Keyple Plugin Pcsc'
-
 
 //copy license file from root folder to each generated artifact
 task copyLICENSEplugin(type: Copy) {
@@ -60,7 +65,7 @@ if (project.getProperties().containsKey("doSign") && doSign=="true") {
 }
 
 //define local or remote upload repository (based on the doSign variable)
-/* from https://central.sonatype.org/pages/gradle.html */
+/* from https://central.sonatype.org/pages/gradle.html
 uploadArchives {
     repositories {
         mavenDeployer {
@@ -80,13 +85,27 @@ uploadArchives {
         }
     }
 }
+ */
 
 //overwrite pom definition values
 uploadArchives {
     repositories {
         mavenDeployer {
+            if (project.getProperties().containsKey("doSign") && doSign=="true") {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+            }else {
+                repository(url: mavenLocal().url)
+            }
+
             pom.project {
-                name project.name
                 description project.description
 
                 organization("Eclipse Keyple"){

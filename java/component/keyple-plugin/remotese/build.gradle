@@ -1,11 +1,17 @@
-project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
+def version = "0.7.0"
+
+if(project.getProperties().containsKey("release") && release=="true"){
+    project.version = version
+}else{
+    project.version = version+'-'+ timestamp+ '-SNAPSHOT'
+}
 
 apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'maven'
 
 project.description ='Keyple Remote SE Plugin Master and Slave'
-
+archivesBaseName = "keyple-java-plugin-remotese"
 sourceCompatibility = 1.6
 
 //copy license file from root folder to each generated artifact
@@ -85,7 +91,7 @@ uploadArchives {
     repositories {
         mavenDeployer {
             pom.project {
-                name project.name
+                name "Keyple Plugin Remotese"
                 description project.description
 
                 organization("Eclipse Keyple"){
