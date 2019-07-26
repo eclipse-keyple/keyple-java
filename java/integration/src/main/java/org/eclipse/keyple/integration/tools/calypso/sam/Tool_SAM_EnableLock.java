@@ -54,7 +54,6 @@ public class Tool_SAM_EnableLock {
         // create an apdu requests list to handle SAM command
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
 
-        // get the challenge from the PO
         apduRequests
                 .add(new SamWriteKeyCmdBuild(SamRevision.C1, (byte) 0x80, (byte) 0xE0, setLockData)
                         .getApduRequest());
