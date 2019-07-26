@@ -15,7 +15,6 @@ sourceCompatibility = 1.6
 archivesBaseName = "keyple-java-core"
 project.description ='Keyple Core'
 
-
 task copyVersionFile {
     //generate properties file META-INF/keyple.properties with version number
     def props = new Properties()
