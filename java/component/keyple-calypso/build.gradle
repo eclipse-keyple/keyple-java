@@ -2,8 +2,11 @@ project.version = '0.7.0'+'-'+ timestamp + '-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'java-library'
+apply plugin: 'maven'
 
 sourceCompatibility = 1.6
+
+project.description = 'Keyple Calypso'
 
 //copy license file from root folder to each generated artifact
 task copyLICENSE(type: Copy) {
@@ -17,20 +20,123 @@ task copyNOTICE(type: Copy) {
     into file("${buildDir}/resources/main/META-INF/")
 }
 
-
-
+//declare manifest
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Keyple Calypso',
+        attributes 'Implementation-Title': project.description,
                 'Implementation-Version': project.version
     }
 }
 
 classes.dependsOn copyLICENSE, copyNOTICE
 
+//generate sources jar
+task sourcesJar(type: Jar, dependsOn : classes) {
+    classifier = 'sources'
+    from sourceSets.main.output, sourceSets.main.java
+}
+
+//generate javadoc jar
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+//publish javadoc, sources and jar
+artifacts {
+    archives sourcesJar, javadocJar
+}
+
+//sign if needed (based on the doSign variable)
+if (project.getProperties().containsKey("doSign") && doSign=="true") {
+    apply plugin: 'signing'
+
+    ext."signing.keyId" = "0C140E36"
+    //other properties are defined in the gradle.properties
+    signing {
+        sign configurations.archives
+    }
+}
+
+//define local or remote upload repository (based on the doSign variable)
+/* from https://central.sonatype.org/pages/gradle.html */
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            if (project.getProperties().containsKey("doSign") && doSign=="true") {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+            }else {
+                repository(url: mavenLocal().url)
+            }
+        }
+    }
+}
+
+//overwrite pom definition values
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name project.name
+                description project.description
+
+                organization("Eclipse Keyple"){
+                    name "Eclipse Keyple"
+                    url "https://projects.eclipse.org/projects/iot.keyple"
+                }
+
+                scm {
+                    connection 'scm:git:git://github.com/eclipse/keyple-java.git'
+                    developerConnection 'scm:git:https://github.com/eclipse/keyple-java.git'
+                    url 'http://github.com/eclipse/keyple-java/tree/master'
+                }
+
+
+                licenses {
+                    license {
+                        name 'Eclipse Public License - v 2.0'
+                        url 'https://www.eclipse.org/legal/epl-2.0/'
+                    }
+                }
+
+                developers {
+                    developer {
+                        name 'Olivier Delcroix'
+                        email 'odelcroi@gmail.com'
+                    }
+                    developer {
+                        name 'Jean-Pierre Fortune'
+                        email 'jean-pierre.fortune@ialto.com'
+                    }
+                    developer {
+                        name 'Pierre Terrée'
+                        email 'pierre.terree@calypsonet.org'
+                    }
+                }
+
+                //dependencies mapping is defined manually
+                pom.scopeMappings.with {
+                    mappings.clear()
+                    addMapping(1, configurations.api, 'runtime')
+                    addMapping(2, configurations.testImplementation, 'test')
+                }
+
+            }
+        }
+    }
+}
 
 dependencies {
-    implementation project(path: ':java:component:keyple-core')
+    //keyple-core project
+    api project(path: ':java:component:keyple-core')
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     api "org.slf4j:slf4j-api:${slf4japi_version}"

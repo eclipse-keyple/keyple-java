@@ -113,7 +113,6 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
      * @param groupReference the reference of the group to which the reader belongs (may be null
      *        depending on the implementation made)
      * @return seReader if available, null otherwise
-     * @throws KeypleReaderException
      */
     @Override
     public SeReader allocateReader(String groupReference) {
@@ -134,7 +133,6 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
      * Release a reader
      * 
      * @param seReader the SeReader to be released.
-     * @throws KeypleReaderException
      */
     @Override
     public void releaseReader(SeReader seReader) {

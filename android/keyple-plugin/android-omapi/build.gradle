@@ -1,12 +1,9 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
-
 group 'org.eclipse.keyple'
 project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
-
-
-
+project.description = 'Keyple Plugin Android OMAPI'
 
 pmd {
     ruleSets = [
@@ -14,8 +11,6 @@ pmd {
             "java-braces",
     ]
 }
-
-
 
 android {
     compileSdkVersion 26
@@ -61,7 +56,7 @@ android {
     libraryVariants.all { variant ->
         task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
             description "Generates Javadoc for variant ${variant.name.capitalize()}"
-            println "Generates Javadoc for variant ${variant.name.capitalize()}"
+           // println "Generates Javadoc task for variant ${variant.name.capitalize()}"
 
             source = variant.javaCompile.source
             options.links("http://docs.oracle.com/javase/6/docs/api/")
@@ -92,30 +87,48 @@ android {
 
 }
 
+
+//build javadoc
+task javadoc(type: Javadoc) {
+    failOnError false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+}
+
+// build a jar with javadoc
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+//build sources jar
 task androidSourcesJar(type: Jar) {
     classifier = 'sources'
     from android.sourceSets.main.java.sourceFiles
 }
 
 artifacts {
-    archives androidSourcesJar
+    archives androidSourcesJar, javadocJar
 }
 
-
+//sign if needed (based on the doSign variable)
 if (project.getProperties().containsKey("doSign") && doSign=="true") {
     apply plugin: 'signing'
-
 
     ext."signing.keyId" = "0C140E36"
     //other properties are defined in the gradle.properties
     signing {
         sign configurations.archives
     }
+}
 
-    /* from https://central.sonatype.org/pages/gradle.html */
-    uploadArchives  {
-        repositories {
-            mavenDeployer {
+/* from https://central.sonatype.org/pages/gradle.html */
+uploadArchives  {
+    repositories {
+        //define local or remote upload repository (based on the doSign variable)
+        mavenDeployer {
+            if (project.getProperties().containsKey("doSign") && doSign=="true") {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
                 repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
@@ -125,56 +138,61 @@ if (project.getProperties().containsKey("doSign") && doSign=="true") {
                 snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
                     authentication(userName: ossrhUsername, password: ossrhPassword)
                 }
+            }else {
+                repository(url: mavenLocal().url)
+            }
 
-                pom.project {
-                    name project.name
-                    packaging "aar"
-                    // optionally artifactId can be defined here
-                    description project.description
-                    url 'https://projects.eclipse.org/projects/iot.keyple'
+            pom.project {
+                name project.name
+                description project.description
+                packaging "aar"
 
-                    scm {
-                        connection 'scm:git:git://github.com/eclipse/keyple-java.git'
-                        developerConnection 'scm:git:https://github.com/eclipse/keyple-java.git'
-                        url 'http://github.com/eclipse/keyple-java/tree/master'
+                organization("Eclipse Keyple"){
+                    name "Eclipse Keyple"
+                    url "https://projects.eclipse.org/projects/iot.keyple"
+                }
+
+                scm {
+                    connection 'scm:git:git://github.com/eclipse/keyple-java.git'
+                    developerConnection 'scm:git:https://github.com/eclipse/keyple-java.git'
+                    url 'http://github.com/eclipse/keyple-java/tree/master'
+                }
+
+                licenses {
+                    license {
+                        name 'Eclipse Public License - v 2.0'
+                        url 'https://www.eclipse.org/legal/epl-2.0/'
                     }
+                }
 
-
-                    licenses {
-                        license {
-                            name 'Eclipse Public License - v 2.0'
-                            url 'https://www.eclipse.org/legal/epl-2.0/'
-                        }
+                developers {
+                    developer {
+                        name 'Olivier Delcroix'
+                        email 'odelcroi@gmail.com'
                     }
-
-                    developers {
-                        developer {
-                            name 'Olivier Delcroix'
-                            email 'odelcroi@gmail.com'
-                            organization 'Eclipse Keyple'
-                            organizationUrl 'https://projects.eclipse.org/projects/iot.keyple'
-                        }
-                        developer {
-                            name 'Jean-Pierre Fortune'
-                            email 'jean-pierre.fortune@ialto.com'
-                            organization 'Eclipse Keyple'
-                            organizationUrl 'https://projects.eclipse.org/projects/iot.keyple'
-                        }
-                        developer {
-                            name 'Pierre Terrée'
-                            email 'pierre.terree@calypsonet.org'
-                            organization 'Eclipse Keyple'
-                            organizationUrl 'https://projects.eclipse.org/projects/iot.keyple'
-                        }
+                    developer {
+                        name 'Jean-Pierre Fortune'
+                        email 'jean-pierre.fortune@ialto.com'
                     }
+                    developer {
+                        name 'Pierre Terrée'
+                        email 'pierre.terree@calypsonet.org'
+                    }
+                }
+
+                //dependencies mapping is defined manually
+                pom.scopeMappings.with {
+                    mappings.clear()
+                    addMapping(1, configurations.implementation, 'compile')
+                    //addMapping(2, configurations.compileOnly, 'runtime') openmobileapi is included in Android
+                    addMapping(2, configurations.testImplementation, 'test')
+                    addMapping(3, configurations.androidTestImplementation, 'test')
+
                 }
             }
         }
     }
-
 }
-
-
 
 repositories {
     mavenLocal()
@@ -186,14 +204,17 @@ repositories {
 dependencies {
     implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
 
+    //keyple-core project
+    implementation project(path:":java:component:keyple-core")
 
+    //android
     implementation "com.android.support:support-v4:${android_support_version}"
     implementation "com.android.support:appcompat-v7:${android_support_version}"
 
+    //logging
     implementation "org.slf4j:slf4j-api:${slf4japi_version}"
 
-    implementation project(path:":java:component:keyple-core")
-
+    //omapi definition
     compileOnly files('libs/org.simalliance.openmobileapi.jar')
     /*
     Tests
