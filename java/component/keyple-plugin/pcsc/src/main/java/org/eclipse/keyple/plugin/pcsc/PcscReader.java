@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.pcsc;
 
+import static org.eclipse.keyple.plugin.pcsc.PcscReaderSettings.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -23,27 +24,9 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class PcscReader extends AbstractThreadedLocalReader {
+final class PcscReader extends AbstractThreadedLocalReader {
 
     private static final Logger logger = LoggerFactory.getLogger(PcscReader.class);
-    public static final String SETTING_KEY_TRANSMISSION_MODE = "transmission_mode";
-    public static final String SETTING_TRANSMISSION_MODE_CONTACTS = "contacts";
-    public static final String SETTING_TRANSMISSION_MODE_CONTACTLESS = "contactless";
-    public static final String SETTING_KEY_PROTOCOL = "protocol";
-    public static final String SETTING_PROTOCOL_T0 = "T0";
-    public static final String SETTING_PROTOCOL_T1 = "T1";
-    public static final String SETTING_PROTOCOL_T_CL = "TCL";
-    public static final String SETTING_PROTOCOL_TX = "Tx";
-    public static final String SETTING_KEY_MODE = "mode";
-    public static final String SETTING_MODE_EXCLUSIVE = "exclusive";
-    public static final String SETTING_MODE_SHARED = "shared";
-    public static final String SETTING_KEY_DISCONNECT = "disconnect";
-    public static final String SETTING_DISCONNECT_RESET = "reset";
-    public static final String SETTING_DISCONNECT_UNPOWER = "unpower";
-    public static final String SETTING_DISCONNECT_LEAVE = "leave";
-    public static final String SETTING_DISCONNECT_EJECT = "eject";
-    public static final String SETTING_KEY_THREAD_TIMEOUT = "thread_wait_timeout";
-    public static final String SETTING_KEY_LOGGING = "logging";
 
     private static final String PROTOCOL_T0 = "T=0";
     private static final String PROTOCOL_T1 = "T=1";
