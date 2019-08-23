@@ -13,6 +13,7 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -121,7 +122,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                          */
                         /* build changed reader names list */
                         changedReaderNames.clear();
-                        for (AbstractObservableReader reader : readers) {
+                        for (SeReader reader : readers) {
                             if (!actualNativeReadersNames.contains(reader.getName())) {
                                 changedReaderNames.add(reader.getName());
                             }
@@ -133,7 +134,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                             notifyObservers(new PluginEvent(this.pluginName, changedReaderNames,
                                     PluginEvent.EventType.READER_DISCONNECTED));
                             /* list update */
-                            for (AbstractObservableReader reader : readers) {
+                            for (SeReader reader : readers) {
                                 if (!actualNativeReadersNames.contains(reader.getName())) {
                                     readers.remove(reader);
                                     logger.trace(
@@ -152,7 +153,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractObservabl
                          */
                         for (String readerName : actualNativeReadersNames) {
                             if (!nativeReadersNames.contains(readerName)) {
-                                AbstractObservableReader reader = fetchNativeReader(readerName);
+                                SeReader reader = fetchNativeReader(readerName);
                                 readers.add(reader);
                                 /* add to the notification list */
                                 changedReaderNames.add(readerName);
