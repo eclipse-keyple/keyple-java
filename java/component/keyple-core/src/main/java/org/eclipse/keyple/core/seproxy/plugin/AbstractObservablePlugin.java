@@ -88,8 +88,7 @@ public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<
 
     /**
      * Fetch connected native readers (from third party library) and returns a list of corresponding
-     * {@link SeReader}
-     * {@link SeReader} are new instances.
+     * {@link SeReader}. {@link SeReader} are new instances.
      * 
      * @return the list of SeReader objects.
      * @throws KeypleReaderException if a reader error occurs
@@ -98,9 +97,7 @@ public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<
 
     /**
      * Fetch connected native reader (from third party library) by its name Returns the current
-     * {@link SeReader} if it is already
-     * listed. Creates and returns a new
-     * {@link SeReader} if not.
+     * {@link SeReader} if it is already listed. Creates and returns a new {@link SeReader} if not.
      *
      * @return the list of SeReader objects.
      * @throws KeypleReaderException if a reader error occurs
