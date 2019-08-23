@@ -22,6 +22,7 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
@@ -29,7 +30,7 @@ import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class PcscPlugin extends AbstractThreadedObservablePlugin {
+final class PcscPlugin extends AbstractThreadedObservablePlugin {
 
     private static final Logger logger = LoggerFactory.getLogger(PcscPlugin.class);
 
@@ -45,7 +46,7 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
 
     private boolean logging = false;
 
-    private PcscPlugin() {
+    PcscPlugin() {
         super("PcscPlugin");
     }
 
@@ -115,9 +116,8 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
      * @throws KeypleReaderException if a reader error occurs
      */
     @Override
-    protected SortedSet<AbstractObservableReader> initNativeReaders() throws KeypleReaderException {
-        SortedSet<AbstractObservableReader> nativeReaders =
-                new ConcurrentSkipListSet<AbstractObservableReader>();
+    protected SortedSet<SeReader> initNativeReaders() throws KeypleReaderException {
+        SortedSet<SeReader> nativeReaders = new ConcurrentSkipListSet<SeReader>();
 
         // parse the current readers list to create the ProxyReader(s) associated with new reader(s)
         CardTerminals terminals = getCardTerminals();
@@ -149,9 +149,9 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
      * @throws KeypleReaderException if a reader error occurs
      */
     @Override
-    protected AbstractObservableReader fetchNativeReader(String name) throws KeypleReaderException {
+    protected SeReader fetchNativeReader(String name) throws KeypleReaderException {
         // return the current reader if it is already listed
-        for (AbstractObservableReader reader : readers) {
+        for (SeReader reader : readers) {
             if (reader.getName().equals(name)) {
                 return reader;
             }
