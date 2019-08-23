@@ -24,9 +24,9 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
-import org.eclipse.keyple.plugin.pcsc.PcscReader;
+import org.eclipse.keyple.plugin.pcsc.PcscReaderSettings;
 
 public class TestEngine {
 
@@ -93,7 +93,7 @@ public class TestEngine {
 
         SeProxyService seProxyService = SeProxyService.getInstance();
         SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
-        pluginsSet.add(PcscPlugin.getInstance());
+        pluginsSet.add(PcscPluginFactory.getInstance().getPluginInstance());
         seProxyService.setPlugins(pluginsSet);
 
         final String PO_READER_NAME_REGEX = ".*(ASK|ACS).*";
@@ -114,8 +114,10 @@ public class TestEngine {
         System.out.println(
                 "==================================================================================");
 
-        poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
-        samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
+        poReader.setParameter(PcscReaderSettings.SETTING_KEY_PROTOCOL,
+                PcscReaderSettings.SETTING_PROTOCOL_T1);
+        samReader.setParameter(PcscReaderSettings.SETTING_KEY_PROTOCOL,
+                PcscReaderSettings.SETTING_PROTOCOL_T0);
 
         // provide the reader with the protocol settings
         poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,

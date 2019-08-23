@@ -26,9 +26,9 @@ import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.integration.IntegrationUtils;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
-import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
-import org.eclipse.keyple.plugin.pcsc.PcscReader;
+import org.eclipse.keyple.plugin.pcsc.PcscReaderSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,11 +42,8 @@ public class Demo_WriteName {
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Get the instance of the PC/SC plugin */
-        PcscPlugin pcscPlugin = PcscPlugin.getInstance();
-
         /* Assign PcscPlugin to the SeProxyService */
-        seProxyService.addPlugin(pcscPlugin);
+        seProxyService.addPlugin(PcscPluginFactory.getInstance().getPluginInstance());
 
         SeReader poReader =
                 IntegrationUtils.getReader(seProxyService, IntegrationUtils.PO_READER_NAME_REGEX);
@@ -67,7 +64,8 @@ public class Demo_WriteName {
             throw new IllegalStateException("Bad PO or SAM reader setup");
         }
 
-        samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
+        samReader.setParameter(PcscReaderSettings.SETTING_KEY_PROTOCOL,
+                PcscReaderSettings.SETTING_PROTOCOL_T0);
 
         logger.info("= PO Reader  NAME = {}", poReader.getName());
         logger.info("= SAM Reader  NAME = {}", samReader.getName());

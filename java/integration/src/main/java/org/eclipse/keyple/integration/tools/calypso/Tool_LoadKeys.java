@@ -39,9 +39,9 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.integration.IntegrationUtils;
-import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
-import org.eclipse.keyple.plugin.pcsc.PcscReader;
+import org.eclipse.keyple.plugin.pcsc.PcscReaderSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -166,11 +166,8 @@ public class Tool_LoadKeys {
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Get the instance of the PC/SC plugin */
-        PcscPlugin pcscPlugin = PcscPlugin.getInstance();
-
         /* Assign PcscPlugin to the SeProxyService */
-        seProxyService.addPlugin(pcscPlugin);
+        seProxyService.addPlugin(PcscPluginFactory.getInstance().getPluginInstance());
 
         ProxyReader poReader = (ProxyReader) IntegrationUtils.getReader(seProxyService,
                 IntegrationUtils.PO_READER_NAME_REGEX);
@@ -194,7 +191,8 @@ public class Tool_LoadKeys {
         logger.info("= PO Reader   NAME = {}", poReader.getName());
         logger.info("= SAM Reader  NAME = {}", samReader.getName());
 
-        samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
+        samReader.setParameter(PcscReaderSettings.SETTING_KEY_PROTOCOL,
+                PcscReaderSettings.SETTING_PROTOCOL_T0);
 
         // provide the reader with the settings
         poReader.setSeProtocolSetting(PcscProtocolSetting.getAllSettings());

@@ -32,9 +32,9 @@ import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.integration.IntegrationUtils;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
-import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
-import org.eclipse.keyple.plugin.pcsc.PcscReader;
+import org.eclipse.keyple.plugin.pcsc.PcscReaderSettings;
 
 @SuppressWarnings("PMD.VariableNamingConventions")
 public class Demo_ValidationTransaction implements ObservableReader.ReaderObserver {
@@ -384,7 +384,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         SeProxyService seProxyService = SeProxyService.getInstance();
         SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
-        pluginsSet.add(PcscPlugin.getInstance());
+        pluginsSet.add(PcscPluginFactory.getInstance().getPluginInstance());
         seProxyService.setPlugins(pluginsSet);
 
         SeReader poReader =
@@ -412,8 +412,10 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
         System.out.println(
                 "==================================================================================");
 
-        poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
-        samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
+        poReader.setParameter(PcscReaderSettings.SETTING_KEY_PROTOCOL,
+                PcscReaderSettings.SETTING_PROTOCOL_T1);
+        samReader.setParameter(PcscReaderSettings.SETTING_KEY_PROTOCOL,
+                PcscReaderSettings.SETTING_PROTOCOL_T0);
 
         // provide the reader with the protocol settings
         poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,

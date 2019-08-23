@@ -14,7 +14,7 @@ package org.eclipse.keyple.example.generic.pc;
 
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.example.generic.common.ObservableReaderNotificationEngine;
-import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 
 
 public class Demo_ObservableReaderNotification_Pcsc {
@@ -26,7 +26,8 @@ public class Demo_ObservableReaderNotification_Pcsc {
         /* Instantiate SeProxyService and add PC/SC plugin */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        seProxyService.addPlugin(PcscPlugin.getInstance());
+        /* Get the instance and assign the PcscPlugin to the SeProxyService */
+        seProxyService.addPlugin(PcscPluginFactory.getInstance().getPluginInstance());
 
         /* Set observers */
         demoEngine.setPluginObserver();
