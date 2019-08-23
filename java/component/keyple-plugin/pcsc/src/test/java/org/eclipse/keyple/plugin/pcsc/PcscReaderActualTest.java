@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.pcsc;
 
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
@@ -59,8 +60,8 @@ public class PcscReaderActualTest {
         PcscPlugin plugin = PcscPlugin.getInstance().setLogging(true);
 
         final MyReaderObserver observer = new MyReaderObserver();
-        for (AbstractObservableReader reader : plugin.getReaders()) {
-            reader.addObserver(observer);
+        for (SeReader reader : plugin.getReaders()) {
+            ((AbstractObservableReader) reader).addObserver(observer);
         }
 
         // We wait to see if the thread management works correctly (thread is created here)
@@ -83,13 +84,12 @@ public class PcscReaderActualTest {
         System.out.println("First thread: " + firstThread);
 
         // Remove the observer from the observable (thread disappears)
-        for (AbstractObservableReader reader : plugin.getReaders()) {
-            reader.removeObserver(observer);
+        for (SeReader reader : plugin.getReaders()) {
+            ((AbstractObservableReader) reader).removeObserver(observer);
         }
-
         // Re-add it (thread is created)
-        for (AbstractObservableReader reader : plugin.getReaders()) {
-            reader.addObserver(observer);
+        for (SeReader reader : plugin.getReaders()) {
+            ((AbstractObservableReader) reader).addObserver(observer);
         }
 
         // Wait for the card event
@@ -115,8 +115,8 @@ public class PcscReaderActualTest {
                 "Thread " + firstThread.getName() + " is now " + firstThread.getState() + " !");
 
         // Remove the observer from the observable (thread disappears)
-        for (AbstractObservableReader reader : plugin.getReaders()) {
-            reader.removeObserver(observer);
+        for (SeReader reader : plugin.getReaders()) {
+            ((AbstractObservableReader) reader).removeObserver(observer);
         }
         System.out.println("Waiting for last thread...");
         secondThread.join();

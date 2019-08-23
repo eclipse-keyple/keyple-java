@@ -15,13 +15,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservablePlugin;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
@@ -70,7 +70,7 @@ public class RemoteSePlugin extends AbstractObservablePlugin {
      */
     public VirtualReader getReaderByRemoteName(String remoteName, String slaveNodeId)
             throws KeypleReaderNotFoundException {
-        for (AbstractObservableReader virtualReader : readers) {
+        for (SeReader virtualReader : readers) {
             if (((VirtualReader) virtualReader).getName()
                     .equals(RemoteSePlugin.generateReaderName(remoteName, slaveNodeId))) {
                 return (VirtualReader) virtualReader;
@@ -172,15 +172,17 @@ public class RemoteSePlugin extends AbstractObservablePlugin {
      * Init Native Readers to empty Set
      */
     @Override
-    protected SortedSet<AbstractObservableReader> initNativeReaders() {
-        return new TreeSet<AbstractObservableReader>();
+    protected SortedSet<SeReader> initNativeReaders() {
+        return new TreeSet<SeReader>();
     }
 
     /**
      * Not used
+     * 
+     * @return
      */
     @Override
-    protected AbstractObservableReader fetchNativeReader(String name) {
+    protected SeReader fetchNativeReader(String name) {
         // should not be call
         throw new IllegalArgumentException(
                 "fetchNativeReader is not used in this plugin, did you meant to use getReader?");

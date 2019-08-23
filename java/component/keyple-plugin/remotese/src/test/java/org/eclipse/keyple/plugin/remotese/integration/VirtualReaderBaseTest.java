@@ -13,6 +13,7 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 
 import java.util.Set;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -93,9 +94,9 @@ public class VirtualReaderBaseTest {
     static public void clearStubpluginReader() throws KeypleReaderException {
         logger.info("Remove all readers from stub plugin");
         StubPlugin stubPlugin = StubPlugin.getInstance();
-        Set<AbstractObservableReader> readers = stubPlugin.getReaders();
-        for (AbstractObservableReader reader : readers) {
-            reader.clearObservers();
+        Set<SeReader> readers = stubPlugin.getReaders();
+        for (SeReader reader : readers) {
+            ((AbstractObservableReader) reader).clearObservers();
         }
         stubPlugin.unplugStubReaders(stubPlugin.getReaderNames(), true);
     }

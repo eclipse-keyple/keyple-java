@@ -62,7 +62,7 @@ public class SmartCardIOReaderTest {
 
         readerName = "reader";
         reader = new PcscReader("pcscPlugin", terminal);
-        reader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
+        reader.setParameter(PcscReaderSettings.SETTING_KEY_LOGGING, "true");
     }
 
     @Test
