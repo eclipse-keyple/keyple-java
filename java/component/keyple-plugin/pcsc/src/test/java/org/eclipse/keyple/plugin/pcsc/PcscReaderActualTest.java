@@ -12,17 +12,16 @@
 package org.eclipse.keyple.plugin.pcsc;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
-import org.eclipse.keyple.core.util.Observable;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class PcscReaderActualTest {
 
-    public class MyReaderObserver implements Observable.Observer<ReaderEvent> {
+    public class MyReaderObserver implements ObservableReader.ReaderObserver {
 
         private Thread lastThread;
 
@@ -48,7 +47,7 @@ public class PcscReaderActualTest {
     }
 
     /**
-     * This test registers/deregisters on an {@link AbstractObservableReader} twice. This allows to
+     * This test registers/deregisters on an {@link SeReader} twice. This allows to
      * verify we create and dispose threads correctly.
      * 
      * @throws KeypleReaderException
@@ -57,11 +56,12 @@ public class PcscReaderActualTest {
     @Ignore // <-- This test works but can only be executed with an actual card present
     @Test
     public void testActual() throws KeypleReaderException, InterruptedException {
-        PcscPlugin plugin = PcscPlugin.getInstance().setLogging(true);
+        PcscPlugin plugin = (PcscPlugin) PcscPluginFactory.getInstance().getPluginInstance();
+        plugin.setLogging(true);
 
         final MyReaderObserver observer = new MyReaderObserver();
         for (SeReader reader : plugin.getReaders()) {
-            ((AbstractObservableReader) reader).addObserver(observer);
+            ((ObservableReader) reader).addObserver(observer);
         }
 
         // We wait to see if the thread management works correctly (thread is created here)
@@ -85,11 +85,11 @@ public class PcscReaderActualTest {
 
         // Remove the observer from the observable (thread disappears)
         for (SeReader reader : plugin.getReaders()) {
-            ((AbstractObservableReader) reader).removeObserver(observer);
+            ((ObservableReader) reader).removeObserver(observer);
         }
         // Re-add it (thread is created)
         for (SeReader reader : plugin.getReaders()) {
-            ((AbstractObservableReader) reader).addObserver(observer);
+            ((ObservableReader) reader).addObserver(observer);
         }
 
         // Wait for the card event
@@ -116,7 +116,7 @@ public class PcscReaderActualTest {
 
         // Remove the observer from the observable (thread disappears)
         for (SeReader reader : plugin.getReaders()) {
-            ((AbstractObservableReader) reader).removeObserver(observer);
+            ((ObservableReader) reader).removeObserver(observer);
         }
         System.out.println("Waiting for last thread...");
         secondThread.join();

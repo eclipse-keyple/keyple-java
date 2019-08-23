@@ -25,7 +25,6 @@ import javax.smartcardio.TerminalFactory;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,27 +35,12 @@ final class PcscPlugin extends AbstractThreadedObservablePlugin {
 
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
 
-    /**
-     * singleton instance of SeProxyService
-     */
-    private static final PcscPlugin uniqueInstance = new PcscPlugin();
-
     private static TerminalFactory factory;
-
 
     private boolean logging = false;
 
     PcscPlugin() {
         super("PcscPlugin");
-    }
-
-    /**
-     * Gets the single instance of PcscPlugin.
-     *
-     * @return single instance of PcscPlugin
-     */
-    public static PcscPlugin getInstance() {
-        return uniqueInstance;
     }
 
     @Override
@@ -110,7 +94,7 @@ final class PcscPlugin extends AbstractThreadedObservablePlugin {
 
     /**
      * Fetch connected native readers (from smartcard.io) and returns a list of corresponding
-     * {@link AbstractObservableReader} {@link AbstractObservableReader} are new instances.
+     * {@link SeReader} {@link SeReader} are new instances.
      *
      * @return the list of AbstractObservableReader objects.
      * @throws KeypleReaderException if a reader error occurs
@@ -160,7 +144,7 @@ final class PcscPlugin extends AbstractThreadedObservablePlugin {
          * parse the current PC/SC readers list to create the ProxyReader(s) associated with new
          * reader(s)
          */
-        AbstractObservableReader reader = null;
+        SeReader reader = null;
         CardTerminals terminals = getCardTerminals();
         List<String> terminalList = new ArrayList<String>();
         try {
