@@ -35,7 +35,7 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin;
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginFactory;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -72,7 +72,7 @@ public class OMAPITestFragment extends Fragment {
         Log.d(TAG, "Initialize SEProxy with Android OMAPI Plugin ");
         SeProxyService seProxyService = SeProxyService.getInstance();
         SortedSet<ReaderPlugin> plugins = new TreeSet<ReaderPlugin>();
-        plugins.add(AndroidOmapiPlugin.getInstance());
+        plugins.add(AndroidOmapiPluginFactory.getInstance().getPluginInstance());
         seProxyService.setPlugins(plugins);
 
     }
@@ -104,8 +104,10 @@ public class OMAPITestFragment extends Fragment {
         super.onResume();
 
         try {
-            SortedSet<? extends SeReader> readers = SeProxyService.getInstance()
-                    .getPlugin(AndroidOmapiPlugin.PLUGIN_NAME).getReaders();
+            SortedSet<SeReader> readers = SeProxyService.getInstance()
+                    .getPlugin(
+                            AndroidOmapiPluginFactory.getInstance().getPluginInstance().getName())
+                    .getReaders();
 
             if (readers == null || readers.size() < 1) {
                 mText.append("\nNo readers found in OMAPI Keyple Plugin");
@@ -236,8 +238,6 @@ public class OMAPITestFragment extends Fragment {
             }
         });
     }
-
-
 
     /**
      * Revocation of the Activity

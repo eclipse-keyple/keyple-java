@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
@@ -27,17 +29,13 @@ import android.util.Log;
  * Loads and configures {@link AndroidOmapiReader} for each SE Reader in the platform TODO : filters
  * readers to load by parameters with a regex
  */
-public final class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEService.CallBack {
+final class AndroidOmapiPlugin extends AbstractStaticPlugin implements SEService.CallBack {
 
     private static final String TAG = AndroidOmapiPlugin.class.getSimpleName();
     public static final String PLUGIN_NAME = "AndroidOmapiPlugin";
 
     private SEService seService;
     private ISeServiceFactory seServiceFactory;
-
-
-    // singleton methods
-    private static AndroidOmapiPlugin uniqueInstance = null;
 
     static ISeServiceFactory getSeServiceFactory() {
         return new SeServiceFactoryImpl();
@@ -56,20 +54,10 @@ public final class AndroidOmapiPlugin extends AbstractStaticPlugin implements SE
     }
 
 
-    public static AndroidOmapiPlugin getInstance() {
-        if (uniqueInstance == null) {
-            uniqueInstance = new AndroidOmapiPlugin();
-        }
-        return uniqueInstance;
-
-
-    }
-
-
     @Override
-    protected SortedSet<AbstractObservableReader> initNativeReaders() {
+    protected SortedSet<SeReader> initNativeReaders() {
 
-        SortedSet<AbstractObservableReader> readers = new TreeSet<AbstractObservableReader>();
+        SortedSet<SeReader> readers = new TreeSet<SeReader>();
 
         if (seService != null && seService.isConnected()) {
             Reader[] omapiReaders = seService.getReaders();

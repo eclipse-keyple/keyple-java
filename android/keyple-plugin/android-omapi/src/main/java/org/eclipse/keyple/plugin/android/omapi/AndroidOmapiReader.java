@@ -44,7 +44,7 @@ import android.util.Log;
  * or virtual devices. They can be removable or not. They can contain one SE that can or cannot be
  * removed.
  */
-public final class AndroidOmapiReader extends AbstractStaticReader {
+final class AndroidOmapiReader extends AbstractStaticReader {
 
     private static final Logger logger =
             LoggerFactory.getLogger(AndroidOmapiReader.class);
