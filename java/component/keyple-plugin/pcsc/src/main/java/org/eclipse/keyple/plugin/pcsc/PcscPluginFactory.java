@@ -26,7 +26,7 @@ public final class PcscPluginFactory implements PluginFactory {
     /**
      * singleton instance of PcscPluginFactory
      */
-    private static final PcscPluginFactory uniqueInstance = new PcscPluginFactory();
+    private static volatile PcscPluginFactory uniqueInstance = new PcscPluginFactory();
 
     /**
      * unique instance of PcscPlugin
@@ -34,11 +34,21 @@ public final class PcscPluginFactory implements PluginFactory {
     private static PcscPlugin pcscPluginUniqueInstance = null;
 
     /**
+     * Private constructor
+     */
+    private PcscPluginFactory() {}
+
+    /**
      * Gets the single instance of {@link PcscPluginFactory}.
+     * <p>
+     * Creates the {@link PcscPlugin} unique instance if not already created.
      *
      * @return single instance of {@link PcscPluginFactory}
      */
     public static PcscPluginFactory getInstance() {
+        if (pcscPluginUniqueInstance == null) {
+            pcscPluginUniqueInstance = new PcscPlugin();
+        }
         return uniqueInstance;
     }
 
@@ -49,9 +59,6 @@ public final class PcscPluginFactory implements PluginFactory {
      * @return the ReaderPlugin
      */
     public ReaderPlugin getPluginInstance() {
-        if (pcscPluginUniqueInstance == null) {
-            pcscPluginUniqueInstance = new PcscPlugin();
-        }
         return (ReaderPlugin) pcscPluginUniqueInstance;
     }
 }
