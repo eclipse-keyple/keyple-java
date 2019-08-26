@@ -13,9 +13,10 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 
 import java.util.Set;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
@@ -23,9 +24,8 @@ import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportFactory;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
+import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
-import org.eclipse.keyple.plugin.stub.StubReader;
 import org.junit.*;
 import org.junit.rules.TestName;
 import org.slf4j.Logger;
@@ -43,7 +43,7 @@ public class VirtualReaderBaseTest {
 
     // Real objects
     private TransportFactory factory;
-    StubReader nativeReader;
+    SeReader nativeReader;
 
     final String NATIVE_READER_NAME = "testStubReader";
     final String CLIENT_NODE_ID = "testClientNodeId";
@@ -61,7 +61,8 @@ public class VirtualReaderBaseTest {
         logger.info("------------------------------");
 
         // assert that there is no stub readers plugged already
-        Assert.assertEquals(0, StubPlugin.getInstance().getReaders().size());
+        Assert.assertEquals(0,
+                StubPluginFactory.getInstance().getPluginInstance().getReaders().size());
 
         logger.info("*** Init LocalTransportFactory");
         // use a local transport factory for testing purposes (only java calls between client and
@@ -82,32 +83,32 @@ public class VirtualReaderBaseTest {
     @Deprecated
     protected void clearStubpluginNativeReader() throws Exception {
         logger.info("Remove nativeReader from stub plugin");
-        StubPlugin stubPlugin = StubPlugin.getInstance();
+        StubPluginFactory stubPluginFactory = StubPluginFactory.getInstance();
         // if nativeReader was initialized during test, unplug it
         if (nativeReader != null) {
-            stubPlugin.unplugStubReader(nativeReader.getName(), true);
-            nativeReader.clearObservers();
+            stubPluginFactory.unplugStubReader(nativeReader.getName(), true);
+            ((ObservableReader) nativeReader).clearObservers();
         }
     }
 
 
     static public void clearStubpluginReader() throws KeypleReaderException {
         logger.info("Remove all readers from stub plugin");
-        StubPlugin stubPlugin = StubPlugin.getInstance();
+        StubPluginFactory stubPluginFactory = StubPluginFactory.getInstance();
+        ReaderPlugin stubPlugin = stubPluginFactory.getPluginInstance();
         Set<SeReader> readers = stubPlugin.getReaders();
         for (SeReader reader : readers) {
-            ((AbstractObservableReader) reader).clearObservers();
+            ((ObservableReader) reader).clearObservers();
         }
-        stubPlugin.unplugStubReaders(stubPlugin.getReaderNames(), true);
+        stubPluginFactory.unplugStubReaders(stubPlugin.getReaderNames(), true);
     }
 
 
 
-    protected StubReader connectStubReader(String readerName, String nodeId,
+    protected SeReader connectStubReader(String readerName, String nodeId,
             TransmissionMode transmissionMode) throws Exception {
         // configure native reader
-        StubReader nativeReader =
-                (StubReader) Integration.createStubReader(readerName, transmissionMode);
+        SeReader nativeReader = Integration.createStubReader(readerName, transmissionMode);
         nativeReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
                 StubProtocolSetting.STUB_PROTOCOL_SETTING
                         .get(SeCommonProtocols.PROTOCOL_ISO14443_4));

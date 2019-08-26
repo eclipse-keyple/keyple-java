@@ -55,7 +55,7 @@ public class StubPluginAsyncTest extends BaseStubTest {
         final String READER_NAME = "plugOneReaderAsync_sucess";
 
         // add READER_CONNECTED assert observer
-        stubPlugin.addObserver(new ObservablePlugin.PluginObserver() {
+        ((ObservablePlugin) stubPlugin).addObserver(new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
                 Assert.assertEquals(PluginEvent.EventType.READER_CONNECTED, event.getEventType());
@@ -65,7 +65,7 @@ public class StubPluginAsyncTest extends BaseStubTest {
             }
         });
 
-        stubPlugin.plugStubReader(READER_NAME, TransmissionMode.CONTACTLESS, false);
+        stubPluginFactory.plugStubReader(READER_NAME, TransmissionMode.CONTACTLESS, false);
         lock.await(2, TimeUnit.SECONDS);
         Assert.assertEquals(0, lock.getCount());
     }
@@ -107,15 +107,15 @@ public class StubPluginAsyncTest extends BaseStubTest {
         };
 
         // add ReaderEvent observer
-        stubPlugin.addObserver(disconnected_obs);
+        ((ObservablePlugin) stubPlugin).addObserver(disconnected_obs);
 
         // plug a reader
-        stubPlugin.plugStubReader(READER_NAME, false);
+        stubPluginFactory.plugStubReader(READER_NAME, false);
 
         connectedLock.await(2, TimeUnit.SECONDS);
 
         // unplug reader
-        stubPlugin.unplugStubReader(READER_NAME, false);
+        stubPluginFactory.unplugStubReader(READER_NAME, false);
 
         // wait for event to be raised
         disconnectedLock.await(2, TimeUnit.SECONDS);
@@ -136,7 +136,7 @@ public class StubPluginAsyncTest extends BaseStubTest {
         final CountDownLatch readerConnected = new CountDownLatch(1);
 
         // add READER_CONNECTED assert observer
-        stubPlugin.addObserver(new ObservablePlugin.PluginObserver() {
+        ((ObservablePlugin) stubPlugin).addObserver(new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
                 logger.info("event {} #readers {}", event.getEventType(),
@@ -151,7 +151,7 @@ public class StubPluginAsyncTest extends BaseStubTest {
 
 
         // connect readers
-        stubPlugin.plugStubReaders(READERS, false);
+        stubPluginFactory.plugStubReaders(READERS, false);
 
         // wait for event to be raised
         readerConnected.await(2, TimeUnit.SECONDS);
@@ -197,16 +197,16 @@ public class StubPluginAsyncTest extends BaseStubTest {
             }
         };
         // add assert DISCONNECT assert observer
-        stubPlugin.addObserver(assertDisconnect);
+        ((ObservablePlugin) stubPlugin).addObserver(assertDisconnect);
 
         // connect reader
-        stubPlugin.plugStubReaders(READERS, false);
+        stubPluginFactory.plugStubReaders(READERS, false);
 
         Assert.assertTrue(connectedLock.await(2, TimeUnit.SECONDS));
 
         Thread.sleep(1000);
 
-        stubPlugin.unplugStubReaders(READERS, false);
+        stubPluginFactory.unplugStubReaders(READERS, false);
 
         Assert.assertTrue(disconnectedLock.await(2, TimeUnit.SECONDS));
 

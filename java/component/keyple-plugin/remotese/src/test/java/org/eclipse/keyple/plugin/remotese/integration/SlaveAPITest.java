@@ -14,7 +14,10 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
@@ -23,8 +26,7 @@ import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalClient;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportFactory;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
-import org.eclipse.keyple.plugin.stub.StubReader;
+import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.junit.*;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
@@ -47,7 +49,7 @@ public class SlaveAPITest {
     TransportFactory factory;
     MasterAPI masterAPI;
 
-    StubReader nativeReader;
+    SeReader nativeReader;
 
     final String NATIVE_READER_NAME = "testStubReader";
     final String CLIENT_NODE_ID = "testClientNodeId";
@@ -89,12 +91,13 @@ public class SlaveAPITest {
 
         logger.info("TearDown Test");
 
-        StubPlugin stubPlugin = StubPlugin.getInstance();
+        StubPluginFactory stubPluginFactory = StubPluginFactory.getInstance();
+        ReaderPlugin stubPlugin = stubPluginFactory.getPluginInstance();
 
         // delete stubReader
-        stubPlugin.unplugStubReader(nativeReader.getName(), true);
+        stubPluginFactory.unplugStubReader(nativeReader.getName(), true);
 
-        nativeReader.clearObservers();
+        ((ObservableReader) nativeReader).clearObservers();
     }
 
 
@@ -119,7 +122,7 @@ public class SlaveAPITest {
                 .getReaderByRemoteName(NATIVE_READER_NAME, CLIENT_NODE_ID);
 
         Assert.assertEquals(NATIVE_READER_NAME, virtualReader.getNativeReaderName());
-        Assert.assertEquals(1, nativeReader.countObservers());
+        Assert.assertEquals(1, ((ObservableReader) nativeReader).countObservers());
         Assert.assertEquals(0, virtualReader.countObservers());
         Assert.assertNotNull(sessionId);
 
@@ -147,7 +150,7 @@ public class SlaveAPITest {
                 .getReaderByRemoteName(NATIVE_READER_NAME, CLIENT_NODE_ID);
 
         Assert.assertEquals(NATIVE_READER_NAME, virtualReader.getNativeReaderName());
-        Assert.assertEquals(1, nativeReader.countObservers());
+        Assert.assertEquals(1, ((ObservableReader) nativeReader).countObservers());
         Assert.assertEquals(0, virtualReader.countObservers());
         Assert.assertNotNull(sessionId);
         Assert.assertEquals(virtualReader.getParameters().get(KEY), VALUE);

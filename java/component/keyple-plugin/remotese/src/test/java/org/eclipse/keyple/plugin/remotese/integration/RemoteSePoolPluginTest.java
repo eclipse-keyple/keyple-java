@@ -19,7 +19,7 @@ import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePoolPlugin;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportFactory;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
+import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubPoolPlugin;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.junit.After;
@@ -56,7 +56,7 @@ public class RemoteSePoolPluginTest {
      */
     @Before
     public void setUp() throws Exception {
-        assert StubPlugin.getInstance().getReaders().size() == 0;
+        assert StubPluginFactory.getInstance().getPluginInstance().getReaders().size() == 0;
 
         // create local transportfactory
         factory = new LocalTransportFactory(SERVER_NODE_ID);

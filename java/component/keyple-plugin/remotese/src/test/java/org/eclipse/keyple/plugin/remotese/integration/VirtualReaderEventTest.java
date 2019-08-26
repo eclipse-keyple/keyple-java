@@ -30,6 +30,7 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
+import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
 import org.junit.*;
 import org.slf4j.Logger;
@@ -119,7 +120,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         logger.info("Insert a Hoplink SE and wait 5 seconds for a SE event to be thrown");
 
         // insert SE
-        nativeReader.insertSe(StubReaderTest.hoplinkSE());
+        StubPluginFactory.getInstance().insertSe(nativeReader.getName(),
+                StubReaderTest.hoplinkSE());
 
         // wait 5 seconds
         lock.await(5, TimeUnit.SECONDS);
@@ -164,13 +166,14 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 "Insert and remove a Hoplink SE and wait 5 seconds for two SE events to be thrown");
 
         // insert SE
-        nativeReader.insertSe(StubReaderTest.hoplinkSE());
+        StubPluginFactory.getInstance().insertSe(nativeReader.getName(),
+                StubReaderTest.hoplinkSE());
 
         // wait 0,5 second
         Thread.sleep(500);
 
         // remove SE
-        nativeReader.removeSe();
+        StubPluginFactory.getInstance().removeSe(nativeReader.getName());
 
         // wait 5 seconds
         lock.await(5, TimeUnit.SECONDS);
@@ -254,7 +257,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         Thread.sleep(1000);
 
         // test
-        nativeReader.insertSe(StubReaderTest.hoplinkSE());
+        StubPluginFactory.getInstance().insertSe(nativeReader.getName(),
+                StubReaderTest.hoplinkSE());
 
         // lock thread for 2 seconds max to wait for the event
         lock.await(5, TimeUnit.SECONDS);
@@ -300,7 +304,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         Thread.sleep(500);
 
         // test
-        nativeReader.insertSe(StubReaderTest.hoplinkSE());
+        StubPluginFactory.getInstance().insertSe(nativeReader.getName(),
+                StubReaderTest.hoplinkSE());
 
 
         // lock thread for 2 seconds max to wait for the event
@@ -353,7 +358,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         Thread.sleep(500);
 
         // test
-        nativeReader.insertSe(StubReaderTest.hoplinkSE());
+        StubPluginFactory.getInstance().insertSe(nativeReader.getName(),
+                StubReaderTest.hoplinkSE());
 
         // lock thread for 2 seconds max to wait for the event
         lock.await(5, TimeUnit.SECONDS);
@@ -405,7 +411,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         Thread.sleep(500);
 
         // test
-        nativeReader.insertSe(StubReaderTest.hoplinkSE());
+        StubPluginFactory.getInstance().insertSe(nativeReader.getName(),
+                StubReaderTest.hoplinkSE());
 
         // lock thread for 2 seconds max to wait for the event
         lock.await(5, TimeUnit.SECONDS);

@@ -13,7 +13,10 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 
 
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
@@ -25,9 +28,8 @@ import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
+import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubPoolPlugin;
-import org.eclipse.keyple.plugin.stub.StubReader;
 import org.junit.Assert;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -75,27 +77,29 @@ public class Integration {
      * @throws InterruptedException
      * @throws KeypleReaderNotFoundException
      */
-    public static StubReader createStubReader(String stubReaderName,
+    public static SeReader createStubReader(String stubReaderName,
             TransmissionMode transmissionMode)
             throws InterruptedException, KeypleReaderNotFoundException {
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        StubPlugin stubPlugin = StubPlugin.getInstance();
+        StubPluginFactory stubPluginFactory = StubPluginFactory.getInstance();
+        ReaderPlugin stubPlugin = stubPluginFactory.getPluginInstance();
         seProxyService.addPlugin(stubPlugin);
 
         // add an stubPluginObserver to start the plugin monitoring thread
         // stubPlugin.addObserver(observer); //do not observe so the monitoring thread is not
         // created
 
-        logger.debug("Stub plugin count observers : {}", stubPlugin.countObservers());
+        logger.debug("Stub plugin count observers : {}",
+                ((ObservablePlugin) stubPlugin).countObservers());
 
         logger.debug("Create a new StubReader : {}", stubReaderName);
-        stubPlugin.plugStubReader(stubReaderName, transmissionMode, true);
+        stubPluginFactory.plugStubReader(stubReaderName, transmissionMode, true);
 
         Thread.sleep(100);
 
         // Get the created proxy reader
-        return (StubReader) stubPlugin.getReader(stubReaderName);
+        return stubPlugin.getReader(stubReaderName);
     }
 
     /**

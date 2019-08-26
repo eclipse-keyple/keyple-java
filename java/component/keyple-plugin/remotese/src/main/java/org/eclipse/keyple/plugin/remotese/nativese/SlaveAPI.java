@@ -23,7 +23,6 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.method.*;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
@@ -263,9 +262,9 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
             // blocking call
             disconnect.getResponse();
             ProxyReader nativeReader = findLocalReader(nativeReaderName);
-            if (nativeReader instanceof AbstractObservableReader) {
+            if (nativeReader instanceof ObservableReader) {
                 // stop propagating the local reader events
-                ((AbstractObservableReader) nativeReader).removeObserver(this);
+                ((ObservableReader) nativeReader).removeObserver(this);
             }
         } catch (KeypleRemoteException e) {
             throw new KeypleReaderException("An error occurred while calling connectReader", e);

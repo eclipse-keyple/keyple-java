@@ -22,6 +22,7 @@ import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.remotese.rm.json.SampleFactory;
+import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
 import org.junit.After;
 import org.junit.Assert;
@@ -115,7 +116,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
         int N_TIMES = 10;
 
         // insert SE
-        nativeReader.insertSe(StubReaderTest.hoplinkSE());
+        StubPluginFactory.getInstance().insertSe(nativeReader.getName(),
+                StubReaderTest.hoplinkSE());
 
         Thread.sleep(1000);
 
@@ -146,7 +148,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     public void rse_transmit_no_response() throws Exception {
 
         // insert SE
-        nativeReader.insertSe(StubReaderTest.noApduResponseSE());
+        StubPluginFactory.getInstance().insertSe(nativeReader.getName(),
+                StubReaderTest.noApduResponseSE());
 
         // wait for card to be detected
         Thread.sleep(500);
@@ -165,7 +168,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     public void transmit_partial_response_set_0() throws InterruptedException {
 
         // insert SE
-        nativeReader.insertSe(StubReaderTest.partialSE());
+        StubPluginFactory.getInstance().insertSe(nativeReader.getName(),
+                StubReaderTest.partialSE());
 
         // wait for card to be detected
         Thread.sleep(500);
@@ -192,7 +196,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     public void transmit_partial_response_set_1() throws InterruptedException {
 
         // insert SE
-        nativeReader.insertSe(StubReaderTest.partialSE());
+        StubPluginFactory.getInstance().insertSe(nativeReader.getName(),
+                StubReaderTest.partialSE());
 
         // wait for card to be detected
         Thread.sleep(500);
@@ -222,7 +227,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     public void transmit_partial_response_set_2() throws InterruptedException {
 
         // insert SE
-        nativeReader.insertSe(StubReaderTest.partialSE());
+        StubPluginFactory.getInstance().insertSe(nativeReader.getName(),
+                StubReaderTest.partialSE());
 
         // wait for card to be detected
         Thread.sleep(500);
@@ -253,7 +259,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     public void transmit_partial_response_set_3() throws InterruptedException {
 
         // insert SE
-        nativeReader.insertSe(StubReaderTest.partialSE());
+        StubPluginFactory.getInstance().insertSe(nativeReader.getName(),
+                StubReaderTest.partialSE());
 
         // wait for card to be detected
         Thread.sleep(500);
@@ -284,7 +291,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     public void transmit_partial_response_0() throws InterruptedException {
 
         // insert SE
-        nativeReader.insertSe(StubReaderTest.partialSE());
+        StubPluginFactory.getInstance().insertSe(nativeReader.getName(),
+                StubReaderTest.partialSE());
 
         // wait for card to be detected
         Thread.sleep(500);
@@ -309,7 +317,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     public void transmit_partial_response_1() throws InterruptedException {
 
         // insert SE
-        nativeReader.insertSe(StubReaderTest.partialSE());
+        StubPluginFactory.getInstance().insertSe(nativeReader.getName(),
+                StubReaderTest.partialSE());
 
         // wait for card to be detected
         Thread.sleep(500);
@@ -334,7 +343,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     public void transmit_partial_response_2() throws InterruptedException {
 
         // insert SE
-        nativeReader.insertSe(StubReaderTest.partialSE());
+        StubPluginFactory.getInstance().insertSe(nativeReader.getName(),
+                StubReaderTest.partialSE());
 
         // wait for card to be detected
         Thread.sleep(500);
@@ -359,7 +369,8 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     public void transmit_partial_response_3() throws InterruptedException {
 
         // insert SE
-        nativeReader.insertSe(StubReaderTest.partialSE());
+        StubPluginFactory.getInstance().insertSe(nativeReader.getName(),
+                StubReaderTest.partialSE());
 
         // wait for card to be detected
         Thread.sleep(500);

@@ -12,6 +12,8 @@
 package org.eclipse.keyple.plugin.stub;
 
 
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -21,7 +23,8 @@ import org.slf4j.LoggerFactory;
 
 public class BaseStubTest {
 
-    StubPlugin stubPlugin;
+    StubPluginFactory stubPluginFactory;
+    ReaderPlugin stubPlugin;
 
     private static final Logger logger = LoggerFactory.getLogger(BaseStubTest.class);
 
@@ -35,13 +38,15 @@ public class BaseStubTest {
         logger.info("------------------------------");
 
         logger.info("setupStub, assert stubplugin is empty");
-        stubPlugin = StubPlugin.getInstance(); // singleton
+        stubPluginFactory = StubPluginFactory.getInstance();
+        stubPlugin = stubPluginFactory.getPluginInstance(); // singleton
 
         logger.info("Stubplugin readers size {}", stubPlugin.getReaders().size());
         Assert.assertEquals(0, stubPlugin.getReaders().size());
 
-        logger.info("Stubplugin observers size {}", stubPlugin.countObservers());
-        Assert.assertEquals(0, stubPlugin.countObservers());
+        logger.info("Stubplugin observers size {}",
+                ((ObservablePlugin) stubPlugin).countObservers());
+        Assert.assertEquals(0, ((ObservablePlugin) stubPlugin).countObservers());
 
         // add a sleep to play with thread monitor timeout
         Thread.sleep(100);
@@ -53,16 +58,16 @@ public class BaseStubTest {
         logger.info("TearDown ");
         logger.info("---------");
 
-        stubPlugin = StubPlugin.getInstance(); // singleton
+        stubPlugin = StubPluginFactory.getInstance().getPluginInstance(); // singleton
 
-        stubPlugin.unplugStubReaders(stubPlugin.getReaderNames(), true);
+        stubPluginFactory.unplugStubReaders(stubPlugin.getReaderNames(), true);
         /*
          * for (AbstractObservableReader reader : stubPlugin.getReaders()) {
          * logger.info("Stubplugin unplugStubReader {}", reader.getName());
          * stubPlugin.unplugStubReader(reader.getName(), true); Thread.sleep(100); //
          * logger.debug("Stubplugin readers size {}", stubPlugin.getReaders().size()); }
          */
-        stubPlugin.clearObservers();
+        ((ObservablePlugin) stubPlugin).clearObservers();
 
     }
 
