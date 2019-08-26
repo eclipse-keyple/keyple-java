@@ -24,4 +24,8 @@ public interface ObservablePlugin extends ReaderPlugin {
     void removeObserver(PluginObserver observer);
 
     void notifyObservers(PluginEvent event);
+
+    void clearObservers();
+
+    int countObservers();
 }
