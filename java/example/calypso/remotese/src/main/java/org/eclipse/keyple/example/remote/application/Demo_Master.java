@@ -19,10 +19,7 @@ import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -42,9 +39,8 @@ import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ClientNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ServerNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
+import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
-import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,13 +132,14 @@ public class Demo_Master implements Observable.Observer {
          */
 
         /* Get the instance of the Stub plugin */
-        StubPlugin stubPlugin = StubPlugin.getInstance();
+        StubPluginFactory stubPluginFactory = StubPluginFactory.getInstance();
+        ReaderPlugin stubPlugin = stubPluginFactory.getPluginInstance();
 
         /* Plug the SAM stub reader. */
-        stubPlugin.plugStubReader("samReader", true);
+        stubPluginFactory.plugStubReader("samReader", true);
 
         try {
-            StubReader samReader = (StubReader) (stubPlugin.getReader("samReader"));
+            SeReader samReader = stubPlugin.getReader("samReader");
 
             samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3,
                     StubProtocolSetting.STUB_PROTOCOL_SETTING
@@ -151,7 +148,7 @@ public class Demo_Master implements Observable.Observer {
             /* Create 'virtual' Calypso SAM */
             StubSecureElement calypsoSamStubSe = new StubSamCalypsoClassic();
 
-            samReader.insertSe(calypsoSamStubSe);
+            stubPluginFactory.insertSe("samReader", calypsoSamStubSe);
             logger.info("Stub SAM inserted");
 
             /*

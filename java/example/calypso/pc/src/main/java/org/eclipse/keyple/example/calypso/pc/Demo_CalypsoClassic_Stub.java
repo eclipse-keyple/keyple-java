@@ -15,20 +15,21 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubSamCalypsoClassic;
 import org.eclipse.keyple.example.calypso.pc.transaction.CalypsoClassicTransactionEngine;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
-import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
-import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public class Demo_CalypsoClassic_Stub {
+    private final static String PO_READER = "poReader";
+    private final static String SAM_READER = "samReader";
 
     /**
      * main program entry
@@ -44,7 +45,9 @@ public class Demo_CalypsoClassic_Stub {
 
         SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
 
-        StubPlugin stubPlugin = StubPlugin.getInstance();
+        StubPluginFactory stubPluginFactory = StubPluginFactory.getInstance();
+
+        ReaderPlugin stubPlugin = stubPluginFactory.getPluginInstance();
 
         /* Get the instance of the PcscPlugin (Singleton pattern) */
         pluginsSet.add(stubPlugin);
@@ -58,13 +61,13 @@ public class Demo_CalypsoClassic_Stub {
         /*
          * Plug PO and SAM stub readers.
          */
-        stubPlugin.plugStubReader("poReader", true);
-        stubPlugin.plugStubReader("samReader", true);
+        stubPluginFactory.plugStubReader(PO_READER, true);
+        stubPluginFactory.plugStubReader(SAM_READER, true);
 
-        StubReader poReader = null, samReader = null;
+        SeReader poReader = null, samReader = null;
         try {
-            poReader = (StubReader) (stubPlugin.getReader("poReader"));
-            samReader = (StubReader) (stubPlugin.getReader("samReader"));
+            poReader = stubPlugin.getReader(PO_READER);
+            samReader = stubPlugin.getReader(SAM_READER);
         } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
         }
@@ -93,7 +96,7 @@ public class Demo_CalypsoClassic_Stub {
 
         /* Insert the SAM into the SAM reader */
         logger.info("Insert stub SAM SE.");
-        samReader.insertSe(samSE);
+        stubPluginFactory.insertSe(SAM_READER, samSE);
 
         /* Set the default selection operation */
         ((ObservableReader) poReader).setDefaultSelectionRequest(
@@ -104,15 +107,15 @@ public class Demo_CalypsoClassic_Stub {
         ((ObservableReader) poReader).addObserver(transactionEngine);
 
         logger.info("Insert stub PO SE.");
-        poReader.insertSe(calypsoStubSe);
+        stubPluginFactory.insertSe(PO_READER, calypsoStubSe);
 
         Thread.sleep(1000);
 
         /* Remove SE */
         logger.info("Remove stub SAM and PO SE.");
 
-        poReader.removeSe();
-        samReader.removeSe();
+        stubPluginFactory.removeSe(PO_READER);
+        stubPluginFactory.removeSe(SAM_READER);
 
         logger.info("END.");
 

@@ -15,15 +15,18 @@ import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.example.generic.common.ObservableReaderNotificationEngine;
 import org.eclipse.keyple.example.generic.pc.stub.se.StubSe1;
 import org.eclipse.keyple.example.generic.pc.stub.se.StubSe2;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
-import org.eclipse.keyple.plugin.stub.StubReader;
+import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 
 
 public class Demo_ObservableReaderNotification_Stub {
+    private final static String READER_1 = "Reader1";
+    private final static String READER_2 = "Reader2";
+
     public final static Object waitBeforeEnd = new Object();
 
     public static void main(String[] args) throws Exception {
@@ -33,7 +36,10 @@ public class Demo_ObservableReaderNotification_Stub {
         SeProxyService seProxyService = SeProxyService.getInstance();
         SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
 
-        StubPlugin stubPlugin = StubPlugin.getInstance();
+        StubPluginFactory stubPluginFactory = StubPluginFactory.getInstance();
+
+        ReaderPlugin stubPlugin = stubPluginFactory.getPluginInstance();
+
         pluginsSet.add(stubPlugin);
         seProxyService.setPlugins(pluginsSet);
 
@@ -45,63 +51,63 @@ public class Demo_ObservableReaderNotification_Stub {
         Thread.sleep(200);
 
         System.out.println("Plug reader 1.");
-        stubPlugin.plugStubReader("Reader1", true);
+        stubPluginFactory.plugStubReader("Reader1", true);
 
         Thread.sleep(100);
 
         System.out.println("Plug reader 2.");
-        stubPlugin.plugStubReader("Reader2", true);
+        stubPluginFactory.plugStubReader("Reader2", true);
 
         Thread.sleep(1000);
 
-        StubReader reader1 = (StubReader) (stubPlugin.getReader("Reader1"));
+        SeReader reader1 = stubPlugin.getReader("Reader1");
 
-        StubReader reader2 = (StubReader) (stubPlugin.getReader("Reader2"));
+        SeReader reader2 = stubPlugin.getReader("Reader2");
 
         /* Create 'virtual' Hoplink and SAM SE */
         StubSecureElement se1 = new StubSe1();
         StubSecureElement se2 = new StubSe2();
 
         System.out.println("Insert SE into reader 1.");
-        reader1.insertSe(se1);
+        stubPluginFactory.insertSe(READER_1, se1);
 
         Thread.sleep(100);
 
         System.out.println("Insert SE into reader 2.");
-        reader2.insertSe(se2);
+        stubPluginFactory.insertSe(READER_2, se2);
 
         Thread.sleep(100);
 
         System.out.println("Remove SE from reader 1.");
-        reader1.removeSe();
+        stubPluginFactory.removeSe(READER_1);
 
         Thread.sleep(100);
 
         System.out.println("Remove SE from reader 2.");
-        reader2.removeSe();
+        stubPluginFactory.removeSe(READER_2);
 
         Thread.sleep(100);
 
         System.out.println("Plug reader 1 again (twice).");
-        stubPlugin.plugStubReader("Reader1", true);
+        stubPluginFactory.plugStubReader("Reader1", true);
 
         System.out.println("Unplug reader 1.");
-        stubPlugin.unplugStubReader("Reader1", true);
+        stubPluginFactory.unplugStubReader("Reader1", true);
 
         Thread.sleep(100);
 
         System.out.println("Plug reader 1 again.");
-        stubPlugin.plugStubReader("Reader1", true);
+        stubPluginFactory.plugStubReader("Reader1", true);
 
         Thread.sleep(100);
 
         System.out.println("Unplug reader 2.");
-        stubPlugin.unplugStubReader("Reader2", true);
+        stubPluginFactory.unplugStubReader("Reader2", true);
 
         Thread.sleep(100);
 
         System.out.println("Unplug reader 2.");
-        stubPlugin.unplugStubReader("Reader1", true);
+        stubPluginFactory.unplugStubReader("Reader1", true);
 
         System.out.println("END.");
 

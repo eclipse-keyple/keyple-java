@@ -17,10 +17,7 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -32,10 +29,7 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
-import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
-import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +58,8 @@ import org.slf4j.LoggerFactory;
 public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements ReaderObserver {
     protected static final Logger logger =
             LoggerFactory.getLogger(UseCase_Calypso2_DefaultSelectionNotification_Stub.class);
+    private final static String PO_READER = "poReader";
+
     private SeSelection seSelection;
     private int readEnvironmentParserIndex;
     /**
@@ -80,18 +76,20 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
         SeProxyService seProxyService = SeProxyService.getInstance();
 
         /* Get the instance of the Stub plugin */
-        StubPlugin stubPlugin = StubPlugin.getInstance();
+        StubPluginFactory stubPluginFactory = StubPluginFactory.getInstance();
+
+        ReaderPlugin stubPlugin = stubPluginFactory.getPluginInstance();
 
         /* Assign StubPlugin to the SeProxyService */
         seProxyService.addPlugin(stubPlugin);
 
         /* Plug the PO stub reader. */
-        stubPlugin.plugStubReader("poReader", true);
+        stubPluginFactory.plugStubReader(PO_READER, true);
 
         /*
          * Get a PO reader ready to work with Calypso PO.
          */
-        StubReader poReader = (StubReader) (stubPlugin.getReader("poReader"));
+        SeReader poReader = stubPlugin.getReader(PO_READER);
 
         /* Check if the reader exists */
         if (poReader == null) {
@@ -171,13 +169,13 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
         Thread.sleep(100);
 
         logger.info("Insert stub PO.");
-        poReader.insertSe(calypsoStubSe);
+        stubPluginFactory.insertSe(PO_READER, calypsoStubSe);
 
         /* Wait a while. */
         Thread.sleep(1000);
 
         logger.info("Remove stub PO.");
-        poReader.removeSe();
+        stubPluginFactory.removeSe(PO_READER);
 
         System.exit(0);
     }

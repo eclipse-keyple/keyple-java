@@ -19,19 +19,14 @@ import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
-import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
-import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +55,8 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Stub {
     protected static final Logger logger =
             LoggerFactory.getLogger(UseCase_Calypso1_ExplicitSelectionAid_Stub.class);
 
+    private final static String PO_READER = "poReader";
+
     public static void main(String[] args)
             throws KeypleBaseException, InterruptedException, IOException, NoStackTraceThrowable {
 
@@ -67,18 +64,20 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Stub {
         SeProxyService seProxyService = SeProxyService.getInstance();
 
         /* Get the instance of the Stub plugin */
-        StubPlugin stubPlugin = StubPlugin.getInstance();
+        StubPluginFactory stubPluginFactory = StubPluginFactory.getInstance();
+
+        ReaderPlugin stubPlugin = stubPluginFactory.getPluginInstance();
 
         /* Assign StubPlugin to the SeProxyService */
         seProxyService.addPlugin(stubPlugin);
 
         /* Plug the PO stub reader. */
-        stubPlugin.plugStubReader("poReader", true);
+        stubPluginFactory.plugStubReader(PO_READER, true);
 
         /*
          * Get a PO reader ready to work with Calypso PO.
          */
-        StubReader poReader = (StubReader) (stubPlugin.getReader("poReader"));
+        SeReader poReader = (SeReader) (stubPlugin.getReader(PO_READER));
 
         /* Check if the reader exists */
         if (poReader == null) {
@@ -93,7 +92,7 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Stub {
         StubSecureElement calypsoStubSe = new StubCalypsoClassic();
 
         logger.info("Insert stub PO.");
-        poReader.insertSe(calypsoStubSe);
+        stubPluginFactory.insertSe(PO_READER, calypsoStubSe);
 
         logger.info(
                 "=============== UseCase Calypso #1: AID based explicit selection ==================");
@@ -225,7 +224,7 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Stub {
         }
 
         logger.info("Remove stub PO.");
-        poReader.removeSe();
+        stubPluginFactory.removeSe(PO_READER);
 
         System.exit(0);
     }

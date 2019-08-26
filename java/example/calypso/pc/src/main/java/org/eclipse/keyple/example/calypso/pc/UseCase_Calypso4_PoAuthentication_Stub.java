@@ -18,9 +18,7 @@ import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -29,9 +27,8 @@ import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubSamCalypsoClassic;
 import org.eclipse.keyple.example.calypso.pc.transaction.CalypsoUtilities;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
+import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
-import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +62,8 @@ import org.slf4j.LoggerFactory;
 public class UseCase_Calypso4_PoAuthentication_Stub {
     private static final Logger logger =
             LoggerFactory.getLogger(UseCase_Calypso4_PoAuthentication_Stub.class);
+    private final static String PO_READER = "poReader";
+    private final static String SAM_READER = "samReader";
 
     public static void main(String[] args)
             throws KeypleBaseException, NoStackTraceThrowable, InterruptedException {
@@ -73,22 +72,24 @@ public class UseCase_Calypso4_PoAuthentication_Stub {
         SeProxyService seProxyService = SeProxyService.getInstance();
 
         /* Get the instance of the Stub plugin */
-        StubPlugin stubPlugin = StubPlugin.getInstance();
+        StubPluginFactory stubPluginFactory = StubPluginFactory.getInstance();
+
+        ReaderPlugin stubPlugin = stubPluginFactory.getPluginInstance();
 
         /* Assign StubPlugin to the SeProxyService */
         seProxyService.addPlugin(stubPlugin);
 
         /* Plug the PO stub reader. */
-        stubPlugin.plugStubReader("poReader", true);
+        stubPluginFactory.plugStubReader(PO_READER, true);
 
         /* Plug the SAM stub reader. */
-        stubPlugin.plugStubReader("samReader", true);
+        stubPluginFactory.plugStubReader(SAM_READER, true);
 
         /*
          * Get a PO and a SAM reader ready to work with a Calypso PO.
          */
-        StubReader poReader = (StubReader) (stubPlugin.getReader("poReader"));
-        StubReader samReader = (StubReader) (stubPlugin.getReader("samReader"));
+        SeReader poReader = (SeReader) (stubPlugin.getReader(PO_READER));
+        SeReader samReader = (SeReader) (stubPlugin.getReader(SAM_READER));
 
         /* Check if the reader exists */
         if (poReader == null || samReader == null) {
@@ -103,13 +104,13 @@ public class UseCase_Calypso4_PoAuthentication_Stub {
         StubSecureElement calypsoStubSe = new StubCalypsoClassic();
 
         logger.info("Insert stub PO.");
-        poReader.insertSe(calypsoStubSe);
+        stubPluginFactory.insertSe(PO_READER, calypsoStubSe);
 
         /* Create 'virtual' Calypso SAM */
         StubSecureElement calypsoSamStubSe = new StubSamCalypsoClassic();
 
         logger.info("Insert stub SAM.");
-        samReader.insertSe(calypsoSamStubSe);
+        stubPluginFactory.insertSe(SAM_READER, calypsoSamStubSe);
 
         /*
          * Open logical channel for the SAM inserted in the reader

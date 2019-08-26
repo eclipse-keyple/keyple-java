@@ -12,7 +12,9 @@
 package org.eclipse.keyple.example.remote.application;
 
 import java.io.IOException;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -26,9 +28,8 @@ import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ClientNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.ServerNode;
 import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
+import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
-import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,7 @@ public class Demo_Slave {
     private static final Logger logger = LoggerFactory.getLogger(Demo_Slave.class);
 
     // physical reader, in this case a StubReader
-    private StubReader localReader;
+    private SeReader localReader;
 
     // DtoNode used as to send and receive KeypleDto to Master
     private DtoNode node;
@@ -128,7 +129,7 @@ public class Demo_Slave {
     }
 
     /**
-     * Creates and configures a {@link StubReader} for the PO
+     * Creates and configures a {@link SeReader} for the PO
      *
      * @throws KeypleReaderException
      * @throws InterruptedException
@@ -139,7 +140,8 @@ public class Demo_Slave {
             logger.info("{} Boot DemoSlave LocalReader ", node.getNodeId());
 
             logger.info("{} Create Local StubPlugin", node.getNodeId());
-            StubPlugin stubPlugin = StubPlugin.getInstance();
+            StubPluginFactory stubPluginFactory = StubPluginFactory.getInstance();
+            ReaderPlugin stubPlugin = stubPluginFactory.getPluginInstance();
 
             SeProxyService.getInstance().addPlugin(stubPlugin);
 
@@ -152,15 +154,15 @@ public class Demo_Slave {
             };
 
             // add observer to have the reader management done by the monitoring thread
-            stubPlugin.addObserver(observer);
+            ((ObservablePlugin) stubPlugin).addObserver(observer);
             Thread.sleep(100);
 
-            stubPlugin.plugStubReader(nativeReaderName, true);
+            stubPluginFactory.plugStubReader(nativeReaderName, true);
 
             Thread.sleep(1000);
 
             // get the created proxy reader
-            localReader = (StubReader) stubPlugin.getReader(nativeReaderName);
+            localReader = stubPlugin.getReader(nativeReaderName);
 
             localReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
                     StubProtocolSetting.STUB_PROTOCOL_SETTING
@@ -177,7 +179,7 @@ public class Demo_Slave {
 
 
     /**
-     * Creates a {@link StubReader} and connects it to the Master terminal via the
+     * Creates a {@link SeReader} and connects it to the Master terminal via the
      * {@link INativeReaderService}
      * 
      * @throws KeypleReaderException
@@ -203,7 +205,7 @@ public class Demo_Slave {
         /* Create 'virtual' Calypso PO */
         StubSecureElement calypsoStubSe = new StubCalypsoClassic();
 
-        localReader.insertSe(calypsoStubSe);
+        StubPluginFactory.getInstance().insertSe(localReader.getName(), calypsoStubSe);
     }
 
     public void insertStubSe(StubSecureElement se) {
@@ -212,7 +214,7 @@ public class Demo_Slave {
         logger.info("{} Start DEMO - insert HoplinkSE  ", node.getNodeId());
 
         // logger.info("{} Insert HoplinkStubSE into Local StubReader",node.getNodeId());
-        localReader.insertSe(se);
+        StubPluginFactory.getInstance().insertSe(localReader.getName(), se);
     }
 
     public void removeSe() {
@@ -221,7 +223,7 @@ public class Demo_Slave {
         logger.info(
                 "*****************************************************************************");
 
-        localReader.removeSe();
+        StubPluginFactory.getInstance().removeSe(localReader.getName());
 
     }
 
