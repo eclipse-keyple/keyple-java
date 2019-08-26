@@ -47,8 +47,8 @@ public class PcscReaderActualTest {
     }
 
     /**
-     * This test registers/deregisters on an {@link SeReader} twice. This allows to
-     * verify we create and dispose threads correctly.
+     * This test registers/deregisters on an {@link SeReader} twice. This allows to verify we create
+     * and dispose threads correctly.
      * 
      * @throws KeypleReaderException
      * @throws InterruptedException
