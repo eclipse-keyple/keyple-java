@@ -16,7 +16,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
@@ -29,9 +28,7 @@ import org.slf4j.LoggerFactory;
  * This class is a singleton, use StubPlugin#getInstance to access it
  *
  */
-public final class StubPlugin extends AbstractThreadedObservablePlugin {
-
-    private static final StubPlugin uniqueInstance = new StubPlugin();
+final class StubPlugin extends AbstractThreadedObservablePlugin {
 
     private static final Logger logger = LoggerFactory.getLogger(StubPlugin.class);
 
@@ -41,7 +38,7 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
     private static SortedSet<String> connectedStubNames =
             Collections.synchronizedSortedSet(new ConcurrentSkipListSet<String>());
 
-    private StubPlugin() {
+    StubPlugin() {
         super("StubPlugin");
 
         /*
@@ -49,15 +46,6 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
          * 10 ms to speed up responsiveness.
          */
         threadWaitTimeout = 10;
-    }
-
-    /**
-     * Gets the single instance of StubPlugin.
-     *
-     * @return single instance of StubPlugin
-     */
-    public static StubPlugin getInstance() {
-        return uniqueInstance;
     }
 
     @Override
@@ -253,7 +241,7 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
                 return reader;
             }
         }
-        AbstractObservableReader reader = null;
+        SeReader reader = null;
         if (connectedStubNames.contains(name)) {
             reader = new StubReader(name);
         }

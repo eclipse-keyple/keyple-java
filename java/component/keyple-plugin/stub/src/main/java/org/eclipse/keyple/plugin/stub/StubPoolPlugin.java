@@ -27,7 +27,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
  */
 public class StubPoolPlugin implements ReaderPoolPlugin {
 
-    StubPlugin stubPlugin;
+    StubPluginFactory stubPluginFactory;
     Map<String, StubReader> readerPool; // groupReference, seReader = limitation each groupReference
                                         // can have only one reader
     Map<String, String> allocatedReader;// readerName,groupReference
@@ -35,15 +35,14 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
     static public String PREFIX_NAME = "POOL_";
 
     public StubPoolPlugin() {
-        this.stubPlugin = StubPlugin.getInstance();
+        this.stubPluginFactory = StubPluginFactory.getInstance();
         this.readerPool = new HashMap<String, StubReader>();
         this.allocatedReader = new HashMap<String, String>();
-
     }
 
     @Override
     public String getName() {
-        return PREFIX_NAME + stubPlugin.getName();
+        return PREFIX_NAME + stubPluginFactory.getPluginInstance().getName();
     }
 
     @Override
@@ -64,10 +63,11 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
             StubSecureElement se) {
         try {
             // create new reader
-            stubPlugin.plugStubReader(readerName, true);
+            stubPluginFactory.plugStubReader(readerName, true);
 
             // get new reader
-            StubReader newReader = (StubReader) stubPlugin.getReader(readerName);
+            StubReader newReader =
+                    (StubReader) stubPluginFactory.getPluginInstance().getReader(readerName);
 
             newReader.insertSe(se);
 
@@ -96,7 +96,7 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
             readerPool.remove(groupReference);
 
             // remove reader from plugin
-            stubPlugin.unplugStubReader(stubReader.getName(), true);
+            stubPluginFactory.unplugStubReader(stubReader.getName(), true);
 
         } catch (KeypleReaderException e) {
             throw new IllegalStateException(
@@ -169,41 +169,39 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
 
     @Override
     public SortedSet<String> getReaderNames() {
-        return stubPlugin.getReaderNames();
+        return stubPluginFactory.getPluginInstance().getReaderNames();
     }
 
     @Override
     public SortedSet<SeReader> getReaders() throws KeypleReaderException {
-        return stubPlugin.getReaders();
+        return stubPluginFactory.getPluginInstance().getReaders();
     }
 
     @Override
     public SeReader getReader(String name) throws KeypleReaderNotFoundException {
-        return stubPlugin.getReader(name);
+        return stubPluginFactory.getPluginInstance().getReader(name);
     }
 
     @Override
     public int compareTo(ReaderPlugin o) {
-        return stubPlugin.compareTo(o);
+        return stubPluginFactory.getPluginInstance().compareTo(o);
     }
 
     @Override
     public Map<String, String> getParameters() {
-        return stubPlugin.getParameters();
+        return stubPluginFactory.getPluginInstance().getParameters();
     }
 
     @Override
     public void setParameter(String key, String value)
             throws IllegalArgumentException, KeypleBaseException {
-        stubPlugin.setParameter(key, value);
+        stubPluginFactory.getPluginInstance().setParameter(key, value);
     }
 
     @Override
     public void setParameters(Map<String, String> parameters)
             throws IllegalArgumentException, KeypleBaseException {
-        stubPlugin.setParameters(parameters);
+        stubPluginFactory.getPluginInstance().setParameters(parameters);
     }
-
-
 
 }
