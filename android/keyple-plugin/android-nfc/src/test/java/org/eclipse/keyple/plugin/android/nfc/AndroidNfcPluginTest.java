@@ -17,6 +17,8 @@ import static org.junit.Assert.assertThat;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.junit.Before;
@@ -30,13 +32,13 @@ import junit.framework.Assert;
 @PrepareForTest({AndroidNfcReader.class})
 public class AndroidNfcPluginTest {
 
-    AndroidNfcPlugin plugin;
+    ReaderPlugin plugin;
 
     // init before each test
     @Before
     public void SetUp() throws IOException {
         // get unique instance
-        plugin = AndroidNfcPlugin.getInstance();
+        plugin = AndroidNfcPluginFactory.getInstance().getPluginInstance();
     }
 
 
@@ -69,7 +71,7 @@ public class AndroidNfcPluginTest {
 
 
     @Test
-    public void setParameter() throws IOException {
+    public void setParameter() throws KeypleBaseException {
         plugin.setParameter("key2", "value2");
         Assert.assertTrue(plugin.getParameters().size() > 0);
         Assert.assertTrue(plugin.getParameters().get("key2").equals("value2"));
