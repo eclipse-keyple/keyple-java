@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractStaticPlugin;
 import org.slf4j.Logger;
@@ -44,11 +46,9 @@ import org.slf4j.LoggerFactory;
  *
  */
 
-public final class AndroidNfcPlugin extends AbstractStaticPlugin {
+final class AndroidNfcPlugin extends AbstractStaticPlugin {
 
     private static final Logger LOG = LoggerFactory.getLogger(AndroidNfcPlugin.class);
-
-    private final static AndroidNfcPlugin uniqueInstance = new AndroidNfcPlugin();
 
     static final String PLUGIN_NAME = "AndroidNfcPlugin";
 
@@ -57,12 +57,8 @@ public final class AndroidNfcPlugin extends AbstractStaticPlugin {
 
     // plugin
 
-    private AndroidNfcPlugin() {
+    AndroidNfcPlugin() {
         super(PLUGIN_NAME);
-    }
-
-    public static AndroidNfcPlugin getInstance() {
-        return uniqueInstance;
     }
 
     @Override
@@ -81,14 +77,14 @@ public final class AndroidNfcPlugin extends AbstractStaticPlugin {
     /**
      * For an Android NFC device, the Android NFC Plugin manages only one @{@link AndroidNfcReader}.
      * 
-     * @return SortedSet<ProxyReader> : contains only one element, the
+     * @return SortedSet<SeReader> : contains only one element, the
      *         singleton @{@link AndroidNfcReader}
      */
     @Override
-    protected SortedSet<AbstractObservableReader> initNativeReaders() {
+    protected SortedSet<SeReader> initNativeReaders() {
         LOG.debug("InitNativeReader() add the unique instance of AndroidNfcReader");
         // return the only one reader in a list
-        SortedSet<AbstractObservableReader> readers = new TreeSet<AbstractObservableReader>();
+        SortedSet<SeReader> readers = new TreeSet<SeReader>();
         readers.add(AndroidNfcReader.getInstance());
         return readers;
     }
@@ -101,7 +97,7 @@ public final class AndroidNfcPlugin extends AbstractStaticPlugin {
      * @return instance of @{@link AndroidNfcReader}
      */
     @Override
-    protected AbstractObservableReader fetchNativeReader(String name) {
+    protected SeReader fetchNativeReader(String name) {
         return readers.first();
     }
 }

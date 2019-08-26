@@ -42,7 +42,7 @@ import android.os.Bundle;
  *
  *
  */
-public final class AndroidNfcReader extends AbstractSelectionLocalReader
+final class AndroidNfcReader extends AbstractSelectionLocalReader
         implements NfcAdapter.ReaderCallback {
 
     private static final Logger LOG = LoggerFactory.getLogger(AndroidNfcReader.class);

@@ -12,7 +12,7 @@
 package org.eclipse.keyple.example.android.nfc;
 
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin;
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import android.os.Bundle;
@@ -30,7 +30,7 @@ import android.view.WindowManager;
 
 
 /**
- * Example of @{@link SeProxyService} implementation based on the @{@link AndroidNfcPlugin}
+ * Example of @{@link SeProxyService} implementation based on the @{@link AndroidNfcPluginFactory}
  *
  */
 public class MainActivity extends AppCompatActivity {

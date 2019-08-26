@@ -37,9 +37,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcFragment;
-import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin;
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactory;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings;
-import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import android.graphics.Color;
@@ -95,7 +94,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
         LOG.debug("Initialize SEProxy with Android Plugin");
         SeProxyService seProxyService = SeProxyService.getInstance();
         SortedSet<ReaderPlugin> plugins = new ConcurrentSkipListSet<ReaderPlugin>();
-        plugins.add(AndroidNfcPlugin.getInstance());
+        plugins.add(AndroidNfcPluginFactory.getInstance().getPluginInstance());
         seProxyService.setPlugins(plugins);
 
         // 2 - add NFC Fragment to activity in order to communicate with Android Plugin
@@ -218,7 +217,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
     }
 
     /**
-     * Catch @{@link AndroidNfcReader} events When a SE is inserted, launch test commands
+     * Catch @{@link SeReader} events When a SE is inserted, launch test commands
      **
      * @param event
      */
@@ -275,7 +274,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                      * print tag info in View
                      */
                     mText.append("\n ---- \n");
-                    mText.append(((AndroidNfcReader) reader).printTagId());
+                    // mText.append(((AndroidNfcReader) reader).printTagId());
                     mText.append("\n ---- \n");
                     SelectionsResult selectionsResult =
                             seSelection.processDefaultSelection(defaultSelectionsResponse);
@@ -365,7 +364,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
 
     /**
-     * Revocation of the Activity from @{@link AndroidNfcReader} list of observers
+     * Revocation of the Activity from @{@link SeReader} list of observers
      */
     @Override
     public void onDestroy() {
