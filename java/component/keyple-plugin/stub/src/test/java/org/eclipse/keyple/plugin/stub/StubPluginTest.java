@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -53,7 +54,7 @@ public class StubPluginTest extends BaseStubTest {
 
         // connect reader
         stubPluginFactory.plugStubReader(READER_NAME, TransmissionMode.CONTACTLESS, true);
-        StubReader stubReader = (StubReader) stubPlugin.getReaders().first();
+        SeReader stubReader = stubPlugin.getReaders().first();
 
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         Assert.assertEquals(READER_NAME, stubReader.getName());

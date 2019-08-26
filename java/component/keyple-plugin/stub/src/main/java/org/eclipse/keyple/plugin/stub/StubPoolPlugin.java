@@ -28,15 +28,15 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 public class StubPoolPlugin implements ReaderPoolPlugin {
 
     StubPluginFactory stubPluginFactory;
-    Map<String, StubReader> readerPool; // groupReference, seReader = limitation each groupReference
-                                        // can have only one reader
+    Map<String, SeReader> readerPool; // groupReference, seReader = limitation each groupReference
+                                      // can have only one reader
     Map<String, String> allocatedReader;// readerName,groupReference
 
     static public String PREFIX_NAME = "POOL_";
 
     public StubPoolPlugin() {
         this.stubPluginFactory = StubPluginFactory.getInstance();
-        this.readerPool = new HashMap<String, StubReader>();
+        this.readerPool = new HashMap<String, SeReader>();
         this.allocatedReader = new HashMap<String, String>();
     }
 
@@ -66,10 +66,9 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
             stubPluginFactory.plugStubReader(readerName, true);
 
             // get new reader
-            StubReader newReader =
-                    (StubReader) stubPluginFactory.getPluginInstance().getReader(readerName);
+            SeReader newReader = stubPluginFactory.getPluginInstance().getReader(readerName);
 
-            newReader.insertSe(se);
+            stubPluginFactory.insertSe(newReader.getName(), se);
 
             // map reader to groupReference
             readerPool.put(groupReference, newReader);
@@ -117,7 +116,7 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
     @Override
     public SeReader allocateReader(String groupReference) {
         // find the reader in the readerPool
-        StubReader seReader = readerPool.get(groupReference);
+        SeReader seReader = readerPool.get(groupReference);
 
         // check if the reader is available
         if (seReader == null || allocatedReader.containsKey(seReader.getName())) {
@@ -147,11 +146,11 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
         /**
          * Remove and Re-insert SE to reset logical channel
          */
-        StubReader stubReader = ((StubReader) seReader);
-        if (stubReader.checkSePresence()) {
-            StubSecureElement se = stubReader.getSe();
-            stubReader.removeSe();
-            stubReader.insertSe(se);
+        StubPluginFactory stubPluginFactory = StubPluginFactory.getInstance();
+        if (stubPluginFactory.checkSePresence(seReader.getName())) {
+            StubSecureElement se = stubPluginFactory.getSe(seReader.getName());
+            stubPluginFactory.removeSe(seReader.getName());
+            stubPluginFactory.insertSe(seReader.getName(), se);
         }
 
         allocatedReader.remove(seReader.getName());

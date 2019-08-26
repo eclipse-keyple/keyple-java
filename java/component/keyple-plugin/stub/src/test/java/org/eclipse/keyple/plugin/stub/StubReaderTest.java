@@ -65,9 +65,9 @@ public class StubReaderTest extends BaseStubTest {
     @After
     public void tearDown() throws KeypleReaderException {
 
-        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        final SeReader reader = stubPlugin.getReader("StubReaderTest");
         ((ObservablePlugin) stubPlugin).clearObservers();
-        reader.clearObservers();
+        ((ObservableReader) reader).clearObservers();
         stubPluginFactory.unplugStubReader("StubReaderTest", true);
     }
 
@@ -91,14 +91,14 @@ public class StubReaderTest extends BaseStubTest {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
 
-        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
-        Assert.assertEquals(false, reader.checkSePresence());
+        final SeReader reader = stubPlugin.getReader("StubReaderTest");
+        Assert.assertEquals(false, stubPluginFactory.checkSePresence(reader.getName()));
 
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
 
         // add observer
-        reader.addObserver(new ObservableReader.ReaderObserver() {
+        ((ObservableReader) reader).addObserver(new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
                 Assert.assertEquals(event.getReaderName(), reader.getName());
@@ -112,12 +112,12 @@ public class StubReaderTest extends BaseStubTest {
             }
         });
         // test
-        reader.insertSe(hoplinkSE());
+        stubPluginFactory.insertSe(reader.getName(), hoplinkSE());
 
         // lock thread for 2 seconds max to wait for the event
         lock.await(2, TimeUnit.SECONDS);
         Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
-        Assert.assertTrue(reader.checkSePresence());
+        Assert.assertTrue(stubPluginFactory.checkSePresence(reader.getName()));
 
 
     }
@@ -131,14 +131,14 @@ public class StubReaderTest extends BaseStubTest {
     public void testRemove() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        final SeReader reader = stubPlugin.getReader("StubReaderTest");
 
         // CountDown lock
         final CountDownLatch insertLock = new CountDownLatch(1);
         final CountDownLatch removeLock = new CountDownLatch(1);
 
         // add observer
-        reader.addObserver(new ObservableReader.ReaderObserver() {
+        ((ObservableReader) reader).addObserver(new ObservableReader.ReaderObserver() {
             int event_i = 1;
 
             @Override
@@ -165,7 +165,7 @@ public class StubReaderTest extends BaseStubTest {
             }
         });
         // test
-        reader.insertSe(hoplinkSE());
+        stubPluginFactory.insertSe(reader.getName(), hoplinkSE());
 
         // lock thread for 2 seconds max to wait for the event SE_INSERTED
         insertLock.await(2, TimeUnit.SECONDS);
@@ -173,7 +173,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(0, insertLock.getCount()); // should be 0 because insertLock is
                                                        // countDown by obs
 
-        reader.removeSe();
+        stubPluginFactory.removeSe(reader.getName());
 
         // lock thread for 2 seconds max to wait for the event SE_REMOVAL
         removeLock.await(2, TimeUnit.SECONDS);
@@ -181,7 +181,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(0, removeLock.getCount()); // should be 0 because removeLock is
                                                        // countDown by obs
 
-        Assert.assertFalse(reader.checkSePresence());
+        Assert.assertFalse(stubPluginFactory.checkSePresence(reader.getName()));
 
     }
 
@@ -291,7 +291,7 @@ public class StubReaderTest extends BaseStubTest {
     public void A_testInsertRemoveTwiceFast() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        final SeReader reader = stubPlugin.getReader("StubReaderTest");
 
         // CountDown lock
         final CountDownLatch firstInsertLock = new CountDownLatch(1);
@@ -300,7 +300,7 @@ public class StubReaderTest extends BaseStubTest {
         final CountDownLatch secondRemoveLock = new CountDownLatch(1);
 
         // add observer
-        reader.addObserver(new ObservableReader.ReaderObserver() {
+        ((ObservableReader) reader).addObserver(new ObservableReader.ReaderObserver() {
             int event_i = 1;
 
             @Override
@@ -341,7 +341,7 @@ public class StubReaderTest extends BaseStubTest {
             }
         });
         // test first sequence
-        reader.insertSe(hoplinkSE());
+        stubPluginFactory.insertSe(reader.getName(), hoplinkSE());
 
         // lock thread for 2 seconds max to wait for the event SE_INSERTED
         firstInsertLock.await(2, TimeUnit.SECONDS);
@@ -349,7 +349,7 @@ public class StubReaderTest extends BaseStubTest {
         // countDown by obs
 
 
-        reader.removeSe();
+        stubPluginFactory.removeSe(reader.getName());
 
         // lock thread for 2 seconds max to wait for the event SE_REMOVAL
         firstRemoveLock.await(2, TimeUnit.SECONDS);
@@ -361,21 +361,21 @@ public class StubReaderTest extends BaseStubTest {
         // BUG, solved by setting a lower threadWaitTimeout (100ms)
 
         // test second sequence
-        reader.insertSe(hoplinkSE());
+        stubPluginFactory.insertSe(reader.getName(), hoplinkSE());
 
         // lock thread for 2 seconds max to wait for the event SE_INSERTED
         secondInsertLock.await(2, TimeUnit.SECONDS);
 
         Assert.assertEquals(0, secondInsertLock.getCount()); // should be 0 because insertLock is
         // countDown by obs
-        reader.removeSe();
+        stubPluginFactory.removeSe(reader.getName());
 
         // lock thread for 2 seconds max to wait for the event SE_REMOVAL
         secondRemoveLock.await(2, TimeUnit.SECONDS);
         Assert.assertEquals(0, secondRemoveLock.getCount()); // should be 0 because removeLock is
         // countDown by obs
 
-        Assert.assertFalse(reader.checkSePresence());
+        Assert.assertFalse(stubPluginFactory.checkSePresence(reader.getName()));
 
     }
 
@@ -383,7 +383,7 @@ public class StubReaderTest extends BaseStubTest {
     public void testInsertMatchingSe() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        final SeReader reader = stubPlugin.getReader("StubReaderTest");
 
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
@@ -395,7 +395,7 @@ public class StubReaderTest extends BaseStubTest {
                         .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // add observer
-        reader.addObserver(new ObservableReader.ReaderObserver() {
+        ((ObservableReader) reader).addObserver(new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
                 Assert.assertEquals(event.getReaderName(), reader.getName());
@@ -454,7 +454,7 @@ public class StubReaderTest extends BaseStubTest {
                 ObservableReader.NotificationMode.MATCHED_ONLY);
 
         // test
-        reader.insertSe(hoplinkSE());
+        stubPluginFactory.insertSe(reader.getName(), hoplinkSE());
 
         // lock thread for 2 seconds max to wait for the event
         lock.await(2, TimeUnit.SECONDS);
@@ -468,13 +468,13 @@ public class StubReaderTest extends BaseStubTest {
     public void testInsertNotMatching_MatchedOnly() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        final SeReader reader = stubPlugin.getReader("StubReaderTest");
 
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
 
         // add observer
-        reader.addObserver(new ObservableReader.ReaderObserver() {
+        ((ObservableReader) reader).addObserver(new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
                 // no event is thrown
@@ -496,7 +496,7 @@ public class StubReaderTest extends BaseStubTest {
                 ObservableReader.NotificationMode.MATCHED_ONLY);
 
         // test
-        reader.insertSe(hoplinkSE());
+        stubPluginFactory.insertSe(reader.getName(), hoplinkSE());
 
 
         // lock thread for 2 seconds max to wait for the event
@@ -508,7 +508,7 @@ public class StubReaderTest extends BaseStubTest {
     public void testInsertNotMatching_Always() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        final SeReader reader = stubPlugin.getReader("StubReaderTest");
 
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
@@ -519,7 +519,7 @@ public class StubReaderTest extends BaseStubTest {
                         .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // add observer
-        reader.addObserver(new ObservableReader.ReaderObserver() {
+        ((ObservableReader) reader).addObserver(new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
                 Assert.assertEquals(event.getReaderName(), reader.getName());
@@ -553,7 +553,7 @@ public class StubReaderTest extends BaseStubTest {
                 ObservableReader.NotificationMode.ALWAYS);
 
         // test
-        reader.insertSe(hoplinkSE());
+        stubPluginFactory.insertSe(reader.getName(), hoplinkSE());
 
         // lock thread for 2 seconds max to wait for the event
         lock.await(2, TimeUnit.SECONDS);
@@ -565,13 +565,13 @@ public class StubReaderTest extends BaseStubTest {
     public void testATR() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        final SeReader reader = stubPlugin.getReader("StubReaderTest");
 
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
 
         // add observer
-        reader.addObserver(new ObservableReader.ReaderObserver() {
+        ((ObservableReader) reader).addObserver(new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
 
@@ -604,7 +604,7 @@ public class StubReaderTest extends BaseStubTest {
         });
 
         // test
-        reader.insertSe(hoplinkSE());
+        stubPluginFactory.insertSe(reader.getName(), hoplinkSE());
 
         // lock thread for 2 seconds max to wait for the event
         lock.await(2, TimeUnit.SECONDS);
@@ -623,9 +623,9 @@ public class StubReaderTest extends BaseStubTest {
     public void transmit_Hoplink_null() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
-        reader.insertSe(hoplinkSE());
-        reader.transmitSet((SeRequestSet) null);
+        SeReader reader = stubPlugin.getReader("StubReaderTest");
+        stubPluginFactory.insertSe(reader.getName(), hoplinkSE());
+        ((ProxyReader) reader).transmitSet((SeRequestSet) null);
 
         // throws exception
     }
@@ -634,12 +634,12 @@ public class StubReaderTest extends BaseStubTest {
     public void transmit_Hoplink_Successful() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        SeReader reader = stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequestSet requests = getRequestIsoDepSetSample();
 
         // init SE
-        reader.insertSe(hoplinkSE());
+        stubPluginFactory.insertSe(reader.getName(), hoplinkSE());
 
         // add Protocol flag
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
@@ -650,7 +650,7 @@ public class StubReaderTest extends BaseStubTest {
         selectSe(reader);
 
         // test
-        SeResponseSet seResponse = reader.transmitSet(requests);
+        SeResponseSet seResponse = ((ProxyReader) reader).transmitSet(requests);
 
         // assert
         Assert.assertTrue(seResponse.getSingleResponse().getApduResponses().get(0).isSuccessful());
@@ -670,7 +670,7 @@ public class StubReaderTest extends BaseStubTest {
     // new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
     //
     // // test
-    // SeResponseSet resp = reader.transmit(seRequest);
+    // SeResponseSet resp = ((ProxyReader)reader).transmit(seRequest);
     //
     // Assert.assertNull(resp.getSingleResponse());
     // }
@@ -680,12 +680,12 @@ public class StubReaderTest extends BaseStubTest {
     public void transmit_no_response() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        SeReader reader = stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequestSet requests = getNoResponseRequest();
 
         // init SE
-        reader.insertSe(noApduResponseSE());
+        stubPluginFactory.insertSe(reader.getName(), noApduResponseSE());
 
         // add Protocol flag
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
@@ -696,19 +696,19 @@ public class StubReaderTest extends BaseStubTest {
         selectSe(reader);
 
         // test
-        SeResponseSet seResponse = reader.transmitSet(requests);
+        SeResponseSet seResponse = ((ProxyReader) reader).transmitSet(requests);
     }
 
     @Test
     public void transmit_partial_response_set_0() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        SeReader reader = stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequestSet seRequestSet = getPartialRequestSet(0);
 
         // init SE
-        reader.insertSe(partialSE());
+        stubPluginFactory.insertSe(reader.getName(), partialSE());
 
         // add Protocol flag
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
@@ -720,7 +720,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponseSet seResponseSet = reader.transmitSet(seRequestSet);
+            SeResponseSet seResponseSet = ((ProxyReader) reader).transmitSet(seRequestSet);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 1);
             Assert.assertEquals(
@@ -732,12 +732,12 @@ public class StubReaderTest extends BaseStubTest {
     public void transmit_partial_response_set_1() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        SeReader reader = stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequestSet seRequestSet = getPartialRequestSet(1);
 
         // init SE
-        reader.insertSe(partialSE());
+        stubPluginFactory.insertSe(reader.getName(), partialSE());
 
         // add Protocol flag
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
@@ -749,7 +749,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponseSet seResponseSet = reader.transmitSet(seRequestSet);
+            SeResponseSet seResponseSet = ((ProxyReader) reader).transmitSet(seRequestSet);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 2);
             Assert.assertEquals(
@@ -766,12 +766,12 @@ public class StubReaderTest extends BaseStubTest {
     public void transmit_partial_response_set_2() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        SeReader reader = stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequestSet seRequestSet = getPartialRequestSet(2);
 
         // init SE
-        reader.insertSe(partialSE());
+        stubPluginFactory.insertSe(reader.getName(), partialSE());
 
         // add Protocol flag
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
@@ -783,7 +783,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponseSet seResponseSet = reader.transmitSet(seRequestSet);
+            SeResponseSet seResponseSet = ((ProxyReader) reader).transmitSet(seRequestSet);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 3);
             Assert.assertEquals(
@@ -799,12 +799,12 @@ public class StubReaderTest extends BaseStubTest {
     public void transmit_partial_response_set_3() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        SeReader reader = stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequestSet seRequestSet = getPartialRequestSet(3);
 
         // init SE
-        reader.insertSe(partialSE());
+        stubPluginFactory.insertSe(reader.getName(), partialSE());
 
         // add Protocol flag
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
@@ -816,7 +816,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponseSet seResponseSet = reader.transmitSet(seRequestSet);
+            SeResponseSet seResponseSet = ((ProxyReader) reader).transmitSet(seRequestSet);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 3);
             Assert.assertEquals(
@@ -832,12 +832,12 @@ public class StubReaderTest extends BaseStubTest {
     public void transmit_partial_response_0() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        SeReader reader = stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequest seRequest = getPartialRequest(0);
 
         // init SE
-        reader.insertSe(partialSE());
+        stubPluginFactory.insertSe(reader.getName(), partialSE());
 
         // add Protocol flag
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
@@ -849,7 +849,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponse seResponse = reader.transmit(seRequest);
+            SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 0);
         }
@@ -860,12 +860,12 @@ public class StubReaderTest extends BaseStubTest {
     public void transmit_partial_response_1() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        SeReader reader = stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequest seRequest = getPartialRequest(1);
 
         // init SE
-        reader.insertSe(partialSE());
+        stubPluginFactory.insertSe(reader.getName(), partialSE());
 
         // add Protocol flag
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
@@ -877,7 +877,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponse seResponse = reader.transmit(seRequest);
+            SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 1);
         }
@@ -887,12 +887,12 @@ public class StubReaderTest extends BaseStubTest {
     public void transmit_partial_response_2() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        SeReader reader = stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequest seRequest = getPartialRequest(2);
 
         // init SE
-        reader.insertSe(partialSE());
+        stubPluginFactory.insertSe(reader.getName(), partialSE());
 
         // add Protocol flag
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
@@ -904,7 +904,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponse seResponse = reader.transmit(seRequest);
+            SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 2);
         }
@@ -914,12 +914,12 @@ public class StubReaderTest extends BaseStubTest {
     public void transmit_partial_response_3() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        SeReader reader = stubPlugin.getReader("StubReaderTest");
         // init Request
         SeRequest seRequest = getPartialRequest(3);
 
         // init SE
-        reader.insertSe(partialSE());
+        stubPluginFactory.insertSe(reader.getName(), partialSE());
 
         // add Protocol flag
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
@@ -931,7 +931,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponse seResponse = reader.transmit(seRequest);
+            SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 3);
         }
@@ -946,7 +946,7 @@ public class StubReaderTest extends BaseStubTest {
     public void testGetName() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        SeReader reader = stubPlugin.getReader("StubReaderTest");
         Assert.assertNotNull(reader.getName());
     }
 
@@ -955,7 +955,7 @@ public class StubReaderTest extends BaseStubTest {
     public void testSetWrongParameter() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        SeReader reader = stubPlugin.getReader("StubReaderTest");
         reader.setParameter("WRONG_PARAMETER", "a");
     }
 
@@ -964,7 +964,7 @@ public class StubReaderTest extends BaseStubTest {
     public void testSetWrongParameters() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        SeReader reader = stubPlugin.getReader("StubReaderTest");
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("WRONG_PARAMETER", "d");
         parameters.put(StubReader.ALLOWED_PARAMETER_1, "a");
@@ -976,7 +976,7 @@ public class StubReaderTest extends BaseStubTest {
     public void testSetParameters() throws Exception {
         stubPluginFactory.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+        SeReader reader = stubPlugin.getReader("StubReaderTest");
 
         Map<String, String> p1 = new HashMap<String, String>();
         p1.put(StubReader.ALLOWED_PARAMETER_1, "a");
