@@ -1,4 +1,4 @@
-apply from: '../../common.gradle'
+apply from: '../common.gradle'
 apply plugin: 'com.diffplug.gradle.spotless'
 
 
@@ -7,7 +7,7 @@ apply plugin: 'com.diffplug.gradle.spotless'
 task aggregatedJavadocs(type: Javadoc, description: 'Generate javadocs from all child projects as if it was a single project', group: 'Documentation') {
     //println 'Create a aggregated javadoc Task to : ' + "$buildDir/docs/javadoc"
     destinationDir = file("$buildDir/docs/javadoc")
-    title = "$project.name " +  project(":java:component:keyple-core").version + " version API"
+    title = "$project.name " +  project(":component:keyple-core").version + " version API"
     options.author true
     options.links  'http://docs.oracle.com/javase/6/docs/api/',
             "http://d.android.com/reference/",
@@ -26,11 +26,11 @@ aggregatedJavadocs.doFirst {
     //println "DoFirst in task  : aggregatedJavadocs"
 
     //add Java modules javadoc
-    def aggregatedJavaProjects = [project(":java:component:keyple-core"),
-                                  project(":java:component:keyple-calypso"),
-                                  project(":java:component:keyple-plugin:keyple-plugin-pcsc"),
-                                  project(":java:component:keyple-plugin:keyple-plugin-stub"),
-                                  project(":java:component:keyple-plugin:keyple-plugin-remotese")]
+    def aggregatedJavaProjects = [project(":component:keyple-core"),
+                                  project(":component:keyple-calypso"),
+                                  project(":component:keyple-plugin:keyple-plugin-pcsc"),
+                                  project(":component:keyple-plugin:keyple-plugin-stub"),
+                                  project(":component:keyple-plugin:keyple-plugin-remotese")]
 
     aggregatedJavaProjects.each { aggregatedJavaProject ->
         source += aggregatedJavaProject.javadoc.source

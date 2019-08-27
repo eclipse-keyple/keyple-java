@@ -16,10 +16,10 @@ jar {
 dependencies {
 
     //use keyple library : core
-    implementation project(path:':java:component:keyple-core')
+    implementation project(path:':component:keyple-core')
 
     //use keyple library : calypso
-    implementation project(path:':java:component:keyple-calypso')
+    implementation project(path:':component:keyple-calypso')
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     implementation "org.slf4j:slf4j-api:${slf4japi_version}"

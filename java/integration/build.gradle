@@ -11,13 +11,13 @@ jar {
 
 dependencies {
 
-    implementation project(path:':java:component:keyple-core')
+    implementation project(path:':component:keyple-core')
 
-    implementation project(path:':java:component:keyple-calypso')
+    implementation project(path:':component:keyple-calypso')
 
-    implementation project(path:':java:component:keyple-plugin:keyple-plugin-pcsc')
+    implementation project(path:':component:keyple-plugin:keyple-plugin-pcsc')
 
-    implementation project(path: ':java:example:calypso:example-calypso-pc')
+    implementation project(path: ':example:calypso:example-calypso-pc')
 
     implementation 'com.google.code.gson:gson:2.8.5'
 

@@ -209,7 +209,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     //keyple-core project
-    implementation project(path:':java:component:keyple-core')
+    implementation project(path:':component:keyple-core')
 
     //android
     implementation "com.android.support:support-v4:${android_support_version}"
@@ -224,9 +224,9 @@ dependencies {
      */
 
     //testImplementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.0.0-RC4'
-    testImplementation project(path:':java:component:keyple-calypso')
-    
-    
+    testImplementation project(path:':component:keyple-calypso')
+
+
     /**Power mock**/
     androidTestImplementation "org.mockito:mockito-android:${mockito_android_version}"
     androidTestImplementation "org.powermock:powermock-api-mockito:${powermock_version}"

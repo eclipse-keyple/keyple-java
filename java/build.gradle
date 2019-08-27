@@ -82,10 +82,10 @@ allprojects {
 spotless {
     java {
         target "java/**/*.java"
-        licenseHeaderFile '.build/spotless.license.txt'
+        licenseHeaderFile '../.build/spotless.license.txt'
         importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
         removeUnusedImports()
-        eclipse().configFile '.build/spotless.eclipseformat.xml'
+        eclipse().configFile '../.build/spotless.eclipseformat.xml'
     }
 
     format 'misc', {

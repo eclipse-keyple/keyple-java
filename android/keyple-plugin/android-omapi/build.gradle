@@ -35,7 +35,7 @@ android {
             minifyEnabled false
         }
     }
-    
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
         targetCompatibility JavaVersion.VERSION_1_6
@@ -213,7 +213,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
 
     //keyple-core project
-    implementation project(path:":java:component:keyple-core")
+    implementation project(path:":component:keyple-core")
 
     //android
     implementation "com.android.support:support-v4:${android_support_version}"
@@ -230,7 +230,7 @@ dependencies {
 
     /** Test **/
     //testImplementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '1.0.0-RC4'
-    testImplementation project(path:':java:component:keyple-calypso')
+    testImplementation project(path:':component:keyple-calypso')
 
     testImplementation files('libs/org.simalliance.openmobileapi.jar')
 

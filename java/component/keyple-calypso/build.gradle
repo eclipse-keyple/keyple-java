@@ -143,11 +143,11 @@ uploadArchives {
 
 dependencies {
     //keyple-core project
-    api project(path: ':java:component:keyple-core')
+    api project(path: ':component:keyple-core')
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     api "org.slf4j:slf4j-api:${slf4japi_version}"
-    
+
     /*
     * Test
     */

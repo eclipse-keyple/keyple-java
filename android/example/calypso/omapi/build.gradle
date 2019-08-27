@@ -1,17 +1,5 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        google()
-        jcenter()
-
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
-    }
-}
-
 plugins {
-    id "com.diffplug.gradle.spotless" version "3.14.0"
+    id "com.diffplug.gradle.spotless"
 }
 
 project.group 'org.eclipse.keyple'
@@ -116,13 +104,13 @@ repositories {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
-    
+
     /*
    Keyple dependencies
     */
-    implementation project(path:':java:component:keyple-calypso')
-    implementation project(path:':java:component:keyple-core')
-    implementation project(path:':keyple-plugin:android-omapi')
+    implementation project(path:':component:keyple-calypso')
+    implementation project(path:':component:keyple-core')
+    implementation project(path:':keyple-plugin:keyple-plugin-android-omapi')
 
     /*
     OMAPI dependencies
@@ -132,7 +120,7 @@ dependencies {
     /*
     Android dependencies
      */
-    
+
     implementation "com.android.support:support-v4:${android_support_version}"
     implementation "com.android.support:appcompat-v7:${android_support_version}"
     implementation "com.android.support:design:${android_support_version}"
@@ -176,4 +164,3 @@ if (propFile.canRead()){
     println 'signing.properties not found'
     android.buildTypes.release.signingConfig = null
 }
-

@@ -1,9 +1,10 @@
 buildscript {
     repositories {
-        mavenLocal()
         mavenCentral()
+        gradlePluginPortal()
         google()
         jcenter()
+        mavenLocal()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
@@ -32,14 +33,14 @@ subprojects {
         resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     }
 
-
+/*
     pmd {
         ruleSets = [
                 "java-basic",
                 "java-braces",
         ]
     }
-    
+*/
 }
 
 
@@ -48,7 +49,7 @@ subprojects {
 task aggregatedJavadocs(type: Javadoc, description: 'Generate javadocs from all child projects as if it was a single project', group: 'Documentation') {
     println 'Create a aggregated javadoc Task to : ' + "$buildDir/docs/javadoc"
     destinationDir = file("$buildDir/docs/javadoc")
-    title = "$project.name " +  project(":java:component:keyple-core").version + " version API"
+    title = "$project.name " +  project(":component:keyple-core").version + " version API"
     options.author true
     options.links  'http://docs.oracle.com/javase/6/docs/api/',
             "http://d.android.com/reference/",

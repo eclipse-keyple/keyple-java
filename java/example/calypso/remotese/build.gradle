@@ -19,27 +19,27 @@ mainClassName = 'org.eclipse.keyple.example.remote.application.Demo_WebserviceWi
 
 dependencies {
 
-    implementation project(path:':java:component:keyple-calypso')
+    implementation project(path:':component:keyple-calypso')
 
-    implementation project(path:':java:component:keyple-core')
+    implementation project(path:':component:keyple-core')
 
-    implementation project(path:':java:component:keyple-plugin:keyple-plugin-stub')
-    
-    implementation project(path:':java:component:keyple-plugin:keyple-plugin-remotese')
+    implementation project(path:':component:keyple-plugin:keyple-plugin-stub')
 
-    implementation project(path: ':java:example:calypso:example-calypso-pc')
+    implementation project(path:':component:keyple-plugin:keyple-plugin-remotese')
 
-    implementation project(path: ':java:example:calypso:example-calypso-common')
+    implementation project(path: ':example:calypso:example-calypso-pc')
+
+    implementation project(path: ':example:calypso:example-calypso-common')
 
     implementation "org.java-websocket:Java-WebSocket:${JavaWebSocket_version}"
 
     runtime "org.slf4j:slf4j-simple:${slf4jsimple_version}"
 
     implementation "com.google.code.gson:gson:${gson_version}"
-    
+
     implementation "com.squareup.retrofit2:retrofit:${retrofit_version}"
     implementation "com.squareup.retrofit2:converter-gson:${retrofit_version}"
-    
+
     /*
     Tests
      */

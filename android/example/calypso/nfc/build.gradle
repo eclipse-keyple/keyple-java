@@ -1,18 +1,5 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        google()
-        jcenter()
-
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
-    }
-}
-
-
 plugins {
-    id "com.diffplug.gradle.spotless" version "3.14.0"
+    id "com.diffplug.gradle.spotless"
 }
 
 apply plugin: 'com.android.application'
@@ -20,30 +7,6 @@ apply from:'../../../../common.gradle'
 
 project.group 'org.eclipse.keyple'
 project.version = '0.7.0-SNAPSHOT'
-
-allprojects {
-
-    configurations.all {
-        // check for updates every build
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    }
-
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        google()
-        jcenter()
-    }
-
-    apply plugin: 'pmd'
-
-    pmd {
-        ruleSets = [
-                "java-basic",
-                "java-braces",
-        ]
-    }
-}
 
 spotless {
     java {
@@ -117,10 +80,10 @@ dependencies {
     /*
     Keyple dependencies
      */
-    implementation project(path:':java:component:keyple-calypso')
-    implementation project(path:':java:component:keyple-core')
-    implementation project(path:':keyple-plugin:android-nfc')
-    
+    implementation project(path:':component:keyple-calypso')
+    implementation project(path:':component:keyple-core')
+    implementation project(path:':keyple-plugin:keyple-plugin-android-nfc')
+
     /*
     Android components
      */

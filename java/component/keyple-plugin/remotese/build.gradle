@@ -143,7 +143,7 @@ uploadArchives {
 
 dependencies {
     //use java library : keyple core
-    api project(path:':java:component:keyple-core')
+    api project(path:':component:keyple-core')
 
     implementation "com.google.code.gson:gson:${gson_version}"
 
@@ -161,12 +161,12 @@ dependencies {
     testImplementation "org.mockito:mockito-core:${mockitocore_version}"
 
     //use keyple library : keyple plugin stub unit tests
-    testImplementation project(path: ':java:component:keyple-plugin:keyple-plugin-stub', configuration: 'testArtifacts')
-    testImplementation project(path: ':java:component:keyple-plugin:keyple-plugin-stub')
+    testImplementation project(path: ':component:keyple-plugin:keyple-plugin-stub', configuration: 'testArtifacts')
+    testImplementation project(path: ':component:keyple-plugin:keyple-plugin-stub')
 
     //use keyple library : keyple calypso
     //testImplementation 'org.eclipse.keyple:keyple-calypso:1.+'
-    testImplementation project(path:':java:component:keyple-calypso')
+    testImplementation project(path:':component:keyple-calypso')
 
 }
 
