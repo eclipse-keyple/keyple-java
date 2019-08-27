@@ -30,18 +30,20 @@ import org.slf4j.LoggerFactory;
  */
 public final class StubPlugin extends AbstractThreadedObservablePlugin {
 
-    private static final StubPlugin uniqueInstance = new StubPlugin();
+    //private static final StubPlugin uniqueInstance = new StubPlugin();
 
     private static final Logger logger = LoggerFactory.getLogger(StubPlugin.class);
 
     private final Map<String, String> parameters = new HashMap<String, String>();
 
+    public final static String PLUGIN_NAME = "StubPlugin";
+
     // simulated list of real-time connected stubReader
-    private static SortedSet<String> connectedStubNames =
+    private SortedSet<String> connectedStubNames =
             Collections.synchronizedSortedSet(new ConcurrentSkipListSet<String>());
 
-    private StubPlugin() {
-        super("StubPlugin");
+    StubPlugin() {
+        super(PLUGIN_NAME);
 
         /*
          * Monitoring is not handled by a lower layer (as in PC/SC), reduce the threading period to
@@ -55,9 +57,11 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
      *
      * @return single instance of StubPlugin
      */
+    /*
     public static StubPlugin getInstance() {
         return uniqueInstance;
     }
+    */
 
     @Override
     public Map<String, String> getParameters() {

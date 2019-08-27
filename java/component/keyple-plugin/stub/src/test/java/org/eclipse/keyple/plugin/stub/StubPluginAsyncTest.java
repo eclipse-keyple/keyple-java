@@ -19,6 +19,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.junit.*;
@@ -40,7 +41,7 @@ public class StubPluginAsyncTest extends BaseStubTest {
     }
 
     @After
-    public void clearStub() throws InterruptedException, KeypleReaderException {
+    public void clearStub() throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
         super.clearStub();
     }
 

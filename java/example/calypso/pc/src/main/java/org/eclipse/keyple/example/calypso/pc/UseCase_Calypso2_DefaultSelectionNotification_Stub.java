@@ -17,10 +17,7 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -32,10 +29,7 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
-import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
-import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,14 +73,13 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Get the instance of the Stub plugin */
-        StubPlugin stubPlugin = StubPlugin.getInstance();
-
-        /* Assign StubPlugin to the SeProxyService */
-        seProxyService.addPlugin(stubPlugin);
+        /* Register  Stub plugin in the platform */
+        seProxyService.registerPlugin(new StubPluginFactory());
+        ReaderPlugin stubPlugin = seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
 
         /* Plug the PO stub reader. */
-        stubPlugin.plugStubReader("poReader", true);
+        ((StubPlugin)stubPlugin).plugStubReader("poReader", true);
+
 
         /*
          * Get a PO reader ready to work with Calypso PO.

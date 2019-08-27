@@ -19,11 +19,13 @@ import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.example.generic.common.SeProtocolDetectionEngine;
 import org.eclipse.keyple.example.generic.pc.stub.se.*;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
+import org.eclipse.keyple.plugin.stub.StubPluginFactory;
 import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
 import org.eclipse.keyple.plugin.stub.StubReader;
 
@@ -47,14 +49,16 @@ Demo_SeProtocolDetection_Stub {
      * @throws IllegalArgumentException in case of a bad argument
      * @throws InterruptedException if thread error occurs
      */
-    public static void main(String[] args) throws IllegalArgumentException, InterruptedException {
+    public static void main(String[] args) throws IllegalArgumentException, InterruptedException, KeyplePluginNotFoundException {
         /* get the SeProxyService instance */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
         /* add the PcscPlugin to the SeProxyService */
         SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
 
-        StubPlugin stubPlugin = StubPlugin.getInstance();
+        /* Register  Stub plugin in the platform */
+        seProxyService.registerPlugin(new StubPluginFactory());
+        ReaderPlugin stubPlugin = seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
 
         pluginsSet.add(stubPlugin);
 
@@ -66,7 +70,7 @@ Demo_SeProtocolDetection_Stub {
         /*
          * Plug PO reader.
          */
-        stubPlugin.plugStubReader("poReader", true);
+        ((StubPlugin)stubPlugin).plugStubReader("poReader", true);
 
         Thread.sleep(200);
 

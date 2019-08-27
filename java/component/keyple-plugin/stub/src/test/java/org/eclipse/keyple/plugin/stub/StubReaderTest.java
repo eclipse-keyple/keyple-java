@@ -68,7 +68,7 @@ public class StubReaderTest extends BaseStubTest {
         final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         stubPlugin.clearObservers();
         reader.clearObservers();
-        stubPlugin.getInstance().unplugStubReader("StubReaderTest", true);
+        stubPlugin.unplugStubReader("StubReaderTest", true);
     }
 
 
@@ -103,7 +103,7 @@ public class StubReaderTest extends BaseStubTest {
             @Override
             public void update(ReaderEvent event) {
                 Assert.assertEquals(event.getReaderName(), reader.getName());
-                Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
                 logger.debug("testInsert event is correct");
@@ -147,7 +147,7 @@ public class StubReaderTest extends BaseStubTest {
                 // first event
                 if (event_i == 1) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
                     Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
                     insertLock.countDown();
                 }
@@ -155,7 +155,7 @@ public class StubReaderTest extends BaseStubTest {
                 // analyze the second event, should be a SE_REMOVED
                 if (event_i == 2) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
                     Assert.assertEquals(ReaderEvent.EventType.SE_REMOVAL, event.getEventType());
                     removeLock.countDown();
                 }
@@ -210,7 +210,7 @@ public class StubReaderTest extends BaseStubTest {
                 // first event
                 if (event_i == 1) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
                     Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
                     firstInsertLock.countDown();
                 }
@@ -218,19 +218,19 @@ public class StubReaderTest extends BaseStubTest {
                 // analyze the second event, should be a SE_REMOVED
                 if (event_i == 2) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
                     Assert.assertEquals(ReaderEvent.EventType.SE_REMOVAL, event.getEventType());
                     firstRemoveLock.countDown();
                 }
                 if (event_i == 3) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
                     Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
                     secondInsertLock.countDown();
                 }
                 if (event_i == 4) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
                     Assert.assertEquals(ReaderEvent.EventType.SE_REMOVAL, event.getEventType());
                     secondRemoveLock.countDown();
                 }
@@ -303,7 +303,7 @@ public class StubReaderTest extends BaseStubTest {
                 // first event
                 if (event_i == 1) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
                     Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
                     firstInsertLock.countDown();
                 }
@@ -311,19 +311,19 @@ public class StubReaderTest extends BaseStubTest {
                 // analyze the second event, should be a SE_REMOVED
                 if (event_i == 2) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
                     Assert.assertEquals(ReaderEvent.EventType.SE_REMOVAL, event.getEventType());
                     firstRemoveLock.countDown();
                 }
                 if (event_i == 3) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
                     Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
                     secondInsertLock.countDown();
                 }
                 if (event_i == 4) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
                     Assert.assertEquals(ReaderEvent.EventType.SE_REMOVAL, event.getEventType());
                     secondRemoveLock.countDown();
                 }
@@ -389,7 +389,7 @@ public class StubReaderTest extends BaseStubTest {
             @Override
             public void update(ReaderEvent event) {
                 Assert.assertEquals(event.getReaderName(), reader.getName());
-                Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
                 Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
                 Assert.assertTrue(((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
                         .getSelectionSeResponseSet().getSingleResponse().getSelectionStatus()
@@ -512,7 +512,7 @@ public class StubReaderTest extends BaseStubTest {
             @Override
             public void update(ReaderEvent event) {
                 Assert.assertEquals(event.getReaderName(), reader.getName());
-                Assert.assertEquals(event.getPluginName(), StubPlugin.getInstance().getName());
+                Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
 
                 // an SE_INSERTED event is thrown
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());

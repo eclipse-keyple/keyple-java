@@ -13,10 +13,13 @@ package org.eclipse.keyple.core.seproxy;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class SeProxyService. This singleton is the entry point of the SE Proxy Service, its instance
@@ -24,6 +27,9 @@ import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
  *
  */
 public final class SeProxyService {
+
+    private static final Logger logger = LoggerFactory.getLogger(SeProxyService.class);
+
 
     /** singleton instance of SeProxyService */
     private static SeProxyService uniqueInstance = new SeProxyService();
@@ -50,6 +56,7 @@ public final class SeProxyService {
      *
      * @param plugins the new plugins
      */
+    @Deprecated
     public void setPlugins(SortedSet<ReaderPlugin> plugins) {
         this.plugins = plugins;
     }
@@ -59,9 +66,39 @@ public final class SeProxyService {
      * 
      * @param plugin the plugin to add.
      */
+    @Deprecated
     public void addPlugin(ReaderPlugin plugin) {
         this.plugins.add(plugin);
     }
+
+
+    /**
+     * Register a new plugin to be available in the platform if not registered yet
+     * @param pluginFactory : plugin factory to instanciate plugin to be added
+     */
+    public void registerPlugin(PluginFactory pluginFactory) {
+        if(!isRegistered(pluginFactory.getPluginName())){
+            this.plugins.add(pluginFactory.getPluginInstance());
+        }else{
+            logger.warn("Plugin has already been registered to the platform");
+        }
+    }
+
+    /**
+     * Check weither a plugin is already registered to the platform or not
+     * @param pluginName : name of the plugin to be checked
+     * @return true if a plugin with matching name has been registered
+     */
+    private boolean isRegistered(String pluginName){
+        for(ReaderPlugin registeredPlugin : plugins){
+            if(registeredPlugin.getName().equals(pluginName)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 
     /**
      * Gets the plugins.

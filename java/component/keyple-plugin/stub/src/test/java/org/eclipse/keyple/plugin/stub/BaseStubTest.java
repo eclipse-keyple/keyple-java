@@ -12,6 +12,8 @@
 package org.eclipse.keyple.plugin.stub;
 
 
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -35,7 +37,7 @@ public class BaseStubTest {
         logger.info("------------------------------");
 
         logger.info("setupStub, assert stubplugin is empty");
-        stubPlugin = StubPlugin.getInstance(); // singleton
+        stubPlugin = (StubPlugin) new StubPluginFactory().getPluginInstance();
 
         logger.info("Stubplugin readers size {}", stubPlugin.getReaders().size());
         Assert.assertEquals(0, stubPlugin.getReaders().size());
@@ -48,12 +50,10 @@ public class BaseStubTest {
 
     }
 
-    public void clearStub() throws InterruptedException, KeypleReaderException {
+    public void clearStub() throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
         logger.info("---------");
         logger.info("TearDown ");
         logger.info("---------");
-
-        stubPlugin = StubPlugin.getInstance(); // singleton
 
         stubPlugin.unplugStubReaders(stubPlugin.getReaderNames(), true);
         /*

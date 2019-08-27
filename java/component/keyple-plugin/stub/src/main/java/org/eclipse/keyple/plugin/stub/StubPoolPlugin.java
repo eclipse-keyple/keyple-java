@@ -34,8 +34,8 @@ public class StubPoolPlugin implements ReaderPoolPlugin {
 
     static public String PREFIX_NAME = "POOL_";
 
-    public StubPoolPlugin() {
-        this.stubPlugin = StubPlugin.getInstance();
+    public StubPoolPlugin(StubPlugin stubPlugin) {
+        this.stubPlugin = stubPlugin;
         this.readerPool = new HashMap<String, StubReader>();
         this.allocatedReader = new HashMap<String, String>();
 

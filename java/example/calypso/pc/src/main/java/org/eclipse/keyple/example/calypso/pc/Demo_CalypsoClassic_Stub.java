@@ -16,15 +16,13 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubSamCalypsoClassic;
 import org.eclipse.keyple.example.calypso.pc.transaction.CalypsoClassicTransactionEngine;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
-import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
-import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.plugin.stub.StubSecureElement;
+import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,21 +34,15 @@ public class Demo_CalypsoClassic_Stub {
      * @param args the program arguments
      * @throws InterruptedException thread exception
      */
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, KeyplePluginNotFoundException {
         final Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Stub.class);
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
-
-        StubPlugin stubPlugin = StubPlugin.getInstance();
-
-        /* Get the instance of the PcscPlugin (Singleton pattern) */
-        pluginsSet.add(stubPlugin);
-
-        /* Assign StubPlugin to the SeProxyService */
-        seProxyService.setPlugins(pluginsSet);
+        /* Register  Stub plugin in the platform */
+        seProxyService.registerPlugin(new StubPluginFactory());
+        ReaderPlugin stubPlugin = seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
 
         /* Setting up the transaction engine (implements Observer) */
         CalypsoClassicTransactionEngine transactionEngine = new CalypsoClassicTransactionEngine();
@@ -58,8 +50,8 @@ public class Demo_CalypsoClassic_Stub {
         /*
          * Plug PO and SAM stub readers.
          */
-        stubPlugin.plugStubReader("poReader", true);
-        stubPlugin.plugStubReader("samReader", true);
+        ((StubPlugin)stubPlugin).plugStubReader("poReader", true);
+        ((StubPlugin)stubPlugin).plugStubReader("samReader", true);
 
         StubReader poReader = null, samReader = null;
         try {
