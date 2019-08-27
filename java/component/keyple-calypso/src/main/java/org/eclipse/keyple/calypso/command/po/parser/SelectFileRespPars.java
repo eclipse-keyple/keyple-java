@@ -158,8 +158,8 @@ public final class SelectFileRespPars extends AbstractPoResponseParser {
 
             } else {
 
-                sharedEf = ((inFileParameters[iter + 1] << 8) & 0x0000ff00)
-                        | (inFileParameters[iter] & 0x000000ff);
+                sharedEf = ((inFileParameters[iter] << 8) & 0x0000ff00)
+                        | (inFileParameters[iter + 1] & 0x000000ff);
                 iter += 2;
             }
 

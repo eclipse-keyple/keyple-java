@@ -55,7 +55,19 @@ public enum CalypsoSamCommands implements CommandsTable {
             CardGenerateKeyRespPars.class),
 
     /** The sam unlock. */
-    UNLOCK("Unlock", (byte) 0x20, UnlockCmdBuild.class, UnlockRespPars.class);
+    UNLOCK("Unlock", (byte) 0x20, UnlockCmdBuild.class, UnlockRespPars.class),
+
+    /** The sam write key command. */
+    WRITE_KEY("Write Key", (byte) 0x1A, SamWriteKeyCmdBuild.class, SamWriteKeyRespPars.class),
+
+    READ_KEY_PARAMETERS("Read Key Parameters", (byte) 0xBC, SamReadKeyParametersCmdBuild.class,
+            SamReadKeyParametersRespPars.class),
+
+    READ_EVENT_COUNTER("Read Event Counter", (byte) 0xBE, SamReadEventCounterCmdBuild.class,
+            SamReadEventCounterRespPars.class),
+
+    READ_CEILINGS("Read Ceilings", (byte) 0xBE, SamReadCeilingsCmdBuild.class,
+            SamReadCeilingsRespPars.class);
 
     /** The name. */
     private final String name;
