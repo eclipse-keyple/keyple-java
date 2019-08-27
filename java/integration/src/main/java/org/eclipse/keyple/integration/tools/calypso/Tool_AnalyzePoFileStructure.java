@@ -291,7 +291,7 @@ public class Tool_AnalyzePoFileStructure {
         SeReader poReader =
                 IntegrationUtils.getReader(seProxyService, IntegrationUtils.PO_READER_NAME_REGEX);
 
-        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,".*");
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4, ".*");
 
         /* Check if the reader exists */
         if (poReader == null) {
