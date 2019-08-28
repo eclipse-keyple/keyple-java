@@ -13,7 +13,6 @@ package org.eclipse.keyple.integration.calypso;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.transaction.*;
