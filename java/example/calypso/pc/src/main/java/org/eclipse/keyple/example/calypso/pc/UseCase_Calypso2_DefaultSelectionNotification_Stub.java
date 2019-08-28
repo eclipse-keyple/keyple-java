@@ -84,7 +84,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
         /*
          * Get a PO reader ready to work with Calypso PO.
          */
-        StubReader poReader = (StubReader) (stubPlugin.getReader("poReader"));
+        StubReaderImpl poReader = (StubReaderImpl) (stubPlugin.getReader("poReader"));
 
         /* Check if the reader exists */
         if (poReader == null) {

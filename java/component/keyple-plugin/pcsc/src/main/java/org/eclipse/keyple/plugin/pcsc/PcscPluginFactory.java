@@ -1,17 +1,17 @@
-package org.eclipse.keyple.plugin.stub;
+package org.eclipse.keyple.plugin.pcsc;
 
 import org.eclipse.keyple.core.seproxy.PluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 
-public class StubPluginFactory extends PluginFactory {
+public class PcscPluginFactory extends PluginFactory {
 
     @Override
     protected String getPluginName() {
-        return StubPluginImpl.PLUGIN_NAME;
+        return "PcscPlugin";
     }
 
     @Override
     protected ReaderPlugin getPluginInstance() {
-        return new StubPluginImpl();
+        return PcscPlugin.getInstance();
     }
 }

@@ -12,7 +12,6 @@
 package org.eclipse.keyple.plugin.stub;
 
 
-import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.junit.Assert;
@@ -23,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 public class BaseStubTest {
 
-    StubPlugin stubPlugin;
+    StubPluginImpl stubPlugin;
 
     private static final Logger logger = LoggerFactory.getLogger(BaseStubTest.class);
 
@@ -37,7 +36,7 @@ public class BaseStubTest {
         logger.info("------------------------------");
 
         logger.info("setupStub, assert stubplugin is empty");
-        stubPlugin = (StubPlugin) new StubPluginFactory().getPluginInstance();
+        stubPlugin = (StubPluginImpl) new StubPluginFactory().getPluginInstance();
 
         logger.info("Stubplugin readers size {}", stubPlugin.getReaders().size());
         Assert.assertEquals(0, stubPlugin.getReaders().size());

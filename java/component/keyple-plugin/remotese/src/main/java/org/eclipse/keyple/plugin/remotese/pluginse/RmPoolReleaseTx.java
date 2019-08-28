@@ -27,12 +27,12 @@ public class RmPoolReleaseTx extends RemoteMethodTx<Boolean> {
 
     private static final Logger logger = LoggerFactory.getLogger(RmPoolReleaseTx.class);
 
-    RemoteSePoolPlugin virtualPoolPlugin;
+    RemoteSePoolPluginImpl virtualPoolPlugin;
     DtoSender dtoSender;
 
     public RmPoolReleaseTx(String nativeReaderName, String virtualReaderName,
-            RemoteSePoolPlugin virtualPoolPlugin, DtoSender dtoSender, String slaveNodeId,
-            String requesterNodeId) {
+                           RemoteSePoolPluginImpl virtualPoolPlugin, DtoSender dtoSender, String slaveNodeId,
+                           String requesterNodeId) {
         super(null, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
         this.dtoSender = dtoSender;
         this.virtualPoolPlugin = virtualPoolPlugin;

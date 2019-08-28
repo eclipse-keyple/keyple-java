@@ -37,10 +37,10 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
         return RemoteMethod.READER_DISCONNECT;
     }
 
-    private final RemoteSePlugin plugin;
+    private final RemoteSePluginImpl plugin;
     private final DtoSender dtoSender;
 
-    public RmConnectReaderExecutor(RemoteSePlugin plugin, DtoSender dtoSender) {
+    public RmConnectReaderExecutor(RemoteSePluginImpl plugin, DtoSender dtoSender) {
         this.plugin = plugin;
         this.dtoSender = dtoSender;
     }
@@ -60,11 +60,11 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
                 JsonParser.getGson().fromJson(body.get("options").getAsString(), Map.class);
 
 
-        VirtualReader virtualReader = null;
+        VirtualReaderImpl virtualReader = null;
         try {
             // create a virtual Reader
             virtualReader =
-                    (VirtualReader) this.plugin.createVirtualReader(slaveNodeId, nativeReaderName,
+                    (VirtualReaderImpl) this.plugin.createVirtualReader(slaveNodeId, nativeReaderName,
                             this.dtoSender, TransmissionMode.valueOf(tranmissionMode), options);
 
 

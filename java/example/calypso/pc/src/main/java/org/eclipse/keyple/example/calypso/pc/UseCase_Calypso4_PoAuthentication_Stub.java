@@ -81,8 +81,8 @@ public class UseCase_Calypso4_PoAuthentication_Stub {
         /*
          * Get a PO and a SAM reader ready to work with a Calypso PO.
          */
-        StubReader poReader = (StubReader) (stubPlugin.getReader("poReader"));
-        StubReader samReader = (StubReader) (stubPlugin.getReader("samReader"));
+        StubReaderImpl poReader = (StubReaderImpl) (stubPlugin.getReader("poReader"));
+        StubReaderImpl samReader = (StubReaderImpl) (stubPlugin.getReader("samReader"));
 
         /* Check if the reader exists */
         if (poReader == null || samReader == null) {

@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.generic.common.GenericSeSelectionRequest;
-import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +40,8 @@ public class UseCase_Generic3_GroupedMultiSelection_Pcsc {
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Get the instance of the PC/SC plugin */
-        PcscPlugin pcscPlugin = PcscPlugin.getInstance();
-
         /* Assign PcscPlugin to the SeProxyService */
-        seProxyService.addPlugin(pcscPlugin);
+        seProxyService.registerPlugin(new PcscPluginFactory());
 
         /*
          * Get a SE reader ready to work with generic SE. Use the getReader helper method from the

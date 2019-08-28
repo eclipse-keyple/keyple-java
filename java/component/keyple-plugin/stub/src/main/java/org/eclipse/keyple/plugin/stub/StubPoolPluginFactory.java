@@ -7,11 +7,11 @@ public class StubPoolPluginFactory extends PluginFactory {
 
     @Override
     protected String getPluginName() {
-        return StubPlugin.PLUGIN_NAME;
+        return StubPluginImpl.PLUGIN_NAME;
     }
 
     @Override
     protected ReaderPlugin getPluginInstance() {
-        return new StubPoolPlugin(new StubPlugin());
+        return new StubPoolPluginImpl(new StubPluginImpl());
     }
 }

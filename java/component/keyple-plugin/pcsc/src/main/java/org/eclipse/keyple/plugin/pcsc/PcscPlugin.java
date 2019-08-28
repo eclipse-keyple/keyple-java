@@ -42,7 +42,6 @@ public final class PcscPlugin extends AbstractThreadedObservablePlugin {
 
     private static TerminalFactory factory;
 
-
     private boolean logging = false;
 
     private PcscPlugin() {

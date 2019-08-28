@@ -53,7 +53,7 @@ public class VirtualReaderTest {
         MasterAPI masterAPI = new MasterAPI(SeProxyService.getInstance(),
                 Integration.getFakeDtoNode(), RPC_TIMEOUT);
 
-        RemoteSePlugin plugin = masterAPI.getPlugin();
+        RemoteSePluginImpl plugin = masterAPI.getPlugin();
 
         ProxyReader reader = plugin.createVirtualReader(CLIENT_NODE_ID, NATIVE_READER_NAME,
                 Integration.getFakeDtoNode(), TransmissionMode.CONTACTLESS,

@@ -24,7 +24,7 @@ import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalClient;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportFactory;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
-import org.eclipse.keyple.plugin.stub.StubReader;
+import org.eclipse.keyple.plugin.stub.StubReaderImpl;
 import org.junit.*;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
@@ -47,7 +47,7 @@ public class SlaveAPITest {
     TransportFactory factory;
     MasterAPI masterAPI;
 
-    StubReader nativeReader;
+    StubReaderImpl nativeReader;
 
     final String NATIVE_READER_NAME = "testStubReader";
     final String CLIENT_NODE_ID = "testClientNodeId";

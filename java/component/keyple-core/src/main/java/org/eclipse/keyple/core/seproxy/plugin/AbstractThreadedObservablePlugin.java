@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractThreadedObservablePlugin extends AbstractObservablePlugin
-        implements ObservablePlugin {
+         {
 
     private static final Logger logger =
             LoggerFactory.getLogger(AbstractThreadedObservablePlugin.class);

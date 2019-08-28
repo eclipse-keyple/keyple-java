@@ -34,9 +34,9 @@ class RmDisconnectReaderExecutor implements RemoteMethodExecutor {
     }
 
 
-    private final RemoteSePlugin plugin;
+    private final RemoteSePluginImpl plugin;
 
-    public RmDisconnectReaderExecutor(RemoteSePlugin plugin) {
+    public RmDisconnectReaderExecutor(RemoteSePluginImpl plugin) {
         this.plugin = plugin;
     }
 

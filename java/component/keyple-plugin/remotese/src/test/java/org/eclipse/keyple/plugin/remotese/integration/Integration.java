@@ -27,7 +27,7 @@ import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPoolPlugin;
-import org.eclipse.keyple.plugin.stub.StubReader;
+import org.eclipse.keyple.plugin.stub.StubReaderImpl;
 import org.junit.Assert;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -75,8 +75,8 @@ public class Integration {
      * @throws InterruptedException
      * @throws KeypleReaderNotFoundException
      */
-    public static StubReader createStubReader(String stubReaderName,
-            TransmissionMode transmissionMode)
+    public static StubReaderImpl createStubReader(String stubReaderName,
+                                                  TransmissionMode transmissionMode)
             throws InterruptedException, KeypleReaderNotFoundException {
         SeProxyService seProxyService = SeProxyService.getInstance();
 
@@ -95,7 +95,7 @@ public class Integration {
         Thread.sleep(100);
 
         // Get the created proxy reader
-        return (StubReader) stubPlugin.getReader(stubReaderName);
+        return (StubReaderImpl) stubPlugin.getReader(stubReaderName);
     }
 
     /**

@@ -11,8 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.generic.pc;
 
-import java.util.SortedSet;
-import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.example.generic.common.ObservableReaderNotificationEngine;
@@ -20,7 +18,7 @@ import org.eclipse.keyple.example.generic.pc.stub.se.StubSe1;
 import org.eclipse.keyple.example.generic.pc.stub.se.StubSe2;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
-import org.eclipse.keyple.plugin.stub.StubReader;
+import org.eclipse.keyple.plugin.stub.StubReaderImpl;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 
 
@@ -54,9 +52,9 @@ public class Demo_ObservableReaderNotification_Stub {
 
         Thread.sleep(1000);
 
-        StubReader reader1 = (StubReader) (stubPlugin.getReader("Reader1"));
+        StubReaderImpl reader1 = (StubReaderImpl) (stubPlugin.getReader("Reader1"));
 
-        StubReader reader2 = (StubReader) (stubPlugin.getReader("Reader2"));
+        StubReaderImpl reader2 = (StubReaderImpl) (stubPlugin.getReader("Reader2"));
 
         /* Create 'virtual' Hoplink and SAM SE */
         StubSecureElement se1 = new StubSe1();

@@ -24,7 +24,7 @@ import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportFactory;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
-import org.eclipse.keyple.plugin.stub.StubReader;
+import org.eclipse.keyple.plugin.stub.StubReaderImpl;
 import org.junit.*;
 import org.junit.rules.TestName;
 import org.slf4j.Logger;
@@ -42,7 +42,7 @@ public class VirtualReaderBaseTest {
 
     // Real objects
     private TransportFactory factory;
-    StubReader nativeReader;
+    StubReaderImpl nativeReader;
 
     final String NATIVE_READER_NAME = "testStubReader";
     final String CLIENT_NODE_ID = "testClientNodeId";
@@ -102,11 +102,11 @@ public class VirtualReaderBaseTest {
 
 
 
-    protected StubReader connectStubReader(String readerName, String nodeId,
-            TransmissionMode transmissionMode) throws Exception {
+    protected StubReaderImpl connectStubReader(String readerName, String nodeId,
+                                               TransmissionMode transmissionMode) throws Exception {
         // configure native reader
-        StubReader nativeReader =
-                (StubReader) Integration.createStubReader(readerName, transmissionMode);
+        StubReaderImpl nativeReader =
+                (StubReaderImpl) Integration.createStubReader(readerName, transmissionMode);
         nativeReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
                 StubProtocolSetting.STUB_PROTOCOL_SETTING
                         .get(SeCommonProtocols.PROTOCOL_ISO14443_4));

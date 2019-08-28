@@ -11,8 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.calypso.pc;
 
-import java.util.SortedSet;
-import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -53,10 +51,10 @@ public class Demo_CalypsoClassic_Stub {
         ((StubPlugin)stubPlugin).plugStubReader("poReader", true);
         ((StubPlugin)stubPlugin).plugStubReader("samReader", true);
 
-        StubReader poReader = null, samReader = null;
+        StubReaderImpl poReader = null, samReader = null;
         try {
-            poReader = (StubReader) (stubPlugin.getReader("poReader"));
-            samReader = (StubReader) (stubPlugin.getReader("samReader"));
+            poReader = (StubReaderImpl) (stubPlugin.getReader("poReader"));
+            samReader = (StubReaderImpl) (stubPlugin.getReader("samReader"));
         } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
         }

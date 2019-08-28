@@ -13,7 +13,6 @@ package org.eclipse.keyple.plugin.stub;
 
 
 
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -49,7 +48,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     @Test
     public void plugStubPoolReader_success()
             throws InterruptedException, KeypleReaderException, NoStackTraceThrowable {
-        StubPoolPlugin stubPoolPlugin = (StubPoolPlugin) new StubPoolPluginFactory().getPluginInstance();
+        StubPoolPluginImpl stubPoolPlugin = (StubPoolPluginImpl) new StubPoolPluginFactory().getPluginInstance();
 
         SeReader seReader = stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubSe);
 
@@ -63,7 +62,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      */
     @Test
     public void unplugStubPoolReader_success() throws InterruptedException, KeypleReaderException {
-        StubPoolPlugin stubPoolPlugin = (StubPoolPlugin) new StubPoolPluginFactory().getPluginInstance();
+        StubPoolPluginImpl stubPoolPlugin = (StubPoolPluginImpl) new StubPoolPluginFactory().getPluginInstance();
 
         // plug a reader
         stubPoolPlugin.plugStubPoolReader("anyGroup", "anyName", stubSe);
@@ -83,7 +82,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     @Test
     public void allocate_success() throws InterruptedException, KeypleReaderException {
         // init stubPoolPlugin
-        StubPoolPlugin stubPoolPlugin = (StubPoolPlugin) new StubPoolPluginFactory().getPluginInstance();
+        StubPoolPluginImpl stubPoolPlugin = (StubPoolPluginImpl) new StubPoolPluginFactory().getPluginInstance();
 
         // plug readers
         stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
@@ -107,7 +106,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     @Test
     public void allocate_twice() throws InterruptedException, KeypleReaderException {
         // init stubPoolPlugin
-        StubPoolPlugin stubPoolPlugin = (StubPoolPlugin) new StubPoolPluginFactory().getPluginInstance();
+        StubPoolPluginImpl stubPoolPlugin = (StubPoolPluginImpl) new StubPoolPluginFactory().getPluginInstance();
 
         // plug readers
         stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
@@ -127,7 +126,7 @@ public class StubPoolPluginTest extends BaseStubTest {
     @Test
     public void release_success() throws InterruptedException, KeypleReaderException {
         // init stubPoolPlugin
-        StubPoolPlugin stubPoolPlugin = (StubPoolPlugin) new StubPoolPluginFactory().getPluginInstance();
+        StubPoolPluginImpl stubPoolPlugin = (StubPoolPluginImpl) new StubPoolPluginFactory().getPluginInstance();
 
         // plug readers
         stubPoolPlugin.plugStubPoolReader("group1", "stub1", stubSe);
