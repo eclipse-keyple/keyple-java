@@ -30,9 +30,9 @@ public class SmartCardIOPluginTest {
 
     @InjectMocks
     @Spy
-    private PcscPlugin plugin;
+    private PcscPluginImpl plugin;
 
-    PcscPlugin smartCardPluginSpyied;
+    PcscPluginImpl smartCardPluginSpyied;
 
     @Mock
     List<ProxyReader> cardTerminals;
