@@ -24,6 +24,8 @@ public interface StubPlugin extends ObservablePlugin {
 
     void plugStubReader(String name, TransmissionMode transmissionMode, Boolean synchronous);
 
+    void plugStubReaders(Set<String> names, Boolean synchronous);
+
     void unplugStubReader(String name, Boolean synchronous) throws KeypleReaderException;
 
     void unplugStubReaders(Set<String> names, Boolean synchronous);

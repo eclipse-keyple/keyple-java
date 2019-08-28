@@ -36,7 +36,6 @@ final class StubReaderImpl extends AbstractThreadedLocalReader implements StubRe
 
     private Map<String, String> parameters = new HashMap<String, String>();
 
-
     TransmissionMode transmissionMode = TransmissionMode.CONTACTLESS;
 
     /**

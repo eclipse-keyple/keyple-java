@@ -21,4 +21,6 @@ public interface StubPoolPlugin extends ReaderPoolPlugin {
 
     SeReader plugStubPoolReader(String groupReference, String readerName, StubSecureElement se);
 
+    void unplugStubPoolReader(String groupReference);
+
 }

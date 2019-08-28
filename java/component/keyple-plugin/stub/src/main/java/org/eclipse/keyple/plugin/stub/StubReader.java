@@ -20,7 +20,6 @@ public interface StubReader extends ObservableReader {
     String CONTACTLESS_PARAMETER = "contactless";
     String CONTACTS_PARAMETER = "contacts";
 
-
     void insertSe(StubSecureElement _se);
 
     void removeSe();
