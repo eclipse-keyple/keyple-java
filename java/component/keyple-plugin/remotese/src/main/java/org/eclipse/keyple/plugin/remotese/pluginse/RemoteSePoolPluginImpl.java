@@ -12,7 +12,6 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.SortedSet;
-import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxPoolEngine;
@@ -38,7 +37,7 @@ class RemoteSePoolPluginImpl extends RemoteSePluginImpl implements RemoteSePoolP
      * Only {@link MasterAPI} can instanciate a RemoteSePlugin
      */
     RemoteSePoolPluginImpl(VirtualReaderSessionFactory sessionManager, DtoSender sender,
-                           long rpcTimeout, String pluginName) {
+            long rpcTimeout, String pluginName) {
         super(sessionManager, sender, rpcTimeout, pluginName);
 
         // allocate a rmTxPoolEngine

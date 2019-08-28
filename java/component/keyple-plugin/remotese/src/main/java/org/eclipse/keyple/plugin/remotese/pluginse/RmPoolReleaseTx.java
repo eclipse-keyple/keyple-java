@@ -31,8 +31,8 @@ public class RmPoolReleaseTx extends RemoteMethodTx<Boolean> {
     DtoSender dtoSender;
 
     public RmPoolReleaseTx(String nativeReaderName, String virtualReaderName,
-                           RemoteSePoolPluginImpl virtualPoolPlugin, DtoSender dtoSender, String slaveNodeId,
-                           String requesterNodeId) {
+            RemoteSePoolPluginImpl virtualPoolPlugin, DtoSender dtoSender, String slaveNodeId,
+            String requesterNodeId) {
         super(null, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
         this.dtoSender = dtoSender;
         this.virtualPoolPlugin = virtualPoolPlugin;

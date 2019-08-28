@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.seproxy;
 
 public abstract class PluginFactory {
 
-    protected abstract String getPluginName();
+    public abstract String getPluginName();
 
     protected abstract ReaderPlugin getPluginInstance();
 }

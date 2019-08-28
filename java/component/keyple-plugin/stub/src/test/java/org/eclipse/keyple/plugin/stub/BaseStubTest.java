@@ -49,18 +49,14 @@ public class BaseStubTest {
 
     }
 
-    public void clearStub() throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
+    public void clearStub()
+            throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
         logger.info("---------");
         logger.info("TearDown ");
         logger.info("---------");
 
         stubPlugin.unplugStubReaders(stubPlugin.getReaderNames(), true);
-        /*
-         * for (AbstractObservableReader reader : stubPlugin.getReaders()) {
-         * logger.info("Stubplugin unplugStubReader {}", reader.getName());
-         * stubPlugin.unplugStubReader(reader.getName(), true); Thread.sleep(100); //
-         * logger.debug("Stubplugin readers size {}", stubPlugin.getReaders().size()); }
-         */
+
         stubPlugin.clearObservers();
 
     }

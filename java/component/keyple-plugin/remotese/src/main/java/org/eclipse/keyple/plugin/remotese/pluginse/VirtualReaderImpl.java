@@ -56,8 +56,8 @@ final class VirtualReaderImpl extends AbstractObservableReader implements Virtua
      * @param transmissionMode : transmission mode of the native reader on slave terminal
      */
     VirtualReaderImpl(VirtualReaderSession session, String nativeReaderName,
-                      RemoteMethodTxEngine rmTxEngine, String slaveNodeId, TransmissionMode transmissionMode,
-                      Map<String, String> options) {
+            RemoteMethodTxEngine rmTxEngine, String slaveNodeId, TransmissionMode transmissionMode,
+            Map<String, String> options) {
         super(RemoteSePluginImpl.DEFAULT_PLUGIN_NAME,
                 RemoteSePluginImpl.generateReaderName(nativeReaderName, slaveNodeId));
         this.session = session;

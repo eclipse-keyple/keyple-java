@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * Simulates communication with a {@link StubSecureElement}. StubReader is observable, it raises
  * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent} : SE_INSERTED, SE_REMOVED
  */
-public final class StubReaderImpl extends AbstractThreadedLocalReader implements StubReader {
+final class StubReaderImpl extends AbstractThreadedLocalReader implements StubReader {
 
     private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
@@ -36,12 +36,6 @@ public final class StubReaderImpl extends AbstractThreadedLocalReader implements
 
     private Map<String, String> parameters = new HashMap<String, String>();
 
-    public static final String ALLOWED_PARAMETER_1 = "parameter1";
-    public static final String ALLOWED_PARAMETER_2 = "parameter2";
-    public static final String CONTACTLESS_PARAMETER = "contactless";
-    public static final String CONTACTS_PARAMETER = "contacts";
-
-    static final String pluginName = "StubPlugin";
 
     TransmissionMode transmissionMode = TransmissionMode.CONTACTLESS;
 
@@ -51,7 +45,7 @@ public final class StubReaderImpl extends AbstractThreadedLocalReader implements
      * @param name
      */
     StubReaderImpl(String name) {
-        super(pluginName, name);
+        super(StubPlugin.PLUGIN_NAME, name);
         threadWaitTimeout = 2000; // time between two events
     }
 

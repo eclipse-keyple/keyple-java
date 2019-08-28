@@ -13,14 +13,12 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractThreadedObservablePlugin extends AbstractObservablePlugin
-         {
+public abstract class AbstractThreadedObservablePlugin extends AbstractObservablePlugin {
 
     private static final Logger logger =
             LoggerFactory.getLogger(AbstractThreadedObservablePlugin.class);

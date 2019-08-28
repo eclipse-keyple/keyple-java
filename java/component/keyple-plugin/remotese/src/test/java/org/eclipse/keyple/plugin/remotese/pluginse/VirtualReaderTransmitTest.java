@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.remotese.integration;
+package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,10 +17,11 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
+import org.eclipse.keyple.plugin.remotese.integration.VirtualReaderBaseTest;
 import org.eclipse.keyple.plugin.remotese.rm.json.SampleFactory;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
 import org.junit.After;
@@ -37,28 +38,34 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderTransmitTest.class);
 
-    private VirtualReader virtualReader;
+    private VirtualReaderImpl virtualReader;
 
 
     @Before
     public void setUp() throws Exception {
-        // restore plugin state
-        clearStubpluginReader();
+        Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+
+        unregisterPlugins();
 
         initKeypleServices();
+
+        // restore plugin state
+        clearStubpluginReader();
 
         // configure and connect a Stub Native reader
         nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID,
                 TransmissionMode.CONTACTLESS);
 
         // test virtual reader
-        virtualReader = getVirtualReader();
+        virtualReader = (VirtualReaderImpl) getVirtualReader();
 
     }
 
     @After
     public void tearDown() throws Exception {
         clearStubpluginReader();
+        unregisterPlugins();
+        Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
     }
 
     /*

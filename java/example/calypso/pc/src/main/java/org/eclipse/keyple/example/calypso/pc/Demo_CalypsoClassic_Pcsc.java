@@ -75,9 +75,11 @@ public class Demo_CalypsoClassic_Pcsc {
 
         /* Set PcSc settings per reader */
         poReader.setParameter(PcscReaderSettings.SETTING_KEY_LOGGING, "true");
-        poReader.setParameter(PcscReaderSettings.SETTING_KEY_PROTOCOL, PcscReaderSettings.SETTING_PROTOCOL_T1);
+        poReader.setParameter(PcscReaderSettings.SETTING_KEY_PROTOCOL,
+                PcscReaderSettings.SETTING_PROTOCOL_T1);
         samReader.setParameter(PcscReaderSettings.SETTING_KEY_LOGGING, "true");
-        samReader.setParameter(PcscReaderSettings.SETTING_KEY_PROTOCOL, PcscReaderSettings.SETTING_PROTOCOL_T0);
+        samReader.setParameter(PcscReaderSettings.SETTING_KEY_PROTOCOL,
+                PcscReaderSettings.SETTING_PROTOCOL_T0);
 
         /*
          * PC/SC card access mode:
@@ -93,8 +95,10 @@ public class Demo_CalypsoClassic_Pcsc {
          * See KEYPLE-CORE.PC.md file to learn more about this point.
          *
          */
-        samReader.setParameter(PcscReaderSettings.SETTING_KEY_MODE, PcscReaderSettings.SETTING_MODE_SHARED);
-        poReader.setParameter(PcscReaderSettings.SETTING_KEY_MODE, PcscReaderSettings.SETTING_MODE_SHARED);
+        samReader.setParameter(PcscReaderSettings.SETTING_KEY_MODE,
+                PcscReaderSettings.SETTING_MODE_SHARED);
+        poReader.setParameter(PcscReaderSettings.SETTING_KEY_MODE,
+                PcscReaderSettings.SETTING_MODE_SHARED);
 
         /* Set the PO reader protocol flag */
         poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,

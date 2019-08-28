@@ -19,6 +19,7 @@ import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -73,6 +74,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
     @Before
     public void setUp() throws Exception {
+        Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+
         // restore plugin state
         clearStubpluginReader();
 
@@ -90,6 +93,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     @After
     public void tearDown() throws Exception {
         clearStubpluginReader();
+        unregisterPlugins();
+
+        Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
     }
 
 

@@ -30,13 +30,11 @@ import org.slf4j.LoggerFactory;
  */
 final class StubPluginImpl extends AbstractThreadedObservablePlugin implements StubPlugin {
 
-    //private static final StubPlugin uniqueInstance = new StubPlugin();
+    // private static final StubPlugin uniqueInstance = new StubPlugin();
 
     private static final Logger logger = LoggerFactory.getLogger(StubPluginImpl.class);
 
     private final Map<String, String> parameters = new HashMap<String, String>();
-
-    public final static String PLUGIN_NAME = "StubPlugin";
 
     // simulated list of real-time connected stubReader
     private SortedSet<String> connectedStubNames =
@@ -58,10 +56,8 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      * @return single instance of StubPlugin
      */
     /*
-    public static StubPlugin getInstance() {
-        return uniqueInstance;
-    }
-    */
+     * public static StubPlugin getInstance() { return uniqueInstance; }
+     */
 
     @Override
     public Map<String, String> getParameters() {

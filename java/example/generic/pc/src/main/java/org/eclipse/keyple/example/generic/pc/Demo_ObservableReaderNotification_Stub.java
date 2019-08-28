@@ -18,7 +18,7 @@ import org.eclipse.keyple.example.generic.pc.stub.se.StubSe1;
 import org.eclipse.keyple.example.generic.pc.stub.se.StubSe2;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPluginFactory;
-import org.eclipse.keyple.plugin.stub.StubReaderImpl;
+import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 
 
@@ -31,7 +31,7 @@ public class Demo_ObservableReaderNotification_Stub {
         // Set Stub plugin
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Register  Stub plugin in the platform */
+        /* Register Stub plugin in the platform */
         seProxyService.registerPlugin(new StubPluginFactory());
         ReaderPlugin stubPlugin = seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
 
@@ -43,18 +43,18 @@ public class Demo_ObservableReaderNotification_Stub {
         Thread.sleep(200);
 
         System.out.println("Plug reader 1.");
-        ((StubPlugin)stubPlugin).plugStubReader("Reader1", true);
+        ((StubPlugin) stubPlugin).plugStubReader("Reader1", true);
 
         Thread.sleep(100);
 
         System.out.println("Plug reader 2.");
-        ((StubPlugin)stubPlugin).plugStubReader("Reader2", true);
+        ((StubPlugin) stubPlugin).plugStubReader("Reader2", true);
 
         Thread.sleep(1000);
 
-        StubReaderImpl reader1 = (StubReaderImpl) (stubPlugin.getReader("Reader1"));
+        StubReader reader1 = (StubReader) (stubPlugin.getReader("Reader1"));
 
-        StubReaderImpl reader2 = (StubReaderImpl) (stubPlugin.getReader("Reader2"));
+        StubReader reader2 = (StubReader) (stubPlugin.getReader("Reader2"));
 
         /* Create 'virtual' Hoplink and SAM SE */
         StubSecureElement se1 = new StubSe1();
@@ -81,27 +81,27 @@ public class Demo_ObservableReaderNotification_Stub {
         Thread.sleep(100);
 
         System.out.println("Plug reader 1 again (twice).");
-        ((StubPlugin)stubPlugin).plugStubReader("Reader1", true);
+        ((StubPlugin) stubPlugin).plugStubReader("Reader1", true);
 
 
         System.out.println("Unplug reader 1.");
-        ((StubPlugin)stubPlugin).unplugStubReader("Reader1", true);
+        ((StubPlugin) stubPlugin).unplugStubReader("Reader1", true);
 
 
         Thread.sleep(100);
 
         System.out.println("Plug reader 1 again.");
-        ((StubPlugin)stubPlugin).plugStubReader("Reader1", true);
+        ((StubPlugin) stubPlugin).plugStubReader("Reader1", true);
 
         Thread.sleep(100);
 
         System.out.println("Unplug reader 1.");
-        ((StubPlugin)stubPlugin).unplugStubReader("Reader1", true);
+        ((StubPlugin) stubPlugin).unplugStubReader("Reader1", true);
 
         Thread.sleep(100);
 
         System.out.println("Unplug reader 2.");
-        ((StubPlugin)stubPlugin).unplugStubReader("Reader2", true);
+        ((StubPlugin) stubPlugin).unplugStubReader("Reader2", true);
 
         System.out.println("END.");
 

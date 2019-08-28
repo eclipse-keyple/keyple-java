@@ -88,45 +88,60 @@ public class MasterAPI implements DtoHandler {
      */
     public MasterAPI(SeProxyService seProxyService, DtoNode dtoNode, long rpcTimeout,
             int pluginType, String pluginName) {
+
+        logger.info("Init MasterAPI with parameters {} {} {} {} {}", seProxyService, dtoNode,
+                rpcTimeout, pluginType, pluginName);
+
+
         this.dtoTransportNode = dtoNode;
         this.pluginType = pluginType;
 
-        if(pluginName == null){
-            pluginName = RemoteSePluginImpl.DEFAULT_PLUGIN_NAME;
+        if (pluginName == null || pluginName.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "pluginName should be properly defined (not null, not empty)");
         }
 
         // Instantiate Session Manager
         VirtualReaderSessionFactory sessionManager = new VirtualReaderSessionFactory();
         try {
 
-        if (pluginType == PLUGIN_TYPE_DEFAULT) {
-            /*
-            // Instantiate Plugin
-            this.plugin = new RemoteSePluginImpl(sessionManager, dtoNode, rpcTimeout,
-                    RemoteSePluginImpl.DEFAULT_PLUGIN_NAME);
-            */
-            seProxyService.registerPlugin(new RemoteSePluginFactory(sessionManager, dtoNode, rpcTimeout,
-                    pluginName));
+            if (pluginType == PLUGIN_TYPE_DEFAULT) {
+                /*
+                 * // Instantiate Plugin this.plugin = new RemoteSePluginImpl(sessionManager,
+                 * dtoNode, rpcTimeout, RemoteSePluginImpl.DEFAULT_PLUGIN_NAME);
+                 */
+                if (seProxyService.isRegistered(pluginName)) {
+                    throw new IllegalArgumentException(
+                            "plugin name is already registered to the platform : " + pluginName);
+                }
 
-            this.plugin = (RemoteSePluginImpl) seProxyService.getPlugin(pluginName);
+                seProxyService.registerPlugin(
+                        new RemoteSePluginFactory(sessionManager, dtoNode, rpcTimeout, pluginName));
 
-        } else if (pluginType == PLUGIN_TYPE_POOL) {
-            /*
-            this.plugin = new RemoteSePoolPluginImpl(sessionManager, dtoNode, rpcTimeout,
-                    RemoteSePluginImpl.DEFAULT_PLUGIN_NAME + "_POOL");
-                    */
-            seProxyService.registerPlugin(new RemoteSePluginFactory(sessionManager, dtoNode, rpcTimeout,
-                    pluginName + "_POOL"));
+                this.plugin = (RemoteSePluginImpl) seProxyService.getPlugin(pluginName);
 
-            this.plugin = (RemoteSePoolPluginImpl) seProxyService.getPlugin(pluginName + "_POOL");
+            } else if (pluginType == PLUGIN_TYPE_POOL) {
+                /*
+                 * this.plugin = new RemoteSePoolPluginImpl(sessionManager, dtoNode, rpcTimeout,
+                 * RemoteSePluginImpl.DEFAULT_PLUGIN_NAME + "_POOL");
+                 */
+                if (seProxyService.isRegistered(pluginName)) {
+                    throw new IllegalArgumentException(
+                            "plugin name is already registered to the platform : " + pluginName);
+                }
 
-        } else {
-            throw new IllegalArgumentException(
-                    "plugin type is not recognized, use static properties defined in MasterAPI#PLUGIN_TYPE_DEFAULT or MasterAPI#PLUGIN_TYPE_POOL");
-        }
+                seProxyService.registerPlugin(new RemoteSePoolPluginFactory(sessionManager, dtoNode,
+                        rpcTimeout, pluginName));
+
+                this.plugin = (RemoteSePoolPluginImpl) seProxyService.getPlugin(pluginName);
+
+            } else {
+                throw new IllegalArgumentException(
+                        "plugin type is not recognized, use static properties defined in MasterAPI#PLUGIN_TYPE_DEFAULT or MasterAPI#PLUGIN_TYPE_POOL");
+            }
         } catch (KeyplePluginNotFoundException e) {
-            throw new IllegalArgumentException(
-                    "plugin name is already registered to the platform : " + pluginName);
+            throw new IllegalStateException(
+                    "Unable to register plugin to platform : " + pluginName);
         }
 
         // Set this service as the Dto Handler for the node

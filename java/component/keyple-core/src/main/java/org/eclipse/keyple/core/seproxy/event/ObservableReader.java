@@ -71,4 +71,8 @@ public interface ObservableReader extends SeReader {
 
     void setDefaultSelectionRequest(AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             NotificationMode notificationMode);
+
+    int countObservers();
+
+    void clearObservers();
 }

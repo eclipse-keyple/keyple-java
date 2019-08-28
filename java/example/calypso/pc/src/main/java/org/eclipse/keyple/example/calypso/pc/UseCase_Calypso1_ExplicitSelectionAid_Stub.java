@@ -69,12 +69,12 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Stub {
         ReaderPlugin stubPlugin = seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
 
         /* Plug the PO stub reader. */
-        ((StubPlugin)stubPlugin).plugStubReader("poReader", true);
+        ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
 
         /*
          * Get a PO reader ready to work with Calypso PO.
          */
-        StubReaderImpl poReader = (StubReaderImpl) (stubPlugin.getReader("poReader"));
+        StubReader poReader = (StubReader) (stubPlugin.getReader("poReader"));
 
         /* Check if the reader exists */
         if (poReader == null) {

@@ -65,7 +65,8 @@ public class Demo_SeProtocolDetection_Pcsc {
         observer.setReader(poReader);
 
         /* configure reader */
-        poReader.setParameter(PcscReaderSettings.SETTING_KEY_PROTOCOL, PcscReaderSettings.SETTING_PROTOCOL_T1);
+        poReader.setParameter(PcscReaderSettings.SETTING_KEY_PROTOCOL,
+                PcscReaderSettings.SETTING_PROTOCOL_T1);
 
         // Protocol detection settings.
         // add 8 expected protocols with three different methods:

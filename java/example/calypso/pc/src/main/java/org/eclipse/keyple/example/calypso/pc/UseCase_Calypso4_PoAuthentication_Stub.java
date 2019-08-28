@@ -70,19 +70,19 @@ public class UseCase_Calypso4_PoAuthentication_Stub {
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Register  Stub plugin in the platform */
+        /* Register Stub plugin in the platform */
         seProxyService.registerPlugin(new StubPluginFactory());
         ReaderPlugin stubPlugin = seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
 
         /* Plug PO and SAM stub reader. */
-        ((StubPlugin)stubPlugin).plugStubReader("poReader", true);
-        ((StubPlugin)stubPlugin).plugStubReader("samReader", true);
+        ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
+        ((StubPlugin) stubPlugin).plugStubReader("samReader", true);
 
         /*
          * Get a PO and a SAM reader ready to work with a Calypso PO.
          */
-        StubReaderImpl poReader = (StubReaderImpl) (stubPlugin.getReader("poReader"));
-        StubReaderImpl samReader = (StubReaderImpl) (stubPlugin.getReader("samReader"));
+        StubReader poReader = (StubReader) (stubPlugin.getReader("poReader"));
+        StubReader samReader = (StubReader) (stubPlugin.getReader("samReader"));
 
         /* Check if the reader exists */
         if (poReader == null || samReader == null) {

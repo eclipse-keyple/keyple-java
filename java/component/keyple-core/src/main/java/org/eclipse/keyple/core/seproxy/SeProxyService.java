@@ -13,10 +13,7 @@ package org.eclipse.keyple.core.seproxy;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
-import java.util.Properties;
-import java.util.SortedSet;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.*;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +32,9 @@ public final class SeProxyService {
     private static SeProxyService uniqueInstance = new SeProxyService();
 
     /** the list of readers’ plugins interfaced with the SE Proxy Service */
-    private SortedSet<ReaderPlugin> plugins = new ConcurrentSkipListSet<ReaderPlugin>();
+    private Set<ReaderPlugin> plugins = new HashSet<ReaderPlugin>();
 
+    // private SortedSet<ReaderPlugin> plugins = new ConcurrentSkipListSet<ReaderPlugin>();
     /**
      * Instantiates a new SeProxyService.
      */
@@ -74,26 +72,49 @@ public final class SeProxyService {
 
     /**
      * Register a new plugin to be available in the platform if not registered yet
+     * 
      * @param pluginFactory : plugin factory to instanciate plugin to be added
      */
     public void registerPlugin(PluginFactory pluginFactory) {
-        if(!isRegistered(pluginFactory.getPluginName())){
-            logger.info("Registering a new Plugin to the platform : {}",pluginFactory.getPluginName());
-            ReaderPlugin newReader = pluginFactory.getPluginInstance();
-            this.plugins.add(newReader);
-        }else{
-            logger.warn("Plugin has already been registered to the platform : {}",pluginFactory.getPluginName());
+        if (!isRegistered(pluginFactory.getPluginName())) {
+            logger.info("Registering a new Plugin to the platform : {}",
+                    pluginFactory.getPluginName());
+            ReaderPlugin newPlugin = pluginFactory.getPluginInstance();
+            this.plugins.add(newPlugin);
+        } else {
+            logger.warn("Plugin has already been registered to the platform : {}",
+                    pluginFactory.getPluginName());
         }
     }
 
     /**
+     * Unregister plugin from platform
+     * 
+     * @param pluginName : plugin name
+     */
+    public boolean unregisterPlugin(String pluginName) {
+
+        ReaderPlugin readerPlugin = null;
+        try {
+            readerPlugin = this.getPlugin(pluginName);
+            logger.info("Unregistering a plugin from the platform : {}", readerPlugin.getName());
+            return plugins.remove(readerPlugin);
+        } catch (KeyplePluginNotFoundException e) {
+            logger.info("Plugin is not registered to the platform : {}", pluginName);
+            return false;
+        }
+
+    }
+
+    /**
      * Check weither a plugin is already registered to the platform or not
+     * 
      * @param pluginName : name of the plugin to be checked
      * @return true if a plugin with matching name has been registered
      */
-    private boolean isRegistered(String pluginName){
-        for(ReaderPlugin registeredPlugin : plugins){
-            if(registeredPlugin.getName().equals(pluginName)){
+    public boolean isRegistered(String pluginName) {
+        for (ReaderPlugin registeredPlugin : plugins) {
+            if (registeredPlugin.getName().equals(pluginName)) {
                 return true;
             }
         }
@@ -108,7 +129,7 @@ public final class SeProxyService {
      * @return the plugins the list of interfaced reader’s plugins.
      */
     public SortedSet<ReaderPlugin> getPlugins() {
-        return plugins;
+        return new TreeSet<ReaderPlugin>(plugins);
     }
 
     /**

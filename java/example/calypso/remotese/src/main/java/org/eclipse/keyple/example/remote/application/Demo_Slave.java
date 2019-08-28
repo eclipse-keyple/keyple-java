@@ -12,7 +12,6 @@
 package org.eclipse.keyple.example.remote.application;
 
 import java.io.IOException;
-
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
@@ -42,7 +41,7 @@ public class Demo_Slave {
     private static final Logger logger = LoggerFactory.getLogger(Demo_Slave.class);
 
     // physical reader, in this case a StubReader
-    private StubReaderImpl localReader;
+    private StubReader localReader;
 
     // DtoNode used as to send and receive KeypleDto to Master
     private DtoNode node;
@@ -157,15 +156,15 @@ public class Demo_Slave {
             };
 
             // add observer to have the reader management done by the monitoring thread
-            ((ObservablePlugin)stubPlugin).addObserver(observer);
+            ((ObservablePlugin) stubPlugin).addObserver(observer);
             Thread.sleep(100);
 
-            ((StubPlugin)stubPlugin).plugStubReader(nativeReaderName, true);
+            ((StubPlugin) stubPlugin).plugStubReader(nativeReaderName, true);
 
             Thread.sleep(1000);
 
             // get the created proxy reader
-            localReader = (StubReaderImpl) stubPlugin.getReader(nativeReaderName);
+            localReader = (StubReader) stubPlugin.getReader(nativeReaderName);
 
             localReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
                     StubProtocolSetting.STUB_PROTOCOL_SETTING

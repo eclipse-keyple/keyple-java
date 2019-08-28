@@ -73,18 +73,18 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Register  Stub plugin in the platform */
+        /* Register Stub plugin in the platform */
         seProxyService.registerPlugin(new StubPluginFactory());
         ReaderPlugin stubPlugin = seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
 
         /* Plug the PO stub reader. */
-        ((StubPlugin)stubPlugin).plugStubReader("poReader", true);
+        ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
 
 
         /*
          * Get a PO reader ready to work with Calypso PO.
          */
-        StubReaderImpl poReader = (StubReaderImpl) (stubPlugin.getReader("poReader"));
+        StubReader poReader = (StubReader) (stubPlugin.getReader("poReader"));
 
         /* Check if the reader exists */
         if (poReader == null) {

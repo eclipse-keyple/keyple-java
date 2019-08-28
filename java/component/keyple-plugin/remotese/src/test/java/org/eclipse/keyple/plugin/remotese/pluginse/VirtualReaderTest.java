@@ -20,6 +20,7 @@ import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.integration.Integration;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -40,12 +41,14 @@ public class VirtualReaderTest {
 
     @Before
     public void setUp() throws Exception {
-
+        Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
     }
 
     @After
     public void tearDown() throws Exception {
+        Integration.unregisterAllPlugin(RemoteSePluginImpl.DEFAULT_PLUGIN_NAME);
 
+        Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
     }
 
     @Test(expected = KeypleReaderException.class)
@@ -53,7 +56,7 @@ public class VirtualReaderTest {
         MasterAPI masterAPI = new MasterAPI(SeProxyService.getInstance(),
                 Integration.getFakeDtoNode(), RPC_TIMEOUT);
 
-        RemoteSePluginImpl plugin = masterAPI.getPlugin();
+        RemoteSePluginImpl plugin = (RemoteSePluginImpl) masterAPI.getPlugin();
 
         ProxyReader reader = plugin.createVirtualReader(CLIENT_NODE_ID, NATIVE_READER_NAME,
                 Integration.getFakeDtoNode(), TransmissionMode.CONTACTLESS,

@@ -325,8 +325,16 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     }
 
 
+    /**
+     * Bind a ReaderPoolPlugin to the slaveAPI to enable Pool Plugins methods
+     * 
+     * @param readerPoolPlugin
+     */
     public void registerReaderPoolPlugin(ReaderPoolPlugin readerPoolPlugin) {
         this.readerPoolPlugin = readerPoolPlugin;
+        /**
+         * Is this method necessary? Can't it be done by searching accross plugins?
+         */
     }
 
 

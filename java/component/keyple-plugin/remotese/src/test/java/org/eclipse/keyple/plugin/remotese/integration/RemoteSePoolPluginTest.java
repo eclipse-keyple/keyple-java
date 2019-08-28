@@ -19,7 +19,6 @@ import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePoolPlugin;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportFactory;
-import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubPoolPlugin;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
 import org.junit.After;
@@ -42,11 +41,12 @@ public class RemoteSePoolPluginTest {
     private StubPoolPlugin stubPoolPlugin;
     private SlaveAPI slaveAPI;
 
+    private SeProxyService seProxyService = SeProxyService.getInstance();
+
     // created by masterAPI
     private RemoteSePoolPlugin remoteSePoolPlugin;
 
     final String CLIENT_NODE_ID = "testClientNodeId";
-    final String CLIENT_NODE_ID_2 = "testClientNodeId2";
     final String SERVER_NODE_ID = "testServerNodeId";
 
     String REF_GROUP1 = "REF_GROUP1";
@@ -56,10 +56,15 @@ public class RemoteSePoolPluginTest {
      */
     @Before
     public void setUp() throws Exception {
-        assert StubPlugin.getInstance().getReaders().size() == 0;
+
+        Assert.assertEquals(0, seProxyService.getPlugins().size());
 
         // create local transportfactory
         factory = new LocalTransportFactory(SERVER_NODE_ID);
+
+        /*
+         * Configure slave with Stub Pool Plugin
+         */
 
         // create stub pool plugin
         stubPoolPlugin = Integration.createStubPoolPlugin();
@@ -67,23 +72,35 @@ public class RemoteSePoolPluginTest {
         // plug readers
         stubPoolPlugin.plugStubPoolReader(REF_GROUP1, "stub1", stubSe);
 
-
         // configure Slave with Stub Pool plugin and local server node
         slaveAPI = new SlaveAPI(SeProxyService.getInstance(), factory.getServer(), "");
+
+        // bind slaveAPI to stubPoolPlugin
         slaveAPI.registerReaderPoolPlugin(stubPoolPlugin);
+
+        /*
+         * Configure master with Remote Pool Plugin
+         */
 
         // configure Master with RemoteSe Pool plugin and client node
         masterAPI = new MasterAPI(SeProxyService.getInstance(), factory.getClient(CLIENT_NODE_ID),
                 10000, MasterAPI.PLUGIN_TYPE_POOL, "REMOTESE_POOL_PLUGIN1");
 
         remoteSePoolPlugin = (RemoteSePoolPlugin) masterAPI.getPlugin();
-
-
     }
 
     @After
     public void tearDown() throws Exception {
-        VirtualReaderBaseTest.clearStubpluginReader();
+        SeProxyService.getInstance().unregisterPlugin(stubPoolPlugin.getName());
+        SeProxyService.getInstance().unregisterPlugin(remoteSePoolPlugin.getName());
+        remoteSePoolPlugin = null;
+        stubPoolPlugin = null;
+        masterAPI = null;
+        factory = null;
+        slaveAPI = null;
+
+        Assert.assertEquals(0, seProxyService.getPlugins().size());
+
     }
 
     /**
@@ -100,12 +117,6 @@ public class RemoteSePoolPluginTest {
         Assert.assertNotNull(seReader);
 
     }
-
-    /**
-     * Test allocate FAIL
-     */
-    @Test
-    public void allocate_fail() throws Exception {}
 
     /**
      * Test release SUCCESS

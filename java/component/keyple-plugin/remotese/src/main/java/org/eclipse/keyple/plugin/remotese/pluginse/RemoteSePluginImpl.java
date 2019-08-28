@@ -51,7 +51,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
      * Only {@link MasterAPI} can instanciate a RemoteSePlugin
      */
     RemoteSePluginImpl(VirtualReaderSessionFactory sessionManager, DtoSender dtoSender,
-                       long rpc_timeout, String pluginName) {
+            long rpc_timeout, String pluginName) {
         super(pluginName);
         this.sessionManager = sessionManager;
         logger.info("Init RemoteSePlugin");

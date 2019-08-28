@@ -29,7 +29,6 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.core.util.Observable;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubSamCalypsoClassic;
 import org.eclipse.keyple.example.calypso.pc.transaction.CalypsoUtilities;
@@ -136,10 +135,11 @@ public class Demo_Master {
 
                         // a new virtual reader is connected, let's configure it
                         try {
-                            ReaderPlugin remoteSEPlugin = SeProxyService
-                                    .getInstance().getPlugin("RemoteSePlugin");
+                            ReaderPlugin remoteSEPlugin =
+                                    SeProxyService.getInstance().getPlugin("RemoteSePlugin");
 
-                            SeReader poReader = remoteSEPlugin.getReader(event.getReaderNames().first());
+                            SeReader poReader =
+                                    remoteSEPlugin.getReader(event.getReaderNames().first());
 
                             logger.info("{} Configure SeSelection", node.getNodeId());
 
@@ -149,24 +149,24 @@ public class Demo_Master {
                             /*
                              * Setting of an AID based selection of a Calypso REV3 PO
                              *
-                             * Select the first application matching the selection AID whatever the SE
-                             * communication protocol keep the logical channel open after the selection
+                             * Select the first application matching the selection AID whatever the
+                             * SE communication protocol keep the logical channel open after the
+                             * selection
                              */
 
                             /*
-                             * Calypso selection: configures a PoSelectionRequest with all the desired
-                             * attributes to make the selection and read additional information
-                             * afterwards
+                             * Calypso selection: configures a PoSelectionRequest with all the
+                             * desired attributes to make the selection and read additional
+                             * information afterwards
                              */
-                            PoSelectionRequest poSelectionRequest =
-                                    new PoSelectionRequest(
-                                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                                    new PoSelector.PoAidSelector(
-                                                            new SeSelector.AidSelector.IsoAid(
-                                                                    CalypsoClassicInfo.AID),
-                                                            null),
-                                                    "AID: " + CalypsoClassicInfo.AID),
-                                            ChannelState.KEEP_OPEN);
+                            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
+                                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                            new PoSelector.PoAidSelector(
+                                                    new SeSelector.AidSelector.IsoAid(
+                                                            CalypsoClassicInfo.AID),
+                                                    null),
+                                            "AID: " + CalypsoClassicInfo.AID),
+                                    ChannelState.KEEP_OPEN);
 
                             logger.info("{} Create a PoSelectionRequest", node.getNodeId());
 
@@ -180,8 +180,8 @@ public class Demo_Master {
                                     node.getNodeId(), poReader.getName());
 
                             /*
-                             * Provide the SeReader with the selection operation to be processed when a
-                             * PO is inserted.
+                             * Provide the SeReader with the selection operation to be processed
+                             * when a PO is inserted.
                              */
                             ((ObservableReader) poReader).setDefaultSelectionRequest(
                                     seSelection.getSelectionOperation(),
@@ -191,40 +191,47 @@ public class Demo_Master {
                             // observe reader events
                             logger.info("{} Add Master Thread as Observer of Virtual Reader {}",
                                     node.getNodeId(), poReader.getName());
-                            ((ObservableReader) poReader).addObserver(new ObservableReader.ReaderObserver() {
-                                @Override
-                                public void update(ReaderEvent event) {
-                                    logger.info("{} UPDATE {} {} {} {}", node.getNodeId(), event.getEventType(),
-                                            event.getPluginName(), event.getReaderName(),
-                                            event.getDefaultSelectionsResponse());
+                            ((ObservableReader) poReader)
+                                    .addObserver(new ObservableReader.ReaderObserver() {
+                                        @Override
+                                        public void update(ReaderEvent event) {
+                                            logger.info("{} UPDATE {} {} {} {}", node.getNodeId(),
+                                                    event.getEventType(), event.getPluginName(),
+                                                    event.getReaderName(),
+                                                    event.getDefaultSelectionsResponse());
 
-                                    switch (event.getEventType()) {
+                                            switch (event.getEventType()) {
 
-                                        case SE_MATCHED:
+                                                case SE_MATCHED:
 
-                                            // executeReadEventLog(selectionsResult);
-                                            executeCalypso4_PoAuthentication(samResource, event.getReaderName());
+                                                    // executeReadEventLog(selectionsResult);
+                                                    executeCalypso4_PoAuthentication(samResource,
+                                                            event.getReaderName());
 
-                                            break;
-                                        case SE_INSERTED:
-                                            logger.info("{} SE_INSERTED {} {}", node.getNodeId(), event.getPluginName(),
-                                                    event.getReaderName());
+                                                    break;
+                                                case SE_INSERTED:
+                                                    logger.info("{} SE_INSERTED {} {}",
+                                                            node.getNodeId(), event.getPluginName(),
+                                                            event.getReaderName());
 
-                                            // Transmit a SeRequestSet to native reader
-                                            // CommandSample.transmit(logger, event.getReaderName());
+                                                    // Transmit a SeRequestSet to native reader
+                                                    // CommandSample.transmit(logger,
+                                                    // event.getReaderName());
 
-                                            break;
-                                        case SE_REMOVAL:
-                                            logger.info("{} SE_REMOVAL {} {}", node.getNodeId(), event.getPluginName(),
-                                                    event.getReaderName());
-                                            break;
-                                        case IO_ERROR:
-                                            logger.info("{} IO_ERROR {} {}", node.getNodeId(), event.getPluginName(),
-                                                    event.getReaderName());
-                                            break;
-                                    }
-                                }
-                            });
+                                                    break;
+                                                case SE_REMOVAL:
+                                                    logger.info("{} SE_REMOVAL {} {}",
+                                                            node.getNodeId(), event.getPluginName(),
+                                                            event.getReaderName());
+                                                    break;
+                                                case IO_ERROR:
+                                                    logger.info("{} IO_ERROR {} {}",
+                                                            node.getNodeId(), event.getPluginName(),
+                                                            event.getReaderName());
+                                                    break;
+                                            }
+                                        }
+                                    });
 
                         } catch (KeypleReaderNotFoundException e) {
                             logger.error(e.getMessage());
@@ -253,10 +260,11 @@ public class Demo_Master {
 
         try {
             /* Get the instance of the Stub plugin */
-            ReaderPlugin stubPlugin = SeProxyService.getInstance().getPlugin(StubPlugin.PLUGIN_NAME);
+            ReaderPlugin stubPlugin =
+                    SeProxyService.getInstance().getPlugin(StubPlugin.PLUGIN_NAME);
 
             /* Plug the SAM stub reader. */
-            ((StubPlugin)stubPlugin).plugStubReader("samReader", true);
+            ((StubPlugin) stubPlugin).plugStubReader("samReader", true);
 
             SeReader samReader = stubPlugin.getReader("samReader");
 
@@ -267,7 +275,7 @@ public class Demo_Master {
             /* Create 'virtual' Calypso SAM */
             StubSecureElement calypsoSamStubSe = new StubSamCalypsoClassic();
 
-            ((StubReader)samReader).insertSe(calypsoSamStubSe);
+            ((StubReader) samReader).insertSe(calypsoSamStubSe);
             logger.info("Stub SAM inserted");
 
             /*
@@ -286,8 +294,6 @@ public class Demo_Master {
 
 
     }
-
-
 
 
 

@@ -22,17 +22,17 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 /**
  * Simulates a @{@link ReaderPoolPlugin} with {@link StubReaderImpl} and {@link StubSecureElement}
  * Manages allocation readers by group reference, Limitations : - each group can contain only one
- * StubReader thus one StubSecureElement This class uses internally @{@link StubPluginImpl} which is a
- * singleton.
+ * StubReader thus one StubSecureElement This class uses internally @{@link StubPluginImpl} which is
+ * a singleton.
  */
-class StubPoolPluginImpl implements ReaderPoolPlugin {
+class StubPoolPluginImpl implements StubPoolPlugin {
 
     StubPluginImpl stubPlugin;
-    Map<String, StubReaderImpl> readerPool; // groupReference, seReader = limitation each groupReference
-                                        // can have only one reader
+    Map<String, StubReaderImpl> readerPool; // groupReference, seReader = limitation each
+                                            // groupReference
+    // can have only one reader
     Map<String, String> allocatedReader;// readerName,groupReference
 
-    static public String PREFIX_NAME = "POOL_";
 
     public StubPoolPluginImpl(StubPluginImpl stubPlugin) {
         this.stubPlugin = stubPlugin;
@@ -43,7 +43,7 @@ class StubPoolPluginImpl implements ReaderPoolPlugin {
 
     @Override
     public String getName() {
-        return PREFIX_NAME + stubPlugin.getName();
+        return PLUGIN_NAME;
     }
 
     @Override
@@ -203,7 +203,5 @@ class StubPoolPluginImpl implements ReaderPoolPlugin {
             throws IllegalArgumentException, KeypleBaseException {
         stubPlugin.setParameters(parameters);
     }
-
-
 
 }

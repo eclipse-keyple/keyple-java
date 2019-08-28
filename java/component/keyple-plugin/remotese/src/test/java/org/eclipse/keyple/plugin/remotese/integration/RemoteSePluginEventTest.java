@@ -14,10 +14,10 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.core.util.Observable;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
 import org.junit.After;
 import org.junit.Assert;
@@ -35,15 +35,18 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
 
     @Before
     public void setUp() throws Exception {
-        // restore plugin state
-        clearStubpluginReader();
 
         initKeypleServices();
+
+        // restore plugin state
+        clearStubpluginReader();
     }
 
     @After
     public void tearDown() throws Exception {
         clearStubpluginReader();
+        unregisterPlugins();
+        Assert.assertEquals(0, seProxyService.getPlugins().size());
     }
 
     /**
@@ -58,7 +61,7 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
 
         final RemoteSePlugin remoteSePlugin = masterAPI.getPlugin();
 
-        remoteSePlugin.addObserver(new Observable.Observer<PluginEvent>() {
+        remoteSePlugin.addObserver(new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
                 Assert.assertNotNull(event.getReaderNames().first());
@@ -92,7 +95,7 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
 
         final RemoteSePlugin remoteSePlugin = masterAPI.getPlugin();
 
-        remoteSePlugin.addObserver(new Observable.Observer<PluginEvent>() {
+        remoteSePlugin.addObserver(new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
 
@@ -139,7 +142,7 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
 
         final RemoteSePlugin remoteSePlugin = masterAPI.getPlugin();
 
-        remoteSePlugin.addObserver(new Observable.Observer<PluginEvent>() {
+        remoteSePlugin.addObserver(new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
                 // READER_CONNECTED should be raised only once, so lock.getCount() should be equals
@@ -178,7 +181,7 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
     public void testDisconnectUnknownReader() throws Exception {
         final RemoteSePlugin remoteSePlugin = masterAPI.getPlugin();
 
-        remoteSePlugin.addObserver(new Observable.Observer<PluginEvent>() {
+        remoteSePlugin.addObserver(new ObservablePlugin.PluginObserver() {
             @Override
             public void update(PluginEvent event) {
                 // READER_CONNECTED should not be called

@@ -24,7 +24,7 @@ import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalClient;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportFactory;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
-import org.eclipse.keyple.plugin.stub.StubReaderImpl;
+import org.eclipse.keyple.plugin.stub.StubReader;
 import org.junit.*;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
@@ -47,11 +47,13 @@ public class SlaveAPITest {
     TransportFactory factory;
     MasterAPI masterAPI;
 
-    StubReaderImpl nativeReader;
+    StubReader nativeReader;
 
     final String NATIVE_READER_NAME = "testStubReader";
     final String CLIENT_NODE_ID = "testClientNodeId";
     final String SERVER_NODE_ID = "testServerNodeId";
+    final String REMOTE_SE_PLUGIN_NAME = "remoteseplugin1";
+
 
     final long RPC_TIMEOUT = 1000;
 
@@ -64,6 +66,8 @@ public class SlaveAPITest {
         logger.info("Test {}", name.getMethodName());
         logger.info("------------------------------");
 
+        Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
+
         logger.info("*** Init LocalTransportFactory");
         // use a local transport factory for testing purposes (only java calls between client and
         // server)
@@ -72,7 +76,7 @@ public class SlaveAPITest {
 
         logger.info("*** Bind Master Services");
         // bind Master services to server
-        masterAPI = Integration.bindMasterSpy(factory.getServer());
+        masterAPI = Integration.bindMasterSpy(factory.getServer(), REMOTE_SE_PLUGIN_NAME);
 
         logger.info("*** Bind Slave Services");
         // bind Slave services to client
@@ -89,12 +93,17 @@ public class SlaveAPITest {
 
         logger.info("TearDown Test");
 
-        StubPlugin stubPlugin = StubPlugin.getInstance();
+        StubPlugin stubPlugin =
+                (StubPlugin) SeProxyService.getInstance().getPlugin(StubPlugin.PLUGIN_NAME);
 
         // delete stubReader
         stubPlugin.unplugStubReader(nativeReader.getName(), true);
 
         nativeReader.clearObservers();
+
+        Integration.unregisterAllPlugin(REMOTE_SE_PLUGIN_NAME);
+
+        Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
     }
 
 

@@ -13,8 +13,10 @@ package org.eclipse.keyple.core.seproxy;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.SortedSet;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservablePlugin;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,25 +35,33 @@ public class SeProxyServiceTest {
     // class to test
     SeProxyService proxyService;
 
+    AbstractObservablePlugin plugin1 = new MockAbstractObservablePlugin(PLUGIN_NAME_1);
+
+    AbstractObservablePlugin plugin2 = new MockAbstractObservablePlugin(PLUGIN_NAME_2);;
+
     @Mock
-    ReaderPlugin plugin1;
+    PluginFactory factory1;
+
+    @Mock
+    PluginFactory factory2;
 
 
-    static String PLUGIN_NAME = "plugin1";
+    static String PLUGIN_NAME_1 = "plugin1";
+    static String PLUGIN_NAME_2 = "plugin2";
 
     @Before
     public void setupBeforeEach() {
 
         // init class to test
         proxyService = SeProxyService.getInstance();
-    }
 
+        Assert.assertEquals(0, proxyService.getPlugins().size());
 
-    @Test
-    public void testGetInstance() {
-        // test
-        assertNotNull(proxyService);
-        // assertNull(proxyService);
+        when(factory1.getPluginInstance()).thenReturn(plugin1);
+        when(factory2.getPluginInstance()).thenReturn(plugin2);
+
+        when(factory1.getPluginName()).thenReturn(PLUGIN_NAME_1);
+        when(factory2.getPluginName()).thenReturn(PLUGIN_NAME_2);
 
     }
 
@@ -66,62 +76,74 @@ public class SeProxyServiceTest {
         assertTrue(version.matches(regex));
     }
 
+    /*
+     * @Test public void testGetSetPlugins() { // init ConcurrentSkipListSet<ReaderPlugin> plugins =
+     * getPluginList();
+     * 
+     * // test proxyService.setPlugins(plugins); assertArrayEquals(plugins.toArray(),
+     * proxyService.getPlugins().toArray()); }
+     */
     @Test
-    public void testGetSetPlugins() {
-        // init
-        ConcurrentSkipListSet<ReaderPlugin> plugins = getPluginList();
+    public void testRegisterPlugin() throws KeyplePluginNotFoundException {
 
-        // test
-        proxyService.setPlugins(plugins);
-        assertArrayEquals(plugins.toArray(), proxyService.getPlugins().toArray());
+        // register plugin1 by its factory
+        proxyService.registerPlugin(factory1);
+
+        // results
+        ReaderPlugin testPlugin = proxyService.getPlugin(PLUGIN_NAME_1);
+        SortedSet testPlugins = proxyService.getPlugins();
+
+        Assert.assertNotNull(testPlugin);
+        Assert.assertEquals(PLUGIN_NAME_1, testPlugin.getName());
+        Assert.assertEquals(1, testPlugins.size());
+
+        // unregister
+        proxyService.unregisterPlugin(PLUGIN_NAME_1);
+
+
     }
 
     @Test
-    public void testGetPlugin() throws KeyplePluginNotFoundException {
-        // init
+    public void testRegisterTwicePlugin() throws KeyplePluginNotFoundException {
 
-        ConcurrentSkipListSet<ReaderPlugin> plugins = getPluginList();
+        // register plugin1 by its factory
+        proxyService.registerPlugin(factory1);
+        proxyService.registerPlugin(factory1);
 
-        proxyService.setPlugins(plugins);
+        // should not be added twice
+        SortedSet testPlugins = proxyService.getPlugins();
+        Assert.assertEquals(1, testPlugins.size());
 
-        // test
-        assertEquals(plugin1, proxyService.getPlugin(PLUGIN_NAME));
+        // unregister
+        proxyService.unregisterPlugin(PLUGIN_NAME_1);
+
     }
+
+    @Test
+    public void testRegisterTwoPlugins() throws KeyplePluginNotFoundException {
+
+        // register plugin1 by its factory
+        proxyService.registerPlugin(factory1);
+        proxyService.registerPlugin(factory2);
+
+        // should not be added twice
+        SortedSet testPlugins = proxyService.getPlugins();
+        Assert.assertEquals(2, testPlugins.size());
+
+        // unregister
+        proxyService.unregisterPlugin(PLUGIN_NAME_1);
+        proxyService.unregisterPlugin(PLUGIN_NAME_2);
+
+    }
+
+
 
     @Test(expected = KeyplePluginNotFoundException.class)
     public void testGetPluginFail() throws Exception {
-
-        // init
-        ConcurrentSkipListSet<ReaderPlugin> plugins = getPluginList();
-        proxyService.setPlugins(plugins);
-
-        // test
         proxyService.getPlugin("unknown");// Throw exception
 
-
     }
 
-
-    /*
-     * HELPERS
-     */
-
-    private ConcurrentSkipListSet<ReaderPlugin> getPluginList() {
-
-        // ReaderPlugin plugin2 = Mockito.mock(ReaderPlugin.class);
-        // when(plugin2.getName()).thenReturn(PLUGIN_NAME_2);
-
-        when(plugin1.getName()).thenReturn(PLUGIN_NAME);
-        ConcurrentSkipListSet<ReaderPlugin> plugins = new ConcurrentSkipListSet<ReaderPlugin>();
-
-
-        plugins.add(plugin1);
-        // plugins.add(plugin2);
-
-        assertEquals(1, plugins.size()); // impossible to add 2 ReaderPlugin mocks
-
-        return plugins;
-    }
 
 
 }

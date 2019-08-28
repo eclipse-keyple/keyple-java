@@ -32,13 +32,14 @@ public class Demo_CalypsoClassic_Stub {
      * @param args the program arguments
      * @throws InterruptedException thread exception
      */
-    public static void main(String[] args) throws InterruptedException, KeyplePluginNotFoundException {
+    public static void main(String[] args)
+            throws InterruptedException, KeyplePluginNotFoundException {
         final Logger logger = LoggerFactory.getLogger(Demo_CalypsoClassic_Stub.class);
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Register  Stub plugin in the platform */
+        /* Register Stub plugin in the platform */
         seProxyService.registerPlugin(new StubPluginFactory());
         ReaderPlugin stubPlugin = seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
 
@@ -48,13 +49,13 @@ public class Demo_CalypsoClassic_Stub {
         /*
          * Plug PO and SAM stub readers.
          */
-        ((StubPlugin)stubPlugin).plugStubReader("poReader", true);
-        ((StubPlugin)stubPlugin).plugStubReader("samReader", true);
+        ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
+        ((StubPlugin) stubPlugin).plugStubReader("samReader", true);
 
-        StubReaderImpl poReader = null, samReader = null;
+        StubReader poReader = null, samReader = null;
         try {
-            poReader = (StubReaderImpl) (stubPlugin.getReader("poReader"));
-            samReader = (StubReaderImpl) (stubPlugin.getReader("samReader"));
+            poReader = (StubReader) (stubPlugin.getReader("poReader"));
+            samReader = (StubReader) (stubPlugin.getReader("samReader"));
         } catch (KeypleReaderNotFoundException e) {
             e.printStackTrace();
         }

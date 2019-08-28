@@ -11,19 +11,14 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.stub;
 
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
-public interface StubReader extends ObservableReader {
+import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
+import org.eclipse.keyple.core.seproxy.SeReader;
 
-    String ALLOWED_PARAMETER_1 = "parameter1";
-    String ALLOWED_PARAMETER_2 = "parameter2";
-    String CONTACTLESS_PARAMETER = "contactless";
-    String CONTACTS_PARAMETER = "contacts";
+public interface StubPoolPlugin extends ReaderPoolPlugin {
 
+    String PLUGIN_NAME = "STUB_POOL_PLUGIN";
 
-    void insertSe(StubSecureElement _se);
+    SeReader plugStubPoolReader(String groupReference, String readerName, StubSecureElement se);
 
-    void removeSe();
-
-    StubSecureElement getSe();
 }
