@@ -32,7 +32,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class SmartCardIOReaderTest {
 
-    private PcscReader reader;
+    private PcscReaderImpl reader;
 
     private String readerName;
 
@@ -61,7 +61,7 @@ public class SmartCardIOReaderTest {
         res = new ResponseAPDU(responseApduByte);
 
         readerName = "reader";
-        reader = new PcscReader("pcscPlugin", terminal);
+        reader = new PcscReaderImpl("pcscPlugin", terminal);
         reader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
     }
 
@@ -151,7 +151,7 @@ public class SmartCardIOReaderTest {
         SeRequestSet seApplicationRequest =
                 new SeRequestSet(new SeRequest(apduRequests, ChannelState.KEEP_OPEN));
 
-        PcscReader spiedReader = spy(this.reader);
+        PcscReaderImpl spiedReader = spy(this.reader);
         SeResponseSet reponseActuelle = spiedReader.transmitSet(seApplicationRequest);
 
         assertEquals(reponseActuelle.getSingleResponse().getApduResponses().size(),
@@ -184,7 +184,7 @@ public class SmartCardIOReaderTest {
         SeRequestSet seApplicationRequest =
                 new SeRequestSet(new SeRequest(apduRequests, ChannelState.KEEP_OPEN));
 
-        PcscReader spiedReader = spy(this.reader);
+        PcscReaderImpl spiedReader = spy(this.reader);
 
         SeResponseSet reponseActuelle = spiedReader.transmitSet(seApplicationRequest);
         assertNotNull(reponseActuelle.getSingleResponse().getSelectionStatus().getFci());
@@ -212,7 +212,7 @@ public class SmartCardIOReaderTest {
         SeRequestSet seApplicationRequest =
                 new SeRequestSet(new SeRequest(apduRequests, ChannelState.KEEP_OPEN));
 
-        PcscReader spiedReader = spy(this.reader);
+        PcscReaderImpl spiedReader = spy(this.reader);
 
         SeResponseSet reponseActuelle = spiedReader.transmitSet(seApplicationRequest);
         assertNotNull(reponseActuelle.getSingleResponse().getSelectionStatus().getFci());

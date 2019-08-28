@@ -56,7 +56,7 @@ public class PcscReaderActualTest {
     @Ignore // <-- This test works but can only be executed with an actual card present
     @Test
     public void testActual() throws KeypleReaderException, InterruptedException {
-        PcscPlugin plugin = PcscPlugin.getInstance().setLogging(true);
+        PcscPluginImpl plugin = PcscPluginImpl.getInstance().setLogging(true);
 
         final MyReaderObserver observer = new MyReaderObserver();
         for (AbstractObservableReader reader : plugin.getReaders()) {

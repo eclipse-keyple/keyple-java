@@ -23,6 +23,6 @@ public class PcscPluginFactory extends PluginFactory {
 
     @Override
     protected ReaderPlugin getPluginInstance() {
-        return PcscPlugin.getInstance();
+        return PcscPluginImpl.getInstance();
     }
 }

@@ -42,7 +42,7 @@ import org.eclipse.keyple.integration.IntegrationUtils;
 import org.eclipse.keyple.integration.samData.SamCounterData;
 import org.eclipse.keyple.integration.samData.SamKeyData;
 import org.eclipse.keyple.integration.samData.SamStructureData;
-import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,11 +135,8 @@ public class Tool_SAM_GetKeyParams {
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Get the instance of the PC/SC plugin */
-        PcscPlugin pcscPlugin = PcscPlugin.getInstance();
-
         /* Assign PcscPlugin to the SeProxyService */
-        seProxyService.addPlugin(pcscPlugin);
+        seProxyService.registerPlugin(new PcscPluginFactory());
 
         ProxyReader samReader = (ProxyReader) IntegrationUtils.getReader(seProxyService,
                 IntegrationUtils.SAM_READER_NAME_REGEX);
