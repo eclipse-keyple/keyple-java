@@ -11,10 +11,10 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.omapi;
 
-import org.eclipse.keyple.core.seproxy.PluginFactory;
+import org.eclipse.keyple.core.seproxy.AbstractPluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 
-public final class AndroidOmapiPluginFactory extends PluginFactory {
+public final class AndroidOmapiPluginFactory extends AbstractPluginFactory {
     @Override
     public String getPluginName() {
         return AndroidOmapiPlugin.PLUGIN_NAME;
