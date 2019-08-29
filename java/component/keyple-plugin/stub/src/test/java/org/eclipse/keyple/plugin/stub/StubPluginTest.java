@@ -71,7 +71,7 @@ public class StubPluginTest extends BaseStubTest {
 
         // connect reader
         stubPlugin.plugStubReader(READER_NAME, TransmissionMode.CONTACTLESS, true);
-        StubReaderImpl stubReader = (StubReaderImpl) stubPlugin.getReaders().first();
+        StubReader stubReader = (StubReader) stubPlugin.getReaders().first();
 
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         Assert.assertEquals(READER_NAME, stubReader.getName());
