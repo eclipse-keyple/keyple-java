@@ -15,7 +15,10 @@ import org.eclipse.keyple.core.seproxy.AbstractPluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 
-public class RemoteSePluginFactory extends AbstractPluginFactory {
+/**
+ * Only used by MasterAPI
+ */
+class RemoteSePluginFactory extends AbstractPluginFactory {
 
     VirtualReaderSessionFactory sessionManager;
     DtoSender dtoSender;

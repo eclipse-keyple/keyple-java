@@ -15,6 +15,11 @@ import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
 
 public interface RemoteSePoolPlugin extends RemoteSePlugin, ReaderPoolPlugin {
 
+    /**
+     * Bind RemoteSePoolPlugin to a SlaveNodeId in order to invoke @{@link ReaderPoolPlugin} methods
+     * 
+     * @param slaveNodeId
+     */
     void bind(String slaveNodeId);
 
 }

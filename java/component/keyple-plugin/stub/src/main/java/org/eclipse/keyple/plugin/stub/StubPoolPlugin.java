@@ -19,8 +19,23 @@ public interface StubPoolPlugin extends ReaderPoolPlugin {
 
     String PLUGIN_NAME = "STUB_POOL_PLUGIN";
 
+    /**
+     * Plug synchronously a new @{@link StubReaderImpl} in Pool with groupReference and a StubSE. A
+     * READER_CONNECTED event will be raised.
+     *
+     * @param groupReference : group refence of the new stub reader
+     * @param readerName : name of the new stub reader
+     * @param se : insert a se at creation (can be null)
+     * @return created StubReader
+     */
     SeReader plugStubPoolReader(String groupReference, String readerName, StubSecureElement se);
 
+    /**
+     * Unplug synchronously a new reader by groupReference. A READER_DISCONNECTED event will be
+     * raised.
+     *
+     * @param groupReference groupReference of the reader to be unplugged
+     */
     void unplugStubPoolReader(String groupReference);
 
 }

@@ -13,7 +13,18 @@ package org.eclipse.keyple.core.seproxy;
 
 public abstract class AbstractPluginFactory {
 
+    /**
+     * Retrieve the name of the plugin that will be instanciated by this factory (can be static or
+     * dynamic)
+     * 
+     * @return pluginName
+     */
     public abstract String getPluginName();
 
+    /**
+     * Retrieve instance of a plugin (can be a singleton or not)
+     * 
+     * @return instance of a ReaderPlugin
+     */
     protected abstract ReaderPlugin getPluginInstance();
 }

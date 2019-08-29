@@ -14,6 +14,10 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
 public interface VirtualReader extends ObservableReader {
-
+    /**
+     * Name of the Native Reader on the slave device
+     * 
+     * @return local name of the native reader (on slave device)
+     */
     String getNativeReaderName();
 }

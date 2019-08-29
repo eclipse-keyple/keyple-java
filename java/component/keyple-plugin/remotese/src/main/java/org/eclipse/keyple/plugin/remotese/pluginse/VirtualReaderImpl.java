@@ -78,11 +78,7 @@ final class VirtualReaderImpl extends AbstractObservableReader implements Virtua
         return transmissionMode;
     }
 
-    /**
-     * Name of the Native Reader
-     *
-     * @return local name of the native reader (on slave device)
-     */
+
     public String getNativeReaderName() {
         return nativeReaderName;
     }

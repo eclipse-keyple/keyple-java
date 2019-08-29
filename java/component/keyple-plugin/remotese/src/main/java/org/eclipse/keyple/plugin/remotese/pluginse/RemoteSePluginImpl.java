@@ -48,7 +48,8 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
     private final Map<String, String> parameters;
 
     /**
-     * Only {@link MasterAPI} can instanciate a RemoteSePlugin
+     * RemoteSePlugin is wrapped into MasterAPI and instanciated like a standard plugin
+     * by @SeProxyService. Use MasterAPI
      */
     RemoteSePluginImpl(VirtualReaderSessionFactory sessionManager, DtoSender dtoSender,
             long rpc_timeout, String pluginName) {
@@ -60,14 +61,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
         this.rpc_timeout = rpc_timeout;
     }
 
-    /**
-     * Retrieve a reader by its native reader name and slave Node Id
-     *
-     * @param remoteName : name of the reader on its native device
-     * @param slaveNodeId : slave node Id of the reader to disconnect
-     * @return corresponding Virtual reader if exists
-     * @throws KeypleReaderNotFoundException if no virtual reader match the native reader name
-     */
+
     public VirtualReaderImpl getReaderByRemoteName(String remoteName, String slaveNodeId)
             throws KeypleReaderNotFoundException {
         for (SeReader virtualReader : readers) {
