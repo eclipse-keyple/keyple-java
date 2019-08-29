@@ -20,9 +20,22 @@ public interface StubReader extends ObservableReader {
     String CONTACTLESS_PARAMETER = "contactless";
     String CONTACTS_PARAMETER = "contacts";
 
+    /**
+     * Insert a stub se into the reader. Will raise a SE_INSERTED event.
+     *
+     * @param _se stub secure element to be inserted in the reader
+     */
     void insertSe(StubSecureElement _se);
 
+    /**
+     * Remove se from reader if any
+     */
     void removeSe();
 
+    /**
+     * Get inserted SE
+     *
+     * @return se, can be null if no Se inserted
+     */
     StubSecureElement getSe();
 }

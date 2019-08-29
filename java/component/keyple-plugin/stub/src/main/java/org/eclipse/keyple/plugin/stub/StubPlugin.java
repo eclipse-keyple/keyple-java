@@ -20,13 +20,50 @@ public interface StubPlugin extends ObservablePlugin {
 
     String PLUGIN_NAME = "STUB_PLUGIN";
 
+    /**
+     * Plug a Stub Reader
+     *
+     * @param name : name of the created reader
+     * @param synchronous : should the stubreader added synchronously (without waiting for the
+     *        observation thread). An READER_CONNECTED event is raised in both cases
+     */
     void plugStubReader(String name, Boolean synchronous);
 
+    /**
+     * Plug a Stub Reader
+     *
+     * @param name : name of the created reader
+     * @param transmissionMode : transmissionMode of the created reader
+     * @param synchronous : should the stubreader added synchronously (without waiting for the
+     *        observation thread). An READER_CONNECTED event is raised in both cases
+     */
     void plugStubReader(String name, TransmissionMode transmissionMode, Boolean synchronous);
 
+    /**
+     * Plug a list of stub Reader at once
+     *
+     * @param names : names of readers to be connected
+     * @param synchronous : should the stubreader be added synchronously (without waiting for the
+     *        observation thread). An READER_CONNECTED event is raised in both cases
+     */
     void plugStubReaders(Set<String> names, Boolean synchronous);
 
+    /**
+     * Unplug a Stub Reader
+     *
+     * @param name the name of the reader
+     * @throws KeypleReaderException in case of a reader exception
+     * @param synchronous : should the stubreader be removed synchronously (without waiting for the
+     *        observation thread). An READER_DISCONNECTED event is raised in both cases
+     */
     void unplugStubReader(String name, Boolean synchronous) throws KeypleReaderException;
 
+    /**
+     * Unplug a list of readers
+     *
+     * @param names : names of the reader to be unplugged
+     * @param synchronous : should the stubreader removed synchronously (without waiting for the
+     *        observation thread). An READER_DISCONNECTED event is raised in both cases
+     */
     void unplugStubReaders(Set<String> names, Boolean synchronous);
 }

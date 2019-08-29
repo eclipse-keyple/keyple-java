@@ -169,11 +169,6 @@ final class StubReaderImpl extends AbstractThreadedLocalReader implements StubRe
      * STATE CONTROLLERS FOR INSERTING AND REMOVING SECURE ELEMENT
      */
 
-    /**
-     * Insert a stub se into the reader. Will raise a SE_INSERTED event.
-     * 
-     * @param _se stub secure element to be inserted in the reader
-     */
     public synchronized void insertSe(StubSecureElement _se) {
         // logger.info("Insert SE {}", _se);
         /* clean channels status */
@@ -189,18 +184,10 @@ final class StubReaderImpl extends AbstractThreadedLocalReader implements StubRe
         }
     }
 
-    /**
-     * Remove se from reader if any
-     */
     public synchronized void removeSe() {
         se = null;
     }
 
-    /**
-     * Get inserted SE
-     * 
-     * @return se, can be null if no Se inserted
-     */
     public StubSecureElement getSe() {
         return se;
     }
