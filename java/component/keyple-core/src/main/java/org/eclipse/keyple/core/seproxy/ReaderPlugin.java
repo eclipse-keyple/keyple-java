@@ -37,7 +37,7 @@ public interface ReaderPlugin extends Nameable, Configurable, Comparable<ReaderP
      * @return the ‘unique’ name of the readers’ plugin.
      * @throws KeypleReaderException if the list of readers has not been initialized
      */
-    SortedSet<? extends SeReader> getReaders() throws KeypleReaderException;
+    SortedSet<SeReader> getReaders() throws KeypleReaderException;
 
     /**
      * Gets the reader whose name is provided as an argument

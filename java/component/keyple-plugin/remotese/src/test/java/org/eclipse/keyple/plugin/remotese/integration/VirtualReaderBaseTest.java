@@ -14,6 +14,8 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 import java.util.Set;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -117,9 +119,9 @@ public class VirtualReaderBaseTest {
         try {
             stubPlugin =
                     (StubPlugin) SeProxyService.getInstance().getPlugin(StubPlugin.PLUGIN_NAME);
-            Set<StubReader> readers = (Set<StubReader>) stubPlugin.getReaders();
-            for (StubReader reader : readers) {
-                reader.clearObservers();
+            Set<SeReader> readers = stubPlugin.getReaders();
+            for (SeReader reader : readers) {
+                ((ObservableReader) reader).clearObservers();
             }
             stubPlugin.unplugStubReaders(stubPlugin.getReaderNames(), true);
         } catch (KeyplePluginNotFoundException e) {

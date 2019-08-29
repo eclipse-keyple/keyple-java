@@ -173,7 +173,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
     }
 
     @Override
-    public SortedSet<? extends SeReader> getReaders() throws KeypleReaderException {
+    public SortedSet<SeReader> getReaders() throws KeypleReaderException {
         return stubPlugin.getReaders();
     }
 

@@ -14,11 +14,11 @@ package org.eclipse.keyple.core.seproxy.plugin;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<
     /**
      * The list of readers
      */
-    protected SortedSet<AbstractObservableReader> readers = null;
+    protected SortedSet<SeReader> readers = null;
 
 
     /**
@@ -62,7 +62,7 @@ public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<
      * 
      * @return the current reader list, can be null if the
      */
-    public final SortedSet<AbstractObservableReader> getReaders() throws KeypleReaderException {
+    public final SortedSet<SeReader> getReaders() throws KeypleReaderException {
         if (readers == null) {
             throw new KeypleReaderException("List of readers has not been initialized");
         }
@@ -79,7 +79,7 @@ public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<
     @Override
     public final SortedSet<String> getReaderNames() {
         SortedSet<String> readerNames = new ConcurrentSkipListSet<String>();
-        for (AbstractObservableReader reader : readers) {
+        for (SeReader reader : readers) {
             readerNames.add(reader.getName());
         }
         return readerNames;
@@ -87,14 +87,14 @@ public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<
 
     /**
      * Fetch connected native readers (from third party library) and returns a list of corresponding
-     * {@link org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader}
-     * {@link org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader} are new instances.
+     * {@link SeReader}
+     * <p>
+     * {@link SeReader} are new instances.
      * 
      * @return the list of AbstractObservableReader objects.
      * @throws KeypleReaderException if a reader error occurs
      */
-    protected abstract SortedSet<AbstractObservableReader> initNativeReaders()
-            throws KeypleReaderException;
+    protected abstract SortedSet<SeReader> initNativeReaders() throws KeypleReaderException;
 
     /**
      * Fetch connected native reader (from third party library) by its name Returns the current
@@ -105,8 +105,7 @@ public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<
      * @return the list of AbstractObservableReader objects.
      * @throws KeypleReaderException if a reader error occurs
      */
-    protected abstract AbstractObservableReader fetchNativeReader(String name)
-            throws KeypleReaderException;
+    protected abstract SeReader fetchNativeReader(String name) throws KeypleReaderException;
 
     /**
      * Starts the monitoring thread
@@ -183,8 +182,8 @@ public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<
      * @return the reader
      * @throws KeypleReaderNotFoundException if the wanted reader is not found
      */
-    public final ProxyReader getReader(String name) throws KeypleReaderNotFoundException {
-        for (ProxyReader reader : readers) {
+    public final SeReader getReader(String name) throws KeypleReaderNotFoundException {
+        for (SeReader reader : readers) {
             if (reader.getName().equals(name)) {
                 return reader;
             }

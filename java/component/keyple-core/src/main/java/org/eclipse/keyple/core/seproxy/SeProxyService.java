@@ -75,7 +75,7 @@ public final class SeProxyService {
      * 
      * @param pluginFactory : plugin factory to instanciate plugin to be added
      */
-    public void registerPlugin(PluginFactory pluginFactory) {
+    public void registerPlugin(AbstractPluginFactory pluginFactory) {
         if (!isRegistered(pluginFactory.getPluginName())) {
             logger.info("Registering a new Plugin to the platform : {}",
                     pluginFactory.getPluginName());

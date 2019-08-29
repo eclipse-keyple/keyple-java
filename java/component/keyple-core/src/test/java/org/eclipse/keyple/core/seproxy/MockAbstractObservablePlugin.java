@@ -26,7 +26,7 @@ public class MockAbstractObservablePlugin extends AbstractObservablePlugin {
     }
 
     @Override
-    protected SortedSet<AbstractObservableReader> initNativeReaders() throws KeypleReaderException {
+    protected SortedSet<SeReader> initNativeReaders() throws KeypleReaderException {
         return null;
     }
 

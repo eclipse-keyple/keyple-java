@@ -45,8 +45,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.rmi.CORBA.Stub;
-
 
 @SuppressWarnings("PMD.SignatureDeclareThrowsException")
 @RunWith(MockitoJUnitRunner.class)
@@ -616,7 +614,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         reader.insertSe(hoplinkSE());
-        ((ProxyReader)reader).transmitSet((SeRequestSet) null);
+        ((ProxyReader) reader).transmitSet((SeRequestSet) null);
 
         // throws exception
     }
@@ -641,7 +639,7 @@ public class StubReaderTest extends BaseStubTest {
         selectSe(reader);
 
         // test
-        SeResponseSet seResponse = ((ProxyReader)reader).transmitSet(requests);
+        SeResponseSet seResponse = ((ProxyReader) reader).transmitSet(requests);
 
         // assert
         Assert.assertTrue(seResponse.getSingleResponse().getApduResponses().get(0).isSuccessful());
@@ -687,7 +685,7 @@ public class StubReaderTest extends BaseStubTest {
         selectSe(reader);
 
         // test
-        SeResponseSet seResponse = ((ProxyReader)reader).transmitSet(requests);
+        SeResponseSet seResponse = ((ProxyReader) reader).transmitSet(requests);
     }
 
     @Test
@@ -711,7 +709,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponseSet seResponseSet = ((ProxyReader)reader).transmitSet(seRequestSet);
+            SeResponseSet seResponseSet = ((ProxyReader) reader).transmitSet(seRequestSet);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 1);
             Assert.assertEquals(
@@ -740,7 +738,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponseSet seResponseSet = ((ProxyReader)reader).transmitSet(seRequestSet);
+            SeResponseSet seResponseSet = ((ProxyReader) reader).transmitSet(seRequestSet);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 2);
             Assert.assertEquals(
@@ -774,7 +772,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponseSet seResponseSet = ((ProxyReader)reader).transmitSet(seRequestSet);
+            SeResponseSet seResponseSet = ((ProxyReader) reader).transmitSet(seRequestSet);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 3);
             Assert.assertEquals(
@@ -807,7 +805,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponseSet seResponseSet = ((ProxyReader)reader).transmitSet(seRequestSet);
+            SeResponseSet seResponseSet = ((ProxyReader) reader).transmitSet(seRequestSet);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 3);
             Assert.assertEquals(
@@ -840,7 +838,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponse seResponse = ((ProxyReader)reader).transmit(seRequest);
+            SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 0);
         }
@@ -868,7 +866,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponse seResponse = ((ProxyReader)reader).transmit(seRequest);
+            SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 1);
         }
@@ -895,7 +893,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponse seResponse = ((ProxyReader)reader).transmit(seRequest);
+            SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 2);
         }
@@ -922,7 +920,7 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponse seResponse = ((ProxyReader)reader).transmit(seRequest);
+            SeResponse seResponse = ((ProxyReader) reader).transmit(seRequest);
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 3);
         }

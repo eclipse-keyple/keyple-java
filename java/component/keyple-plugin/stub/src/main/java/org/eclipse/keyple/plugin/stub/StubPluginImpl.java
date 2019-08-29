@@ -13,9 +13,9 @@ package org.eclipse.keyple.plugin.stub;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
@@ -220,14 +220,13 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
     /**
      * Init native Readers to empty Set
      * 
-     * @return the list of AbstractObservableReader objects.
+     * @return the list of SeReader objects.
      * @throws KeypleReaderException if a reader error occurs
      */
     @Override
-    protected SortedSet<AbstractObservableReader> initNativeReaders() throws KeypleReaderException {
+    protected SortedSet<SeReader> initNativeReaders() throws KeypleReaderException {
         /* init Stub Readers response object */
-        SortedSet<AbstractObservableReader> newNativeReaders =
-                new ConcurrentSkipListSet<AbstractObservableReader>();
+        SortedSet<SeReader> newNativeReaders = new ConcurrentSkipListSet<SeReader>();
 
         /*
          * parse the current readers list to create the ProxyReader(s) associated with new reader(s)
@@ -247,13 +246,13 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      * @return the reader object
      */
     @Override
-    protected AbstractObservableReader fetchNativeReader(String name) {
-        for (AbstractObservableReader reader : readers) {
+    protected SeReader fetchNativeReader(String name) {
+        for (SeReader reader : readers) {
             if (reader.getName().equals(name)) {
                 return reader;
             }
         }
-        AbstractObservableReader reader = null;
+        SeReader reader = null;
         if (connectedStubNames.contains(name)) {
             reader = new StubReaderImpl(name);
         }
