@@ -25,7 +25,7 @@ import android.view.MenuItem;
 /**
  * Example of Android application to test
  * 
- * @{@link org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin}
+ * @{@link org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginImpl}
  *
  */
 public class MainActivity extends AppCompatActivity {

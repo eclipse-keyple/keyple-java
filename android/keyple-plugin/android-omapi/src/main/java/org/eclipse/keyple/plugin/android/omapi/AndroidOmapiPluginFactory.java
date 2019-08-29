@@ -11,9 +11,17 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.omapi;
 
-/**
- * The PcscPlugin interface provides the public elements used to manage the Android OMAPI plugin.
- */
-public interface AndroidOmapiPlugin {
-    String PLUGIN_NAME = "AndroidOmapiPlugin";
+import org.eclipse.keyple.core.seproxy.PluginFactory;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+
+public final class AndroidOmapiPluginFactory extends PluginFactory {
+    @Override
+    public String getPluginName() {
+        return AndroidOmapiPlugin.PLUGIN_NAME;
+    }
+
+    @Override
+    protected ReaderPlugin getPluginInstance() {
+        return AndroidOmapiPluginImpl.getInstance();
+    }
 }
