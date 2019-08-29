@@ -74,5 +74,4 @@ public interface ObservableReader extends SeReader {
 
     int countObservers();
 
-    void clearObservers();
 }
