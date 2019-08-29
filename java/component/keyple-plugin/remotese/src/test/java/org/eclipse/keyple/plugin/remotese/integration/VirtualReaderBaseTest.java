@@ -12,10 +12,8 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 
-import java.util.Set;
+
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -43,7 +41,7 @@ public class VirtualReaderBaseTest {
 
     // Real objects
     protected TransportFactory factory;
-    protected StubReader nativeReader;
+    // protected StubReader nativeReader;
 
     protected final String NATIVE_READER_NAME = "testStubReader";
     protected final String CLIENT_NODE_ID = "testClientNodeId";
@@ -60,21 +58,10 @@ public class VirtualReaderBaseTest {
     protected SlaveAPI slaveAPI;
 
 
-    protected void initKeypleServices() throws Exception {
+    protected void initMasterNSlave() throws Exception {
         logger.info("------------------------------");
         logger.info("Test {}", name.getMethodName());
         logger.info("------------------------------");
-
-        Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
-
-        /*
-         * Register Stub Plugin
-         */
-        seProxyService.registerPlugin(new StubPluginFactory());
-        StubPlugin stubPlugin = (StubPlugin) seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
-
-        // assert that there is no stub readers plugged already
-        Assert.assertEquals(0, stubPlugin.getReaders().size());
 
         logger.info("*** Init LocalTransportFactory");
         // use a local transport factory for testing purposes (only java calls between client and
@@ -82,15 +69,22 @@ public class VirtualReaderBaseTest {
         factory = new LocalTransportFactory(SERVER_NODE_ID);
 
         logger.info("*** Bind Master Services");
-
         // bind Master services to server
-        masterAPI = Integration.bindMasterSpy(factory.getServer(), REMOTE_SE_PLUGIN_NAME);
+        masterAPI = Integration.createMasterAPI(factory.getServer(), REMOTE_SE_PLUGIN_NAME);
 
         logger.info("*** Bind Slave Services");
         // bind Slave services to client
-        slaveAPI = Integration.bindSlaveSpy(factory.getClient(CLIENT_NODE_ID), SERVER_NODE_ID);
+        slaveAPI = Integration.createSlaveAPI(factory.getClient(CLIENT_NODE_ID), SERVER_NODE_ID);
 
     }
+
+    protected void clearMasterNSlave() {
+        factory = null;
+        masterAPI = null;
+        slaveAPI = null;
+    }
+
+
 
     protected void unregisterPlugins() {
         seProxyService.unregisterPlugin(StubPlugin.PLUGIN_NAME);
@@ -99,38 +93,30 @@ public class VirtualReaderBaseTest {
     }
 
 
-    @Deprecated
-    protected void clearStubpluginNativeReader() throws Exception {
-        logger.info("Remove nativeReader from stub plugin");
-        StubPlugin stubPlugin =
-                (StubPlugin) SeProxyService.getInstance().getPlugin(StubPlugin.PLUGIN_NAME);
-
-        // if nativeReader was initialized during test, unplug it
-        if (nativeReader != null) {
-            stubPlugin.unplugStubReader(nativeReader.getName(), true);
-            nativeReader.clearObservers();
-        }
-    }
-
-
-    static public void clearStubpluginReader() throws KeypleReaderException {
+    public void disconnectReader(String readerName) throws KeypleReaderException {
         logger.info("Remove all readers from stub plugin");
         StubPlugin stubPlugin = null;
         try {
             stubPlugin =
                     (StubPlugin) SeProxyService.getInstance().getPlugin(StubPlugin.PLUGIN_NAME);
-            Set<SeReader> readers = stubPlugin.getReaders();
-            for (SeReader reader : readers) {
-                ((ObservableReader) reader).clearObservers();
-            }
-            stubPlugin.unplugStubReaders(stubPlugin.getReaderNames(), true);
+
+            // Set<SeReader> readers = stubPlugin.getReaders();
+
+            /*
+             * unplug each readers and check that there are no observers
+             */
+            /*
+             * for (SeReader reader : readers) { Assert.assertEquals(0, ((ObservableReader)
+             * reader).countObservers()); ((ObservableReader) reader).clearObservers(); }
+             */
+            this.slaveAPI.disconnectReader("", readerName);
+            stubPlugin.unplugStubReader(readerName, true);
+
         } catch (KeyplePluginNotFoundException e) {
             // stub plugin is not registered
         }
 
     }
-
-
 
     protected StubReader connectStubReader(String readerName, String nodeId,
             TransmissionMode transmissionMode) throws Exception {

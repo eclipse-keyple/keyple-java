@@ -31,6 +31,7 @@ import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
+import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubReaderTest;
 import org.junit.*;
 import org.slf4j.Logger;
@@ -44,6 +45,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     private static final Logger logger = LoggerFactory.getLogger(VirtualReaderEventTest.class);
 
     private VirtualReader virtualReader;
+    private StubReader nativeReader;
 
     /**
      * Create a new class extending AbstractSeSelectionRequest
@@ -76,23 +78,25 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     public void setUp() throws Exception {
         Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
 
-        // restore plugin state
-        clearStubpluginReader();
+        initMasterNSlave();
 
-        initKeypleServices();
-
-        // configure and connect a Stub Native reader
+        /*
+         * connect stub reader to create virtual reader
+         */
         nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID,
                 TransmissionMode.CONTACTLESS);
 
-        // test virtual reader
+        // get virtual reader
         virtualReader = getVirtualReader();
 
     }
 
     @After
     public void tearDown() throws Exception {
-        clearStubpluginReader();
+        disconnectReader(NATIVE_READER_NAME);
+
+        clearMasterNSlave();
+
         unregisterPlugins();
 
         Assert.assertEquals(0, SeProxyService.getInstance().getPlugins().size());
@@ -110,8 +114,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         // lock test until message is received
         final CountDownLatch lock = new CountDownLatch(1);
 
-        // add stubPluginObserver
-        virtualReader.addObserver(new ObservableReader.ReaderObserver() {
+        ObservableReader.ReaderObserver obs = new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
                 Assert.assertEquals(event.getReaderName(), virtualReader.getName());
@@ -120,7 +123,10 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 logger.debug("Reader Event is correct, release lock");
                 lock.countDown();
             }
-        });
+        };
+
+        // add stubPluginObserver
+        virtualReader.addObserver(obs);
 
         logger.info("Insert a Hoplink SE and wait 5 seconds for a SE event to be thrown");
 
@@ -129,6 +135,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         // wait 5 seconds
         lock.await(5, TimeUnit.SECONDS);
+
+        // remove observer
+        virtualReader.removeObserver(obs);
 
         Assert.assertEquals(0, lock.getCount());
     }
@@ -145,8 +154,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         // lock test until two messages are received
         final CountDownLatch lock = new CountDownLatch(2);
 
-        // add stubPluginObserver
-        virtualReader.addObserver(new ObservableReader.ReaderObserver() {
+        ObservableReader.ReaderObserver obs = new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
                 if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
@@ -164,7 +172,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
                 }
             }
-        });
+        };
+        // add stubPluginObserver
+        virtualReader.addObserver(obs);
 
         logger.info(
                 "Insert and remove a Hoplink SE and wait 5 seconds for two SE events to be thrown");
@@ -181,6 +191,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         // wait 5 seconds
         lock.await(5, TimeUnit.SECONDS);
 
+        // remove observer
+        virtualReader.removeObserver(obs);
+
         Assert.assertEquals(0, lock.getCount());
 
         // https://github.com/calypsonet/keyple-java/issues/420
@@ -195,8 +208,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         final CountDownLatch lock = new CountDownLatch(1);
         final String poAid = "A000000291A000000191";
 
-        // add observer
-        virtualReader.addObserver(new ObservableReader.ReaderObserver() {
+        ObservableReader.ReaderObserver obs = new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
                 Assert.assertEquals(event.getReaderName(), virtualReader.getName());
@@ -240,7 +252,10 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 // unlock thread
                 lock.countDown();
             }
-        });
+        };
+
+        // add observer
+        virtualReader.addObserver(obs);
 
         SeSelection seSelection = new SeSelection();
 
@@ -264,6 +279,10 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         // lock thread for 2 seconds max to wait for the event
         lock.await(5, TimeUnit.SECONDS);
+
+        // remove observer
+        virtualReader.removeObserver(obs);
+
         Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
         // observer
 
@@ -276,15 +295,18 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
 
-        // add observer
-        virtualReader.addObserver(new ObservableReader.ReaderObserver() {
+        ObservableReader.ReaderObserver obs = new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
                 // no event should be thrown
                 Assert.fail();
                 lock.countDown();// should not be called
             }
-        });
+        };
+
+        // add observer
+        virtualReader.addObserver(obs);
+
         String poAid = "A000000291A000000192";// not matching poAid
 
         SeSelection seSelection = new SeSelection();
@@ -311,6 +333,10 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         // lock thread for 2 seconds max to wait for the event
         lock.await(3, TimeUnit.SECONDS);
+
+        // remove observer
+        virtualReader.removeObserver(obs);
+
         Assert.assertEquals(1, lock.getCount()); // should be 1 because countDown is never called
     }
 
@@ -321,7 +347,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         final CountDownLatch lock = new CountDownLatch(1);
 
         // add observer
-        virtualReader.addObserver(new ObservableReader.ReaderObserver() {
+        ObservableReader.ReaderObserver obs = new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
                 Assert.assertEquals(event.getReaderName(), virtualReader.getName());
@@ -338,7 +364,10 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
                 lock.countDown();// should be called
             }
-        });
+        };
+
+        virtualReader.addObserver(obs);
+
         String poAid = "A000000291A000000192";// not matching poAid
 
         SeSelection seSelection = new SeSelection();
@@ -363,8 +392,13 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         // lock thread for 2 seconds max to wait for the event
         lock.await(5, TimeUnit.SECONDS);
+
+        // remove observer
+        virtualReader.removeObserver(obs);
+
         Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
         // observer
+
     }
 
     @Test
@@ -373,8 +407,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
 
-        // add observer
-        virtualReader.addObserver(new ObservableReader.ReaderObserver() {
+        ObservableReader.ReaderObserver obs = new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
 
@@ -404,7 +437,10 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 // unlock thread
                 lock.countDown();
             }
-        });
+        };
+
+        // add observer
+        virtualReader.addObserver(obs);
 
         // wait 1 second
         logger.debug("Wait 1 second before inserting SE");
@@ -416,6 +452,9 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         // lock thread for 2 seconds max to wait for the event
         lock.await(5, TimeUnit.SECONDS);
         Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
+
+        // remove observer
+        virtualReader.removeObserver(obs);
 
     }
 

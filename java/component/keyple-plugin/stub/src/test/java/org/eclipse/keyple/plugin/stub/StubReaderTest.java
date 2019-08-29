@@ -54,21 +54,22 @@ public class StubReaderTest extends BaseStubTest {
 
     Logger logger = LoggerFactory.getLogger(StubReaderTest.class);
 
+    ObservableReader.ReaderObserver readerObs;
+
     // init before each test
     @Before
     public void SetUp() throws Exception {
-        // clear observers from others tests as StubPlugin is a singleton
 
         this.setupStub();
-
     }
 
     @After
     public void tearDown() throws KeypleReaderException {
-
         final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         stubPlugin.clearObservers();
-        reader.clearObservers();
+        reader.removeObserver(readerObs);
+        readerObs = null;
+        Assert.assertEquals(0, ((ObservableReader) reader).countObservers());
         stubPlugin.unplugStubReader("StubReaderTest", true);
     }
 
@@ -99,8 +100,8 @@ public class StubReaderTest extends BaseStubTest {
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
 
-        // add observer
-        reader.addObserver(new ObservableReader.ReaderObserver() {
+
+        readerObs = new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
                 Assert.assertEquals(event.getReaderName(), reader.getName());
@@ -111,7 +112,11 @@ public class StubReaderTest extends BaseStubTest {
                 // unlock thread
                 lock.countDown();
             }
-        });
+        };
+
+        // add observer
+        reader.addObserver(readerObs);
+
         // test
         reader.insertSe(hoplinkSE());
 
@@ -139,7 +144,7 @@ public class StubReaderTest extends BaseStubTest {
         final CountDownLatch removeLock = new CountDownLatch(1);
 
         // add observer
-        reader.addObserver(new ObservableReader.ReaderObserver() {
+        readerObs = new ObservableReader.ReaderObserver() {
             int event_i = 1;
 
             @Override
@@ -162,7 +167,11 @@ public class StubReaderTest extends BaseStubTest {
                 }
                 event_i++;
             }
-        });
+        };
+
+        // add observer
+        reader.addObserver(readerObs);
+
         // test
         reader.insertSe(hoplinkSE());
 
@@ -202,7 +211,7 @@ public class StubReaderTest extends BaseStubTest {
         final CountDownLatch secondRemoveLock = new CountDownLatch(1);
 
         // add observer
-        reader.addObserver(new ObservableReader.ReaderObserver() {
+        readerObs = new ObservableReader.ReaderObserver() {
             int event_i = 1;
 
             @Override
@@ -237,7 +246,11 @@ public class StubReaderTest extends BaseStubTest {
                 }
                 event_i++;
             }
-        });
+        };
+
+        // add observer
+        reader.addObserver(readerObs);
+
         // test first sequence
         reader.insertSe(hoplinkSE());
 
@@ -295,7 +308,7 @@ public class StubReaderTest extends BaseStubTest {
         final CountDownLatch secondRemoveLock = new CountDownLatch(1);
 
         // add observer
-        reader.addObserver(new ObservableReader.ReaderObserver() {
+        readerObs = new ObservableReader.ReaderObserver() {
             int event_i = 1;
 
             @Override
@@ -330,7 +343,11 @@ public class StubReaderTest extends BaseStubTest {
                 }
                 event_i++;
             }
-        });
+        };
+
+        // add observer
+        reader.addObserver(readerObs);
+
         // test first sequence
         reader.insertSe(hoplinkSE());
 
@@ -386,7 +403,7 @@ public class StubReaderTest extends BaseStubTest {
                         .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // add observer
-        reader.addObserver(new ObservableReader.ReaderObserver() {
+        readerObs = new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
                 Assert.assertEquals(event.getReaderName(), reader.getName());
@@ -429,7 +446,10 @@ public class StubReaderTest extends BaseStubTest {
                 // unlock thread
                 lock.countDown();
             }
-        });
+        };
+
+        // add observer
+        reader.addObserver(readerObs);
 
         SeSelection seSelection = new SeSelection();
 
@@ -464,13 +484,17 @@ public class StubReaderTest extends BaseStubTest {
         final CountDownLatch lock = new CountDownLatch(1);
 
         // add observer
-        reader.addObserver(new ObservableReader.ReaderObserver() {
+        readerObs = new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
                 // no event is thrown
                 lock.countDown();// should not be called
             }
-        });
+        };
+
+        // add observer
+        reader.addObserver(readerObs);
+
         String poAid = "A000000291A000000192";// not matching poAid
 
         SeSelection seSelection = new SeSelection();
@@ -509,7 +533,7 @@ public class StubReaderTest extends BaseStubTest {
                         .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // add observer
-        reader.addObserver(new ObservableReader.ReaderObserver() {
+        readerObs = new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
                 Assert.assertEquals(event.getReaderName(), reader.getName());
@@ -526,7 +550,11 @@ public class StubReaderTest extends BaseStubTest {
 
                 lock.countDown();// should be called
             }
-        });
+        };
+
+        // add observer
+        reader.addObserver(readerObs);
+
         String poAid = "A000000291A000000192";// not matching poAid
 
         SeSelection seSelection = new SeSelection();
@@ -560,7 +588,7 @@ public class StubReaderTest extends BaseStubTest {
         final CountDownLatch lock = new CountDownLatch(1);
 
         // add observer
-        reader.addObserver(new ObservableReader.ReaderObserver() {
+        readerObs = new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
 
@@ -590,8 +618,10 @@ public class StubReaderTest extends BaseStubTest {
                 // unlock thread
                 lock.countDown();
             }
-        });
+        };
 
+        // add observer
+        reader.addObserver(readerObs);
         // test
         reader.insertSe(hoplinkSE());
 

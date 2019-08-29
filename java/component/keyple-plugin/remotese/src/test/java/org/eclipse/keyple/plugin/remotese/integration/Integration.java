@@ -45,11 +45,7 @@ public class Integration {
      * @param node
      * @return
      */
-    public static MasterAPI bindMasterSpy(DtoNode node, String pluginName) {
-
-        // Remove remotese plugin is already registered
-        SeProxyService.getInstance().unregisterPlugin(pluginName);
-
+    public static MasterAPI createMasterAPI(DtoNode node, String pluginName) {
         // Create Master services : masterAPI
         MasterAPI masterAPI = new MasterAPI(SeProxyService.getInstance(), node, 10000,
                 MasterAPI.PLUGIN_TYPE_DEFAULT, pluginName);
@@ -63,12 +59,10 @@ public class Integration {
      * @param node
      * @return
      */
-    public static SlaveAPI bindSlaveSpy(DtoNode node, String masterNodeId) {
+    public static SlaveAPI createSlaveAPI(DtoNode node, String masterNodeId) {
         // Binds node for outgoing KeypleDto
         SlaveAPI slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId);
         SlaveAPI spy = Mockito.spy(slaveAPI);
-        // Binds node for incoming KeypleDTo
-        // spy.bindDtoEndpoint(node);
         return spy;
     }
 
@@ -84,15 +78,7 @@ public class Integration {
             TransmissionMode transmissionMode) throws InterruptedException,
             KeypleReaderNotFoundException, KeyplePluginNotFoundException {
 
-        // get SeProxyService
-        SeProxyService seProxyService = SeProxyService.getInstance();
-
-        // register plugin
-        seProxyService.registerPlugin(new StubPluginFactory());
-
-        // get plugin
-        StubPlugin stubPlugin = (StubPlugin) seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
-
+        StubPlugin stubPlugin = createStubPlugin();
 
         // add an stubPluginObserver to start the plugin monitoring thread
         // stubPlugin.addObserver(observer); //do not observe so the monitoring thread is not
@@ -114,6 +100,21 @@ public class Integration {
         SeProxyService.getInstance().unregisterPlugin(StubPoolPlugin.PLUGIN_NAME);
         SeProxyService.getInstance().unregisterPlugin(remoteSePluginName);
 
+    }
+
+
+    public static StubPlugin createStubPlugin() throws KeyplePluginNotFoundException {
+
+        // get SeProxyService
+        SeProxyService seProxyService = SeProxyService.getInstance();
+
+        // register plugin
+        seProxyService.registerPlugin(new StubPluginFactory());
+
+        // get plugin
+        StubPlugin stubPlugin = (StubPlugin) seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
+
+        return stubPlugin;
     }
 
     /**
