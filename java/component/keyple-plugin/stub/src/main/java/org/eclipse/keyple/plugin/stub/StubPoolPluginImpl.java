@@ -25,7 +25,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
  * StubReader thus one StubSecureElement This class uses internally @{@link StubPluginImpl} which is
  * a singleton.
  */
-class StubPoolPluginImpl implements StubPoolPlugin {
+final class StubPoolPluginImpl implements StubPoolPlugin {
 
     StubPluginImpl stubPlugin;
     Map<String, StubReaderImpl> readerPool; // groupReference, seReader = limitation each
