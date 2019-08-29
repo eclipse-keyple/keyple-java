@@ -50,27 +50,6 @@ public final class SeProxyService {
     }
 
     /**
-     * Sets the plugins.
-     *
-     * @param plugins the new plugins
-     */
-    @Deprecated
-    public void setPlugins(SortedSet<ReaderPlugin> plugins) {
-        this.plugins = plugins;
-    }
-
-    /**
-     * Adds a single plugin to the plugin list.
-     * 
-     * @param plugin the plugin to add.
-     */
-    @Deprecated
-    public void addPlugin(ReaderPlugin plugin) {
-        this.plugins.add(plugin);
-    }
-
-
-    /**
      * Register a new plugin to be available in the platform if not registered yet
      * 
      * @param pluginFactory : plugin factory to instanciate plugin to be added

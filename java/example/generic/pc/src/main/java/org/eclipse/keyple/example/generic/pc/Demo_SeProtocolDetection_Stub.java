@@ -56,11 +56,8 @@ Demo_SeProtocolDetection_Stub {
 
         /* Register Stub plugin in the platform */
         seProxyService.registerPlugin(new StubPluginFactory());
+
         ReaderPlugin stubPlugin = seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
-
-        pluginsSet.add(stubPlugin);
-
-        seProxyService.setPlugins(pluginsSet);
 
         /* create an observer class to handle the SE operations */
         SeProtocolDetectionEngine observer = new SeProtocolDetectionEngine();
