@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy;
 
-public abstract class PluginFactory {
+public abstract class AbstractPluginFactory {
 
     public abstract String getPluginName();
 

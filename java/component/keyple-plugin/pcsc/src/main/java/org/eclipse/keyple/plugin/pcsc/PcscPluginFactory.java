@@ -11,14 +11,14 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.pcsc;
 
-import org.eclipse.keyple.core.seproxy.PluginFactory;
+import org.eclipse.keyple.core.seproxy.AbstractPluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 
-public class PcscPluginFactory extends PluginFactory {
+public class PcscPluginFactory extends AbstractPluginFactory {
 
     @Override
     public String getPluginName() {
-        return "PcscPlugin";
+        return PcscPlugin.PLUGIN_NAME;
     }
 
     @Override

@@ -40,10 +40,10 @@ public class SeProxyServiceTest {
     AbstractObservablePlugin plugin2 = new MockAbstractObservablePlugin(PLUGIN_NAME_2);;
 
     @Mock
-    PluginFactory factory1;
+    AbstractPluginFactory factory1;
 
     @Mock
-    PluginFactory factory2;
+    AbstractPluginFactory factory2;
 
 
     static String PLUGIN_NAME_1 = "plugin1";
