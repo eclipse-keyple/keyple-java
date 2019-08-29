@@ -37,7 +37,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcFragment;
-import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin;
+import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactory;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader;
 import org.slf4j.Logger;
@@ -93,10 +93,12 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
         // 1 - First initialize SEProxy with Android Plugin
         LOG.debug("Initialize SEProxy with Android Plugin");
+
+        /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
-        SortedSet<ReaderPlugin> plugins = new ConcurrentSkipListSet<ReaderPlugin>();
-        plugins.add(AndroidNfcPlugin.getInstance());
-        seProxyService.setPlugins(plugins);
+
+        /* Assign PcscPlugin to the SeProxyService */
+        seProxyService.registerPlugin(new AndroidNfcPluginFactory());
 
         // 2 - add NFC Fragment to activity in order to communicate with Android Plugin
         LOG.debug("Add Keyple NFC Fragment to activity in order to "
@@ -171,11 +173,11 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                     ObservableReader.NotificationMode.MATCHED_ONLY);
 
             /*
-             * uncomment to active protocol listening for Mifare ultralight ((AndroidNfcReader)
+             * uncomment to active protocol listening for Mifare ultralight ((AndroidNfcReaderImpl)
              *
              * reader).addSeProtocolSetting( AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_UL);
              *
-             * uncomment to active protocol listening for Mifare Classic ((AndroidNfcReader)
+             * uncomment to active protocol listening for Mifare Classic ((AndroidNfcReaderImpl)
              * reader).addSeProtocolSetting(
              * AndroidNfcProtocolSettings.SETTING_PROTOCOL_MIFARE_CLASSIC);
              */
