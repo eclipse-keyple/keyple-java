@@ -50,7 +50,9 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      */
     @Override
     protected void stopObservation() {
-        thread.end();
+        if(thread!=null){
+            thread.end();
+        }
     }
 
     /**
