@@ -18,7 +18,7 @@ public interface RemoteSePoolPlugin extends RemoteSePlugin, ReaderPoolPlugin {
     /**
      * Bind RemoteSePoolPlugin to a SlaveNodeId in order to invoke @{@link ReaderPoolPlugin} methods
      * 
-     * @param slaveNodeId
+     * @param slaveNodeId Slave Node Id to be used for this RemoteSePoolPlugin
      */
     void bind(String slaveNodeId);
 
