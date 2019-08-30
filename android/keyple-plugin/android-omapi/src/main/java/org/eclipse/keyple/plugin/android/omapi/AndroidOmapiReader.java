@@ -11,5 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.omapi;
 
-public interface AndroidOmapiReader {
+import org.eclipse.keyple.core.seproxy.SeReader;
+
+public interface AndroidOmapiReader extends SeReader {
 }

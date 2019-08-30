@@ -11,11 +11,23 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc;
 
-public interface AndroidNfcReader {
+import android.content.Intent;
+import android.nfc.NfcAdapter;
+
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+
+public interface AndroidNfcReader extends ObservableReader, NfcAdapter.ReaderCallback  {
     /**
      * Gets a string describing the low level description of the current tag.
      * <p>Used for logging purpose
      * @return string
      */
     public String printTagId();
+
+    /**
+     * Process data from NFC Intent
+     *
+     * @param intent : Intent received and filterByProtocol by xml tech_list
+     */
+    void processIntent(Intent intent);
 }

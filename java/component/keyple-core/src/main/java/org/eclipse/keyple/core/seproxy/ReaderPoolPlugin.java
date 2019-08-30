@@ -19,6 +19,8 @@ import java.util.SortedSet;
  * <p>
  * It is typically used to define a ReaderPlugin built on top of an HSM interface that can allocate
  * a large number of virtual reader slots.
+ * <p>
+ * A ReaderPoolPlugin can't be observable.
  */
 public interface ReaderPoolPlugin extends ReaderPlugin {
     /**

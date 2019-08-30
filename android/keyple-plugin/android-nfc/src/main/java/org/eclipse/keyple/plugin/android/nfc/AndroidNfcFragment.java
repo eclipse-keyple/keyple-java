@@ -120,7 +120,7 @@ public class AndroidNfcFragment extends Fragment {
                     && intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED)) {
                 LOG.debug("Handle ACTION TECH intent");
 
-                ((AndroidNfcReaderImpl) AndroidNfcPluginImpl.getInstance().getReaders().first())
+                ((AndroidNfcReader) SeProxyService.getInstance().getPlugin(AndroidNfcPlugin.PLUGIN_NAME).getReaders().first())
                         .processIntent(intent);
 
             } else {

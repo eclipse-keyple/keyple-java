@@ -13,7 +13,8 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader.NotificationMode;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 
 public abstract class AbstractObservableReader extends AbstractLoggedObservable<ReaderEvent>
-        implements ObservableReader, ProxyReader {
+        implements ProxyReader {
 
     /** logger */
     private static final Logger logger = LoggerFactory.getLogger(AbstractObservableReader.class);

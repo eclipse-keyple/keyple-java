@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * Observable plugin. These plugin can report when a reader is added or removed.
  */
 public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<PluginEvent>
-        implements ReaderPlugin, ObservablePlugin {
+        implements ReaderPlugin {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractObservablePlugin.class);
 

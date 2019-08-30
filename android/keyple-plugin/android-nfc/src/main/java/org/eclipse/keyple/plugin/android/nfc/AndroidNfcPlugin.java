@@ -11,9 +11,11 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.android.nfc;
 
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+
 /**
  * The PcscPlugin interface provides the public elements used to manage the Android OMAPI plugin.
  */
-public interface AndroidNfcPlugin {
+public interface AndroidNfcPlugin extends ReaderPlugin {
     String PLUGIN_NAME = "AndroidNfcPlugin";
 }

@@ -43,7 +43,7 @@ import android.os.Bundle;
  *
  */
 final class AndroidNfcReaderImpl extends AbstractSelectionLocalReader
-        implements NfcAdapter.ReaderCallback {
+        implements AndroidNfcReader {
 
     private static final Logger LOG = LoggerFactory.getLogger(AndroidNfcReaderImpl.class);
 
@@ -262,13 +262,15 @@ final class AndroidNfcReaderImpl extends AbstractSelectionLocalReader
      *
      * @param intent : Intent received and filterByProtocol by xml tech_list
      */
-    void processIntent(Intent intent) {
+    @Override
+    public void processIntent(Intent intent) {
 
         // Extract Tag from Intent
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         this.onTagDiscovered(tag);
     }
 
+    @Override
     public String printTagId() {
 
         if (tagProxy != null && tagProxy.getTag() != null) {

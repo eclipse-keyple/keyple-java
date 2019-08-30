@@ -23,10 +23,7 @@ import android.view.MenuItem;
 
 
 /**
- * Example of Android application to test
- * 
- * @{@link org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginImpl}
- *
+ * Example of Android application to test AndroidOmapiPlugin
  */
 public class MainActivity extends AppCompatActivity {
 
