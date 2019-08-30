@@ -120,7 +120,7 @@ public class AndroidNfcFragment extends Fragment {
                     && intent.getAction().equals(NfcAdapter.ACTION_TECH_DISCOVERED)) {
                 LOG.debug("Handle ACTION TECH intent");
 
-                ((AndroidNfcReader) AndroidNfcPlugin.getInstance().getReaders().first())
+                ((AndroidNfcReader) SeProxyService.getInstance().getPlugin(AndroidNfcPlugin.PLUGIN_NAME).getReaders().first())
                         .processIntent(intent);
 
             } else {
@@ -128,7 +128,7 @@ public class AndroidNfcFragment extends Fragment {
 
             }
 
-            ((AndroidNfcReader) SeProxyService.getInstance().getPlugin(AndroidNfcPlugin.PLUGIN_NAME).getReaders()
+            ((AndroidNfcReaderImpl) SeProxyService.getInstance().getPlugin(AndroidNfcPluginImpl.PLUGIN_NAME).getReaders()
                     .first()).enableNFCReaderMode(getActivity());
 
         } catch (KeypleReaderException e) {
@@ -149,7 +149,7 @@ public class AndroidNfcFragment extends Fragment {
 
         try {
             // Disable Reader Mode for NFC Adapter
-            ((AndroidNfcReader) SeProxyService.getInstance().getPlugins().first().getReaders()
+            ((AndroidNfcReaderImpl) SeProxyService.getInstance().getPlugins().first().getReaders()
                     .first()).disableNFCReaderMode(getActivity());
 
         } catch (KeypleReaderException e) {

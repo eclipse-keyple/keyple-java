@@ -19,6 +19,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.junit.*;
@@ -40,9 +41,26 @@ public class StubPluginTest extends BaseStubTest {
     }
 
     @After
-    public void clearStub() throws InterruptedException, KeypleReaderException {
+    public void clearStub()
+            throws InterruptedException, KeypleReaderException, KeyplePluginNotFoundException {
         super.clearStub();
     }
+
+    /*
+     * @Test public void instanciatePlugin() throws InterruptedException, KeypleReaderException,
+     * KeyplePluginNotFoundException { final String READER_NAME = "plugOneReaderSync_sucess";
+     * SeProxyService seProxyService = SeProxyService.getInstance();
+     * 
+     * seProxyService.registerPlugin(new StubPluginFactory());
+     * 
+     * ReaderPlugin stubPlugin = seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
+     * 
+     * ((StubPlugin) stubPlugin).plugStubReader(READER_NAME, TransmissionMode.CONTACTLESS, true);
+     * 
+     * }
+     */
+
+
 
     /**
      * Plug one reader synchronously Check: Count if created

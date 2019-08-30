@@ -59,9 +59,11 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
 
     /**
-     * Constructor
+     * Constructor with a default timeout DEFAULT_RPC_TIMEOUT
      * 
+     * @param seProxyService : instance of the seProxyService
      * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
+     * @param masterNodeId : Master Node Id to connect to
      */
     public SlaveAPI(SeProxyService seProxyService, DtoNode dtoNode, String masterNodeId) {
         this.seProxyService = seProxyService;
@@ -72,9 +74,12 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     }
 
     /**
-     * Constructor
-     *
+     * Constructor with custom timeout
+     * 
+     * @param seProxyService : instance of the seProxyService
      * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
+     * @param masterNodeId : Master Node Id to connect to
+     * @param timeout : timeout to be used before a request is abandonned
      */
     public SlaveAPI(SeProxyService seProxyService, DtoNode dtoNode, String masterNodeId,
             long timeout) {
@@ -209,9 +214,15 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
 
     /**
+    
+     */
+
+    /**
      * Connect a local reader to Remote SE Plugin {@link INativeReaderService}
-     * 
+     *
      * @param localReader : native reader to be connected
+     * @return sessionId
+     * @throws KeypleReaderException
      */
     @Override
     public String connectReader(SeReader localReader) throws KeypleReaderException {
@@ -325,8 +336,16 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     }
 
 
+    /**
+     * Bind a ReaderPoolPlugin to the slaveAPI to enable Pool Plugins methods
+     * 
+     * @param readerPoolPlugin readerPoolPlugin to be used
+     */
     public void registerReaderPoolPlugin(ReaderPoolPlugin readerPoolPlugin) {
         this.readerPoolPlugin = readerPoolPlugin;
+        /**
+         * Is this method necessary? Can't it be done by searching accross plugins?
+         */
     }
 
 

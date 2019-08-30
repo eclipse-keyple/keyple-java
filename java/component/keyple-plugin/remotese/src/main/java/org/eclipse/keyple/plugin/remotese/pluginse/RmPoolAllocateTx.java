@@ -33,10 +33,10 @@ public class RmPoolAllocateTx extends RemoteMethodTx<SeReader> {
 
 
     String groupReference;
-    RemoteSePoolPlugin virtualPoolPlugin;
+    RemoteSePoolPluginImpl virtualPoolPlugin;
     DtoSender dtoSender;
 
-    public RmPoolAllocateTx(String groupReference, RemoteSePoolPlugin virtualPoolPlugin,
+    public RmPoolAllocateTx(String groupReference, RemoteSePoolPluginImpl virtualPoolPlugin,
             DtoSender dtoSender, String slaveNodeId, String requesterNodeId) {
         super(null, null, null, slaveNodeId, requesterNodeId);
         this.groupReference = groupReference;
@@ -81,8 +81,8 @@ public class RmPoolAllocateTx extends RemoteMethodTx<SeReader> {
                 // options are not supported in this mode
                 Map<String, String> options = new HashMap<String, String>();
 
-                VirtualReader virtualReader =
-                        (VirtualReader) this.virtualPoolPlugin.createVirtualReader(slaveNodeId,
+                VirtualReaderImpl virtualReader =
+                        (VirtualReaderImpl) this.virtualPoolPlugin.createVirtualReader(slaveNodeId,
                                 nativeReaderName, this.dtoSender,
                                 TransmissionMode.valueOf(transmissionMode), options);
 

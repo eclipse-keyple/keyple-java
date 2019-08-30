@@ -12,8 +12,7 @@
 package org.eclipse.keyple.plugin.remotese.transport.model;
 
 /**
- * Data Transfer Object used to common an API call from a Master Reader to a Slave Reader (and vice
- * versa)
+ * Immutable Object used to invoke remotely an API call to MasterAPI or to SlaveAPI
  */
 public class KeypleDto {
 
@@ -45,12 +44,17 @@ public class KeypleDto {
 
 
     /**
-     * Constructor
-     *
+     * Constructor of a KeypleDto
+     * 
      * @param action : API method to be called
      * @param body : Arguments of the API (json)
      * @param isRequest : Is a request or a response
      * @param sessionId : Session Id of current Virtual Reader Session Id
+     * @param nativeReaderName : readerName of the native reader
+     * @param virtualReaderName : readerName of the virtual reader
+     * @param requesterNodeId : node the request is sent from
+     * @param targetNodeId : node the request is sent to
+     * @param id : unique id of this request (null in case of notification)
      */
     public KeypleDto(String action, String body, Boolean isRequest, String sessionId,
             String nativeReaderName, String virtualReaderName, String requesterNodeId,

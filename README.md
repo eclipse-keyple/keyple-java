@@ -3,6 +3,33 @@
 This is the repository for the Java implementation of the 'Eclipse [Keyple](https://keyple.org/)' API.
 (In September 2019, the C++ implementation will be hosted on https://github.com/eclipse/keyple-cpp)
 
+## Getting started
+Releases and snapshots are available from Maven central repositories.
+
+### Import keyple components with Gradle
+
+When using gradle, it is fairly simple to import Keyple components into your project. Just add the following statements to your build.gradle file :
+
+```
+repositories {
+        //to import snapshots
+        maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        //to import releases
+        maven { url 'https://oss.sonatype.org/content/repositories/releases' }
+}
+
+dependencies {
+    //declare a dependency to a keyple component, in this case import a snapshot of keyple-core component
+    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.7.0-20190724-SNAPSHOT'
+
+    //declare a dependency to a keyple component, in this case import a snapshot of keyple-calypso component
+    implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.7.0-20190724-SNAPSHOT'
+   
+    //import pcsc plugin
+    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc', version: '0.7.0-20190724-SNAPSHOT'
+    ...
+}
+```
 
 ## Global Architecture of Keyple
 

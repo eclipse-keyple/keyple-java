@@ -13,7 +13,6 @@ package org.eclipse.keyple.integration.calypso;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.transaction.*;
@@ -24,7 +23,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 
@@ -92,9 +91,9 @@ public class TestEngine {
             throws IOException, InterruptedException, KeypleBaseException {
 
         SeProxyService seProxyService = SeProxyService.getInstance();
-        SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
-        pluginsSet.add(PcscPlugin.getInstance());
-        seProxyService.setPlugins(pluginsSet);
+
+        /* Assign PcscPlugin to the SeProxyService */
+        seProxyService.registerPlugin(new PcscPluginFactory());
 
         final String PO_READER_NAME_REGEX = ".*(ASK|ACS).*";
         final String SAM_READER_NAME_REGEX = ".*(Cherry TC|SCM Microsystems|Identive|HID).*";

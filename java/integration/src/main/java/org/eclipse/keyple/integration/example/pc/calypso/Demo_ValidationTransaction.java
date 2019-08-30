@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.SortedSet;
-import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
@@ -32,7 +30,7 @@ import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.integration.IntegrationUtils;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
-import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
+import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
 
@@ -383,9 +381,9 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
             throws IOException, InterruptedException, KeypleBaseException {
 
         SeProxyService seProxyService = SeProxyService.getInstance();
-        SortedSet<ReaderPlugin> pluginsSet = new ConcurrentSkipListSet<ReaderPlugin>();
-        pluginsSet.add(PcscPlugin.getInstance());
-        seProxyService.setPlugins(pluginsSet);
+
+        /* Assign PcscPlugin to the SeProxyService */
+        seProxyService.registerPlugin(new PcscPluginFactory());
 
         SeReader poReader =
                 IntegrationUtils.getReader(seProxyService, IntegrationUtils.PO_READER_NAME_REGEX);
