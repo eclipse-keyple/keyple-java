@@ -25,13 +25,13 @@ import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
  */
 class RmReaderEventExecutor implements RemoteMethodExecutor {
 
-    private final RemoteSePlugin remoteSePlugin;
+    private final RemoteSePluginImpl remoteSePlugin;
 
     public RemoteMethod getMethodName() {
         return RemoteMethod.READER_EVENT;
     }
 
-    public RmReaderEventExecutor(RemoteSePlugin remoteSePlugin) {
+    public RmReaderEventExecutor(RemoteSePluginImpl remoteSePlugin) {
         this.remoteSePlugin = remoteSePlugin;
     }
 
@@ -44,7 +44,7 @@ class RmReaderEventExecutor implements RemoteMethodExecutor {
 
         // substitute native reader name by virtual reader name
         ReaderEvent virtualEvent = new ReaderEvent(remoteSePlugin.getName(),
-                RemoteSePlugin.generateReaderName(event.getReaderName(),
+                RemoteSePluginImpl.generateReaderName(event.getReaderName(),
                         keypleDto.getRequesterNodeId()),
                 event.getEventType(), event.getDefaultSelectionsResponse());
 

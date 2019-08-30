@@ -73,6 +73,8 @@ public abstract class RemoteMethodTx<T> {
 
     /**
      * Internal method to set manually the keypleDto response To be called by the tx manager
+     * 
+     * @throws KeypleRemoteException if a problem occurs while sending the keypleDto
      */
     protected abstract T parseResponse(KeypleDto keypleDto) throws KeypleRemoteException;
 
@@ -83,10 +85,12 @@ public abstract class RemoteMethodTx<T> {
      */
     public abstract RemoteMethod getMethodName();
 
+
     /**
      * Non blocking method to getResponse results from the remote method call
-     *
-     * @param callback
+     * 
+     * @param callback get Result from this callback
+     * @throws KeypleRemoteException if a problem occurs while sending
      */
     public void send(RemoteMethodTxCallback<T> callback) throws KeypleRemoteException {
         this.callback = callback;
@@ -174,7 +178,9 @@ public abstract class RemoteMethodTx<T> {
     }
 
     /**
-     * Marks this rm has registered
+     * Mark or Unmark as registered
+     * 
+     * @param registered
      */
     public void setRegistered(Boolean registered) {
         isRegistered = registered;

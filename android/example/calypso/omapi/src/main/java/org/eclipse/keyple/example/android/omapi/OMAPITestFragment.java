@@ -36,6 +36,8 @@ import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin;
+import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginFactory;
+
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -70,11 +72,12 @@ public class OMAPITestFragment extends Fragment {
 
         // initialize SEProxy with Android Plugin
         Log.d(TAG, "Initialize SEProxy with Android OMAPI Plugin ");
-        SeProxyService seProxyService = SeProxyService.getInstance();
-        SortedSet<ReaderPlugin> plugins = new TreeSet<ReaderPlugin>();
-        plugins.add(AndroidOmapiPlugin.getInstance());
-        seProxyService.setPlugins(plugins);
 
+        /* Get the instance of the SeProxyService (Singleton pattern) */
+        SeProxyService seProxyService = SeProxyService.getInstance();
+
+        /* Assign PcscPlugin to the SeProxyService */
+        seProxyService.registerPlugin(new AndroidOmapiPluginFactory());
     }
 
     /**
@@ -104,7 +107,7 @@ public class OMAPITestFragment extends Fragment {
         super.onResume();
 
         try {
-            SortedSet<? extends SeReader> readers = SeProxyService.getInstance()
+            SortedSet<SeReader> readers = SeProxyService.getInstance()
                     .getPlugin(AndroidOmapiPlugin.PLUGIN_NAME).getReaders();
 
             if (readers == null || readers.size() < 1) {
@@ -241,7 +244,7 @@ public class OMAPITestFragment extends Fragment {
 
     /**
      * Revocation of the Activity
-     * from @{@link org.eclipse.keyple.plugin.android.omapi.AndroidOmapiReader} list of observers
+     * from @{@link SeReader} list of observers
      */
     @Override
     public void onDestroy() {
