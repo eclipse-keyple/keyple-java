@@ -16,16 +16,15 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
-import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.plugin.AbstractSelectionLocalReader;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.seproxy.protocol.Protocol;
-import org.eclipse.keyple.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractSelectionLocalReader;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import android.app.Activity;
@@ -36,7 +35,7 @@ import android.os.Bundle;
 
 
 /**
- * Implementation of {@link org.eclipse.keyple.seproxy.SeReader} to communicate with NFC Tag though
+ * Implementation of {@link org.eclipse.keyple.core.seproxy.SeReader} to communicate with NFC Tag though
  * Android {@link NfcAdapter}
  *
  * Configure NFCAdapter Protocols with {@link AndroidNfcReader#setParameter(String, String)}
@@ -236,7 +235,7 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
     @Override
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         // Initialization
-        LOG.debug("Send " + apduIn.length + " bytes to tag : " + ByteArrayUtils.toHex(apduIn));
+        LOG.debug("Send " + apduIn.length + " bytes");
         byte[] dataOut = null;
         try {
             dataOut = tagProxy.transceive(apduIn);
@@ -247,14 +246,14 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
         } catch (IOException e) {
             throw new KeypleIOReaderException("Error while transmitting APDU", e);
         }
-        LOG.debug("Data out : " + ByteArrayUtils.toHex(dataOut));
+        LOG.debug("Data out : " + ByteArrayUtil.toHex(dataOut));
         return dataOut;
     }
 
 
     @Override
     protected boolean protocolFlagMatches(SeProtocol protocolFlag) {
-        return protocolFlag.equals(Protocol.ANY) || protocolsMap.containsKey(protocolFlag)
+        return protocolFlag == null || protocolsMap.containsKey(protocolFlag)
                 && protocolsMap.get(protocolFlag).equals(tagProxy.getTech());
     }
 
@@ -303,7 +302,7 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
 
     /**
      * Build Reader Mode flags Integer from parameters
-     * 
+     *
      * @return flags Integer
      */
     int getFlags() {
@@ -323,11 +322,11 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
 
         // Build flags list for reader mode
         for (SeProtocol seProtocol : this.protocolsMap.keySet()) {
-            if (ContactlessProtocols.PROTOCOL_ISO14443_4 == seProtocol) {
+            if (SeCommonProtocols.PROTOCOL_ISO14443_4 == seProtocol) {
                 flags = flags | NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_NFC_A;
 
-            } else if (seProtocol == ContactlessProtocols.PROTOCOL_MIFARE_UL
-                    || seProtocol == ContactlessProtocols.PROTOCOL_MIFARE_CLASSIC) {
+            } else if (seProtocol == SeCommonProtocols.PROTOCOL_MIFARE_UL
+                    || seProtocol == SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC) {
                 flags = flags | NfcAdapter.FLAG_READER_NFC_A;
             }
         }
@@ -337,7 +336,7 @@ public final class AndroidNfcReader extends AbstractSelectionLocalReader
 
     /**
      * Build Reader Mode options Bundle from parameters
-     * 
+     *
      * @return options
      */
     Bundle getOptions() {

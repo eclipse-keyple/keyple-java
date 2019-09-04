@@ -12,17 +12,18 @@
 package org.eclipse.keyple.example.generic.pc;
 
 import java.io.IOException;
+import org.eclipse.keyple.core.selection.*;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.example.generic.common.GenericSeSelectionRequest;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeReader;
-import org.eclipse.keyple.seproxy.SeSelector;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.transaction.*;
-import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,14 +37,15 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
 
     private static void doAndAnalyseSelection(SeReader seReader, SeSelection seSelection, int index)
             throws KeypleReaderException {
-        MatchingSe matchingSe = seSelection.processExplicitSelection(seReader)
-                .getMatchingSelection(index).getMatchingSe();
-        if (matchingSe != null && matchingSe.getSelectionStatus().hasMatched()) {
+        SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
+        if (selectionsResult.hasActiveSelection()) {
+            AbstractMatchingSe matchingSe =
+                    selectionsResult.getMatchingSelection(index).getMatchingSe();
             logger.info("The SE matched the selection {}.", index);
 
             logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index,
-                    ByteArrayUtils.toHex(matchingSe.getSelectionStatus().getAtr().getBytes()),
-                    ByteArrayUtils.toHex(matchingSe.getSelectionStatus().getFci().getDataOut()));
+                    ByteArrayUtil.toHex(matchingSe.getSelectionStatus().getAtr().getBytes()),
+                    ByteArrayUtil.toHex(matchingSe.getSelectionStatus().getFci().getDataOut()));
         } else {
             logger.info("The selection did not match for case {}.", index);
         }
@@ -65,7 +67,7 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
          * Get a SE reader ready to work with generic SE. Use the getReader helper method from the
          * ReaderUtilities class.
          */
-        SeReader seReader = ReaderUtilities.getDefaultContactLessSeReader(seProxyService);
+        SeReader seReader = ReaderUtilities.getDefaultContactLessSeReader();
 
         /* Check if the reader exists */
         if (seReader == null) {
@@ -77,7 +79,7 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
                         + "==================");
         logger.info("= SE Reader  NAME = {}", seReader.getName());
 
-        MatchingSe matchingSe;
+        AbstractMatchingSe matchingSe;
 
         /* Check if a SE is present in the reader */
         if (seReader.isSePresent()) {
@@ -90,39 +92,39 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
             String seAidPrefix = "A000000404012509";
 
             /* AID based selection */
-            seSelection.prepareSelection(new SeSelectionRequest(
-                    new SeSelector(
-                            new SeSelector.AidSelector(ByteArrayUtils.fromHex(seAidPrefix), null,
-                                    SeSelector.AidSelector.FileOccurrence.FIRST,
-                                    SeSelector.AidSelector.FileControlInformation.FCI),
-                            null, "Initial selection #1"),
-                    ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4));
+            seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new SeSelector.AidSelector(
+                            new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
+                            null, SeSelector.AidSelector.FileOccurrence.FIRST,
+                            SeSelector.AidSelector.FileControlInformation.FCI),
+                    "Initial selection #1"), ChannelState.KEEP_OPEN));
 
             seSelection = new SeSelection();
 
             doAndAnalyseSelection(seReader, seSelection, 1);
 
             /* next selection */
-            seSelection.prepareSelection(new SeSelectionRequest(
-                    new SeSelector(
-                            new SeSelector.AidSelector(ByteArrayUtils.fromHex(seAidPrefix), null,
-                                    SeSelector.AidSelector.FileOccurrence.NEXT,
-                                    SeSelector.AidSelector.FileControlInformation.FCI),
-                            null, "Next selection #2"),
-                    ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4));
+            seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new SeSelector.AidSelector(
+                            new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
+                            null, SeSelector.AidSelector.FileOccurrence.NEXT,
+                            SeSelector.AidSelector.FileControlInformation.FCI),
+                    "Next selection #2"), ChannelState.KEEP_OPEN));
 
             seSelection = new SeSelection();
 
             doAndAnalyseSelection(seReader, seSelection, 2);
 
             /* next selection */
-            seSelection.prepareSelection(new SeSelectionRequest(
-                    new SeSelector(
-                            new SeSelector.AidSelector(ByteArrayUtils.fromHex(seAidPrefix), null,
-                                    SeSelector.AidSelector.FileOccurrence.NEXT,
-                                    SeSelector.AidSelector.FileControlInformation.FCI),
-                            null, "Next selection #3"),
-                    ChannelState.CLOSE_AFTER, ContactlessProtocols.PROTOCOL_ISO14443_4));
+            seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new SeSelector.AidSelector(
+                            new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
+                            null, SeSelector.AidSelector.FileOccurrence.NEXT,
+                            SeSelector.AidSelector.FileControlInformation.FCI),
+                    "Next selection #3"), ChannelState.CLOSE_AFTER));
 
             doAndAnalyseSelection(seReader, seSelection, 3);
 

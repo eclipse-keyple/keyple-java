@@ -43,7 +43,7 @@ public class Demo_Websocket_MasterClient {
         Demo_Master master = new Demo_Master(factory, false, CLIENT_NODE_ID);
         master.boot();
 
-        // execute slave scenario
-        slave.insertSE(new StubCalypsoClassic(), true);
+        // execute Calypso Transaction Scenario
+        slave.executeScenario(new StubCalypsoClassic(), true);
     }
 }

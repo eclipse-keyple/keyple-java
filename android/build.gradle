@@ -2,29 +2,23 @@ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
+        google()
         jcenter()
     }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.14.0"
+    }
 }
 
-plugins {
-    id "com.diffplug.gradle.spotless" version "3.14.0"
-}
 
-project.ext {
-    enableMavenLocalRepo = false
-}
+apply from: '../common.gradle'
 
 subprojects {
+
     group 'org.eclipse.keyple'
-}
+    apply plugin: 'pmd'
 
-
-allprojects {
-
-    configurations.all {
-        // check for updates every build
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    }
 
     repositories {
         mavenLocal()
@@ -33,59 +27,21 @@ allprojects {
         jcenter()
     }
 
-    apply plugin: 'pmd'
+    configurations.all {
+        // check for updates every build
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+
 
     pmd {
         ruleSets = [
                 "java-basic",
                 "java-braces",
-                // "java-strings",
-                // "java-imports",
-                // "java-unnecessary",
-                // "java-unusedcode",
-                //"java-metrics",
-                // "java-empty",
-                // "java-codesize",
-                // "java-clone",
-                // "java-typeresolution",
-                // "java-strictexception",
-                // "java-finalizers",
-                // "java-migrating",
-                // "java-logging-java",
-                // "java-controversial"  // 8 issues
-                // "java-sunsecure"      // 1 issue
-                // "java-junit"          // 1 issue
-                // "java-optimizations"  // 44 issues
-                // "java-naming",        // 9 issues
-                // "java-coupling"       // 2 issues
-                // "java-design"         // 19 issues
-                // "java-comments"       // 87 issues --> Kind of conflicting with spotless
         ]
     }
+    
 }
 
-
-
-spotless {
-    java {
-        target '**/*.java'
-
-        licenseHeaderFile '../.build/spotless.license.txt'
-
-        importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
-
-        removeUnusedImports()
-
-        eclipse().configFile '../.build/spotless.eclipseformat.xml'
-    }
-
-    format 'misc', {
-        target '**/*.java', '**/*.gradle', '**/*.yml', '**/*.md'
-
-        indentWithSpaces()
-        endWithNewline()
-    }
-}
 
 
 //create task for to agragate javadoc

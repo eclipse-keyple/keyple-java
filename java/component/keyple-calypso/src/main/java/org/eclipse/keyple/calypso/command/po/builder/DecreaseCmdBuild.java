@@ -15,7 +15,7 @@ package org.eclipse.keyple.calypso.command.po.builder;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.DecreaseRespPars;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * The Class DecreaseCmdBuild. This class provides the dedicated constructor to build the Decrease

@@ -12,6 +12,12 @@
 package org.eclipse.keyple.example.remote.application;
 
 import java.io.IOException;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
+import org.eclipse.keyple.core.seproxy.event.PluginEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.INativeReaderService;
@@ -24,12 +30,6 @@ import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.event.ObservablePlugin;
-import org.eclipse.keyple.seproxy.event.PluginEvent;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * Demo_Slave is where slave readers are physically located, it connects one native reader to the
  * master to delegate control of it
  */
-class Demo_Slave {
+public class Demo_Slave {
 
     private static final Logger logger = LoggerFactory.getLogger(Demo_Slave.class);
 
@@ -47,10 +47,10 @@ class Demo_Slave {
     // DtoNode used as to send and receive KeypleDto to Master
     private DtoNode node;
 
-    // private String slaveNodeId;
-
-    // NativeReaderServiceImpl, used to connectAReader and disconnect readers
+    // SlaveAPI, used to connect PoReader and disconnect readers
     private SlaveAPI slaveAPI;
+
+    private String nativeReaderName;
 
     /**
      * At startup, create the {@link DtoNode} object, either a {@link ClientNode} or a
@@ -62,6 +62,10 @@ class Demo_Slave {
      */
     public Demo_Slave(final TransportFactory transportFactory, Boolean isServer,
             final String slaveNodeId, String masterNodeId) {
+
+
+        nativeReaderName = "STUB_READER" + slaveNodeId;
+
         logger.info(
                 "*****************************************************************************");
         logger.info("{} Create DemoSlave    ", slaveNodeId);
@@ -88,12 +92,15 @@ class Demo_Slave {
                 // if slave is server, must specify which master to connect to
                 slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId);
 
+                initPoReader();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
 
-            // Slave is client, connectAReader to Master Server
+
+            // Slave is client, connectPoReader to Master Server
             node = transportFactory.getClient(slaveNodeId);
 
             // slave client uses its clientid to connect to server
@@ -102,7 +109,7 @@ class Demo_Slave {
             ((ClientNode) node).connect(new ClientNode.ConnectCallback() {
                 @Override
                 public void onConnectSuccess() {
-                    logger.info("Client connected");
+                    logger.info("{} onConnectSuccess ", slaveNodeId);
                 }
 
                 @Override
@@ -114,17 +121,59 @@ class Demo_Slave {
             slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node,
                     ((ClientNode) node).getServerNodeId());
 
-            /*
-             * // start client in a new thread new Thread() {
-             * 
-             * @Override public void run() { } }.start();
-             */
-
+            initPoReader();
 
         }
 
     }
 
+    /**
+     * Creates and configures a {@link StubReader} for the PO
+     *
+     * @throws KeypleReaderException
+     * @throws InterruptedException
+     */
+    final private void initPoReader() {
+
+        try {
+            logger.info("{} Boot DemoSlave LocalReader ", node.getNodeId());
+
+            logger.info("{} Create Local StubPlugin", node.getNodeId());
+            StubPlugin stubPlugin = StubPlugin.getInstance();
+
+            SeProxyService.getInstance().addPlugin(stubPlugin);
+
+            ObservablePlugin.PluginObserver observer = new ObservablePlugin.PluginObserver() {
+                @Override
+                public void update(PluginEvent event) {
+                    logger.info("{} Update - pluginEvent from inline observer", node.getNodeId(),
+                            event);
+                }
+            };
+
+            // add observer to have the reader management done by the monitoring thread
+            stubPlugin.addObserver(observer);
+            Thread.sleep(100);
+
+            stubPlugin.plugStubReader(nativeReaderName, true);
+
+            Thread.sleep(1000);
+
+            // get the created proxy reader
+            localReader = (StubReader) stubPlugin.getReader(nativeReaderName);
+
+            localReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                    StubProtocolSetting.STUB_PROTOCOL_SETTING
+                            .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (KeypleReaderNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 
 
     /**
@@ -134,45 +183,12 @@ class Demo_Slave {
      * @throws KeypleReaderException
      * @throws InterruptedException
      */
-    public String connectAReader()
-            throws KeypleReaderException, InterruptedException, KeypleRemoteException {
-
-
-        logger.info("{} Boot DemoSlave LocalReader ", node.getNodeId());
-
-        logger.info("{} Create Local StubPlugin", node.getNodeId());
-        StubPlugin stubPlugin = StubPlugin.getInstance();
-
-        SeProxyService.getInstance().addPlugin(stubPlugin);
-
-        ObservablePlugin.PluginObserver observer = new ObservablePlugin.PluginObserver() {
-            @Override
-            public void update(PluginEvent event) {
-                logger.info("{} Update - pluginEvent from inline observer", node.getNodeId(),
-                        event);
-            }
-        };
-
-        // add observer to have the reader management done by the monitoring thread
-        stubPlugin.addObserver(observer);
-
-        Thread.sleep(100);
-
-        stubPlugin.plugStubReader("stubClientSlave", true);
-
-        Thread.sleep(1000);
-
-        // get the created proxy reader
-        localReader = (StubReader) stubPlugin.getReader("stubClientSlave");
-
-        localReader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
-
-        // Binds node for incoming KeypleDTo
-        // slaveAPI.bindDtoEndpoint(node);
+    public String connectPoReader() throws KeypleReaderException {
 
         // connect a reader to Remote Plugin
-        logger.info("{} Connect remotely the StubPlugin ", node.getNodeId());
+        logger.info(
+                "*****************************************************************************");
+        logger.info("{} Connect remotely the Native Reader ", node.getNodeId());
         return slaveAPI.connectReader(localReader);
 
     }
@@ -181,8 +197,6 @@ class Demo_Slave {
         logger.info(
                 "*****************************************************************************");
         logger.info("{} Start DEMO - insert Calypso  ", node.getNodeId());
-        logger.info(
-                "*****************************************************************************");
 
         // logger.info("{} Insert CalypsoSE into Local StubReader",node.getNodeId());
 
@@ -196,8 +210,6 @@ class Demo_Slave {
         logger.info(
                 "*****************************************************************************");
         logger.info("{} Start DEMO - insert HoplinkSE  ", node.getNodeId());
-        logger.info(
-                "*****************************************************************************");
 
         // logger.info("{} Insert HoplinkStubSE into Local StubReader",node.getNodeId());
         localReader.insertSe(se);
@@ -205,8 +217,6 @@ class Demo_Slave {
 
     public void removeSe() {
 
-        logger.info(
-                "*****************************************************************************");
         logger.info("{} remove SE ", node.getNodeId());
         logger.info(
                 "*****************************************************************************");
@@ -218,8 +228,6 @@ class Demo_Slave {
     public void disconnect(String sessionId, String nativeReaderName)
             throws KeypleReaderException, KeypleRemoteException {
 
-        logger.info(
-                "*****************************************************************************");
         logger.info("{} Disconnect native reader ", node.getNodeId());
         logger.info(
                 "*****************************************************************************");
@@ -227,22 +235,19 @@ class Demo_Slave {
         slaveAPI.disconnectReader(sessionId, localReader.getName());
     }
 
-    public void insertSE(final StubSecureElement se, final Boolean killAtEnd)
+    public void executeScenario(final StubSecureElement se, final Boolean killAtEnd)
             throws KeypleReaderNotFoundException, InterruptedException, KeypleReaderException,
             KeypleRemoteException {
-        logger.info("------------------------");
+        // logger.info("------------------------");
         logger.info("{} Connect Reader to Master", node.getNodeId());
-        logger.info("------------------------");
+        // logger.info("------------------------");
 
         Thread.sleep(2000);
-        String sessionId = this.connectAReader();
-        logger.info("--------------------------------------------------");
+        String sessionId = this.connectPoReader();
+        // logger.info("--------------------------------------------------");
         logger.info("{} Session created on server {}", node.getNodeId(), sessionId);
         // logger.info("Wait 2 seconds, then insert SE");
-        logger.info("--------------------------------------------------");
-
-        // Thread.sleep(2000);
-
+        // logger.info("--------------------------------------------------");
         logger.info("{} Inserting SE", node.getNodeId());
         this.insertStubSe(se);
         logger.info("{} Wait 2 seconds, then remove SE", node.getNodeId());

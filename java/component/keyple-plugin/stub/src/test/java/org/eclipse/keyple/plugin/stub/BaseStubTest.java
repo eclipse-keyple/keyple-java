@@ -11,7 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.stub;
 
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
+
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TestName;
@@ -28,12 +29,12 @@ public class BaseStubTest {
     @Rule
     public TestName name = new TestName();
 
-    public void setUp() throws Exception {
+    public void setupStub() throws Exception {
         logger.info("------------------------------");
         logger.info("Test {}", name.getMethodName());
         logger.info("------------------------------");
 
-        logger.info("setUp, assert stubplugin is empty");
+        logger.info("setupStub, assert stubplugin is empty");
         stubPlugin = StubPlugin.getInstance(); // singleton
 
         logger.info("Stubplugin readers size {}", stubPlugin.getReaders().size());
@@ -47,7 +48,7 @@ public class BaseStubTest {
 
     }
 
-    public void tearDown() throws InterruptedException, KeypleReaderException {
+    public void clearStub() throws InterruptedException, KeypleReaderException {
         logger.info("---------");
         logger.info("TearDown ");
         logger.info("---------");
@@ -64,4 +65,5 @@ public class BaseStubTest {
         stubPlugin.clearObservers();
 
     }
+
 }

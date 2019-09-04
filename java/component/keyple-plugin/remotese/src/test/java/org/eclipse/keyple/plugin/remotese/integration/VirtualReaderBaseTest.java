@@ -12,6 +12,11 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 
+import java.util.Set;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
@@ -20,7 +25,6 @@ import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportFact
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
 import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
 import org.junit.*;
 import org.junit.rules.TestName;
 import org.slf4j.Logger;
@@ -38,16 +42,17 @@ public class VirtualReaderBaseTest {
 
     // Real objects
     private TransportFactory factory;
-    private SlaveAPI slaveAPI;
     StubReader nativeReader;
-    VirtualReader virtualReader;
 
     final String NATIVE_READER_NAME = "testStubReader";
     final String CLIENT_NODE_ID = "testClientNodeId";
     final String SERVER_NODE_ID = "testServerNodeId";
 
     // Spy Object
-    MasterAPI masterAPI;
+    protected MasterAPI masterAPI;
+    // Spy Object
+    protected SlaveAPI slaveAPI;
+
 
     protected void initKeypleServices() throws Exception {
         logger.info("------------------------------");
@@ -63,45 +68,48 @@ public class VirtualReaderBaseTest {
         factory = new LocalTransportFactory(SERVER_NODE_ID);
 
         logger.info("*** Bind Master Services");
+
         // bind Master services to server
-        masterAPI = Integration.bindMaster(factory.getServer());
+        masterAPI = Integration.bindMasterSpy(factory.getServer());
 
         logger.info("*** Bind Slave Services");
         // bind Slave services to client
-        slaveAPI = Integration.bindSlave(factory.getClient(CLIENT_NODE_ID), SERVER_NODE_ID);
-
-
+        slaveAPI = Integration.bindSlaveSpy(factory.getClient(CLIENT_NODE_ID), SERVER_NODE_ID);
 
     }
 
-    protected void clearStubpluginReaders() throws Exception {
-
-        logger.info("Cleaning of the stub plugin");
-
+    @Deprecated
+    protected void clearStubpluginNativeReader() throws Exception {
+        logger.info("Remove nativeReader from stub plugin");
         StubPlugin stubPlugin = StubPlugin.getInstance();
-
         // if nativeReader was initialized during test, unplug it
         if (nativeReader != null) {
             stubPlugin.unplugStubReader(nativeReader.getName(), true);
             nativeReader.clearObservers();
         }
+    }
 
 
-
-        // stubPlugin.removeObserver(stubPluginObserver);
-
-        // Thread.sleep(500);
-
-        logger.info("End of cleaning of the stub plugin");
+    static public void clearStubpluginReader() throws KeypleReaderException {
+        logger.info("Remove all readers from stub plugin");
+        StubPlugin stubPlugin = StubPlugin.getInstance();
+        Set<AbstractObservableReader> readers = stubPlugin.getReaders();
+        for (AbstractObservableReader reader : readers) {
+            reader.clearObservers();
+        }
+        stubPlugin.unplugStubReaders(stubPlugin.getReaderNames(), true);
     }
 
 
 
-    protected StubReader connectStubReader(String readerName, String nodeId) throws Exception {
+    protected StubReader connectStubReader(String readerName, String nodeId,
+            TransmissionMode transmissionMode) throws Exception {
         // configure native reader
-        StubReader nativeReader = (StubReader) Integration.createStubReader(readerName);
-        nativeReader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        StubReader nativeReader =
+                (StubReader) Integration.createStubReader(readerName, transmissionMode);
+        nativeReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
         this.slaveAPI.connectReader(nativeReader);
         return nativeReader;
     }

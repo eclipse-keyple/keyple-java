@@ -15,10 +15,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
-import org.eclipse.keyple.seproxy.plugin.AbstractStaticPlugin;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractStaticPlugin;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.SEService;
 import android.util.Log;
@@ -66,17 +66,6 @@ public final class AndroidOmapiPlugin extends AbstractStaticPlugin implements SE
     }
 
 
-    /**
-     * Returns all {@link AndroidOmapiReader} readers loaded by the plugin
-     * 
-     * @return {@link AndroidOmapiReader} readers loaded by the plugin
-     * @throws KeypleReaderException
-     */
-    /*
-     * @Override public SortedSet<? extends ProxyReader> getReaders() throws KeypleReaderException {
-     * return new TreeSet<ProxyReader>(proxyReaders.values()); }
-     */
-
     @Override
     protected SortedSet<AbstractObservableReader> initNativeReaders() {
 
@@ -114,8 +103,9 @@ public final class AndroidOmapiPlugin extends AbstractStaticPlugin implements SE
 
     /**
      * Fetch connected native reader (from third party library) by its name Returns the current
-     * {@link org.eclipse.keyple.seproxy.plugin.AbstractObservableReader} if it is already listed.
+     * {@link org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader} if it is already listed.
      *
+     * @param name reader name to be fetched
      * @return the list of AbstractObservableReader objects.
      * @throws KeypleReaderNotFoundException if reader is not found
      */
@@ -126,10 +116,12 @@ public final class AndroidOmapiPlugin extends AbstractStaticPlugin implements SE
     }
 
     /**
-     * Do not call this method directly. Invoked by Open Mobile {@link SEService} when connected
+     * Warning. Do not call this method directly.
+     *
+     * Invoked by Open Mobile {@link SEService} when connected
      * Instanciates {@link AndroidOmapiReader} for each SE Reader detected in the platform
      * 
-     * @param seService
+     * @param seService : connected omapi service
      */
     @Override
     public void serviceConnected(SEService seService) {

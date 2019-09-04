@@ -13,6 +13,7 @@ package org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
+import java.util.Observable;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.example.remote.transport.wspolling.WsPTransportDTO;
 import org.eclipse.keyple.plugin.remotese.transport.*;
@@ -32,7 +33,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /**
  * Rest client, polls server, based on client_retrofit and callbacks
  */
-public class WsPRetrofitClientImpl implements ClientNode {
+public class WsPRetrofitClientImpl extends Observable implements ClientNode {
 
 
     private static final Logger logger = LoggerFactory.getLogger(WsPRetrofitClientImpl.class);
@@ -40,7 +41,8 @@ public class WsPRetrofitClientImpl implements ClientNode {
     final private String baseUrl;
     final private String clientNodeId;
     final private String serverNodeId;
-    private Boolean poll;
+    private Boolean pollActivated;
+    private Boolean isPolling;
     private ClientNode.ConnectCallback connectCallback;
 
     private DtoHandler dtoHandler;
@@ -50,7 +52,8 @@ public class WsPRetrofitClientImpl implements ClientNode {
         this.baseUrl = baseUrl;
         this.clientNodeId = clientNodeId;
         this.serverNodeId = serverNodeId;
-
+        this.pollActivated = false;
+        this.isPolling = false; // presume it will work
     }
 
 
@@ -60,22 +63,33 @@ public class WsPRetrofitClientImpl implements ClientNode {
      * @param clientNodeId : terminal node Id (ie : androidDevice1)
      */
     private void startPollingWorker(final String clientNodeId) {
-        this.poll = true;
+        this.pollActivated = true;
         poll(clientNodeId);
     }
 
+    /**
+     * Poll for keyple DTOs
+     * 
+     * @param clientNodeId
+     */
     private void poll(final String clientNodeId) {
-        logger.debug("Polling from node {}", clientNodeId);
+        // logger.debug("Polling from node {}", clientNodeId);
         final WsPRetrofitClientImpl thisClient = this;
         // if poll is activated
-        if (this.poll) {
+        if (this.pollActivated) {
             Call<KeypleDto> call = getRetrofitClient(baseUrl).getPolling(clientNodeId);
             call.enqueue(new Callback<KeypleDto>() {
                 @Override
                 public void onResponse(Call<KeypleDto> call, Response<KeypleDto> response) {
-                    if (thisClient.connectCallback != null) {
-                        thisClient.connectCallback.onConnectSuccess();
+
+                    if (!isPolling) {
+                        logger.trace("Polling state changed, polling is ON now");
+                        setChanged();
+                        notifyObservers(true);
+                        isPolling = true;
                     }
+
+
                     int statusCode = response.code();
 
                     logger.trace("Polling for clientNodeId {} receive a httpResponse http code {}",
@@ -85,6 +99,12 @@ public class WsPRetrofitClientImpl implements ClientNode {
                     } else {
                         // 204 : no response
                     }
+
+                    // if a callback is set, call it
+                    if (thisClient.connectCallback != null) {
+                        thisClient.connectCallback.onConnectSuccess();
+                    }
+
                     poll(clientNodeId);// recursive call to restart polling
                 }
 
@@ -92,11 +112,19 @@ public class WsPRetrofitClientImpl implements ClientNode {
                 public void onFailure(Call<KeypleDto> call, Throwable t) {
                     logger.trace("Receive exception : {} , {}", t.getMessage(), t.getClass());
 
+                    if (isPolling) {
+                        logger.trace("Polling state changed, polling is OFF now");
+                        setChanged();
+                        notifyObservers(false);
+                        isPolling = false;
+                    }
                     // Log error here since request failed
                     if (t instanceof ConnectException) {
                         logger.error("Connection refused to server : {} , {}", t.getMessage(),
                                 t.getCause());
                         thisClient.stopPollingWorker();
+
+                        // if a callback is set, call it
                         if (thisClient.connectCallback != null) {
                             thisClient.connectCallback.onConnectFailure();
                         }
@@ -105,11 +133,16 @@ public class WsPRetrofitClientImpl implements ClientNode {
                                 t.getMessage());
                         poll(clientNodeId);// recursive call to restart polling
                     } else {
-                        logger.error("Unexpected error : {} , {}", t.getMessage(), t.getCause());
-                        poll(clientNodeId);// recursive call to restart polling
+                        logger.error("Unexpected error when poll() : {} , {}", t.getMessage(),
+                                t.getCause());
+
+                        // if a callback is set, call it, will it be called?
                         if (thisClient.connectCallback != null) {
                             thisClient.connectCallback.onConnectFailure();
                         }
+                        poll(clientNodeId);// recursive call to restart polling
+
+
                     }
                 }
             });
@@ -121,11 +154,15 @@ public class WsPRetrofitClientImpl implements ClientNode {
 
 
     private void stopPollingWorker() {
-        this.poll = false;
+        this.pollActivated = false;
+    }
+
+    public Boolean getPollActivated() {
+        return this.pollActivated;
     }
 
     public Boolean isPolling() {
-        return this.poll;
+        return this.isPolling;
     }
 
 
@@ -217,8 +254,6 @@ public class WsPRetrofitClientImpl implements ClientNode {
     public void disconnect() {
         this.stopPollingWorker();
     }
-
-
 
     static WsPRetrofitClient getRetrofitClient(String baseUrl) {
 

@@ -13,22 +13,22 @@ package org.eclipse.keyple.integration.example.pc.calypso;
 
 
 
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.core.selection.*;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.integration.IntegrationUtils;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeReader;
-import org.eclipse.keyple.seproxy.SeSelector;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.seproxy.protocol.Protocol;
-import org.eclipse.keyple.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.transaction.*;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
+import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,14 +49,25 @@ public class Demo_WriteName {
         seProxyService.addPlugin(pcscPlugin);
 
         SeReader poReader =
-                DemoUtilities.getReader(seProxyService, DemoUtilities.PO_READER_NAME_REGEX);
+                IntegrationUtils.getReader(seProxyService, IntegrationUtils.PO_READER_NAME_REGEX);
+
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
         SeReader samReader =
-                DemoUtilities.getReader(seProxyService, DemoUtilities.SAM_READER_NAME_REGEX);
+                IntegrationUtils.getReader(seProxyService, IntegrationUtils.SAM_READER_NAME_REGEX);
+
+        samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO7816_3));
 
         /* Check if the readers exists */
         if (poReader == null || samReader == null) {
             throw new IllegalStateException("Bad PO or SAM reader setup");
         }
+
+        samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
         logger.info("= PO Reader  NAME = {}", poReader.getName());
         logger.info("= SAM Reader  NAME = {}", samReader.getName());
@@ -65,22 +76,24 @@ public class Demo_WriteName {
 
         SeSelection samSelection = new SeSelection();
 
-        SeSelectionRequest samSelectionRequest = new SeSelectionRequest(
-                new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+        SamSelectionRequest samSelectionRequest = new SamSelectionRequest(
+                new SamSelector(SamRevision.C1, null, "SAM Selection"), ChannelState.KEEP_OPEN);
 
-        /* Prepare selector, ignore MatchingSe here */
+        /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
-
+        SelectionsResult samSelectionsResult;
         try {
-            if (!samSelection.processExplicitSelection(samReader).hasActiveSelection()) {
+            samSelectionsResult = samSelection.processExplicitSelection(samReader);
+            if (!samSelectionsResult.hasActiveSelection()) {
                 System.out.println("Unable to open a logical channel for SAM!");
                 throw new IllegalStateException("SAM channel opening failure");
             }
         } catch (KeypleReaderException e) {
             throw new IllegalStateException("Reader exception: " + e.getMessage());
-
         }
+
+        SamResource samResource = new SamResource(samReader,
+                (CalypsoSam) samSelectionsResult.getActiveSelection().getMatchingSe());
 
         /* Check if a PO is present in the reader */
         if (poReader.isSePresent()) {
@@ -107,38 +120,29 @@ public class Demo_WriteName {
             String cdLightAid = "315449432E494341"; // AID of the Rev2.4 PO emulating CDLight
 
             // Add Audit C0 AID to the list
-            int auditC0SeIndex =
-                    seSelection
-                            .prepareSelection(
-                                    new PoSelectionRequest(
-                                            new SeSelector(new SeSelector.AidSelector(
-                                                    ByteArrayUtils.fromHex(
-                                                            PoFileStructureInfo.poAuditC0Aid),
-                                                    null), null, "Audit C0"),
-                                            ChannelState.KEEP_OPEN, Protocol.ANY));
+            int auditC0SeIndex = seSelection.prepareSelection(new PoSelectionRequest(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                    PoFileStructureInfo.poAuditC0Aid), null),
+                            "Audit C0"),
+                    ChannelState.KEEP_OPEN));
 
             // Add CLAP AID to the list
             int clapSe =
-                    seSelection
-                            .prepareSelection(
-                                    new PoSelectionRequest(
-                                            new SeSelector(
-                                                    new SeSelector.AidSelector(
-                                                            ByteArrayUtils.fromHex(
-                                                                    PoFileStructureInfo.clapAid),
-                                                            null),
-                                                    null, "CLAP"),
-                                            ChannelState.KEEP_OPEN, Protocol.ANY));
+                    seSelection.prepareSelection(new PoSelectionRequest(
+                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                    new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                            PoFileStructureInfo.clapAid), null),
+                                    "CLAP"),
+                            ChannelState.KEEP_OPEN));
 
             // Add cdLight AID to the list
-            int cdLightSe =
-                    seSelection
-                            .prepareSelection(new PoSelectionRequest(
-                                    new SeSelector(
-                                            new SeSelector.AidSelector(ByteArrayUtils
-                                                    .fromHex(PoFileStructureInfo.cdLightAid), null),
-                                            null, "CDLight"),
-                                    ChannelState.KEEP_OPEN, Protocol.ANY));
+            int cdLightSe = seSelection.prepareSelection(new PoSelectionRequest(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                    PoFileStructureInfo.cdLightAid), null),
+                            "CDLight"),
+                    ChannelState.KEEP_OPEN));
 
             SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
             if (!selectionsResult.hasActiveSelection()) {
@@ -164,10 +168,10 @@ public class Demo_WriteName {
              */
             logger.info("The selection of the PO has succeeded.");
 
-            MatchingSe selectedSe = selectionsResult.getActiveSelection().getMatchingSe();
+            CalypsoPo calypsoPo = (CalypsoPo) selectionsResult.getActiveSelection().getMatchingSe();
 
-            PoTransaction poTransaction =
-                    new PoTransaction(poReader, (CalypsoPo) selectedSe, samReader, null);
+            PoTransaction poTransaction = new PoTransaction(new PoResource(poReader, calypsoPo),
+                    samResource, new SecuritySettings());
 
             String name = "CNA Keyple Demo";
 
@@ -183,8 +187,7 @@ public class Demo_WriteName {
             poTransaction.prepareUpdateRecordCmd(environmentSid, (byte) 0x01, name.getBytes(),
                     "Environment");
 
-            poProcessStatus = poTransaction.processClosing(TransmissionMode.CONTACTLESS,
-                    ChannelState.KEEP_OPEN);
+            poProcessStatus = poTransaction.processClosing(ChannelState.KEEP_OPEN);
 
             if (!poProcessStatus) {
                 throw new IllegalStateException("processClosing failure.");

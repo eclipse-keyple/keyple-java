@@ -15,24 +15,23 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.command.sam.SamRevision;
+import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.core.selection.MatchingSelection;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.seproxy.*;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReader;
-import org.eclipse.keyple.seproxy.*;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.seproxy.protocol.Protocol;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.transaction.MatchingSelection;
-import org.eclipse.keyple.transaction.SeSelection;
-import org.eclipse.keyple.transaction.SeSelectionRequest;
-import org.eclipse.keyple.util.ByteArrayUtils;
 
 public class TestEngine {
 
-    public static SeReader poReader, samReader;
+    public static SeReader poReader;
+    public static SamResource samResource;
 
     public static PoFileStructureInfo selectPO()
             throws IllegalArgumentException, KeypleReaderException {
@@ -41,24 +40,30 @@ public class TestEngine {
 
         // Add Audit C0 AID to the list
         seSelection
-                .prepareSelection(new PoSelectionRequest(new SeSelector(
-                        new SeSelector.AidSelector(
-                                ByteArrayUtils.fromHex(PoFileStructureInfo.poAuditC0Aid), null),
-                        null, "Audit C0"), ChannelState.KEEP_OPEN, Protocol.ANY));
+                .prepareSelection(new PoSelectionRequest(
+                        new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                        PoFileStructureInfo.poAuditC0Aid), null),
+                                "Audit C0"),
+                        ChannelState.KEEP_OPEN));
 
         // Add CLAP AID to the list
         seSelection
-                .prepareSelection(new PoSelectionRequest(new SeSelector(
-                        new SeSelector.AidSelector(
-                                ByteArrayUtils.fromHex(PoFileStructureInfo.clapAid), null),
-                        null, "CLAP"), ChannelState.KEEP_OPEN, Protocol.ANY));
+                .prepareSelection(new PoSelectionRequest(
+                        new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                        PoFileStructureInfo.clapAid), null),
+                                "CLAP"),
+                        ChannelState.KEEP_OPEN));
 
         // Add cdLight AID to the list
         seSelection
-                .prepareSelection(new PoSelectionRequest(new SeSelector(
-                        new SeSelector.AidSelector(
-                                ByteArrayUtils.fromHex(PoFileStructureInfo.cdLightAid), null),
-                        null, "CDLight"), ChannelState.KEEP_OPEN, Protocol.ANY));
+                .prepareSelection(new PoSelectionRequest(
+                        new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
+                                        PoFileStructureInfo.cdLightAid), null),
+                                "CDLight"),
+                        ChannelState.KEEP_OPEN));
 
         MatchingSelection matchingSelection =
                 seSelection.processExplicitSelection(poReader).getActiveSelection();
@@ -95,7 +100,7 @@ public class TestEngine {
         final String SAM_READER_NAME_REGEX = ".*(Cherry TC|SCM Microsystems|Identive|HID).*";
 
         poReader = getReader(seProxyService, PO_READER_NAME_REGEX);
-        samReader = getReader(seProxyService, SAM_READER_NAME_REGEX);
+        SeReader samReader = getReader(seProxyService, SAM_READER_NAME_REGEX);
 
 
         if (poReader == samReader || poReader == null || samReader == null) {
@@ -112,9 +117,10 @@ public class TestEngine {
         poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
         samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
-        // provide the reader with the map
-        poReader.addSeProtocolSetting(
-                new SeProtocolSetting(PcscProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        // provide the reader with the protocol settings
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         try {
             if (!samReader.isSePresent()) {
@@ -131,27 +137,33 @@ public class TestEngine {
         // open
         SeSelection samSelection = new SeSelection();
 
-        SeSelectionRequest samSelectionRequest = new SeSelectionRequest(
-                new SeSelector(null, new SeSelector.AtrFilter(SAM_ATR_REGEX), "SAM Selection"),
-                ChannelState.KEEP_OPEN, Protocol.ANY);
+        SamSelectionRequest samSelectionRequest = new SamSelectionRequest(
+                new SamSelector(SamRevision.C1, null, "SAM Selection"), ChannelState.KEEP_OPEN);
 
-        /* Prepare selector, ignore MatchingSe here */
+        /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
+
+        CalypsoSam calypsoSam;
 
         try {
             MatchingSelection matchingSelection =
                     samSelection.processExplicitSelection(samReader).getActiveSelection();
-            if (matchingSelection != null && matchingSelection.getMatchingSe().isSelected()) {
-                System.out.println("Unable to open a logical channel for SAM!");
-                throw new IllegalStateException("SAM channel opening failure");
+            if (matchingSelection != null) {
+                calypsoSam = (CalypsoSam) matchingSelection.getMatchingSe();
+                if (!calypsoSam.isSelected()) {
+                    System.out.println("Unable to open a logical channel for SAM!");
+                    throw new IllegalStateException("SAM channel opening failure");
+                } else {
+                }
             } else {
+                System.out.println("The SAM selection returned null!");
+                throw new IllegalStateException("SAM channel opening failure");
             }
         } catch (KeypleReaderException e) {
             throw new IllegalStateException("Reader exception: " + e.getMessage());
-
         }
 
-
+        samResource = new SamResource(samReader, calypsoSam);
     }
 
 }

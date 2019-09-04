@@ -15,10 +15,11 @@ plugins {
 }
 
 project.group 'org.eclipse.keyple'
-project.version = '1.0.0-RC4'
+project.version = '0.7.0-SNAPSHOT'
 
 
 apply plugin: 'com.android.application'
+apply from:'../../../../common.gradle'
 
 allprojects {
 
@@ -175,3 +176,4 @@ if (propFile.canRead()){
     println 'signing.properties not found'
     android.buildTypes.release.signingConfig = null
 }
+

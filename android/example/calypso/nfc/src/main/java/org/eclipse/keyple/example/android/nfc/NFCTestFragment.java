@@ -18,27 +18,28 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcFragment;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPlugin;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcReader;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.ReaderPlugin;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeReader;
-import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.event.SelectionResponse;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.transaction.SeSelection;
-import org.eclipse.keyple.transaction.SelectionsResult;
-import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import android.graphics.Color;
@@ -117,8 +118,9 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
 
             // with this protocol settings we activate the nfc for ISO1443_4 protocol
-            ((ObservableReader) reader).addSeProtocolSetting(
-                    new SeProtocolSetting(AndroidNfcProtocolSettings.SETTING_PROTOCOL_ISO14443_4));
+            ((ObservableReader) reader).addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                    AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING
+                            .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
             /*
              * Prepare a Calypso PO selection
@@ -136,11 +138,13 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
              * Calypso selection: configures a PoSelector with all the desired attributes to make
              * the selection and read additional information afterwards
              */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                    new PoSelector.PoAidSelector(ByteArrayUtils.fromHex(CalypsoClassicInfo.AID),
-                            PoSelector.InvalidatedPo.REJECT),
-                    null, "AID: " + CalypsoClassicInfo.AID), ChannelState.KEEP_OPEN,
-                    ContactlessProtocols.PROTOCOL_ISO14443_4);
+            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(
+                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
+                                    PoSelector.InvalidatedPo.REJECT),
+                            "AID: " + CalypsoClassicInfo.AID),
+                    ChannelState.KEEP_OPEN);
 
             /*
              * Prepare the reading order and keep the associated parser for later use once the
@@ -228,7 +232,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
                 switch (event.getEventType()) {
                     case SE_MATCHED:
-                        runCalyspoTransaction(event.getDefaultSelectionResponse());
+                        runCalyspoTransaction(event.getDefaultSelectionsResponse());
                         break;
 
                     case SE_INSERTED:
@@ -255,9 +259,11 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
     /**
      * Run Calypso simple read transaction
      * 
-     * @param defaultSelectionResponse
+     * @param defaultSelectionsResponse
+     * 
      */
-    private void runCalyspoTransaction(final SelectionResponse defaultSelectionResponse) {
+    private void runCalyspoTransaction(
+            final AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
         LOG.debug("Running Calypso Simple Read transaction");
         getActivity().runOnUiThread(new Runnable() {
             @Override
@@ -272,7 +278,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                     mText.append(((AndroidNfcReader) reader).printTagId());
                     mText.append("\n ---- \n");
                     SelectionsResult selectionsResult =
-                            seSelection.processDefaultSelection(defaultSelectionResponse);
+                            seSelection.processDefaultSelection(defaultSelectionsResponse);
                     if (selectionsResult.hasActiveSelection()) {
                         CalypsoPo calypsoPo =
                                 (CalypsoPo) selectionsResult.getActiveSelection().getMatchingSe();
@@ -280,7 +286,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                         mText.append("\nCalypso PO selection: ");
                         appendColoredText(mText, "SUCCESS\n", Color.GREEN);
                         mText.append("AID: ");
-                        appendHexBuffer(mText, ByteArrayUtils.fromHex(CalypsoClassicInfo.AID));
+                        appendHexBuffer(mText, ByteArrayUtil.fromHex(CalypsoClassicInfo.AID));
 
                         /*
                          * Retrieve the data read from the parser updated during the selection
@@ -298,7 +304,8 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
                         appendColoredText(mText, "\n\n2nd PO exchange:\n", Color.BLACK);
                         mText.append("* read the event log file");
-                        PoTransaction poTransaction = new PoTransaction(reader, calypsoPo);
+                        PoTransaction poTransaction =
+                                new PoTransaction(new PoResource(reader, calypsoPo));
 
                         /*
                          * Prepare the reading order and keep the associated parser for later use
@@ -396,7 +403,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
      */
     private static void appendHexBuffer(TextView tv, byte[] ba) {
         int start = tv.getText().length();
-        tv.append(ByteArrayUtils.toHex(ba));
+        tv.append(ByteArrayUtil.toHex(ba));
         int end = tv.getText().length();
 
         Spannable spannableText = (Spannable) tv.getText();

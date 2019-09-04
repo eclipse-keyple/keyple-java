@@ -22,5 +22,3 @@ project(':keyple-plugin:android-nfc').name = "keyple-plugin-android-nfc"
 
 include ':keyple-plugin:android-omapi'
 project(':keyple-plugin:android-omapi').name = "keyple-plugin-android-omapi"
-
-println "rootProject : " + startParameter

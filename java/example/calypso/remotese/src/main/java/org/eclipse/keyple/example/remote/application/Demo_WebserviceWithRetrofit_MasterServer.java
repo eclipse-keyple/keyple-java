@@ -44,7 +44,7 @@ public class Demo_WebserviceWithRetrofit_MasterServer {
         // Client is Slave
         Demo_Slave slave = new Demo_Slave(factory, false, CLIENT_NODE_ID, SERVER_NODE_ID);
 
-        // execute slave scenario
-        slave.insertSE(new StubCalypsoClassic(), true);
+        // execute Calypso Transaction Scenario
+        slave.executeScenario(new StubCalypsoClassic(), true);
     }
 }

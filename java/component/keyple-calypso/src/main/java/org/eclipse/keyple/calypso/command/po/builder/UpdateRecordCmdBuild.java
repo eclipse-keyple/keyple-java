@@ -15,7 +15,7 @@ package org.eclipse.keyple.calypso.command.po.builder;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.*;
 import org.eclipse.keyple.calypso.command.po.parser.UpdateRecordRespPars;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 // TODO: Auto-generated Javadoc
 /**

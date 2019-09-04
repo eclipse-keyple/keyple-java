@@ -11,41 +11,48 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.pluginse.method;
 
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.message.SeRequest;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTx;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.message.SeRequestSet;
-import org.eclipse.keyple.seproxy.message.SeResponseSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RmTransmitTx extends RemoteMethodTx<SeResponseSet> {
+/**
+ * Handle the Transmit keypleDTO serialization and deserialization
+ */
+public class RmTransmitTx extends RemoteMethodTx<SeResponse> {
 
     private static final Logger logger = LoggerFactory.getLogger(RmTransmitTx.class);
 
-    private final SeRequestSet seRequestSet;
+    private final SeRequest seRequest;
 
+    @Override
+    public RemoteMethod getMethodName() {
+        return RemoteMethod.READER_TRANSMIT;
+    }
 
-    public RmTransmitTx(SeRequestSet seRequestSet, String sessionId, String nativeReaderName,
+    public RmTransmitTx(SeRequest seRequest, String sessionId, String nativeReaderName,
             String virtualReaderName, String requesterNodeId, String slaveNodeId) {
         super(sessionId, nativeReaderName, virtualReaderName, slaveNodeId, requesterNodeId);
-        this.seRequestSet = seRequestSet;
+        this.seRequest = seRequest;
     }
 
     @Override
     public KeypleDto dto() {
-        return new KeypleDto(RemoteMethod.READER_TRANSMIT.getName(),
-                JsonParser.getGson().toJson(seRequestSet, SeRequestSet.class), true, this.sessionId,
-                this.nativeReaderName, this.virtualReaderName, requesterNodeId, targetNodeId);
+        return KeypleDtoHelper.buildRequest(getMethodName().getName(),
+                JsonParser.getGson().toJson(seRequest, SeRequest.class), this.sessionId,
+                this.nativeReaderName, this.virtualReaderName, requesterNodeId, targetNodeId, id);
     }
 
 
     @Override
-    public SeResponseSet parseResponse(KeypleDto keypleDto) throws KeypleRemoteException {
+    public SeResponse parseResponse(KeypleDto keypleDto) throws KeypleRemoteException {
 
         logger.trace("KeypleDto : {}", keypleDto);
         if (KeypleDtoHelper.containsException(keypleDto)) {
@@ -56,7 +63,7 @@ public class RmTransmitTx extends RemoteMethodTx<SeResponseSet> {
                     "An exception occurs while calling the remote method transmitSet", ex);
         } else {
             logger.trace("KeypleDto contains a response: {}", keypleDto);
-            return JsonParser.getGson().fromJson(keypleDto.getBody(), SeResponseSet.class);
+            return JsonParser.getGson().fromJson(keypleDto.getBody(), SeResponse.class);
         }
     }
 

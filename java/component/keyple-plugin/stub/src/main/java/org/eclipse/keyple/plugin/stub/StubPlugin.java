@@ -13,13 +13,21 @@ package org.eclipse.keyple.plugin.stub;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
-import org.eclipse.keyple.seproxy.plugin.AbstractThreadedObservablePlugin;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This plugin allows to simulate Secure Element communication by creating @{@link StubReader}
+ * and @{@link StubSecureElement}. Plug a new StubReader with StubPlugin#plugStubReader and insert
+ * an implementation of your own of {@link StubSecureElement} to start simulation communication.
+ * This class is a singleton, use StubPlugin#getInstance to access it
+ *
+ */
 public final class StubPlugin extends AbstractThreadedObservablePlugin {
 
     private static final StubPlugin uniqueInstance = new StubPlugin();
@@ -29,16 +37,17 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
     private final Map<String, String> parameters = new HashMap<String, String>();
 
     // simulated list of real-time connected stubReader
-    private static SortedSet<String> connectedStubNames = new ConcurrentSkipListSet<String>();
+    private static SortedSet<String> connectedStubNames =
+            Collections.synchronizedSortedSet(new ConcurrentSkipListSet<String>());
 
     private StubPlugin() {
         super("StubPlugin");
 
         /*
          * Monitoring is not handled by a lower layer (as in PC/SC), reduce the threading period to
-         * 50 ms to speed up responsiveness.
+         * 10 ms to speed up responsiveness.
          */
-        threadWaitTimeout = 50;
+        threadWaitTimeout = 10;
     }
 
     /**
@@ -60,15 +69,28 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
         parameters.put(key, value);
     }
 
+    /**
+     * Plug a Stub Reader
+     *
+     * @param name : name of the created reader
+     * @param synchronous : should the stubreader added synchronously (without waiting for the
+     *        observation thread). An READER_CONNECTED event is raised in both cases
+     */
+    public void plugStubReader(String name, Boolean synchronous) {
+        plugStubReader(name, TransmissionMode.CONTACTLESS, synchronous);
+    }
+
 
     /**
      * Plug a Stub Reader
-     * 
+     *
      * @param name : name of the created reader
+     * @param transmissionMode : transmissionMode of the created reader
      * @param synchronous : should the stubreader added synchronously (without waiting for the
-     *        observation thread)
+     *        observation thread). An READER_CONNECTED event is raised in both cases
      */
-    public void plugStubReader(String name, Boolean synchronous) {
+    public void plugStubReader(String name, TransmissionMode transmissionMode,
+            Boolean synchronous) {
 
         logger.info("Plugging a new reader with name " + name);
         /* add the native reader to the native readers list */
@@ -91,6 +113,8 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
      * Plug a list of stub Reader at once
      *
      * @param names : names of readers to be connected
+     * @param synchronous : should the stubreader be added synchronously (without waiting for the
+     *        observation thread). An READER_CONNECTED event is raised in both cases
      */
     public void plugStubReaders(Set<String> names, Boolean synchronous) {
         logger.debug("Plugging {} readers ..", names.size());
@@ -133,9 +157,10 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
      * 
      * @param name the name of the reader
      * @throws KeypleReaderException in case of a reader exception
+     * @param synchronous : should the stubreader be removed synchronously (without waiting for the
+     *        observation thread). An READER_DISCONNECTED event is raised in both cases
      */
-    public void unplugStubReader(String name, Boolean synchronous)
-            throws KeypleReaderException, InterruptedException {
+    public void unplugStubReader(String name, Boolean synchronous) throws KeypleReaderException {
 
         if (!connectedStubNames.contains(name)) {
             logger.warn("unplugStubReader() No reader found with name {}", name);
@@ -153,7 +178,13 @@ public final class StubPlugin extends AbstractThreadedObservablePlugin {
         }
     }
 
-
+    /**
+     * Unplug a list of readers
+     * 
+     * @param names : names of the reader to be unplugged
+     * @param synchronous : should the stubreader removed synchronously (without waiting for the
+     *        observation thread). An READER_DISCONNECTED event is raised in both cases
+     */
     public void unplugStubReaders(Set<String> names, Boolean synchronous) {
         logger.info("Unplug {} stub readers", names.size());
         logger.debug("Unplug stub readers.. {}", names);

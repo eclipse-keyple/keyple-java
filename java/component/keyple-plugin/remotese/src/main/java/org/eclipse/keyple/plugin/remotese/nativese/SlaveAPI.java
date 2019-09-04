@@ -12,6 +12,18 @@
 package org.eclipse.keyple.plugin.remotese.nativese;
 
 
+import java.util.HashMap;
+import java.util.Map;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
+import org.eclipse.keyple.core.seproxy.ReaderPoolPlugin;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.message.ProxyReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.method.*;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
@@ -22,14 +34,6 @@ import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
-import org.eclipse.keyple.seproxy.ReaderPlugin;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.event.ObservableReader;
-import org.eclipse.keyple.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.seproxy.message.ProxyReader;
-import org.eclipse.keyple.seproxy.plugin.AbstractObservableReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +48,15 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
     private final DtoNode dtoNode;// bind node
     private final SeProxyService seProxyService;
+
     private final RemoteMethodTxEngine rmTxEngine;// rm command processor
-    private final String masterNodeId;// master node id to connect to
+    private final String masterNodeId;// master node id used for connect, disconnect, and events
+
+    // used in case of a poolPlugin architecture
+    private ReaderPoolPlugin readerPoolPlugin;
+
+    public static final long DEFAULT_RPC_TIMEOUT = 10000;
+
 
     /**
      * Constructor
@@ -55,10 +66,22 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     public SlaveAPI(SeProxyService seProxyService, DtoNode dtoNode, String masterNodeId) {
         this.seProxyService = seProxyService;
         this.dtoNode = dtoNode;
-        this.rmTxEngine = new RemoteMethodTxEngine(dtoNode);
+        this.rmTxEngine = new RemoteMethodTxEngine(dtoNode, DEFAULT_RPC_TIMEOUT);
         this.masterNodeId = masterNodeId;
+        this.bindDtoEndpoint(dtoNode);
+    }
 
-
+    /**
+     * Constructor
+     *
+     * @param dtoNode : Define which DTO sender will be called when a DTO needs to be sent.
+     */
+    public SlaveAPI(SeProxyService seProxyService, DtoNode dtoNode, String masterNodeId,
+            long timeout) {
+        this.seProxyService = seProxyService;
+        this.dtoNode = dtoNode;
+        this.rmTxEngine = new RemoteMethodTxEngine(dtoNode, timeout);
+        this.masterNodeId = masterNodeId;
         this.bindDtoEndpoint(dtoNode);
     }
 
@@ -84,35 +107,31 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
         KeypleDto keypleDTO = transportDto.getKeypleDTO();
         TransportDto out;
 
-        logger.trace("onDto {}", KeypleDtoHelper.toJson(keypleDTO));
+        logger.trace("{} onDto {}", dtoNode.getNodeId(), KeypleDtoHelper.toJson(keypleDTO));
 
         RemoteMethod method = RemoteMethod.get(keypleDTO.getAction());
-        logger.debug("Remote Method called : {} - isRequest : {}", method, keypleDTO.isRequest());
+        logger.debug("{} Remote Method called : {} - isRequest : {}", dtoNode.getNodeId(), method,
+                keypleDTO.isRequest());
 
         switch (method) {
+
+            /*
+             * Response from Master
+             */
             case READER_CONNECT:
-                // process READER_CONNECT response
-                if (keypleDTO.isRequest()) {
-                    throw new IllegalStateException(
-                            "a READER_CONNECT request has been received by SlaveAPI");
-                } else {
-                    // send DTO to TxEngine
-                    out = this.rmTxEngine.onDTO(transportDto);
-                }
-                break;
-
             case READER_DISCONNECT:
-                // process READER_DISCONNECT response
                 if (keypleDTO.isRequest()) {
-                    throw new IllegalStateException(
-                            "a READER_DISCONNECT request has been received by SlaveAPI");
+                    throw new IllegalStateException("a " + keypleDTO.getAction()
+                            + " request has been received by SlaveAPI");
                 } else {
                     // send DTO to TxEngine
                     out = this.rmTxEngine.onDTO(transportDto);
                 }
                 break;
 
-
+            /*
+             * Request from Master
+             */
             case READER_TRANSMIT:
                 // must be a request
                 if (keypleDTO.isRequest()) {
@@ -121,6 +140,17 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
                 } else {
                     throw new IllegalStateException(
                             "a READER_TRANSMIT response has been received by SlaveAPI");
+                }
+                break;
+
+            case READER_TRANSMIT_SET:
+                // must be a request
+                if (keypleDTO.isRequest()) {
+                    RemoteMethodExecutor rmTransmitSet = new RmTransmitSetExecutor(this);
+                    out = rmTransmitSet.execute(transportDto);
+                } else {
+                    throw new IllegalStateException(
+                            "a READER_TRANSMIT_SET response has been received by SlaveAPI");
                 }
                 break;
 
@@ -136,6 +166,32 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
                 }
                 break;
 
+            case POOL_ALLOCATE_READER:
+
+                // must be a request
+                if (keypleDTO.isRequest()) {
+                    // executor
+                    RmPoolAllocateExecutor rmPoolAllocateExecutor =
+                            new RmPoolAllocateExecutor(this.readerPoolPlugin);
+                    out = rmPoolAllocateExecutor.execute(transportDto);
+                } else {
+                    throw new IllegalStateException(
+                            "a POOL_ALLOCATE_READER response has been received by SlaveAPI");
+                }
+                break;
+
+            case POOL_RELEASE_READER:
+                // must be a request
+                if (keypleDTO.isRequest()) {
+                    RmPoolReleaseExecutor rmPoolReleaseExecutor =
+                            new RmPoolReleaseExecutor(this.readerPoolPlugin);
+                    out = rmPoolReleaseExecutor.execute(transportDto);
+                } else {
+                    throw new IllegalStateException(
+                            "a POOL_RELEASE_READER response has been received by SlaveAPI");
+                }
+                break;
+
             default:
                 logger.warn("**** ERROR - UNRECOGNIZED ****");
                 logger.warn("Receive unrecognized message action : {} {} {} {}",
@@ -145,10 +201,10 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
                         "a  ERROR - UNRECOGNIZED request has been received by SlaveAPI");
         }
 
-        logger.trace("onDto response to be sent {}", KeypleDtoHelper.toJson(out.getKeypleDTO()));
+        logger.trace("{} onDto response to be sent {}", dtoNode.getNodeId(),
+                KeypleDtoHelper.toJson(out.getKeypleDTO()));
+
         return out;
-
-
     }
 
 
@@ -158,15 +214,34 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      * @param localReader : native reader to be connected
      */
     @Override
-    public String connectReader(ProxyReader localReader) throws KeypleReaderException {
+    public String connectReader(SeReader localReader) throws KeypleReaderException {
+        return connectReader(localReader, new HashMap<String, String>());
+    }
 
-        logger.info("connectReader {} from device {}", localReader.getName(), dtoNode.getNodeId());
+    /**
+     * Connect a local reader to Remote SE Plugin {@link INativeReaderService} with options
+     *
+     * @param localReader : native reader to be connected
+     * @param options : options will be set as parameters of virtual reader
+     */
+    @Override
+    public String connectReader(SeReader localReader, Map<String, String> options)
+            throws KeypleReaderException {
+
+        if (options == null) {
+            options = new HashMap<String, String>();
+        }
+
+        logger.info("{} connectReader {} from device {}", dtoNode.getNodeId(),
+                localReader.getName(), dtoNode.getNodeId());
 
         RmConnectReaderTx connect = new RmConnectReaderTx(null, localReader.getName(), null,
-                masterNodeId, localReader, dtoNode.getNodeId(), this);
+                masterNodeId, localReader, dtoNode.getNodeId(), this, options);
         try {
-            rmTxEngine.register(connect);
-            return connect.get();
+            rmTxEngine.add(connect);
+
+            // blocking call
+            return connect.getResponse();
         } catch (KeypleRemoteException e) {
             throw new KeypleReaderException("An error occurred while calling connectReader", e);
         }
@@ -176,14 +251,17 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
     @Override
     public void disconnectReader(String sessionId, String nativeReaderName)
             throws KeypleReaderException {
-        logger.info("disconnectReader {} from device {}", nativeReaderName, dtoNode.getNodeId());
+        logger.info("{} disconnectReader {} from device {}", dtoNode.getNodeId(), nativeReaderName,
+                dtoNode.getNodeId());
 
         RmDisconnectReaderTx disconnect = new RmDisconnectReaderTx(sessionId, nativeReaderName,
                 dtoNode.getNodeId(), masterNodeId);
 
         try {
-            rmTxEngine.register(disconnect);
-            disconnect.get();
+            rmTxEngine.add(disconnect);
+
+            // blocking call
+            disconnect.getResponse();
             ProxyReader nativeReader = findLocalReader(nativeReaderName);
             if (nativeReader instanceof AbstractObservableReader) {
                 // stop propagating the local reader events
@@ -192,7 +270,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
         } catch (KeypleRemoteException e) {
             throw new KeypleReaderException("An error occurred while calling connectReader", e);
         } catch (KeypleReaderNotFoundException e) {
-            e.printStackTrace();
+            logger.warn("SlaveAPI#disconnectReader() : reader with name was not found",
+                    nativeReaderName);
         }
     }
 
@@ -225,19 +304,29 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      */
     @Override
     public void update(ReaderEvent event) {
-        logger.info("SlaveAPI listens for event from native Reader - Received Event {}",
-                event.getEventType());
+        logger.info("{} SlaveAPI - reader event {}", dtoNode.getNodeId(), event.getEventType());
 
         // construct json data
         String data = JsonParser.getGson().toJson(event);
 
         try {
-            dtoNode.sendDTO(new KeypleDto(RemoteMethod.READER_EVENT.getName(), data, true, null,
-                    event.getReaderName(), null, this.dtoNode.getNodeId(), masterNodeId));
+            dtoNode.sendDTO(KeypleDtoHelper.buildNotification(RemoteMethod.READER_EVENT.getName(),
+                    data, null, event.getReaderName(), null, this.dtoNode.getNodeId(),
+                    masterNodeId));
         } catch (KeypleRemoteException e) {
             logger.error("Event " + event.toString()
                     + " could not be sent though Remote Service Interface", e);
         }
+    }
+
+
+    public RemoteMethodTxEngine getRmTxEngine() {
+        return rmTxEngine;
+    }
+
+
+    public void registerReaderPoolPlugin(ReaderPoolPlugin readerPoolPlugin) {
+        this.readerPoolPlugin = readerPoolPlugin;
     }
 
 

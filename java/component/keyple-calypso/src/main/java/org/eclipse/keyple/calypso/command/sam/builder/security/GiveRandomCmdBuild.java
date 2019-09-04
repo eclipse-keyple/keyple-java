@@ -28,10 +28,8 @@ public class GiveRandomCmdBuild extends AbstractSamCommandBuilder {
      *
      * @param revision of the SAM
      * @param random the random data
-     * @throws IllegalArgumentException - if the random data is null or has a length not
-     *         equal to 8
-     *
-     *         TODO implement specific settings for rev < 3
+     * @throws IllegalArgumentException - if the random data is null or has a length not equal to 8
+     *         TODO implement specific settings for rev less than 3
      */
     public GiveRandomCmdBuild(SamRevision revision, byte[] random) {
         super(command, null);

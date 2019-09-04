@@ -16,23 +16,20 @@ import java.io.IOException;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.core.selection.MatchingSelection;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPlugin;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.SeReader;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.transaction.MatchingSelection;
-import org.eclipse.keyple.transaction.SeSelection;
-import org.eclipse.keyple.transaction.SelectionsResult;
-import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +78,7 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
          * Get a PO reader ready to work with Calypso PO. Use the getReader helper method from the
          * CalypsoUtilities class.
          */
-        SeReader poReader = CalypsoUtilities.getDefaultPoReader(seProxyService);
+        SeReader poReader = CalypsoUtilities.getDefaultPoReader();
 
         /* Check if the reader exists */
         if (poReader == null) {
@@ -119,15 +116,15 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
              * make the selection and read additional information afterwards
              */
             PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                    new PoSelector(null, new PoSelector.PoAtrFilter(poAtrRegex),
-                            "ATR: " + poAtrRegex),
-                    ChannelState.KEEP_OPEN, ContactlessProtocols.PROTOCOL_ISO14443_4);
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                            new PoSelector.PoAtrFilter(poAtrRegex), null, "ATR: " + poAtrRegex),
+                    ChannelState.KEEP_OPEN);
 
             /*
              * Prepare the selection of the DF RT.
              */
             int selectFileParserIndex = poSelectionRequest.prepareSelectFileCmd(
-                    ByteArrayUtils.fromHex(poDfRtPath), "Select file: " + poDfRtPath);
+                    ByteArrayUtil.fromHex(poDfRtPath), "Select file: " + poDfRtPath);
 
             /*
              * Prepare the reading order and keep the associated parser for later use once the
@@ -163,15 +160,14 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
                         .getResponseParser(readEnvironmentParserIndex);
 
                 logger.info("DF RT FCI: {}",
-                        ByteArrayUtils.toHex(selectFileRespPars.getSelectionData()));
+                        ByteArrayUtil.toHex(selectFileRespPars.getSelectionData()));
 
                 /* Retrieve the data read from the parser updated during the selection process */
                 byte environmentAndHolder[] = (readEnvironmentParser.getRecords())
                         .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
 
                 /* Log the result */
-                logger.info("Environment file data: {}",
-                        ByteArrayUtils.toHex(environmentAndHolder));
+                logger.info("Environment file data: {}", ByteArrayUtil.toHex(environmentAndHolder));
 
                 /* Go on with the reading of the first record of the EventLog file */
                 logger.info(
@@ -181,7 +177,8 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
                 logger.info(
                         "==================================================================================");
 
-                PoTransaction poTransaction = new PoTransaction(poReader, calypsoPo);
+                PoTransaction poTransaction =
+                        new PoTransaction(new PoResource(poReader, calypsoPo));
 
                 /*
                  * Prepare the reading order and keep the associated parser for later use once the
@@ -209,7 +206,7 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
                                     .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
 
                     /* Log the result */
-                    logger.info("EventLog file data: {}", ByteArrayUtils.toHex(eventLog));
+                    logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
                 }
                 logger.info(
                         "==================================================================================");

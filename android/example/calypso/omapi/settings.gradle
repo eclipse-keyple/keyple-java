@@ -1,7 +1,11 @@
 rootProject.name = 'example-android-omapi'
 
+
 include ':keyple-plugin:android-omapi'
 project(':keyple-plugin:android-omapi').projectDir = new File("../../../keyple-plugin/android-omapi")
+
+include ':java:component'
+project(':java:component').projectDir = new File("../../../../java/component")
 
 include ':java:component:keyple-core'
 project(':java:component:keyple-core').projectDir = new File("../../../../java/component/keyple-core")

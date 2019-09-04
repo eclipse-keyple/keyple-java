@@ -1,29 +1,42 @@
 buildscript {
     repositories {
         mavenLocal()
-        mavenCentral()
+        //mavenCentral()
         jcenter()
+        maven {
+            url 'https://repo.eclipse.org/service/local/repositories/maven_central/content'
+        }
+    }
+
+    dependencies {
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.14.0"
     }
 }
 
-plugins {
-    id "com.diffplug.gradle.spotless" version "3.14.0"
-}
+
+apply from: 'common.gradle'
+
+
+apply plugin: "com.diffplug.gradle.spotless"
 
 allprojects {
 
     group 'org.eclipse.keyple'
-    
+
     configurations.all {
         // check for updates every build
         resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     }
 
     repositories {
+        maven {
+            url 'https://repo.eclipse.org/service/local/repositories/maven_central/content'
+        }
         mavenLocal()
-        mavenCentral()
+        //mavenCentral()
         google()
         jcenter()
+
     }
 
     apply plugin: 'pmd'
@@ -68,7 +81,7 @@ allprojects {
 
 spotless {
     java {
-        target 'java/**/*.java'
+        target "java/**/*.java"
         licenseHeaderFile '.build/spotless.license.txt'
         importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
         removeUnusedImports()
@@ -84,6 +97,7 @@ spotless {
 }
 
 
+/*
 //create task to agregate javadoc
 task aggregatedJavadocs(type: Javadoc, description: 'Generate javadocs from all child projects as if it was a single project', group: 'Documentation') {
     //println 'Create a aggregated javadoc Task to : ' + "$buildDir/docs/javadoc"
@@ -121,3 +135,4 @@ aggregatedJavadocs.doFirst {
 
     }
 }
+*/

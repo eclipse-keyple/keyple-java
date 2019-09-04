@@ -22,22 +22,20 @@ import org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
-import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.SeSelector;
-import org.eclipse.keyple.seproxy.message.ApduRequest;
-import org.eclipse.keyple.seproxy.message.SeResponse;
-import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
-import org.eclipse.keyple.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.transaction.SeSelectionRequest;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.message.ApduRequest;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Specialized selection request to manage the specific characteristics of Calypso POs
  */
-public final class PoSelectionRequest extends SeSelectionRequest {
+public final class PoSelectionRequest extends AbstractSeSelectionRequest {
     private static final Logger logger = LoggerFactory.getLogger(PoSelectionRequest.class);
 
     private int commandIndex;
@@ -52,14 +50,12 @@ public final class PoSelectionRequest extends SeSelectionRequest {
     /**
      * Constructor.
      * 
-     * @param seSelector the selector to target a particular SE
+     * @param poSelector the selector to target a particular SE
      * @param channelState tell if the channel is to be closed or not after the command
-     * @param protocolFlag the targeted protocol
      */
-    public PoSelectionRequest(SeSelector seSelector, ChannelState channelState,
-            SeProtocol protocolFlag) {
+    public PoSelectionRequest(PoSelector poSelector, ChannelState channelState) {
 
-        super(seSelector, channelState, protocolFlag);
+        super(poSelector, channelState);
 
         commandIndex = 0;
 
@@ -163,7 +159,7 @@ public final class PoSelectionRequest extends SeSelectionRequest {
      */
     public int prepareReadRecordsCmd(byte sfi, ReadDataStructure readDataStructureEnum,
             byte firstRecordNumber, String extraInfo) {
-        if (protocolFlag == ContactsProtocols.PROTOCOL_ISO7816_3) {
+        if (seSelector.getSeProtocol() == SeCommonProtocols.PROTOCOL_ISO7816_3) {
             throw new IllegalArgumentException(
                     "In contacts mode, the expected length must be specified.");
         }
@@ -182,7 +178,7 @@ public final class PoSelectionRequest extends SeSelectionRequest {
     public int prepareSelectFileCmd(byte[] path, String extraInfo) {
         addApduRequest(new SelectFileCmdBuild(poClass, path).getApduRequest());
         if (logger.isTraceEnabled()) {
-            logger.trace("Select File: PATH = {}", ByteArrayUtils.toHex(path));
+            logger.trace("Select File: PATH = {}", ByteArrayUtil.toHex(path));
         }
 
         /* set the parser for the response of this command */
@@ -218,10 +214,12 @@ public final class PoSelectionRequest extends SeSelectionRequest {
      * Prepare a custom read ApduRequest to be executed following the selection.
      * 
      * @param name the name of the command (will appear in the ApduRequest log)
-     * @param apduRequest the ApduRequest (the correct instruction byte must be provided)
+     * @param apdu the byte array corresponding to the command to be sent (the correct instruction
+     *        byte must be provided)
      * @return the command index indicating the order of the command in the command list
      */
-    public int preparePoCustomReadCmd(String name, ApduRequest apduRequest) {
+    public int preparePoCustomReadCmd(String name, byte[] apdu) {
+        ApduRequest apduRequest = new ApduRequest(apdu, false);
         addApduRequest(new PoCustomReadCommandBuilder(name, apduRequest).getApduRequest());
         if (logger.isTraceEnabled()) {
             logger.trace("CustomReadCommand: APDUREQUEST = {}", apduRequest);
@@ -286,6 +284,7 @@ public final class PoSelectionRequest extends SeSelectionRequest {
      */
     @Override
     protected CalypsoPo parse(SeResponse seResponse) {
-        return new CalypsoPo(seResponse, seSelector.getExtraInfo());
+        return new CalypsoPo(seResponse, seSelector.getSeProtocol().getTransmissionMode(),
+                seSelector.getExtraInfo());
     }
 }

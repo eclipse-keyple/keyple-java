@@ -11,8 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.calypso.command.sam;
 
-import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 public class AbstractSamResponseParser extends AbstractApduResponseParser {
     /**

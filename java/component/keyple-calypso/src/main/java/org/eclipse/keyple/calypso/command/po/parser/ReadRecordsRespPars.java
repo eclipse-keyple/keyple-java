@@ -13,9 +13,9 @@ package org.eclipse.keyple.calypso.command.po.parser;
 
 import java.util.*;
 import org.eclipse.keyple.calypso.command.po.AbstractPoResponseParser;
-import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 /**
  * Read Records (00B2) response parser. See specs: Calypso / page 89 / 9.4.7 Read Records The
@@ -163,7 +163,7 @@ public final class ReadRecordsRespPars extends AbstractPoResponseParser {
                 SortedMap<Integer, byte[]> recordMap = getRecords();
                 string = String.format("Single record data: {RECORD = %d, DATA = %s}",
                         recordMap.firstKey(),
-                        ByteArrayUtils.toHex(recordMap.get(recordMap.firstKey())));
+                        ByteArrayUtil.toHex(recordMap.get(recordMap.firstKey())));
             }
                 break;
             case MULTIPLE_RECORD_DATA: {
@@ -174,7 +174,7 @@ public final class ReadRecordsRespPars extends AbstractPoResponseParser {
                 for (Iterator it = records.iterator(); it.hasNext();) {
                     Integer record = (Integer) it.next();
                     sb.append(String.format("{RECORD = %d, DATA = %s}", record,
-                            ByteArrayUtils.toHex(recordMap.get(record))));
+                            ByteArrayUtil.toHex(recordMap.get(record))));
                     if (it.hasNext()) {
                         sb.append(", ");
                     }

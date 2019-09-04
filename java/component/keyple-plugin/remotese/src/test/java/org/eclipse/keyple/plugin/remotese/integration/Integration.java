@@ -12,17 +12,22 @@
 package org.eclipse.keyple.plugin.remotese.integration;
 
 
+
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
+import org.eclipse.keyple.plugin.remotese.transport.DtoHandler;
 import org.eclipse.keyple.plugin.remotese.transport.DtoNode;
 import org.eclipse.keyple.plugin.remotese.transport.impl.java.LocalTransportDto;
+import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDto;
 import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
+import org.eclipse.keyple.plugin.stub.StubPoolPlugin;
 import org.eclipse.keyple.plugin.stub.StubReader;
-import org.eclipse.keyple.seproxy.ReaderPlugin;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderNotFoundException;
 import org.junit.Assert;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -30,48 +35,25 @@ import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class Integration {
+public class Integration {
 
     private static final Logger logger = LoggerFactory.getLogger(Integration.class);
 
 
     /**
-     * Create a Virtual Reader Service
+     * Create a Spy MasterAPI
      * 
      * @param node
      * @return
      */
-    public static MasterAPI bindMaster(DtoNode node) {
+    public static MasterAPI bindMasterSpy(DtoNode node) {
         // Create Master services : masterAPI
         MasterAPI masterAPI = new MasterAPI(SeProxyService.getInstance(), node);
-
-        // observe remote se plugin for events
-        ReaderPlugin rsePlugin = masterAPI.getPlugin();
-
-        // Binds masterAPI to a
-        // masterAPI.bindDtoEndpoint(node);
-
-        return masterAPI;
+        return Mockito.spy(masterAPI);
     }
 
     /**
-     * Create a Native Reader Service
-     * 
-     * @param node
-     * @return
-     */
-    public static SlaveAPI bindSlave(DtoNode node, String masterNodeId) {
-        // Binds node for outgoing KeypleDto
-        SlaveAPI slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId);
-
-        // Binds node for incoming KeypleDTo
-        // slaveAPI.bindDtoEndpoint(node);
-
-        return slaveAPI;
-    }
-
-    /**
-     * Create a Spy Native Reader Service
+     * Create a Spy SlaveAPI
      * 
      * @param node
      * @return
@@ -79,12 +61,9 @@ class Integration {
     public static SlaveAPI bindSlaveSpy(DtoNode node, String masterNodeId) {
         // Binds node for outgoing KeypleDto
         SlaveAPI slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node, masterNodeId);
-
         SlaveAPI spy = Mockito.spy(slaveAPI);
-
         // Binds node for incoming KeypleDTo
         // spy.bindDtoEndpoint(node);
-
         return spy;
     }
 
@@ -96,7 +75,8 @@ class Integration {
      * @throws InterruptedException
      * @throws KeypleReaderNotFoundException
      */
-    public static StubReader createStubReader(String stubReaderName)
+    public static StubReader createStubReader(String stubReaderName,
+            TransmissionMode transmissionMode)
             throws InterruptedException, KeypleReaderNotFoundException {
         SeProxyService seProxyService = SeProxyService.getInstance();
 
@@ -110,13 +90,29 @@ class Integration {
         logger.debug("Stub plugin count observers : {}", stubPlugin.countObservers());
 
         logger.debug("Create a new StubReader : {}", stubReaderName);
-        stubPlugin.plugStubReader(stubReaderName, true);
+        stubPlugin.plugStubReader(stubReaderName, transmissionMode, true);
 
         Thread.sleep(100);
 
-        // get the created proxy reader
+        // Get the created proxy reader
         return (StubReader) stubPlugin.getReader(stubReaderName);
     }
+
+    /**
+     * Create a Stub Reader Pool Plugin
+     *
+     * @return
+     * @throws InterruptedException
+     * @throws KeypleReaderNotFoundException
+     */
+    public static StubPoolPlugin createStubPoolPlugin()
+            throws InterruptedException, KeypleReaderNotFoundException {
+
+        StubPoolPlugin poolPlugin = new StubPoolPlugin();
+        SeProxyService.getInstance().addPlugin(poolPlugin);
+        return poolPlugin;
+    }
+
 
     /**
      * Create a mock method for onDto() that checks that keypleDto contains an exception
@@ -131,7 +127,32 @@ class Integration {
 
                 // assert that returning dto DOES contain an exception
                 Assert.assertTrue(KeypleDtoHelper.containsException(transportDto.getKeypleDTO()));
-                return new LocalTransportDto(KeypleDtoHelper.NoResponse(), null);
+                return new LocalTransportDto(
+                        KeypleDtoHelper.NoResponse(transportDto.getKeypleDTO().getId()), null);
+            }
+        };
+    }
+
+    public static DtoNode getFakeDtoNode() {
+        return new DtoNode() {
+            @Override
+            public void setDtoHandler(DtoHandler handler) {
+
+            }
+
+            @Override
+            public void sendDTO(TransportDto message) throws KeypleRemoteException {
+
+            }
+
+            @Override
+            public void sendDTO(KeypleDto message) throws KeypleRemoteException {
+
+            }
+
+            @Override
+            public String getNodeId() {
+                return "";
             }
         };
     }

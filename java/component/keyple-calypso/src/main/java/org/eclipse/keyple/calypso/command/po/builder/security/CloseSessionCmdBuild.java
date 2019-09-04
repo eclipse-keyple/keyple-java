@@ -16,8 +16,8 @@ import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.AbstractPoCommandBuilder;
 import org.eclipse.keyple.calypso.command.po.CalypsoPoCommands;
 import org.eclipse.keyple.calypso.command.po.parser.security.CloseSessionRespPars;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -45,7 +45,7 @@ public final class CloseSessionCmdBuild extends AbstractPoCommandBuilder<CloseSe
         if (terminalSessionSignature != null && terminalSessionSignature.length != 4
                 && terminalSessionSignature.length != 8) {
             throw new IllegalArgumentException("Invalid terminal sessionSignature: "
-                    + ByteArrayUtils.toHex(terminalSessionSignature));
+                    + ByteArrayUtil.toHex(terminalSessionSignature));
         }
 
         byte p1 = ratificationAsked ? (byte) 0x80 : (byte) 0x00;

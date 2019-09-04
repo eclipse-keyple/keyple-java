@@ -17,18 +17,18 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.eclipse.keyple.seproxy.SeSelector;
-import org.eclipse.keyple.seproxy.exception.KeypleApplicationSelectionException;
-import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
-import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.seproxy.message.*;
-import org.eclipse.keyple.seproxy.plugin.AbstractStaticReader;
-import org.eclipse.keyple.seproxy.protocol.ContactsProtocols;
-import org.eclipse.keyple.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.seproxy.protocol.TransmissionMode;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.exception.KeypleApplicationSelectionException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractStaticReader;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.simalliance.openmobileapi.Channel;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.Session;
@@ -38,8 +38,9 @@ import org.slf4j.LoggerFactory;
 import android.util.Log;
 
 /**
- * Communicates with Android readers throught the Open Mobile API see {@link Reader} Instances of
- * this class represent SE readers supported by this device. These readers can be physical devices
+ * Communicates with Android readers throught the Open Mobile API see org.simalliance.openmobileapi.Reader
+ *
+ * Instances of this class represent SE readers supported by this device. These readers can be physical devices
  * or virtual devices. They can be removable or not. They can contain one SE that can or cannot be
  * removed.
  */
@@ -85,12 +86,10 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
 
     /**
      * Check if a SE is present in this reader. see {@link Reader#isSecureElementPresent()}
-     * 
      * @return True if the SE is present, false otherwise
-     * @throws KeypleReaderException
      */
     @Override
-    protected boolean checkSePresence() throws NoStackTraceThrowable {
+    protected boolean checkSePresence() {
         return omapiReader.isSecureElementPresent();
     }
 
@@ -110,104 +109,52 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
     }
 
     /**
-     * Operate a logical channel opening.
-     * <p>
-     * The channel opening is done according to the AidSelector and AtrFilter combination.
-     *
-     * @param seSelector the selection data
-     * @return the SelectionStatus
-     * @throws KeypleIOReaderException if an IOException occurs
+     * Open a logical channel by selecting the application
+     * @param aidSelector the selection parameters
+     * @return a ApduResponse built from the FCI data resulting from the application selection
+     * @throws KeypleIOReaderException
+     * @throws KeypleChannelStateException
+     * @throws KeypleApplicationSelectionException
      */
-    @Override
-    protected final SelectionStatus openLogicalChannel(SeSelector seSelector)
-            throws KeypleIOReaderException, KeypleChannelStateException, KeypleApplicationSelectionException {
-        ApduResponse fciResponse;
-        byte[] atr = getATR();
-        boolean selectionHasMatched = true;
-        SelectionStatus selectionStatus;
-
-        /** Perform ATR filtering if requested */
-        if (seSelector.getAtrFilter() != null) {
-            if (atr == null) {
-                throw new KeypleIOReaderException("Didn't get an ATR from the SE.");
-            }
-
-            if (logger.isTraceEnabled()) {
-                logger.trace("[{}] openLogicalChannel => ATR: {}", this.getName(),
-                        ByteArrayUtils.toHex(atr));
-            }
-            if (!seSelector.getAtrFilter().atrMatches(atr)) {
-                logger.trace("[{}] openLogicalChannel => ATR didn't match. SELECTOR = {}",
-                        this.getName(), seSelector);
-                selectionHasMatched = false;
-            }
+    protected ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector) throws KeypleIOReaderException, KeypleChannelStateException, KeypleApplicationSelectionException {
+        if(aidSelector.getAidToSelect() == null) {
             try {
                 openChannel = session.openBasicChannel(null);
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new KeypleIOReaderException("IOException while opening basic channel.");
             } catch (SecurityException e) {
-                throw new KeypleChannelStateException("Error while opening basic channel, SE_SELECTOR = " +  seSelector.toString(), e.getCause());
+                throw new KeypleChannelStateException("Error while opening basic channel, SE_SELECTOR = " +  aidSelector.toString(), e.getCause());
             }
 
             if (openChannel == null) {
                 throw new KeypleIOReaderException("Failed to open a basic channel.");
             }
-        }
-
-        /**
-         * Perform application selection if requested and if ATR filtering matched or was not
-         * requested
-         */
-        if (selectionHasMatched && seSelector.getAidSelector() != null) {
-            final SeSelector.AidSelector aidSelector = seSelector.getAidSelector();
-            final byte aid[] = aidSelector.getAidToSelect();
-            if (aid == null) {
-                throw new IllegalArgumentException("AID must not be null for an AidSelector.");
-            }
+        } else {
             if (logger.isTraceEnabled()) {
                 logger.trace("[{}] openLogicalChannel => Select Application with AID = {}",
-                        this.getName(), ByteArrayUtils.toHex(aid));
+                        this.getName(), ByteArrayUtil.toHex(aidSelector.getAidToSelect().getValue()));
             }
             try {
-                openChannel = session.openLogicalChannel(aid);
+                openChannel = session.openLogicalChannel(aidSelector.getAidToSelect().getValue(),
+                        (byte)(aidSelector.getFileOccurrence().getIsoBitMask()
+                                | aidSelector.getFileControlInformation().getIsoBitMask()));
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new KeypleIOReaderException("IOException while opening logical channel.");
             } catch (NoSuchElementException e) {
                 throw new KeypleApplicationSelectionException(
-                        "Error while selecting application : " + ByteArrayUtils.toHex(aid), e);
+                        "Error while selecting application : " + ByteArrayUtil.toHex(aidSelector.getAidToSelect().getValue()), e);
             } catch (SecurityException e) {
-                throw new KeypleChannelStateException("Error while opening logical channel, aid :" + ByteArrayUtils.toHex(aid), e.getCause());
+                throw new KeypleChannelStateException("Error while opening logical channel, aid :" + ByteArrayUtil.toHex(aidSelector.getAidToSelect().getValue()), e.getCause());
             }
 
             if (openChannel == null) {
                 throw new KeypleIOReaderException("Failed to open a logical channel.");
             }
-
-            /* get the FCI and build an ApduResponse */
-            fciResponse = new ApduResponse(openChannel.getSelectResponse(), aidSelector.getSuccessfulSelectionStatusCodes());
-
-            if (!fciResponse.isSuccessful()) {
-                logger.trace(
-                        "[{}] openLogicalChannel => Application Selection failed. SELECTOR = {}",
-                        this.getName(), aidSelector);
-            }
-            /*
-             * The ATR filtering matched or was not requested. The selection status is determined by
-             * the answer to the select application command.
-             */
-            selectionStatus = new SelectionStatus(new AnswerToReset(atr), fciResponse,
-                    fciResponse.isSuccessful());
-        } else {
-            /*
-             * The ATR filtering didn't match or no AidSelector was provided. The selection status
-             * is determined by the ATR filtering.
-             */
-            selectionStatus = new SelectionStatus(new AnswerToReset(atr),
-                    new ApduResponse(null, null), selectionHasMatched);
         }
-        return selectionStatus;
+        /* get the FCI and build an ApduResponse */
+        return new ApduResponse(openChannel.getSelectResponse(), aidSelector.getSuccessfulSelectionStatusCodes());
     }
 
     @Override
@@ -229,11 +176,8 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
         }
     }
 
-
     /**
-     * Close session see {@link Session#close()}
-     * 
-     * @throws KeypleReaderException
+     * Close session see org.simalliance.openmobileapi.Session#close()
      */
     @Override
     protected void closePhysicalChannel() {
@@ -245,17 +189,17 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
     }
 
     /**
-     * Transmit an APDU command (as per ISO/IEC 7816) to the SE see {@link Channel#transmit(byte[])}
+     * Transmit an APDU command (as per ISO/IEC 7816) to the SE see org.simalliance.openmobileapi.Channel#transmit(byte[])
      * 
      * @param apduIn byte buffer containing the ingoing data
-     * @return
-     * @throws KeypleReaderException
+     * @return apduOut response
+     * @throws KeypleIOReaderException if error while sending or receiving bytes
      */
     @Override
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         // Initialization
         Log.d(TAG, "Data Length to be sent to tag : " + apduIn.length);
-        Log.d(TAG, "Data in : " + ByteArrayUtils.toHex(apduIn));
+        Log.d(TAG, "Data in : " + ByteArrayUtil.toHex(apduIn));
         byte[] data = apduIn;
         byte[] dataOut = new byte[0];
         try {
@@ -265,19 +209,17 @@ public final class AndroidOmapiReader extends AbstractStaticReader {
             throw new KeypleIOReaderException("Error while transmitting APDU", e);
         }
         byte[] out = dataOut;
-        Log.d(TAG, "Data out : " + ByteArrayUtils.toHex(out));
+        Log.d(TAG, "Data out : " + ByteArrayUtil.toHex(out));
         return out;
     }
 
     /**
-     * The only protocol Fla
-     * 
+     * Check that protocolFlag is PROTOCOL_ISO7816_3
      * @param protocolFlag
-     * @return true
-     * @throws KeypleReaderException
+     * @return true if match PROTOCOL_ISO7816_3
      */
     @Override
     protected boolean protocolFlagMatches(SeProtocol protocolFlag) {
-        return protocolFlag.equals(ContactsProtocols.PROTOCOL_ISO7816_3);
+        return protocolFlag.equals(SeCommonProtocols.PROTOCOL_ISO7816_3);
     }
 }

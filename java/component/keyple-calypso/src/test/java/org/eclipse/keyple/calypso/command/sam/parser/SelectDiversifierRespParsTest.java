@@ -13,8 +13,8 @@ package org.eclipse.keyple.calypso.command.sam.parser;
 
 
 import org.eclipse.keyple.calypso.command.sam.parser.security.SelectDiversifierRespPars;
-import org.eclipse.keyple.command.AbstractApduResponseParser;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
+import org.eclipse.keyple.core.command.AbstractApduResponseParser;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.hamcrest.core.IsNot;
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,9 +31,7 @@ public class SelectDiversifierRespParsTest {
         ApduResponse apduResponse = new ApduResponse(new byte[] {(byte) 0x90, 0x00}, null);
         ApduResponse apduResponse1 = new ApduResponse(new byte[] {(byte) 0x80, 0x00}, null);
 
-        AbstractApduResponseParser apduResponseParser =
-                new SelectDiversifierRespPars(
-                        apduResponse);
+        AbstractApduResponseParser apduResponseParser = new SelectDiversifierRespPars(apduResponse);
 
         Assert.assertEquals(0x9000, apduResponseParser.getApduResponse().getStatusCode());
 

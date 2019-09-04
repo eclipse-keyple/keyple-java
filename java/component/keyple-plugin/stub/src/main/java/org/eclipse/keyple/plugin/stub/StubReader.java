@@ -14,29 +14,25 @@ package org.eclipse.keyple.plugin.stub;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.seproxy.exception.KeypleChannelStateException;
-import org.eclipse.keyple.seproxy.exception.KeypleIOReaderException;
-import org.eclipse.keyple.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.seproxy.message.ApduRequest;
-import org.eclipse.keyple.seproxy.message.ApduResponse;
-import org.eclipse.keyple.seproxy.message.SeRequestSet;
-import org.eclipse.keyple.seproxy.message.SeResponseSet;
-import org.eclipse.keyple.seproxy.plugin.AbstractThreadedLocalReader;
-import org.eclipse.keyple.seproxy.protocol.Protocol;
-import org.eclipse.keyple.seproxy.protocol.SeProtocol;
-import org.eclipse.keyple.seproxy.protocol.TransmissionMode;
+import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedLocalReader;
+import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
+import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+/**
+ * Simulates communication with a {@link StubSecureElement}. StubReader is observable, it raises
+ * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent} : SE_INSERTED, SE_REMOVED
+ */
 public final class StubReader extends AbstractThreadedLocalReader {
 
     private static final Logger logger = LoggerFactory.getLogger(StubReader.class);
 
     private StubSecureElement se;
-
-    private boolean sePresent;
 
     private Map<String, String> parameters = new HashMap<String, String>();
 
@@ -46,15 +42,22 @@ public final class StubReader extends AbstractThreadedLocalReader {
     public static final String CONTACTS_PARAMETER = "contacts";
 
     static final String pluginName = "StubPlugin";
-    String readerName = "StubReader";
 
     TransmissionMode transmissionMode = TransmissionMode.CONTACTLESS;
 
-    public StubReader(String name) {
+    /**
+     * Do not use directly
+     * 
+     * @param name
+     */
+    StubReader(String name) {
         super(pluginName, name);
-        readerName = name;
-        sePresent = false;
-        threadWaitTimeout = 5000;
+        threadWaitTimeout = 2000; // time between two events
+    }
+
+    StubReader(String name, TransmissionMode transmissionMode) {
+        this(name);
+        this.transmissionMode = transmissionMode;
     }
 
     @Override
@@ -83,14 +86,20 @@ public final class StubReader extends AbstractThreadedLocalReader {
 
     @Override
     public byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
+        if (se == null) {
+            throw new KeypleIOReaderException("No SE available.");
+        }
         return se.processApdu(apduIn);
     }
 
     @Override
     protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
         boolean result;
-        // Get protocolFlag to check if ATR filtering is required
-        if (protocolFlag != Protocol.ANY) {
+        if (se == null) {
+            throw new KeypleReaderException("No SE available.");
+        }
+        // Test protocolFlag to check if ATR based protocol filtering is required
+        if (protocolFlag != null) {
             if (!isPhysicalChannelOpen()) {
                 openPhysicalChannel();
             }
@@ -119,7 +128,7 @@ public final class StubReader extends AbstractThreadedLocalReader {
 
 
     @Override
-    protected boolean checkSePresence() {
+    protected synchronized boolean checkSePresence() {
         return se != null;
     }
 
@@ -152,26 +161,28 @@ public final class StubReader extends AbstractThreadedLocalReader {
     /*
      * HELPERS TO TEST INTERNAL METHOD TODO : is this necessary?
      */
-    final ApduResponse processApduRequestTestProxy(ApduRequest apduRequest)
-            throws KeypleReaderException {
-        return this.processApduRequest(apduRequest);
-    }
-
-    final SeResponseSet processSeRequestSetTestProxy(SeRequestSet requestSet)
-            throws KeypleReaderException {
-        return this.processSeRequestSet(requestSet);
-    }
-
-    final boolean isLogicalChannelOpenTestProxy() {
-        return this.isPhysicalChannelOpen();
-    }
-
+    /*
+     * final ApduResponse processApduRequestTestProxy(ApduRequest apduRequest) throws
+     * KeypleReaderException { return this.processApduRequest(apduRequest); }
+     * 
+     * final SeResponseSet processSeRequestSetTestProxy(SeRequestSet requestSet) throws
+     * KeypleReaderException { return this.processSeRequestSet(requestSet); }
+     * 
+     * final boolean isLogicalChannelOpenTestProxy() { return this.isPhysicalChannelOpen(); }
+     */
 
 
     /*
      * STATE CONTROLLERS FOR INSERTING AND REMOVING SECURE ELEMENT
      */
-    public void insertSe(StubSecureElement _se) {
+
+    /**
+     * Insert a stub se into the reader. Will raise a SE_INSERTED event.
+     * 
+     * @param _se stub secure element to be inserted in the reader
+     */
+    public synchronized void insertSe(StubSecureElement _se) {
+        // logger.info("Insert SE {}", _se);
         /* clean channels status */
         if (isPhysicalChannelOpen()) {
             try {
@@ -180,13 +191,25 @@ public final class StubReader extends AbstractThreadedLocalReader {
                 e.printStackTrace();
             }
         }
-        se = _se;
-        sePresent = true;
+        if (_se != null) {
+            se = _se;
+        }
     }
 
-    public void removeSe() {
+    /**
+     * Remove se from reader if any
+     */
+    public synchronized void removeSe() {
         se = null;
-        sePresent = false;
+    }
+
+    /**
+     * Get inserted SE
+     * 
+     * @return se, can be null if no Se inserted
+     */
+    public StubSecureElement getSe() {
+        return se;
     }
 
     /**
@@ -199,8 +222,8 @@ public final class StubReader extends AbstractThreadedLocalReader {
     @Override
     protected boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable {
         for (int i = 0; i < timeout / 10; i++) {
-            if (sePresent) {
-                break;
+            if (checkSePresence()) {
+                return true;
             }
             try {
                 Thread.sleep(10);
@@ -208,7 +231,8 @@ public final class StubReader extends AbstractThreadedLocalReader {
                 logger.debug("Sleep was interrupted");
             }
         }
-        return sePresent;
+        logger.trace("[{}] no card was inserted", this.getName());
+        return false;
     }
 
     /**
@@ -221,8 +245,9 @@ public final class StubReader extends AbstractThreadedLocalReader {
     @Override
     protected boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable {
         for (int i = 0; i < timeout / 10; i++) {
-            if (!sePresent) {
-                break;
+            if (!checkSePresence()) {
+                logger.trace("[{}] card removed", this.getName());
+                return true;
             }
             try {
                 Thread.sleep(10);
@@ -230,6 +255,7 @@ public final class StubReader extends AbstractThreadedLocalReader {
                 logger.debug("Sleep was interrupted");
             }
         }
-        return !sePresent;
+        logger.trace("[{}] no card was removed", this.getName());
+        return false;
     }
 }

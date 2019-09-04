@@ -15,26 +15,23 @@ package org.eclipse.keyple.example.calypso.pc;
 import java.io.IOException;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
-import org.eclipse.keyple.calypso.transaction.CalypsoPo;
-import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
-import org.eclipse.keyple.calypso.transaction.PoSelector;
-import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.calypso.transaction.*;
+import org.eclipse.keyple.core.selection.MatchingSelection;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
 import org.eclipse.keyple.plugin.stub.StubPlugin;
 import org.eclipse.keyple.plugin.stub.StubProtocolSetting;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
-import org.eclipse.keyple.seproxy.ChannelState;
-import org.eclipse.keyple.seproxy.SeProxyService;
-import org.eclipse.keyple.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.seproxy.protocol.ContactlessProtocols;
-import org.eclipse.keyple.seproxy.protocol.SeProtocolSetting;
-import org.eclipse.keyple.transaction.MatchingSelection;
-import org.eclipse.keyple.transaction.SeSelection;
-import org.eclipse.keyple.transaction.SelectionsResult;
-import org.eclipse.keyple.util.ByteArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,8 +85,9 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Stub {
             throw new IllegalStateException("Bad PO reader setup");
         }
 
-        poReader.addSeProtocolSetting(
-                new SeProtocolSetting(StubProtocolSetting.SETTING_PROTOCOL_ISO14443_4));
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         /* Create 'virtual' Calypso PO */
         StubSecureElement calypsoStubSe = new StubCalypsoClassic();
@@ -127,11 +125,13 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Stub {
              * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
              * make the selection and read additional information afterwards
              */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
-                    new PoSelector.PoAidSelector(ByteArrayUtils.fromHex(CalypsoClassicInfo.AID),
-                            PoSelector.InvalidatedPo.REJECT),
-                    null, "AID: " + CalypsoClassicInfo.AID), ChannelState.KEEP_OPEN,
-                    ContactlessProtocols.PROTOCOL_ISO14443_4);
+            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
+                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new PoSelector.PoAidSelector(
+                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
+                                    PoSelector.InvalidatedPo.REJECT),
+                            "AID: " + CalypsoClassicInfo.AID),
+                    ChannelState.KEEP_OPEN);
 
             /*
              * Prepare the reading order and keep the associated parser for later use once the
@@ -170,8 +170,7 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Stub {
                         .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
 
                 /* Log the result */
-                logger.info("Environment file data: {}",
-                        ByteArrayUtils.toHex(environmentAndHolder));
+                logger.info("Environment file data: {}", ByteArrayUtil.toHex(environmentAndHolder));
 
                 /* Go on with the reading of the first record of the EventLog file */
                 logger.info(
@@ -181,7 +180,8 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Stub {
                 logger.info(
                         "==================================================================================");
 
-                PoTransaction poTransaction = new PoTransaction(poReader, calypsoPo);
+                PoTransaction poTransaction =
+                        new PoTransaction(new PoResource(poReader, calypsoPo));
 
                 /*
                  * Prepare the reading order and keep the associated parser for later use once the
@@ -209,7 +209,7 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Stub {
                                     .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
 
                     /* Log the result */
-                    logger.info("EventLog file data: {}", ByteArrayUtils.toHex(eventLog));
+                    logger.info("EventLog file data: {}", ByteArrayUtil.toHex(eventLog));
                 }
                 logger.info(
                         "==================================================================================");

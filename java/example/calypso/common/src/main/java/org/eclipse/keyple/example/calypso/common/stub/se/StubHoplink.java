@@ -12,8 +12,8 @@
 package org.eclipse.keyple.example.calypso.common.stub.se;
 
 
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.stub.StubSecureElement;
-import org.eclipse.keyple.util.ByteArrayUtils;
 
 /**
  * This class is an example of a Stub Implementation of SecureElement. It works with the protocol
@@ -59,7 +59,7 @@ public class StubHoplink extends StubSecureElement {
 
     @Override
     public byte[] getATR() {
-        return ByteArrayUtils.fromHex(ATR_HEX);
+        return ByteArrayUtil.fromHex(ATR_HEX);
     }
 
     @Override

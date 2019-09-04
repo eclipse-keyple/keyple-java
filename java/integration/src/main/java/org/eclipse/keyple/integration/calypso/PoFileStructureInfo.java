@@ -13,8 +13,8 @@ package org.eclipse.keyple.integration.calypso;
 
 
 import org.eclipse.keyple.calypso.command.po.parser.GetDataFciRespPars;
-import org.eclipse.keyple.transaction.MatchingSe;
-import org.eclipse.keyple.util.ByteArrayUtils;
+import org.eclipse.keyple.core.selection.AbstractMatchingSe;
+import org.eclipse.keyple.core.util.ByteArrayUtil;
 
 @SuppressWarnings("PMD.VariableNamingConventions")
 public class PoFileStructureInfo {
@@ -38,7 +38,7 @@ public class PoFileStructureInfo {
 
     private EfData simulatedCountersFileData;
 
-    private MatchingSe matchingSe;
+    private AbstractMatchingSe matchingSe;
 
     private void setFileStructureForAuditC0() {
 
@@ -75,7 +75,7 @@ public class PoFileStructureInfo {
 
     }
 
-    public PoFileStructureInfo(MatchingSe matchingSe) {
+    public PoFileStructureInfo(AbstractMatchingSe matchingSe) {
 
         this.matchingSe = matchingSe;
 
@@ -84,22 +84,22 @@ public class PoFileStructureInfo {
 
         byte[] poCalypsoInstanceAid = poFciRespPars.getDfName();
 
-        if (java.util.Arrays.equals(poCalypsoInstanceAid, ByteArrayUtils.fromHex(poAuditC0Aid))) {
+        if (java.util.Arrays.equals(poCalypsoInstanceAid, ByteArrayUtil.fromHex(poAuditC0Aid))) {
 
             setFileStructureForAuditC0();
 
-        } else if (java.util.Arrays.equals(poCalypsoInstanceAid, ByteArrayUtils.fromHex(clapAid))) {
+        } else if (java.util.Arrays.equals(poCalypsoInstanceAid, ByteArrayUtil.fromHex(clapAid))) {
 
             setFileStructureForClap();
 
         } else if (java.util.Arrays.equals(poCalypsoInstanceAid,
-                ByteArrayUtils.fromHex(cdLightAid))) {
+                ByteArrayUtil.fromHex(cdLightAid))) {
 
             setFileStructureForCdLight();
 
         } else {
             throw new IllegalArgumentException(
-                    "The file structure for AID " + ByteArrayUtils.toHex(poCalypsoInstanceAid)
+                    "The file structure for AID " + ByteArrayUtil.toHex(poCalypsoInstanceAid)
                             + " is not registered for testing.");
         }
     }
@@ -128,7 +128,7 @@ public class PoFileStructureInfo {
         return simulatedCountersFileData;
     }
 
-    public MatchingSe getMatchingSe() {
+    public AbstractMatchingSe getMatchingSe() {
         return matchingSe;
     }
 }
