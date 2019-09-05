@@ -19,13 +19,13 @@ repositories {
 }
 
 dependencies {
-    //declare a dependency to a keyple component, in this case import a snapshot of keyple-core component
+    //Keyple core is the mandatory library to use Keyple
     implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.7.0-20190724-SNAPSHOT'
 
-    //declare a dependency to a keyple component, in this case import a snapshot of keyple-calypso component
+    //Import Calypso library to support Calypso Portable Object
     implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.7.0-20190724-SNAPSHOT'
    
-    //import pcsc plugin
+    //Import PCSC library to use a Pcsc reader
     implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc', version: '0.7.0-20190724-SNAPSHOT'
     ...
 }
