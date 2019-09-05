@@ -241,7 +241,9 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
 
         VirtualReader virtualReader = getVirtualReader();
 
-        masterAPI.getPlugin().disconnectVirtualReader(((VirtualReader) virtualReader).getNativeReaderName(), virtualReader.getSession().getSlaveNodeId());
+        masterAPI.getPlugin().disconnectVirtualReader(
+                ((VirtualReader) virtualReader).getNativeReaderName(),
+                virtualReader.getSession().getSlaveNodeId());
 
         // wait 5 seconds
         lock.await(5, TimeUnit.SECONDS);
@@ -262,7 +264,8 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
         // wait 1 second
         Thread.sleep(1000);
         VirtualReader virtualReader = getVirtualReader();
-        masterAPI.getPlugin().disconnectVirtualReader(((VirtualReader) virtualReader).getNativeReaderName(),"none");
+        masterAPI.getPlugin().disconnectVirtualReader(
+                ((VirtualReader) virtualReader).getNativeReaderName(), "none");
     }
 
     /**
@@ -278,7 +281,8 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
         // wait 1 second
         Thread.sleep(1000);
         VirtualReader virtualReader = getVirtualReader();
-        masterAPI.getPlugin().disconnectVirtualReader("none",virtualReader.getSession().getSlaveNodeId());
+        masterAPI.getPlugin().disconnectVirtualReader("none",
+                virtualReader.getSession().getSlaveNodeId());
     }
 
 }

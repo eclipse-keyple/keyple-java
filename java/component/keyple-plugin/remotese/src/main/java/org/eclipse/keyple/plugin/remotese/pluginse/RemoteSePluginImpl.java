@@ -75,7 +75,8 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
 
 
     @Override
-    public void disconnectVirtualReader(String nativeReaderName, String slaveNodeId) throws KeypleReaderException {
+    public void disconnectVirtualReader(String nativeReaderName, String slaveNodeId)
+            throws KeypleReaderException {
         removeVirtualReader(nativeReaderName, slaveNodeId);
     }
 
@@ -131,7 +132,8 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
      * 
      * @param nativeReaderName : name of the virtual reader to be deleted
      * @param slaveNodeId : slave node where the remoteReader is hosted
-     * @throws KeypleReaderNotFoundException if no virtual reader match the native reader name and slave node Id
+     * @throws KeypleReaderNotFoundException if no virtual reader match the native reader name and
+     *         slave node Id
      */
     void removeVirtualReader(String nativeReaderName, String slaveNodeId)
             throws KeypleReaderNotFoundException {
@@ -223,7 +225,6 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
     static String generateReaderName(String nativeReaderName, String slaveNodeId) {
         return "remote-" + nativeReaderName + "-" + slaveNodeId;
     }
-
 
 
 
