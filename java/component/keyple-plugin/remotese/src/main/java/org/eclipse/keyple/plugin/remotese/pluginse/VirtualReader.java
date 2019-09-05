@@ -20,4 +20,10 @@ public interface VirtualReader extends ObservableReader {
      * @return local name of the native reader (on slave device)
      */
     String getNativeReaderName();
+
+    /**
+     * Return Virtual Reader Session that contains informations about master and slave nodes
+     * @return virtual reader session
+     */
+    public VirtualReaderSession getSession();
 }
