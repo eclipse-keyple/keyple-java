@@ -13,7 +13,12 @@ package org.eclipse.keyple.core.seproxy;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.SortedSet;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservablePlugin;
 import org.junit.Assert;
@@ -136,8 +141,6 @@ public class SeProxyServiceTest {
 
     }
 
-
-
     @Test(expected = KeyplePluginNotFoundException.class)
     public void testGetPluginFail() throws Exception {
         proxyService.getPlugin("unknown");// Throw exception
@@ -145,5 +148,118 @@ public class SeProxyServiceTest {
     }
 
 
+    /**
+     * Test that a plugin can not be added twice with multi thread
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testRegister_MultiThread() throws Exception {
+
+        final MockObservablePluginFactory factory = new MockObservablePluginFactory(PLUGIN_NAME_1);
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        final AtomicBoolean running = new AtomicBoolean();
+        final AtomicInteger overlaps = new AtomicInteger();
+
+        int threads = 10;
+        ExecutorService service = Executors.newFixedThreadPool(threads);
+        Collection<Future> futures = new ArrayList(threads);
+
+        for (int t = 0; t < threads; ++t) {
+            futures.add(service.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        /*
+                         * All thread wait for the countdown
+                         */
+                        latch.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (running.get()) {
+                        overlaps.incrementAndGet();
+                    }
+                    running.set(true);
+                    proxyService.registerPlugin(factory);
+                    running.set(false);
+
+                }
+            }));
+        }
+        /*
+         * Release all thread at once
+         */
+        latch.countDown();
+        /*
+         * wait for execution
+         */
+        Thread.sleep(500);
+        logger.info("Overlap {}", overlaps);
+        assertEquals(1, proxyService.getPlugins().size());
+
+        // unregister
+        proxyService.unregisterPlugin(PLUGIN_NAME_1);
+
+
+    }
+
+    /**
+     * Test that a plugin can not be added twice with multi thread
+     *
+     * @throws Exception
+     */
+    @Test
+    public void unregisterMultiThread() throws Exception {
+
+        final MockObservablePluginFactory factory = new MockObservablePluginFactory(PLUGIN_NAME_1);
+
+        // add a plugin
+        proxyService.registerPlugin(factory);
+
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        final AtomicBoolean running = new AtomicBoolean();
+        final AtomicInteger overlaps = new AtomicInteger();
+
+        int threads = 10;
+        ExecutorService service = Executors.newFixedThreadPool(threads);
+        Collection<Future> futures = new ArrayList(threads);
+
+        for (int t = 0; t < threads; ++t) {
+            futures.add(service.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        /*
+                         * All thread wait for the countdown
+                         */
+                        latch.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (running.get()) {
+                        overlaps.incrementAndGet();
+                    }
+                    running.set(true);
+                    proxyService.unregisterPlugin(factory.getPluginName());
+                    running.set(false);
+                }
+            }));
+        }
+        /*
+         * Release all thread at once
+         */
+        latch.countDown();
+        Thread.sleep(500);
+        logger.info("Overlap {}", overlaps);
+        assertEquals(0, proxyService.getPlugins().size());
+        // unregister
+        proxyService.unregisterPlugin(PLUGIN_NAME_1);
+
+
+    }
 
 }

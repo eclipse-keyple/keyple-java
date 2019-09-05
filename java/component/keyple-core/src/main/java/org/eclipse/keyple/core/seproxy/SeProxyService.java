@@ -27,12 +27,14 @@ public final class SeProxyService {
 
     private static final Logger logger = LoggerFactory.getLogger(SeProxyService.class);
 
-
     /** singleton instance of SeProxyService */
     private static SeProxyService uniqueInstance = new SeProxyService();
 
     /** the list of readers’ plugins interfaced with the SE Proxy Service */
-    private Set<ReaderPlugin> plugins = new HashSet<ReaderPlugin>();
+    private final Set<ReaderPlugin> plugins = new HashSet<ReaderPlugin>();
+
+    // this is the object we will be synchronizing on ("the monitor")
+    private final Object MONITOR = new Object();
 
     // private SortedSet<ReaderPlugin> plugins = new ConcurrentSkipListSet<ReaderPlugin>();
     /**
@@ -55,15 +57,22 @@ public final class SeProxyService {
      * @param pluginFactory : plugin factory to instanciate plugin to be added
      */
     public void registerPlugin(AbstractPluginFactory pluginFactory) {
-        if (!isRegistered(pluginFactory.getPluginName())) {
-            logger.info("Registering a new Plugin to the platform : {}",
-                    pluginFactory.getPluginName());
-            ReaderPlugin newPlugin = pluginFactory.getPluginInstance();
-            this.plugins.add(newPlugin);
-        } else {
-            logger.warn("Plugin has already been registered to the platform : {}",
-                    pluginFactory.getPluginName());
+        if (pluginFactory == null) {
+            throw new IllegalArgumentException("Factory must not be null");
         }
+
+        synchronized (MONITOR) {
+            if (!isRegistered(pluginFactory.getPluginName())) {
+                logger.info("Registering a new Plugin to the platform : {}",
+                        pluginFactory.getPluginName());
+                ReaderPlugin newPlugin = pluginFactory.getPluginInstance();
+                this.plugins.add(newPlugin);
+            } else {
+                logger.warn("Plugin has already been registered to the platform : {}",
+                        pluginFactory.getPluginName());
+            }
+        }
+
     }
 
     /**
@@ -72,17 +81,19 @@ public final class SeProxyService {
      * @param pluginName : plugin name
      */
     public boolean unregisterPlugin(String pluginName) {
-
         ReaderPlugin readerPlugin = null;
-        try {
-            readerPlugin = this.getPlugin(pluginName);
-            logger.info("Unregistering a plugin from the platform : {}", readerPlugin.getName());
-            return plugins.remove(readerPlugin);
-        } catch (KeyplePluginNotFoundException e) {
-            logger.info("Plugin is not registered to the platform : {}", pluginName);
-            return false;
-        }
 
+        synchronized (MONITOR) {
+            try {
+                readerPlugin = this.getPlugin(pluginName);
+                logger.info("Unregistering a plugin from the platform : {}",
+                        readerPlugin.getName());
+                return plugins.remove(readerPlugin);
+            } catch (KeyplePluginNotFoundException e) {
+                logger.info("Plugin is not registered to the platform : {}", pluginName);
+                return false;
+            }
+        }
     }
 
     /**
@@ -91,13 +102,16 @@ public final class SeProxyService {
      * @param pluginName : name of the plugin to be checked
      * @return true if a plugin with matching name has been registered
      */
-    public boolean isRegistered(String pluginName) {
-        for (ReaderPlugin registeredPlugin : plugins) {
-            if (registeredPlugin.getName().equals(pluginName)) {
-                return true;
+    public synchronized boolean isRegistered(String pluginName) {
+        synchronized (MONITOR) {
+            for (ReaderPlugin registeredPlugin : plugins) {
+                if (registeredPlugin.getName().equals(pluginName)) {
+                    return true;
+                }
             }
+            return false;
         }
-        return false;
+
     }
 
 
@@ -107,7 +121,7 @@ public final class SeProxyService {
      *
      * @return the plugins the list of interfaced reader’s plugins.
      */
-    public SortedSet<ReaderPlugin> getPlugins() {
+    public synchronized SortedSet<ReaderPlugin> getPlugins() {
         return new TreeSet<ReaderPlugin>(plugins);
     }
 
@@ -118,13 +132,15 @@ public final class SeProxyService {
      * @return the plugin
      * @throws KeyplePluginNotFoundException if the wanted plugin is not found
      */
-    public ReaderPlugin getPlugin(String name) throws KeyplePluginNotFoundException {
-        for (ReaderPlugin plugin : plugins) {
-            if (plugin.getName().equals(name)) {
-                return plugin;
+    public synchronized ReaderPlugin getPlugin(String name) throws KeyplePluginNotFoundException {
+        synchronized (MONITOR) {
+            for (ReaderPlugin plugin : plugins) {
+                if (plugin.getName().equals(name)) {
+                    return plugin;
+                }
             }
+            throw new KeyplePluginNotFoundException(name);
         }
-        throw new KeyplePluginNotFoundException(name);
     }
 
     /**

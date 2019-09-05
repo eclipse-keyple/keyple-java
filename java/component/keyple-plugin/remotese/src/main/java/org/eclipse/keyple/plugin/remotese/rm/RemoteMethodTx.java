@@ -73,8 +73,10 @@ public abstract class RemoteMethodTx<T> {
 
     /**
      * Internal method to set manually the keypleDto response To be called by the tx manager
-     * 
+     *
+     * @param keypleDto incoming message to parse response from
      * @throws KeypleRemoteException if a problem occurs while sending the keypleDto
+     * @return response
      */
     protected abstract T parseResponse(KeypleDto keypleDto) throws KeypleRemoteException;
 
@@ -180,7 +182,7 @@ public abstract class RemoteMethodTx<T> {
     /**
      * Mark or Unmark as registered
      * 
-     * @param registered
+     * @param registered true to register, false to unregister
      */
     public void setRegistered(Boolean registered) {
         isRegistered = registered;
