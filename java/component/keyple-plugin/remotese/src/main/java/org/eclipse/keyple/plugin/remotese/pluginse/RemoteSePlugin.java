@@ -37,10 +37,11 @@ public interface RemoteSePlugin extends ReaderPlugin, ObservablePlugin {
     /**
      * Exceptionnaly disconnect a Virtual Reader. Use it in case of error, Slave node is not notified of the disconnect.
      * A READER_DISCONNECTED event is thrown.
-     * @param virtualReader
-     * @throws KeypleReaderException
+     * @param remoteName : name of the reader on its native device
+     * @param slaveNodeId : slave node Id of the reader to disconnect
+     * @throws KeypleReaderNotFoundException if no virtual reader match the native reader name
      */
-    void disconnectVirtualReader(String nativeReaderName, String slaveNodeId) throws KeypleReaderException;
+    void disconnectVirtualReader(String remoteName, String slaveNodeId) throws KeypleReaderException;
 
 
 }
