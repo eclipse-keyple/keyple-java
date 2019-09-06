@@ -8,32 +8,13 @@
  */
 
 
-rootProject.name = 'keyple-java'
+rootProject.name = 'keyple-java-integration'
 //println '** ' + rootProject.name + ' initialization phase.'
 
-
 /*
- * Published projects
+ * All examples projects
  */
 
-include ':java:component:keyple-core'
-include ':java:component:keyple-calypso'
-
-include ':java:component:keyple-plugin:pcsc'
-project(':java:component:keyple-plugin:pcsc').name = "keyple-plugin-pcsc"
-
-include ':java:component:keyple-plugin:stub'
-project(':java:component:keyple-plugin:stub').name = "keyple-plugin-stub"
-
-include ':java:component:keyple-plugin:remotese'
-project(':java:component:keyple-plugin:remotese').name = "keyple-plugin-remotese"
-
-
-/*
- * Non published projects
- */
-
-//include ':java:integration'
 
 //include ':java:example:generic:common'
 //project(':java:example:generic:common').name = "example-generic-common"
@@ -49,6 +30,6 @@ project(':java:component:keyple-plugin:remotese').name = "keyple-plugin-remotese
 ////
 //include ':java:example:calypso:remotese'
 //project(':java:example:calypso:remotese').name = "example-remotese"
-//
+
 
 //println "rootProject : " + startParameter
