@@ -12,17 +12,17 @@ jar {
 }
 
 dependencies {
-    //use keyple library : calypso
-    implementation project(path:':java:component:keyple-calypso')
+    //import the last version of keyple-java-core
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
 
-    //use keyple library : core
-    implementation project(path:':java:component:keyple-core')
+    //import the last version of keyple-java-calypso
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
 
-    //use keyple library : plugin stub
-    implementation project(path:':java:component:keyple-plugin:keyple-plugin-stub')
+    //import the last version of keyple-java-plugin-stub
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: '+'
 
-    //use keyple library : plugin pcsc
-    implementation project(path:':java:component:keyple-plugin:keyple-plugin-pcsc')
+    //import the last version of keyple-java-plugin-pcsc
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: '+'
 
     //use keyple example : generic-common
     implementation project(path: ':java:example:generic:example-generic-common')

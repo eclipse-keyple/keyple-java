@@ -12,15 +12,14 @@ jar {
 }
 
 dependencies {
+    //import the last version of keyple-java-core
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
 
-    //use keyple library : core
-    implementation project(path:':java:component:keyple-core')
+    //import the last version of keyple-java-calypso
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
 
-    //use keyple library : calypso
-    implementation project(path:':java:component:keyple-calypso')
-
-    //use keyple example : stub-plugin
-    implementation project(path: ':java:component:keyple-plugin:keyple-plugin-stub')
+    //import the last version of keyple-java-plugin-stub
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: '+'
 
     implementation "org.slf4j:slf4j-api:${slf4japi_version}"
 

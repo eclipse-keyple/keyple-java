@@ -32,6 +32,9 @@ allprojects {
         maven {
             url 'https://repo.eclipse.org/service/local/repositories/maven_central/content'
         }
+        maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        //to import releases
+        maven { url 'https://oss.sonatype.org/content/repositories/releases' }
         mavenLocal()
         //mavenCentral()
         google()
