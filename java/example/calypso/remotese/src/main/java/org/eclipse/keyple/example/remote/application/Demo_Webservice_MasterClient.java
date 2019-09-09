@@ -19,6 +19,7 @@ import org.eclipse.keyple.plugin.remotese.transport.factory.TransportFactory;
  * Demo Web Service with jdk http client library The master device uses the webservice client
  * whereas the slave device uses the webservice server
  */
+@Deprecated
 public class Demo_Webservice_MasterClient {
 
     public static void main(String[] args) throws Exception {
