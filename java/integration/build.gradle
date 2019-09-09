@@ -1,6 +1,39 @@
+buildscript {
+    repositories {
+        jcenter()
+        //use a mirror of maven_central to speed up CI build
+        maven {
+            url 'https://repo.eclipse.org/service/local/repositories/maven_central/content'
+        }
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.14.0"
+    }
+}
+
 apply plugin: 'java'
+apply plugin: "com.diffplug.gradle.spotless"
 
 sourceCompatibility = 1.6
+
+spotless {
+    java {
+        target "java/**/*.java"
+        licenseHeaderFile '.build/spotless.license.txt'
+        importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
+        removeUnusedImports()
+        eclipse().configFile '.build/spotless.eclipseformat.xml'
+    }
+
+    format 'misc', {
+        target 'java/**/*.java', 'java/**/*.gradle', 'java/**/*.yml', 'java/**/*.md'
+
+        indentWithSpaces()
+        endWithNewline()
+    }
+}
 
 jar {
     manifest {
@@ -9,15 +42,33 @@ jar {
     }
 }
 
+repositories {
+    maven {
+        url 'https://repo.eclipse.org/service/local/repositories/maven_central/content'
+    }
+    //to import keyple snapshots
+    maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    //to import keyple releases
+    maven { url 'https://oss.sonatype.org/content/repositories/releases' }
+    mavenLocal()
+    //mavenCentral()
+    google()
+    jcenter()
+
+}
+
 dependencies {
 
-    implementation project(path:':java:component:keyple-core')
+    //import the last version of keyple-java-core
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
 
-    implementation project(path:':java:component:keyple-calypso')
+    //import the last version of keyple-java-calypso
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
 
-    implementation project(path:':java:component:keyple-plugin:keyple-plugin-pcsc')
+    //import the last version of keyple-java-plugin-pcsc
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: '+'
 
-    implementation project(path: ':java:example:calypso:example-calypso-pc')
+    //implementation project(path: ':java:example:calypso:example-calypso-pc')
 
     implementation 'com.google.code.gson:gson:2.8.5'
 
@@ -26,7 +77,6 @@ dependencies {
     implementation "org.slf4j:slf4j-ext:${slf4jext_version}"
     implementation "com.google.code.gson:gson:${gson_version}"
 
-    implementation "com.google.code.gson:gson:${gson_version}"
 
     //https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
     compile "org.junit.jupiter:junit-jupiter-api:${jupiter_version}"

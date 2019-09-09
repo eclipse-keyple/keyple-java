@@ -1,7 +1,9 @@
-**Using the Keyple Calypso library**
+Getting Started - Calypso Example
 ---
 
-**These examples involve two set of packages and two complete Android projects**
+Those examples make use of the Keyple Calypso library. They demonstrate how to select a Calypso application and execute Calypso secure Transaction. We use a PCSC plugin for real smartcard a Stub Plugin to simulates Calypso Secure Element. 
+
+**These examples involve two set of packages**
 
 - Resources common to all Keyple Calypso demonstration examples
 
@@ -10,26 +12,23 @@
 - PC platform launchers
 
       `org.eclipse.keyple.example.calypso.pc`
-- Android projects
-
-  - NFC based project (https://developer.android.com/reference/android/nfc/package-summary)
-  - OMAPI based project (https://developer.android.com/reference/android/se/omapi/package-summary)       
-* The purpose of these packages is to demonstrate the use of the Calypso library.
+   
+**The purpose of these packages is to demonstrate the use of the Calypso library:**
 
   * Dual reader configuration (PO and SAM)
   * PO Secure Session management
-  * Basic scenario for ticketing
+  * Default application selection
+  * Explicit application selection
+  
 
-* Six launchers working out of the box on a PC platform
+Ten launchers can be run independently
 
   * Classic Calypso Transaction (use of PoSecure session) 
     * Real mode with PC/SC readers (Calypso Secure Elements required [PO and SAM]) [`Demo_CalypsoClassic_Pcsc.java`]
-    * Simulation mode (virtual Secure Elements included) [`Demo_CalypsoClassic_Stub.java`]
-  * Basic Hoplink Transaction (use of PoSecure session) 
-    * Real mode with PC/SC readers (Hoplink Secure Elements required [PO and SAM]) [`Demo_Hoplink_Pcsc.java`]
-    * Simulation mode (virtual Secure Elements included) [`Demo_Hoplink_Stub.java`]
-  * Use case Calypso Authentication: open/close Secure Session only [`UseCase_CalypsoAuthenticationLevel3_Pcsc.java`]
-    * Real mode with PC/SC readers
+    * Simulation mode (Stub Secure Elements included) [`Demo_CalypsoClassic_Stub.java`]
+  * Use case Calypso Authentication: open/close Secure Session only 
+    * Real mode with PC/SC readers [`UseCase_Calypso4_PoAuthentication_Pcsc.java`]
+    * Simulation mode  (Stub Secure Elements included) [`UseCase_Calypso4_PoAuthentication_Stub.java`]
   * Use case Multiple Session: illustrates the multiple session generation mechanism for managing the sending of modifying commands that exceed the capacity of the session buffer.  [`UseCase_MultipleSession_Pcsc.java`]
     * Real mode with PC/SC readers
 
@@ -41,11 +40,9 @@
             - A first SE message to select the application in the reader
             - A second SE message to operate the simple Calypso transaction
         - Implementations:
-            - For PC/SC plugin: UseCase_Calypso1_ExplicitSelectionAid_Pcsc
-            - For Stub plugin: UseCase_Calypso1_ExplicitSelectionAid_Stub
-            - For OMAPI plugin: UseCase_Calypso1_ExplicitSelectionAid_Omapi
-            - Not supported by the Android NFC plugin, because the NFC reader could be managed only on SE detection.
-
+            - For PC/SC plugin: `UseCase_Calypso1_ExplicitSelectionAid_Pcsc`
+            - For Stub plugin: `UseCase_Calypso1_ExplicitSelectionAid_Stub`
+            
 - Use Case ‘Calypso 2’ – Default Selection Notification
     - Scenario:
         - Define a default selection of ISO 14443-4 Calypso PO and set it to an observable reader, on SE detection in case the Calypso selection is successful, notify the terminal application with the PO information, then the terminal follows by operating a simple Calypso PO transaction.
@@ -54,10 +51,8 @@
             - A first SE message to notify about the selected Calypso PO
             - A second SE message to operate the simple Calypso transaction
         - Implementations:
-            - For PC/SC plugin: UseCase_Calypso2_DefaultSelectionNotification_Pcsc
-            - For Stub plugin: UseCase_Calypso2_DefaultSelectionNotification_Stub
-            - For NFC plugin: UseCase_Calypso2_DefaultSelectionNotification_Nfc
-            - Not supported by the Android OMAPI plugin, because an OMAPI reader isn’t observable.
+            - For PC/SC plugin: `UseCase_Calypso2_DefaultSelectionNotification_Pcsc`
+            - For Stub plugin: `UseCase_Calypso2_DefaultSelectionNotification_Stub`
 
 * Available packages in details:
 
@@ -88,6 +83,10 @@
 |`UseCase_CalypsoAuthenticationLevel3_Pcsc.java`|Contains the main class of an example of code focusing on session opening/closing|
 |`UseCase_MultipleSession_Pcsc.java`|Contains the main class of an example of code focusing on the multiple session mode (for handling large amount of data transferred to a PO)|
 |`UseCase_Calypso1_ExplicitSelectionAid_Pcsc.java`|Explicit Selection with a PC/SC reader|
-|`UseCase_Calypso1_ExplicitSelectionAid_Stub.java`|Explicit Selection with a Stub reader (virtual SE and reader)|
+|`UseCase_Calypso1_ExplicitSelectionAid_Stub.java`|Explicit Selection with a Stub reader (stub SE and reader)|
 |`UseCase_Calypso2_DefaultSelectionAid_Pcsc.java`|Default Selection with a PC/SC reader|
-|`UseCase_Calypso2_DefaultSelectionAid_Stub.java`|Default Selection with a Stub reader (virtual SE and reader)|
+|`UseCase_Calypso2_DefaultSelectionAid_Stub.java`|Default Selection with a Stub reader (stub SE and reader)|
+|`UseCase_Calypso3_Rev1Selection_Pcsc.java`|B' Selection with a PC/SC reader|
+|`UseCase_Calypso4_PoAuthentication_Pcsc.java`|Execute a Calypso Transaction with a PC/SC reader|
+|`UseCase_Calypso4_PoAuthentication_Stub.java`|Execute a Calypso Transaction with a Stub reader|
+|`UseCase_Calypso5_MultipleSession_Pcsc.java`|Execute a Calypso Transaction containing multiple modifications with a PC/SC reader|

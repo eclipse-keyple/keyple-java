@@ -18,18 +18,21 @@ mainClassName = 'org.eclipse.keyple.example.remote.application.Demo_WebserviceWi
 
 
 dependencies {
+    //import the last version of keyple-java-core
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
 
-    implementation project(path:':java:component:keyple-calypso')
+    //import the last version of keyple-java-calypso
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
 
-    implementation project(path:':java:component:keyple-core')
+    //import the last version of keyple-java-plugin-stub
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: '+'
 
-    implementation project(path:':java:component:keyple-plugin:keyple-plugin-stub')
-    
-    implementation project(path:':java:component:keyple-plugin:keyple-plugin-remotese')
+    //import the last version of keyple-java-plugin-remotese
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese', version: '+'
 
-    implementation project(path: ':java:example:calypso:example-calypso-pc')
+    implementation project(path: ':calypso:example-calypso-pc')
 
-    implementation project(path: ':java:example:calypso:example-calypso-common')
+    implementation project(path: ':calypso:example-calypso-common')
 
     implementation "org.java-websocket:Java-WebSocket:${JavaWebSocket_version}"
 

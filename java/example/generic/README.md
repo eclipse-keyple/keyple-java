@@ -1,5 +1,7 @@
-**Using the Keyple Core library**
+Getting Started - Generic Example
 ---
+
+Those examples make use of the Keyple Core library. They demonstrate how to observe insertion/removal of Secure Elements (smartcard) or Readers.
 
 **These examples involve two packages**
 
@@ -10,7 +12,7 @@
 
       `org.eclipse.keyple.example.generic.pc`
       
-* The purpose of these examples is to demonstrate the use of the Core library.
+**The purpose of these examples is to demonstrate the use of the Core library**
 
   * Reader management:
     * Observability of plugins to manage the insertion / removal of readers
