@@ -109,7 +109,7 @@ public class Integration {
         SeProxyService seProxyService = SeProxyService.getInstance();
 
         // register plugin
-            seProxyService.registerPlugin(new StubPluginFactory());
+        seProxyService.registerPlugin(new StubPluginFactory());
 
 
         // get plugin
