@@ -144,8 +144,7 @@ public class MasterAPI implements DtoHandler {
             throw new IllegalStateException(
                     "Unable to register plugin to platform : " + pluginName);
         } catch (KeyplePluginInstanciationException e) {
-            throw new IllegalStateException(
-                    "Unable to instanciate RemoteSe plugin");
+            throw new IllegalStateException("Unable to instanciate RemoteSe plugin");
         }
 
         // Set this service as the Dto Handler for the node

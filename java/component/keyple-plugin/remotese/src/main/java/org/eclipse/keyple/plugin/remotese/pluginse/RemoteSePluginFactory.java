@@ -28,6 +28,7 @@ class RemoteSePluginFactory extends AbstractPluginFactory {
 
     /**
      * used only by MasterAPI
+     * 
      * @param sessionManager
      * @param dtoSender
      * @param rpc_timeout
@@ -48,10 +49,10 @@ class RemoteSePluginFactory extends AbstractPluginFactory {
 
     @Override
     protected ReaderPlugin getPluginInstance() throws KeyplePluginException {
-        if(dtoSender==null){
+        if (dtoSender == null) {
             throw new KeyplePluginException("Dto sender must not be null");
         }
-        if(sessionManager==null){
+        if (sessionManager == null) {
             throw new KeyplePluginException("VirtualReaderSessionFactory must not be null");
         }
         return new RemoteSePluginImpl(sessionManager, dtoSender, rpc_timeout, pluginName);

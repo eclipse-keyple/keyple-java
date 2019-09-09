@@ -14,7 +14,6 @@ package org.eclipse.keyple.core.seproxy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 import java.util.SortedSet;
-
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservablePlugin;

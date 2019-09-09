@@ -26,8 +26,8 @@ class RemoteSePoolPluginFactory extends AbstractPluginFactory {
     long rpc_timeout;
     String pluginName;
 
-    RemoteSePoolPluginFactory(VirtualReaderSessionFactory sessionManager,
-            DtoSender dtoSender, long rpc_timeout, String pluginName) {
+    RemoteSePoolPluginFactory(VirtualReaderSessionFactory sessionManager, DtoSender dtoSender,
+            long rpc_timeout, String pluginName) {
         this.sessionManager = sessionManager;
         this.dtoSender = dtoSender;
         this.rpc_timeout = rpc_timeout;
@@ -41,10 +41,10 @@ class RemoteSePoolPluginFactory extends AbstractPluginFactory {
 
     @Override
     protected ReaderPlugin getPluginInstance() throws KeyplePluginException {
-        if(dtoSender==null){
+        if (dtoSender == null) {
             throw new KeyplePluginException("Dto sender must not be null");
         }
-        if(sessionManager==null){
+        if (sessionManager == null) {
             throw new KeyplePluginException("VirtualReaderSessionFactory must not be null");
         }
         return new RemoteSePoolPluginImpl(sessionManager, dtoSender, rpc_timeout, pluginName);

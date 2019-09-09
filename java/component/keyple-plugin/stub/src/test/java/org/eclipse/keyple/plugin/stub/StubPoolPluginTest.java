@@ -48,8 +48,8 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Plug a pool reader
      */
     @Test
-    public void plugStubPoolReader_success()
-            throws InterruptedException, KeypleReaderException, NoStackTraceThrowable, KeyplePluginException {
+    public void plugStubPoolReader_success() throws InterruptedException, KeypleReaderException,
+            NoStackTraceThrowable, KeyplePluginException {
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(new StubPluginFactory())
                         .getPluginInstance();
@@ -65,7 +65,8 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Unplug a pool reader
      */
     @Test
-    public void unplugStubPoolReader_success() throws InterruptedException, KeypleReaderException, KeyplePluginException {
+    public void unplugStubPoolReader_success()
+            throws InterruptedException, KeypleReaderException, KeyplePluginException {
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(new StubPluginFactory())
                         .getPluginInstance();
@@ -86,7 +87,8 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Allocate one reader
      */
     @Test
-    public void allocate_success() throws InterruptedException, KeypleReaderException, KeyplePluginException {
+    public void allocate_success()
+            throws InterruptedException, KeypleReaderException, KeyplePluginException {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(new StubPluginFactory())
@@ -112,7 +114,8 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Allocate twice the same reader, it does throw any error as no concurrency is managed
      */
     @Test
-    public void allocate_twice() throws InterruptedException, KeypleReaderException, KeyplePluginException {
+    public void allocate_twice()
+            throws InterruptedException, KeypleReaderException, KeyplePluginException {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(new StubPluginFactory())
@@ -134,7 +137,8 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Release one reader
      */
     @Test
-    public void release_success() throws InterruptedException, KeypleReaderException, KeyplePluginException {
+    public void release_success()
+            throws InterruptedException, KeypleReaderException, KeyplePluginException {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(new StubPluginFactory())
