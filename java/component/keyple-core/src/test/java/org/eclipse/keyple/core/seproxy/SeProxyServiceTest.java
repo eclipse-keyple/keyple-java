@@ -14,6 +14,8 @@ package org.eclipse.keyple.core.seproxy;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 import java.util.SortedSet;
+
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservablePlugin;
 import org.junit.Assert;
@@ -50,7 +52,7 @@ public class SeProxyServiceTest {
     static String PLUGIN_NAME_2 = "plugin2";
 
     @Before
-    public void setupBeforeEach() {
+    public void setupBeforeEach() throws KeyplePluginException {
 
         // init class to test
         proxyService = SeProxyService.getInstance();
@@ -84,7 +86,7 @@ public class SeProxyServiceTest {
      * proxyService.getPlugins().toArray()); }
      */
     @Test
-    public void testRegisterPlugin() throws KeyplePluginNotFoundException {
+    public void testRegisterPlugin() throws KeyplePluginException {
 
         // register plugin1 by its factory
         proxyService.registerPlugin(factory1);
@@ -104,7 +106,7 @@ public class SeProxyServiceTest {
     }
 
     @Test
-    public void testRegisterTwicePlugin() throws KeyplePluginNotFoundException {
+    public void testRegisterTwicePlugin() throws KeyplePluginException {
 
         // register plugin1 by its factory
         proxyService.registerPlugin(factory1);
@@ -120,7 +122,7 @@ public class SeProxyServiceTest {
     }
 
     @Test
-    public void testRegisterTwoPlugins() throws KeyplePluginNotFoundException {
+    public void testRegisterTwoPlugins() throws KeyplePluginException {
 
         // register plugin1 by its factory
         proxyService.registerPlugin(factory1);

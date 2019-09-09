@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.stub;
 import org.eclipse.keyple.core.seproxy.AbstractPluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginException;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
 
 /**
  * Build a StubPoolPlugin Factory.
@@ -37,9 +38,9 @@ public class StubPoolPluginFactory extends AbstractPluginFactory {
     }
 
     @Override
-    protected ReaderPlugin getPluginInstance() throws KeyplePluginException {
+    protected ReaderPlugin getPluginInstance() throws KeyplePluginInstanciationException {
         if(stubPluginFactory==null){
-            throw new KeyplePluginException("stubPluginFactory must not be null");
+            throw new KeyplePluginInstanciationException("stubPluginFactory must not be null");
         }
         return new StubPoolPluginImpl((StubPluginImpl) stubPluginFactory.getPluginInstance());
     }

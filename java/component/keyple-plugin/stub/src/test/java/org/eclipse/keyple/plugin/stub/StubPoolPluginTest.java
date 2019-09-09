@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.stub;
 
 
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
@@ -48,7 +49,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      */
     @Test
     public void plugStubPoolReader_success()
-            throws InterruptedException, KeypleReaderException, NoStackTraceThrowable {
+            throws InterruptedException, KeypleReaderException, NoStackTraceThrowable, KeyplePluginException {
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(new StubPluginFactory())
                         .getPluginInstance();
@@ -64,7 +65,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Unplug a pool reader
      */
     @Test
-    public void unplugStubPoolReader_success() throws InterruptedException, KeypleReaderException {
+    public void unplugStubPoolReader_success() throws InterruptedException, KeypleReaderException, KeyplePluginException {
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(new StubPluginFactory())
                         .getPluginInstance();
@@ -85,7 +86,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Allocate one reader
      */
     @Test
-    public void allocate_success() throws InterruptedException, KeypleReaderException {
+    public void allocate_success() throws InterruptedException, KeypleReaderException, KeyplePluginException {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(new StubPluginFactory())
@@ -111,7 +112,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Allocate twice the same reader, it does throw any error as no concurrency is managed
      */
     @Test
-    public void allocate_twice() throws InterruptedException, KeypleReaderException {
+    public void allocate_twice() throws InterruptedException, KeypleReaderException, KeyplePluginException {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(new StubPluginFactory())
@@ -133,7 +134,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Release one reader
      */
     @Test
-    public void release_success() throws InterruptedException, KeypleReaderException {
+    public void release_success() throws InterruptedException, KeypleReaderException, KeyplePluginException {
         // init stubPoolPlugin
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(new StubPluginFactory())

@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
@@ -142,6 +143,9 @@ public class MasterAPI implements DtoHandler {
         } catch (KeyplePluginNotFoundException e) {
             throw new IllegalStateException(
                     "Unable to register plugin to platform : " + pluginName);
+        } catch (KeyplePluginInstanciationException e) {
+            throw new IllegalStateException(
+                    "Unable to instanciate RemoteSe plugin");
         }
 
         // Set this service as the Dto Handler for the node

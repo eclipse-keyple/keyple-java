@@ -11,7 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy;
 
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginException;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
 
 public abstract class AbstractPluginFactory {
 
@@ -28,5 +28,5 @@ public abstract class AbstractPluginFactory {
      * 
      * @return instance of a ReaderPlugin
      */
-    protected abstract ReaderPlugin getPluginInstance() throws KeyplePluginException;
+    protected abstract ReaderPlugin getPluginInstance() throws KeyplePluginInstanciationException;
 }
