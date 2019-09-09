@@ -29,6 +29,7 @@ allprojects {
     }
 
     repositories {
+        mavenLocal()
         maven {
             url 'https://repo.eclipse.org/service/local/repositories/maven_central/content'
         }
@@ -36,7 +37,6 @@ allprojects {
         maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
         //to import keyple releases
         maven { url 'https://oss.sonatype.org/content/repositories/releases' }
-        mavenLocal()
         //mavenCentral()
         google()
         jcenter()
