@@ -35,7 +35,7 @@ project(':java:component:keyple-plugin:remotese').name = "keyple-plugin-remotese
 
 //include ':java:integration'
 
-//include ':java:example:generic:common'
+//include ':java:example'
 //project(':java:example:generic:common').name = "example-generic-common"
 ////
 //include ':java:example:generic:pc'

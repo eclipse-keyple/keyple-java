@@ -1,9 +1,11 @@
 buildscript {
     repositories {
         jcenter()
+        //use a mirror of maven_central to speed up CI build
         maven {
             url 'https://repo.eclipse.org/service/local/repositories/maven_central/content'
         }
+        mavenCentral()
     }
 
     dependencies {

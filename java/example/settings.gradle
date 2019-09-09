@@ -9,7 +9,7 @@
 
 
 rootProject.name = 'keyple-java-example'
-//println '** ' + rootProject.name + ' initialization phase.'
+//println '** ' + rootProject.name + ' initialization phase. ' + startParameter
 
 /*
  * All examples projects
@@ -18,18 +18,15 @@ rootProject.name = 'keyple-java-example'
 
 include ':generic:common'
 project(':generic:common').name = "example-generic-common"
-// 
+
 include ':generic:pc'
 project(':generic:pc').name = "example-generic-pc"
-//
+
 include ':calypso:common'
 project(':calypso:common').name = "example-calypso-common"
-//
+
 include ':calypso:pc'
 project(':calypso:pc').name = "example-calypso-pc"
-//
+
 include ':calypso:remotese'
 project(':calypso:remotese').name = "example-remotese"
-
-
-//println "rootProject : " + startParameter
