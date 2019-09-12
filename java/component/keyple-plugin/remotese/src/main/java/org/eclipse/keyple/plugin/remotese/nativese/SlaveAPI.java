@@ -221,8 +221,8 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      * Connect a local reader to Remote SE Plugin {@link INativeReaderService}
      *
      * @param localReader : native reader to be connected
-     * @return sessionId
-     * @throws KeypleReaderException
+     * @return sessionId : if successful returns sessionId
+     * @throws KeypleReaderException : if unsuccessful
      */
     @Override
     public String connectReader(SeReader localReader) throws KeypleReaderException {

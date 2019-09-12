@@ -48,7 +48,7 @@ class RmDisconnectReaderExecutor implements RemoteMethodExecutor {
         String nativeReaderName = keypleDto.getNativeReaderName();
 
         try {
-            plugin.disconnectRemoteReader(nativeReaderName,
+            plugin.removeVirtualReader(nativeReaderName,
                     transportDto.getKeypleDTO().getRequesterNodeId());
             JsonObject body = new JsonObject();
             body.addProperty("status", true);

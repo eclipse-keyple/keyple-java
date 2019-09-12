@@ -9,22 +9,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.plugin.remotese.pluginse;
+package org.eclipse.keyple.core.seproxy;
 
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+public class MockObservablePluginFactory extends AbstractPluginFactory {
 
-public interface VirtualReader extends ObservableReader {
-    /**
-     * Name of the Native Reader on the slave device
-     * 
-     * @return local name of the native reader (on slave device)
-     */
-    String getNativeReaderName();
+    private final String pluginName;
 
-    /**
-     * Return Virtual Reader Session that contains informations about master and slave nodes
-     * 
-     * @return virtual reader session
-     */
-    public VirtualReaderSession getSession();
+    MockObservablePluginFactory(String pluginName) {
+        this.pluginName = pluginName;
+    }
+
+    @Override
+    public String getPluginName() {
+        return pluginName;
+    }
+
+    @Override
+    protected ReaderPlugin getPluginInstance() {
+        return new MockAbstractObservablePlugin(pluginName);
+    }
 }

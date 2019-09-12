@@ -73,6 +73,14 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
         throw new KeypleReaderNotFoundException(remoteName);
     }
 
+
+    @Override
+    public void disconnectVirtualReader(String nativeReaderName, String slaveNodeId)
+            throws KeypleReaderException {
+        removeVirtualReader(nativeReaderName, slaveNodeId);
+    }
+
+
     /**
      * Create a virtual reader (internal method)
      */
@@ -120,18 +128,21 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
     }
 
     /**
-     * Delete a virtual reader (internal method)
+     * Remove a virtual reader (internal method)
      * 
-     * @param nativeReaderName name of the virtual reader to be deleted
+     * @param nativeReaderName : name of the virtual reader to be deleted
+     * @param slaveNodeId : slave node where the remoteReader is hosted
+     * @throws KeypleReaderNotFoundException if no virtual reader match the native reader name and
+     *         slave node Id
      */
-    void disconnectRemoteReader(String nativeReaderName, String slaveNodeId)
+    void removeVirtualReader(String nativeReaderName, String slaveNodeId)
             throws KeypleReaderNotFoundException {
 
         // retrieve virtual reader to delete
         final VirtualReaderImpl virtualReader =
                 this.getReaderByRemoteName(nativeReaderName, slaveNodeId);
 
-        logger.info("Disconnect VirtualReader with name {} with slaveNodeId {}", nativeReaderName,
+        logger.info("Remove VirtualReader with name {} with slaveNodeId {}", nativeReaderName,
                 slaveNodeId);
 
         // remove observers of reader
@@ -139,9 +150,6 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
 
         // remove reader
         readers.remove(virtualReader);
-
-        // send event READER_DISCONNECTED in a separate thread
-        // new Thread() {public void run() { }}.start();
 
         notifyObservers(new PluginEvent(getName(), virtualReader.getName(),
                 PluginEvent.EventType.READER_DISCONNECTED));
@@ -217,6 +225,7 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
     static String generateReaderName(String nativeReaderName, String slaveNodeId) {
         return "remote-" + nativeReaderName + "-" + slaveNodeId;
     }
+
 
 
 }
