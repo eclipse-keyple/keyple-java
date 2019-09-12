@@ -16,10 +16,11 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.SortedSet;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginException;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservablePlugin;
 import org.junit.Assert;
@@ -183,7 +184,11 @@ public class SeProxyServiceTest {
                         overlaps.incrementAndGet();
                     }
                     running.set(true);
-                    proxyService.registerPlugin(factory);
+                    try {
+                        proxyService.registerPlugin(factory);
+                    } catch (KeyplePluginInstanciationException e) {
+                        e.printStackTrace();
+                    }
                     running.set(false);
 
                 }

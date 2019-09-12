@@ -57,6 +57,7 @@ public final class SeProxyService {
      * Register a new plugin to be available in the platform if not registered yet
      * 
      * @param pluginFactory : plugin factory to instanciate plugin to be added
+     * @throws KeyplePluginInstanciationException : if an error occurs during instanciation
      */
     public void registerPlugin(AbstractPluginFactory pluginFactory)
             throws KeyplePluginInstanciationException {
@@ -83,6 +84,7 @@ public final class SeProxyService {
      * Unregister plugin from platform
      * 
      * @param pluginName : plugin name
+     * @return true if a plugin was unregistered
      */
     public boolean unregisterPlugin(String pluginName) {
         ReaderPlugin readerPlugin = null;
