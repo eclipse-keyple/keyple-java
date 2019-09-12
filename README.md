@@ -19,14 +19,14 @@ repositories {
 }
 
 dependencies {
-    //declare a dependency to a keyple component, in this case import a snapshot of keyple-core component
-    implementation group: 'org.eclipse.keyple', name: 'keyple-core', version: '0.7.0-20190724-SNAPSHOT'
+     //Keyple core is a mandatory library for using Keyple, in this case import the last version of keyple-java-core
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
 
-    //declare a dependency to a keyple component, in this case import a snapshot of keyple-calypso component
-    implementation group: 'org.eclipse.keyple', name: 'keyple-calypso', version: '0.7.0-20190724-SNAPSHOT'
+    //Import Calypso library to support Calypso Portable Object, in this case import the last version of keyple-java-calypso
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
    
-    //import pcsc plugin
-    implementation group: 'org.eclipse.keyple', name: 'keyple-plugin-pcsc', version: '0.7.0-20190724-SNAPSHOT'
+    //Import PCSC library to use a Pcsc reader, in this case import the last version of keyple-java-plugin-pcsc
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: '+'
     ...
 }
 ```
@@ -47,8 +47,8 @@ Dedicated reader’s plugins have to be implemented in order to interface the SE
 ## keyple-java repositories structure
 
 - Modules that are provided as artifacts
-  - keyple-core: source and unit tests for the SE Proxy module.
-  - keyple-calypso: source and unit tests for the Calypso library.
+  - keyple-core: source and unit tests for the SE Proxy module (artifact : keyple-java-core)
+  - keyple-calypso: source and unit tests for the Calypso library (artifact : keyple-java-calypso)
   - keyple-plugin: source and unit tests for the different plugins: smartcard.io PC/SC, Stub, Android NFC, Android OMAPI, etc.
 - developer support, testing
   - example: source for Keyple implementation examples, generic or Calypso specific.
@@ -89,7 +89,7 @@ Depending on the targetting usage: implementation of a ticketing **application**
 ![Calypso packages](doc/KeyplePackages_Calypso.svg "Calypso packages")
 
 ## JARs
-The Eclipse Keyple Java artifacts are published on the Eclipse Keyple Project page [https://projects.eclipse.org/projects/iot.keyple/downloads] (may be soon also available on Maven).
+The Eclipse Keyple Java artifacts are published on the Eclipse Keyple Project page [https://projects.eclipse.org/projects/iot.keyple/downloads] (available also on Maven).
 
 - Keyple modules:
   - **'Keyple Core module' JAR**:  the generic API to manage Secure Element Readers and to select SE application.
@@ -104,35 +104,38 @@ The Eclipse Keyple Java artifacts are published on the Eclipse Keyple Project pa
 ## Documentation
 The current functional specification [keyple-doc](https://calypsonet.github.io/keyple-doc/) is obsolete.
 
-## Building the examples and the Keyple components
+## Building the Keyple components
+
+This guide helps developer that want to contribute to Keyple components base code. You can fork the project and contribute to it. Every contribution will be reviewed by the developper team and scan by our CI and quality code tools before being merged to the base code.
 
 ### Java components
 
 #### Prerequisites
-Here are the prerequisites to build the keyple components (jars) and to run the /example projects
+Here are the prerequisites to build the keyple components (jars)
 - Java JDK 1.6 or newer
 - Maven (any version) [available here](https://maven.apache.org/install.html)
 - Gradle (any version as we use the gradle wrapper) [available here](https://gradle.org/install/)
 
 
 #### Linux or Macos
-Following commands will build all the artifacts at once. The first command is required to be executed at least once to build the gradle wrapper.  
+Following commands will build all the artifacts at once. The first command is required to be executed at least once to build the gradle wrapper. Then, the keyple-core artifact is built and installed into the local maven repository as other artifacts depends on it.  
 ```
 gradle wrapper --gradle-version 4.5.1
+./gradlew :java:component:keyple-core:uploadArchives --info
 ./gradlew build  --info
 ```
 
 
 #### Windows
-Following commands will build all the artifacts at once. The first command is required to be executed at least once to build the gradle wrapper.  
+Following commands will build all the artifacts at once. The first command is required to be executed at least once to build the gradle wrapper. Then, the keyple-core artifact is built and installed into the local maven repository as other artifacts depends on it.  
 ```
 gradle wrapper --gradle-version 4.5.1
+.\gradlew.bat :java:component:keyple-core:uploadArchives --info
 .\gradlew.bat build  --info
 ```
 
 ### Android components
-
-If you want to build the keyple android components (aar plugins, apk example app), you need : 
+If you want to build the keyple android components (aar plugins), you need : 
 - Java JDK 1.8 or newer (OMAPI app requires java 1.8)
 - Intellij 2018 community version or Android Studio 3.0
 - Android sdk 26 should be installed on your machine [follow those instructions](http://www.androiddocs.com/sdk/installing/index.html)
@@ -143,17 +146,16 @@ To acknowledge where is installed you Android SDK, you need to create a file `lo
 
 For instance ``sdk.dir=/Users/user/Library/Android/sdk``
 
-
-
 #### Linux or Macos
-To build the plugins, execute the following commands in the **/android folder**, the first command is required to be executed at least once to build the gradle wrapper.  
 
+First, you need to build and install locally the java component keyple-core (see above)
+To build the plugins, execute the following commands in the **/android folder**, the first command is required to be executed at least once to build the gradle wrapper.  
 ```
 gradle wrapper --gradle-version 4.5.1
 ./gradlew build
 ```
 
-To build the example app NFC and OMAPI
+To build the example app NFC and OMAPI, first, you need to build and install locally the java component keyple-core, keyple-calypso and keyple-android-plugin (see above)
 
 ```
 ./gradlew -b ./example/calypso/nfc/build.gradle assembleDebug 
@@ -161,7 +163,7 @@ To build the example app NFC and OMAPI
 ```
 
 #### Windows
-
+First, you need to build and install locally the java component keyple-core (see above)
 To build the plugins, execute the following commands in the **/android folder**, the first command is required to be executed at least once to build the gradle wrapper.  
 
 ```
@@ -169,7 +171,8 @@ gradle wrapper --gradle-version 4.5.1`
 .\gradlew.bat build
 ```
 
-To build the example app NFC and OMAPI
+To build the example app NFC and OMAPI, first, you need to build and install locally the java component keyple-core, keyple-calypso and keyple-android-plugin (see above)
+
 
 ```
 .\gradlew.bat -b ./example/calypso/nfc/build.gradle assembleDebug 
