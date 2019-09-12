@@ -14,6 +14,7 @@ package org.eclipse.keyple.plugin.remotese.integration;
 
 
 import org.eclipse.keyple.core.seproxy.SeProxyService;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -75,8 +76,9 @@ public class Integration {
      * @throws KeypleReaderNotFoundException
      */
     public static StubReader createStubReader(String stubReaderName,
-            TransmissionMode transmissionMode) throws InterruptedException,
-            KeypleReaderNotFoundException, KeyplePluginNotFoundException {
+            TransmissionMode transmissionMode)
+            throws InterruptedException, KeypleReaderNotFoundException,
+            KeyplePluginNotFoundException, KeyplePluginInstanciationException {
 
         StubPlugin stubPlugin = createStubPlugin();
 
@@ -103,7 +105,8 @@ public class Integration {
     }
 
 
-    public static StubPlugin createStubPlugin() throws KeyplePluginNotFoundException {
+    public static StubPlugin createStubPlugin()
+            throws KeyplePluginNotFoundException, KeyplePluginInstanciationException {
 
         // get SeProxyService
         SeProxyService seProxyService = SeProxyService.getInstance();
@@ -125,7 +128,8 @@ public class Integration {
      * @throws InterruptedException
      * @throws KeypleReaderNotFoundException
      */
-    public static StubPoolPlugin createStubPoolPlugin() throws KeyplePluginNotFoundException {
+    public static StubPoolPlugin createStubPoolPlugin()
+            throws KeyplePluginNotFoundException, KeyplePluginInstanciationException {
 
         SeProxyService seProxyService = SeProxyService.getInstance();
 
