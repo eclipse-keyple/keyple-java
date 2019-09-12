@@ -24,6 +24,7 @@ import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
@@ -110,7 +111,7 @@ public class Demo_Master {
     /**
      * Initiate {@link MasterAPI} with both ingoing and outcoming {@link DtoNode}
      */
-    public void boot() {
+    public void boot() throws KeyplePluginInstanciationException {
 
 
         logger.info("{} Create VirtualReaderService, start plugin", node.getNodeId());
