@@ -25,8 +25,8 @@ class RemoteSePoolPluginFactory extends AbstractPluginFactory {
     long rpc_timeout;
     String pluginName;
 
-    public RemoteSePoolPluginFactory(VirtualReaderSessionFactory sessionManager,
-            DtoSender dtoSender, long rpc_timeout, String pluginName) {
+    RemoteSePoolPluginFactory(VirtualReaderSessionFactory sessionManager, DtoSender dtoSender,
+            long rpc_timeout, String pluginName) {
         this.sessionManager = sessionManager;
         this.dtoSender = dtoSender;
         this.rpc_timeout = rpc_timeout;

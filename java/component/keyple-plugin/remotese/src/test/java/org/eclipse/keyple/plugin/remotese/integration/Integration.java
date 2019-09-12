@@ -111,6 +111,7 @@ public class Integration {
         // register plugin
         seProxyService.registerPlugin(new StubPluginFactory());
 
+
         // get plugin
         StubPlugin stubPlugin = (StubPlugin) seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
 
@@ -132,6 +133,7 @@ public class Integration {
                 new StubPoolPluginFactory(new StubPluginFactory());
 
         seProxyService.registerPlugin(stubPoolPluginFactory);
+
 
         StubPoolPlugin poolPlugin =
                 (StubPoolPlugin) seProxyService.getPlugin(StubPoolPlugin.PLUGIN_NAME);

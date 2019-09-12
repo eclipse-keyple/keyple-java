@@ -105,6 +105,10 @@ android {
 }
 
 repositories {
+    //to import keyple snapshots
+    maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    //to import keyple releases
+    maven { url 'https://oss.sonatype.org/content/repositories/releases' }
     mavenLocal()
     mavenCentral()
     google()
@@ -117,10 +121,15 @@ dependencies {
     /*
     Keyple dependencies
      */
-    implementation project(path:':java:component:keyple-calypso')
-    implementation project(path:':java:component:keyple-core')
-    implementation project(path:':keyple-plugin:android-nfc')
-    
+    //import the last version of keyple-java-core
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
+
+    //import the last version of keyple-java-calypso
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
+
+    //import the last version of keyple-java-plugin-nfc
+    implementation group: 'org.eclipse.keyple', name: 'keyple-android-plugin-nfc', version: '+'
+
     /*
     Android components
      */

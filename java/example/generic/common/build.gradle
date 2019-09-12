@@ -2,7 +2,7 @@ apply plugin: 'java'
 
 sourceCompatibility = 1.6
 
-project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
+//project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
 
 
 jar {
@@ -14,12 +14,11 @@ jar {
 
 
 dependencies {
+    //import the last version of keyple-java-core
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
 
-    //use keyple library : core
-    implementation project(path:':java:component:keyple-core')
-
-    //use keyple library : calypso
-    implementation project(path:':java:component:keyple-calypso')
+    //import the last version of keyple-java-calypso
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     implementation "org.slf4j:slf4j-api:${slf4japi_version}"
