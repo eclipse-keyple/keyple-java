@@ -47,8 +47,8 @@ Demo_SeProtocolDetection_Stub {
      * @throws IllegalArgumentException in case of a bad argument
      * @throws InterruptedException if thread error occurs
      */
-    public static void main(String[] args)
-            throws IllegalArgumentException, InterruptedException, KeyplePluginNotFoundException, KeyplePluginInstanciationException {
+    public static void main(String[] args) throws IllegalArgumentException, InterruptedException,
+            KeyplePluginNotFoundException, KeyplePluginInstanciationException {
         /* get the SeProxyService instance */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
