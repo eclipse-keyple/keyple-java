@@ -17,8 +17,10 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
+import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
 import org.eclipse.keyple.plugin.stub.StubReader;
 import org.junit.After;
 import org.junit.Assert;
@@ -194,6 +196,93 @@ public class RemoteSePluginEventTest extends VirtualReaderBaseTest {
         this.disconnectStubReader("anysession", "A_NOT_CONNECTED_READER", CLIENT_NODE_ID);
 
         // Expect a KeypleReaderException exception to be thrown
+    }
+
+
+    /**
+     * Test MasterAPI disconnect method
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testMaster_DisconnectReaderSucess() throws Exception {
+        // lock test until two messages are received
+        final CountDownLatch lock = new CountDownLatch(2);
+
+        obs = new ObservablePlugin.PluginObserver() {
+            @Override
+            public void update(PluginEvent event) {
+
+                // we expect the first event to be READER_CONNECTED
+                if (event.getEventType() == PluginEvent.EventType.READER_CONNECTED) {
+                    Assert.assertEquals(2, lock.getCount());
+                    lock.countDown();
+                } else {
+                    // second event should be a READER_DISCONNECTED
+                    Assert.assertNotNull(event.getReaderNames().first());
+                    Assert.assertEquals(1, event.getReaderNames().size());
+                    Assert.assertEquals(remoteSePlugin.getName(), event.getPluginName());
+                    Assert.assertEquals(PluginEvent.EventType.READER_DISCONNECTED,
+                            event.getEventType());
+                    lock.countDown();
+                }
+            }
+        };
+
+        // add observer
+        remoteSePlugin.addObserver(obs);
+
+        // connect a Stub Native reader
+        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID,
+                TransmissionMode.CONTACTLESS);
+
+        // wait 1 second
+        Thread.sleep(1000);
+
+        VirtualReader virtualReader = getVirtualReader();
+
+        masterAPI.getPlugin().disconnectVirtualReader(
+                ((VirtualReader) virtualReader).getNativeReaderName(),
+                virtualReader.getSession().getSlaveNodeId());
+
+        // wait 5 seconds
+        lock.await(5, TimeUnit.SECONDS);
+
+        Assert.assertEquals(0, lock.getCount());
+    }
+
+    /**
+     * Test MasterAPI disconnect method fail
+     *
+     * @throws Exception
+     */
+    @Test(expected = KeypleReaderNotFoundException.class)
+    public void testMaster_DisconnectReaderNotFound() throws Exception {
+        // connect a Stub Native reader
+        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID,
+                TransmissionMode.CONTACTLESS);
+        // wait 1 second
+        Thread.sleep(1000);
+        VirtualReader virtualReader = getVirtualReader();
+        masterAPI.getPlugin().disconnectVirtualReader(
+                ((VirtualReader) virtualReader).getNativeReaderName(), "none");
+    }
+
+    /**
+     * Test MasterAPI disconnect method fail
+     *
+     * @throws Exception
+     */
+    @Test(expected = KeypleReaderNotFoundException.class)
+    public void testMaster_DisconnectReaderNotFound2() throws Exception {
+        // connect a Stub Native reader
+        nativeReader = this.connectStubReader(NATIVE_READER_NAME, CLIENT_NODE_ID,
+                TransmissionMode.CONTACTLESS);
+        // wait 1 second
+        Thread.sleep(1000);
+        VirtualReader virtualReader = getVirtualReader();
+        masterAPI.getPlugin().disconnectVirtualReader("none",
+                virtualReader.getSession().getSlaveNodeId());
     }
 
 }

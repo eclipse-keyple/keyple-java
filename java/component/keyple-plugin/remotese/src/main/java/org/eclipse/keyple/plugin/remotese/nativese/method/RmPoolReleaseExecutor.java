@@ -27,7 +27,7 @@ public class RmPoolReleaseExecutor implements RemoteMethodExecutor {
     ReaderPoolPlugin poolPlugin;
 
     public RemoteMethod getMethodName() {
-        return RemoteMethod.POOL_ALLOCATE_READER;
+        return RemoteMethod.POOL_RELEASE_READER;
     }
 
     public RmPoolReleaseExecutor(ReaderPoolPlugin poolPlugin) {

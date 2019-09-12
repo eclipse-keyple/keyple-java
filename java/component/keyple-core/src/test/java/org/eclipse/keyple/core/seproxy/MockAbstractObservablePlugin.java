@@ -36,14 +36,10 @@ public class MockAbstractObservablePlugin extends AbstractObservablePlugin {
     }
 
     @Override
-    protected void startObservation() {
-
-    }
+    protected void startObservation() {}
 
     @Override
-    protected void stopObservation() {
-
-    }
+    protected void stopObservation() {}
 
     @Override
     public Map<String, String> getParameters() {

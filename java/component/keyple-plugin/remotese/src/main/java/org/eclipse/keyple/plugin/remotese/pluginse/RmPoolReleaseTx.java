@@ -70,7 +70,7 @@ public class RmPoolReleaseTx extends RemoteMethodTx<Boolean> {
 
             // create the Virtual Reader related to the Reader Allocation
             try {
-                this.virtualPoolPlugin.disconnectRemoteReader(nativeReaderName,
+                this.virtualPoolPlugin.removeVirtualReader(nativeReaderName,
                         keypleDto.getRequesterNodeId());
                 return true;
             } catch (KeypleReaderException e) {

@@ -83,7 +83,7 @@ final class VirtualReaderImpl extends AbstractObservableReader implements Virtua
         return nativeReaderName;
     }
 
-    VirtualReaderSession getSession() {
+    public VirtualReaderSession getSession() {
         return session;
     }
 
