@@ -13,7 +13,7 @@ package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import org.eclipse.keyple.core.seproxy.AbstractPluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
-import org.eclipse.keyple.core.seproxy.exception.KeyplePluginException;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
 
 /**
@@ -48,12 +48,13 @@ class RemoteSePluginFactory extends AbstractPluginFactory {
     }
 
     @Override
-    protected ReaderPlugin getPluginInstance() throws KeyplePluginException {
+    protected ReaderPlugin getPluginInstance() throws KeyplePluginInstanciationException {
         if (dtoSender == null) {
-            throw new KeyplePluginException("Dto sender must not be null");
+            throw new KeyplePluginInstanciationException("Dto sender must not be null");
         }
         if (sessionManager == null) {
-            throw new KeyplePluginException("VirtualReaderSessionFactory must not be null");
+            throw new KeyplePluginInstanciationException(
+                    "VirtualReaderSessionFactory must not be null");
         }
         return new RemoteSePluginImpl(sessionManager, dtoSender, rpc_timeout, pluginName);
     }
