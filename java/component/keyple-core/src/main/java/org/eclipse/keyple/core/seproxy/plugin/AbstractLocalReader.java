@@ -143,10 +143,10 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
              */
             boolean aSeMatched = false;
             try {
-                SeResponseSet seResponseSet =
+                List<SeResponse> seResponseList =
                         processSeRequestSet(defaultSelectionsRequest.getSelectionSeRequestSet());
 
-                for (SeResponse seResponse : seResponseSet.getResponses()) {
+                for (SeResponse seResponse : seResponseList) {
                     if (seResponse != null && seResponse.getSelectionStatus().hasMatched()) {
                         aSeMatched = true;
                         break;
@@ -157,7 +157,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     if (aSeMatched) {
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_MATCHED,
-                                new DefaultSelectionsResponse(seResponseSet)));
+                                new DefaultSelectionsResponse(seResponseList)));
                         presenceNotified = true;
                     } else {
                         /* the SE did not match, close the logical channel */
@@ -168,7 +168,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                         /* The SE matched, notify an SE_MATCHED event with the received response */
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_MATCHED,
-                                new DefaultSelectionsResponse(seResponseSet)));
+                                new DefaultSelectionsResponse(seResponseList)));
                     } else {
                         /*
                          * The SE didn't match, notify an SE_INSERTED event with the received
@@ -176,7 +176,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                          */
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_INSERTED,
-                                new DefaultSelectionsResponse(seResponseSet)));
+                                new DefaultSelectionsResponse(seResponseList)));
                     }
                     presenceNotified = true;
                 }
@@ -527,15 +527,15 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return SeResponseSet the response set
      * @throws KeypleIOReaderException if a reader error occurs
      */
-    protected final SeResponseSet processSeRequestSet(SeRequestSet requestSet)
+    protected final List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet)
             throws KeypleReaderException {
 
-        boolean requestMatchesProtocol[] = new boolean[requestSet.getRequests().size()];
+        boolean requestMatchesProtocol[] = new boolean[requestSet.size()];
         int requestIndex = 0, lastRequestIndex;
 
         // Determine which requests are matching the current ATR
         // All requests without selector are considered matching
-        for (SeRequest request : requestSet.getRequests()) {
+        for (SeRequest request : requestSet) {
             SeSelector seSelector = request.getSeSelector();
             if (seSelector != null) {
                 requestMatchesProtocol[requestIndex] =
@@ -565,7 +565,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
          */
         List<SeResponse> responses = new ArrayList<SeResponse>();
         boolean stopProcess = false;
-        for (SeRequest request : requestSet.getRequests()) {
+        for (SeRequest request : requestSet) {
 
             if (!stopProcess) {
                 if (requestMatchesProtocol[requestIndex]) {
@@ -582,7 +582,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                         /* Add the latest (and partial) SeResponse to the current list. */
                         responses.add(ex.getSeResponse());
                         /* Build a SeResponseSet with the available data. */
-                        ex.setSeResponseSet(new SeResponseSet(responses));
+                        ex.setSeResponseSet(responses);
                         logger.debug(
                                 "[{}] processSeRequestSet => transmit : process interrupted, collect previous responses {}",
                                 this.getName(), responses);
@@ -625,7 +625,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 }
             }
         }
-        return new SeResponseSet(responses);
+        return responses;
     }
 
     /**

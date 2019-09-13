@@ -43,7 +43,7 @@ public class SampleFactory {
         return ObservableReader.NotificationMode.ALWAYS;
     }
 
-    public static SeRequestSet getASeRequestSet_ISO14443_4() {
+    public static Set<SeRequest> getASeRequestSet_ISO14443_4() {
         String poAid = "A000000291A000000191";
 
         List<ApduRequest> poApduRequestList;
@@ -55,12 +55,16 @@ public class SampleFactory {
         SeRequest seRequest =
                 new SeRequest(seSelector, poApduRequestList, ChannelState.CLOSE_AFTER);
 
-        return new SeRequestSet(seRequest);
+        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
+
+        seRequestSet.add(seRequest);
+
+        return seRequestSet;
 
     }
 
 
-    public static SeRequestSet getASeRequestSet() {
+    public static Set<SeRequest> getASeRequestSet() {
         String poAid = "A000000291A000000191";
 
         List<ApduRequest> poApduRequestList;
@@ -68,7 +72,11 @@ public class SampleFactory {
 
         SeRequest seRequest = new SeRequest(poApduRequestList, ChannelState.CLOSE_AFTER);
 
-        return new SeRequestSet(seRequest);
+        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
+
+        seRequestSet.add(seRequest);
+
+        return seRequestSet;
 
     }
 
@@ -98,7 +106,7 @@ public class SampleFactory {
 
     }
 
-    public static SeRequestSet getCompleteRequestSet() {
+    public static Set<SeRequest> getCompleteRequestSet() {
         String poAid = "A000000291A000000191";
 
         List<ApduRequest> poApduRequestList;
@@ -121,12 +129,16 @@ public class SampleFactory {
         seRequests.add(seRequest);
         seRequests.add(seRequest2);
 
-        return new SeRequestSet(seRequests);
+        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
+
+        seRequestSet.add(seRequest);
+
+        return seRequestSet;
 
 
     }
 
-    public static SeResponseSet getCompleteResponseSet() {
+    public static List<SeResponse> getCompleteResponseSet() {
         List<SeResponse> seResponses = new ArrayList<SeResponse>();
 
         ApduResponse apdu = new ApduResponse(ByteArrayUtil.fromHex("9000"), new HashSet<Integer>());
@@ -142,7 +154,7 @@ public class SampleFactory {
         seResponses.add(
                 new SeResponse(true, true, new SelectionStatus(null, apdu, true), apduResponses));
 
-        return new SeResponseSet(seResponses);
+        return seResponses;
 
 
     }

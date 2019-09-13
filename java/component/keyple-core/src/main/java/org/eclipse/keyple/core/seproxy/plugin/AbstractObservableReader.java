@@ -12,6 +12,8 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 
+import java.util.List;
+import java.util.Set;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.NotificationMode;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
@@ -27,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Abstract definition of an observable reader.
  * <ul>
- * <li>High level logging and benchmarking of SeRequestSet and SeRequest transmission</li>
+ * <li>High level logging and benchmarking of Set of SeRequest and SeRequest transmission</li>
  * <li>Observability management</li>
  * <li>Name-based comparison of ProxyReader (required for SortedSet&lt;ProxyReader&gt;)</li>
  * <li>Plugin naming management</li>
@@ -104,8 +106,8 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * Execute the transmission of a list of {@link SeRequest} and returns a list of
      * {@link SeResponse}
      * <p>
-     * The global execution time (inter-exchange and communication) and the SeRequestSet content is
-     * logged (DEBUG level).
+     * The global execution time (inter-exchange and communication) and the Set of SeRequest content
+     * is logged (DEBUG level).
      * <p>
      * As the method is final, it cannot be extended.
      *
@@ -113,12 +115,13 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * @return responseSet the response set
      * @throws KeypleReaderException if a reader error occurs
      */
-    public final SeResponseSet transmitSet(SeRequestSet requestSet) throws KeypleReaderException {
+    public final List<SeResponse> transmitSet(Set<SeRequest> requestSet)
+            throws KeypleReaderException {
         if (requestSet == null) {
             throw new IllegalArgumentException("seRequestSet must not be null");
         }
 
-        SeResponseSet responseSet;
+        List<SeResponse> responseSet;
 
         if (logger.isDebugEnabled()) {
             long timeStamp = System.nanoTime();
@@ -164,18 +167,18 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * <p>
      * This method is handled by transmitSet.
      * 
-     * @param requestSet the SeRequestSet to be processed
-     * @return the SeResponseSet (responses to the SeRequestSet)
+     * @param requestSet the Set of {@link SeRequest} to be processed
+     * @return the List of {@link SeResponse} (responses to the Set of {@link SeRequest})
      * @throws KeypleReaderException if reader error occurs
      */
-    protected abstract SeResponseSet processSeRequestSet(SeRequestSet requestSet)
+    protected abstract List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet)
             throws KeypleReaderException;
 
     /**
      * Execute the transmission of a {@link SeRequest} and returns a {@link SeResponse}
      * <p>
-     * The individual execution time (inter-exchange and communication) and the SeRequestSet content
-     * is logged (DEBUG level).
+     * The individual execution time (inter-exchange and communication) and the {@link SeRequest}
+     * content is logged (DEBUG level).
      * <p>
      * As the method is final, it cannot be extended.
      *
@@ -234,8 +237,8 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * <p>
      * This method is handled by transmit.
      * 
-     * @param seRequest the SeRequestSet to be processed
-     * @return the SeResponse (responses to the SeRequest)
+     * @param seRequest the {@link SeRequest} to be processed
+     * @return the {@link SeResponse} (responses to the {@link SeRequest})
      * @throws KeypleReaderException if reader error occurs
      */
     protected abstract SeResponse processSeRequest(SeRequest seRequest)

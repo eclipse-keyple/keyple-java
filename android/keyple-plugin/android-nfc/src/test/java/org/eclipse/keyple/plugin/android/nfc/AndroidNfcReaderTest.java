@@ -17,7 +17,10 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
@@ -29,8 +32,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
-import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Before;
@@ -92,7 +94,7 @@ public class AndroidNfcReaderTest {
                 AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // input
-        SeRequestSet requests = getRequestIsoDepSetSample();
+        Set<SeRequest> requests = getRequestIsoDepSetSample();
 
         // init Mock
         when(tagProxy.transceive(ByteArrayUtil.fromHex("00A404000AA000000291A00000019100")))
@@ -106,11 +108,11 @@ public class AndroidNfcReaderTest {
 
         // test
         insertSe();
-        SeResponseSet seResponse = reader.transmitSet(requests);
+        List<SeResponse> seResponseList = reader.transmitSet(requests);
 
         // assert
         Assert.assertTrue(
-                seResponse.getSingleResponse().getSelectionStatus().getFci().isSuccessful());
+                seResponseList.get(0).getSelectionStatus().getFci().isSuccessful());
 
     }
 
@@ -121,7 +123,7 @@ public class AndroidNfcReaderTest {
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4, AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // input
-        SeRequestSet requests = getRequestIsoDepSetSample();
+        Set<SeRequest> requests = getRequestIsoDepSetSample();
 
         // init Mock with Mifare Classic Smart card
         when(tagProxy.transceive(ByteArrayUtil.fromHex("00A404000AA000000291A00000019100")))
@@ -135,10 +137,10 @@ public class AndroidNfcReaderTest {
 
         // test
         insertSe();
-        SeResponseSet seResponse = reader.transmitSet(requests);
+        List<SeResponse> seResponseList = reader.transmitSet(requests);
 
         // assert the only seRequest is null
-        Assert.assertTrue(seResponse.getSingleResponse() == null);
+        Assert.assertTrue(seResponseList.get(0) == null);
 
     }
 
@@ -149,7 +151,7 @@ public class AndroidNfcReaderTest {
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC, AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_MIFARE_CLASSIC));
 
         // input
-        SeRequestSet requests = getRequestIsoDepSetSample();
+        Set<SeRequest> requests = getRequestIsoDepSetSample();
 
         // init Mock with Isodep Classic Smart card
         when(tagProxy.transceive(ByteArrayUtil.fromHex("00A404000AA000000291A00000019100")))
@@ -163,10 +165,10 @@ public class AndroidNfcReaderTest {
 
         // test
         insertSe();
-        SeResponseSet seResponse = reader.transmitSet(requests);
+        List<SeResponse> seResponseList = reader.transmitSet(requests);
 
         // assert the only seRequest is null
-        Assert.assertTrue(seResponse.getSingleResponse() == null);
+        Assert.assertTrue(seResponseList.get(0) == null);
 
     }
 
@@ -177,7 +179,7 @@ public class AndroidNfcReaderTest {
         reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4, AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // input
-        SeRequestSet requests = getRequestIsoDepSetSample();
+        Set<SeRequest> requests = getRequestIsoDepSetSample();
 
         // init Mock with Isodep Classic Smart card
         when(tagProxy.transceive(ByteArrayUtil.fromHex("00A404000AA000000291A00000019100")))
@@ -194,7 +196,7 @@ public class AndroidNfcReaderTest {
 
         // test
         insertSe();
-        SeResponseSet seResponse = reader.transmitSet(requests);
+        List<SeResponse> seResponseList = reader.transmitSet(requests);
 
         // wait for exception
     }
@@ -207,7 +209,7 @@ public class AndroidNfcReaderTest {
                 AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // input
-        SeRequestSet requests = getRequestIsoDepSetSample();
+        Set<SeRequest> requests = getRequestIsoDepSetSample();
 
         // init Mock with Isodep Classic Smart card
         when(tagProxy.transceive(ByteArrayUtil.fromHex("00A404000AA000000291A00000019100")))
@@ -222,10 +224,10 @@ public class AndroidNfcReaderTest {
 
         // test
         insertSe();
-        SeResponseSet seResponse = reader.transmitSet(requests);
+        List<SeResponse> seResponseList = reader.transmitSet(requests);
 
         // assert the only seRequest is null
-        Assert.assertTrue(seResponse.getSingleResponse() == null);
+        Assert.assertTrue(seResponseList.get(0) == null);
     }
 
 
@@ -237,7 +239,7 @@ public class AndroidNfcReaderTest {
                 AndroidNfcProtocolSettings.NFC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
         // input
-        SeRequestSet requests = getRequestIsoDepSetSample();
+        Set<SeRequest> requests = getRequestIsoDepSetSample();
 
         // init Mock with Isodep Classic Smart card
         when(tagProxy.transceive(ByteArrayUtil.fromHex("00B201A420"))).thenReturn(ByteArrayUtil
@@ -251,10 +253,10 @@ public class AndroidNfcReaderTest {
 
         // test
         insertSe();
-        SeResponseSet seResponse = reader.transmitSet(requests);
+        List<SeResponse> seResponseList = reader.transmitSet(requests);
 
         // assert the only seRequest is null
-        Assert.assertTrue(seResponse.getSingleResponse() == null);
+        Assert.assertTrue(seResponseList.get(0) == null);
     }
 
     /*
@@ -498,7 +500,7 @@ public class AndroidNfcReaderTest {
         reader.onTagDiscovered(tag);
     }
 
-    private SeRequestSet getRequestIsoDepSetSample() {
+    private Set<SeRequest> getRequestIsoDepSetSample() {
         String poAid = "A000000291A000000191";
 
         ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO,
@@ -514,7 +516,9 @@ public class AndroidNfcReaderTest {
                 new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null), poApduRequestList,
                 ChannelState.CLOSE_AFTER);
 
-        return new SeRequestSet(seRequest);
+        Set<SeRequest> seRequests = new LinkedHashSet<SeRequest>();
+        seRequests.add(seRequest);
+        return seRequests;
 
     }
 }

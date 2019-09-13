@@ -11,11 +11,13 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.rm.json;
 
+import java.util.List;
+import java.util.Set;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
-import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
+import org.eclipse.keyple.core.seproxy.message.SeRequest;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.transport.json.JsonParser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,20 +38,20 @@ public class JsonParserTest {
 
     @Test
     public void testHoplinkSeRequestSet() {
-        SeRequestSet seRequestSet = SampleFactory.getASeRequestSet_ISO14443_4();
-        testSerializeDeserializeObj(seRequestSet, SeRequestSet.class);
+        Set<SeRequest> seRequestSet = SampleFactory.getASeRequestSet_ISO14443_4();
+        testSerializeDeserializeObj(seRequestSet, Set.class);
     }
 
     @Test
     public void testCompleteSeRequestSet() {
-        SeRequestSet seRequestSet = SampleFactory.getCompleteRequestSet();
-        testSerializeDeserializeObj(seRequestSet, SeRequestSet.class);
+        Set<SeRequest> seRequestSet = SampleFactory.getCompleteRequestSet();
+        testSerializeDeserializeObj(seRequestSet, Set.class);
     }
 
     @Test
     public void testSeResponseSet() {
-        SeResponseSet responseSet = SampleFactory.getCompleteResponseSet();
-        testSerializeDeserializeObj(responseSet, SeResponseSet.class);
+        List<SeResponse> responseSet = SampleFactory.getCompleteResponseSet();
+        testSerializeDeserializeObj(responseSet, List.class);
 
     }
 

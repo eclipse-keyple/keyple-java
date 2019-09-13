@@ -11,16 +11,20 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.android.omapi;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import android.app.Fragment;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -30,22 +34,17 @@ import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin;
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginFactory;
 
-import android.app.Fragment;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * View for OMAPI Tests
@@ -203,14 +202,15 @@ public class OMAPITestFragment extends Fragment {
                     // any ATR"),
                     // poApduRequestList, ChannelState.CLOSE_AFTER,
                     // SeCommonProtocol.PROTOCOL_ISO7816_3);
+                    Set<SeRequest> seRequests = new LinkedHashSet<SeRequest>();
+                    seRequests.add(seRequest);
 
-
-                    SeResponseSet seResponseSet =
-                            ((ProxyReader) reader).transmitSet(new SeRequestSet(seRequest));
+                    List<SeResponse> seResponseList =
+                            ((ProxyReader) reader).transmitSet(seRequests);
 
 
                     mText.append("\n ---- \n");
-                    for (SeResponse response : seResponseSet.getResponses()) {
+                    for (SeResponse response : seResponseList) {
                         if (response != null) {
                             for (ApduResponse apdu : response.getApduResponses()) {
                                 mText.append("Response : " + apdu.getStatusCode() + " - "

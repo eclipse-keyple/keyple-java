@@ -96,8 +96,7 @@ public final class SeRequest implements Serializable {
     }
 
     /**
-     * Define if the channel should be kept open after the the {@link SeRequestSet} has been
-     * executed.
+     * Define if the channel should be kept open after the {@link SeRequest} has been executed.
      *
      * @return If the channel should be kept open
      */

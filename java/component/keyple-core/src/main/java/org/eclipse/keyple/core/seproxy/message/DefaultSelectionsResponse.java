@@ -11,21 +11,22 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.message;
 
+import java.util.List;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
 /**
- * Class containing the {@link org.eclipse.keyple.core.seproxy.message.SeResponseSet} used from a
- * default selection made at the {@link ObservableReader} level.
+ * Class containing the List of {@link SeResponse} used from a default selection made at the
+ * {@link ObservableReader} level.
  */
 public final class DefaultSelectionsResponse extends AbstractDefaultSelectionsResponse {
 
-    public DefaultSelectionsResponse(SeResponseSet selectionSeResponseSet) {
+    public DefaultSelectionsResponse(List<SeResponse> selectionSeResponseSet) {
         super(selectionSeResponseSet);
     }
 
     @Override
-    public SeResponseSet getSelectionSeResponseSet() {
+    public List<SeResponse> getSelectionSeResponseSet() {
         return selectionSeResponseSet;
     }
 }

@@ -17,7 +17,7 @@ Those examples make use of the Keyple Core library. They demonstrate how to obse
   * Reader management:
     * Observability of plugins to manage the insertion / removal of readers
     * Observability of readers to manage the insertion / removal of secure elements
-  * SeRequestSet/SeResponseSet building
+  * SeRequest/SeResponse building
   * PO technology identification (protocol based filtering)
   * Application selection (AID or ATR based)
   * Two basic scenarios

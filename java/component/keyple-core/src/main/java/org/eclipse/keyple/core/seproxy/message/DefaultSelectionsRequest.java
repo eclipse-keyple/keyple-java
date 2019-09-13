@@ -11,21 +11,22 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.message;
 
+import java.util.Set;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
 /**
- * Class containing the {@link org.eclipse.keyple.core.seproxy.message.SeRequestSet} used to make a
- * default selection at the {@link ObservableReader} level.
+ * Class containing the Set of {@link SeRequest} used to make a default selection at the
+ * {@link ObservableReader} level.
  */
 public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsRequest {
 
-    public DefaultSelectionsRequest(SeRequestSet selectionSeRequestSet) {
+    public DefaultSelectionsRequest(Set<SeRequest> selectionSeRequestSet) {
         super(selectionSeRequestSet);
     }
 
     @Override
-    public SeRequestSet getSelectionSeRequestSet() {
+    public Set<SeRequest> getSelectionSeRequestSet() {
         return selectionSeRequestSet;
     }
 }
