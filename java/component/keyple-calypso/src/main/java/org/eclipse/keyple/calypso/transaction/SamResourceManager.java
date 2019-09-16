@@ -112,12 +112,13 @@ public class SamResourceManager {
 
         samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3, ".*");
 
-        SeSelection samSelection = new SeSelection();
+        SeSelection samSelection =
+                new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
 
         SamSelector samSelector = new SamSelector(new SamIdentifier(AUTO, null, null), "SAM");
 
         /* Prepare selector, ignore MatchingSe here */
-        samSelection.prepareSelection(new SamSelectionRequest(samSelector, ChannelState.KEEP_OPEN));
+        samSelection.prepareSelection(new SamSelectionRequest(samSelector));
 
         SelectionsResult selectionsResult = samSelection.processExplicitSelection(samReader);
         if (!selectionsResult.hasActiveSelection()) {

@@ -30,9 +30,9 @@ allprojects {
 
     repositories {
         //to import keyple snapshots
-        maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        //maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
         //to import keyple releases
-        maven { url 'https://oss.sonatype.org/content/repositories/releases' }
+        //maven { url 'https://oss.sonatype.org/content/repositories/releases' }
         mavenLocal()
         mavenCentral()
         google()

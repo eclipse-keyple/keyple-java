@@ -13,7 +13,6 @@ package org.eclipse.keyple.calypso.transaction;
 
 import org.eclipse.keyple.calypso.command.sam.AbstractSamResponseParser;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
-import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 
 /**
@@ -24,10 +23,9 @@ public class SamSelectionRequest extends AbstractSeSelectionRequest {
      * Create a {@link SamSelectionRequest}
      * 
      * @param samSelector the SAM selector
-     * @param channelState the action to take after (close or keep open)
      */
-    public SamSelectionRequest(SamSelector samSelector, ChannelState channelState) {
-        super(samSelector, channelState);
+    public SamSelectionRequest(SamSelector samSelector) {
+        super(samSelector);
     }
 
     /**

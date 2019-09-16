@@ -12,6 +12,8 @@
 package org.eclipse.keyple.core.seproxy.message;
 
 import java.util.Set;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 
@@ -21,8 +23,13 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
  */
 public final class DefaultSelectionsRequest extends AbstractDefaultSelectionsRequest {
 
+    public DefaultSelectionsRequest(Set<SeRequest> selectionSeRequestSet,
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelState channelState) {
+        super(selectionSeRequestSet, multiSeRequestProcessing, channelState);
+    }
+
     public DefaultSelectionsRequest(Set<SeRequest> selectionSeRequestSet) {
-        super(selectionSeRequestSet);
+        this(selectionSeRequestSet, MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
     }
 
     @Override

@@ -13,7 +13,6 @@ package org.eclipse.keyple.calypso.transaction;
 
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.AUTO;
 import static org.junit.Assert.*;
-import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.message.AnswerToReset;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
@@ -25,8 +24,7 @@ public class SamSelectionRequestTest {
     @Test
     public void parse() {
         SamSelector samSelector = new SamSelector(AUTO, null, "Dummy SeSelector");
-        SamSelectionRequest samSelectionRequest =
-                new SamSelectionRequest(samSelector, ChannelState.KEEP_OPEN);
+        SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus = new SelectionStatus(
                 new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180D002030411223344829000")),
                 null, true);
@@ -38,8 +36,7 @@ public class SamSelectionRequestTest {
     @Test(expected = IllegalStateException.class)
     public void getCommandParser() {
         SamSelector samSelector = new SamSelector(AUTO, null, "Dummy SeSelector");
-        SamSelectionRequest samSelectionRequest =
-                new SamSelectionRequest(samSelector, ChannelState.KEEP_OPEN);
+        SamSelectionRequest samSelectionRequest = new SamSelectionRequest(samSelector);
         SelectionStatus selectionStatus = new SelectionStatus(
                 new AnswerToReset(ByteArrayUtil.fromHex("3B001122805A0180D002030411223344829000")),
                 null, true);

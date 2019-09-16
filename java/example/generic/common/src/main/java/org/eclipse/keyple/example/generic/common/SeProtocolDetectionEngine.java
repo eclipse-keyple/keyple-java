@@ -51,7 +51,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
 
     public AbstractDefaultSelectionsRequest prepareSeSelection() {
 
-        seSelection = new SeSelection();
+        seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
 
         // process SDK defined protocols
         for (SeCommonProtocols protocol : SeCommonProtocols.values()) {
@@ -62,14 +62,11 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                     byte SFI_T2Usage = (byte) 0x1A;
                     byte SFI_T2Environment = (byte) 0x14;
 
-                    PoSelectionRequest poSelectionRequest =
-                            new PoSelectionRequest(
-                                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                            new PoSelector.PoAidSelector(
-                                                    new SeSelector.AidSelector.IsoAid(HoplinkAID),
-                                                    null),
-                                            "Hoplink selector"),
-                                    ChannelState.KEEP_OPEN);
+                    PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
+                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                    new PoSelector.PoAidSelector(
+                                            new SeSelector.AidSelector.IsoAid(HoplinkAID), null),
+                                    "Hoplink selector"));
 
                     poSelectionRequest.preparePoCustomReadCmd("Standard Get Data",
                             ByteArrayUtil.fromHex("FFCA000000"));
@@ -93,8 +90,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
                     /* Add a generic selector */
                     seSelection.prepareSelection(new GenericSeSelectionRequest(
                             new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                                    new SeSelector.AtrFilter(".*"), null, "Default selector"),
-                            ChannelState.KEEP_OPEN));
+                                    new SeSelector.AtrFilter(".*"), null, "Default selector")));
                     break;
             }
         }

@@ -12,6 +12,8 @@
 package org.eclipse.keyple.core.seproxy.event;
 
 import java.util.Set;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 
 /**
@@ -21,9 +23,24 @@ public abstract class AbstractDefaultSelectionsRequest {
     /** The Set of {@link SeRequest} */
     protected final Set<SeRequest> selectionSeRequestSet;
 
-    protected AbstractDefaultSelectionsRequest(Set<SeRequest> selectionSeRequestSet) {
+    private final MultiSeRequestProcessing multiSeRequestProcessing;
+
+    private final ChannelState channelState;
+
+    protected AbstractDefaultSelectionsRequest(Set<SeRequest> selectionSeRequestSet,
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelState channelState) {
         this.selectionSeRequestSet = selectionSeRequestSet;
+        this.multiSeRequestProcessing = multiSeRequestProcessing;
+        this.channelState = channelState;
     }
 
     protected abstract Set<SeRequest> getSelectionSeRequestSet();
+
+    public final MultiSeRequestProcessing getMultiSeRequestProcessing() {
+        return multiSeRequestProcessing;
+    }
+
+    public ChannelState getChannelState() {
+        return channelState;
+    }
 }

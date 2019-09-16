@@ -13,10 +13,7 @@ package org.eclipse.keyple.example.generic.pc;
 
 
 import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -87,7 +84,7 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
         /*
          * Prepare a SE selection
          */
-        seSelection = new SeSelection();
+        seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
 
         /*
          * Setting of an AID based selection
@@ -100,13 +97,11 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
          * Generic selection: configures a SeSelector with all the desired attributes to make the
          * selection
          */
-        GenericSeSelectionRequest seSelector =
-                new GenericSeSelectionRequest(
-                        new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(
-                                        ByteArrayUtil.fromHex(seAid)), null),
-                                "AID: " + seAid),
-                        ChannelState.KEEP_OPEN);
+        GenericSeSelectionRequest seSelector = new GenericSeSelectionRequest(new SeSelector(
+                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                new SeSelector.AidSelector(
+                        new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAid)), null),
+                "AID: " + seAid));
 
         /*
          * Add the selection case to the current selection (we could have added other cases here)

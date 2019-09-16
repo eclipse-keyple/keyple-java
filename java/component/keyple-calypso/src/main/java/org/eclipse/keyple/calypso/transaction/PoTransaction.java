@@ -245,7 +245,7 @@ public final class PoTransaction {
         samApduRequestList.add(samGetChallenge.getApduRequest());
 
         /* Build a SAM SeRequest */
-        SeRequest samSeRequest = new SeRequest(samApduRequestList, ChannelState.KEEP_OPEN);
+        SeRequest samSeRequest = new SeRequest(samApduRequestList);
 
         logger.debug("processAtomicOpening => identification: SAMSEREQUEST = {}", samSeRequest);
 
@@ -299,7 +299,7 @@ public final class PoTransaction {
         }
 
         /* Create a SeRequest from the ApduRequest list, PO AID as Selector, keep channel open */
-        SeRequest poSeRequest = new SeRequest(poApduRequestList, ChannelState.KEEP_OPEN);
+        SeRequest poSeRequest = new SeRequest(poApduRequestList);
 
         logger.debug("processAtomicOpening => opening:  POSEREQUEST = {}", poSeRequest);
 
@@ -471,12 +471,12 @@ public final class PoTransaction {
          * Create a SeRequest from the ApduRequest list, PO AID as Selector, manage the logical
          * channel according to the channelState enum
          */
-        SeRequest poSeRequest = new SeRequest(poApduRequestList, channelState);
+        SeRequest poSeRequest = new SeRequest(poApduRequestList);
 
         logger.debug("processAtomicPoCommands => POREQUEST = {}", poSeRequest);
 
         /* Transmit the commands to the PO */
-        SeResponse poSeResponse = poReader.transmit(poSeRequest);
+        SeResponse poSeResponse = poReader.transmit(poSeRequest, channelState);
 
         logger.debug("processAtomicPoCommands => PORESPONSE = {}", poSeResponse);
 
@@ -755,13 +755,13 @@ public final class PoTransaction {
         /*
          * Transfer PO commands
          */
-        SeRequest poSeRequest = new SeRequest(poApduRequestList, channelState);
+        SeRequest poSeRequest = new SeRequest(poApduRequestList);
 
         logger.debug("processAtomicClosing => POSEREQUEST = {}", poSeRequest);
 
         SeResponse poSeResponse;
         try {
-            poSeResponse = poReader.transmit(poSeRequest);
+            poSeResponse = poReader.transmit(poSeRequest, channelState);
         } catch (KeypleReaderException ex) {
             poSeResponse = ex.getSeResponse();
             /*
@@ -816,7 +816,7 @@ public final class PoTransaction {
         List<ApduRequest> samApduRequestList = new ArrayList<ApduRequest>();
         samApduRequestList.add(digestAuth.getApduRequest());
 
-        samSeRequest = new SeRequest(samApduRequestList, ChannelState.KEEP_OPEN);
+        samSeRequest = new SeRequest(samApduRequestList);
 
         logger.debug("PoTransaction.DigestProcessor => checkPoSignature: SAMREQUEST = {}",
                 samSeRequest);
@@ -1157,7 +1157,7 @@ public final class PoTransaction {
                             : SIGNATURE_LENGTH_REV_INF_32).getApduRequest()));
 
 
-            return new SeRequest(samApduRequestList, ChannelState.KEEP_OPEN);
+            return new SeRequest(samApduRequestList);
         }
     }
 
@@ -1738,13 +1738,13 @@ public final class PoTransaction {
         /*
          * Transfer PO commands
          */
-        SeRequest poSeRequest = new SeRequest(poApduRequestList, channelState);
+        SeRequest poSeRequest = new SeRequest(poApduRequestList);
 
         logger.debug("processCancel => POSEREQUEST = {}", poSeRequest);
 
         SeResponse poSeResponse;
         try {
-            poSeResponse = poReader.transmit(poSeRequest);
+            poSeResponse = poReader.transmit(poSeRequest, channelState);
         } catch (KeypleReaderException ex) {
             poSeResponse = ex.getSeResponse();
         }

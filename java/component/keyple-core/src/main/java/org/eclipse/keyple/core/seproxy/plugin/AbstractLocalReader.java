@@ -12,6 +12,8 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.*;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -144,7 +146,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             boolean aSeMatched = false;
             try {
                 List<SeResponse> seResponseList =
-                        processSeRequestSet(defaultSelectionsRequest.getSelectionSeRequestSet());
+                        processSeRequestSet(defaultSelectionsRequest.getSelectionSeRequestSet(),
+                                defaultSelectionsRequest.getMultiSeRequestProcessing(),
+                                defaultSelectionsRequest.getChannelState());
 
                 for (SeResponse seResponse : seResponseList) {
                     if (seResponse != null && seResponse.getSelectionStatus().hasMatched()) {
@@ -524,10 +528,13 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * responses pushed in the responseSet object is set to null.
      *
      * @param requestSet the request set
+     * @param multiSeRequestProcessing the multi se processing mode
+     * @param channelState indicates if the channel has to be closed at the end of the processing
      * @return SeResponseSet the response set
      * @throws KeypleIOReaderException if a reader error occurs
      */
-    protected final List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet)
+    protected final List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet,
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelState channelState)
             throws KeypleReaderException {
 
         boolean requestMatchesProtocol[] = new boolean[requestSet.size()];
@@ -573,7 +580,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                             request);
                     SeResponse response = null;
                     try {
-                        response = processSeRequestLogical(request);
+                        response = processSeRequestLogical(request, channelState);
                     } catch (KeypleReaderException ex) {
                         /*
                          * The process has been interrupted. We launch a KeypleReaderException with
@@ -599,7 +606,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     responses.add(null);
                 }
                 requestIndex++;
-                if (!request.isKeepChannelOpen()) {
+                if (channelState == ChannelState.CLOSE_AFTER) {
                     if (lastRequestIndex == requestIndex) {
                         /*
                          * For the processing of the last SeRequest with a protocolFlag matching the
@@ -635,18 +642,19 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * The physical channel is closed if requested.
      *
      * @param seRequest the SeRequest
+     * @param channelState indicates if the channel has to be closed at the end of the processing
      * @return the SeResponse to the SeRequest
      * @throws KeypleReaderException if a transmission fails
      */
     @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
             "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity", "PMD.ExcessiveMethodLength"})
-    protected final SeResponse processSeRequest(SeRequest seRequest)
+    protected final SeResponse processSeRequest(SeRequest seRequest, ChannelState channelState)
             throws IllegalStateException, KeypleReaderException {
 
-        SeResponse seResponse = processSeRequestLogical(seRequest);
+        SeResponse seResponse = processSeRequestLogical(seRequest, channelState);
 
-        /* close the physical channel if CLOSE_AFTER is requested */
-        if (!seRequest.isKeepChannelOpen()) {
+        /* close the physical channel if requested */
+        if (channelState == ChannelState.CLOSE_AFTER) {
             closePhysicalChannel();
         }
 
@@ -660,14 +668,15 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * <p>
      * It opens both physical and logical channels if needed.
      * <p>
-     * The logical channel is closed when CLOSE_AFTER is requested.
+     * The logical channel is closed when requested.
      *
-     * @param seRequest
+     * @param seRequest the {@link SeRequest} to be sent
+     * @param channelState indicates if the channel has to be closed at the end of the processing
      * @return seResponse
      * @throws IllegalStateException
      * @throws KeypleReaderException
      */
-    private SeResponse processSeRequestLogical(SeRequest seRequest)
+    private SeResponse processSeRequestLogical(SeRequest seRequest, ChannelState channelState)
             throws IllegalStateException, KeypleReaderException {
         boolean previouslyOpen = true;
         SelectionStatus selectionStatus = null;
@@ -785,7 +794,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         }
 
         /* close the logical channel if requested */
-        if (!seRequest.isKeepChannelOpen()) {
+        if (channelState == ChannelState.CLOSE_AFTER) {
             closeLogicalChannel();
         }
 

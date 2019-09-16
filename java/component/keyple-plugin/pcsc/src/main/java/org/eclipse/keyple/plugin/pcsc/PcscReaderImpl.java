@@ -45,6 +45,7 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
     private CardChannel channel;
 
     private boolean logging;
+    private boolean waitForRemovalModeEnabled = false;
 
 
     /**
@@ -432,5 +433,10 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
                 return TransmissionMode.CONTACTS;
             }
         }
+    }
+
+    @Override
+    public void setWaitForRemovalMode(boolean waitForRemovalModeEnabled) {
+        this.waitForRemovalModeEnabled = waitForRemovalModeEnabled;
     }
 }

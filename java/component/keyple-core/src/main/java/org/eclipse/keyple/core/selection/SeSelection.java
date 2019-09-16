@@ -12,6 +12,8 @@
 package org.eclipse.keyple.core.selection;
 
 import java.util.*;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
@@ -40,12 +42,17 @@ public final class SeSelection {
             new ArrayList<AbstractSeSelectionRequest>();
     private final Set<SeRequest> selectionRequestSet = new LinkedHashSet<SeRequest>();
     private int selectionIndex;
+    private MultiSeRequestProcessing multiSeRequestProcessing;
+    private ChannelState channelState;
 
     /**
      * Initializes the SeSelection
      */
-    public SeSelection() {
+    public SeSelection(MultiSeRequestProcessing multiSeRequestProcessing,
+            ChannelState channelState) {
         selectionIndex = 0;
+        this.multiSeRequestProcessing = multiSeRequestProcessing;
+        this.channelState = channelState;
     }
 
     /**
@@ -162,7 +169,8 @@ public final class SeSelection {
         }
 
         /* Communicate with the SE to do the selection */
-        List<SeResponse> seResponseList = ((ProxyReader) seReader).transmitSet(selectionRequestSet);
+        List<SeResponse> seResponseList = ((ProxyReader) seReader).transmitSet(selectionRequestSet,
+                multiSeRequestProcessing, channelState);
 
         return processSelection(new DefaultSelectionsResponse(seResponseList));
     }
@@ -175,7 +183,7 @@ public final class SeSelection {
      * @return the {@link DefaultSelectionsRequest} previously prepared with prepareSelection
      */
     public AbstractDefaultSelectionsRequest getSelectionOperation() {
-        return (AbstractDefaultSelectionsRequest) (new DefaultSelectionsRequest(
-                selectionRequestSet));
+        return (AbstractDefaultSelectionsRequest) (new DefaultSelectionsRequest(selectionRequestSet,
+                multiSeRequestProcessing, channelState));
     }
 }

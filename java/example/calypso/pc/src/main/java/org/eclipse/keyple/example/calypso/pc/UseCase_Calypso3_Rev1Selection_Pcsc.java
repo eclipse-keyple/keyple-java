@@ -21,6 +21,7 @@ import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
@@ -99,7 +100,8 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
             /*
              * Prepare a Calypso PO selection
              */
-            SeSelection seSelection = new SeSelection();
+            SeSelection seSelection =
+                    new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
 
             /*
              * Setting of an AID based selection of a Calypso REV3 PO
@@ -112,10 +114,9 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
              * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
              * make the selection and read additional information afterwards
              */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                            new PoSelector.PoAtrFilter(poAtrRegex), null, "ATR: " + poAtrRegex),
-                    ChannelState.KEEP_OPEN);
+            PoSelectionRequest poSelectionRequest =
+                    new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                            new PoSelector.PoAtrFilter(poAtrRegex), null, "ATR: " + poAtrRegex));
 
             /*
              * Prepare the selection of the DF RT.

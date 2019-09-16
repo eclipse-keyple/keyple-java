@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -102,12 +104,15 @@ final class VirtualReaderImpl extends AbstractObservableReader implements Virtua
      * Blocking TransmitSet
      * 
      * @param seRequestSet : SeRequestSet to be transmitted to SE
+     * @param multiSeRequestProcessing the multi se processing mode
+     * @param channelState indicates if the channel has to be closed at the end of the processing
      * @return seResponseSet : SeResponseSet from SE
      * @throws IllegalArgumentException
      * @throws KeypleReaderException
      */
     @Override
-    protected List<SeResponse> processSeRequestSet(Set<SeRequest> seRequestSet)
+    protected List<SeResponse> processSeRequestSet(Set<SeRequest> seRequestSet,
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelState channelState)
             throws IllegalArgumentException, KeypleReaderException {
 
         RmTransmitSetTx transmit = new RmTransmitSetTx(seRequestSet, session.getSessionId(),
@@ -134,12 +139,13 @@ final class VirtualReaderImpl extends AbstractObservableReader implements Virtua
      * Blocking Transmit
      * 
      * @param seRequest : SeRequest to be transmitted to SE
+     * @param channelState indicates if the channel has to be closed at the end of the processing
      * @return seResponse : SeResponse from SE
      * @throws IllegalArgumentException
      * @throws KeypleReaderException
      */
     @Override
-    protected SeResponse processSeRequest(SeRequest seRequest)
+    protected SeResponse processSeRequest(SeRequest seRequest, ChannelState channelState)
             throws IllegalArgumentException, KeypleReaderException {
 
         RmTransmitTx transmit =
@@ -240,6 +246,11 @@ final class VirtualReaderImpl extends AbstractObservableReader implements Virtua
                     "setDefaultSelectionRequest encounters an exception while communicating with slave",
                     e);
         }
+    }
+
+    @Override
+    public void setWaitForRemovalMode(boolean waitForRemovalModeEnabled) {
+        // TODO implement removal mode management
     }
 
 

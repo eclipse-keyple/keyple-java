@@ -102,7 +102,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
         /*
          * Prepare a Calypso PO selection
          */
-        seSelection = new SeSelection();
+        seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
 
         /*
          * Setting of an AID based selection of a Calypso REV3 PO
@@ -115,13 +115,12 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
          * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
          * make the selection and read additional information afterwards
          */
-        PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+        PoSelectionRequest poSelectionRequest =
+                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new PoSelector.PoAidSelector(
                                 new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
                                 PoSelector.InvalidatedPo.REJECT),
-                        "AID: " + CalypsoClassicInfo.AID),
-                ChannelState.KEEP_OPEN);
+                        "AID: " + CalypsoClassicInfo.AID));
 
         /*
          * Prepare the reading order and keep the associated parser for later use once the selection

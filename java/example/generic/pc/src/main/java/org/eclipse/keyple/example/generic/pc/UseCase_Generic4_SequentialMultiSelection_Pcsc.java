@@ -13,10 +13,7 @@ package org.eclipse.keyple.example.generic.pc;
 
 import java.io.IOException;
 import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
@@ -83,7 +80,8 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
 
             SeSelection seSelection;
 
-            seSelection = new SeSelection();
+            seSelection =
+                    new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.CLOSE_AFTER);
 
             /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
             String seAidPrefix = "A000000404012509";
@@ -95,9 +93,10 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
                             new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
                             null, SeSelector.AidSelector.FileOccurrence.FIRST,
                             SeSelector.AidSelector.FileControlInformation.FCI),
-                    "Initial selection #1"), ChannelState.KEEP_OPEN));
+                    "Initial selection #1")));
 
-            seSelection = new SeSelection();
+            seSelection =
+                    new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.CLOSE_AFTER);
 
             doAndAnalyseSelection(seReader, seSelection, 1);
 
@@ -108,9 +107,10 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
                             new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
                             null, SeSelector.AidSelector.FileOccurrence.NEXT,
                             SeSelector.AidSelector.FileControlInformation.FCI),
-                    "Next selection #2"), ChannelState.KEEP_OPEN));
+                    "Next selection #2")));
 
-            seSelection = new SeSelection();
+            seSelection =
+                    new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.CLOSE_AFTER);
 
             doAndAnalyseSelection(seReader, seSelection, 2);
 
@@ -121,7 +121,7 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
                             new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAidPrefix)),
                             null, SeSelector.AidSelector.FileOccurrence.NEXT,
                             SeSelector.AidSelector.FileControlInformation.FCI),
-                    "Next selection #3"), ChannelState.CLOSE_AFTER));
+                    "Next selection #3")));
 
             doAndAnalyseSelection(seReader, seSelection, 3);
 

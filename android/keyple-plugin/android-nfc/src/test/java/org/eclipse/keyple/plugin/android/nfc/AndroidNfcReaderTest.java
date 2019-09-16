@@ -513,8 +513,7 @@ public class AndroidNfcReaderTest {
 
         // TODO change this with the use of the selection API
         SeRequest seRequest = new SeRequest(new SeSelector( SeCommonProtocols.PROTOCOL_ISO14443_4,null,
-                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null), poApduRequestList,
-                ChannelState.CLOSE_AFTER);
+                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null), poApduRequestList);
 
         Set<SeRequest> seRequests = new LinkedHashSet<SeRequest>();
         seRequests.add(seRequest);

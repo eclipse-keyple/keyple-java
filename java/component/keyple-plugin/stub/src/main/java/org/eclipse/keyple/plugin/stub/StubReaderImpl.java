@@ -224,4 +224,9 @@ final class StubReaderImpl extends AbstractThreadedLocalReader implements StubRe
         logger.trace("[{}] no card was removed", this.getName());
         return false;
     }
+
+    @Override
+    public void setWaitForRemovalMode(boolean waitForRemovalModeEnabled) {
+        // TODO implement removal mode management
+    }
 }

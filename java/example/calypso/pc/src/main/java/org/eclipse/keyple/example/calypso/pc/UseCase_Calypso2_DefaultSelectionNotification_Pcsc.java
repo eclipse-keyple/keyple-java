@@ -17,10 +17,7 @@ import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -96,7 +93,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
         /*
          * Prepare a Calypso PO selection
          */
-        seSelection = new SeSelection();
+        seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
 
         /*
          * Setting of an AID based selection of a Calypso REV3 PO
@@ -109,13 +106,12 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
          * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
          * make the selection and read additional information afterwards
          */
-        PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+        PoSelectionRequest poSelectionRequest =
+                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new PoSelector.PoAidSelector(
                                 new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
                                 PoSelector.InvalidatedPo.REJECT),
-                        "AID: " + CalypsoClassicInfo.AID),
-                ChannelState.KEEP_OPEN);
+                        "AID: " + CalypsoClassicInfo.AID));
 
         /*
          * Prepare the reading order and keep the associated parser for later use once the selection

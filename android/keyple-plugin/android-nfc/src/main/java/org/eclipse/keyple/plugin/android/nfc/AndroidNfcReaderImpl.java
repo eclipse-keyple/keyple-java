@@ -85,6 +85,11 @@ final class AndroidNfcReaderImpl extends AbstractSelectionLocalReader
 
     }
 
+    @Override
+    public void setWaitForRemovalMode(boolean waitForRemovalModeEnabled) {
+        // TODO implement
+    }
+
     /**
      * Holder of singleton
      */

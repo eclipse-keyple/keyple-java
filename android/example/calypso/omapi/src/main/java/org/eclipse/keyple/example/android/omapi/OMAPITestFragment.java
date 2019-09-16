@@ -195,7 +195,7 @@ public class OMAPITestFragment extends Fragment {
                                             new SeSelector.AidSelector(
                                                     new SeSelector.AidSelector.IsoAid(poAid), null),
                                             "AID = " + poAid),
-                                    poApduRequestList, ChannelState.CLOSE_AFTER);
+                                    poApduRequestList);
 
                     // SeRequest seRequest =
                     // new SeRequest(new SeSelector(null, new SeSelector.AtrFilter(".*"), "Select

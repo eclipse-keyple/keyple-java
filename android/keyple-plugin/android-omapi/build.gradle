@@ -213,7 +213,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
 
     //keyple-core project
-    implementation project(path:":java:component:keyple-core")
+    implementation project(path:":java:component:keyple-java-core")
 
     //android
     implementation "com.android.support:support-v4:${android_support_version}"

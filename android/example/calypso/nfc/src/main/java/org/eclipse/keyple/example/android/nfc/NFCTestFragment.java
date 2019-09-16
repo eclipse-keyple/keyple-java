@@ -23,6 +23,7 @@ import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -52,6 +53,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 
 
 /**
@@ -124,7 +126,8 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
             /*
              * Prepare a Calypso PO selection
              */
-            seSelection = new SeSelection();
+            seSelection =
+                    new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
 
             /*
              * Setting of an AID based selection of a Calypso REV3 PO
@@ -137,13 +140,12 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
              * Calypso selection: configures a PoSelector with all the desired attributes to make
              * the selection and read additional information afterwards
              */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.PoAidSelector(
-                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                                    PoSelector.InvalidatedPo.REJECT),
-                            "AID: " + CalypsoClassicInfo.AID),
-                    ChannelState.KEEP_OPEN);
+            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new PoSelector.PoAidSelector(
+                            new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
+                            PoSelector.InvalidatedPo.REJECT),
+                    "AID: " + CalypsoClassicInfo.AID));
 
             /*
              * Prepare the reading order and keep the associated parser for later use once the

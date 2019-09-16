@@ -18,7 +18,6 @@ import java.util.Set;
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
-import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
@@ -140,7 +139,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
                     (byte) 0x20, "");
             List<ApduRequest> poApduRequestList =
                     Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
-            SeRequest seRequest = new SeRequest(poApduRequestList, ChannelState.KEEP_OPEN);
+            SeRequest seRequest = new SeRequest(poApduRequestList);
             Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
             seRequestSet.add(seRequest);
 

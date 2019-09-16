@@ -14,6 +14,8 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.List;
 import java.util.Set;
+import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.NotificationMode;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
@@ -115,7 +117,8 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * @return responseSet the response set
      * @throws KeypleReaderException if a reader error occurs
      */
-    public final List<SeResponse> transmitSet(Set<SeRequest> requestSet)
+    public final List<SeResponse> transmitSet(Set<SeRequest> requestSet,
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelState channelState)
             throws KeypleReaderException {
         if (requestSet == null) {
             throw new IllegalArgumentException("seRequestSet must not be null");
@@ -132,7 +135,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         }
 
         try {
-            responseSet = processSeRequestSet(requestSet);
+            responseSet = processSeRequestSet(requestSet, multiSeRequestProcessing, channelState);
         } catch (KeypleChannelStateException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
@@ -162,16 +165,25 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         return responseSet;
     }
 
+    public final List<SeResponse> transmitSet(Set<SeRequest> requestSet)
+            throws KeypleReaderException {
+        return transmitSet(requestSet, MultiSeRequestProcessing.FIRST_MATCH,
+                ChannelState.KEEP_OPEN);
+    }
+
     /**
      * Abstract method implemented by the AbstractLocalReader and VirtualReader classes.
      * <p>
      * This method is handled by transmitSet.
-     * 
+     *
      * @param requestSet the Set of {@link SeRequest} to be processed
+     * @param multiSeRequestProcessing the multi se processing mode
+     * @param channelState indicates if the channel has to be closed at the end of the processing
      * @return the List of {@link SeResponse} (responses to the Set of {@link SeRequest})
      * @throws KeypleReaderException if reader error occurs
      */
-    protected abstract List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet)
+    protected abstract List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet,
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelState channelState)
             throws KeypleReaderException;
 
     /**
@@ -183,10 +195,12 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * As the method is final, it cannot be extended.
      *
      * @param seRequest the request to be transmitted
+     * @param channelState indicates if the channel has to be closed at the end of the processing
      * @return the received response
      * @throws KeypleReaderException if a reader error occurs
      */
-    public final SeResponse transmit(SeRequest seRequest) throws KeypleReaderException {
+    public final SeResponse transmit(SeRequest seRequest, ChannelState channelState)
+            throws KeypleReaderException {
         if (seRequest == null) {
             throw new IllegalArgumentException("seRequest must not be null");
         }
@@ -202,7 +216,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         }
 
         try {
-            seResponse = processSeRequest(seRequest);
+            seResponse = processSeRequest(seRequest, channelState);
         } catch (KeypleChannelStateException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
@@ -232,16 +246,20 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
         return seResponse;
     }
 
+    public final SeResponse transmit(SeRequest seRequest) throws KeypleReaderException {
+        return transmit(seRequest, ChannelState.KEEP_OPEN);
+    }
+
     /**
      * Abstract method implemented by the AbstractLocalReader and VirtualReader classes.
      * <p>
      * This method is handled by transmit.
-     * 
+     *
      * @param seRequest the {@link SeRequest} to be processed
      * @return the {@link SeResponse} (responses to the {@link SeRequest})
      * @throws KeypleReaderException if reader error occurs
      */
-    protected abstract SeResponse processSeRequest(SeRequest seRequest)
+    protected abstract SeResponse processSeRequest(SeRequest seRequest, ChannelState channelState)
             throws KeypleReaderException;
 
     /** ==== Methods specific to observability ============================= */

@@ -144,7 +144,8 @@ public class Demo_Master {
                             logger.info("{} Configure SeSelection", node.getNodeId());
 
                             /* set default selection request */
-                            SeSelection seSelection = new SeSelection();
+                            SeSelection seSelection = new SeSelection(
+                                    MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
 
                             /*
                              * Setting of an AID based selection of a Calypso REV3 PO
@@ -165,8 +166,7 @@ public class Demo_Master {
                                                     new SeSelector.AidSelector.IsoAid(
                                                             CalypsoClassicInfo.AID),
                                                     null),
-                                            "AID: " + CalypsoClassicInfo.AID),
-                                    ChannelState.KEEP_OPEN);
+                                            "AID: " + CalypsoClassicInfo.AID));
 
                             logger.info("{} Create a PoSelectionRequest", node.getNodeId());
 
@@ -387,7 +387,8 @@ public class Demo_Master {
             /*
              * Prepare a Calypso PO selection
              */
-            SeSelection seSelection = new SeSelection();
+            SeSelection seSelection =
+                    new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
 
             /*
              * Setting of an AID based selection of a Calypso REV3 PO
@@ -400,13 +401,12 @@ public class Demo_Master {
              * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
              * make the selection and read additional information afterwards
              */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.PoAidSelector(
-                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                                    PoSelector.InvalidatedPo.REJECT),
-                            "AID: " + CalypsoClassicInfo.AID),
-                    ChannelState.KEEP_OPEN);
+            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new PoSelector.PoAidSelector(
+                            new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
+                            PoSelector.InvalidatedPo.REJECT),
+                    "AID: " + CalypsoClassicInfo.AID));
             /*
              * Add the selection case to the current selection (we could have added other cases
              * here)

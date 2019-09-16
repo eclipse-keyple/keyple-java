@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -117,7 +118,7 @@ public class SmartCardIOReaderTest {
         apduRequests.add(apduRequestMF);
 
         Set<SeRequest> seApplicationRequest = new LinkedHashSet<SeRequest>();
-        seApplicationRequest.add(new SeRequest(apduRequests, ChannelState.KEEP_OPEN));
+        seApplicationRequest.add(new SeRequest(apduRequests));
 
         List<SeResponse> reponseActuelle = reader.transmitSet(seApplicationRequest);
 
@@ -148,10 +149,11 @@ public class SmartCardIOReaderTest {
         apduRequests.add(apduRequestMF);
 
         Set<SeRequest> seApplicationRequest = new LinkedHashSet<SeRequest>();
-        seApplicationRequest.add(new SeRequest(apduRequests, ChannelState.KEEP_OPEN));
+        seApplicationRequest.add(new SeRequest(apduRequests));
 
         PcscReaderImpl spiedReader = spy(this.reader);
-        List<SeResponse> reponseActuelle = spiedReader.transmitSet(seApplicationRequest);
+        List<SeResponse> reponseActuelle = spiedReader.transmitSet(seApplicationRequest,
+                MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
 
         assertEquals(reponseActuelle.get(0).getApduResponses().size(),
                 seApplicationRequest.iterator().next().getApduRequests().size());
@@ -182,7 +184,7 @@ public class SmartCardIOReaderTest {
         apduRequests.add(apduRequestMF);
 
         Set<SeRequest> seApplicationRequest = new LinkedHashSet<SeRequest>();
-        seApplicationRequest.add(new SeRequest(apduRequests, ChannelState.KEEP_OPEN));
+        seApplicationRequest.add(new SeRequest(apduRequests));
 
         PcscReaderImpl spiedReader = spy(this.reader);
 
@@ -211,11 +213,12 @@ public class SmartCardIOReaderTest {
         apduRequests.add(apduRequestMF);
 
         Set<SeRequest> seApplicationRequest = new LinkedHashSet<SeRequest>();
-        seApplicationRequest.add(new SeRequest(apduRequests, ChannelState.KEEP_OPEN));
+        seApplicationRequest.add(new SeRequest(apduRequests));
 
         PcscReaderImpl spiedReader = spy(this.reader);
 
-        List<SeResponse> reponseActuelle = spiedReader.transmitSet(seApplicationRequest);
+        List<SeResponse> reponseActuelle = spiedReader.transmitSet(seApplicationRequest,
+                MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
         assertNotNull(reponseActuelle.get(0).getSelectionStatus().getFci());
         assertEquals(reponseActuelle.get(0).getApduResponses().size(),
                 seApplicationRequest.iterator().next().getApduRequests().size());
