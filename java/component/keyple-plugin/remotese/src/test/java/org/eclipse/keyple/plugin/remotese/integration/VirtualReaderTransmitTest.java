@@ -148,7 +148,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
             // assert
             Assert.assertTrue(seResponse.get(0).getApduResponses().get(0).isSuccessful());
 
-            logger.info("SeResponseSet returned as expected {}", seResponse.get(0));
+            logger.info("SeResponse returned as expected {}", seResponse.get(0));
         }
 
 

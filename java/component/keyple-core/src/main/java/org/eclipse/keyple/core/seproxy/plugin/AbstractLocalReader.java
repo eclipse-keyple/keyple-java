@@ -524,7 +524,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * responses pushed in the responseSet object is set to null.
      *
      * @param requestSet the request set
-     * @return SeResponseSet the response set
+     * @return the response list
      * @throws KeypleIOReaderException if a reader error occurs
      */
     protected final List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet)
@@ -581,7 +581,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                          */
                         /* Add the latest (and partial) SeResponse to the current list. */
                         responses.add(ex.getSeResponse());
-                        /* Build a SeResponseSet with the available data. */
+                        /* Build a List of SeResponse with the available data. */
                         ex.setSeResponseSet(responses);
                         logger.debug(
                                 "[{}] processSeRequestSet => transmit : process interrupted, collect previous responses {}",
@@ -594,7 +594,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 } else {
                     /*
                      * in case the protocolFlag of a SeRequest doesn't match the reader status, a
-                     * null SeResponse is added to the SeResponseSet.
+                     * null SeResponse is added to the SeResponse List.
                      */
                     responses.add(null);
                 }

@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
  */
 public class KeypleReaderException extends KeypleBaseException {
     /*
-     * SeResponseSet and SeResponse objects to carry partial responses in the event of a breakdown
+     * SeResponse and List of SeResponse objects to carry partial responses in the event of a breakdown
      * in communication with the SE.
      */
     private List<SeResponse> seResponseList;
@@ -46,7 +46,7 @@ public class KeypleReaderException extends KeypleBaseException {
         super(message, cause);
     }
 
-    /* Setters and Getters for SeResponseSet and SeResponse */
+    /* Setters and Getters for List of SeResponse and SeResponse */
     public List<SeResponse> getSeResponseSet() {
         return seResponseList;
     }
