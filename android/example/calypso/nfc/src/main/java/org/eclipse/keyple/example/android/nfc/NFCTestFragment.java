@@ -166,8 +166,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
              * inserted.
              */
             ((ObservableReader) reader).setDefaultSelectionRequest(
-                    seSelection.getSelectionOperation(),
-                    ObservableReader.NotificationMode.ALWAYS);
+                    seSelection.getSelectionOperation(), ObservableReader.NotificationMode.ALWAYS);
 
             /*
              * uncomment to active protocol listening for Mifare ultralight ((AndroidNfcReaderImpl)
@@ -236,7 +235,8 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
                     case SE_INSERTED:
                         mText.append("\n ---- \n");
-                        mText.append("PO detected but AID didn't match with " + CalypsoClassicInfo.AID);
+                        mText.append(
+                                "PO detected but AID didn't match with " + CalypsoClassicInfo.AID);
                         break;
 
                     case SE_REMOVAL:
