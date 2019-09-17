@@ -129,7 +129,7 @@ dependencies {
 
     //import the last version of keyple-java-plugin-nfc
     implementation group: 'org.eclipse.keyple', name: 'keyple-android-plugin-nfc', version: '+'
-
+    
     /*
     Android components
      */

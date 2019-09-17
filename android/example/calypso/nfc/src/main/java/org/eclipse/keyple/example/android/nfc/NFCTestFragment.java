@@ -166,8 +166,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
              * inserted.
              */
             ((ObservableReader) reader).setDefaultSelectionRequest(
-                    seSelection.getSelectionOperation(),
-                    ObservableReader.NotificationMode.MATCHED_ONLY);
+                    seSelection.getSelectionOperation(), ObservableReader.NotificationMode.ALWAYS);
 
             /*
              * uncomment to active protocol listening for Mifare ultralight ((AndroidNfcReaderImpl)
@@ -231,17 +230,18 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
                 switch (event.getEventType()) {
                     case SE_MATCHED:
-                        runCalyspoTransaction(event.getDefaultSelectionsResponse());
+                        executeCommands(event.getDefaultSelectionsResponse());
                         break;
 
                     case SE_INSERTED:
-
-                        // execute simple tests
+                        mText.append("\n ---- \n");
+                        mText.append(
+                                "PO detected but AID didn't match with " + CalypsoClassicInfo.AID);
                         break;
 
                     case SE_REMOVAL:
-                        // mText.append("\n ---- \n");
-                        // mText.append("Connection closed to tag");
+                        mText.append("\n ---- \n");
+                        mText.append("Tag removed");
                         break;
 
                     case IO_ERROR:
@@ -261,7 +261,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
      * @param defaultSelectionsResponse
      * 
      */
-    private void runCalyspoTransaction(
+    private void executeCommands(
             final AbstractDefaultSelectionsResponse defaultSelectionsResponse) {
         LOG.debug("Running Calypso Simple Read transaction");
         getActivity().runOnUiThread(new Runnable() {
