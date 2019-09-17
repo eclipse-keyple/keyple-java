@@ -103,10 +103,10 @@ final class VirtualReaderImpl extends AbstractObservableReader implements Virtua
     /**
      * Blocking TransmitSet
      * 
-     * @param seRequestSet : SeRequestSet to be transmitted to SE
+     * @param seRequestSet : Set of SeRequest to be transmitted to SE
      * @param multiSeRequestProcessing the multi se processing mode
      * @param channelState indicates if the channel has to be closed at the end of the processing
-     * @return seResponseSet : SeResponseSet from SE
+     * @return List of SeResponse from SE
      * @throws IllegalArgumentException
      * @throws KeypleReaderException
      */

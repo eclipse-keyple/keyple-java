@@ -173,7 +173,7 @@ public class AndroidOmapiReaderTest {
         proxyReader = new AndroidOmapiReaderImpl(PLUGIN_NAME, omapiReader, omapiReader.getName());
 
         // test
-        List<SeResponse> seResponse = proxyReader.transmitSet(getCalypsoRequestSample());
+        List<SeResponse> seResponseList = proxyReader.transmitSet(getCalypsoRequestSample());
 
         // expected = KeypleReaderException.class
     }
