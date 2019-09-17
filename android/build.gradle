@@ -45,6 +45,7 @@ subprojects {
 
 
 //create task for to agragate javadoc
+/*
 task aggregatedJavadocs(type: Javadoc, description: 'Generate javadocs from all child projects as if it was a single project', group: 'Documentation') {
     println 'Create a aggregated javadoc Task to : ' + "$buildDir/docs/javadoc"
     destinationDir = file("$buildDir/docs/javadoc")
@@ -81,3 +82,4 @@ aggregatedJavadocs.doFirst {
     }
 
 }
+*/
