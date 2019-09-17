@@ -14,10 +14,7 @@ package org.eclipse.keyple.plugin.pcsc;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.exception.*;
@@ -118,14 +115,15 @@ public class SmartCardIOReaderTest {
 
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
-        SeRequestSet seApplicationRequest =
-                new SeRequestSet(new SeRequest(apduRequests, ChannelState.KEEP_OPEN));
 
-        SeResponseSet reponseActuelle = reader.transmitSet(seApplicationRequest);
+        Set<SeRequest> seApplicationRequest = new LinkedHashSet<SeRequest>();
+        seApplicationRequest.add(new SeRequest(apduRequests, ChannelState.KEEP_OPEN));
 
-        assertNull(reponseActuelle.getSingleResponse().getSelectionStatus().getFci());
-        assertEquals(reponseActuelle.getSingleResponse().getApduResponses().size(), 0);
-        assertFalse(reponseActuelle.getSingleResponse().wasChannelPreviouslyOpen());
+        List<SeResponse> reponseActuelle = reader.transmitSet(seApplicationRequest);
+
+        assertNull(reponseActuelle.get(0).getSelectionStatus().getFci());
+        assertEquals(reponseActuelle.get(0).getApduResponses().size(), 0);
+        assertFalse(reponseActuelle.get(0).wasChannelPreviouslyOpen());
     }
 
     // TODO redesign @Test
@@ -148,17 +146,18 @@ public class SmartCardIOReaderTest {
 
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
-        SeRequestSet seApplicationRequest =
-                new SeRequestSet(new SeRequest(apduRequests, ChannelState.KEEP_OPEN));
+
+        Set<SeRequest> seApplicationRequest = new LinkedHashSet<SeRequest>();
+        seApplicationRequest.add(new SeRequest(apduRequests, ChannelState.KEEP_OPEN));
 
         PcscReaderImpl spiedReader = spy(this.reader);
-        SeResponseSet reponseActuelle = spiedReader.transmitSet(seApplicationRequest);
+        List<SeResponse> reponseActuelle = spiedReader.transmitSet(seApplicationRequest);
 
-        assertEquals(reponseActuelle.getSingleResponse().getApduResponses().size(),
-                seApplicationRequest.getSingleRequest().getApduRequests().size());
+        assertEquals(reponseActuelle.get(0).getApduResponses().size(),
+                seApplicationRequest.iterator().next().getApduRequests().size());
         // assertNotNull(Whitebox.getInternalState(spiedReader, "card"));
         // assertNotNull(Whitebox.getInternalState(spiedReader, "channel"));
-        assertNotNull(reponseActuelle.getSingleResponse().getSelectionStatus().getFci());
+        assertNotNull(reponseActuelle.get(0).getSelectionStatus().getFci());
     }
 
     // TODO redesign @Test
@@ -181,15 +180,16 @@ public class SmartCardIOReaderTest {
 
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
-        SeRequestSet seApplicationRequest =
-                new SeRequestSet(new SeRequest(apduRequests, ChannelState.KEEP_OPEN));
+
+        Set<SeRequest> seApplicationRequest = new LinkedHashSet<SeRequest>();
+        seApplicationRequest.add(new SeRequest(apduRequests, ChannelState.KEEP_OPEN));
 
         PcscReaderImpl spiedReader = spy(this.reader);
 
-        SeResponseSet reponseActuelle = spiedReader.transmitSet(seApplicationRequest);
-        assertNotNull(reponseActuelle.getSingleResponse().getSelectionStatus().getFci());
-        assertEquals(reponseActuelle.getSingleResponse().getApduResponses().size(),
-                seApplicationRequest.getSingleRequest().getApduRequests().size());
+        List<SeResponse> reponseActuelle = spiedReader.transmitSet(seApplicationRequest);
+        assertNotNull(reponseActuelle.get(0).getSelectionStatus().getFci());
+        assertEquals(reponseActuelle.get(0).getApduResponses().size(),
+                seApplicationRequest.iterator().next().getApduRequests().size());
     }
 
     // TODO redesign @Test
@@ -209,15 +209,16 @@ public class SmartCardIOReaderTest {
 
         List<ApduRequest> apduRequests = new ArrayList<ApduRequest>();
         apduRequests.add(apduRequestMF);
-        SeRequestSet seApplicationRequest =
-                new SeRequestSet(new SeRequest(apduRequests, ChannelState.KEEP_OPEN));
+
+        Set<SeRequest> seApplicationRequest = new LinkedHashSet<SeRequest>();
+        seApplicationRequest.add(new SeRequest(apduRequests, ChannelState.KEEP_OPEN));
 
         PcscReaderImpl spiedReader = spy(this.reader);
 
-        SeResponseSet reponseActuelle = spiedReader.transmitSet(seApplicationRequest);
-        assertNotNull(reponseActuelle.getSingleResponse().getSelectionStatus().getFci());
-        assertEquals(reponseActuelle.getSingleResponse().getApduResponses().size(),
-                seApplicationRequest.getSingleRequest().getApduRequests().size());
+        List<SeResponse> reponseActuelle = spiedReader.transmitSet(seApplicationRequest);
+        assertNotNull(reponseActuelle.get(0).getSelectionStatus().getFci());
+        assertEquals(reponseActuelle.get(0).getApduResponses().size(),
+                seApplicationRequest.iterator().next().getApduRequests().size());
         // assertNull(Whitebox.getInternalState(spiedReader, "card"));
         // assertNull(Whitebox.getInternalState(spiedReader, "channel"));
     }

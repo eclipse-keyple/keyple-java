@@ -12,6 +12,8 @@
 package org.eclipse.keyple.core.seproxy.message;
 
 
+import java.util.List;
+import java.util.Set;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 
@@ -19,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 /**
  * ProxyReader interface
  * <ul>
- * <li>To operate the transmission of SeRequestSet, a specific local reader processes the sorted
+ * <li>To operate the transmission of Set of SeRequest, a specific local reader processes the sorted
  * list of SeRequest.</li>
  * <li>According to SeRequest protocolFlag and to the current status of the reader (RF protocol
  * involved / current ATR) the processing of a specific SeRequest could be skipped.</li>
@@ -32,18 +34,18 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 public interface ProxyReader extends SeReader {
 
     /**
-     * Transmits a {@link SeRequestSet} (list of {@link SeRequest}) to a SE application and get back
-     * the corresponding {@link SeResponseSet} (list of {@link SeResponse}).
+     * Transmits a Set of {@link SeRequest} (list of {@link SeRequest}) to a SE application and get
+     * back the corresponding a List of {@link SeResponse}.
      * <p>
      * The usage of this method is conditioned to the presence of a SE in the selected reader.
      * <p>
      * All the {@link SeRequest} are processed consecutively. The received {@link SeResponse} and
-     * placed in the {@link SeResponseSet}.
+     * placed in the List of {@link SeResponse}.
      * <p>
      * If the protocol flag set in the request match the current SE protocol and the keepChannelOpen
-     * flag is set to true, the transmit method returns immediately with a {@link SeResponseSet}.
-     * This response contains the received response from the matching SE in the last position of
-     * set. The previous one are set to null, the logical channel is open.
+     * flag is set to true, the transmit method returns immediately with a List of
+     * {@link SeResponse}. This response contains the received response from the matching SE in the
+     * last position of set. The previous one are set to null, the logical channel is open.
      * <p>
      * If the protocol flag set in the request match the current SE protocol and the keepChannelOpen
      * flag is set to false, the transmission go on for the next {@link SeRequest}. The channel is
@@ -53,11 +55,11 @@ public interface ProxyReader extends SeReader {
      * exception (SE missing, IO error, wrong card state, timeout) have to be caught during the
      * processing of the SE request transmission.
      *
-     * @param seApplicationRequest the application request
+     * @param seApplicationRequest the Set of application requests
      * @return the SE response
      * @throws KeypleReaderException An error occurs during transmit (channel, IO)
      */
-    SeResponseSet transmitSet(SeRequestSet seApplicationRequest)
+    List<SeResponse> transmitSet(Set<SeRequest> seApplicationRequest)
             throws KeypleReaderException, IllegalArgumentException;
 
     /**

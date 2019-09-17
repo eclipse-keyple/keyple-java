@@ -11,18 +11,19 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.event;
 
-import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
+import java.util.Set;
+import org.eclipse.keyple.core.seproxy.message.SeRequest;
 
 /**
  * The {@link AbstractDefaultSelectionsRequest} class is dedicated to
  */
 public abstract class AbstractDefaultSelectionsRequest {
-    /** The {@link org.eclipse.keyple.core.seproxy.message.SeRequestSet} */
-    protected final SeRequestSet selectionSeRequestSet;
+    /** The Set of {@link SeRequest} */
+    protected final Set<SeRequest> selectionSeRequestSet;
 
-    protected AbstractDefaultSelectionsRequest(SeRequestSet selectionSeRequestSet) {
+    protected AbstractDefaultSelectionsRequest(Set<SeRequest> selectionSeRequestSet) {
         this.selectionSeRequestSet = selectionSeRequestSet;
     }
 
-    protected abstract SeRequestSet getSelectionSeRequestSet();
+    protected abstract Set<SeRequest> getSelectionSeRequestSet();
 }

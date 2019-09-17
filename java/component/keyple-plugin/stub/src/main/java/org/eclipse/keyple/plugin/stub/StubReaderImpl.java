@@ -152,20 +152,6 @@ final class StubReaderImpl extends AbstractThreadedLocalReader implements StubRe
     }
 
     /*
-     * HELPERS TO TEST INTERNAL METHOD TODO : is this necessary?
-     */
-    /*
-     * final ApduResponse processApduRequestTestProxy(ApduRequest apduRequest) throws
-     * KeypleReaderException { return this.processApduRequest(apduRequest); }
-     * 
-     * final SeResponseSet processSeRequestSetTestProxy(SeRequestSet requestSet) throws
-     * KeypleReaderException { return this.processSeRequestSet(requestSet); }
-     * 
-     * final boolean isLogicalChannelOpenTestProxy() { return this.isPhysicalChannelOpen(); }
-     */
-
-
-    /*
      * STATE CONTROLLERS FOR INSERTING AND REMOVING SECURE ELEMENT
      */
 

@@ -12,15 +12,16 @@
 package org.eclipse.keyple.core.seproxy.event;
 
 
-import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
+import java.util.List;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
 
 public abstract class AbstractDefaultSelectionsResponse {
-    /** The {@link org.eclipse.keyple.core.seproxy.message.SeResponseSet} */
-    protected final SeResponseSet selectionSeResponseSet;
+    /** The Listt of {@link SeResponse} */
+    protected final List<SeResponse> selectionSeResponseSet;
 
-    protected AbstractDefaultSelectionsResponse(SeResponseSet selectionSeResponseSet) {
+    protected AbstractDefaultSelectionsResponse(List<SeResponse> selectionSeResponseSet) {
         this.selectionSeResponseSet = selectionSeResponseSet;
     }
 
-    protected abstract SeResponseSet getSelectionSeResponseSet();
+    protected abstract List<SeResponse> getSelectionSeResponseSet();
 }

@@ -16,9 +16,12 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
+
 import org.eclipse.keyple.calypso.command.PoClass;
 import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
@@ -30,8 +33,7 @@ import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
-import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
@@ -115,11 +117,11 @@ public class AndroidOmapiReaderTest {
         // default init
 
         // test
-        SeResponseSet seResponse = proxyReader.transmitSet(getCalypsoRequestSample());
+        List<SeResponse> seResponseList = proxyReader.transmitSet(getCalypsoRequestSample());
 
         // assert
         Assert.assertTrue(
-                seResponse.getResponses().get(0).getApduResponses().get(0).isSuccessful());
+                seResponseList.get(0).getApduResponses().get(0).isSuccessful());
 
     }
 
@@ -131,10 +133,10 @@ public class AndroidOmapiReaderTest {
         proxyReader = new AndroidOmapiReaderImpl(PLUGIN_NAME, omapiReader, omapiReader.getName());
 
         // test
-        SeResponseSet seResponse = proxyReader.transmitSet(getCalypsoRequestSample());
+        List<SeResponse> seResponseList = proxyReader.transmitSet(getCalypsoRequestSample());
 
         // assert
-        Assert.assertNull(seResponse.getResponses().get(0));
+        Assert.assertNull(seResponseList.get(0));
 
     }
 
@@ -152,10 +154,12 @@ public class AndroidOmapiReaderTest {
                 ChannelState.CLOSE_AFTER);
 
         // test
-        SeResponseSet seResponse = proxyReader.transmitSet(new SeRequestSet(seRequest));
+        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
+        seRequestSet.add(seRequest);
+        List<SeResponse> seResponseList = proxyReader.transmitSet(seRequestSet);
 
         // assert
-        Assert.assertNull(seResponse.getResponses().get(0));
+        Assert.assertNull(seResponseList.get(0));
 
     }
 
@@ -170,7 +174,7 @@ public class AndroidOmapiReaderTest {
         proxyReader = new AndroidOmapiReaderImpl(PLUGIN_NAME, omapiReader, omapiReader.getName());
 
         // test
-        SeResponseSet seResponse = proxyReader.transmitSet(getCalypsoRequestSample());
+        List<SeResponse> seResponseList = proxyReader.transmitSet(getCalypsoRequestSample());
 
         // expected = KeypleReaderException.class
     }
@@ -219,7 +223,7 @@ public class AndroidOmapiReaderTest {
 
     }
 
-    SeRequestSet getCalypsoRequestSample() {
+    Set<SeRequest> getCalypsoRequestSample() {
         String poAid = "A000000291A000000191";
 
         ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO,
@@ -233,7 +237,9 @@ public class AndroidOmapiReaderTest {
                 new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null), poApduRequestList,
                 ChannelState.CLOSE_AFTER);
 
-        return new SeRequestSet(seRequest);
+        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
+        seRequestSet.add(seRequest);
+        return seRequestSet;
 
     }
 

@@ -410,12 +410,11 @@ public class StubReaderTest extends BaseStubTest {
                 Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
                 Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
                 Assert.assertTrue(((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                        .getSelectionSeResponseSet().getSingleResponse().getSelectionStatus()
-                        .hasMatched());
+                        .getSelectionSeResponseSet().get(0).getSelectionStatus().hasMatched());
                 Assert.assertArrayEquals(
                         ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                .getSelectionSeResponseSet().getSingleResponse()
-                                .getSelectionStatus().getAtr().getBytes(),
+                                .getSelectionSeResponseSet().get(0).getSelectionStatus().getAtr()
+                                .getBytes(),
                         hoplinkSE().getATR());
 
                 // retrieve the expected FCI from the Stub SE running the select application command
@@ -438,8 +437,8 @@ public class StubReaderTest extends BaseStubTest {
 
                 Assert.assertArrayEquals(
                         ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                .getSelectionSeResponseSet().getSingleResponse()
-                                .getSelectionStatus().getFci().getBytes(),
+                                .getSelectionSeResponseSet().get(0).getSelectionStatus().getFci()
+                                .getBytes(),
                         fci);
 
                 logger.debug("match event is correct");
@@ -545,8 +544,8 @@ public class StubReaderTest extends BaseStubTest {
                 // card has not match
                 Assert.assertFalse(
                         ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                .getSelectionSeResponseSet().getSingleResponse()
-                                .getSelectionStatus().hasMatched());
+                                .getSelectionSeResponseSet().get(0).getSelectionStatus()
+                                .hasMatched());
 
                 lock.countDown();// should be called
             }
@@ -644,7 +643,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         reader.insertSe(hoplinkSE());
-        ((ProxyReader) reader).transmitSet((SeRequestSet) null);
+        ((ProxyReader) reader).transmitSet(null);
 
         // throws exception
     }
@@ -655,7 +654,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
-        SeRequestSet requests = getRequestIsoDepSetSample();
+        Set<SeRequest> requests = getRequestIsoDepSetSample();
 
         // init SE
         reader.insertSe(hoplinkSE());
@@ -669,10 +668,10 @@ public class StubReaderTest extends BaseStubTest {
         selectSe(reader);
 
         // test
-        SeResponseSet seResponse = ((ProxyReader) reader).transmitSet(requests);
+        List<SeResponse> seResponse = ((ProxyReader) reader).transmitSet(requests);
 
         // assert
-        Assert.assertTrue(seResponse.getSingleResponse().getApduResponses().get(0).isSuccessful());
+        Assert.assertTrue(seResponse.get(0).getApduResponses().get(0).isSuccessful());
     }
 
 
@@ -691,7 +690,7 @@ public class StubReaderTest extends BaseStubTest {
     // // test
     // SeResponseSet resp = reader.transmit(seRequest);
     //
-    // Assert.assertNull(resp.getSingleResponse());
+    // Assert.assertNull(resp.get(0));
     // }
 
 
@@ -701,7 +700,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
-        SeRequestSet requests = getNoResponseRequest();
+        Set<SeRequest> requests = getNoResponseRequest();
 
         // init SE
         reader.insertSe(noApduResponseSE());
@@ -715,7 +714,7 @@ public class StubReaderTest extends BaseStubTest {
         selectSe(reader);
 
         // test
-        SeResponseSet seResponse = ((ProxyReader) reader).transmitSet(requests);
+        List<SeResponse> seResponse = ((ProxyReader) reader).transmitSet(requests);
     }
 
     @Test
@@ -724,7 +723,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
-        SeRequestSet seRequestSet = getPartialRequestSet(0);
+        Set<SeRequest> seRequestSet = getPartialRequestSet(0);
 
         // init SE
         reader.insertSe(partialSE());
@@ -739,11 +738,10 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponseSet seResponseSet = ((ProxyReader) reader).transmitSet(seRequestSet);
+            List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
         } catch (KeypleReaderException ex) {
-            Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 1);
-            Assert.assertEquals(
-                    ex.getSeResponseSet().getResponses().get(0).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponseSet().size(), 1);
+            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 2);
         }
     }
 
@@ -753,7 +751,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
-        SeRequestSet seRequestSet = getPartialRequestSet(1);
+        Set<SeRequest> seRequestSet = getPartialRequestSet(1);
 
         // init SE
         reader.insertSe(partialSE());
@@ -768,15 +766,12 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponseSet seResponseSet = ((ProxyReader) reader).transmitSet(seRequestSet);
+            List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
         } catch (KeypleReaderException ex) {
-            Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 2);
-            Assert.assertEquals(
-                    ex.getSeResponseSet().getResponses().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(
-                    ex.getSeResponseSet().getResponses().get(1).getApduResponses().size(), 2);
-            Assert.assertEquals(
-                    ex.getSeResponseSet().getResponses().get(1).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponseSet().size(), 2);
+            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 2);
         }
     }
 
@@ -787,7 +782,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
-        SeRequestSet seRequestSet = getPartialRequestSet(2);
+        Set<SeRequest> seRequestSet = getPartialRequestSet(2);
 
         // init SE
         reader.insertSe(partialSE());
@@ -802,15 +797,12 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponseSet seResponseSet = ((ProxyReader) reader).transmitSet(seRequestSet);
+            List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
         } catch (KeypleReaderException ex) {
-            Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 3);
-            Assert.assertEquals(
-                    ex.getSeResponseSet().getResponses().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(
-                    ex.getSeResponseSet().getResponses().get(1).getApduResponses().size(), 4);
-            Assert.assertEquals(
-                    ex.getSeResponseSet().getResponses().get(2).getApduResponses().size(), 2);
+            Assert.assertEquals(ex.getSeResponseSet().size(), 3);
+            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseSet().get(2).getApduResponses().size(), 2);
         }
     }
 
@@ -820,7 +812,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
         // init Request
-        SeRequestSet seRequestSet = getPartialRequestSet(3);
+        Set<SeRequest> seRequestSet = getPartialRequestSet(3);
 
         // init SE
         reader.insertSe(partialSE());
@@ -835,15 +827,12 @@ public class StubReaderTest extends BaseStubTest {
 
         // test
         try {
-            SeResponseSet seResponseSet = ((ProxyReader) reader).transmitSet(seRequestSet);
+            List<SeResponse> seResponseList = ((ProxyReader) reader).transmitSet(seRequestSet);
         } catch (KeypleReaderException ex) {
-            Assert.assertEquals(ex.getSeResponseSet().getResponses().size(), 3);
-            Assert.assertEquals(
-                    ex.getSeResponseSet().getResponses().get(0).getApduResponses().size(), 4);
-            Assert.assertEquals(
-                    ex.getSeResponseSet().getResponses().get(1).getApduResponses().size(), 4);
-            Assert.assertEquals(
-                    ex.getSeResponseSet().getResponses().get(2).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseSet().size(), 3);
+            Assert.assertEquals(ex.getSeResponseSet().get(0).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseSet().get(1).getApduResponses().size(), 4);
+            Assert.assertEquals(ex.getSeResponseSet().get(2).getApduResponses().size(), 4);
         }
     }
 
@@ -1012,7 +1001,7 @@ public class StubReaderTest extends BaseStubTest {
      */
 
 
-    static public SeRequestSet getRequestIsoDepSetSample() {
+    static public Set<SeRequest> getRequestIsoDepSetSample() {
         String poAid = "A000000291A000000191";
 
         ReadRecordsCmdBuild poReadRecordCmd_T2Env =
@@ -1025,7 +1014,11 @@ public class StubReaderTest extends BaseStubTest {
 
         SeRequest seRequest = new SeRequest(poApduRequestList, ChannelState.CLOSE_AFTER);
 
-        return new SeRequestSet(seRequest);
+        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
+
+        seRequestSet.add(seRequest);
+
+        return seRequestSet;
 
     }
 
@@ -1034,7 +1027,7 @@ public class StubReaderTest extends BaseStubTest {
      *
      * An Exception will be thrown.
      */
-    static public SeRequestSet getNoResponseRequest() {
+    static public Set<SeRequest> getNoResponseRequest() {
 
         IncreaseCmdBuild poIncreaseCmdBuild =
                 new IncreaseCmdBuild(PoClass.ISO, (byte) 0x14, (byte) 0x01, 0, "");
@@ -1045,8 +1038,11 @@ public class StubReaderTest extends BaseStubTest {
 
         SeRequest seRequest = new SeRequest(poApduRequestList, ChannelState.CLOSE_AFTER);
 
-        return new SeRequestSet(seRequest);
+        Set<SeRequest> seRequestSet = new LinkedHashSet<SeRequest>();
 
+        seRequestSet.add(seRequest);
+
+        return seRequestSet;
     }
 
     /*
@@ -1054,7 +1050,7 @@ public class StubReaderTest extends BaseStubTest {
      *
      * An Exception will be thrown.
      */
-    static public SeRequestSet getPartialRequestSet(int scenario) {
+    static public Set<SeRequest> getPartialRequestSet(int scenario) {
         String poAid = "A000000291A000000191";
 
         ReadRecordsCmdBuild poReadRecord1CmdBuild = new ReadRecordsCmdBuild(PoClass.ISO,
@@ -1121,7 +1117,7 @@ public class StubReaderTest extends BaseStubTest {
             default:
         }
 
-        return new SeRequestSet(seRequestSets);
+        return seRequestSets;
     }
 
     /*

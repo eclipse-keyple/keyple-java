@@ -17,7 +17,6 @@ import org.eclipse.keyple.calypso.command.sam.parser.security.DigestAuthenticate
 import org.eclipse.keyple.core.command.AbstractApduResponseParser;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 import org.eclipse.keyple.core.seproxy.message.SelectionStatus;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
@@ -34,14 +33,14 @@ public class DigestAuthenticateRespParsTest {
         List<ApduResponse> responses = new ArrayList<ApduResponse>();
         ApduResponse apduResponse = new ApduResponse(new byte[] {90, 0}, null);
         responses.add(apduResponse);
-        SeResponseSet seResponse =
-                new SeResponseSet(new SeResponse(true, true,
+        SeResponse seResponse =
+                new SeResponse(true, true,
                         new SelectionStatus(null,
                                 new ApduResponse(ByteArrayUtil.fromHex("9000"), null), true),
-                        responses));
+                        responses);
 
-        AbstractApduResponseParser apduResponseParser = new DigestAuthenticateRespPars(
-                seResponse.getSingleResponse().getApduResponses().get(0));
+        AbstractApduResponseParser apduResponseParser =
+                new DigestAuthenticateRespPars(seResponse.getApduResponses().get(0));
         byte[] responseActual = apduResponseParser.getApduResponse().getBytes();
         Assert.assertArrayEquals(new byte[] {90, 0}, responseActual);
     }
