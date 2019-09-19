@@ -138,24 +138,16 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                 }
 
                 while (running) {
-                    // If we have a card,
-                    if (isSePresent()) {
+                    logger.trace("[{}] observe card insertion", readerName);
+                    // we will wait for it to appear
+                    if (waitForCardPresent(threadWaitTimeout)) {
+                        // notify insertion
+                        cardInserted();
                         logger.trace("[{}] Observe card removal", readerName);
-                        // we will wait for it to disappear
-                        if (waitForCardAbsent(threadWaitTimeout)) {
-                            // and notify about it.
-                            cardRemoved();
-                        }
-                        // false means timeout, and we go back to the beginning of the loop
-                    }
-                    // If we don't,
-                    else {
-                        logger.trace("[{}] observe card insertion", readerName);
-                        // we will wait for it to appear
-                        if (waitForCardPresent(threadWaitTimeout)) {
-                            cardInserted();
-                        }
-                        // false means timeout, and we go back to the beginning of the loop
+                        // wait as long as the PO responds (timeout is useless)
+                        waitForCardAbsent(threadWaitTimeout);
+                        // notify removal
+                        cardRemoved();
                     }
                 }
             } catch (NoStackTraceThrowable e) {

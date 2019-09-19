@@ -47,6 +47,9 @@ public final class SeSelection {
 
     /**
      * Initializes the SeSelection
+     * 
+     * @param multiSeRequestProcessing the multi se processing mode
+     * @param channelState indicates if the channel has to be closed at the end of the processing
      */
     public SeSelection(MultiSeRequestProcessing multiSeRequestProcessing,
             ChannelState channelState) {
