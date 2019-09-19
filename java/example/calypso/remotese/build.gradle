@@ -30,9 +30,9 @@ dependencies {
     //import the last version of keyple-java-plugin-remotese
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese', version: '+'
 
-    implementation project(path: ':example:calypso:example-calypso-pc')
+    implementation project(path: ':calypso:example-calypso-pc')
 
-    implementation project(path: ':example:calypso:example-calypso-common')
+    implementation project(path: ':calypso:example-calypso-common')
 
     implementation "org.java-websocket:Java-WebSocket:${JavaWebSocket_version}"
 
