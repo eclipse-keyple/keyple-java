@@ -25,10 +25,6 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
     private static final Logger logger = LoggerFactory.getLogger(AbstractThreadedLocalReader.class);
     private EventThread thread;
     private static final AtomicInteger threadCount = new AtomicInteger();
-    /**
-     * Thread wait timeout in ms
-     */
-    protected long threadWaitTimeout;
 
     protected AbstractThreadedLocalReader(String pluginName, String readerName) {
         super(pluginName, readerName);
@@ -53,15 +49,6 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
         if (thread != null) {
             thread.end();
         }
-    }
-
-    /**
-     * setter to fix the wait timeout in ms.
-     *
-     * @param timeout Timeout to use
-     */
-    protected final void setThreadWaitTimeout(long timeout) {
-        this.threadWaitTimeout = timeout;
     }
 
     /**
@@ -140,12 +127,12 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                 while (running) {
                     logger.trace("[{}] observe card insertion", readerName);
                     // we will wait for it to appear
-                    if (waitForCardPresent(threadWaitTimeout)) {
+                    if (waitForCardPresent(0)) {
                         // notify insertion
                         cardInserted();
                         logger.trace("[{}] Observe card removal", readerName);
                         // wait as long as the PO responds (timeout is useless)
-                        waitForCardAbsent(threadWaitTimeout);
+                        waitForCardAbsent(0);
                         // notify removal
                         cardRemoved();
                     }
