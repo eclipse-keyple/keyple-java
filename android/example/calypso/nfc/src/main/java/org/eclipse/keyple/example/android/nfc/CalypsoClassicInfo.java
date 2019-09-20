@@ -29,9 +29,9 @@ package org.eclipse.keyple.example.android.nfc;
  */
 public class CalypsoClassicInfo {
     /** Calypso default AID */
-    public final static String AID = "A0000004040125090101";
+    // public final static String AID = "A0000004040125090101";
     /// ** 1TIC.ICA AID */
-    // public final static String AID = "315449432E494341";
+    public final static String AID = "315449432E494341";
     /** SAM C1 regular expression: platform, version and serial number values are ignored */
     public final static String SAM_C1_ATR_REGEX =
             "3B3F9600805A[0-9a-fA-F]{2}80C1[0-9a-fA-F]{14}829000";

@@ -8,8 +8,8 @@ Keyple is compatible with any card reader as long as a Keyple plugin is provided
 - Remote SE readers : the Remote Se plugin allows to communicate with a smartcard inserted on a remote reader hosted on another device.
 
 As Keyple is not tight to Calypso protocol, both generic and Calypso examples are provided.
-- Calypso examples are available in this subproject : [Calypso examples](/calypso/)
-- Generic examples are available in this subproject : [Generic examples](/generic/)
+- Calypso examples are available in this subproject : [Calypso examples](/java/example/calypso/)
+- Generic examples are available in this subproject : [Generic examples](/java/example/generic/)
 
 Build
 ---

@@ -20,9 +20,7 @@ import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +38,7 @@ public final class SeSelection {
      */
     private final List<AbstractSeSelectionRequest> seSelectionRequestList =
             new ArrayList<AbstractSeSelectionRequest>();
-    private final SeRequestSet selectionRequestSet =
-            new SeRequestSet(new LinkedHashSet<SeRequest>());
+    private final Set<SeRequest> selectionRequestSet = new LinkedHashSet<SeRequest>();
     private int selectionIndex;
 
     /**
@@ -78,7 +75,7 @@ public final class SeSelection {
      * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent} (default selection) or from an
      * explicit selection.
      * <p>
-     * The responses from the {@link SeResponseSet} is parsed and checked.
+     * The responses from the List of {@link SeResponse} is parsed and checked.
      * <p>
      * A {@link AbstractMatchingSe} list is build and returned. Non matching SE are signaled by a
      * null element in the list
@@ -98,8 +95,7 @@ public final class SeSelection {
         int selectionIndex = 0;
 
         /* Check SeResponses */
-        for (SeResponse seResponse : defaultSelectionsResponse.getSelectionSeResponseSet()
-                .getResponses()) {
+        for (SeResponse seResponse : defaultSelectionsResponse.getSelectionSeResponseSet()) {
             if (seResponse != null) {
                 /* test if the selection is successful: we should have either a FCI or an ATR */
                 if (seResponse.getSelectionStatus() != null
@@ -136,7 +132,7 @@ public final class SeSelection {
         if (logger.isTraceEnabled()) {
             logger.trace("Process default SELECTIONRESPONSE ({} response(s))",
                     ((DefaultSelectionsResponse) defaultSelectionsResponse)
-                            .getSelectionSeResponseSet().getResponses().size());
+                            .getSelectionSeResponseSet().size());
         }
 
         return processSelection((DefaultSelectionsResponse) defaultSelectionsResponse);
@@ -162,14 +158,13 @@ public final class SeSelection {
     public SelectionsResult processExplicitSelection(SeReader seReader)
             throws KeypleReaderException {
         if (logger.isTraceEnabled()) {
-            logger.trace("Transmit SELECTIONREQUEST ({} request(s))",
-                    selectionRequestSet.getRequests().size());
+            logger.trace("Transmit SELECTIONREQUEST ({} request(s))", selectionRequestSet.size());
         }
 
         /* Communicate with the SE to do the selection */
-        SeResponseSet seResponseSet = ((ProxyReader) seReader).transmitSet(selectionRequestSet);
+        List<SeResponse> seResponseList = ((ProxyReader) seReader).transmitSet(selectionRequestSet);
 
-        return processSelection(new DefaultSelectionsResponse(seResponseSet));
+        return processSelection(new DefaultSelectionsResponse(seResponseList));
     }
 
     /**

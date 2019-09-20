@@ -215,7 +215,7 @@ public class Demo_Master {
                                                             node.getNodeId(), event.getPluginName(),
                                                             event.getReaderName());
 
-                                                    // Transmit a SeRequestSet to native reader
+                                                    // Transmit a SeRequest to native reader
                                                     // CommandSample.transmit(logger,
                                                     // event.getReaderName());
 

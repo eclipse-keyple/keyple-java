@@ -12,14 +12,14 @@
 package org.eclipse.keyple.plugin.remotese.pluginse;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -101,13 +101,13 @@ final class VirtualReaderImpl extends AbstractObservableReader implements Virtua
     /**
      * Blocking TransmitSet
      * 
-     * @param seRequestSet : SeRequestSet to be transmitted to SE
-     * @return seResponseSet : SeResponseSet from SE
+     * @param seRequestSet : Set of SeRequest to be transmitted to SE
+     * @return List of SeResponse from SE
      * @throws IllegalArgumentException
      * @throws KeypleReaderException
      */
     @Override
-    protected SeResponseSet processSeRequestSet(SeRequestSet seRequestSet)
+    protected List<SeResponse> processSeRequestSet(Set<SeRequest> seRequestSet)
             throws IllegalArgumentException, KeypleReaderException {
 
         RmTransmitSetTx transmit = new RmTransmitSetTx(seRequestSet, session.getSessionId(),

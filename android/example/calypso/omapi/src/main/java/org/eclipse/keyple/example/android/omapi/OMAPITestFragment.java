@@ -11,33 +11,27 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.android.omapi;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.SortedSet;
-import java.util.TreeSet;
-import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.calypso.command.po.builder.UpdateRecordCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
+import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
+import org.eclipse.keyple.calypso.transaction.CalypsoPo;
+import org.eclipse.keyple.calypso.transaction.PoResource;
+import org.eclipse.keyple.calypso.transaction.PoSelectionRequest;
+import org.eclipse.keyple.calypso.transaction.PoSelector;
+import org.eclipse.keyple.calypso.transaction.PoTransaction;
+import org.eclipse.keyple.core.selection.MatchingSelection;
+import org.eclipse.keyple.core.selection.SeSelection;
+import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.message.ApduRequest;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
-import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeRequest;
-import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
-import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPlugin;
 import org.eclipse.keyple.plugin.android.omapi.AndroidOmapiPluginFactory;
-
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -63,7 +57,7 @@ public class OMAPITestFragment extends Fragment {
 
     /**
      * Initialize SEProxy with Keyple Android OMAPI Plugin
-     * 
+     *
      * @param savedInstanceState
      */
     @Override
@@ -82,7 +76,7 @@ public class OMAPITestFragment extends Fragment {
 
     /**
      * Initialize UI for this view
-     * 
+     *
      * @param inflater
      * @param container
      * @param savedInstanceState
@@ -142,87 +136,143 @@ public class OMAPITestFragment extends Fragment {
                 try {
 
 
-
                     String poAid = "A000000291A000000191";
+                    byte SFIHoplinkEFT2Environment = (byte) 0x14;
+                    byte SFIHoplinkEFT2Usage = (byte) 0x1A;
+
                     String t2UsageRecord1_dataFill =
                             "0102030405060708090A0B0C0D0E0F10" + "1112131415161718191A1B1C1D1E1F20"
                                     + "2122232425262728292A2B2C2D2E2F30";
+
+                    /*
+                     * Prepare a Calypso PO selection
+                     */
+                    SeSelection seSelection = new SeSelection();
+
+                    /*
+                     * Setting of an AID based selection of a Calypso REV3 PO
+                     *
+                     * Select the first application matching the selection AID whatever the SE
+                     * communication protocol keep the logical channel open after the selection
+                     */
+
+                    /*
+                     * Calypso selection: configures a PoSelectionRequest with all the desired
+                     * attributes to make the selection and read additional information afterwards
+                     */
+                    PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
+                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                                    new PoSelector.PoAidSelector(
+                                            new SeSelector.AidSelector.IsoAid(poAid),
+                                            PoSelector.InvalidatedPo.REJECT),
+                                    "AID: " + poAid),
+                            ChannelState.KEEP_OPEN);
+
 
                     mText.append("\n");
                     mText.append("Selecting application : " + poAid);
                     mText.append("\n");
 
+                    /*
+                     * Prepare the reading order and keep the associated parser for later use once
+                     * the selection has been made.
+                     */
+                    int readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
+                            SFIHoplinkEFT2Environment, ReadDataStructure.SINGLE_RECORD_DATA,
+                            (byte) 1, String.format("Hoplink EF T2Environment (SFI=%02X)",
+                                    SFIHoplinkEFT2Environment));
 
-                    ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO,
-                            (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true,
-                            (byte) 0x20, "Hoplink EF T2Environment");
+                    int readUsageParserIndex = poSelectionRequest.prepareReadRecordsCmd(
+                            SFIHoplinkEFT2Environment, ReadDataStructure.SINGLE_RECORD_DATA,
+                            (byte) 1, String.format("Hoplink EF T2Usage (SFI=%02X)",
+                                    SFIHoplinkEFT2Environment));
 
-                    ReadRecordsCmdBuild poReadRecordCmd_T2Usage = new ReadRecordsCmdBuild(
-                            PoClass.ISO, (byte) 0x1A, ReadDataStructure.SINGLE_RECORD_DATA,
-                            (byte) 0x01, true, (byte) 0x30, "Hoplink EF T2Usage");
+                    /*
+                     * Add the selection case to the current selection (we could have added other
+                     * cases here)
+                     *
+                     * Ignore the returned index since we have only one selection here.
+                     */
+                    seSelection.prepareSelection(poSelectionRequest);
 
-                    UpdateRecordCmdBuild poUpdateRecordCmd_T2UsageFill = new UpdateRecordCmdBuild(
-                            PoClass.ISO, (byte) 0x1A, (byte) 0x01,
-                            ByteArrayUtil.fromHex(t2UsageRecord1_dataFill), "Hoplink EF T2Usage");
+                    /*
+                     * Actual PO communication: operate through a single request the Calypso PO
+                     * selection and the file read
+                     */
 
+                    SelectionsResult selectionsResult = null;
+                    try {
+                        selectionsResult = seSelection.processExplicitSelection(reader);
+                    } catch (KeypleReaderException e) {
+                        e.printStackTrace();
+                    }
 
-                    Boolean keepChannelOpen = false;
+                    if (selectionsResult.hasActiveSelection()) {
+                        MatchingSelection matchingSelection = selectionsResult.getActiveSelection();
 
-                    mText.append("\n");
-                    mText.append("Executing command Calypso : " + poReadRecordCmd_T2Env.getName());
-                    mText.append("\n");
-                    mText.append(
-                            "Executing command Calypso : " + poReadRecordCmd_T2Usage.getName());
-                    mText.append("\n");
-                    mText.append("Executing command Calypso : "
-                            + poUpdateRecordCmd_T2UsageFill.getName());
-                    mText.append("\n");
-                    mText.append("Keep Channel Open : " + keepChannelOpen);
-                    mText.append("\n");
-                    mText.append(
-                            "Using protocol : " + SeCommonProtocols.PROTOCOL_ISO7816_3.getName());
-                    mText.append("\n ----\n ");
+                        CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
+                        mText.append("The selection of the PO has succeeded.\n");
 
-                    List<ApduRequest> poApduRequestList;
+                        ReadRecordsRespPars readEnvironmentParser =
+                                (ReadRecordsRespPars) matchingSelection
+                                        .getResponseParser(readEnvironmentParserIndex);
 
-                    poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest(),
-                            poReadRecordCmd_T2Usage.getApduRequest(),
-                            poUpdateRecordCmd_T2UsageFill.getApduRequest());
+                        /*
+                         * Retrieve the data read from the parser updated during the selection
+                         * process (Environment)
+                         */
+                        byte environmentAndHolder[] = (readEnvironmentParser.getRecords()).get(1);
 
+                        /* Log the result */
+                        mText.append("Environment file data: "
+                                + ByteArrayUtil.toHex(environmentAndHolder) + "\n");
 
-                    SeRequest seRequest =
-                            new SeRequest(
-                                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
-                                            new SeSelector.AidSelector(
-                                                    new SeSelector.AidSelector.IsoAid(poAid), null),
-                                            "AID = " + poAid),
-                                    poApduRequestList, ChannelState.CLOSE_AFTER);
+                        ReadRecordsRespPars readT2UsageParser =
+                                (ReadRecordsRespPars) matchingSelection
+                                        .getResponseParser(readUsageParserIndex);
 
-                    // SeRequest seRequest =
-                    // new SeRequest(new SeSelector(null, new SeSelector.AtrFilter(".*"), "Select
-                    // any ATR"),
-                    // poApduRequestList, ChannelState.CLOSE_AFTER,
-                    // SeCommonProtocol.PROTOCOL_ISO7816_3);
+                        /*
+                         * Retrieve the data read from the parser updated during the selection
+                         * process (Usage)
+                         */
+                        byte t2Usage[] = (readT2UsageParser.getRecords()).get(1);
 
+                        /* Log the result */
+                        mText.append("T2 Usage data: " + ByteArrayUtil.toHex(t2Usage) + "\n");
 
-                    SeResponseSet seResponseSet =
-                            ((ProxyReader) reader).transmitSet(new SeRequestSet(seRequest));
+                        /* Go on with the reading of the first record of the EventLog file */
+                        mText.append(
+                                "==================================================================================");
+                        mText.append(
+                                "= Update T2 Usage.                                                               =");
+                        mText.append(
+                                "==================================================================================");
 
+                        PoTransaction poTransaction =
+                                new PoTransaction(new PoResource(reader, calypsoPo));
 
-                    mText.append("\n ---- \n");
-                    for (SeResponse response : seResponseSet.getResponses()) {
-                        if (response != null) {
-                            for (ApduResponse apdu : response.getApduResponses()) {
-                                mText.append("Response : " + apdu.getStatusCode() + " - "
-                                        + ByteArrayUtil.toHex(apdu.getBytes()));
-                                mText.append("\n");
-                            }
-                            mText.append("\n\n\n\n\n");
+                        /*
+                         * Prepare the update order and keep the associated parser for later use
+                         * once the transaction has been processed.
+                         */
 
-                        } else {
-                            mText.append("Response : null");
-                            mText.append("\n\n\n\n\n");
+                        int updateT2UsageParserIndex =
+                                poTransaction.prepareUpdateRecordCmd(SFIHoplinkEFT2Usage,
+                                        (byte) 0x01, ByteArrayUtil.fromHex(t2UsageRecord1_dataFill),
+                                        String.format("Update T2 USage (SFI=%02X, recnbr=%d))",
+                                                SFIHoplinkEFT2Usage, 1));
+
+                        /*
+                         * Actual PO communication: send the prepared read order, then close the
+                         * channel with the PO
+                         */
+                        if (poTransaction.processPoCommands(ChannelState.CLOSE_AFTER)) {
+                            mText.append("The update of the T2 Usage file has succeeded.");
+
                         }
+                        mText.append("=====================================\n");
+                        mText.append("= End of the Calypso PO processing. =\n");
+                        mText.append("=====================================\n");
                     }
                 } catch (final KeypleReaderException e) {
                     getActivity().runOnUiThread(new Runnable() {
@@ -234,17 +284,14 @@ public class OMAPITestFragment extends Fragment {
 
                         }
                     });
-
                 }
             }
         });
     }
 
 
-
     /**
-     * Revocation of the Activity
-     * from @{@link SeReader} list of observers
+     * Revocation of the Activity from @{@link SeReader} list of observers
      */
     @Override
     public void onDestroy() {

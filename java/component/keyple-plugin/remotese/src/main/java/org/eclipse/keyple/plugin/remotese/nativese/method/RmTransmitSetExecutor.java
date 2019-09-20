@@ -11,10 +11,14 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.remotese.nativese.method;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.message.SeRequestSet;
-import org.eclipse.keyple.core.seproxy.message.SeResponseSet;
+import org.eclipse.keyple.core.seproxy.message.SeRequest;
+import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.plugin.remotese.nativese.SlaveAPI;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethod;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodExecutor;
@@ -24,6 +28,7 @@ import org.eclipse.keyple.plugin.remotese.transport.model.KeypleDtoHelper;
 import org.eclipse.keyple.plugin.remotese.transport.model.TransportDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Execute the Transmit on Native Reader
@@ -46,11 +51,11 @@ public class RmTransmitSetExecutor implements RemoteMethodExecutor {
     public TransportDto execute(TransportDto transportDto) {
         KeypleDto keypleDto = transportDto.getKeypleDTO();
         TransportDto out = null;
-        SeResponseSet seResponseSet = null;
+        List<SeResponse> seResponseList = null;
 
         // Extract info from keypleDto
-        SeRequestSet seRequestSet =
-                JsonParser.getGson().fromJson(keypleDto.getBody(), SeRequestSet.class);
+        Set<SeRequest> seRequestSet = JsonParser.getGson().fromJson(keypleDto.getBody(),
+                new TypeToken<LinkedHashSet<SeRequest>>() {}.getType());
         String nativeReaderName = keypleDto.getNativeReaderName();
         logger.trace("Execute locally seRequestSet : {}", seRequestSet);
 
@@ -59,10 +64,11 @@ public class RmTransmitSetExecutor implements RemoteMethodExecutor {
             ProxyReader reader = slaveAPI.findLocalReader(nativeReaderName);
 
             // execute transmitSet
-            seResponseSet = reader.transmitSet(seRequestSet);
+            seResponseList = reader.transmitSet(seRequestSet);
 
             // prepare response
-            String parseBody = JsonParser.getGson().toJson(seResponseSet, SeResponseSet.class);
+            String parseBody = JsonParser.getGson().toJson(seResponseList,
+                    new TypeToken<ArrayList<SeResponse>>() {}.getType());
             out = transportDto.nextTransportDTO(KeypleDtoHelper.buildResponse(
                     getMethodName().getName(), parseBody, keypleDto.getSessionId(),
                     nativeReaderName, keypleDto.getVirtualReaderName(), keypleDto.getTargetNodeId(),

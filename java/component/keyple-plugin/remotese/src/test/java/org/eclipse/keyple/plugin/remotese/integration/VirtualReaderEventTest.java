@@ -215,13 +215,12 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
                 Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
                 Assert.assertTrue(((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                        .getSelectionSeResponseSet().getSingleResponse().getSelectionStatus()
-                        .hasMatched());
+                        .getSelectionSeResponseSet().get(0).getSelectionStatus().hasMatched());
 
                 Assert.assertArrayEquals(
                         ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                .getSelectionSeResponseSet().getSingleResponse()
-                                .getSelectionStatus().getAtr().getBytes(),
+                                .getSelectionSeResponseSet().get(0).getSelectionStatus().getAtr()
+                                .getBytes(),
                         hoplinkSE().getATR());
 
                 // retrieve the expected FCI from the Stub SE running the select application command
@@ -244,8 +243,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
                 Assert.assertArrayEquals(
                         ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                .getSelectionSeResponseSet().getSingleResponse()
-                                .getSelectionStatus().getFci().getBytes(),
+                                .getSelectionSeResponseSet().get(0).getSelectionStatus().getFci()
+                                .getBytes(),
                         fci);
 
                 logger.debug("match event is correct");
@@ -359,8 +358,8 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                 // card has not match
                 Assert.assertFalse(
                         ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                .getSelectionSeResponseSet().getSingleResponse()
-                                .getSelectionStatus().hasMatched());
+                                .getSelectionSeResponseSet().get(0).getSelectionStatus()
+                                .hasMatched());
 
                 lock.countDown();// should be called
             }
