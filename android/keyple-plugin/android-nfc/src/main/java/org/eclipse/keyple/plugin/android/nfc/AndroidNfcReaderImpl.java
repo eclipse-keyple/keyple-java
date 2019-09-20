@@ -35,7 +35,7 @@ import android.os.Bundle;
 
 
 /**
- * Implementation of {@link org.eclipse.keyple.core.seproxy.SeReader} to communicate with NFC Tag though
+ * Implementation of {@link SeReader} to communicate with NFC Tag though
  * Android {@link NfcAdapter}
  *
  * Configure NFCAdapter Protocols with {@link AndroidNfcReaderImpl#setParameter(String, String)}

@@ -16,17 +16,17 @@ rootProject.name = 'keyple-java-example'
  */
 
 
-include ':example:generic:common'
-project(':example:generic:common').name = "example-generic-common"
+include ':generic:common'
+project(':generic:common').name = "example-generic-common"
 
-include ':example:generic:pc'
-project(':example:generic:pc').name = "example-generic-pc"
+include ':generic:pc'
+project(':generic:pc').name = "example-generic-pc"
 
-include ':example:calypso:common'
-project(':example:calypso:common').name = "example-calypso-common"
+include ':calypso:common'
+project(':calypso:common').name = "example-calypso-common"
 
-include ':example:calypso:pc'
-project(':example:calypso:pc').name = "example-calypso-pc"
+include ':calypso:pc'
+project(':calypso:pc').name = "example-calypso-pc"
 
-include ':example:calypso:remotese'
-project(':example:calypso:remotese').name = "example-remotese"
+include ':calypso:remotese'
+project(':calypso:remotese').name = "example-remotese"

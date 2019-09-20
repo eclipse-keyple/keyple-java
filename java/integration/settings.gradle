@@ -16,20 +16,20 @@ rootProject.name = 'keyple-java-integration'
  */
 
 
-//include ':java:example:generic:common'
-//project(':java:example:generic:common').name = "example-generic-common"
+//include ':java:generic:common'
+//project(':java:generic:common').name = "example-generic-common"
 ////
-//include ':java:example:generic:pc'
-//project(':java:example:generic:pc').name = "example-generic-pc"
+//include ':java:generic:pc'
+//project(':java:generic:pc').name = "example-generic-pc"
 ////
-//include ':java:example:calypso:common'
-//project(':java:example:calypso:common').name = "example-calypso-common"
+//include ':java:calypso:common'
+//project(':java:calypso:common').name = "example-calypso-common"
 ////
-//include ':java:example:calypso:pc'
-//project(':java:example:calypso:pc').name = "example-calypso-pc"
+//include ':java:calypso:pc'
+//project(':java:calypso:pc').name = "example-calypso-pc"
 ////
-//include ':java:example:calypso:remotese'
-//project(':java:example:calypso:remotese').name = "example-remotese"
+//include ':java:calypso:remotese'
+//project(':java:calypso:remotese').name = "example-remotese"
 
 
 //println "rootProject : " + startParameter

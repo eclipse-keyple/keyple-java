@@ -68,7 +68,7 @@ dependencies {
     //import the last version of keyple-java-plugin-pcsc
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: '+'
 
-    //implementation project(path: ':java:example:calypso:example-calypso-pc')
+    //implementation project(path: ':java:calypso:example-calypso-pc')
 
     implementation 'com.google.code.gson:gson:2.8.5'
 
