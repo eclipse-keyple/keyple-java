@@ -128,6 +128,8 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
          */
         seSelection.prepareSelection(poSelectionRequest);
 
+        ((ObservableReader) poReader).setWaitForRemovalMode(true);
+
         /*
          * Provide the SeReader with the selection operation to be processed when a PO is inserted.
          */
@@ -219,7 +221,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
                  * with the PO
                  */
                 try {
-                    if (poTransaction.processPoCommands(ChannelState.CLOSE_AFTER)) {
+                    if (poTransaction.processPoCommands(ChannelState.KEEP_OPEN)) {
                         logger.info("The reading of the EventLog has succeeded.");
 
                         /*

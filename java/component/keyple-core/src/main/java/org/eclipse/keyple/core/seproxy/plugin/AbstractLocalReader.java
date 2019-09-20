@@ -50,6 +50,15 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /** current selection status */
     private SelectionStatus currentSelectionStatus;
 
+    /**
+     * The selector the succeeded the last time a PO was seen.
+     * <p>
+     * Use to handle the card removal process when operated with the ping method.
+     * <p>
+     * This field is accessed by {@link AbstractThreadedLocalReader}
+     */
+    protected SeSelector lastSuccessfulSelector;
+
     /** notification status flag used to avoid redundant notifications */
     private boolean presenceNotified = false;
 
@@ -467,6 +476,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         logicalChannelIsOpen = false;
         aidCurrentlySelected = null;
         currentSelectionStatus = null;
+        lastSuccessfulSelector = null;
     }
 
     /** ==== Protocol management =========================================== */
@@ -605,9 +615,17 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                      */
                     responses.add(null);
                 }
+                if (multiSeRequestProcessing == MultiSeRequestProcessing.PROCESS_ALL) {
+                    // multi SeRequest case: just close the logical channel and go on with the next
+                    // selection.
+                    closeLogicalChannel();
+                } else {
+                    // the current PO matches the first selection case, we stop here.
+                    stopProcess = true;
+                }
                 requestIndex++;
-                if (channelState == ChannelState.CLOSE_AFTER) {
-                    if (lastRequestIndex == requestIndex) {
+                if (lastRequestIndex == requestIndex) {
+                    if (channelState == ChannelState.CLOSE_AFTER) {
                         /*
                          * For the processing of the last SeRequest with a protocolFlag matching the
                          * SE reader status, if the logical channel doesn't require to be kept open,
@@ -618,17 +636,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                         logger.debug("[{}] processSeRequestSet => Closing of the physical channel.",
                                 this.getName());
                     }
-                } else {
-                    if (isLogicalChannelOpen()) {
-                        stopProcess = true;
-                    }
-                    /*
-                     * When keepChannelOpen is true, we stop after the first matching request we
-                     * exit the for loop here For the processing of a SeRequest with a protocolFlag
-                     * which matches the current SE reader status, in case it's requested to keep
-                     * the logical channel open, then the other remaining SeRequest are skipped, and
-                     * null SeRequest are returned for them.
-                     */
                 }
             }
         }
@@ -740,6 +747,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     selectionStatus = openLogicalChannelAndSelect(seRequest.getSeSelector());
                     logger.trace("[{}] processSeRequest => Logical channel opening success.",
                             this.getName());
+                    /* Keep the current selector to handle the ping based card removal process */
+                    lastSuccessfulSelector = seRequest.getSeSelector();
                 } catch (KeypleApplicationSelectionException e) {
                     logger.trace("[{}] processSeRequest => Logical channel opening failure",
                             this.getName());

@@ -12,6 +12,7 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,11 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
     private static final Logger logger = LoggerFactory.getLogger(AbstractThreadedLocalReader.class);
     private EventThread thread;
     private static final AtomicInteger threadCount = new AtomicInteger();
+    protected boolean waitForRemovalModeEnabled = false;
+    /**
+     * Thread wait timeout in ms
+     */
+    protected long threadWaitTimeout;
 
     protected AbstractThreadedLocalReader(String pluginName, String readerName) {
         super(pluginName, readerName);
@@ -52,27 +58,30 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
     }
 
     /**
+     * setter to fix the wait timeout in ms.
+     *
+     * @param timeout Timeout to use
+     */
+    protected final void setThreadWaitTimeout(long timeout) {
+        this.threadWaitTimeout = timeout;
+    }
+
+    /**
      * Waits for a card. Returns true if a card is detected before the end of the provided timeout.
+     * <p>
+     * This method must be implemented by the plugin's reader class.
+     * <p>
      * Returns false if no card detected within the delay.
      *
-     * @param timeout the delay in millisecond we wait for a card insertion
+     * @param timeout the delay in millisecond we wait for a card insertion, a value of zero means
+     *        wait for ever.
      * @return presence status
      * @throws NoStackTraceThrowable a exception without stack trace in order to be catched and
      *         processed silently
      */
     protected abstract boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable;
 
-    /**
-     * Wait until the card disappears. Returns true if a card has disappeared before the end of the
-     * provided timeout. Returns false if the is still present within the delay. Closes the physical
-     * channel when the card has disappeared.
-     *
-     * @param timeout the delay in millisecond we wait for a card to be withdrawn
-     * @return presence status
-     * @throws NoStackTraceThrowable a exception without stack trace in order to be catched and
-     *         processed silently
-     */
-    protected abstract boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable;
+
 
     /**
      * Thread in charge of reporting live events
@@ -130,9 +139,15 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                     if (waitForCardPresent(0)) {
                         // notify insertion
                         cardInserted();
-                        logger.trace("[{}] Observe card removal", readerName);
-                        // wait as long as the PO responds (timeout is useless)
-                        waitForCardAbsent(0);
+                        if (waitForRemovalModeEnabled) {
+                            // wait as long as the PO responds (timeout is useless)
+                            logger.trace("[{}] Observe card removal", readerName);
+                            if (this instanceof SmartReader) {
+                                ((SmartReader) this).waitForCardAbsentNative(0);
+                            } else {
+                                waitForCardAbsentPing(0);
+                            }
+                        }
                         // notify removal
                         cardRemoved();
                     }
@@ -142,6 +157,47 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                         e.getMessage());
             }
         }
+    }
+
+    /**
+     * Wait for the card to disappear.
+     * <p>
+     * The method used to do this is to replay, while the physical channel is still open, the
+     * request that made the current selection until the PO no longer responds.
+     *
+     * @param timeout the delay in millisecond we wait for a card insertion, a value of zero means
+     *        wait for ever.
+     */
+    private void waitForCardAbsentPing(int timeout) {
+        /*
+         * TODO remove lastSuccessfulSelector if (lastSuccessfulSelector != null) { while (true) {
+         * try { SelectionStatus selectionStatus = openLogicalChannel(lastSuccessfulSelector); if
+         * (selectionStatus != null && selectionStatus.hasMatched()) { // avoid Thread.sleep(10); }
+         * else return; } catch (KeypleIOReaderException ex) { // considered as a card removal
+         * return; } catch (KeypleChannelStateException e) { // considered as a card removal return;
+         * } catch (KeypleApplicationSelectionException e) { // considered as a card removal return;
+         * } catch (InterruptedException e) { e.printStackTrace(); } } }
+         */
+        // APDU sent to check the communication with the PO
+        // byte[] apdu = new byte[] {(byte) 0x00, (byte) 0xCA, (byte) 0x00, (byte) 0x6F};
+        byte[] apdu = new byte[] {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00};
+        // byte[] apdu = new byte[]{(byte)0x00, (byte)0xB2, (byte)0x00, (byte)0x00};
+        // loop for ever until the PO stop responding
+        try {
+            while (true) {
+                byte[] rapdu = new byte[0];
+                rapdu = transmitApdu(apdu);
+                // sleep a little to reduce the cpu consumption of the current thread
+                Thread.sleep(50);
+            }
+        } catch (KeypleIOReaderException e) {
+            // log only unexpected exceptions, else exit silently
+            logger.trace("[{}] Exception occured in waitForCardAbsentPing. Message: {}",
+                    this.getName(), e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        logger.debug("Card removed.");
     }
 
     /**

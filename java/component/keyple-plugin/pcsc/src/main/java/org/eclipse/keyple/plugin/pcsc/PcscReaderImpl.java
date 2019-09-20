@@ -32,8 +32,6 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
     private static final String PROTOCOL_T_CL = "T=CL";
     private static final String PROTOCOL_ANY = "T=0";
 
-    private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 5000;
-
     private final CardTerminal terminal;
 
     private String parameterCardProtocol;
@@ -45,8 +43,6 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
     private CardChannel channel;
 
     private boolean logging;
-    private boolean waitForRemovalModeEnabled = false;
-
 
     /**
      * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
@@ -119,8 +115,8 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
         }
     }
 
-    @Override
-    protected boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable {
+    // @Override
+    public boolean waitForCardAbsentNative(long timeout) throws NoStackTraceThrowable {
         try {
             if (terminal.waitForCardAbsent(timeout)) {
                 return true;
@@ -128,8 +124,8 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
                 return false;
             }
         } catch (CardException e) {
-            logger.trace("[{}] Exception occured in waitForCardAbsent. Message: {}", this.getName(),
-                    e.getMessage());
+            logger.trace("[{}] Exception occured in waitForCardAbsentNative. Message: {}",
+                    this.getName(), e.getMessage());
             throw new NoStackTraceThrowable();
         }
     }
@@ -285,20 +281,6 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
                 throw new IllegalArgumentException(
                         "Parameter value not supported " + name + " : " + value);
             }
-        } else if (name.equals(SETTING_KEY_THREAD_TIMEOUT)) {
-            // TODO use setter
-            if (value == null) {
-                threadWaitTimeout = SETTING_THREAD_TIMEOUT_DEFAULT;
-            } else {
-                long timeout = Long.parseLong(value);
-
-                if (timeout <= 0) {
-                    throw new IllegalArgumentException(
-                            "Timeout has to be of at least 1ms " + name + value);
-                }
-
-                threadWaitTimeout = timeout;
-            }
         } else if (name.equals(SETTING_KEY_DISCONNECT)) {
             if (value == null || value.equals(SETTING_DISCONNECT_RESET)) {
                 cardReset = true;
@@ -344,13 +326,6 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
                 parameters.put(SETTING_KEY_MODE, SETTING_MODE_SHARED);
             }
         }
-
-        { // The thread wait timeout
-            if (threadWaitTimeout != SETTING_THREAD_TIMEOUT_DEFAULT) {
-                parameters.put(SETTING_KEY_THREAD_TIMEOUT, Long.toString(threadWaitTimeout));
-            }
-        }
-
 
         return parameters;
     }

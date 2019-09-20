@@ -208,22 +208,22 @@ final class StubReaderImpl extends AbstractThreadedLocalReader implements StubRe
      * @return true if the SE is absent
      * @throws NoStackTraceThrowable in case of unplugging the reader
      */
-    @Override
-    protected boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable {
-        for (int i = 0; i < timeout / 10; i++) {
-            if (!checkSePresence()) {
-                logger.trace("[{}] card removed", this.getName());
-                return true;
-            }
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                logger.debug("Sleep was interrupted");
-            }
-        }
-        logger.trace("[{}] no card was removed", this.getName());
-        return false;
-    }
+    // @Override
+    // protected boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable {
+    // for (int i = 0; i < timeout / 10; i++) {
+    // if (!checkSePresence()) {
+    // logger.trace("[{}] card removed", this.getName());
+    // return true;
+    // }
+    // try {
+    // Thread.sleep(10);
+    // } catch (InterruptedException e) {
+    // logger.debug("Sleep was interrupted");
+    // }
+    // }
+    // logger.trace("[{}] no card was removed", this.getName());
+    // return false;
+    // }
 
     @Override
     public void setWaitForRemovalMode(boolean waitForRemovalModeEnabled) {
