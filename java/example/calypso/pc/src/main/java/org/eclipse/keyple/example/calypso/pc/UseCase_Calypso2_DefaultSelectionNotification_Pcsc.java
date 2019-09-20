@@ -25,6 +25,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
+import org.eclipse.keyple.core.seproxy.plugin.SmartReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
@@ -127,6 +128,12 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
          * Add the selection case to the current selection (we could have added other cases here)
          */
         seSelection.prepareSelection(poSelectionRequest);
+
+        if (poReader instanceof SmartReader) {
+            logger.debug("This READER is instanceof SmartReader");
+        } else {
+            logger.debug("This READER is NOT instanceof SmartReader");
+        }
 
         ((ObservableReader) poReader).setWaitForRemovalMode(true);
 

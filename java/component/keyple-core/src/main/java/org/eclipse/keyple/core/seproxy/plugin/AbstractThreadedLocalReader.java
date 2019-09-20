@@ -133,6 +133,12 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                     cardInserted();
                 }
 
+                if (this instanceof SmartReader) {
+                    logger.debug("This READER is instanceof SmartReader");
+                } else {
+                    logger.debug("This READER is NOT instanceof SmartReader");
+                }
+
                 while (running) {
                     logger.trace("[{}] observe card insertion", readerName);
                     // we will wait for it to appear

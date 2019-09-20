@@ -115,7 +115,7 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
         }
     }
 
-    // @Override
+    @Override
     public boolean waitForCardAbsentNative(long timeout) throws NoStackTraceThrowable {
         try {
             if (terminal.waitForCardAbsent(timeout)) {
