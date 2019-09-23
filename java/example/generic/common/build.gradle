@@ -2,8 +2,9 @@ apply plugin: 'java'
 
 sourceCompatibility = 1.6
 
-//project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
-
+ext {
+    keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
+}
 
 jar {
     manifest {
@@ -12,13 +13,16 @@ jar {
     }
 }
 
+compileJava.doFirst {
+    println project.name + " - Using keyple_version parameter with value " + keyple_v
+}
 
 dependencies {
     //import the last version of keyple-java-core
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_v
 
     //import the last version of keyple-java-calypso
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_v
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     implementation "org.slf4j:slf4j-api:${slf4japi_version}"
