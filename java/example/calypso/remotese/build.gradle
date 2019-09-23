@@ -6,6 +6,10 @@ apply plugin:'application'
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
+ext {
+    keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
+}
+
 jar {
     manifest {
         attributes 'Implementation-Title': 'Keyple Example Remote SE',
@@ -16,19 +20,22 @@ jar {
 
 mainClassName = 'org.eclipse.keyple.example.remote.application.Demo_WebserviceWithRetrofit_MasterServer'
 
+compileJava.doFirst {
+    println project.name + " - Using keyple_version parameter with value " + keyple_v
+}
 
 dependencies {
     //import the last version of keyple-java-core
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_v
 
     //import the last version of keyple-java-calypso
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_v
 
     //import the last version of keyple-java-plugin-stub
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: keyple_v
 
     //import the last version of keyple-java-plugin-remotese
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese', version: keyple_v
 
     implementation project(path: ':calypso:example-calypso-pc')
 
