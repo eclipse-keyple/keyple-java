@@ -184,7 +184,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      */
     private void waitForCardAbsentPing(int timeout) {
         // APDU sent to check the communication with the PO
-        byte[] apdu = new byte[] {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00};
+        byte[] apdu = new byte[] {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x00};
         // loop for ever until the PO stop responding
         try {
             while (true) {
