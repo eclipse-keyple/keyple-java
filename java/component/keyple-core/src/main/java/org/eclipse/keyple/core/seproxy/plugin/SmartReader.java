@@ -11,13 +11,14 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 
 /**
  * Interface implemented by the readers able to handle natively the card removal process.
  * <p>
  */
-public interface SmartReader {
+public interface SmartReader extends ObservableReader {
     /**
      * Wait until the card disappears.
      * <p>

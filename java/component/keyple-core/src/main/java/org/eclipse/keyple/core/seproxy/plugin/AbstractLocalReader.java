@@ -50,15 +50,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /** current selection status */
     private SelectionStatus currentSelectionStatus;
 
-    /**
-     * The selector the succeeded the last time a PO was seen.
-     * <p>
-     * Use to handle the card removal process when operated with the ping method.
-     * <p>
-     * This field is accessed by {@link AbstractThreadedLocalReader}
-     */
-    protected SeSelector lastSuccessfulSelector;
-
     /** notification status flag used to avoid redundant notifications */
     private boolean presenceNotified = false;
 
@@ -211,6 +202,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * <p>
      * The SE will be notified removed only if it has been previously notified present (observable
      * reader only)
+     * 
+     * @throws NoStackTraceThrowable a exception without stack trace in order to be catched and
+     *         processed silently
      */
     protected final void cardRemoved() throws NoStackTraceThrowable {
         if (presenceNotified) {
@@ -247,9 +241,12 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * <p>
      * Gets application selection data according to
      * {@link org.eclipse.keyple.core.seproxy.SeSelector.AidSelector} attributes.
-     *
+     * 
+     * @param aidSelector the AID based selector
      * @return a ApduResponse containing the FCI or similar data output from selection application
      * @throws KeypleIOReaderException if a reader error occurs
+     * @throws KeypleChannelStateException if a channel state exception occurs
+     * @throws KeypleApplicationSelectionException if a selection exception occurs
      */
     protected abstract ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
             throws KeypleIOReaderException, KeypleChannelStateException,
@@ -330,6 +327,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return the SelectionStatus containing the actual selection result (ATR and/or FCI and the
      *         matching status flag).
      * @throws KeypleIOReaderException if a reader error occurs
+     * @throws KeypleChannelStateException if a channel state exception occurs
+     * @throws KeypleApplicationSelectionException if a selection exception occurs
      */
     protected SelectionStatus openLogicalChannel(SeSelector seSelector)
             throws KeypleIOReaderException, KeypleChannelStateException,
@@ -404,7 +403,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      *         the selection process result. When ATR or FCI are not available, they are set to null
      *         but they can't be both null at the same time.
      * @throws KeypleIOReaderException if a reader error occurs
-     * @throws KeypleApplicationSelectionException if the application selection fails
+     * @throws KeypleChannelStateException if a channel state exception occurs
+     * @throws KeypleApplicationSelectionException if a selection exception occurs
      */
     protected final SelectionStatus openLogicalChannelAndSelect(SeSelector seSelector)
             throws KeypleChannelStateException, KeypleIOReaderException,
@@ -476,7 +476,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         logicalChannelIsOpen = false;
         aidCurrentlySelected = null;
         currentSelectionStatus = null;
-        lastSuccessfulSelector = null;
     }
 
     /** ==== Protocol management =========================================== */
@@ -505,7 +504,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /**
      * Complete the current setting map with the provided map
      * 
-     * @param protocolSetting
+     * @param protocolSetting the protocol setting map
      */
     public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
         this.protocolsMap.putAll(protocolSetting);
@@ -747,8 +746,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     selectionStatus = openLogicalChannelAndSelect(seRequest.getSeSelector());
                     logger.trace("[{}] processSeRequest => Logical channel opening success.",
                             this.getName());
-                    /* Keep the current selector to handle the ping based card removal process */
-                    lastSuccessfulSelector = seRequest.getSeSelector();
                 } catch (KeypleApplicationSelectionException e) {
                     logger.trace("[{}] processSeRequest => Logical channel opening failure",
                             this.getName());

@@ -11,13 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.pcsc;
 
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.SmartReader;
 
 /**
  * The PcscReader interface provides the public elements used to manage a PC/SC reader.
  */
-public interface PcscReader extends ObservableReader, SmartReader {
+public interface PcscReader extends SmartReader {
     String SETTING_KEY_TRANSMISSION_MODE = "transmission_mode";
     String SETTING_TRANSMISSION_MODE_CONTACTS = "contacts";
     String SETTING_TRANSMISSION_MODE_CONTACTLESS = "contactless";

@@ -131,12 +131,18 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                 if (isSePresent()) {
                     logger.trace("[{}] Card is already present in reader", readerName);
                     cardInserted();
-                }
-
-                if (this instanceof SmartReader) {
-                    logger.debug("This READER is instanceof SmartReader");
-                } else {
-                    logger.debug("This READER is NOT instanceof SmartReader");
+                    if (waitForRemovalModeEnabled) {
+                        // wait as long as the PO responds (timeout is useless)
+                        logger.trace("[{}] Observe card removal", readerName);
+                        if (AbstractThreadedLocalReader.this instanceof SmartReader) {
+                            ((SmartReader) AbstractThreadedLocalReader.this)
+                                    .waitForCardAbsentNative(0);
+                        } else {
+                            waitForCardAbsentPing(0);
+                        }
+                    }
+                    // notify removal
+                    cardRemoved();
                 }
 
                 while (running) {
@@ -144,12 +150,14 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                     // we will wait for it to appear
                     if (waitForCardPresent(0)) {
                         // notify insertion
+                        logger.debug("Card inserted.");
                         cardInserted();
                         if (waitForRemovalModeEnabled) {
                             // wait as long as the PO responds (timeout is useless)
                             logger.trace("[{}] Observe card removal", readerName);
-                            if (this instanceof SmartReader) {
-                                ((SmartReader) this).waitForCardAbsentNative(0);
+                            if (AbstractThreadedLocalReader.this instanceof SmartReader) {
+                                ((SmartReader) AbstractThreadedLocalReader.this)
+                                        .waitForCardAbsentNative(0);
                             } else {
                                 waitForCardAbsentPing(0);
                             }
@@ -175,19 +183,8 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
      *        wait for ever.
      */
     private void waitForCardAbsentPing(int timeout) {
-        /*
-         * TODO remove lastSuccessfulSelector if (lastSuccessfulSelector != null) { while (true) {
-         * try { SelectionStatus selectionStatus = openLogicalChannel(lastSuccessfulSelector); if
-         * (selectionStatus != null && selectionStatus.hasMatched()) { // avoid Thread.sleep(10); }
-         * else return; } catch (KeypleIOReaderException ex) { // considered as a card removal
-         * return; } catch (KeypleChannelStateException e) { // considered as a card removal return;
-         * } catch (KeypleApplicationSelectionException e) { // considered as a card removal return;
-         * } catch (InterruptedException e) { e.printStackTrace(); } } }
-         */
         // APDU sent to check the communication with the PO
-        // byte[] apdu = new byte[] {(byte) 0x00, (byte) 0xCA, (byte) 0x00, (byte) 0x6F};
         byte[] apdu = new byte[] {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00};
-        // byte[] apdu = new byte[]{(byte)0x00, (byte)0xB2, (byte)0x00, (byte)0x00};
         // loop for ever until the PO stop responding
         try {
             while (true) {
