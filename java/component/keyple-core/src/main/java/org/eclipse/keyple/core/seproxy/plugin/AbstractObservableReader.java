@@ -270,7 +270,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * Starts the monitoring of the reader activity (especially card insertion and removal)
      * <p>
      * This abstract method has to be implemented by the class that handle the monitoring thread (
-     * e.g. {@link AbstractThreadedLocalReader}).
+     * e.g. {@link AbstractLocalReader}).
      * <p>
      * It will be called when a first observer is added (see addObserver).
      */
@@ -280,7 +280,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * Ends the monitoring of the reader activity
      * <p>
      * This abstract method has to be implemented by the class that handle the monitoring thread
-     * (e.g. {@link AbstractThreadedLocalReader}). It will be called when the observer is removed.
+     * (e.g. {@link AbstractLocalReader}). It will be called when the observer is removed.
      * <p>
      * It will be called when the last observer is removed (see removeObserver).
      *

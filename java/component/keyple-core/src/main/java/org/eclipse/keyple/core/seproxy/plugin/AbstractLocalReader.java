@@ -12,6 +12,7 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -116,9 +117,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /**
      * This method is invoked when a SE is inserted in the case of an observable reader.
      * <p>
-     * e.g. from the monitoring thread in the case of a Pcsc plugin
-     * ({@link AbstractSelectionLocalReader}) or from the NfcAdapter callback method onTagDiscovered
-     * in the case of a Android NFC plugin.
+     * e.g. from the monitoring thread in the case of a Pcsc plugin or from the NfcAdapter callback
+     * method onTagDiscovered in the case of a Android NFC plugin.
      * <p>
      * It will fire an ReaderEvent in the following cases:
      * <ul>
@@ -194,8 +194,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     }
 
     /**
-     * This method is invoked when a SE is removed in the case of an observable reader
-     * ({@link AbstractThreadedLocalReader}).
+     * This method is invoked when a SE is removed in the case of an observable reader.
      * <p>
      * It will also be invoked if isSePresent is called and at least one of the physical or logical
      * channels is still open (case of a non-observable reader)
@@ -225,8 +224,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         try {
             closePhysicalChannel();
         } catch (KeypleChannelStateException e) {
-            logger.trace("[{}] Exception occured in closeLogicalAndPhysicalChannels. Message: {}", this.getName(),
-                    e.getMessage());
+            logger.trace("[{}] Exception occured in closeLogicalAndPhysicalChannels. Message: {}",
+                    this.getName(), e.getMessage());
         }
     }
 
@@ -239,24 +238,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return ATR returned by the SE or reconstructed by the reader (contactless)
      */
     protected abstract byte[] getATR();
-
-
-    /**
-     * This abstract method must be implemented by the derived class in order to proceed to the
-     * application selection
-     * <p>
-     * Gets application selection data according to
-     * {@link org.eclipse.keyple.core.seproxy.SeSelector.AidSelector} attributes.
-     * 
-     * @param aidSelector the AID based selector
-     * @return a ApduResponse containing the FCI or similar data output from selection application
-     * @throws KeypleIOReaderException if a reader error occurs
-     * @throws KeypleChannelStateException if a channel state exception occurs
-     * @throws KeypleApplicationSelectionException if a selection exception occurs
-     */
-    protected abstract ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
-            throws KeypleIOReaderException, KeypleChannelStateException,
-            KeypleApplicationSelectionException;
 
 
     /**
@@ -399,10 +380,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * If the selection is successful, the logical channel is considered open. On the contrary, if
      * the selection fails, the logical channel remains closed.
      * <p>
-     * This method relies on the abstracts methods openLogicalChannelByAtr and
-     * openLogicalChannelByAid implemented either by {@link AbstractSelectionLocalReader} or by any
-     * other derived class that provides a SE selection mechanism (e.g. OmapiReader).
-     * 
+     *
      * @param seSelector the SE Selector: either the AID of the application to select or an ATR
      *        selection regular expression
      * @return a {@link SelectionStatus} object containing the SE ATR, the SE FCI and a flag giving
@@ -631,11 +609,11 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 requestIndex++;
                 if (lastRequestIndex == requestIndex) {
                     if (channelState == ChannelState.CLOSE_AFTER) {
-                        if ((this instanceof AbstractThreadedLocalReader)
+                        if ((this instanceof ThreadedMonitoringReader)
                                 && (((ObservableReader) this).countObservers() > 0)
-                                && ((AbstractThreadedLocalReader) this).waitForRemovalModeEnabled) {
+                                && waitForRemovalModeEnabled) {
                             /* observed reader */
-                            ((AbstractThreadedLocalReader) this).doRemovalSequence = true;
+                            doRemovalSequence = true;
                         } else {
                             /* close the physical channel if requested */
                             closePhysicalChannel();
@@ -666,10 +644,10 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         SeResponse seResponse = processSeRequestLogical(seRequest);
 
         if (channelState == ChannelState.CLOSE_AFTER) {
-            if ((this instanceof AbstractThreadedLocalReader)
+            if ((this instanceof ThreadedMonitoringReader)
                     && (((ObservableReader) this).countObservers() > 0)
-                    && ((AbstractThreadedLocalReader) this).waitForRemovalModeEnabled) {
-                ((AbstractThreadedLocalReader) this).doRemovalSequence = true;
+                    && waitForRemovalModeEnabled) {
+                doRemovalSequence = true;
             } else {
                 /* close the physical channel if requested */
                 closePhysicalChannel();
@@ -936,4 +914,251 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         this.defaultSelectionsRequest = (DefaultSelectionsRequest) defaultSelectionsRequest;
         this.notificationMode = notificationMode;
     };
+
+    /* Monitoring thread management methods */
+    private EventThread thread;
+    private static final AtomicInteger threadCount = new AtomicInteger();
+    protected boolean waitForRemovalModeEnabled = false;
+    protected boolean doRemovalSequence = false;
+
+    /**
+     * Thread wait timeout in ms
+     */
+    protected long threadWaitTimeout;
+
+    /**
+     * Start the monitoring thread.
+     * <p>
+     * The thread is created if it does not already exist
+     */
+    @Override
+    protected void startObservation() {
+        thread = new EventThread(this.getPluginName(), this.getName());
+        thread.start();
+    }
+
+    /**
+     * Terminate the monitoring thread
+     */
+    @Override
+    protected void stopObservation() {
+        if (thread != null) {
+            thread.end();
+        }
+    }
+
+    /**
+     * setter to fix the wait timeout in ms.
+     *
+     * @param timeout Timeout to use
+     */
+    protected final void setThreadWaitTimeout(long timeout) {
+        this.threadWaitTimeout = timeout;
+    }
+
+    /**
+     * Waits for a card. Returns true if a card is detected before the end of the provided timeout.
+     * <p>
+     * This method must be implemented by the plugin's reader class.
+     * <p>
+     * Returns false if no card detected within the delay.
+     *
+     * @param timeout the delay in millisecond we wait for a card insertion, a value of zero means
+     *        wait for ever.
+     * @return presence status
+     * @throws NoStackTraceThrowable a exception without stack trace in order to be catched and
+     *         processed silently
+     */
+    protected abstract boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable;
+
+
+
+    /**
+     * Thread in charge of reporting live events
+     */
+    private class EventThread extends Thread {
+        /**
+         * Plugin name
+         */
+        private final String pluginName;
+
+        /**
+         * Reader that we'll report about
+         */
+        private final String readerName;
+
+
+        /**
+         * If the thread should be kept a alive
+         */
+        private volatile boolean running = true;
+
+        /**
+         * Constructor
+         *
+         * @param pluginName name of the plugin that instantiated the reader
+         * @param readerName name of the reader who owns this thread
+         */
+        EventThread(String pluginName, String readerName) {
+            super("observable-reader-events-" + threadCount.addAndGet(1));
+            setDaemon(true);
+            this.pluginName = pluginName;
+            this.readerName = readerName;
+        }
+
+        /**
+         * Marks the thread as one that should end when the last cardWaitTimeout occurs
+         */
+        void end() {
+            running = false;
+            this.interrupt(); // exit io wait if needed
+        }
+
+        public void run() {
+            try {
+                // First thing we'll do is to notify that a card was inserted if one is already
+                // present.
+                if (isSePresent()) {
+                    logger.trace("[{}] Card is already present in reader", readerName);
+                    cardInserted();
+                    if (waitForRemovalModeEnabled) {
+                        // wait as long as the PO responds (timeout is useless)
+                        logger.trace("[{}] Observe card removal", readerName);
+                        if (this instanceof SmartRemovalReader) {
+                            ((SmartRemovalReader) this).waitForCardAbsentNative(0);
+                        } else {
+                            waitForCardAbsentPing(0);
+                        }
+                    }
+                    // notify removal
+                    cardRemoved();
+                }
+
+                while (running) {
+                    logger.trace("[{}] observe card insertion", readerName);
+                    // we will wait for it to appear
+                    if (waitForCardPresent(0)) {
+                        // notify insertion
+                        logger.debug("Card inserted.");
+                        cardInserted();
+                        if (waitForRemovalModeEnabled && doRemovalSequence) {
+                            doRemovalSequence = false;
+                            // wait as long as the PO responds (timeout is useless)
+                            logger.trace("[{}] Observe card removal", readerName);
+                            if (AbstractLocalReader.this instanceof SmartRemovalReader) {
+                                ((SmartRemovalReader) AbstractLocalReader.this)
+                                        .waitForCardAbsentNative(0);
+                            } else {
+                                waitForCardAbsentPing(0);
+                            }
+                        }
+                        // notify removal
+                        cardRemoved();
+                    }
+                }
+            } catch (NoStackTraceThrowable e) {
+                logger.trace("[{}] Exception occurred in monitoring thread: {}", readerName,
+                        e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Wait for the card to disappear.
+     * <p>
+     * The method used to do this is to replay, while the physical channel is still open, the
+     * request that made the current selection until the PO no longer responds.
+     *
+     * @param timeout the delay in millisecond we wait for a card insertion, a value of zero means
+     *        wait for ever.
+     */
+    private void waitForCardAbsentPing(int timeout) {
+        // APDU sent to check the communication with the PO
+        byte[] apdu = new byte[] {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+        // loop for ever until the PO stop responding
+        try {
+            while (true) {
+                byte[] rapdu = new byte[0];
+                rapdu = transmitApdu(apdu);
+                // sleep a little to reduce the cpu consumption of the current thread
+                Thread.sleep(50);
+            }
+        } catch (KeypleIOReaderException e) {
+            // log only unexpected exceptions, else exit silently
+            logger.trace("[{}] Exception occured in waitForCardAbsentPing. Message: {}",
+                    this.getName(), e.getMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        logger.debug("Card removed.");
+    }
+
+    public void setWaitForRemovalMode(boolean waitForRemovalModeEnabled) {
+        this.waitForRemovalModeEnabled = waitForRemovalModeEnabled;
+    }
+
+
+    /**
+     * Called when the class is unloaded. Attempt to do a clean exit.
+     *
+     * @throws Throwable a generic exception
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        thread.end();
+        thread = null;
+        logger.trace("[{}] Observable Reader thread ended.", this.getName());
+        super.finalize();
+    }
+
+    /* Selection management */
+
+    /**
+     * Executes the selection application command and returns the requested data according to
+     * AidSelector attributes.
+     *
+     * @param aidSelector the selection parameters
+     * @return the response to the select application command
+     * @throws KeypleIOReaderException if a reader error occurs
+     */
+    protected ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
+            throws KeypleIOReaderException {
+        ApduResponse fciResponse;
+        final byte aid[] = aidSelector.getAidToSelect().getValue();
+        if (aid == null) {
+            throw new IllegalArgumentException("AID must not be null for an AidSelector.");
+        }
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] openLogicalChannel => Select Application with AID = {}",
+                    this.getName(), ByteArrayUtil.toHex(aid));
+        }
+        /*
+         * build a get response command the actual length expected by the SE in the get response
+         * command is handled in transmitApdu
+         */
+        byte[] selectApplicationCommand = new byte[6 + aid.length];
+        selectApplicationCommand[0] = (byte) 0x00; // CLA
+        selectApplicationCommand[1] = (byte) 0xA4; // INS
+        selectApplicationCommand[2] = (byte) 0x04; // P1: select by name
+        // P2: b0,b1 define the File occurrence, b2,b3 define the File control information
+        // we use the bitmask defined in the respective enums
+        selectApplicationCommand[3] = (byte) (aidSelector.getFileOccurrence().getIsoBitMask()
+                | aidSelector.getFileControlInformation().getIsoBitMask());
+        selectApplicationCommand[4] = (byte) (aid.length); // Lc
+        System.arraycopy(aid, 0, selectApplicationCommand, 5, aid.length); // data
+        selectApplicationCommand[5 + aid.length] = (byte) 0x00; // Le
+
+        /*
+         * we use here processApduRequest to manage case 4 hack. The successful status codes list
+         * for this command is provided.
+         */
+        fciResponse = processApduRequest(new ApduRequest("Internal Select Application",
+                selectApplicationCommand, true, aidSelector.getSuccessfulSelectionStatusCodes()));
+
+        if (!fciResponse.isSuccessful()) {
+            logger.trace("[{}] openLogicalChannel => Application Selection failed. SELECTOR = {}",
+                    this.getName(), aidSelector);
+        }
+        return fciResponse;
+    }
 }

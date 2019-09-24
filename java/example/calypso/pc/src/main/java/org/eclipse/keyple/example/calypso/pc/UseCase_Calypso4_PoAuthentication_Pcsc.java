@@ -82,6 +82,8 @@ public class UseCase_Calypso4_PoAuthentication_Pcsc {
             throw new IllegalStateException("Bad PO or SAM reader setup");
         }
 
+        ((CalypsoSam) samResource.getMatchingSe()).getSerialNumber();
+
         logger.info("=============== UseCase Calypso #4: Po Authentication ==================");
         logger.info("= PO Reader  NAME = {}", poReader.getName());
         logger.info("= SAM Reader  NAME = {}", samResource.getSeReader().getName());

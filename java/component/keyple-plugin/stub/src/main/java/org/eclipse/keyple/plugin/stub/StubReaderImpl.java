@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * Simulates communication with a {@link StubSecureElement}. StubReader is observable, it raises
  * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent} : SE_INSERTED, SE_REMOVED
  */
-final class StubReaderImpl extends AbstractThreadedLocalReader implements StubReader {
+final class StubReaderImpl extends AbstractLocalReader implements StubReader {
 
     private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
@@ -202,8 +202,8 @@ final class StubReaderImpl extends AbstractThreadedLocalReader implements StubRe
     }
 
     /**
-     * Defined in the {@link org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader} interface, this method is
-     * called by the monitoring thread to check SE absence
+     * Defined in the {@link org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader} interface,
+     * this method is called by the monitoring thread to check SE absence
      * 
      * @param timeout the delay in millisecond we wait for a card withdrawing
      * @return true if the SE is absent

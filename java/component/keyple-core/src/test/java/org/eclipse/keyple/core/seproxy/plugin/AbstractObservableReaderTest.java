@@ -127,6 +127,11 @@ public class AbstractObservableReaderTest extends CoreBaseTest {
             }
 
             @Override
+            protected boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable {
+                return false;
+            }
+
+            @Override
             protected void closePhysicalChannel() throws KeypleChannelStateException {
 
             }

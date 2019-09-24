@@ -16,14 +16,14 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscReader {
+final class PcscReaderImpl extends AbstractLocalReader implements PcscReader {
 
     private static final Logger logger = LoggerFactory.getLogger(PcscReaderImpl.class);
 
@@ -117,6 +117,7 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
 
     /**
      * Wait for the card absent event from smartcard.io
+     * 
      * @param timeout waiting time in ms
      * @return true if the card is removed within the delay
      */
