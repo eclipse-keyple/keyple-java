@@ -27,6 +27,7 @@ public abstract class AbstractMatchingSe {
 
     /**
      * Constructor.
+     * 
      * @param selectionResponse the response from the SE
      * @param transmissionMode the transmission mode, contact or contactless
      * @param extraInfo information string

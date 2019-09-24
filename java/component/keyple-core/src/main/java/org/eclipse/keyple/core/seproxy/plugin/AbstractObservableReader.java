@@ -256,7 +256,8 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * This method is handled by transmit.
      *
      * @param seRequest the {@link SeRequest} to be processed
-     * @param channelState a flag indicating if the channel has to be closed after the processing of the {@link SeRequest}
+     * @param channelState a flag indicating if the channel has to be closed after the processing of
+     *        the {@link SeRequest}
      * @return the {@link SeResponse} (responses to the {@link SeRequest})
      * @throws KeypleReaderException if reader error occurs
      */
