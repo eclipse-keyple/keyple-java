@@ -27,6 +27,7 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
     private EventThread thread;
     private static final AtomicInteger threadCount = new AtomicInteger();
     protected boolean waitForRemovalModeEnabled = false;
+    protected boolean doRemovalSequence = false;
     /**
      * Thread wait timeout in ms
      */
@@ -134,8 +135,8 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                     if (waitForRemovalModeEnabled) {
                         // wait as long as the PO responds (timeout is useless)
                         logger.trace("[{}] Observe card removal", readerName);
-                        if (AbstractThreadedLocalReader.this instanceof SmartReader) {
-                            ((SmartReader) AbstractThreadedLocalReader.this)
+                        if (AbstractThreadedLocalReader.this instanceof SmartRemovalReader) {
+                            ((SmartRemovalReader) AbstractThreadedLocalReader.this)
                                     .waitForCardAbsentNative(0);
                         } else {
                             waitForCardAbsentPing(0);
@@ -152,11 +153,12 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
                         // notify insertion
                         logger.debug("Card inserted.");
                         cardInserted();
-                        if (waitForRemovalModeEnabled) {
+                        if (waitForRemovalModeEnabled && doRemovalSequence) {
+                            doRemovalSequence = false;
                             // wait as long as the PO responds (timeout is useless)
                             logger.trace("[{}] Observe card removal", readerName);
-                            if (AbstractThreadedLocalReader.this instanceof SmartReader) {
-                                ((SmartReader) AbstractThreadedLocalReader.this)
+                            if (AbstractThreadedLocalReader.this instanceof SmartRemovalReader) {
+                                ((SmartRemovalReader) AbstractThreadedLocalReader.this)
                                         .waitForCardAbsentNative(0);
                             } else {
                                 waitForCardAbsentPing(0);
@@ -202,6 +204,13 @@ public abstract class AbstractThreadedLocalReader extends AbstractSelectionLocal
         }
         logger.debug("Card removed.");
     }
+
+
+    @Override
+    public void setWaitForRemovalMode(boolean waitForRemovalModeEnabled) {
+        this.waitForRemovalModeEnabled = waitForRemovalModeEnabled;
+    }
+
 
     /**
      * Called when the class is unloaded. Attempt to do a clean exit.

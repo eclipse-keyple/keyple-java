@@ -11,9 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.stub;
 
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader;
 
-public interface StubReader extends ObservableReader {
+public interface StubReader extends SmartRemovalReader {
 
     String ALLOWED_PARAMETER_1 = "parameter1";
     String ALLOWED_PARAMETER_2 = "parameter2";

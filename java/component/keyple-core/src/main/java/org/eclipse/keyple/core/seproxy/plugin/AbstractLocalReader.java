@@ -185,8 +185,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     presenceNotified = true;
                 }
             } catch (KeypleReaderException e) {
-                /* the last transmission failed, close the logical channel */
-                closeLogicalChannel();
+                /* the last transmission failed, close the logical and physical channels */
+                closeLogicalAndPhysicalChannels();
                 e.printStackTrace();
                 // in this case the card has been removed or not read correctly, do not throw event
             }
@@ -212,17 +212,23 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     ReaderEvent.EventType.SE_REMOVAL, null));
             presenceNotified = false;
         }
+        closeLogicalAndPhysicalChannels();
+    }
+
+    /** ==== Physical and logical channels management ====================== */
+
+    /**
+     * Close both logical and physical channels
+     */
+    private void closeLogicalAndPhysicalChannels() {
         closeLogicalChannel();
         try {
             closePhysicalChannel();
         } catch (KeypleChannelStateException e) {
-            logger.trace("[{}] Exception occured in waitForCardAbsent. Message: {}", this.getName(),
+            logger.trace("[{}] Exception occured in closeLogicalAndPhysicalChannels. Message: {}", this.getName(),
                     e.getMessage());
-            throw new NoStackTraceThrowable();
         }
     }
-
-    /** ==== Physical and logical channels management ====================== */
 
     /**
      * This abstract method must be implemented by the derived class in order to provide the SE ATR
@@ -589,7 +595,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                             request);
                     SeResponse response = null;
                     try {
-                        response = processSeRequestLogical(request, channelState);
+                        response = processSeRequestLogical(request);
                     } catch (KeypleReaderException ex) {
                         /*
                          * The process has been interrupted. We launch a KeypleReaderException with
@@ -625,15 +631,15 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 requestIndex++;
                 if (lastRequestIndex == requestIndex) {
                     if (channelState == ChannelState.CLOSE_AFTER) {
-                        /*
-                         * For the processing of the last SeRequest with a protocolFlag matching the
-                         * SE reader status, if the logical channel doesn't require to be kept open,
-                         * then the physical channel is closed.
-                         */
-                        closePhysicalChannel();
-
-                        logger.debug("[{}] processSeRequestSet => Closing of the physical channel.",
-                                this.getName());
+                        if ((this instanceof AbstractThreadedLocalReader)
+                                && (((ObservableReader) this).countObservers() > 0)
+                                && ((AbstractThreadedLocalReader) this).waitForRemovalModeEnabled) {
+                            /* observed reader */
+                            ((AbstractThreadedLocalReader) this).doRemovalSequence = true;
+                        } else {
+                            /* close the physical channel if requested */
+                            closePhysicalChannel();
+                        }
                     }
                 }
             }
@@ -657,11 +663,17 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     protected final SeResponse processSeRequest(SeRequest seRequest, ChannelState channelState)
             throws IllegalStateException, KeypleReaderException {
 
-        SeResponse seResponse = processSeRequestLogical(seRequest, channelState);
+        SeResponse seResponse = processSeRequestLogical(seRequest);
 
-        /* close the physical channel if requested */
         if (channelState == ChannelState.CLOSE_AFTER) {
-            closePhysicalChannel();
+            if ((this instanceof AbstractThreadedLocalReader)
+                    && (((ObservableReader) this).countObservers() > 0)
+                    && ((AbstractThreadedLocalReader) this).waitForRemovalModeEnabled) {
+                ((AbstractThreadedLocalReader) this).doRemovalSequence = true;
+            } else {
+                /* close the physical channel if requested */
+                closePhysicalChannel();
+            }
         }
 
         return seResponse;
@@ -677,12 +689,11 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * The logical channel is closed when requested.
      *
      * @param seRequest the {@link SeRequest} to be sent
-     * @param channelState indicates if the channel has to be closed at the end of the processing
      * @return seResponse
      * @throws IllegalStateException
      * @throws KeypleReaderException
      */
-    private SeResponse processSeRequestLogical(SeRequest seRequest, ChannelState channelState)
+    private SeResponse processSeRequestLogical(SeRequest seRequest)
             throws IllegalStateException, KeypleReaderException {
         boolean previouslyOpen = true;
         SelectionStatus selectionStatus = null;
@@ -791,17 +802,12 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                      */
                     logger.debug(
                             "The process has been interrupted, collect Apdu responses collected so far");
-                    closeLogicalChannel();
+                    closeLogicalAndPhysicalChannels();
                     ex.setSeResponse(new SeResponse(false, previouslyOpen, selectionStatus,
                             apduResponseList));
                     throw ex;
                 }
             }
-        }
-
-        /* close the logical channel if requested */
-        if (channelState == ChannelState.CLOSE_AFTER) {
-            closeLogicalChannel();
         }
 
         return new SeResponse(isLogicalChannelOpen(), previouslyOpen, selectionStatus,

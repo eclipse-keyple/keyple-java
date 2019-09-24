@@ -115,8 +115,13 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
         }
     }
 
+    /**
+     * Wait for the card absent event from smartcard.io
+     * @param timeout waiting time in ms
+     * @return true if the card is removed within the delay
+     */
     @Override
-    public boolean waitForCardAbsentNative(long timeout) throws NoStackTraceThrowable {
+    public boolean waitForCardAbsentNative(long timeout) {
         try {
             if (terminal.waitForCardAbsent(timeout)) {
                 return true;
@@ -126,7 +131,7 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
         } catch (CardException e) {
             logger.trace("[{}] Exception occured in waitForCardAbsentNative. Message: {}",
                     this.getName(), e.getMessage());
-            throw new NoStackTraceThrowable();
+            return false;
         }
     }
 
@@ -408,10 +413,5 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
                 return TransmissionMode.CONTACTS;
             }
         }
-    }
-
-    @Override
-    public void setWaitForRemovalMode(boolean waitForRemovalModeEnabled) {
-        this.waitForRemovalModeEnabled = waitForRemovalModeEnabled;
     }
 }
