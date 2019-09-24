@@ -57,7 +57,8 @@ public final class ReadRecordsRespPars extends AbstractPoResponseParser {
 
     /**
      * Instantiates a new ReadRecordsRespPars.
-     *
+     * 
+     * @param apduResponse the response from the PO
      * @param recordNumber the record number
      * @param readDataStructure the type of content in the response to parse
      */

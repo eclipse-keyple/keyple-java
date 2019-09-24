@@ -143,9 +143,11 @@ public class SamResourceManager {
      *
      * @param allocationMode the blocking/non-blocking mode
      * @param samIdentifier the targeted SAM identifier
+     * @return a SAM resource
+     * @throws KeypleReaderException if a reader error occurs
      */
     public SamResource allocateSamResource(AllocationMode allocationMode,
-            SamIdentifier samIdentifier) throws InterruptedException, KeypleReaderException {
+            SamIdentifier samIdentifier) throws KeypleReaderException {
         long maxBlockingDate = System.currentTimeMillis() + MAX_BLOCKING_TIME;
         boolean noSamResourceLogged = false;
         logger.debug("Allocating SAM reader channel...");
@@ -183,7 +185,12 @@ public class SamResourceManager {
                     logger.trace("No SAM resources available at the moment.");
                     noSamResourceLogged = true;
                 }
-                Thread.sleep(10);
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // set interrupt flag
+                    logger.error("Interrupt exception in Thread.sleep.");
+                }
                 if (System.currentTimeMillis() >= maxBlockingDate) {
                     logger.error("The allocation process failed. Timeout {} sec exceeded .",
                             (MAX_BLOCKING_TIME / 100.0));
