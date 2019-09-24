@@ -1042,7 +1042,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                                 waitForCardAbsentPing(0);
                             }
                         }
-                        // notify removal
+                        // handle removal (notify if needed)
                         cardRemoved();
                     }
                 }

@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -183,10 +182,9 @@ final class StubReaderImpl extends AbstractLocalReader implements StubReader {
      * 
      * @param timeout the delay in millisecond we wait for a card insertion
      * @return true if the SE is present
-     * @throws NoStackTraceThrowable in case of unplugging the reader
      */
     @Override
-    protected boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable {
+    public boolean waitForCardPresent(long timeout) {
         for (int i = 0; i < timeout / 10; i++) {
             if (checkSePresence()) {
                 return true;
