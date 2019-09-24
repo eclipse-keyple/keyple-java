@@ -42,6 +42,8 @@ public final class AppendRecordRespPars extends AbstractPoResponseParser {
 
     /**
      * Instantiates a new AppendRecordRespPars.
+     * 
+     * @param response the response from the PO
      */
     public AppendRecordRespPars(ApduResponse response) {
         super(response);
