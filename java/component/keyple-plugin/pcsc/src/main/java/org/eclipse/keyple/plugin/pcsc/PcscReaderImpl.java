@@ -105,13 +105,13 @@ final class PcscReaderImpl extends AbstractLocalReader implements PcscReader {
     }
 
     @Override
-    protected boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable {
+    public boolean waitForCardPresent(long timeout) {
         try {
             return terminal.waitForCardPresent(timeout);
         } catch (CardException e) {
             logger.trace("[{}] Exception occured in waitForCardPresent. Message: {}",
                     this.getName(), e.getMessage());
-            throw new NoStackTraceThrowable();
+            return false;
         }
     }
 

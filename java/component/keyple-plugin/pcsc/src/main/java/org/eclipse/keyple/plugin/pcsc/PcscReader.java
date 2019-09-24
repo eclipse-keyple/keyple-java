@@ -11,13 +11,15 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.pcsc;
 
+import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
 import org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader;
 import org.eclipse.keyple.core.seproxy.plugin.ThreadedMonitoringReader;
 
 /**
  * The PcscReader interface provides the public elements used to manage a PC/SC reader.
  */
-public interface PcscReader extends SmartRemovalReader, ThreadedMonitoringReader {
+public interface PcscReader
+        extends SmartInsertionReader, SmartRemovalReader, ThreadedMonitoringReader {
     String SETTING_KEY_TRANSMISSION_MODE = "transmission_mode";
     String SETTING_TRANSMISSION_MODE_CONTACTS = "contacts";
     String SETTING_TRANSMISSION_MODE_CONTACTLESS = "contactless";
