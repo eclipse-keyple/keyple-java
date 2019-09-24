@@ -102,6 +102,7 @@ public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<
      * listed. Creates and returns a new
      * {@link org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader} if not.
      *
+     * @param name the reader name
      * @return the list of AbstractObservableReader objects.
      * @throws KeypleReaderException if a reader error occurs
      */

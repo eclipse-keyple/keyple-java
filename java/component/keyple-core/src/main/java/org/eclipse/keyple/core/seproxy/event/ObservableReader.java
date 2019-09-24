@@ -57,6 +57,9 @@ public interface ObservableReader extends SeReader {
 
         /**
          * This method can be used for reverse lookup purpose
+         *
+         * @param name the enum name
+         * @return the corresponding enum
          */
         public static NotificationMode get(String name) {
             return lookup.get(name);
