@@ -166,6 +166,8 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     } else {
                         /* the SE did not match, close the logical channel */
                         closeLogicalChannel();
+                        /* request the removal sequence if enabled */
+                        doRemovalSequence = true;
                     }
                 } else {
                     if (aSeMatched) {
@@ -957,23 +959,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     }
 
     /**
-     * Waits for a card. Returns true if a card is detected before the end of the provided timeout.
-     * <p>
-     * This method must be implemented by the plugin's reader class.
-     * <p>
-     * Returns false if no card detected within the delay.
-     *
-     * @param timeout the delay in millisecond we wait for a card insertion, a value of zero means
-     *        wait for ever.
-     * @return presence status
-     * @throws NoStackTraceThrowable a exception without stack trace in order to be catched and
-     *         processed silently
-     */
-    protected abstract boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable;
-
-
-
-    /**
      * Thread in charge of reporting live events
      */
     private class EventThread extends Thread {
@@ -1016,6 +1001,11 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
 
         public void run() {
             try {
+                if (!(AbstractLocalReader.this instanceof SmartInsertionReader)) {
+                    throw new IllegalStateException(
+                            "An observed reader must implement the SmartInsertionReader "
+                                    + "interface.");
+                }
                 // First thing we'll do is to notify that a card was inserted if one is already
                 // present.
                 if (isSePresent()) {
@@ -1024,7 +1014,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     if (waitForRemovalModeEnabled) {
                         // wait as long as the PO responds (timeout is useless)
                         logger.trace("[{}] Observe card removal", readerName);
-                        if (this instanceof SmartRemovalReader) {
+                        if (AbstractLocalReader.this instanceof SmartRemovalReader) {
                             ((SmartRemovalReader) this).waitForCardAbsentNative(0);
                         } else {
                             waitForCardAbsentPing(0);
@@ -1037,7 +1027,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 while (running) {
                     logger.trace("[{}] observe card insertion", readerName);
                     // we will wait for it to appear
-                    if (waitForCardPresent(0)) {
+                    if (((SmartInsertionReader) AbstractLocalReader.this).waitForCardPresent(0)) {
                         // notify insertion
                         logger.debug("Card inserted.");
                         cardInserted();
