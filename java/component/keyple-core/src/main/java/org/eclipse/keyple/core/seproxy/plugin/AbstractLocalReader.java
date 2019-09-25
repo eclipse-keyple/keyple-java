@@ -611,7 +611,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 requestIndex++;
                 if (lastRequestIndex == requestIndex) {
                     if (channelState == ChannelState.CLOSE_AFTER) {
-                        if ((this instanceof ThreadedMonitoringReader)
+                        if (!(this instanceof SmartRemovalReader)
                                 && (((ObservableReader) this).countObservers() > 0)
                                 && waitForRemovalModeEnabled) {
                             /* observed reader */
@@ -646,7 +646,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         SeResponse seResponse = processSeRequestLogical(seRequest);
 
         if (channelState == ChannelState.CLOSE_AFTER) {
-            if ((this instanceof ThreadedMonitoringReader)
+            if (!(this instanceof SmartRemovalReader)
                     && (((ObservableReader) this).countObservers() > 0)
                     && waitForRemovalModeEnabled) {
                 doRemovalSequence = true;
@@ -1062,7 +1062,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @param timeout the delay in millisecond we wait for a card insertion, a value of zero means
      *        wait for ever.
      */
-    private void waitForCardAbsentPing(int timeout) {
+    protected void waitForCardAbsentPing(int timeout) {
         // APDU sent to check the communication with the PO
         byte[] apdu = new byte[] {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x00};
         // loop for ever until the PO stop responding

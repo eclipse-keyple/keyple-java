@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.nfc.NfcAdapter;
 
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
 
 public interface AndroidNfcReader extends ObservableReader, NfcAdapter.ReaderCallback  {
     /**
