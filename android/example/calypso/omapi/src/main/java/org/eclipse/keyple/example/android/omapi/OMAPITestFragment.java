@@ -26,6 +26,7 @@ import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginInstanciationException;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -50,6 +51,7 @@ public class OMAPITestFragment extends Fragment {
     private static final String TAG = OMAPITestFragment.class.getSimpleName();
 
     private TextView mText;
+    private Boolean pluginRegistered = false;
 
     public static OMAPITestFragment newInstance() {
         return new OMAPITestFragment();
@@ -71,7 +73,13 @@ public class OMAPITestFragment extends Fragment {
         SeProxyService seProxyService = SeProxyService.getInstance();
 
         /* Assign PcscPlugin to the SeProxyService */
-        seProxyService.registerPlugin(new AndroidOmapiPluginFactory());
+        try {
+            seProxyService.registerPlugin(new AndroidOmapiPluginFactory(this.getActivity().getApplicationContext()));
+            pluginRegistered = true;
+
+        } catch (KeyplePluginInstanciationException e) {
+            Log.e(TAG, "Error while instanciating plugin OMAPI " + e.getMessage());
+        }
     }
 
     /**
@@ -100,24 +108,29 @@ public class OMAPITestFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+            if(pluginRegistered){
         try {
-            SortedSet<SeReader> readers = SeProxyService.getInstance()
-                    .getPlugin(AndroidOmapiPlugin.PLUGIN_NAME).getReaders();
+                SortedSet<SeReader> readers = SeProxyService.getInstance()
+                        .getPlugin(AndroidOmapiPlugin.PLUGIN_NAME).getReaders();
 
-            if (readers == null || readers.size() < 1) {
-                mText.append("\nNo readers found in OMAPI Keyple Plugin");
-                mText.append("\nTry to reload..");
-            } else {
-                for (SeReader aReader : readers) {
-                    Log.d(TAG, "Launching tests for reader : " + aReader.getName());
-                    runHoplinkSimpleRead(aReader);
+                if (readers == null || readers.size() < 1) {
+                    mText.append("\nNo readers found in OMAPI Keyple Plugin");
+                    mText.append("\nTry to reload..");
+                } else {
+                    for (SeReader aReader : readers) {
+                        Log.d(TAG, "Launching tests for reader : " + aReader.getName());
+                        runHoplinkSimpleRead(aReader);
+                    }
+
                 }
 
-            }
 
         } catch (KeypleReaderException | KeyplePluginNotFoundException e) {
             e.printStackTrace();
         }
+            }else{
+                mText.append("\nImpossible to setup OMAPI plugin");
+            }
 
     }
 

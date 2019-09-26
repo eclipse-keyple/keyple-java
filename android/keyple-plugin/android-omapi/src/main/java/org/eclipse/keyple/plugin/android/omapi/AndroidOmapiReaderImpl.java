@@ -46,8 +46,6 @@ final class AndroidOmapiReaderImpl extends AbstractStaticReader implements Andro
     private static final Logger logger =
             LoggerFactory.getLogger(AndroidOmapiReaderImpl.class);
 
-    private static final String TAG = AndroidOmapiReaderImpl.class.getSimpleName();
-
     private Reader omapiReader;
     private Session session = null;
     private Channel openChannel = null;
@@ -61,13 +59,13 @@ final class AndroidOmapiReaderImpl extends AbstractStaticReader implements Andro
 
     @Override
     public Map<String, String> getParameters() {
-        Log.w(TAG, "No parameters are supported by AndroidOmapiReaderImpl");
+        logger.warn(  "No parameters are supported by AndroidOmapiReaderImpl");
         return parameters;
     }
 
     @Override
     public void setParameter(String key, String value) {
-        Log.w(TAG, "No parameters are supported by AndroidOmapiReaderImpl");
+        logger.warn(  "No parameters are supported by AndroidOmapiReaderImpl");
         parameters.put(key, value);
     }
 
@@ -97,7 +95,7 @@ final class AndroidOmapiReaderImpl extends AbstractStaticReader implements Andro
     @Override
     protected byte[] getATR() {
         if(session != null) {
-            Log.i(TAG, "Retrieveing ATR from session...");
+            logger.info(  "Retrieveing ATR from session...");
             return session.getATR();
         }
         else {
@@ -195,8 +193,8 @@ final class AndroidOmapiReaderImpl extends AbstractStaticReader implements Andro
     @Override
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         // Initialization
-        Log.d(TAG, "Data Length to be sent to tag : " + apduIn.length);
-        Log.d(TAG, "Data in : " + ByteArrayUtil.toHex(apduIn));
+        logger.debug(  "Data Length to be sent to tag : " + apduIn.length);
+        logger.debug( "Data in : " + ByteArrayUtil.toHex(apduIn));
         byte[] data = apduIn;
         byte[] dataOut = new byte[0];
         try {
@@ -206,7 +204,7 @@ final class AndroidOmapiReaderImpl extends AbstractStaticReader implements Andro
             throw new KeypleIOReaderException("Error while transmitting APDU", e);
         }
         byte[] out = dataOut;
-        Log.d(TAG, "Data out : " + ByteArrayUtil.toHex(out));
+        logger.debug( "Data out : " + ByteArrayUtil.toHex(out));
         return out;
     }
 

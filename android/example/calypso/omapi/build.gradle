@@ -29,11 +29,11 @@ allprojects {
     }
 
     repositories {
+        mavenLocal()
         //to import keyple snapshots
         maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
         //to import keyple releases
         maven { url 'https://oss.sonatype.org/content/repositories/releases' }
-        mavenLocal()
         mavenCentral()
         google()
         jcenter()
