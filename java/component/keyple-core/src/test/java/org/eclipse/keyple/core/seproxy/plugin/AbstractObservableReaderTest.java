@@ -158,7 +158,7 @@ public class AbstractObservableReaderTest extends CoreBaseTest {
             }
 
             @Override
-            protected ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
+            protected ApduResponse processExplicitAidSelection(SeSelector.AidSelector aidSelector)
                     throws KeypleIOReaderException {
                 return null;
             }

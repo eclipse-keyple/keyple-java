@@ -11,5 +11,13 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-public interface SelectionReader {
+import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.message.ApduResponse;
+
+/**
+ * Interface implemented by readers able to handle natively the SE selection process (e.g. Android
+ * OMAPI readers).
+ */
+public interface SmartSelectionReader {
+    ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector);
 }

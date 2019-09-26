@@ -43,8 +43,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /** logical channel status flag */
     private boolean logicalChannelIsOpen = false;
 
-    private boolean forceGetDataFlag = false;
-
     /** current AID if any */
     private SeSelector.AidSelector.IsoAid aidCurrentlySelected;
 
@@ -164,8 +162,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                                 new DefaultSelectionsResponse(seResponseList)));
                         presenceNotified = true;
                     } else {
-                        /* the SE did not match, close the logical channel */
-                        closeLogicalChannel();
                         /* request the removal sequence if enabled */
                         doRemovalSequence = true;
                     }
@@ -246,55 +242,30 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * This method is dedicated to the case where no FCI data is available in return for the select
      * command.
      * <p>
-     * We force here selection without response and proceed to a get data command to get the
-     * expected FCI.
-     * 
-     * @param aidSelector
+     *
+     * @param aidSelector used to retrieve the successful status codes from the main AidSelector
      * @return a ApduResponse containing the FCI
      */
-    private ApduResponse openChannelForAidHackGetData(SeSelector.AidSelector aidSelector)
-            throws KeypleApplicationSelectionException, KeypleIOReaderException,
-            KeypleChannelStateException {
-        SeSelector.AidSelector noResponseAidSelector = new SeSelector.AidSelector(
-                aidSelector.getAidToSelect(), aidSelector.getSuccessfulSelectionStatusCodes(),
-                aidSelector.getFileOccurrence(),
-                SeSelector.AidSelector.FileControlInformation.NO_RESPONSE);
-        ApduResponse fciResponse = openChannelForAid(noResponseAidSelector);
-        if (fciResponse.isSuccessful()) {
-            byte[] getDataCommand = new byte[4];
-            getDataCommand[0] = (byte) 0x00; // CLA
-            getDataCommand[1] = (byte) 0xCA; // INS
-            getDataCommand[2] = (byte) 0x00; // P1: always 0
-            getDataCommand[3] = (byte) 0x6F; // P2: 0x6F FCI for the current DF
+    private ApduResponse selectionGetData(SeSelector.AidSelector aidSelector)
+            throws KeypleIOReaderException {
+        ApduResponse fciResponse;
+        byte[] getDataCommand = new byte[4];
+        getDataCommand[0] = (byte) 0x00; // CLA
+        getDataCommand[1] = (byte) 0xCA; // INS
+        getDataCommand[2] = (byte) 0x00; // P1: always 0
+        getDataCommand[3] = (byte) 0x6F; // P2: 0x6F FCI for the current DF
 
-            /*
-             * The successful status codes list for this command is provided.
-             */
-            fciResponse = processApduRequest(new ApduRequest("Internal Get Data", getDataCommand,
-                    false, aidSelector.getSuccessfulSelectionStatusCodes()));
+        /*
+         * The successful status codes list for this command is provided.
+         */
+        fciResponse = processApduRequest(new ApduRequest("Internal Get Data", getDataCommand, false,
+                aidSelector.getSuccessfulSelectionStatusCodes()));
 
-            if (!fciResponse.isSuccessful()) {
-                logger.trace("[{}] openChannelForAidHackGetData => Get data failed. SELECTOR = {}",
-                        this.getName(), aidSelector);
-            }
+        if (!fciResponse.isSuccessful()) {
+            logger.trace("[{}] selectionGetData => Get data failed. SELECTOR = {}", this.getName(),
+                    aidSelector);
         }
         return fciResponse;
-    }
-
-
-    /**
-     * Set the flag that enables the execution of the Get Data hack to get the FCI
-     * <p>
-     * This method should called by the reader plugins that need this specific behavior (ex. OMAPI)
-     *
-     * <p>
-     * The default value for the forceGetDataFlag is false, thus only specific readers plugins
-     * should call this method.
-     * 
-     * @param forceGetDataFlag true or false
-     */
-    protected void setForceGetDataFlag(boolean forceGetDataFlag) {
-        this.forceGetDataFlag = forceGetDataFlag;
     }
 
     /**
@@ -349,10 +320,22 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
          */
         if (selectionHasMatched && seSelector.getAidSelector() != null) {
             ApduResponse fciResponse;
-            if (!forceGetDataFlag) {
-                fciResponse = openChannelForAid(seSelector.getAidSelector());
+            if (this instanceof SmartSelectionReader) {
+                fciResponse = ((SmartSelectionReader) this)
+                        .openChannelForAid(seSelector.getAidSelector());
             } else {
-                fciResponse = openChannelForAidHackGetData(seSelector.getAidSelector());
+                fciResponse = processExplicitAidSelection(seSelector.getAidSelector());
+            }
+
+            if (fciResponse.isSuccessful() && fciResponse.getDataOut().length == 0) {
+                /**
+                 * The selection didn't provide data (e.g. OMAPI), we get the FCI using a Get Data
+                 * command.
+                 * <p>
+                 * The AID selector is provided to handle successful status word in the Get Data
+                 * command.
+                 */
+                fciResponse = selectionGetData(seSelector.getAidSelector());
             }
 
             /*
@@ -1111,7 +1094,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return the response to the select application command
      * @throws KeypleIOReaderException if a reader error occurs
      */
-    protected ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
+    protected ApduResponse processExplicitAidSelection(SeSelector.AidSelector aidSelector)
             throws KeypleIOReaderException {
         ApduResponse fciResponse;
         final byte aid[] = aidSelector.getAidToSelect().getValue();
