@@ -229,8 +229,6 @@ dependencies {
      *
 
     /** Test **/
-    testImplementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: project.version
-
     testImplementation files('libs/org.simalliance.openmobileapi.jar')
 
     /**Power mock**/

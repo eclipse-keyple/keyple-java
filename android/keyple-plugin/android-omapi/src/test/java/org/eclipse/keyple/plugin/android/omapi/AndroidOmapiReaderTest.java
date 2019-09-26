@@ -22,9 +22,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.eclipse.keyple.calypso.command.PoClass;
-import org.eclipse.keyple.calypso.command.po.builder.ReadRecordsCmdBuild;
-import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
+
 import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
@@ -113,11 +111,11 @@ public class AndroidOmapiReaderTest {
      */
 
     @Test
-    public void transmitHoplinkSuccessfull() throws KeypleBaseException {
+    public void transmitSuccessfull() throws KeypleBaseException {
         // default init
 
         // test
-        List<SeResponse> seResponseList = proxyReader.transmitSet(getCalypsoRequestSample());
+        List<SeResponse> seResponseList = proxyReader.transmitSet(getSeRequestSample());
 
         // assert
         Assert.assertTrue(
@@ -133,7 +131,7 @@ public class AndroidOmapiReaderTest {
         proxyReader = new AndroidOmapiReaderImpl(PLUGIN_NAME, omapiReader, omapiReader.getName());
 
         // test
-        List<SeResponse> seResponseList = proxyReader.transmitSet(getCalypsoRequestSample());
+        List<SeResponse> seResponseList = proxyReader.transmitSet(getSeRequestSample());
 
         // assert
         Assert.assertNull(seResponseList.get(0));
@@ -144,11 +142,10 @@ public class AndroidOmapiReaderTest {
     public void transmitWrongProtocol() throws KeypleBaseException {
         // init
         String poAid = "A000000291A000000191";
-        ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO,
-                (byte) 0x14,ReadDataStructure.SINGLE_RECORD_DATA,  (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
-        List<ApduRequest> poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
 
-        // wrong protocol
+        List<ApduRequest> poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("0000"),false));
+
+        // wrong protocol : PROTOCOL_MIFARE_UL
         SeRequest seRequest = new SeRequest(new SeSelector( SeCommonProtocols.PROTOCOL_MIFARE_UL, null,
                 new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid),null),null), poApduRequestList,
                 ChannelState.CLOSE_AFTER);
@@ -174,7 +171,7 @@ public class AndroidOmapiReaderTest {
         proxyReader = new AndroidOmapiReaderImpl(PLUGIN_NAME, omapiReader, omapiReader.getName());
 
         // test
-        List<SeResponse> seResponseList = proxyReader.transmitSet(getCalypsoRequestSample());
+        List<SeResponse> seResponseList = proxyReader.transmitSet(getSeRequestSample());
 
         // expected = KeypleReaderException.class
     }
@@ -200,7 +197,7 @@ public class AndroidOmapiReaderTest {
         when(channel.getSelectResponse()).thenReturn(ByteArrayUtil.fromHex(poAidResponse));
         when(channel.getSession()).thenReturn(session);
 
-        when(channel.transmit(ByteArrayUtil.fromHex("00B201A420"))).thenReturn(ByteArrayUtil
+        when(channel.transmit(ByteArrayUtil.fromHex("0000"))).thenReturn(ByteArrayUtil
                 .fromHex("00000000000000000000000000000000000000000000000000000000000000009000"));
 
         return omapiReader;
@@ -223,15 +220,12 @@ public class AndroidOmapiReaderTest {
 
     }
 
-    Set<SeRequest> getCalypsoRequestSample() {
+    Set<SeRequest> getSeRequestSample() {
         String poAid = "A000000291A000000191";
-
-        ReadRecordsCmdBuild poReadRecordCmd_T2Env = new ReadRecordsCmdBuild(PoClass.ISO,
-                (byte) 0x14, ReadDataStructure.SINGLE_RECORD_DATA, (byte) 0x01, true, (byte) 0x20, "Hoplink EF T2Environment");
 
         List<ApduRequest> poApduRequestList;
 
-        poApduRequestList = Arrays.asList(poReadRecordCmd_T2Env.getApduRequest());
+        poApduRequestList = Arrays.asList(new ApduRequest(ByteArrayUtil.fromHex("0000"),false));
 
         SeRequest seRequest = new SeRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO7816_3, null,
                 new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(poAid), null), null), poApduRequestList,
