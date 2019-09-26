@@ -12,6 +12,9 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.exception.KeypleApplicationSelectionException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
@@ -19,5 +22,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * OMAPI readers).
  */
 public interface SmartSelectionReader {
-    ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector);
+    ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
+            throws KeypleIOReaderException, KeypleChannelStateException,
+            KeypleApplicationSelectionException;
 }
