@@ -122,6 +122,9 @@ public class Demo_CalypsoClassic_Pcsc {
         /* Set terminal as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);
 
+        /* Activate the removal sequence management */
+        ((ObservableReader) poReader).setWaitForRemovalMode(true);
+
         /* Wait for ever (exit with CTRL-C) */
         synchronized (waitForEnd) {
             waitForEnd.wait();

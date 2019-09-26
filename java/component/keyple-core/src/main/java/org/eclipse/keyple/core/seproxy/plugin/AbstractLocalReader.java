@@ -246,14 +246,11 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @param aidSelector used to retrieve the successful status codes from the main AidSelector
      * @return a ApduResponse containing the FCI
      */
-    private ApduResponse selectionGetData(SeSelector.AidSelector aidSelector)
+    private ApduResponse recoverSelectionFciData(SeSelector.AidSelector aidSelector)
             throws KeypleIOReaderException {
         ApduResponse fciResponse;
-        byte[] getDataCommand = new byte[4];
-        getDataCommand[0] = (byte) 0x00; // CLA
-        getDataCommand[1] = (byte) 0xCA; // INS
-        getDataCommand[2] = (byte) 0x00; // P1: always 0
-        getDataCommand[3] = (byte) 0x6F; // P2: 0x6F FCI for the current DF
+        // Get Data APDU: CLA, INS, P1: always 0, P2: 0x6F FCI for the current DF, LC: 0
+        byte[] getDataCommand = {(byte) 0x00, (byte) 0xCA, (byte) 0x00, (byte) 0x6F, (byte) 0x00};
 
         /*
          * The successful status codes list for this command is provided.
@@ -335,7 +332,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                  * The AID selector is provided to handle successful status word in the Get Data
                  * command.
                  */
-                fciResponse = selectionGetData(seSelector.getAidSelector());
+                fciResponse = recoverSelectionFciData(seSelector.getAidSelector());
             }
 
             /*
@@ -588,14 +585,15 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     // selection.
                     closeLogicalChannel();
                 } else {
-                    // the current PO matches the first selection case, we stop here.
-                    stopProcess = true;
+                    if (isLogicalChannelOpen()) {
+                        // the current PO matches the selection case, we stop here.
+                        stopProcess = true;
+                    }
                 }
                 requestIndex++;
                 if (lastRequestIndex == requestIndex) {
                     if (channelState == ChannelState.CLOSE_AFTER) {
-                        if (!(this instanceof SmartRemovalReader)
-                                && (((ObservableReader) this).countObservers() > 0)
+                        if ((((ObservableReader) this).countObservers() > 0)
                                 && waitForRemovalModeEnabled) {
                             /* observed reader */
                             doRemovalSequence = true;
@@ -629,9 +627,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         SeResponse seResponse = processSeRequestLogical(seRequest);
 
         if (channelState == ChannelState.CLOSE_AFTER) {
-            if (!(this instanceof SmartRemovalReader)
-                    && (((ObservableReader) this).countObservers() > 0)
-                    && waitForRemovalModeEnabled) {
+            if ((((ObservableReader) this).countObservers() > 0) && waitForRemovalModeEnabled) {
                 doRemovalSequence = true;
             } else {
                 /* close the physical channel if requested */
@@ -1047,7 +1043,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      */
     protected void waitForCardAbsentPing(int timeout) {
         // APDU sent to check the communication with the PO
-        byte[] apdu = new byte[] {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+        byte[] apdu = {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x00};
         // loop for ever until the PO stop responding
         try {
             while (true) {

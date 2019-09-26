@@ -192,7 +192,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poProcessStatus = poTransaction.processClosing(ChannelState.KEEP_OPEN);
+            poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AFTER);
 
         } else {
             /*

@@ -128,6 +128,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
          */
         seSelection.prepareSelection(poSelectionRequest);
 
+        /* Activate the removal sequence management */
         ((ObservableReader) poReader).setWaitForRemovalMode(true);
 
         /*
