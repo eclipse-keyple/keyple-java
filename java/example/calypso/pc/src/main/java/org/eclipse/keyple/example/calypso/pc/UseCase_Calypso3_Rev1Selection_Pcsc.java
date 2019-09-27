@@ -31,6 +31,7 @@ import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
+import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +79,9 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
          */
         SeReader poReader = CalypsoUtilities.getDefaultPoReader();
 
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_B_PRIME,
+                PcscProtocolSetting.PCSC_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_B_PRIME));
+
         /* Check if the reader exists */
         if (poReader == null) {
             throw new IllegalStateException("Bad PO reader setup");
@@ -99,15 +103,14 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
 
             /*
              * Prepare a Calypso PO selection
+             * Setting up a selection of a Calypso REV1 PO (B Prime) based on ATR
+             *
+             * Select the first application matching the selection.
              */
             SeSelection seSelection =
                     new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
 
             /*
-             * Setting of an AID based selection of a Calypso REV3 PO
-             *
-             * Select the first application matching the selection AID whatever the SE communication
-             * protocol keep the logical channel open after the selection
              */
 
             /*
@@ -115,7 +118,7 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
              * make the selection and read additional information afterwards
              */
             PoSelectionRequest poSelectionRequest =
-                    new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                    new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME,
                             new PoSelector.PoAtrFilter(poAtrRegex), null, "ATR: " + poAtrRegex));
 
             /*
