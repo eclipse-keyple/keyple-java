@@ -112,7 +112,6 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
             reader = seProxyService.getPlugins().first().getReaders().first();
             /* remove the observer if it already exist */
             ((ObservableReader) reader).addObserver(this);
-            ((ObservableReader) reader).setWaitForRemovalMode(true);
 
             reader.setParameter("FLAG_READER_PRESENCE_CHECK_DELAY", "100");
             reader.setParameter("FLAG_READER_NO_PLATFORM_SOUNDS", "0");

@@ -76,6 +76,4 @@ public interface ObservableReader extends SeReader {
             NotificationMode notificationMode);
 
     int countObservers();
-
-    void setWaitForRemovalMode(boolean waitForRemovalModeEnabled);
 }

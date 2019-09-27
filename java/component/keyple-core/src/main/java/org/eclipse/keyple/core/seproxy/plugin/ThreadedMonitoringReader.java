@@ -12,5 +12,4 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 public interface ThreadedMonitoringReader {
-    void setWaitForRemovalMode(boolean waitForRemovalModeEnabled);
 }

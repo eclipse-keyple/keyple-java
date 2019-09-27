@@ -248,10 +248,4 @@ final class VirtualReaderImpl extends AbstractObservableReader implements Virtua
         }
     }
 
-    @Override
-    public void setWaitForRemovalMode(boolean waitForRemovalModeEnabled) {
-        // TODO implement removal mode management
-    }
-
-
 }

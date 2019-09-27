@@ -593,8 +593,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 requestIndex++;
                 if (lastRequestIndex == requestIndex) {
                     if (channelState == ChannelState.CLOSE_AFTER) {
-                        if ((((ObservableReader) this).countObservers() > 0)
-                                && waitForRemovalModeEnabled) {
+                        if ((((ObservableReader) this).countObservers() > 0)) {
                             /* observed reader */
                             doRemovalSequence = true;
                         } else {
@@ -627,7 +626,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         SeResponse seResponse = processSeRequestLogical(seRequest);
 
         if (channelState == ChannelState.CLOSE_AFTER) {
-            if ((((ObservableReader) this).countObservers() > 0) && waitForRemovalModeEnabled) {
+            if ((((ObservableReader) this).countObservers() > 0)) {
                 doRemovalSequence = true;
             } else {
                 /* close the physical channel if requested */
@@ -899,7 +898,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /* Monitoring thread management methods */
     private EventThread thread;
     private static final AtomicInteger threadCount = new AtomicInteger();
-    protected boolean waitForRemovalModeEnabled = false;
     protected boolean doRemovalSequence = false;
 
     /**
@@ -990,7 +988,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 if (isSePresent()) {
                     logger.trace("[{}] Card is already present in reader", readerName);
                     cardInserted();
-                    if (waitForRemovalModeEnabled) {
+                    if (doRemovalSequence) {
                         // wait as long as the PO responds (timeout is useless)
                         logger.trace("[{}] Observe card removal", readerName);
                         if (AbstractLocalReader.this instanceof SmartRemovalReader) {
@@ -1010,7 +1008,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                         // notify insertion
                         logger.debug("Card inserted.");
                         cardInserted();
-                        if (waitForRemovalModeEnabled && doRemovalSequence) {
+                        if (doRemovalSequence) {
                             doRemovalSequence = false;
                             // wait as long as the PO responds (timeout is useless)
                             logger.trace("[{}] Observe card removal", readerName);
@@ -1061,11 +1059,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         }
         logger.debug("Card removed.");
     }
-
-    public void setWaitForRemovalMode(boolean waitForRemovalModeEnabled) {
-        this.waitForRemovalModeEnabled = waitForRemovalModeEnabled;
-    }
-
 
     /**
      * Called when the class is unloaded. Attempt to do a clean exit.
