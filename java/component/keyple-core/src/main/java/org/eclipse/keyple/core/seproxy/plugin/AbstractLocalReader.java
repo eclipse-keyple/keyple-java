@@ -161,9 +161,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                                 ReaderEvent.EventType.SE_MATCHED,
                                 new DefaultSelectionsResponse(seResponseList)));
                         presenceNotified = true;
-                    } else {
-                        /* request the removal sequence if enabled */
-                        doRemovalSequence = true;
                     }
                 } else {
                     if (aSeMatched) {
@@ -593,11 +590,12 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 requestIndex++;
                 if (lastRequestIndex == requestIndex) {
                     if (channelState == ChannelState.CLOSE_AFTER) {
-                        if ((((ObservableReader) this).countObservers() > 0)) {
-                            /* observed reader */
-                            doRemovalSequence = true;
-                        } else {
-                            /* close the physical channel if requested */
+                        if (!(this instanceof ObservableReader)
+                                || (((ObservableReader) this).countObservers() == 0)) {
+                            /*
+                             * Not observable/observed: close immediately the physical channel if
+                             * requested
+                             */
                             closePhysicalChannel();
                         }
                     }
@@ -626,10 +624,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         SeResponse seResponse = processSeRequestLogical(seRequest);
 
         if (channelState == ChannelState.CLOSE_AFTER) {
-            if ((((ObservableReader) this).countObservers() > 0)) {
-                doRemovalSequence = true;
-            } else {
-                /* close the physical channel if requested */
+            if (!(this instanceof ObservableReader)
+                    || (((ObservableReader) this).countObservers() == 0)) {
+                /* Not observable/observed: close immediately the physical channel if requested */
                 closePhysicalChannel();
             }
         }
@@ -898,7 +895,6 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /* Monitoring thread management methods */
     private EventThread thread;
     private static final AtomicInteger threadCount = new AtomicInteger();
-    protected boolean doRemovalSequence = false;
 
     /**
      * Thread wait timeout in ms
@@ -988,14 +984,12 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 if (isSePresent()) {
                     logger.trace("[{}] Card is already present in reader", readerName);
                     cardInserted();
-                    if (doRemovalSequence) {
-                        // wait as long as the PO responds (timeout is useless)
-                        logger.trace("[{}] Observe card removal", readerName);
-                        if (AbstractLocalReader.this instanceof SmartRemovalReader) {
-                            ((SmartRemovalReader) this).waitForCardAbsentNative(0);
-                        } else {
-                            waitForCardAbsentPing(0);
-                        }
+                    // wait as long as the PO responds (timeout is useless)
+                    logger.trace("[{}] Observe card removal", readerName);
+                    if (AbstractLocalReader.this instanceof SmartRemovalReader) {
+                        ((SmartRemovalReader) this).waitForCardAbsentNative(0);
+                    } else {
+                        waitForCardAbsentPing(0);
                     }
                     // notify removal
                     cardRemoved();
@@ -1008,16 +1002,13 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                         // notify insertion
                         logger.debug("Card inserted.");
                         cardInserted();
-                        if (doRemovalSequence) {
-                            doRemovalSequence = false;
-                            // wait as long as the PO responds (timeout is useless)
-                            logger.trace("[{}] Observe card removal", readerName);
-                            if (AbstractLocalReader.this instanceof SmartRemovalReader) {
-                                ((SmartRemovalReader) AbstractLocalReader.this)
-                                        .waitForCardAbsentNative(0);
-                            } else {
-                                waitForCardAbsentPing(0);
-                            }
+                        // wait as long as the PO responds (timeout is useless)
+                        logger.trace("[{}] Observe card removal", readerName);
+                        if (AbstractLocalReader.this instanceof SmartRemovalReader) {
+                            ((SmartRemovalReader) AbstractLocalReader.this)
+                                    .waitForCardAbsentNative(0);
+                        } else {
+                            waitForCardAbsentPing(0);
                         }
                         // handle removal (notify if needed)
                         cardRemoved();

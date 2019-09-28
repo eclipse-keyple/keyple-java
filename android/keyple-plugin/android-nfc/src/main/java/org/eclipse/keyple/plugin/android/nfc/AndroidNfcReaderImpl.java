@@ -169,9 +169,7 @@ final class AndroidNfcReaderImpl extends AbstractLocalReader
         try {
             tagProxy = TagProxy.getTagProxy(tag);
             cardInserted();
-            if(doRemovalSequence) {
-                waitForCardAbsentPing(0);
-            }
+            waitForCardAbsentPing(0);
             cardRemoved();
         } catch (KeypleReaderException e) {
             // print and do nothing
