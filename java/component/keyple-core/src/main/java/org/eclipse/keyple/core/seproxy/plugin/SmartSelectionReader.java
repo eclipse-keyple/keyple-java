@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleApplicationSelectionException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
@@ -21,7 +22,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * Interface implemented by readers able to handle natively the SE selection process (e.g. Android
  * OMAPI readers).
  */
-public interface SmartSelectionReader {
+public interface SmartSelectionReader extends SeReader {
     ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
             throws KeypleIOReaderException, KeypleChannelStateException,
             KeypleApplicationSelectionException;

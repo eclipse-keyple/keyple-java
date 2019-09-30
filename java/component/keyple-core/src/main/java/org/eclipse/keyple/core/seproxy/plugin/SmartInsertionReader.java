@@ -11,7 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-public interface SmartInsertionReader {
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+
+public interface SmartInsertionReader extends ObservableReader {
     /**
      * TODO Check if we really need a timeout parameter Waits for a card. Returns true if a card is
      * detected before the end of the provided timeout.
