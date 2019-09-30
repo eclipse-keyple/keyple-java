@@ -224,35 +224,36 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
      */
     @Override
     public void update(final ReaderEvent event) {
-        // getActivity().runOnUiThread(new Runnable() {
-        // @Override
-        // public void run() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
 
-        LOG.info("New ReaderEvent received : " + event.toString());
+                LOG.info("New ReaderEvent received : " + event.toString());
 
-        switch (event.getEventType()) {
-            case SE_MATCHED:
-                executeCommands(event.getDefaultSelectionsResponse());
-                break;
+                switch (event.getEventType()) {
+                    case SE_MATCHED:
+                        executeCommands(event.getDefaultSelectionsResponse());
+                        break;
 
-            case SE_INSERTED:
-                mText.append("\n ---- \n");
-                mText.append("PO detected but AID didn't match with " + CalypsoClassicInfo.AID);
-                break;
+                    case SE_INSERTED:
+                        mText.append("\n ---- \n");
+                        mText.append(
+                                "PO detected but AID didn't match with " + CalypsoClassicInfo.AID);
+                        break;
 
-            case SE_REMOVAL:
-                mText.append("\n ---- \n");
-                mText.append("Tag removed");
-                break;
+                    case SE_REMOVAL:
+                        mText.append("\n ---- \n");
+                        mText.append("Tag removed");
+                        break;
 
-            case IO_ERROR:
-                mText.append("\n ---- \n");
-                mText.setText("Error reading card");
-                break;
+                    case IO_ERROR:
+                        mText.append("\n ---- \n");
+                        mText.setText("Error reading card");
+                        break;
 
-        }
-        // }
-        // });
+                }
+            }
+        });
     }
 
 
