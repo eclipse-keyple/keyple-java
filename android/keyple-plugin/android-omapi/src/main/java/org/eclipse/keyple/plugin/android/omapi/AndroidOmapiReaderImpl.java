@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleApplicationSelectionExcep
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractStaticReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.SmartSelectionReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
@@ -42,7 +42,7 @@ import android.util.Log;
  * or virtual devices. They can be removable or not. They can contain one SE that can or cannot be
  * removed.
  */
-final class AndroidOmapiReaderImpl extends AbstractStaticReader implements AndroidOmapiReader, SmartSelectionReader {
+final class AndroidOmapiReaderImpl extends AbstractLocalReader implements AndroidOmapiReader, SmartSelectionReader {
 
     private static final Logger logger =
             LoggerFactory.getLogger(AndroidOmapiReaderImpl.class);
