@@ -185,7 +185,8 @@ final class StubReaderImpl extends AbstractLocalReader implements StubReader {
      */
     @Override
     public boolean waitForCardPresent(long timeout) {
-        for (int i = 0; i < timeout / 10; i++) {
+        // for (int i = 0; i < timeout / 10; i++) {
+        while (true) {
             if (checkSePresence()) {
                 return true;
             }
@@ -195,8 +196,8 @@ final class StubReaderImpl extends AbstractLocalReader implements StubReader {
                 logger.debug("Sleep was interrupted");
             }
         }
-        logger.trace("[{}] no card was inserted", this.getName());
-        return false;
+        // logger.trace("[{}] no card was inserted", this.getName());
+        // return false;
     }
 
     /**
@@ -208,7 +209,8 @@ final class StubReaderImpl extends AbstractLocalReader implements StubReader {
      */
     @Override
     public boolean waitForCardAbsentNative(long timeout) {
-        for (int i = 0; i < timeout / 10; i++) {
+        // for (int i = 0; i < timeout / 10; i++) {
+        while (true) {
             if (!checkSePresence()) {
                 logger.trace("[{}] card removed", this.getName());
                 return true;
@@ -219,7 +221,7 @@ final class StubReaderImpl extends AbstractLocalReader implements StubReader {
                 logger.debug("Sleep was interrupted");
             }
         }
-        logger.trace("[{}] no card was removed", this.getName());
-        return false;
+        // logger.trace("[{}] no card was removed", this.getName());
+        // return false;
     }
 }

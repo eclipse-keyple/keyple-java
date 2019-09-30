@@ -987,7 +987,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                     // wait as long as the PO responds (timeout is useless)
                     logger.trace("[{}] Observe card removal", readerName);
                     if (AbstractLocalReader.this instanceof SmartRemovalReader) {
-                        ((SmartRemovalReader) this).waitForCardAbsentNative(0);
+                        ((SmartRemovalReader) AbstractLocalReader.this).waitForCardAbsentNative(0);
                     } else {
                         waitForCardAbsentPing(0);
                     }

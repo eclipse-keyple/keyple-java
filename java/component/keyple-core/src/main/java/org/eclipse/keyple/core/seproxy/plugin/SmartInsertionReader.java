@@ -13,7 +13,8 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 public interface SmartInsertionReader {
     /**
-     * Waits for a card. Returns true if a card is detected before the end of the provided timeout.
+     * TODO Check if we really need a timeout parameter Waits for a card. Returns true if a card is
+     * detected before the end of the provided timeout.
      * <p>
      * This method must be implemented by the plugin's reader class.
      * <p>

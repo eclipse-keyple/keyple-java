@@ -102,8 +102,8 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
                     "==================================================================================");
 
             /*
-             * Prepare a Calypso PO selection
-             * Setting up a selection of a Calypso REV1 PO (B Prime) based on ATR
+             * Prepare a Calypso PO selection Setting up a selection of a Calypso REV1 PO (B Prime)
+             * based on ATR
              *
              * Select the first application matching the selection.
              */
@@ -129,11 +129,12 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
 
             /*
              * Prepare the reading order and keep the associated parser for later use once the
-             * selection has been made.
+             * selection has been made. We provide the expected record length since the REV1 PO need
+             * it.
              */
             int readEnvironmentParserIndex = poSelectionRequest.prepareReadRecordsCmd(
                     CalypsoClassicInfo.SFI_EnvironmentAndHolder,
-                    ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1,
+                    ReadDataStructure.SINGLE_RECORD_DATA, CalypsoClassicInfo.RECORD_NUMBER_1, 29,
                     String.format("EnvironmentAndHolder (SFI=%02X))",
                             CalypsoClassicInfo.SFI_EnvironmentAndHolder));
 
@@ -183,11 +184,12 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
 
                 /*
                  * Prepare the reading order and keep the associated parser for later use once the
-                 * transaction has been processed.
+                 * transaction has been processed. We provide the expected record length since the
+                 * REV1 PO need it.
                  */
                 int readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
                         CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
-                        CalypsoClassicInfo.RECORD_NUMBER_1,
+                        CalypsoClassicInfo.RECORD_NUMBER_1, 29,
                         String.format("EventLog (SFI=%02X, recnbr=%d))",
                                 CalypsoClassicInfo.SFI_EventLog,
                                 CalypsoClassicInfo.RECORD_NUMBER_1));

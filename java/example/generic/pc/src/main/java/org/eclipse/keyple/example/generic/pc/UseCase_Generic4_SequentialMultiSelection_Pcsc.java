@@ -37,7 +37,7 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
         SelectionsResult selectionsResult = seSelection.processExplicitSelection(seReader);
         if (selectionsResult.hasActiveSelection()) {
             AbstractMatchingSe matchingSe =
-                    selectionsResult.getMatchingSelection(index).getMatchingSe();
+                    selectionsResult.getMatchingSelection(0).getMatchingSe();
             logger.info("The SE matched the selection {}.", index);
 
             logger.info("Selection status for case {}: \n\t\tATR: {}\n\t\tFCI: {}", index,
@@ -95,10 +95,10 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
                             SeSelector.AidSelector.FileControlInformation.FCI),
                     "Initial selection #1")));
 
+            doAndAnalyseSelection(seReader, seSelection, 1);
+
             seSelection =
                     new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.CLOSE_AFTER);
-
-            doAndAnalyseSelection(seReader, seSelection, 1);
 
             /* next selection */
             seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
@@ -109,10 +109,11 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
                             SeSelector.AidSelector.FileControlInformation.FCI),
                     "Next selection #2")));
 
+            doAndAnalyseSelection(seReader, seSelection, 2);
+
             seSelection =
                     new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.CLOSE_AFTER);
 
-            doAndAnalyseSelection(seReader, seSelection, 2);
 
             /* next selection */
             seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(

@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements ReaderObserver {
     protected static final Logger logger =
             LoggerFactory.getLogger(UseCase_Generic2_DefaultSelectionNotification_Pcsc.class);
-    private String seAid = "A0000004040125090101";
+    private String seAid = "315449432E49434131";
     private SeSelection seSelection;
     /**
      * This object is used to freeze the main thread while card operations are handle through the

@@ -94,6 +94,10 @@ public class Demo_SeProtocolDetection_Pcsc {
         // Set terminal as Observer of the first reader
         ((ObservableReader) poReader).addObserver(observer);
 
+        // Set Default selection
+        ((ObservableReader) poReader).setDefaultSelectionRequest(observer.prepareSeSelection(),
+                ObservableReader.NotificationMode.ALWAYS);
+
         // wait for Enter key to exit.
         System.out.println("Press Enter to exit");
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
