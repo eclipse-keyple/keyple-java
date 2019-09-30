@@ -23,7 +23,6 @@ import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -126,8 +125,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
             /*
              * Prepare a Calypso PO selection
              */
-            seSelection =
-                    new SeSelection();
+            seSelection = new SeSelection();
 
             /*
              * Setting of an AID based selection of a Calypso REV3 PO

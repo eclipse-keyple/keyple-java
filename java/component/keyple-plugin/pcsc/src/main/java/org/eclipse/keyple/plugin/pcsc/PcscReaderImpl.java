@@ -17,13 +17,16 @@ import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
+import org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class PcscReaderImpl extends AbstractLocalReader implements PcscReader {
+final class PcscReaderImpl extends AbstractLocalReader
+        implements PcscReader, SmartInsertionReader, SmartRemovalReader {
 
     private static final Logger logger = LoggerFactory.getLogger(PcscReaderImpl.class);
 
