@@ -127,7 +127,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
              * Prepare a Calypso PO selection
              */
             seSelection =
-                    new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+                    new SeSelection();
 
             /*
              * Setting of an AID based selection of a Calypso REV3 PO

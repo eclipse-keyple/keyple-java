@@ -21,7 +21,6 @@ import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
@@ -107,8 +106,7 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
              *
              * Select the first application matching the selection.
              */
-            SeSelection seSelection =
-                    new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+            SeSelection seSelection = new SeSelection();
 
             /*
              */

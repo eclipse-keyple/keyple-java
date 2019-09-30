@@ -272,7 +272,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
         /*
          * Initialize the selection process
          */
-        seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+        seSelection = new SeSelection();
 
         /* operate multiple PO selections */
         String poFakeAid1 = "AABBCCDDEE"; // fake AID 1

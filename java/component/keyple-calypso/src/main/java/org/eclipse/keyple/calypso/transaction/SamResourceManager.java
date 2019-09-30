@@ -112,8 +112,7 @@ public class SamResourceManager {
 
         samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3, ".*");
 
-        SeSelection samSelection =
-                new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+        SeSelection samSelection = new SeSelection();
 
         SamSelector samSelector = new SamSelector(new SamIdentifier(AUTO, null, null), "SAM");
 

@@ -451,8 +451,7 @@ public class StubReaderTest extends BaseStubTest {
         // add observer
         reader.addObserver(readerObs);
 
-        SeSelection seSelection =
-                new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+        SeSelection seSelection = new SeSelection();
 
         PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
                 SeCommonProtocols.PROTOCOL_ISO14443_4, null,
@@ -498,8 +497,7 @@ public class StubReaderTest extends BaseStubTest {
 
         String poAid = "A000000291A000000192";// not matching poAid
 
-        SeSelection seSelection =
-                new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+        SeSelection seSelection = new SeSelection();
 
         PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
                 SeCommonProtocols.PROTOCOL_ISO14443_4, null,
@@ -559,8 +557,7 @@ public class StubReaderTest extends BaseStubTest {
 
         String poAid = "A000000291A000000192";// not matching poAid
 
-        SeSelection seSelection =
-                new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+        SeSelection seSelection = new SeSelection();
 
         PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
                 SeCommonProtocols.PROTOCOL_ISO14443_4, null,
@@ -1326,8 +1323,7 @@ public class StubReaderTest extends BaseStubTest {
             }
         }
 
-        SeSelection seSelection =
-                new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+        SeSelection seSelection = new SeSelection();
         GenericSeSelectionRequest genericSeSelectionRequest =
                 new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                         new SeSelector.AtrFilter("3B.*"), null, "ATR selection"));

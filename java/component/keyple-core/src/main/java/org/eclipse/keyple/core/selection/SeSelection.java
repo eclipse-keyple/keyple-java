@@ -46,7 +46,7 @@ public final class SeSelection {
     private ChannelState channelState;
 
     /**
-     * Initializes the SeSelection
+     * Constructor.
      * 
      * @param multiSeRequestProcessing the multi se processing mode
      * @param channelState indicates if the channel has to be closed at the end of the processing
@@ -56,6 +56,13 @@ public final class SeSelection {
         selectionIndex = 0;
         this.multiSeRequestProcessing = multiSeRequestProcessing;
         this.channelState = channelState;
+    }
+
+    /**
+     * Alternate constructor for standard usages.
+     */
+    public SeSelection() {
+        this(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
     }
 
     /**

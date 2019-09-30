@@ -257,8 +257,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         // add observer
         virtualReader.addObserver(obs);
 
-        SeSelection seSelection =
-                new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+        SeSelection seSelection = new SeSelection();
 
         GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                 new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
@@ -309,8 +308,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         String poAid = "A000000291A000000192";// not matching poAid
 
-        SeSelection seSelection =
-                new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+        SeSelection seSelection = new SeSelection();
 
         GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                 new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
@@ -370,8 +368,7 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         String poAid = "A000000291A000000192";// not matching poAid
 
-        SeSelection seSelection =
-                new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+        SeSelection seSelection = new SeSelection();
 
         GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
                 new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,

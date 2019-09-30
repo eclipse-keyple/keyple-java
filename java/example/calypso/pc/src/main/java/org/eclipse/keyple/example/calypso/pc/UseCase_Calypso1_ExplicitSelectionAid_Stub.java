@@ -105,8 +105,7 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Stub {
             /*
              * Prepare a Calypso PO selection
              */
-            SeSelection seSelection =
-                    new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+            SeSelection seSelection = new SeSelection();
 
             /*
              * Setting of an AID based selection of a Calypso REV3 PO

@@ -84,7 +84,7 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
         /*
          * Prepare a SE selection
          */
-        seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+        seSelection = new SeSelection();
 
         /*
          * Setting of an AID based selection

@@ -18,8 +18,6 @@ import java.io.InputStream;
 import java.util.Properties;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.SeSelection;
-import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -104,8 +102,7 @@ public class CalypsoUtilities {
          * check the availability of the SAM doing a ATR based selection, open its physical and
          * logical channels and keep it open
          */
-        SeSelection samSelection =
-                new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+        SeSelection samSelection = new SeSelection();
 
         SamSelector samSelector = new SamSelector(C1, ".*", "Selection SAM C1");
 

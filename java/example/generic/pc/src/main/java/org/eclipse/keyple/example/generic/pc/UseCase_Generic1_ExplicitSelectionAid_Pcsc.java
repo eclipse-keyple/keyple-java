@@ -87,8 +87,7 @@ public class UseCase_Generic1_ExplicitSelectionAid_Pcsc {
             /*
              * Prepare the SE selection
              */
-            SeSelection seSelection =
-                    new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+            SeSelection seSelection = new SeSelection();
 
             /*
              * Setting of an AID based selection (in this example a Calypso REV3 PO)

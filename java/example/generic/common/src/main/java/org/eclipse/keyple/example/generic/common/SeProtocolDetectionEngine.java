@@ -51,7 +51,7 @@ public class SeProtocolDetectionEngine extends AbstractReaderObserverEngine {
 
     public AbstractDefaultSelectionsRequest prepareSeSelection() {
 
-        seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+        seSelection = new SeSelection();
 
         // process SDK defined protocols
         for (SeCommonProtocols protocol : SeCommonProtocols.values()) {
