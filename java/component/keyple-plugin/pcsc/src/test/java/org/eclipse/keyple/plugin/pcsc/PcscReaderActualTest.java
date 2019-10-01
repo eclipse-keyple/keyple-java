@@ -15,7 +15,6 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -48,7 +47,7 @@ public class PcscReaderActualTest {
     }
 
     /**
-     * This test registers/deregisters on an {@link AbstractObservableReader} twice. This allows to
+     * This test registers/deregisters on an {@link AbstractReader} twice. This allows to
      * verify we create and dispose threads correctly.
      * 
      * @throws KeypleReaderException

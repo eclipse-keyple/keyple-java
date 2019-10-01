@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * set
  */
 @SuppressWarnings({"PMD.TooManyMethods", "PMD.CyclomaticComplexity"})
-public abstract class AbstractLocalReader extends AbstractObservableReader {
+public abstract class AbstractLocalReader extends AbstractReader {
 
     /** logger */
     private static final Logger logger = LoggerFactory.getLogger(AbstractLocalReader.class);
@@ -902,24 +902,47 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     protected long threadWaitTimeout;
 
     /**
-     * Start the monitoring thread.
+     * Add a reader observer.
      * <p>
-     * The thread is created if it does not already exist
+     * The observer will receive all the events produced by this reader (card insertion, removal,
+     * etc.)
+     * <p>Start the monitoring thread if {@link ThreadedMonitoringReader}.
+     *
+     * @param observer the observer object
      */
-    @Override
-    protected void startObservation() {
-        thread = new EventThread(this.getPluginName(), this.getName());
-        thread.start();
+    public final void addObserver(ObservableReader.ReaderObserver observer) {
+        super.addObserver(observer);
+        // if an observer is added to an empty list, start the observation
+        if (super.countObservers() == 1) {
+            if (this instanceof ThreadedMonitoringReader) {
+                logger.debug("Start monitoring the reader {}", this.getName());
+                thread = new EventThread(this.getPluginName(), this.getName());
+                thread.start();
+            }
+        }
     }
 
     /**
-     * Terminate the monitoring thread
+     * Remove a reader observer.
+     * <p>
+     * The observer will not receive any of the events produced by this reader.
+     * <p>
+     * Terminate the monitoring thread if {@link ThreadedMonitoringReader}.
+     * <p>
+     * The thread is created if it does not already exist
+     *
+     * @param observer the observer object
      */
-    @Override
-    protected void stopObservation() {
-        if (thread != null) {
-            thread.end();
+    public final void removeObserver(ObservableReader.ReaderObserver observer) {
+        if (super.countObservers() == 0) {
+            if (this instanceof ThreadedMonitoringReader) {
+                logger.debug("Stop the reader monitoring.");
+                if (thread != null) {
+                    thread.end();
+                }
+            }
         }
+        super.removeObserver(observer);
     }
 
     /**
@@ -976,7 +999,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             try {
                 if (!(AbstractLocalReader.this instanceof SmartInsertionReader)) {
                     throw new IllegalStateException(
-                            "An observed reader must implement the SmartInsertionReader "
+                            "An threaded monitoring reader must implement the SmartInsertionReader "
                                     + "interface.");
                 }
                 // First thing we'll do is to notify that a card was inserted if one is already

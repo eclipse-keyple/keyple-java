@@ -24,7 +24,7 @@ import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,9 +107,9 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
     /**
      * Fetch connected native readers (from smartcard.io) and returns a list of corresponding
-     * {@link AbstractObservableReader} {@link AbstractObservableReader} are new instances.
+     * {@link AbstractReader} {@link AbstractReader} are new instances.
      *
-     * @return the list of AbstractObservableReader objects.
+     * @return the list of AbstractReader objects.
      * @throws KeypleReaderException if a reader error occurs
      */
     @Override
@@ -157,7 +157,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
          * parse the current PC/SC readers list to create the ProxyReader(s) associated with new
          * reader(s)
          */
-        AbstractObservableReader reader = null;
+        AbstractReader reader = null;
         CardTerminals terminals = getCardTerminals();
         List<String> terminalList = new ArrayList<String>();
         try {

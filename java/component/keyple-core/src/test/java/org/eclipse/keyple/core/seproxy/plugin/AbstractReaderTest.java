@@ -36,31 +36,33 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Test methods linked to observability
+ *
+ * TODO Review this test because the thread start control is no longer relevant.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class AbstractObservableReaderTest extends CoreBaseTest {
+public class AbstractReaderTest extends CoreBaseTest {
 
     private static final Logger logger =
-            LoggerFactory.getLogger(AbstractObservableReaderTest.class);
+            LoggerFactory.getLogger(AbstractReaderTest.class);
 
 
     final String PLUGIN_NAME = "abstractObservablePluginTest";
-    final String READER_NAME = "abstractObservableReaderTest";
+    final String READER_NAME = "AbstractReaderTest";
 
     final ObservableReader.ReaderObserver obs1 = getObserver();
     final ObservableReader.ReaderObserver obs2 = getObserver();
 
-    AbstractObservableReader spyReader;
+    ThreadedTestReader spyReader;
 
-    CountDownLatch startObservationCall;
-    CountDownLatch stopObservationCall;
+    CountDownLatch addObserverCall;
+    CountDownLatch removeObserverCall;
 
     @Before
     public void setUp() {
         logger.info("------------------------------");
         logger.info("Test {}", name.getMethodName() + "");
         logger.info("------------------------------");
-        spyReader = Mockito.spy(getBlankAbstractObservableReader(PLUGIN_NAME, READER_NAME));
+        spyReader = Mockito.spy(getBlankAbstractReader(PLUGIN_NAME, READER_NAME));
         initSpyReader();
     }
 
@@ -70,37 +72,37 @@ public class AbstractObservableReaderTest extends CoreBaseTest {
 
     @Test
     public void testAddObserver() {
-        startObservationCall = new CountDownLatch(5);
-        stopObservationCall = new CountDownLatch(5);
+        addObserverCall = new CountDownLatch(5);
+        removeObserverCall = new CountDownLatch(5);
         spyReader.addObserver(obs1);
         Assert.assertEquals(1, spyReader.countObservers());
-        Assert.assertEquals(4, startObservationCall.getCount());// should be called once
-        Assert.assertEquals(5, stopObservationCall.getCount());// should not be called
+        Assert.assertEquals(4, addObserverCall.getCount());// should be called once
+        Assert.assertEquals(5, removeObserverCall.getCount());// should not be called
 
     }
 
     @Test
     public void testRemoveObserver() {
-        startObservationCall = new CountDownLatch(5);
-        stopObservationCall = new CountDownLatch(5);
+        addObserverCall = new CountDownLatch(5);
+        removeObserverCall = new CountDownLatch(5);
         spyReader.addObserver(obs1);
         spyReader.removeObserver(obs1);
         Assert.assertEquals(0, spyReader.countObservers());
-        Assert.assertEquals(4, startObservationCall.getCount());// should be called once
-        Assert.assertEquals(4, stopObservationCall.getCount());// should be called once
+        Assert.assertEquals(4, addObserverCall.getCount());// should be called once
+        Assert.assertEquals(4, removeObserverCall.getCount());// should be called once
 
     }
 
     @Test
     public void testAddRemoveObserver() {
-        startObservationCall = new CountDownLatch(5);
-        stopObservationCall = new CountDownLatch(5);
+        addObserverCall = new CountDownLatch(5);
+        removeObserverCall = new CountDownLatch(5);
         spyReader.addObserver(obs1);
         spyReader.addObserver(obs2);
         spyReader.removeObserver(obs2);
         Assert.assertEquals(1, spyReader.countObservers());
-        Assert.assertEquals(4, startObservationCall.getCount());// should be called once
-        Assert.assertEquals(5, stopObservationCall.getCount());// should not be called
+        Assert.assertEquals(3, addObserverCall.getCount());// should be called twice
+        Assert.assertEquals(4, removeObserverCall.getCount());// should be once
     }
 
 
@@ -113,7 +115,7 @@ public class AbstractObservableReaderTest extends CoreBaseTest {
      * Class implementing {@link ThreadedMonitoringReader} to enable thread monitoring
      */
     abstract class ThreadedTestReader extends AbstractLocalReader
-            implements ThreadedMonitoringReader {
+            implements ThreadedMonitoringReader, SmartInsertionReader {
 
         /**
          * Constructor
@@ -126,19 +128,14 @@ public class AbstractObservableReaderTest extends CoreBaseTest {
         }
     }
 
-    AbstractObservableReader getBlankAbstractObservableReader(String pluginName,
+    ThreadedTestReader getBlankAbstractReader(String pluginName,
             String readerName) {
         /* anonymous subclass of ThreadedTestReader */
         return new ThreadedTestReader(pluginName, readerName) {
 
             @Override
-            protected void startObservation() {
-
-            }
-
-            @Override
-            protected void stopObservation() {
-
+            public boolean waitForCardPresent(long timeout) {
+                return false;
             }
 
             @Override
@@ -213,23 +210,46 @@ public class AbstractObservableReaderTest extends CoreBaseTest {
 
     void initSpyReader() {
 
-        // track when startObservation is called
+        // track when addObserver with obs1 is called
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                startObservationCall.countDown();
+                addObserverCall.countDown();
+                invocation.callRealMethod();
                 return null;
             }
-        }).when(spyReader).startObservation();
+        }).when(spyReader).addObserver(obs1);
 
-        // track when stopObservation is called
+        // track when when removeObserver with obs1 is called
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                stopObservationCall.countDown();
+                removeObserverCall.countDown();
+                invocation.callRealMethod();
                 return null;
             }
-        }).when(spyReader).stopObservation();
+        }).when(spyReader).removeObserver(obs1);
+
+        // track when addObserver with obs2 is called
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                addObserverCall.countDown();
+                invocation.callRealMethod();
+                return null;
+            }
+        }).when(spyReader).addObserver(obs2);
+
+        // track when when removeObserver with obs2 is called
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                removeObserverCall.countDown();
+                invocation.callRealMethod();
+                return null;
+            }
+        }).when(spyReader).removeObserver(obs2);
+
     }
 
 

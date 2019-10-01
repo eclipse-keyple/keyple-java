@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * Virtual Reader is a proxy to a Native Reader on the slave terminal Use it like a local reader,
  * all API call will be transferred to the Native Reader with a RPC session
  */
-final class VirtualReaderImpl extends AbstractObservableReader implements VirtualReader {
+final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
 
     private final VirtualReaderSession session;
     private final String nativeReaderName;
@@ -162,17 +162,6 @@ final class VirtualReaderImpl extends AbstractObservableReader implements Virtua
         }
 
     }
-
-    @Override
-    protected void startObservation() {
-        logger.trace("startObservation is not used in this plugin");
-    }
-
-    @Override
-    protected void stopObservation() {
-        logger.trace("stopObservation is not used in this plugin");
-    }
-
 
     @Override
     public void addSeProtocolSetting(SeProtocol seProtocol, String protocolRule) {

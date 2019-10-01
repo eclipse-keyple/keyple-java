@@ -91,19 +91,19 @@ public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<
      * <p>
      * {@link SeReader} are new instances.
      * 
-     * @return the list of AbstractObservableReader objects.
+     * @return the list of AbstractReader objects.
      * @throws KeypleReaderException if a reader error occurs
      */
     protected abstract SortedSet<SeReader> initNativeReaders() throws KeypleReaderException;
 
     /**
      * Fetch connected native reader (from third party library) by its name Returns the current
-     * {@link org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader} if it is already
+     * {@link AbstractReader} if it is already
      * listed. Creates and returns a new
-     * {@link org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader} if not.
+     * {@link AbstractReader} if not.
      *
      * @param name the reader name
-     * @return the list of AbstractObservableReader objects.
+     * @return the list of AbstractReader objects.
      * @throws KeypleReaderException if a reader error occurs
      */
     protected abstract SeReader fetchNativeReader(String name) throws KeypleReaderException;

@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * seProxyService.setPlugins(plugins);
  *
  * ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
- * ((AbstractObservableReader) reader).addObserver(this);
+ * ((AbstractReader) reader).addObserver(this);
  *
  *
  *

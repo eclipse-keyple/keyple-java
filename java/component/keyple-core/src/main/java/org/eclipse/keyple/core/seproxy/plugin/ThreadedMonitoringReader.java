@@ -11,5 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-public interface ThreadedMonitoringReader {
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+
+public interface ThreadedMonitoringReader extends ObservableReader {
+
 }

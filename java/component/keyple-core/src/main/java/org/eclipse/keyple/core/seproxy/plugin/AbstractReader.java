@@ -38,11 +38,11 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 
-public abstract class AbstractObservableReader extends AbstractLoggedObservable<ReaderEvent>
+public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEvent>
         implements ProxyReader {
 
     /** logger */
-    private static final Logger logger = LoggerFactory.getLogger(AbstractObservableReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractReader.class);
 
     /** Timestamp recorder */
     private long before;
@@ -68,7 +68,7 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * @param pluginName the name of the plugin that instantiated the reader
      * @param readerName the name of the reader
      */
-    protected AbstractObservableReader(String pluginName, String readerName) {
+    protected AbstractReader(String pluginName, String readerName) {
         super(readerName);
         this.pluginName = pluginName;
         this.before = System.nanoTime(); /*
@@ -267,45 +267,14 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     /** ==== Methods specific to observability ============================= */
 
     /**
-     * Starts the monitoring of the reader activity (especially card insertion and removal)
-     * <p>
-     * This abstract method has to be implemented by the class that handle the monitoring thread (
-     * e.g. {@link AbstractLocalReader}).
-     * <p>
-     * It will be called when a first observer is added (see addObserver).
-     */
-    protected abstract void startObservation();
-
-    /**
-     * Ends the monitoring of the reader activity
-     * <p>
-     * This abstract method has to be implemented by the class that handle the monitoring thread
-     * (e.g. {@link AbstractLocalReader}). It will be called when the observer is removed.
-     * <p>
-     * It will be called when the last observer is removed (see removeObserver).
-     *
-     */
-    protected abstract void stopObservation();
-
-    /**
      * Add a reader observer.
      * <p>
      * The observer will receive all the events produced by this reader (card insertion, removal,
      * etc.)
-     * <p>
-     * The startObservation() is called when the first observer is added. (to start a monitoring
-     * thread for instance)
      *
      * @param observer the observer object
      */
-    public final void addObserver(ReaderObserver observer) {
-        // if an observer is added to an empty list, start the observation
-        if (super.countObservers() == 0) {
-            if (this instanceof ThreadedMonitoringReader) {
-                logger.debug("Start monitoring the reader {}", this.getName());
-                startObservation();
-            }
-        }
+    public void addObserver(ReaderObserver observer) {
         super.addObserver(observer);
     }
 
@@ -313,19 +282,10 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
      * Remove a reader observer.
      * <p>
      * The observer will not receive any of the events produced by this reader.
-     * <p>
-     * The stopObservation() is called when the last observer is removed. (to stop a monitoring
-     * thread for instance)
      *
      * @param observer the observer object
      */
-    public final void removeObserver(ReaderObserver observer) {
+    public void removeObserver(ReaderObserver observer) {
         super.removeObserver(observer);
-        if (super.countObservers() == 0) {
-            if (this instanceof ThreadedMonitoringReader) {
-                logger.debug("Stop the reader monitoring.");
-                stopObservation();
-            }
-        }
     }
 }
