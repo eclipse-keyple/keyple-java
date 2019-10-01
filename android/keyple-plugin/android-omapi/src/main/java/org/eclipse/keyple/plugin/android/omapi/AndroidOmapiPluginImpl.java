@@ -18,7 +18,7 @@ import java.util.TreeSet;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractStaticPlugin;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.SEService;
 import android.util.Log;
@@ -27,7 +27,7 @@ import android.util.Log;
  * Loads and configures {@link AndroidOmapiReaderImpl} for each SE Reader in the platform TODO : filters
  * readers to load by parameters with a regex
  */
-final class AndroidOmapiPluginImpl extends AbstractStaticPlugin implements AndroidOmapiPlugin, SEService.CallBack {
+final class AndroidOmapiPluginImpl extends AbstractPlugin implements AndroidOmapiPlugin, SEService.CallBack {
 
     private static final String TAG = AndroidOmapiPluginImpl.class.getSimpleName();
 
