@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservablePlugin;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.plugin.remotese.rm.RemoteMethodTxEngine;
 import org.eclipse.keyple.plugin.remotese.transport.DtoSender;
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * Remote SE Plugin Creates a virtual reader when a remote readers connect Manages the dispatch of
  * events received from remote readers
  */
-class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlugin {
+class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteSePluginImpl.class);
     public static final String DEFAULT_PLUGIN_NAME = "RemoteSePlugin";
@@ -186,22 +186,6 @@ class RemoteSePluginImpl extends AbstractObservablePlugin implements RemoteSePlu
         // should not be call
         throw new IllegalArgumentException(
                 "fetchNativeReader is not used in this plugin, did you meant to use getReader?");
-    }
-
-    /**
-     * Not used
-     */
-    @Override
-    protected void startObservation() {
-        logger.warn("RemoteSePlugin#startObservation is not used in this plugin");
-    }
-
-    /**
-     * Not used
-     */
-    @Override
-    protected void stopObservation() {
-        logger.warn("RemoteSePlugin#stopObservation is not used in this plugin");
     }
 
     @Override

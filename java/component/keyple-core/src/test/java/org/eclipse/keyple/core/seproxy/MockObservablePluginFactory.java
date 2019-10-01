@@ -26,6 +26,6 @@ public class MockObservablePluginFactory extends AbstractPluginFactory {
 
     @Override
     protected ReaderPlugin getPluginInstance() {
-        return new MockAbstractObservablePlugin(pluginName);
+        return new MockAbstractPlugin(pluginName);
     }
 }

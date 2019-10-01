@@ -17,7 +17,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractStaticPlugin;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 
-final class AndroidNfcPluginImpl extends AbstractStaticPlugin implements AndroidNfcPlugin {
+final class AndroidNfcPluginImpl extends AbstractPlugin implements AndroidNfcPlugin {
 
     private static final Logger LOG = LoggerFactory.getLogger(AndroidNfcPluginImpl.class);
 

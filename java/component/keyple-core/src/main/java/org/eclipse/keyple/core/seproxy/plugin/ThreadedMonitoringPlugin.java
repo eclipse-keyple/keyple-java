@@ -11,12 +11,20 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import java.util.SortedSet;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 
 /**
- * Interface to be implemented by the readers requiring a thread handled by Keyple core to monitor
- * the card insertion/removal
+ * Interface to be implemented by the plugins requiring a thread handled by Keyple core to monitor
+ * the reader insertion/removal
  */
-public interface ThreadedMonitoringReader extends ObservableReader {
-
+public interface ThreadedMonitoringPlugin {
+    /**
+     * Fetch the list of connected native reader (usually from third party library) and returns
+     * their names (or id)
+     *
+     * @return connected readers' name list
+     * @throws KeypleReaderException if a reader error occurs
+     */
+    SortedSet<String> fetchNativeReadersNames() throws KeypleReaderException;
 }

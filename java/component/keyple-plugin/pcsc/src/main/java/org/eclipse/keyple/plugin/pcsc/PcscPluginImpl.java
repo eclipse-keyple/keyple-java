@@ -24,12 +24,13 @@ import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
+import org.eclipse.keyple.core.seproxy.plugin.ThreadedMonitoringPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements PcscPlugin {
+final class PcscPluginImpl extends AbstractPlugin implements PcscPlugin, ThreadedMonitoringPlugin {
 
     private static final Logger logger = LoggerFactory.getLogger(PcscPluginImpl.class);
 
@@ -85,7 +86,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
      * @return connected readers' name list
      * @throws KeypleReaderException if a reader error occurs
      */
-    protected SortedSet<String> fetchNativeReadersNames() throws KeypleReaderException {
+    public SortedSet<String> fetchNativeReadersNames() throws KeypleReaderException {
         SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
         CardTerminals terminals = getCardTerminals();
         try {
