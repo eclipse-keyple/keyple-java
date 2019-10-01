@@ -301,8 +301,10 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     public final void addObserver(ReaderObserver observer) {
         // if an observer is added to an empty list, start the observation
         if (super.countObservers() == 0) {
-            logger.debug("Start monitoring the reader {}", this.getName());
-            startObservation();
+            if (this instanceof ThreadedMonitoringReader) {
+                logger.debug("Start monitoring the reader {}", this.getName());
+                startObservation();
+            }
         }
         super.addObserver(observer);
     }
@@ -320,8 +322,10 @@ public abstract class AbstractObservableReader extends AbstractLoggedObservable<
     public final void removeObserver(ReaderObserver observer) {
         super.removeObserver(observer);
         if (super.countObservers() == 0) {
-            logger.debug("Stop the reader monitoring.");
-            stopObservation();
+            if (this instanceof ThreadedMonitoringReader) {
+                logger.debug("Stop the reader monitoring.");
+                stopObservation();
+            }
         }
     }
 }

@@ -109,12 +109,27 @@ public class AbstractObservableReaderTest extends CoreBaseTest {
      * HELPERS
      */
 
+    /**
+     * Class implementing {@link ThreadedMonitoringReader} to enable thread monitoring
+     */
+    abstract class ThreadedTestReader extends AbstractLocalReader
+            implements ThreadedMonitoringReader {
 
+        /**
+         * Constructor
+         *
+         * @param pluginName the name of the plugin that instantiated the reader
+         * @param readerName the name of the reader
+         */
+        public ThreadedTestReader(String pluginName, String readerName) {
+            super(pluginName, readerName);
+        }
+    }
 
     AbstractObservableReader getBlankAbstractObservableReader(String pluginName,
             String readerName) {
-
-        return new AbstractLocalReader(pluginName, readerName) {
+        /* anonymous subclass of ThreadedTestReader */
+        return new ThreadedTestReader(pluginName, readerName) {
 
             @Override
             protected void startObservation() {
