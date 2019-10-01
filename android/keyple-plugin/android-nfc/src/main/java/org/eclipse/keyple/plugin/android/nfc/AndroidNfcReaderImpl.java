@@ -78,16 +78,6 @@ final class AndroidNfcReaderImpl extends AbstractLocalReader
         LOG.info("Init singleton NFC Reader");
     }
 
-    @Override
-    protected void startObservation() {
-
-    }
-
-    @Override
-    protected void stopObservation() {
-
-    }
-
     /**
      * Holder of singleton
      */
