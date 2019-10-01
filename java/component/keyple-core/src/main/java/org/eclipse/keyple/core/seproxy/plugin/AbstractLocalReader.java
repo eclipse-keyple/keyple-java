@@ -1003,21 +1003,6 @@ public abstract class AbstractLocalReader extends AbstractReader {
                             "An threaded monitoring reader must implement the SmartInsertionReader "
                                     + "interface.");
                 }
-                // First thing we'll do is to notify that a card was inserted if one is already
-                // present.
-                if (isSePresent()) {
-                    logger.trace("[{}] Card is already present in reader", readerName);
-                    cardInserted();
-                    // wait as long as the PO responds (timeout is useless)
-                    logger.trace("[{}] Observe card removal", readerName);
-                    if (AbstractLocalReader.this instanceof SmartRemovalReader) {
-                        ((SmartRemovalReader) AbstractLocalReader.this).waitForCardAbsentNative(0);
-                    } else {
-                        waitForCardAbsentPing(0);
-                    }
-                    // notify removal
-                    cardRemoved();
-                }
 
                 while (running) {
                     logger.trace("[{}] observe card insertion", readerName);
