@@ -42,8 +42,7 @@ import org.slf4j.LoggerFactory;
 @RunWith(MockitoJUnitRunner.class)
 public class AbstractReaderTest extends CoreBaseTest {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(AbstractReaderTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractReaderTest.class);
 
 
     final String PLUGIN_NAME = "abstractObservablePluginTest";
@@ -128,8 +127,7 @@ public class AbstractReaderTest extends CoreBaseTest {
         }
     }
 
-    ThreadedTestReader getBlankAbstractReader(String pluginName,
-            String readerName) {
+    ThreadedTestReader getBlankAbstractReader(String pluginName, String readerName) {
         /* anonymous subclass of ThreadedTestReader */
         return new ThreadedTestReader(pluginName, readerName) {
 

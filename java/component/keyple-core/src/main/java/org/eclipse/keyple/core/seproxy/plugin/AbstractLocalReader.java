@@ -906,7 +906,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * <p>
      * The observer will receive all the events produced by this reader (card insertion, removal,
      * etc.)
-     * <p>Start the monitoring thread if {@link ThreadedMonitoringReader}.
+     * <p>
+     * Start the monitoring thread if {@link ThreadedMonitoringReader}.
      *
      * @param observer the observer object
      */

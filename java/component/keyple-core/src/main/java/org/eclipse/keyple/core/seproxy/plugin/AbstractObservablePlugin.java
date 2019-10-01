@@ -98,8 +98,7 @@ public abstract class AbstractObservablePlugin extends AbstractLoggedObservable<
 
     /**
      * Fetch connected native reader (from third party library) by its name Returns the current
-     * {@link AbstractReader} if it is already
-     * listed. Creates and returns a new
+     * {@link AbstractReader} if it is already listed. Creates and returns a new
      * {@link AbstractReader} if not.
      *
      * @param name the reader name
