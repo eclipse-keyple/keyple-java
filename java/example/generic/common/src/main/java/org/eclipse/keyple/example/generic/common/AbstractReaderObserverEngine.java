@@ -61,7 +61,7 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
                 currentlyProcessingSe = false;
                 break;
 
-            case SE_REMOVAL:
+            case SE_AWAITING_INSERTION:
                 if (currentlyProcessingSe) {
                     processUnexpectedSeRemoval(); // to clean current SE processing
                     logger.error("Unexpected SE Removal");
@@ -72,6 +72,9 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
                     }
                 }
                 currentlyProcessingSe = false;
+                break;
+            case SE_AWAITING_REMOVAL:
+                logger.info("Waiting for PO removal...");
                 break;
             default:
 

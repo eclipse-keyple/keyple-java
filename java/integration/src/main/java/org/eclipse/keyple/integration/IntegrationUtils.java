@@ -19,7 +19,6 @@ import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.command.sam.builder.security.UnlockCmdBuild;
 import org.eclipse.keyple.calypso.transaction.SamResource;
-import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -351,7 +350,7 @@ public class IntegrationUtils {
         // get the challenge from the PO
         apduRequests.add(new UnlockCmdBuild(SamRevision.C1, unlockData).getApduRequest());
 
-        SeRequest seRequest = new SeRequest(apduRequests, ChannelState.KEEP_OPEN);
+        SeRequest seRequest = new SeRequest(apduRequests);
 
         SeResponse seResponse = ((ProxyReader) samResource.getSeReader()).transmit(seRequest);
 

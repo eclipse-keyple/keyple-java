@@ -231,6 +231,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                 switch (event.getEventType()) {
                     case SE_MATCHED:
                         executeCommands(event.getDefaultSelectionsResponse());
+                        ((ObservableReader) reader).terminate(true);
                         break;
 
                     case SE_INSERTED:
@@ -239,7 +240,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                                 "PO detected but AID didn't match with " + CalypsoClassicInfo.AID);
                         break;
 
-                    case SE_REMOVAL:
+                    case SE_AWAITING_INSERTION:
                         mText.append("\n ---- \n");
                         mText.append("Tag removed");
                         break;
@@ -380,7 +381,6 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
             fm.beginTransaction().remove(f).commit();
         }
     }
-
 
     /**
      * Initialize display

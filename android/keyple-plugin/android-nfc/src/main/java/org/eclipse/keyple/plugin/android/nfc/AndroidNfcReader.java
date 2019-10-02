@@ -18,6 +18,14 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
 
 public interface AndroidNfcReader extends ObservableReader, NfcAdapter.ReaderCallback  {
+
+    String READER_NAME = "AndroidNfcReaderImpl";
+    String PLUGIN_NAME = "AndroidNfcPluginImpl";
+
+    String FLAG_READER_SKIP_NDEF_CHECK = "FLAG_READER_SKIP_NDEF_CHECK";
+    String FLAG_READER_NO_PLATFORM_SOUNDS = "FLAG_READER_NO_PLATFORM_SOUNDS";
+    String FLAG_READER_PRESENCE_CHECK_DELAY =
+            "FLAG_READER_PRESENCE_CHECK_DELAY";
     /**
      * Gets a string describing the low level description of the current tag.
      * <p>Used for logging purpose

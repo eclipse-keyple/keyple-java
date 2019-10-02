@@ -236,6 +236,13 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
                 } catch (KeypleReaderException e) {
                     e.printStackTrace();
                 }
+
+                /*
+                 * informs the underlying layer of the end of the SE processing, in order to manage
+                 * the removal sequence
+                 */
+                ((ObservableReader) poReader).terminate(true);
+
                 logger.info(
                         "==================================================================================");
                 logger.info(
@@ -246,9 +253,25 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
             case SE_INSERTED:
                 logger.error(
                         "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
+                /*
+                 * informs the underlying layer of the end of the SE processing, in order to manage
+                 * the removal sequence
+                 */
+                try {
+                    ((ObservableReader) SeProxyService.getInstance()
+                            .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
+                                    .terminate(true);
+                } catch (KeypleReaderNotFoundException e) {
+                    e.printStackTrace();
+                } catch (KeyplePluginNotFoundException e) {
+                    e.printStackTrace();
+                }
                 break;
-            case SE_REMOVAL:
-                logger.info("The PO has been removed.");
+            case SE_AWAITING_INSERTION:
+                logger.info("There is no PO inserted anymore. Return to the waiting state...");
+                break;
+            case SE_AWAITING_REMOVAL:
+                logger.info("Waiting for PO removal...");
                 break;
             default:
                 break;

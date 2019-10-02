@@ -34,7 +34,8 @@ public final class ReaderEvent {
     private final DefaultSelectionsResponse defaultResponseSet;
 
     /**
-     * The different types of reader event
+     * The different types of reader events, reflecting the status of the reader regarding the
+     * presence of the card
      */
     public enum EventType {
         /**
@@ -43,19 +44,24 @@ public final class ReaderEvent {
         IO_ERROR("SE Reader IO Error"),
 
         /**
+         * No SE is present, the system is waiting for an insertion.
+         */
+        SE_AWAITING_INSERTION("SE awaiting insertion"),
+
+        /**
          * A SE has been inserted.
          */
         SE_INSERTED("SE insertion"),
 
         /**
-         * A SE has been inserted and the default requests process has been operated.
+         * A SE has been inserted and the default requests process has been successfully operated.
          */
         SE_MATCHED("SE matched"),
 
         /**
-         * The SE has been removed.
+         * The SE is present, the system is awaiting for its removal.
          */
-        SE_REMOVAL("SE removal");
+        SE_AWAITING_REMOVAL("SE awaiting removal");
 
         /** The event name. */
         private String name;

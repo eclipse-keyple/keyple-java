@@ -21,7 +21,6 @@ import org.eclipse.keyple.calypso.transaction.SamSelectionRequest;
 import org.eclipse.keyple.calypso.transaction.SamSelector;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -58,7 +57,7 @@ public class Tool_SAM_EnableLock {
                 .add(new SamWriteKeyCmdBuild(SamRevision.C1, (byte) 0x80, (byte) 0xE0, setLockData)
                         .getApduRequest());
 
-        SeRequest seRequest = new SeRequest(apduRequests, ChannelState.KEEP_OPEN);
+        SeRequest seRequest = new SeRequest(apduRequests);
 
         SeResponse seResponse = ((ProxyReader) samResource.getSeReader()).transmit(seRequest);
 
@@ -101,8 +100,8 @@ public class Tool_SAM_EnableLock {
 
         SeSelection samSelection = new SeSelection();
 
-        SamSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SamSelector(SamRevision.C1, null, "SAM Selection"), ChannelState.KEEP_OPEN);
+        SamSelectionRequest samSelectionRequest =
+                new SamSelectionRequest(new SamSelector(SamRevision.C1, null, "SAM Selection"));
 
         /* Prepare selector, ignore MatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);

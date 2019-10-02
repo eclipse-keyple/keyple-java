@@ -66,6 +66,15 @@ public interface ObservableReader extends SeReader {
         }
     }
 
+    /**
+     * Allows the application to signal the end of processing and thus proceed with the removal
+     * sequence, followed by a restart of the card search.
+     *
+     * @param waitForRemoval if true then the procedure will wait for the card to be removed before
+     *        closing the physical channel
+     */
+    void terminate(boolean waitForRemoval);
+
     void addObserver(ReaderObserver observer);
 
     void removeObserver(ReaderObserver observer);

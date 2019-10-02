@@ -163,11 +163,12 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
                     Assert.assertEquals(2, lock.getCount());
                     lock.countDown();
                 } else {
-                    // the next event should be SE_REMOVAL
+                    // the next event should be SE_AWAITING_INSERTION
                     Assert.assertEquals(1, lock.getCount());
                     Assert.assertEquals(event.getReaderName(), virtualReader.getName());
                     Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
-                    Assert.assertEquals(ReaderEvent.EventType.SE_REMOVAL, event.getEventType());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_AWAITING_INSERTION,
+                            event.getEventType());
                     logger.debug("Reader Event is correct, release lock");
                     lock.countDown();
 

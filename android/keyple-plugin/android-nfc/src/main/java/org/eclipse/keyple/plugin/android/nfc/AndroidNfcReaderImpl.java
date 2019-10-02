@@ -50,16 +50,6 @@ final class AndroidNfcReaderImpl extends AbstractLocalReader
 
     private static final Logger LOG = LoggerFactory.getLogger(AndroidNfcReaderImpl.class);
 
-    static final String READER_NAME = "AndroidNfcReaderImpl";
-    static final String PLUGIN_NAME = "AndroidNfcPluginImpl";
-
-
-    public static final String FLAG_READER_SKIP_NDEF_CHECK = "FLAG_READER_SKIP_NDEF_CHECK";
-    public static final String FLAG_READER_NO_PLATFORM_SOUNDS = "FLAG_READER_NO_PLATFORM_SOUNDS";
-    public static final String FLAG_READER_PRESENCE_CHECK_DELAY =
-            "FLAG_READER_PRESENCE_CHECK_DELAY";
-
-
     // Android NFC Adapter
     private NfcAdapter nfcAdapter;
 
@@ -220,7 +210,7 @@ final class AndroidNfcReaderImpl extends AbstractLocalReader
             if (tagProxy != null) {
                 tagProxy.close();
                 notifyObservers(new ReaderEvent(PLUGIN_NAME, READER_NAME,
-                        ReaderEvent.EventType.SE_REMOVAL, null));
+                        ReaderEvent.EventType.SE_AWAITING_INSERTION, null));
                 LOG.info("Disconnected tag : " + printTagId());
             }
         } catch (IOException e) {
@@ -249,6 +239,10 @@ final class AndroidNfcReaderImpl extends AbstractLocalReader
         return dataOut;
     }
 
+    @Override
+    public void terminate(boolean waitForRemoval) {
+        // TODO implement
+    }
 
     @Override
     protected boolean protocolFlagMatches(SeProtocol protocolFlag) {

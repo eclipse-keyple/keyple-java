@@ -183,6 +183,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
     public void update(ReaderEvent event) {
         switch (event.getEventType()) {
             case SE_MATCHED:
+                SeReader poReader = null;
                 MatchingSelection matchingSelection =
                         seSelection.processDefaultSelection(event.getDefaultSelectionsResponse())
                                 .getActiveSelection();
@@ -190,7 +191,6 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
                 CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
 
                 if (calypsoPo.isSelected()) {
-                    SeReader poReader = null;
                     try {
                         poReader = SeProxyService.getInstance().getPlugin(event.getPluginName())
                                 .getReader(event.getReaderName());
@@ -270,13 +270,35 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
                     logger.error(
                             "The selection of the PO has failed. Should not have occurred due to the MATCHED_ONLY selection mode.");
                 }
+
+                /*
+                 * informs the underlying layer of the end of the SE processing, in order to manage
+                 * the removal sequence
+                 */
+                ((ObservableReader) poReader).terminate(true);
                 break;
             case SE_INSERTED:
                 logger.error(
                         "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
+                /*
+                 * informs the underlying layer of the end of the SE processing, in order to manage
+                 * the removal sequence
+                 */
+                try {
+                    ((ObservableReader) SeProxyService.getInstance()
+                            .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
+                                    .terminate(true);
+                } catch (KeypleReaderNotFoundException e) {
+                    e.printStackTrace();
+                } catch (KeyplePluginNotFoundException e) {
+                    e.printStackTrace();
+                }
                 break;
-            case SE_REMOVAL:
-                logger.info("The PO has been removed.");
+            case SE_AWAITING_INSERTION:
+                logger.info("There is no PO inserted anymore. Return to the waiting state...");
+                break;
+            case SE_AWAITING_REMOVAL:
+                logger.info("Waiting for PO removal...");
                 break;
             default:
                 break;

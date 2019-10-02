@@ -201,11 +201,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *         processed silently
      */
     protected final void cardRemoved() throws NoStackTraceThrowable {
-        if (presenceNotified) {
-            notifyObservers(new ReaderEvent(this.pluginName, this.name,
-                    ReaderEvent.EventType.SE_REMOVAL, null));
-            presenceNotified = false;
-        }
+        notifyObservers(new ReaderEvent(this.pluginName, this.name,
+                ReaderEvent.EventType.SE_AWAITING_INSERTION, null));
         closeLogicalAndPhysicalChannels();
     }
 
@@ -957,6 +954,10 @@ public abstract class AbstractLocalReader extends AbstractReader {
         this.threadWaitTimeout = timeout;
     }
 
+    private boolean doWaitForRemoval = false;
+    private boolean seProcessed;
+    private final Object waitForRemovalSync = new Object();
+
     /**
      * Thread in charge of reporting live events
      */
@@ -1005,30 +1006,95 @@ public abstract class AbstractLocalReader extends AbstractReader {
                             "An threaded monitoring reader must implement the SmartInsertionReader "
                                     + "interface.");
                 }
+                // Notify the application of the current state: awaiting for SE insertion
+                notifyObservers(new ReaderEvent(this.pluginName, AbstractLocalReader.this.name,
+                        ReaderEvent.EventType.SE_AWAITING_INSERTION, null));
 
                 while (running) {
                     logger.trace("[{}] observe card insertion", readerName);
                     // we will wait for it to appear
                     if (((SmartInsertionReader) AbstractLocalReader.this).waitForCardPresent(0)) {
-                        // notify insertion
+                        seProcessed = false;
+                        // a SE has been inserted, we'll end with a SE_INSERTED or SE_MATCHED
+                        // notification
                         logger.debug("Card inserted.");
                         cardInserted();
-                        // wait as long as the PO responds (timeout is useless)
-                        logger.trace("[{}] Observe card removal", readerName);
-                        if (AbstractLocalReader.this instanceof SmartRemovalReader) {
-                            ((SmartRemovalReader) AbstractLocalReader.this)
-                                    .waitForCardAbsentNative(0);
-                        } else {
-                            waitForCardAbsentPing(0);
+                        // the presence may be not notified. E.g. when the SE no longer communicates
+                        // during the
+                        // default selection process. In this case, we just ignore and go on in the
+                        // "awaiting for SE
+                        // insertion" state.
+                        if (presenceNotified) {
+                            // the SE is still considered to be present, we wait for the application
+                            // to notify us when the
+                            // processing ends
+                            if (!seProcessed) {
+                                synchronized (waitForRemovalSync) {
+                                    try {
+                                        waitForRemovalSync.wait(threadWaitTimeout);
+                                    } catch (InterruptedException ex) {
+                                        Thread.currentThread().interrupt();
+                                        throw new IllegalStateException(
+                                                "An Interrupted Exception occured while waiting "
+                                                        + "notification from application.");
+                                    }
+                                }
+                            }
+                            if (doWaitForRemoval) {
+                                doWaitForRemoval = false;
+                                // Notify the application of the current state: awaiting for SE
+                                // removal
+                                notifyObservers(new ReaderEvent(this.pluginName,
+                                        AbstractLocalReader.this.name,
+                                        ReaderEvent.EventType.SE_AWAITING_REMOVAL, null));
+
+                                // wait as long as the PO responds (timeout is useless)
+                                logger.trace("[{}] Observe card removal", readerName);
+                                if (AbstractLocalReader.this instanceof SmartRemovalReader) {
+                                    ((SmartRemovalReader) AbstractLocalReader.this)
+                                            .waitForCardAbsentNative(0);
+                                } else {
+                                    waitForCardAbsentPing(0);
+                                }
+                            }
+                            // close the physical channel and notify for the new awaiting for
+                            // insertion state
+                            cardRemoved();
                         }
-                        // handle removal (notify if needed)
-                        cardRemoved();
                     }
                 }
             } catch (NoStackTraceThrowable e) {
                 logger.trace("[{}] Exception occurred in monitoring thread: {}", readerName,
                         e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Signal from the application to terminate the operations with the current SE.
+     * <p>
+     * We handle here two different cases:
+     * <li>
+     * <ul>
+     * the notification is executed in the same thread (reader monitoring thread): in this case the
+     * seProcessed flag is set when cardInserted/notifyObservers/update ends. The monitoring thread
+     * can continue without having to wait for the end of the SE processing.
+     * </ul>
+     * <ul>
+     * the notification is executed in a separate thread: in this case the cardInserted method will
+     * have finished before the end of the SE processing and the reader monitoring thread is already
+     * waiting with the waitForRemovalSync object. Here we release the waitForRemovalSync object by
+     * calling its notify method.
+     * </ul>
+     * </li>
+     *
+     * @param waitForRemoval true indicates that the removal sequence must be performed
+     */
+    public void terminate(boolean waitForRemoval) {
+        synchronized (waitForRemovalSync) {
+            seProcessed = true;
+            doWaitForRemoval = waitForRemoval;
+            waitForRemovalSync.notify();
         }
     }
 

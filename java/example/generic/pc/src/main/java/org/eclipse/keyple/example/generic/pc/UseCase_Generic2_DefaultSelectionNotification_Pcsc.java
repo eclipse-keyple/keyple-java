@@ -18,6 +18,8 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.generic.common.GenericSeSelectionRequest;
@@ -160,13 +162,46 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
                     logger.error(
                             "The selection of the SE has failed. Should not have occurred due to the MATCHED_ONLY selection mode.");
                 }
+                logger.error(
+                        "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
+                /*
+                 * informs the underlying layer of the end of the SE processing, in order to manage
+                 * the removal sequence
+                 */
+                try {
+                    ((ObservableReader) SeProxyService.getInstance()
+                            .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
+                                    .terminate(true);
+                } catch (KeypleReaderNotFoundException e) {
+                    e.printStackTrace();
+                } catch (KeyplePluginNotFoundException e) {
+                    e.printStackTrace();
+                }
                 break;
             case SE_INSERTED:
                 logger.error(
                         "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
+                logger.error(
+                        "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
+                /*
+                 * informs the underlying layer of the end of the SE processing, in order to manage
+                 * the removal sequence
+                 */
+                try {
+                    ((ObservableReader) SeProxyService.getInstance()
+                            .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
+                                    .terminate(true);
+                } catch (KeypleReaderNotFoundException e) {
+                    e.printStackTrace();
+                } catch (KeyplePluginNotFoundException e) {
+                    e.printStackTrace();
+                }
                 break;
-            case SE_REMOVAL:
-                logger.info("The SE has been removed.");
+            case SE_AWAITING_INSERTION:
+                logger.info("There is no PO inserted anymore. Return to the waiting state...");
+                break;
+            case SE_AWAITING_REMOVAL:
+                logger.info("Waiting for PO removal...");
                 break;
             default:
                 break;

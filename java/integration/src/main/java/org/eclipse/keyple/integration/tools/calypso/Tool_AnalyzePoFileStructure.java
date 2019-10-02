@@ -66,7 +66,7 @@ public class Tool_AnalyzePoFileStructure {
             apduRequests.add(new PoGetChallengeCmdBuild(poResource.getMatchingSe().getPoClass())
                     .getApduRequest());
 
-            SeRequest seRequest = new SeRequest(apduRequests, ChannelState.KEEP_OPEN);
+            SeRequest seRequest = new SeRequest(apduRequests);
 
             SeResponse seResponse = ((ProxyReader) poResource.getSeReader()).transmit(seRequest);
 
@@ -149,7 +149,7 @@ public class Tool_AnalyzePoFileStructure {
 
                 apduRequests.add(new GetDataTraceCmdBuild(poResource.getMatchingSe().getPoClass())
                         .getApduRequest());
-                SeRequest seRequest = new SeRequest(apduRequests, ChannelState.KEEP_OPEN);
+                SeRequest seRequest = new SeRequest(apduRequests);
 
                 SeResponse seResponse =
                         ((ProxyReader) poResource.getSeReader()).transmit(seRequest);
@@ -228,7 +228,7 @@ public class Tool_AnalyzePoFileStructure {
             PoSelectionRequest poSelectionRequest1 = new PoSelectionRequest(new PoSelector(
                     SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                     new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(aid), null),
-                    "firstApplication"), ChannelState.KEEP_OPEN);
+                    "firstApplication"));
 
             int firstApplicationIndex = seSelection.prepareSelection(poSelectionRequest1);
 
@@ -251,8 +251,7 @@ public class Tool_AnalyzePoFileStructure {
                             new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(aid),
                                     null, SeSelector.AidSelector.FileOccurrence.NEXT,
                                     SeSelector.AidSelector.FileControlInformation.FCI),
-                            "secondApplication"),
-                    ChannelState.KEEP_OPEN);
+                            "secondApplication"));
 
             int secondApplicationIndex = seSelection.prepareSelection(poSelectionRequest2);
 

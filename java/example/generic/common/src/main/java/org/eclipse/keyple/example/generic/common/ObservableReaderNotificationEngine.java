@@ -64,6 +64,24 @@ public class ObservableReaderNotificationEngine {
         }
 
         public void update(ReaderEvent event) {
+            switch (event.getEventType()) {
+                case SE_INSERTED:
+                case SE_MATCHED:
+                    /*
+                     * informs the underlying layer of the end of the SE processing, in order to
+                     * manage the removal sequence
+                     */
+                    try {
+                        ((ObservableReader) SeProxyService.getInstance()
+                                .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
+                                        .terminate(true);
+                    } catch (KeypleReaderNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (KeyplePluginNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+            }
             /* just log the event */
             logger.info("Event: PLUGINNAME = {}, READERNAME = {}, EVENT = {}",
                     event.getPluginName(), event.getReaderName(), event.getEventType().getName());
