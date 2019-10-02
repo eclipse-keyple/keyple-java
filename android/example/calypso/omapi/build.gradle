@@ -21,6 +21,10 @@ project.version = '0.7.0-SNAPSHOT'
 apply plugin: 'com.android.application'
 apply from:'../../../../common.gradle'
 
+ext {
+    keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
+}
+
 allprojects {
 
     configurations.all {
@@ -29,11 +33,11 @@ allprojects {
     }
 
     repositories {
-        //to import keyple snapshots
-        //maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
-        //to import keyple releases
-        //maven { url 'https://oss.sonatype.org/content/repositories/releases' }
         mavenLocal()
+        //to import keyple snapshots
+        maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        //to import keyple releases
+        maven { url 'https://oss.sonatype.org/content/repositories/releases' }
         mavenCentral()
         google()
         jcenter()
@@ -113,9 +117,12 @@ android {
 
 repositories {
     mavenLocal()
+    //to import keyple snapshots
+    maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    //to import keyple releases
+    maven { url 'https://oss.sonatype.org/content/repositories/releases' }
     mavenCentral()
     google()
-    jcenter()
 }
 
 dependencies {
@@ -125,13 +132,13 @@ dependencies {
    Keyple dependencies
     */
     //import the last version of keyple-java-core
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_v
 
     //import the last version of keyple-java-calypso
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_v
 
     //import the last version of keyple-java-plugin-omapi
-    implementation group: 'org.eclipse.keyple', name: 'keyple-android-plugin-omapi', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-android-plugin-omapi', version: keyple_v
 
 
     /*
