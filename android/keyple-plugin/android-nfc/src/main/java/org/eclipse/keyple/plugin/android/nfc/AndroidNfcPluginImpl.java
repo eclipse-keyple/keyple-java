@@ -32,16 +32,6 @@ import org.slf4j.LoggerFactory;
  * getFragmentManager().beginTransaction().add(AndroidNfcFragment.newInstance(),
  * "myFragmentId").commit();
  *
- * Then set the Activity as an observer of the plugin as any Keyple plugin :
- *
- * SeProxyService seProxyService = SeProxyService.getInstance(); List<ReaderPlugin> plugins = new
- * ArrayList<ReaderPlugin>(); plugins.add(AndroidNfcPluginImpl.getInstance());
- * seProxyService.setPlugins(plugins);
- *
- * ProxyReader reader = seProxyService.getPlugins().get(0).getReaders().get(0);
- * ((AbstractReader) reader).addObserver(this);
- *
- *
  *
  */
 
