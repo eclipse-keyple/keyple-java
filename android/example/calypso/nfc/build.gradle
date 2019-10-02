@@ -18,6 +18,10 @@ plugins {
 apply plugin: 'com.android.application'
 apply from:'../../../../common.gradle'
 
+ext {
+    keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
+}
+
 project.group 'org.eclipse.keyple'
 project.version = '0.7.0-SNAPSHOT'
 
@@ -122,13 +126,13 @@ dependencies {
     Keyple dependencies
      */
     //import the last version of keyple-java-core
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_v
 
     //import the last version of keyple-java-calypso
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_v
 
     //import the last version of keyple-java-plugin-nfc
-    implementation group: 'org.eclipse.keyple', name: 'keyple-android-plugin-nfc', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-android-plugin-nfc', version: keyple_v
     
     /*
     Android components

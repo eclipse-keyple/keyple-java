@@ -223,7 +223,6 @@ dependencies {
     Tests
      */
     testImplementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: project.version
-    //testImplementation project(path:':java:component:keyple-calypso')
 
     /**Power mock**/
     androidTestImplementation "org.mockito:mockito-android:${mockito_android_version}"
