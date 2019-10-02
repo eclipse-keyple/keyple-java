@@ -590,7 +590,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 requestIndex++;
                 if (lastRequestIndex == requestIndex) {
                     if (channelState == ChannelState.CLOSE_AFTER) {
-                        if (!(this instanceof ObservableReader)
+                        if (this instanceof SmartRemovalReader
+                                || !(this instanceof ObservableReader)
                                 || (((ObservableReader) this).countObservers() == 0)) {
                             /*
                              * Not observable/observed: close immediately the physical channel if
@@ -624,7 +625,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
         SeResponse seResponse = processSeRequestLogical(seRequest);
 
         if (channelState == ChannelState.CLOSE_AFTER) {
-            if (!(this instanceof ObservableReader)
+            if (this instanceof SmartRemovalReader || !(this instanceof ObservableReader)
                     || (((ObservableReader) this).countObservers() == 0)) {
                 /* Not observable/observed: close immediately the physical channel if requested */
                 closePhysicalChannel();

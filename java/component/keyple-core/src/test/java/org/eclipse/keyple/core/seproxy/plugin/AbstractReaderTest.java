@@ -45,7 +45,7 @@ public class AbstractReaderTest extends CoreBaseTest {
     private static final Logger logger = LoggerFactory.getLogger(AbstractReaderTest.class);
 
 
-    final String PLUGIN_NAME = "abstractObservablePluginTest";
+    final String PLUGIN_NAME = "abstractPluginTest";
     final String READER_NAME = "AbstractReaderTest";
 
     final ObservableReader.ReaderObserver obs1 = getObserver();
