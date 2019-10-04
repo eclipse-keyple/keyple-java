@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
@@ -260,6 +261,10 @@ public abstract class AbstractPlugin extends AbstractLoggedObservable<PluginEven
                             /* list update */
                             for (SeReader reader : readers) {
                                 if (!actualNativeReadersNames.contains(reader.getName())) {
+                                    /* removes any possible observers before removing the reader */
+                                    if (reader instanceof ObservableReader) {
+                                        ((ObservableReader) reader).clearObservers();
+                                    }
                                     readers.remove(reader);
                                     logger.trace(
                                             "[{}][{}] Plugin thread => Remove unplugged reader from readers list.",
