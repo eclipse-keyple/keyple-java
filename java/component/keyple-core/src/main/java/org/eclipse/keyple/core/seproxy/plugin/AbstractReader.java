@@ -56,6 +56,15 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
     /** Indicate if all SE detected should be notified or only matching SE */
     protected NotificationMode notificationMode;
 
+    /**
+     * This flag is used with transmit or transmitSet
+     * <p>
+     * This flag will be used by the terminate method to determine if a command to close the
+     * physical channel has been requested and therefore to switch to the removal sequence for the
+     * observed readers.
+     */
+    private boolean forceClosing = true;
+
     /** ==== Constructor =================================================== */
 
     /**
@@ -123,6 +132,9 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
         if (requestSet == null) {
             throw new IllegalArgumentException("seRequestSet must not be null");
         }
+
+        /* sets the forceClosing flag */
+        forceClosing = channelState == ChannelState.KEEP_OPEN;
 
         List<SeResponse> responseSet;
 
@@ -205,6 +217,9 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
             throw new IllegalArgumentException("seRequest must not be null");
         }
 
+        /* sets the forceClosing flag */
+        forceClosing = channelState == ChannelState.KEEP_OPEN;
+
         SeResponse seResponse = null;
 
         if (logger.isDebugEnabled()) {
@@ -265,6 +280,29 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
             throws KeypleReaderException;
 
     /** ==== Methods specific to observability ============================= */
+
+    /**
+     * Allows the application to signal the end of processing and thus proceed with the removal
+     * sequence, followed by a restart of the card search.
+     * <p>
+     * Do nothing if the closing of the physical channel has already been requested.
+     * <p>
+     * Send a request without APDU just to close the physical channel if it has not already been
+     * closed.
+     */
+    public void terminate() {
+        logger.trace("Explicit physical channel closing request.");
+        if (forceClosing) {
+            try {
+                processSeRequest(null, ChannelState.CLOSE_AFTER);
+                logger.trace("Explicit physical channel closing executed.");
+            } catch (KeypleReaderException e) {
+                logger.error("KeypleReaderException while terminating." + e.getMessage());
+            }
+        } else {
+            logger.trace("Explicit physical channel closing already requested.");
+        }
+    }
 
     /**
      * Add a reader observer.

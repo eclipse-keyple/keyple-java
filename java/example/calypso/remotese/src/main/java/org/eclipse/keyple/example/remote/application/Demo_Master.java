@@ -219,14 +219,14 @@ public class Demo_Master {
                                                     // event.getReaderName());
 
                                                     break;
-                                                case SE_AWAITING_INSERTION:
-                                                    logger.info("{} SE_AWAITING_INSERTION {} {}",
+                                                case AWAITING_SE_INSERTION:
+                                                    logger.info("{} AWAITING_SE_INSERTION {} {}",
                                                             node.getNodeId(), event.getPluginName(),
                                                             event.getReaderName());
                                                     break;
 
-                                                case SE_AWAITING_REMOVAL:
-                                                    logger.info("{} SE_AWAITING_REMOVAL {} {}",
+                                                case AWAITING_SE_REMOVAL:
+                                                    logger.info("{} AWAITING_SE_REMOVAL {} {}",
                                                             node.getNodeId(), event.getPluginName(),
                                                             event.getReaderName());
                                                     break;

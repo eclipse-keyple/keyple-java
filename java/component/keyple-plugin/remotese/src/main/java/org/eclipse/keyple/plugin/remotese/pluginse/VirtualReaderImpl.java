@@ -215,11 +215,6 @@ final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     }
 
     @Override
-    public void terminate(boolean waitForRemoval) {
-        // TODO implement this
-    }
-
-    @Override
     public void setDefaultSelectionRequest(
             AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             NotificationMode notificationMode) {

@@ -163,7 +163,7 @@ public class StubReaderTest extends BaseStubTest {
                 if (event_i == 2) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
                     Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.SE_AWAITING_INSERTION,
+                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
                             event.getEventType());
                     removeLock.countDown();
                 }
@@ -185,7 +185,7 @@ public class StubReaderTest extends BaseStubTest {
 
         reader.removeSe();
 
-        // lock thread for 2 seconds max to wait for the event SE_AWAITING_INSERTION
+        // lock thread for 2 seconds max to wait for the event AWAITING_SE_INSERTION
         removeLock.await(2, TimeUnit.SECONDS);
 
         Assert.assertEquals(0, removeLock.getCount()); // should be 0 because removeLock is
@@ -231,7 +231,7 @@ public class StubReaderTest extends BaseStubTest {
                 if (event_i == 2) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
                     Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.SE_AWAITING_INSERTION,
+                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
                             event.getEventType());
                     firstRemoveLock.countDown();
                 }
@@ -244,7 +244,7 @@ public class StubReaderTest extends BaseStubTest {
                 if (event_i == 4) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
                     Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.SE_AWAITING_INSERTION,
+                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
                             event.getEventType());
                     secondRemoveLock.countDown();
                 }
@@ -268,7 +268,7 @@ public class StubReaderTest extends BaseStubTest {
 
         reader.removeSe();
 
-        // lock thread for 2 seconds max to wait for the event SE_AWAITING_INSERTION
+        // lock thread for 2 seconds max to wait for the event AWAITING_SE_INSERTION
         firstRemoveLock.await(2, TimeUnit.SECONDS);
         Assert.assertEquals(0, firstRemoveLock.getCount()); // should be 0 because removeLock is
                                                             // countDown by obs
@@ -289,7 +289,7 @@ public class StubReaderTest extends BaseStubTest {
         Thread.sleep(1000);
         reader.removeSe();
 
-        // lock thread for 2 seconds max to wait for the event SE_AWAITING_INSERTION
+        // lock thread for 2 seconds max to wait for the event AWAITING_SE_INSERTION
         secondRemoveLock.await(2, TimeUnit.SECONDS);
         Assert.assertEquals(0, secondRemoveLock.getCount()); // should be 0 because removeLock is
                                                              // countDown by obs
@@ -330,7 +330,7 @@ public class StubReaderTest extends BaseStubTest {
                 if (event_i == 2) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
                     Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.SE_AWAITING_INSERTION,
+                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
                             event.getEventType());
                     firstRemoveLock.countDown();
                 }
@@ -343,7 +343,7 @@ public class StubReaderTest extends BaseStubTest {
                 if (event_i == 4) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
                     Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.SE_AWAITING_INSERTION,
+                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
                             event.getEventType());
                     secondRemoveLock.countDown();
                 }
@@ -365,7 +365,7 @@ public class StubReaderTest extends BaseStubTest {
 
         reader.removeSe();
 
-        // lock thread for 2 seconds max to wait for the event SE_AWAITING_INSERTION
+        // lock thread for 2 seconds max to wait for the event AWAITING_SE_INSERTION
         firstRemoveLock.await(2, TimeUnit.SECONDS);
         Assert.assertEquals(0, firstRemoveLock.getCount()); // should be 0 because removeLock is
         // countDown by obs
@@ -384,7 +384,7 @@ public class StubReaderTest extends BaseStubTest {
         // countDown by obs
         reader.removeSe();
 
-        // lock thread for 2 seconds max to wait for the event SE_AWAITING_INSERTION
+        // lock thread for 2 seconds max to wait for the event AWAITING_SE_INSERTION
         secondRemoveLock.await(2, TimeUnit.SECONDS);
         Assert.assertEquals(0, secondRemoveLock.getCount()); // should be 0 because removeLock is
         // countDown by obs

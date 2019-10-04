@@ -131,6 +131,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * the selection.
      */
     protected final void cardInserted() {
+        presenceNotified = false;
         if (defaultSelectionsRequest == null) {
             /* no default request is defined, just notify the SE insertion */
             notifyObservers(new ReaderEvent(this.pluginName, this.name,
@@ -144,7 +145,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
             boolean aSeMatched = false;
             try {
                 List<SeResponse> seResponseList =
-                        processSeRequestSet(defaultSelectionsRequest.getSelectionSeRequestSet(),
+                        transmitSet(defaultSelectionsRequest.getSelectionSeRequestSet(),
                                 defaultSelectionsRequest.getMultiSeRequestProcessing(),
                                 defaultSelectionsRequest.getChannelState());
 
@@ -202,7 +203,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      */
     protected final void cardRemoved() throws NoStackTraceThrowable {
         notifyObservers(new ReaderEvent(this.pluginName, this.name,
-                ReaderEvent.EventType.SE_AWAITING_INSERTION, null));
+                ReaderEvent.EventType.AWAITING_SE_INSERTION, null));
         closeLogicalAndPhysicalChannels();
     }
 
@@ -596,6 +597,13 @@ public abstract class AbstractLocalReader extends AbstractReader {
                              */
                             closePhysicalChannel();
                         }
+
+                        if (this instanceof ThreadedMonitoringReader) {
+                            /*
+                             * request the removal sequence when the reader is monitored by a thread
+                             */
+                            skipToRemovalSequence();
+                        }
                     }
                 }
             }
@@ -609,7 +617,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * <p>
      * The physical channel is closed if requested.
      *
-     * @param seRequest the SeRequest
+     * @param seRequest the SeRequest (null if only the closing of the physical channel is
+     *        requested)
      * @param channelState indicates if the channel has to be closed at the end of the processing
      * @return the SeResponse to the SeRequest
      * @throws KeypleReaderException if a transmission fails
@@ -619,13 +628,23 @@ public abstract class AbstractLocalReader extends AbstractReader {
     protected final SeResponse processSeRequest(SeRequest seRequest, ChannelState channelState)
             throws IllegalStateException, KeypleReaderException {
 
-        SeResponse seResponse = processSeRequestLogical(seRequest);
+        SeResponse seResponse = null;
+
+        /* The SeRequest may be null when we just need to close the physical channel */
+        if (seRequest != null) {
+            seResponse = processSeRequestLogical(seRequest);
+        }
 
         if (channelState == ChannelState.CLOSE_AFTER) {
             if (this instanceof SmartRemovalReader || !(this instanceof ObservableReader)
                     || (((ObservableReader) this).countObservers() == 0)) {
                 /* Not observable/observed: close immediately the physical channel if requested */
                 closePhysicalChannel();
+            }
+
+            if (this instanceof ThreadedMonitoringReader) {
+                /* request the removal sequence when the reader is monitored by a thread */
+                skipToRemovalSequence();
             }
         }
 
@@ -946,6 +965,18 @@ public abstract class AbstractLocalReader extends AbstractReader {
     }
 
     /**
+     * Remove all the observers of the reader
+     */
+    @Override
+    public void clearObservers() {
+        super.clearObservers();
+        if (thread != null) {
+            logger.debug("Stop the reader monitoring.");
+            thread.end();
+        }
+    }
+
+    /**
      * setter to fix the wait timeout in ms.
      *
      * @param timeout Timeout to use
@@ -954,7 +985,6 @@ public abstract class AbstractLocalReader extends AbstractReader {
         this.threadWaitTimeout = timeout;
     }
 
-    private boolean doWaitForRemoval = false;
     private boolean seProcessed;
     private final Object waitForRemovalSync = new Object();
 
@@ -1008,7 +1038,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 }
                 // Notify the application of the current state: awaiting for SE insertion
                 notifyObservers(new ReaderEvent(this.pluginName, AbstractLocalReader.this.name,
-                        ReaderEvent.EventType.SE_AWAITING_INSERTION, null));
+                        ReaderEvent.EventType.AWAITING_SE_INSERTION, null));
 
                 while (running) {
                     logger.trace("[{}] observe card insertion", readerName);
@@ -1024,43 +1054,42 @@ public abstract class AbstractLocalReader extends AbstractReader {
                         // default selection process. In this case, we just ignore and go on in the
                         // "awaiting for SE
                         // insertion" state.
-                        if (presenceNotified) {
-                            // the SE is still considered to be present, we wait for the application
-                            // to notify us when the
-                            // processing ends
-                            if (!seProcessed) {
-                                synchronized (waitForRemovalSync) {
-                                    try {
-                                        waitForRemovalSync.wait(threadWaitTimeout);
-                                    } catch (InterruptedException ex) {
-                                        Thread.currentThread().interrupt();
-                                        throw new IllegalStateException(
-                                                "An Interrupted Exception occured while waiting "
-                                                        + "notification from application.");
-                                    }
-                                }
-                            }
-                            if (doWaitForRemoval) {
-                                doWaitForRemoval = false;
-                                // Notify the application of the current state: awaiting for SE
-                                // removal
-                                notifyObservers(new ReaderEvent(this.pluginName,
-                                        AbstractLocalReader.this.name,
-                                        ReaderEvent.EventType.SE_AWAITING_REMOVAL, null));
-
-                                // wait as long as the PO responds (timeout is useless)
-                                logger.trace("[{}] Observe card removal", readerName);
-                                if (AbstractLocalReader.this instanceof SmartRemovalReader) {
-                                    ((SmartRemovalReader) AbstractLocalReader.this)
-                                            .waitForCardAbsentNative(0);
-                                } else {
-                                    waitForCardAbsentPing(0);
-                                }
-                            }
-                            // close the physical channel and notify for the new awaiting for
-                            // insertion state
-                            cardRemoved();
+                        if (!presenceNotified) {
+                            terminate();
                         }
+                        // the SE is still considered to be present, we wait for the application
+                        // to notify us when the
+                        // processing ends
+                        if (!seProcessed) {
+                            synchronized (waitForRemovalSync) {
+                                try {
+                                    waitForRemovalSync.wait(threadWaitTimeout);
+                                } catch (InterruptedException ex) {
+                                    Thread.currentThread().interrupt();
+                                    throw new IllegalStateException(
+                                            "An Interrupted Exception occurred while waiting "
+                                                    + "notification from application.");
+                                }
+                            }
+                        }
+
+                        // Notify the application of the current state: awaiting for SE
+                        // removal
+                        notifyObservers(
+                                new ReaderEvent(this.pluginName, AbstractLocalReader.this.name,
+                                        ReaderEvent.EventType.AWAITING_SE_REMOVAL, null));
+
+                        // wait as long as the PO responds (timeout is useless)
+                        logger.trace("[{}] Observe card removal", readerName);
+                        if (AbstractLocalReader.this instanceof SmartRemovalReader) {
+                            ((SmartRemovalReader) AbstractLocalReader.this)
+                                    .waitForCardAbsentNative(0);
+                        } else {
+                            waitForCardAbsentPing(0);
+                        }
+                        // close the physical channel and notify for the new awaiting for
+                        // insertion state
+                        cardRemoved();
                     }
                 }
             } catch (NoStackTraceThrowable e) {
@@ -1071,29 +1100,25 @@ public abstract class AbstractLocalReader extends AbstractReader {
     }
 
     /**
-     * Signal from the application to terminate the operations with the current SE.
+     * Handle the signal from the application to terminate the operations with the current SE
+     * (ChannelState set to CLOSE_AFTER).
      * <p>
      * We handle here two different cases:
-     * <li>
+     * </p>
      * <ul>
-     * the notification is executed in the same thread (reader monitoring thread): in this case the
-     * seProcessed flag is set when cardInserted/notifyObservers/update ends. The monitoring thread
-     * can continue without having to wait for the end of the SE processing.
+     * <li>the notification is executed in the same thread (reader monitoring thread): in this case
+     * the seProcessed flag is set when cardInserted/notifyObservers/update ends. The monitoring
+     * thread can continue without having to wait for the end of the SE processing.</li>
+     * <li>the notification is executed in a separate thread: in this case the cardInserted method
+     * will have finished before the end of the SE processing and the reader monitoring thread is
+     * already waiting with the waitForRemovalSync object. Here we release the waitForRemovalSync
+     * object by calling its notify method.</li>
      * </ul>
-     * <ul>
-     * the notification is executed in a separate thread: in this case the cardInserted method will
-     * have finished before the end of the SE processing and the reader monitoring thread is already
-     * waiting with the waitForRemovalSync object. Here we release the waitForRemovalSync object by
-     * calling its notify method.
-     * </ul>
-     * </li>
      *
-     * @param waitForRemoval true indicates that the removal sequence must be performed
      */
-    public void terminate(boolean waitForRemoval) {
+    private void skipToRemovalSequence() {
         synchronized (waitForRemovalSync) {
             seProcessed = true;
-            doWaitForRemoval = waitForRemoval;
             waitForRemovalSync.notify();
         }
     }
