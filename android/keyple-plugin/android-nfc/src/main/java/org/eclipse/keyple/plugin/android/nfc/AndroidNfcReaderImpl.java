@@ -210,7 +210,7 @@ final class AndroidNfcReaderImpl extends AbstractLocalReader
             if (tagProxy != null) {
                 tagProxy.close();
                 notifyObservers(new ReaderEvent(PLUGIN_NAME, READER_NAME,
-                        ReaderEvent.EventType.SE_AWAITING_INSERTION, null));
+                        ReaderEvent.EventType.AWAITING_SE_INSERTION, null));
                 LOG.info("Disconnected tag : " + printTagId());
             }
         } catch (IOException e) {
@@ -237,11 +237,6 @@ final class AndroidNfcReaderImpl extends AbstractLocalReader
         }
         LOG.debug("Data out : " + ByteArrayUtil.toHex(dataOut));
         return dataOut;
-    }
-
-    @Override
-    public void terminate(boolean waitForRemoval) {
-        // TODO implement
     }
 
     @Override

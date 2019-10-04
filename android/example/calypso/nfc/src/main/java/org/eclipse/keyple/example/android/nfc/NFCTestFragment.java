@@ -231,16 +231,17 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                 switch (event.getEventType()) {
                     case SE_MATCHED:
                         executeCommands(event.getDefaultSelectionsResponse());
-                        ((ObservableReader) reader).terminate(true);
+                        ((ObservableReader) reader).terminate();
                         break;
 
                     case SE_INSERTED:
                         mText.append("\n ---- \n");
                         mText.append(
                                 "PO detected but AID didn't match with " + CalypsoClassicInfo.AID);
+                        ((ObservableReader) reader).terminate();
                         break;
 
-                    case SE_AWAITING_INSERTION:
+                    case AWAITING_SE_INSERTION:
                         mText.append("\n ---- \n");
                         mText.append("Tag removed");
                         break;
