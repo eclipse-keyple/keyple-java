@@ -588,8 +588,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 requestIndex++;
                 if (lastRequestIndex == requestIndex) {
                     if (channelState == ChannelState.CLOSE_AFTER) {
-                        if (this instanceof SmartRemovalReader
-                                || !(this instanceof ObservableReader)
+                        if (!(this instanceof ObservableReader)
                                 || (((ObservableReader) this).countObservers() == 0)) {
                             /*
                              * Not observable/observed: close immediately the physical channel if
@@ -636,7 +635,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
         }
 
         if (channelState == ChannelState.CLOSE_AFTER) {
-            if (this instanceof SmartRemovalReader || !(this instanceof ObservableReader)
+            if (!(this instanceof ObservableReader)
                     || (((ObservableReader) this).countObservers() == 0)) {
                 /* Not observable/observed: close immediately the physical channel if requested */
                 closePhysicalChannel();
@@ -1049,28 +1048,39 @@ public abstract class AbstractLocalReader extends AbstractReader {
                         // notification
                         logger.debug("Card inserted.");
                         cardInserted();
-                        // the presence may be not notified. E.g. when the SE no longer communicates
-                        // during the
-                        // default selection process. In this case, we just ignore and go on in the
-                        // "awaiting for SE
-                        // insertion" state.
-                        if (!presenceNotified) {
-                            terminate();
-                        }
-                        // the SE is still considered to be present, we wait for the application
-                        // to notify us when the
-                        // processing ends
-                        if (!seProcessed) {
-                            synchronized (waitForRemovalSync) {
-                                try {
-                                    waitForRemovalSync.wait(threadWaitTimeout);
-                                } catch (InterruptedException ex) {
-                                    Thread.currentThread().interrupt();
-                                    throw new IllegalStateException(
-                                            "An Interrupted Exception occurred while waiting "
-                                                    + "notification from application.");
+                        if (AbstractLocalReader.this instanceof SmartRemovalReader) {
+                            ((SmartRemovalReader) AbstractLocalReader.this)
+                                    .waitForCardAbsentNative(0);
+                        } else {
+
+                            // the presence may be not notified. E.g. when the SE no longer communicates
+                            // during the
+                            // default selection process. In this case, we just ignore and go on in the
+                            // "awaiting for SE
+                            // insertion" state.
+                            if (!presenceNotified) {
+                                terminate();
+                            }
+                            // the SE is still considered to be present, we wait for the application
+                            // to notify us when the
+                            // processing ends
+                            if (!seProcessed) {
+                                synchronized (waitForRemovalSync) {
+                                    try {
+                                        waitForRemovalSync.wait(threadWaitTimeout);
+                                    } catch (InterruptedException ex) {
+                                        Thread.currentThread().interrupt();
+                                        throw new IllegalStateException(
+                                                "An Interrupted Exception occurred while waiting "
+                                                        + "notification from application.");
+                                    }
                                 }
                             }
+                            // wait as long as the PO responds (timeout is useless)
+                            logger.trace("[{}] Observe card removal", readerName);
+                            waitForCardAbsentPing(0);
+                            // close the physical channel and notify for the new awaiting for
+                            // insertion state
                         }
 
                         // Notify the application of the current state: awaiting for SE
@@ -1079,16 +1089,6 @@ public abstract class AbstractLocalReader extends AbstractReader {
                                 new ReaderEvent(this.pluginName, AbstractLocalReader.this.name,
                                         ReaderEvent.EventType.AWAITING_SE_REMOVAL, null));
 
-                        // wait as long as the PO responds (timeout is useless)
-                        logger.trace("[{}] Observe card removal", readerName);
-                        if (AbstractLocalReader.this instanceof SmartRemovalReader) {
-                            ((SmartRemovalReader) AbstractLocalReader.this)
-                                    .waitForCardAbsentNative(0);
-                        } else {
-                            waitForCardAbsentPing(0);
-                        }
-                        // close the physical channel and notify for the new awaiting for
-                        // insertion state
                         cardRemoved();
                     }
                 }
