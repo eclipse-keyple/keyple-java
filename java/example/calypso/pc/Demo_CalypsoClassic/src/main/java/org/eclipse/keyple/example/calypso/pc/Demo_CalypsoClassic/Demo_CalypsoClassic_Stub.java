@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.calypso.pc;
+package org.eclipse.keyple.example.calypso.pc.Demo_CalypsoClassic;
 
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
@@ -17,9 +17,9 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
-import org.eclipse.keyple.example.calypso.common.stub.se.StubSamCalypsoClassic;
-import org.eclipse.keyple.example.calypso.pc.transaction.CalypsoClassicTransactionEngine;
+import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
+import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
+import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoClassicTransactionEngine;
 import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
