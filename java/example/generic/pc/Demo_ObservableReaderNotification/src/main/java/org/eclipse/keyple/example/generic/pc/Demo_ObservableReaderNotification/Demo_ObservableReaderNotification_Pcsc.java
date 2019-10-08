@@ -9,11 +9,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.generic.pc;
+package org.eclipse.keyple.example.generic.pc.Demo_ObservableReaderNotification;
 
 
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.example.generic.common.ObservableReaderNotificationEngine;
+import org.eclipse.keyple.example.common.generic.ObservableReaderNotificationEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 
 
