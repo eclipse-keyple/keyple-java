@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.generic.pc;
+package org.eclipse.keyple.example.generic.pc.UseCase_Generic3_GroupedMultiSelection;
 
 import java.io.IOException;
 import org.eclipse.keyple.core.selection.*;
@@ -21,7 +21,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.example.generic.common.GenericSeSelectionRequest;
+import org.eclipse.keyple.example.common.ReaderUtilities;
+import org.eclipse.keyple.example.common.generic.GenericSeSelectionRequest;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UseCase_Generic3_GroupedMultiSelection_Pcsc {
     protected static final Logger logger =
-            LoggerFactory.getLogger(UseCase_Generic1_ExplicitSelectionAid_Pcsc.class);
+            LoggerFactory.getLogger(UseCase_Generic3_GroupedMultiSelection_Pcsc.class);
 
     public static void main(String[] args)
             throws KeypleBaseException, InterruptedException, IOException, NoStackTraceThrowable {
