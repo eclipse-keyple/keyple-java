@@ -46,7 +46,12 @@ public final class ReaderEvent {
         /**
          * No SE is present, the system is waiting for an insertion.
          */
-        AWAITING_SE_INSERTION("SE awaiting insertion"),
+        AWAITING_SE_START_DETECTION("Awaiting start SE detection"),
+
+        /**
+         * No SE is present, the system is waiting for an insertion.
+         */
+        AWAITING_SE_INSERTION("Awaiting SE insertion"),
 
         /**
          * A SE has been inserted.
@@ -61,7 +66,7 @@ public final class ReaderEvent {
         /**
          * The SE is present, the system is awaiting for its removal.
          */
-        AWAITING_SE_REMOVAL("SE awaiting removal");
+        AWAITING_SE_REMOVAL("Awaiting SE removal");
 
         /** The event name. */
         private String name;

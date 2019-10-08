@@ -61,7 +61,6 @@ final class PcscReaderImpl extends AbstractLocalReader
         this.terminal = terminal;
         this.card = null;
         this.channel = null;
-        this.protocolsMap = new HashMap<SeProtocol, String>();
 
         // Using null values to use the standard method for defining default values
         try {

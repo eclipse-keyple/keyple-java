@@ -13,6 +13,7 @@ package org.eclipse.keyple.core.seproxy.event;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.util.Observable;
 
@@ -69,8 +70,11 @@ public interface ObservableReader extends SeReader {
     /**
      * Allows the application to signal the end of processing and thus proceed with the removal
      * sequence, followed by a restart of the card search.
+     * 
+     * @param channelState indicates the action to be taken after the closing of the physical
+     *        channel (continue to wait for SE or stop)
      */
-    void terminate();
+    void notifySeProcessed(ChannelState channelState);
 
     void addObserver(ReaderObserver observer);
 

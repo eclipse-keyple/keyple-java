@@ -56,7 +56,7 @@ public class StubProtocolSetting {
     /**
      * Return a subset of the settings map
      *
-     * @param specificProtocols
+     * @param specificProtocols subset of protocols
      * @return a settings map
      */
     public static Map<SeProtocol, String> getSpecificSettings(

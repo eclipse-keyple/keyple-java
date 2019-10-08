@@ -12,8 +12,14 @@
 package org.eclipse.keyple.core.seproxy;
 
 /**
- * indicates if the physical channel should be closed or not at the end of the request transmission
+ * indicates the action to be operated on the physical channel at the end of the request
+ * transmission
+ * <ul>
+ * <li>KEEP_OPEN: lefts the physical channel open</li>
+ * <li>CLOSE_AND_CONTINUE: closes the physical channel and continues with SE detection</li>
+ * <li>CLOSE_AND_STOP: closes the physical channel and stops the SE detection</li>
+ * </ul>
  */
 public enum ChannelState {
-    KEEP_OPEN, CLOSE_AFTER
+    KEEP_OPEN, CLOSE_AND_CONTINUE, CLOSE_AND_STOP
 }

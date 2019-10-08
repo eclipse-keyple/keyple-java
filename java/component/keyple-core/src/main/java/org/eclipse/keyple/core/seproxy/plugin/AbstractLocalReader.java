@@ -49,9 +49,6 @@ public abstract class AbstractLocalReader extends AbstractReader {
     /** current selection status */
     private SelectionStatus currentSelectionStatus;
 
-    /** notification status flag used to avoid redundant notifications */
-    private boolean presenceNotified = false;
-
     /** Timestamp recorder */
     private long before;
 
@@ -129,9 +126,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * <p>
      * It will do nothing if a default selection is defined in MATCHED_ONLY mode but no SE matched
      * the selection.
+     * 
+     * @return true if the notification was actually sent to the application, false if not
      */
-    protected final void cardInserted() {
-        presenceNotified = false;
+    protected final boolean processCardInsertion() {
+        boolean presenceNotified = false;
         if (defaultSelectionsRequest == null) {
             /* no default request is defined, just notify the SE insertion */
             notifyObservers(new ReaderEvent(this.pluginName, this.name,
@@ -187,6 +186,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 // in this case the card has been removed or not read correctly, do not throw event
             }
         }
+        return presenceNotified;
     }
 
     /**
@@ -197,11 +197,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * <p>
      * The SE will be notified removed only if it has been previously notified present (observable
      * reader only)
-     * 
-     * @throws NoStackTraceThrowable a exception without stack trace in order to be catched and
-     *         processed silently
+     *
      */
-    protected final void cardRemoved() throws NoStackTraceThrowable {
+    protected final void cardRemoved() {
         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                 ReaderEvent.EventType.AWAITING_SE_INSERTION, null));
         closeLogicalAndPhysicalChannels();
@@ -448,7 +446,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * interpreted by reader plugins implementing protocolFlagMatches (e.g. ATR regex for Pcsc
      * plugins, technology name for Nfc plugins, etc).
      */
-    protected Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
+    protected final Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
 
     /**
      * Defines the protocol setting Map to allow SE to be differentiated according to their
@@ -548,7 +546,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 if (requestMatchesProtocol[requestIndex]) {
                     logger.debug("[{}] processSeRequestSet => transmit {}", this.getName(),
                             request);
-                    SeResponse response = null;
+                    SeResponse response;
                     try {
                         response = processSeRequestLogical(request);
                     } catch (KeypleReaderException ex) {
@@ -587,7 +585,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 }
                 requestIndex++;
                 if (lastRequestIndex == requestIndex) {
-                    if (channelState == ChannelState.CLOSE_AFTER) {
+                    if (!(channelState == ChannelState.KEEP_OPEN)) {
                         if (!(this instanceof ObservableReader)
                                 || (((ObservableReader) this).countObservers() == 0)) {
                             /*
@@ -601,7 +599,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
                             /*
                              * request the removal sequence when the reader is monitored by a thread
                              */
-                            skipToRemovalSequence();
+                            if (thread != null) {
+                                thread.startRemoval(channelState);
+                            }
                         }
                     }
                 }
@@ -634,7 +634,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
             seResponse = processSeRequestLogical(seRequest);
         }
 
-        if (channelState == ChannelState.CLOSE_AFTER) {
+        if (!(channelState == ChannelState.KEEP_OPEN)) {
             if (!(this instanceof ObservableReader)
                     || (((ObservableReader) this).countObservers() == 0)) {
                 /* Not observable/observed: close immediately the physical channel if requested */
@@ -643,7 +643,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
 
             if (this instanceof ThreadedMonitoringReader) {
                 /* request the removal sequence when the reader is monitored by a thread */
-                skipToRemovalSequence();
+                if (thread != null) {
+                    thread.startRemoval(channelState);
+                }
             }
         }
 
@@ -756,8 +758,6 @@ public abstract class AbstractLocalReader extends AbstractReader {
             if (!isLogicalChannelOpen()) {
                 throw new IllegalStateException(
                         "[" + this.getName() + "] processSeRequest => No logical channel opened!");
-            } else {
-                selectionStatus = null;
             }
         }
 
@@ -888,14 +888,25 @@ public abstract class AbstractLocalReader extends AbstractReader {
      */
     protected abstract byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException;
 
-    /** ==== Default selection assignment ================================== */
+    /** ==== SE detection and default selection assignment ================================== */
 
     /**
-     * If defined, the prepared setDefaultSelectionRequest will be processed as soon as a SE is
-     * inserted. The result of this request set will be added to the reader event.
+     * Start of SE detection with advanced selection mechanism.
+     * <p>
+     * If defined, the prepared DefaultSelectionRequest will be processed as soon as a SE is
+     * inserted. The result of this request set will be added to the reader event notified to the
+     * application.
+     * <p>
+     * If it is not defined (set to null), a simple SE detection will be notified in the end.
      * <p>
      * Depending on the notification mode, the observer will be notified whenever an SE is inserted,
      * regardless of the selection status, or only if the current SE matches the selection criteria.
+     * <p>
+     * In addition, the observation thread will be notified of request to start the SE insertion
+     * monitoring (change from the WAIT_FOR_START_DETECTION state to WAIT_FOR_SE_INSERTION).
+     * <p>
+     * An {@link java.lang.IllegalStateException} exception will be thrown if no observers have been
+     * recorded for this reader (see startMonitoring).
      *
      * @param defaultSelectionsRequest the {@link AbstractDefaultSelectionsRequest} to be executed
      *        when a SE is inserted
@@ -906,7 +917,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
             ObservableReader.NotificationMode notificationMode) {
         this.defaultSelectionsRequest = (DefaultSelectionsRequest) defaultSelectionsRequest;
         this.notificationMode = notificationMode;
-    };
+        // unleash the monitoring thread to initiate SE detection
+        if (thread != null) {
+            thread.startDetection();
+        }
+    }
 
     /* Monitoring thread management methods */
     private EventThread thread;
@@ -954,8 +969,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
     public final void removeObserver(ObservableReader.ReaderObserver observer) {
         if (super.countObservers() == 0) {
             if (this instanceof ThreadedMonitoringReader) {
-                logger.debug("Stop the reader monitoring.");
                 if (thread != null) {
+                    logger.debug("Stop the reader monitoring.");
                     thread.end();
                 }
             }
@@ -984,8 +999,17 @@ public abstract class AbstractLocalReader extends AbstractReader {
         this.threadWaitTimeout = timeout;
     }
 
-    private boolean seProcessed;
-    private final Object waitForRemovalSync = new Object();
+    private final int WAIT_FOR_SE_DETECTION_EXIT_LATENCY = 10; // TODO make it configurable
+    private final int WAIT_FOR_SE_INSERTION_EXIT_LATENCY = 10; // TODO make it configurable
+    private final int WAIT_FOR_SE_PROCESSING_EXIT_LATENCY = 10; // TODO make it configurable
+    private final int WAIT_FOR_SE_REMOVAL_EXIT_LATENCY = 10; // TODO make it configurable
+
+
+
+    /* The states that a ThreadedMonitoringReader can have */
+    private enum MonitoringState {
+        WAIT_FOR_START_DETECTION, WAIT_FOR_SE_INSERTION, WAIT_FOR_SE_PROCESSING, WAIT_FOR_SE_REMOVAL
+    }
 
     /**
      * Thread in charge of reporting live events
@@ -1008,6 +1032,29 @@ public abstract class AbstractLocalReader extends AbstractReader {
         private volatile boolean running = true;
 
         /**
+         * Current reader state
+         */
+        private MonitoringState monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
+
+        /**
+         * previous state (logging purposes)
+         */
+        private MonitoringState previousState = MonitoringState.WAIT_FOR_SE_INSERTION;
+
+        /**
+         * Synchronization objects and flags TODO Improve this mechanism by using classes and
+         * methods of the java.util.concurrent package
+         */
+        private final Object waitForStartDetectionSync = new Object();
+        private final Object waitForSeProcessing = new Object();
+
+        // these flags help to distinguish notify and timeout when wait is exited.
+        private boolean startDetectionNotified = false;
+        private boolean seProcessingNotified = false;
+
+        ChannelState channelStateAction = ChannelState.KEEP_OPEN;
+
+        /**
          * Constructor
          *
          * @param pluginName name of the plugin that instantiated the reader
@@ -1028,129 +1075,210 @@ public abstract class AbstractLocalReader extends AbstractReader {
             this.interrupt(); // exit io wait if needed
         }
 
+        /**
+         * Makes the current change from WAIT_FOR_START_DETECTION to WAIT_FOR_SE_INSERTION
+         */
+        void startDetection() {
+            startDetectionNotified = true;
+            synchronized (waitForStartDetectionSync) {
+                waitForStartDetectionSync.notify();
+            }
+        }
+
+        /**
+         * Makes the current change from WAIT_FOR_SE_PROCESSING to WAIT_FOR_SE_REMOVAL Handle the
+         * signal from the application to terminate the operations with the current SE (ChannelState
+         * set to CLOSE_AND_CONTINUE or CLOSE_AND_STOP).
+         * <p>
+         * We handle here two different cases:
+         * </p>
+         * <ul>
+         * <li>the notification is executed in the same thread (reader monitoring thread): in this
+         * case the seProcessingNotified flag is set when
+         * processCardInsertion/notifyObservers/update ends. The monitoring thread can continue
+         * without having to wait for the end of the SE processing.</li>
+         * <li>the notification is executed in a separate thread: in this case the
+         * processCardInsertion method will have finished before the end of the SE processing and
+         * the reader monitoring thread is already waiting with the waitForRemovalSync object. Here
+         * we release the waitForRemovalSync object by calling its notify method.</li>
+         * </ul>
+         */
+        void startRemoval(ChannelState channelState) {
+            channelStateAction = channelState;
+            seProcessingNotified = true;
+            synchronized (waitForSeProcessing) {
+                waitForSeProcessing.notify();
+            }
+        }
+
+        /**
+         * Thread loop
+         */
         public void run() {
-            try {
-                if (!(AbstractLocalReader.this instanceof SmartInsertionReader)) {
-                    throw new IllegalStateException(
-                            "An threaded monitoring reader must implement the SmartInsertionReader "
-                                    + "interface.");
-                }
-                // Notify the application of the current state: awaiting for SE insertion
-                notifyObservers(new ReaderEvent(this.pluginName, AbstractLocalReader.this.name,
-                        ReaderEvent.EventType.AWAITING_SE_INSERTION, null));
+            while (running) {
+                logger.trace("Reade state machine: previous {}, new {}", previousState,
+                        monitoringState);
+                previousState = monitoringState;
+                try {
+                    switch (monitoringState) {
+                        case WAIT_FOR_START_DETECTION:
+                            // We are waiting for the application to start monitoring SE insertions
+                            // with
+                            // the call to setDefaultSelectionRequest.
+                            // We notify the application of the current state.
+                            // notifyObservers(
+                            // new ReaderEvent(this.pluginName, AbstractLocalReader.this.name,
+                            // ReaderEvent.EventType.AWAITING_SE_START_DETECTION, null));
 
-                while (running) {
-                    logger.trace("[{}] observe card insertion", readerName);
-                    // we will wait for it to appear
-                    if (((SmartInsertionReader) AbstractLocalReader.this).waitForCardPresent(0)) {
-                        seProcessed = false;
-                        // a SE has been inserted, we'll end with a SE_INSERTED or SE_MATCHED
-                        // notification
-                        logger.debug("Card inserted.");
-                        cardInserted();
-                        if (AbstractLocalReader.this instanceof SmartRemovalReader) {
-                            ((SmartRemovalReader) AbstractLocalReader.this)
-                                    .waitForCardAbsentNative(0);
-                        } else {
+                            // to distinguish between timeout and notification
+                            startDetectionNotified = false;
 
-                            // the presence may be not notified. E.g. when the SE no longer communicates
-                            // during the
-                            // default selection process. In this case, we just ignore and go on in the
-                            // "awaiting for SE
-                            // insertion" state.
-                            if (!presenceNotified) {
-                                terminate();
+                            // Loop until we are notified (call to setDefaultSelectionRequest) or
+                            // interrupted (call to end)
+                            while (true) {
+                                synchronized (waitForStartDetectionSync) {
+                                    waitForStartDetectionSync
+                                            .wait(WAIT_FOR_SE_DETECTION_EXIT_LATENCY);
+                                }
+                                if (startDetectionNotified) {
+                                    // the application has requested the start of monitoring
+                                    monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
+                                    break;
+                                }
+                                if (Thread.interrupted()) {
+                                    // a request to stop the thread has been made
+                                    running = false;
+                                    break;
+                                }
                             }
-                            // the SE is still considered to be present, we wait for the application
-                            // to notify us when the
-                            // processing ends
-                            if (!seProcessed) {
-                                synchronized (waitForRemovalSync) {
-                                    try {
-                                        waitForRemovalSync.wait(threadWaitTimeout);
-                                    } catch (InterruptedException ex) {
-                                        Thread.currentThread().interrupt();
-                                        throw new IllegalStateException(
-                                                "An Interrupted Exception occurred while waiting "
-                                                        + "notification from application.");
+                            break;
+                        case WAIT_FOR_SE_INSERTION:
+                            // We are waiting for the reader to inform us when a card is inserted.
+                            // We notify the application of the current state.
+                            notifyObservers(
+                                    new ReaderEvent(this.pluginName, AbstractLocalReader.this.name,
+                                            ReaderEvent.EventType.AWAITING_SE_INSERTION, null));
+                            while (true) {
+                                if (((SmartInsertionReader) AbstractLocalReader.this)
+                                        .waitForCardPresent(WAIT_FOR_SE_INSERTION_EXIT_LATENCY)) {
+                                    seProcessingNotified = false;
+                                    // a SE has been inserted, will end with a SE_INSERTED or
+                                    // SE_MATCHED notification according to the
+                                    // DefaultSelectionRequest.
+                                    // If a DefaultSelectionRequest is present with the MATCHED_ONLY
+                                    // flag and the SE presented does not match, then the
+                                    // processCardInsertion method will return false to indicate
+                                    // that this SE can be ignored.
+                                    logger.debug("Card inserted.");
+                                    if (processCardInsertion()) {
+                                        // The notification to the application was made by
+                                        // processCardInsertion
+                                        monitoringState = MonitoringState.WAIT_FOR_SE_PROCESSING;
+                                        break;
+                                    }
+                                }
+                                if (Thread.interrupted()) {
+                                    // a request to stop the thread has been made
+                                    running = false;
+                                    break;
+                                }
+                            }
+                            break;
+                        case WAIT_FOR_SE_PROCESSING:
+                            // loop until notification of the end of the SE processing operation, an
+                            // SE
+                            // withdrawal or a request to stop is made.
+                            while (true) {
+                                if (seProcessingNotified) {
+                                    // the application has completed the processing, we move to the
+                                    // SE
+                                    // removal waiting phase
+                                    monitoringState = MonitoringState.WAIT_FOR_SE_REMOVAL;
+                                    break;
+                                }
+                                if (!isSePresent()) {
+                                    // the SE has been removed, we return to the state of waiting
+                                    // for
+                                    // insertion
+                                    monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
+                                    break;
+                                }
+                                if (Thread.interrupted()) {
+                                    // a request to stop the thread has been made
+                                    running = false;
+                                    break;
+                                }
+                                synchronized (waitForSeProcessing) {
+                                    waitForSeProcessing.wait(WAIT_FOR_SE_PROCESSING_EXIT_LATENCY);
+                                }
+                            }
+                            break;
+                        case WAIT_FOR_SE_REMOVAL:
+                            boolean exitLoop = false;
+                            // We are waiting for the reader to inform us when a card is inserted.
+                            // We notify the application of the current state.
+                            notifyObservers(
+                                    new ReaderEvent(this.pluginName, AbstractLocalReader.this.name,
+                                            ReaderEvent.EventType.AWAITING_SE_REMOVAL, null));
+                            while (!exitLoop) {
+                                if (((AbstractLocalReader.this instanceof SmartRemovalReader)
+                                        && ((SmartRemovalReader) AbstractLocalReader.this)
+                                                .waitForCardAbsentNative(
+                                                        WAIT_FOR_SE_REMOVAL_EXIT_LATENCY))
+                                        || (!(AbstractLocalReader.this instanceof SmartRemovalReader))
+                                                && isSePresentPing()) {
+                                    // The SE has been removed
+                                    // Notify a SE_REMOVAL event
+                                    switch (channelStateAction) {
+                                        case CLOSE_AND_CONTINUE:
+                                            monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
+                                            exitLoop = true;
+                                            break;
+                                        case CLOSE_AND_STOP:
+                                            monitoringState =
+                                                    MonitoringState.WAIT_FOR_START_DETECTION;
+                                            exitLoop = true;
+                                            break;
+                                        case KEEP_OPEN:
+                                            throw new IllegalStateException(
+                                                    "Unexcepted KEEP_OPEN action.");
                                     }
                                 }
                             }
-                            // wait as long as the PO responds (timeout is useless)
-                            logger.trace("[{}] Observe card removal", readerName);
-                            waitForCardAbsentPing(0);
-                            // close the physical channel and notify for the new awaiting for
-                            // insertion state
-                        }
-
-                        // Notify the application of the current state: awaiting for SE
-                        // removal
-                        notifyObservers(
-                                new ReaderEvent(this.pluginName, AbstractLocalReader.this.name,
-                                        ReaderEvent.EventType.AWAITING_SE_REMOVAL, null));
-
-                        cardRemoved();
+                            break;
                     }
+                } catch (InterruptedException ex) {
+                    logger.debug("Exiting monitoring thread.");
+                    running = false;
+
+                } catch (NoStackTraceThrowable e) {
+                    logger.trace("[{}] Exception occurred in monitoring thread: {}", readerName,
+                            e.getMessage());
+                    running = false;
                 }
-            } catch (NoStackTraceThrowable e) {
-                logger.trace("[{}] Exception occurred in monitoring thread: {}", readerName,
-                        e.getMessage());
             }
         }
     }
 
     /**
-     * Handle the signal from the application to terminate the operations with the current SE
-     * (ChannelState set to CLOSE_AFTER).
+     * Sends a neutral APDU to the SE to check its presence
      * <p>
-     * We handle here two different cases:
-     * </p>
-     * <ul>
-     * <li>the notification is executed in the same thread (reader monitoring thread): in this case
-     * the seProcessed flag is set when cardInserted/notifyObservers/update ends. The monitoring
-     * thread can continue without having to wait for the end of the SE processing.</li>
-     * <li>the notification is executed in a separate thread: in this case the cardInserted method
-     * will have finished before the end of the SE processing and the reader monitoring thread is
-     * already waiting with the waitForRemovalSync object. Here we release the waitForRemovalSync
-     * object by calling its notify method.</li>
-     * </ul>
-     *
+     * This method has to be called regularly until the SE no longer respond.
+     * 
+     * @return true if the SE still responds, false if not
      */
-    private void skipToRemovalSequence() {
-        synchronized (waitForRemovalSync) {
-            seProcessed = true;
-            waitForRemovalSync.notify();
-        }
-    }
-
-    /**
-     * Wait for the card to disappear.
-     * <p>
-     * The method used to do this is to replay, while the physical channel is still open, the
-     * request that made the current selection until the PO no longer responds.
-     *
-     * @param timeout the delay in millisecond we wait for a card insertion, a value of zero means
-     *        wait for ever.
-     */
-    protected void waitForCardAbsentPing(int timeout) {
+    protected boolean isSePresentPing() {
         // APDU sent to check the communication with the PO
-        byte[] apdu = {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x00};
-        // loop for ever until the PO stop responding
+        final byte[] apdu = {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+        // transmits the APDU and checks for the IO exception.
         try {
-            while (true) {
-                byte[] rapdu = new byte[0];
-                rapdu = transmitApdu(apdu);
-                // sleep a little to reduce the cpu consumption of the current thread
-                Thread.sleep(50);
-            }
+            transmitApdu(apdu);
         } catch (KeypleIOReaderException e) {
-            // log only unexpected exceptions, else exit silently
-            logger.trace("[{}] Exception occured in waitForCardAbsentPing. Message: {}",
-                    this.getName(), e.getMessage());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.trace("[{}] Exception occured in isSePresentPing. Message: {}", this.getName(),
+                    e.getMessage());
+            return false;
         }
-        logger.debug("Card removed.");
+        return true;
     }
 
     /**
@@ -1179,7 +1307,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
     protected ApduResponse processExplicitAidSelection(SeSelector.AidSelector aidSelector)
             throws KeypleIOReaderException {
         ApduResponse fciResponse;
-        final byte aid[] = aidSelector.getAidToSelect().getValue();
+        final byte[] aid = aidSelector.getAidToSelect().getValue();
         if (aid == null) {
             throw new IllegalArgumentException("AID must not be null for an AidSelector.");
         }
