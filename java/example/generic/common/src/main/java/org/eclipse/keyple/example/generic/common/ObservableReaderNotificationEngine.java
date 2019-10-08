@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.generic.common;
 
+import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -75,7 +76,7 @@ public class ObservableReaderNotificationEngine {
                 try {
                     ((ObservableReader) SeProxyService.getInstance()
                             .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
-                                    .terminate();
+                                    .notifySeProcessed(ChannelState.CLOSE_AND_CONTINUE);
                 } catch (KeypleReaderNotFoundException e) {
                     e.printStackTrace();
                 } catch (KeyplePluginNotFoundException e) {

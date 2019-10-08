@@ -12,6 +12,7 @@
 package org.eclipse.keyple.example.generic.common;
 
 
+import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -99,7 +100,7 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
                     try {
                         ((ObservableReader) SeProxyService.getInstance()
                                 .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
-                                        .terminate();
+                                        .notifySeProcessed(ChannelState.CLOSE_AND_CONTINUE);
                     } catch (KeypleReaderNotFoundException e) {
                         e.printStackTrace();
                     } catch (KeyplePluginNotFoundException e) {

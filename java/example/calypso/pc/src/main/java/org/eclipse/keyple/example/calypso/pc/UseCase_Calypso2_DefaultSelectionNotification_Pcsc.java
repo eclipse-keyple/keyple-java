@@ -219,7 +219,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
                  * with the PO
                  */
                 try {
-                    if (poTransaction.processPoCommands(ChannelState.CLOSE_AFTER)) {
+                    if (poTransaction.processPoCommands(ChannelState.CLOSE_AND_CONTINUE)) {
                         logger.info("The reading of the EventLog has succeeded.");
 
                         /*
@@ -268,7 +268,8 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
              */
             try {
                 ((ObservableReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
-                        .getReader(event.getReaderName())).terminate();
+                        .getReader(event.getReaderName()))
+                                .notifySeProcessed(ChannelState.CLOSE_AND_CONTINUE);
             } catch (KeypleReaderNotFoundException e) {
                 e.printStackTrace();
             } catch (KeyplePluginNotFoundException e) {

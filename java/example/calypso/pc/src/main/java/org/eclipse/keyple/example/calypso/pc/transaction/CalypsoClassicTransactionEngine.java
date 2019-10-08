@@ -192,7 +192,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AFTER);
+            poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AND_CONTINUE);
 
         } else {
             /*
@@ -251,7 +251,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AFTER);
+            poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AND_CONTINUE);
 
             logger.info("Parsing Append EventLog file: " + ((AppendRecordRespPars) poTransaction
                     .getResponseParser(appendEventLogParserIndex)).toString());

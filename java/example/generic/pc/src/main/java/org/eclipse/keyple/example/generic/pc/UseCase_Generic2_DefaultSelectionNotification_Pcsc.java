@@ -189,7 +189,8 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
              */
             try {
                 ((ObservableReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
-                        .getReader(event.getReaderName())).terminate();
+                        .getReader(event.getReaderName()))
+                                .notifySeProcessed(ChannelState.CLOSE_AND_CONTINUE);
             } catch (KeypleReaderNotFoundException e) {
                 e.printStackTrace();
             } catch (KeyplePluginNotFoundException e) {

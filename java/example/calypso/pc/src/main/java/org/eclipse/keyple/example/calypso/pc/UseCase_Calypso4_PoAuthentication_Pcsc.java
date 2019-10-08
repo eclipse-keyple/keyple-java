@@ -215,7 +215,7 @@ public class UseCase_Calypso4_PoAuthentication_Pcsc {
                 /*
                  * A ratification command will be sent (CONTACTLESS_MODE).
                  */
-                poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AFTER);
+                poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AND_CONTINUE);
 
                 if (!poProcessStatus) {
                     throw new IllegalStateException("processClosing failure.");
