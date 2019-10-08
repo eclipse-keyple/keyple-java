@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.calypso.pc;
+package org.eclipse.keyple.example.calypso.pc.UseCase_Calypso1_ExplicitSelectionAid;
 
 
 import java.io.IOException;
@@ -27,8 +27,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
-import org.eclipse.keyple.example.calypso.pc.transaction.CalypsoUtilities;
+import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
+import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
