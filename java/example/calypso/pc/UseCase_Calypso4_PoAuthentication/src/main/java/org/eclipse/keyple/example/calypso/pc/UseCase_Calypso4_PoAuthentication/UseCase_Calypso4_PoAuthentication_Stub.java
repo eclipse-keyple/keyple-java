@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.calypso.pc;
+package org.eclipse.keyple.example.calypso.pc.UseCase_Calypso4_PoAuthentication;
 
 
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
@@ -26,10 +26,10 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.example.calypso.common.postructure.CalypsoClassicInfo;
-import org.eclipse.keyple.example.calypso.common.stub.se.StubCalypsoClassic;
-import org.eclipse.keyple.example.calypso.common.stub.se.StubSamCalypsoClassic;
-import org.eclipse.keyple.example.calypso.pc.transaction.CalypsoUtilities;
+import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
+import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
+import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
+import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
