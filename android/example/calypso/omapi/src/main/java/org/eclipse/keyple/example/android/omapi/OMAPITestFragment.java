@@ -267,7 +267,7 @@ public class OMAPITestFragment extends Fragment {
                          * Actual PO communication: send the prepared read order, then close the
                          * channel with the PO
                          */
-                        if (poTransaction.processPoCommands(ChannelState.CLOSE_AFTER)) {
+                        if (poTransaction.processPoCommands(ChannelState.CLOSE_AND_CONTINUE)) {
                             mText.append("The update of the T2 Usage file has succeeded.");
 
                         }
