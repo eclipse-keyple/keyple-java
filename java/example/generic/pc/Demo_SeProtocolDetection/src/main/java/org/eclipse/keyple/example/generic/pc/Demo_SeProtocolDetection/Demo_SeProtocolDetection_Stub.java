@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.generic.pc;
+package org.eclipse.keyple.example.generic.pc.Demo_SeProtocolDetection;
 
 
 import java.util.EnumSet;
@@ -22,8 +22,8 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.example.generic.common.SeProtocolDetectionEngine;
-import org.eclipse.keyple.example.generic.pc.stub.se.*;
+import org.eclipse.keyple.example.common.generic.SeProtocolDetectionEngine;
+import org.eclipse.keyple.example.common.generic.stub.*;
 import org.eclipse.keyple.plugin.stub.*;
 
 /**

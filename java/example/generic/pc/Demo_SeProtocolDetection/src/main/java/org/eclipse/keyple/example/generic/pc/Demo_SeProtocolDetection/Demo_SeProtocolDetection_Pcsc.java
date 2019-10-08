@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.generic.pc;
+package org.eclipse.keyple.example.generic.pc.Demo_SeProtocolDetection;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,7 +20,9 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
-import org.eclipse.keyple.example.generic.common.SeProtocolDetectionEngine;
+import org.eclipse.keyple.example.common.PcscReadersSettings;
+import org.eclipse.keyple.example.common.ReaderUtilities;
+import org.eclipse.keyple.example.common.generic.SeProtocolDetectionEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
 import org.eclipse.keyple.plugin.pcsc.PcscReaderSettings;
