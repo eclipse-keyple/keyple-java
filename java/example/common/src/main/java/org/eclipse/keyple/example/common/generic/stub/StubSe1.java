@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.generic.pc.stub.se;
+package org.eclipse.keyple.example.common.generic.stub;
 
 
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -18,15 +18,12 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
 /**
  * Simple contact stub SE (no command)
  */
-public class StubMifareDesfire extends StubSecureElement {
+public class StubSe1 extends StubSecureElement {
 
-    final static String seProtocol = "PROTOCOL_MIFARE_DESFIRE";
-    final String ATR_HEX = "3B8180018080";
+    final static String seProtocol = "PROTOCOL_ISO7816_3";
+    final String ATR_HEX = "3B3F9600805A0080C120000012345678829000";// serial number : 12345678
 
-    public StubMifareDesfire() {
-        /* Get data */
-        addHexCommand("FFCA 000000", "223344556677889000");
-    }
+    public StubSe1() {}
 
     @Override
     public byte[] getATR() {

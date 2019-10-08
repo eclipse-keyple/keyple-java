@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.generic.pc.stub.se;
+package org.eclipse.keyple.example.common.generic.stub;
 
 
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -18,14 +18,14 @@ import org.eclipse.keyple.plugin.stub.StubSecureElement;
 /**
  * Simple contact stub SE (no command)
  */
-public class StubMifareClassic extends StubSecureElement {
+public class StubCalypsoBPrime extends StubSecureElement {
 
-    final static String seProtocol = "PROTOCOL_MIFARE_CLASSIC";
-    final String ATR_HEX = "3B8F8001804F0CA000000306030001000000006A";
+    final static String seProtocol = "PROTOCOL_B_PRIME";
+    final String ATR_HEX = "3B8F8001805A0A01032003111122334482900082";
 
-    public StubMifareClassic() {
+    public StubCalypsoBPrime() {
         /* Get data */
-        addHexCommand("FFCA 000000", "112233449000");
+        addHexCommand("FFCA 000000", "CA7195009000");
     }
 
     @Override

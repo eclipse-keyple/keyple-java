@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.generic.pc;
+package org.eclipse.keyple.example.common;
 
 public interface PcscReadersSettings {
     // This is where you should add patterns of readers you want to use for tests

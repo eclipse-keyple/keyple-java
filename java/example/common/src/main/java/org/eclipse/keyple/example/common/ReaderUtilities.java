@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.generic.pc;
+package org.eclipse.keyple.example.common;
 
 import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;

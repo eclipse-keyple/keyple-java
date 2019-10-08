@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.calypso.pc.transaction;
+package org.eclipse.keyple.example.common.calypso.pc.transaction;
 
 import static org.eclipse.keyple.calypso.command.sam.SamRevision.C1;
 import java.io.FileNotFoundException;
@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.example.generic.pc.ReaderUtilities;
+import org.eclipse.keyple.example.common.ReaderUtilities;
 
 public class CalypsoUtilities {
     private static Properties properties;

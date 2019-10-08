@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.generic.pc.stub.se;
+package org.eclipse.keyple.example.common.generic.stub;
 
 
 import org.eclipse.keyple.core.util.ByteArrayUtil;

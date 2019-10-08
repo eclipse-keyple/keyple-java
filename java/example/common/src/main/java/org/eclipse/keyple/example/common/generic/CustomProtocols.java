@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.generic.common;
+package org.eclipse.keyple.example.common.generic;
 
 import static org.eclipse.keyple.core.seproxy.protocol.TransmissionMode.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
