@@ -210,7 +210,7 @@ final class AndroidNfcReaderImpl extends AbstractLocalReader
             if (tagProxy != null) {
                 tagProxy.close();
                 notifyObservers(new ReaderEvent(PLUGIN_NAME, READER_NAME,
-                        ReaderEvent.EventType.AWAITING_SE_INSERTION, null));
+                        ReaderEvent.EventType.SE_REMOVED, null));
                 LOG.info("Disconnected tag : " + printTagId());
             }
         } catch (IOException e) {

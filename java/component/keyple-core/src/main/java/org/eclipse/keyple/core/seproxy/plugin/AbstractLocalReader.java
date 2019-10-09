@@ -182,7 +182,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
             } catch (KeypleReaderException e) {
                 /* the last transmission failed, close the logical and physical channels */
                 closeLogicalAndPhysicalChannels();
-                e.printStackTrace();
+                logger.debug("An IO Exception occurred while processing the default selection. {}",
+                        e.getMessage());
                 // in this case the card has been removed or not read correctly, do not throw event
             }
         }
@@ -201,7 +202,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      */
     protected final void cardRemoved() {
         notifyObservers(new ReaderEvent(this.pluginName, this.name,
-                ReaderEvent.EventType.AWAITING_SE_INSERTION, null));
+                ReaderEvent.EventType.SE_REMOVED, null));
         closeLogicalAndPhysicalChannels();
     }
 
@@ -586,6 +587,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 requestIndex++;
                 if (lastRequestIndex == requestIndex) {
                     if (!(channelState == ChannelState.KEEP_OPEN)) {
+                        // close logical channel unconditionally
+                        closeLogicalChannel();
                         if (!(this instanceof ObservableReader)
                                 || (((ObservableReader) this).countObservers() == 0)) {
                             /*
@@ -635,6 +638,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
         }
 
         if (!(channelState == ChannelState.KEEP_OPEN)) {
+            // close logical channel unconditionally
+            closeLogicalChannel();
             if (!(this instanceof ObservableReader)
                     || (((ObservableReader) this).countObservers() == 0)) {
                 /* Not observable/observed: close immediately the physical channel if requested */
@@ -929,8 +934,13 @@ public abstract class AbstractLocalReader extends AbstractReader {
 
     /**
      * Thread wait timeout in ms
+     * <p>
+     * This value will be used to avoid infinite waiting time. When set to 0 (default), no timeout
+     * check is performed.
+     * <p>
+     * See setThreadWaitTimeout method.
      */
-    protected long threadWaitTimeout;
+    private long threadWaitTimeout = 0;
 
     /**
      * Add a reader observer.
@@ -991,9 +1001,13 @@ public abstract class AbstractLocalReader extends AbstractReader {
     }
 
     /**
-     * setter to fix the wait timeout in ms.
-     *
-     * @param timeout Timeout to use
+     * Setter to fix the wait timeout in ms.
+     * <p>
+     * It is advised to set a relatively high value (e. g. 120000) to avoid disturbing the nominal
+     * operation.
+     * 
+     * @param timeout Timeout to use when the monitoring thread is in the WAIT_FOR_SE_PROCESSING and
+     *        WAIT_FOR_SE_REMOVAL states.
      */
     protected final void setThreadWaitTimeout(long timeout) {
         this.threadWaitTimeout = timeout;
@@ -1115,8 +1129,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
          * Thread loop
          */
         public void run() {
+            long startTime; // timeout management
             while (running) {
-                logger.trace("Reade state machine: previous {}, new {}", previousState,
+                logger.trace("Reader state machine: previous {}, new {}", previousState,
                         monitoringState);
                 previousState = monitoringState;
                 try {
@@ -1153,25 +1168,21 @@ public abstract class AbstractLocalReader extends AbstractReader {
                             }
                             break;
                         case WAIT_FOR_SE_INSERTION:
-                            // We are waiting for the reader to inform us when a card is inserted.
-                            // We notify the application of the current state.
-                            notifyObservers(
-                                    new ReaderEvent(this.pluginName, AbstractLocalReader.this.name,
-                                            ReaderEvent.EventType.AWAITING_SE_INSERTION, null));
+                            // We are waiting for the reader to inform us that a card is inserted.
                             while (true) {
                                 if (((SmartInsertionReader) AbstractLocalReader.this)
                                         .waitForCardPresent(WAIT_FOR_SE_INSERTION_EXIT_LATENCY)) {
                                     seProcessingNotified = false;
-                                    // a SE has been inserted, will end with a SE_INSERTED or
+                                    // a SE has been inserted, the following process
+                                    // (processCardInsertion) will end with a SE_INSERTED or
                                     // SE_MATCHED notification according to the
                                     // DefaultSelectionRequest.
-                                    // If a DefaultSelectionRequest is present with the MATCHED_ONLY
+                                    // If a DefaultSelectionRequest is set with the MATCHED_ONLY
                                     // flag and the SE presented does not match, then the
                                     // processCardInsertion method will return false to indicate
                                     // that this SE can be ignored.
-                                    logger.debug("Card inserted.");
                                     if (processCardInsertion()) {
-                                        // The notification to the application was made by
+                                        // Note: the notification to the application was made by
                                         // processCardInsertion
                                         monitoringState = MonitoringState.WAIT_FOR_SE_PROCESSING;
                                         break;
@@ -1186,20 +1197,42 @@ public abstract class AbstractLocalReader extends AbstractReader {
                             break;
                         case WAIT_FOR_SE_PROCESSING:
                             // loop until notification of the end of the SE processing operation, an
-                            // SE
-                            // withdrawal or a request to stop is made.
+                            // SE withdrawal or a request to stop is made.
+                            // An global timeout period is also checked to avoid infinite waiting;
+                            // exceeding the time limit leads to the notification of an IO_ERROR
+                            // event and stops monitoring
+                            startTime = System.currentTimeMillis();
                             while (true) {
                                 if (seProcessingNotified) {
                                     // the application has completed the processing, we move to the
                                     // SE
-                                    // removal waiting phase
+                                    switch (channelStateAction) {
+                                        case CLOSE_AND_CONTINUE:
+                                            monitoringState = MonitoringState.WAIT_FOR_SE_REMOVAL;
+                                            break;
+                                        case CLOSE_AND_STOP:
+                                            // We notify the application of the SE_REMOVED event.
+                                            notifyObservers(new ReaderEvent(this.pluginName,
+                                                    AbstractLocalReader.this.name,
+                                                    ReaderEvent.EventType.SE_REMOVED, null));
+                                            monitoringState =
+                                                    MonitoringState.WAIT_FOR_START_DETECTION;
+                                            break;
+                                        case KEEP_OPEN:
+                                            throw new IllegalStateException(
+                                                    "Unexcepted KEEP_OPEN action.");
+                                    }
                                     monitoringState = MonitoringState.WAIT_FOR_SE_REMOVAL;
                                     break;
                                 }
-                                if (!isSePresent()) {
+                                if (AbstractLocalReader.this instanceof SmartPresenceReader
+                                        && !isSePresent()) {
                                     // the SE has been removed, we return to the state of waiting
-                                    // for
-                                    // insertion
+                                    // for insertion
+                                    // We notify the application of the SE_REMOVED event.
+                                    notifyObservers(new ReaderEvent(this.pluginName,
+                                            AbstractLocalReader.this.name,
+                                            ReaderEvent.EventType.SE_REMOVED, null));
                                     monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
                                     break;
                                 }
@@ -1208,41 +1241,52 @@ public abstract class AbstractLocalReader extends AbstractReader {
                                     running = false;
                                     break;
                                 }
+                                if (threadWaitTimeout != 0 && System.currentTimeMillis()
+                                        - startTime > threadWaitTimeout) {
+                                    // We notify the application of the IO_ERROR event.
+                                    notifyObservers(new ReaderEvent(this.pluginName,
+                                            AbstractLocalReader.this.name,
+                                            ReaderEvent.EventType.IO_ERROR, null));
+                                    logger.error(
+                                            "The SE's processing time has exceeded the specified limit.");
+                                    monitoringState = MonitoringState.WAIT_FOR_START_DETECTION;
+                                }
                                 synchronized (waitForSeProcessing) {
                                     waitForSeProcessing.wait(WAIT_FOR_SE_PROCESSING_EXIT_LATENCY);
                                 }
                             }
                             break;
                         case WAIT_FOR_SE_REMOVAL:
-                            boolean exitLoop = false;
                             // We are waiting for the reader to inform us when a card is inserted.
-                            // We notify the application of the current state.
-                            notifyObservers(
-                                    new ReaderEvent(this.pluginName, AbstractLocalReader.this.name,
-                                            ReaderEvent.EventType.AWAITING_SE_REMOVAL, null));
-                            while (!exitLoop) {
-                                if (((AbstractLocalReader.this instanceof SmartRemovalReader)
-                                        && ((SmartRemovalReader) AbstractLocalReader.this)
+                            // An global timeout period is also checked to avoid infinite waiting;
+                            // exceeding the time limit leads to the notification of an IO_ERROR
+                            // event and stops monitoring
+                            startTime = System.currentTimeMillis();
+                            while (true) {
+                                if (((AbstractLocalReader.this instanceof SmartPresenceReader)
+                                        && ((SmartPresenceReader) AbstractLocalReader.this)
                                                 .waitForCardAbsentNative(
                                                         WAIT_FOR_SE_REMOVAL_EXIT_LATENCY))
-                                        || (!(AbstractLocalReader.this instanceof SmartRemovalReader))
+                                        || (!(AbstractLocalReader.this instanceof SmartPresenceReader))
                                                 && isSePresentPing()) {
-                                    // The SE has been removed
-                                    // Notify a SE_REMOVAL event
-                                    switch (channelStateAction) {
-                                        case CLOSE_AND_CONTINUE:
-                                            monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
-                                            exitLoop = true;
-                                            break;
-                                        case CLOSE_AND_STOP:
-                                            monitoringState =
-                                                    MonitoringState.WAIT_FOR_START_DETECTION;
-                                            exitLoop = true;
-                                            break;
-                                        case KEEP_OPEN:
-                                            throw new IllegalStateException(
-                                                    "Unexcepted KEEP_OPEN action.");
-                                    }
+                                    // the SE has been removed, we return to the state of waiting
+                                    // for insertion
+                                    // We notify the application of the SE_REMOVED event.
+                                    notifyObservers(new ReaderEvent(this.pluginName,
+                                            AbstractLocalReader.this.name,
+                                            ReaderEvent.EventType.SE_REMOVED, null));
+                                    monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
+                                    break;
+                                }
+                                if (threadWaitTimeout != 0 && System.currentTimeMillis()
+                                        - startTime > threadWaitTimeout) {
+                                    // We notify the application of the IO_ERROR event.
+                                    notifyObservers(new ReaderEvent(this.pluginName,
+                                            AbstractLocalReader.this.name,
+                                            ReaderEvent.EventType.IO_ERROR, null));
+                                    monitoringState = MonitoringState.WAIT_FOR_START_DETECTION;
+                                    logger.error(
+                                            "The time limit for the removal of the SE has been exceeded.");
                                 }
                             }
                             break;
@@ -1250,7 +1294,6 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 } catch (InterruptedException ex) {
                     logger.debug("Exiting monitoring thread.");
                     running = false;
-
                 } catch (NoStackTraceThrowable e) {
                     logger.trace("[{}] Exception occurred in monitoring thread: {}", readerName,
                             e.getMessage());
@@ -1277,6 +1320,14 @@ public abstract class AbstractLocalReader extends AbstractReader {
             logger.trace("[{}] Exception occured in isSePresentPing. Message: {}", this.getName(),
                     e.getMessage());
             return false;
+        }
+        // in case the communication is successful we sleep a little to avoid too intensive
+        // processing.
+        try {
+            Thread.sleep(30);
+        } catch (InterruptedException e) {
+            // forwards the exception upstairs
+            Thread.currentThread().interrupt();
         }
         return true;
     }

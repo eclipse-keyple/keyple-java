@@ -415,7 +415,7 @@ public class SamResourceManager {
                             localSamResources.add(newSamResource);
                         }
                         break;
-                    case AWAITING_SE_INSERTION:
+                    case SE_REMOVED:
                     case IO_ERROR:
                         removeResource(samReader);
                         break;

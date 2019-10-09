@@ -241,7 +241,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                         ((ObservableReader) reader).notifySeProcessed(ChannelState.CLOSE_AND_CONTINUE);
                         break;
 
-                    case AWAITING_SE_INSERTION:
+                    case SE_REMOVED:
                         mText.append("\n ---- \n");
                         mText.append("Tag removed");
                         break;

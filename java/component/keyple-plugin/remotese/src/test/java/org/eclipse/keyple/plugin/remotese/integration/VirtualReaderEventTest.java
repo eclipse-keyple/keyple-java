@@ -116,22 +116,13 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         final CountDownLatch lock = new CountDownLatch(1);
 
         ObservableReader.ReaderObserver obs = new ObservableReader.ReaderObserver() {
-            int event_i = 1;
-
             @Override
             public void update(ReaderEvent event) {
-                if (event_i == 1) {
-                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
-                            event.getEventType());
-                }
-                if (event_i == 2) {
-                    Assert.assertEquals(event.getReaderName(), virtualReader.getName());
-                    Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
-                    Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
-                    logger.debug("Reader Event is correct, release lock");
-                    lock.countDown();
-                }
-                event_i++;
+                Assert.assertEquals(event.getReaderName(), virtualReader.getName());
+                Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
+                Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+                logger.debug("Reader Event is correct, release lock");
+                lock.countDown();
             }
         };
 
@@ -162,34 +153,25 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
     public void testRemoveEvent() throws Exception {
 
         // lock test until two messages are received
-        final CountDownLatch lock = new CountDownLatch(3);
+        final CountDownLatch lock = new CountDownLatch(2);
 
         ObservableReader.ReaderObserver obs = new ObservableReader.ReaderObserver() {
-            int event_i = 1;
-
             @Override
             public void update(ReaderEvent event) {
-                if (event_i == 1
-                        && event.getEventType() == ReaderEvent.EventType.AWAITING_SE_INSERTION) {
-                    // we expect the first event to be AWAITING_SE_INSERTION
-                    Assert.assertEquals(3, lock.getCount());
-                    lock.countDown();
-                } else if (event_i == 2
-                        && event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
-                    // we expect the second event to be SE_INSERTED
+                if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
+                    // we expect the first event to be SE_INSERTED
                     Assert.assertEquals(2, lock.getCount());
                     lock.countDown();
-                } else if (event_i == 3) {
-                    // the next event should be AWAITING_SE_INSERTION
+                } else {
+                    // the next event should be SE_REMOVED
                     Assert.assertEquals(1, lock.getCount());
                     Assert.assertEquals(event.getReaderName(), virtualReader.getName());
                     Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
-                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
-                            event.getEventType());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
                     logger.debug("Reader Event is correct, release lock");
                     lock.countDown();
+
                 }
-                event_i++;
             }
         };
         // add stubPluginObserver
@@ -228,59 +210,47 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         final String poAid = "A000000291A000000191";
 
         ObservableReader.ReaderObserver obs = new ObservableReader.ReaderObserver() {
-            int event_i = 1;
-
             @Override
             public void update(ReaderEvent event) {
-                if (event_i == 1) {
-                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
-                            event.getEventType());
+                Assert.assertEquals(event.getReaderName(), virtualReader.getName());
+                Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
+                Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
+                Assert.assertTrue(((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
+                        .getSelectionSeResponseSet().get(0).getSelectionStatus().hasMatched());
+
+                Assert.assertArrayEquals(
+                        ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
+                                .getSelectionSeResponseSet().get(0).getSelectionStatus().getAtr()
+                                .getBytes(),
+                        hoplinkSE().getATR());
+
+                // retrieve the expected FCI from the Stub SE running the select application command
+                byte[] aid = ByteArrayUtil.fromHex(poAid);
+                byte[] selectApplicationCommand = new byte[6 + aid.length];
+                selectApplicationCommand[0] = (byte) 0x00; // CLA
+                selectApplicationCommand[1] = (byte) 0xA4; // INS
+                selectApplicationCommand[2] = (byte) 0x04; // P1: select by name
+                selectApplicationCommand[3] = (byte) 0x00; // P2: requests the first
+                selectApplicationCommand[4] = (byte) (aid.length); // Lc
+                System.arraycopy(aid, 0, selectApplicationCommand, 5, aid.length); // data
+
+                selectApplicationCommand[5 + aid.length] = (byte) 0x00; // Le
+                byte[] fci = null;
+                try {
+                    fci = hoplinkSE().processApdu(selectApplicationCommand);
+                } catch (KeypleIOReaderException e) {
+                    e.printStackTrace();
                 }
-                if (event_i == 2) {
-                    Assert.assertEquals(event.getReaderName(), virtualReader.getName());
-                    Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
-                    Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
-                    Assert.assertTrue(
-                            ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                    .getSelectionSeResponseSet().get(0).getSelectionStatus()
-                                    .hasMatched());
 
-                    Assert.assertArrayEquals(
-                            ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                    .getSelectionSeResponseSet().get(0).getSelectionStatus()
-                                    .getAtr().getBytes(),
-                            hoplinkSE().getATR());
+                Assert.assertArrayEquals(
+                        ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
+                                .getSelectionSeResponseSet().get(0).getSelectionStatus().getFci()
+                                .getBytes(),
+                        fci);
 
-                    // retrieve the expected FCI from the Stub SE running the select application
-                    // command
-                    byte[] aid = ByteArrayUtil.fromHex(poAid);
-                    byte[] selectApplicationCommand = new byte[6 + aid.length];
-                    selectApplicationCommand[0] = (byte) 0x00; // CLA
-                    selectApplicationCommand[1] = (byte) 0xA4; // INS
-                    selectApplicationCommand[2] = (byte) 0x04; // P1: select by name
-                    selectApplicationCommand[3] = (byte) 0x00; // P2: requests the first
-                    selectApplicationCommand[4] = (byte) (aid.length); // Lc
-                    System.arraycopy(aid, 0, selectApplicationCommand, 5, aid.length); // data
-
-                    selectApplicationCommand[5 + aid.length] = (byte) 0x00; // Le
-                    byte[] fci = null;
-                    try {
-                        fci = hoplinkSE().processApdu(selectApplicationCommand);
-                    } catch (KeypleIOReaderException e) {
-                        e.printStackTrace();
-                    }
-
-                    Assert.assertArrayEquals(
-                            ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                    .getSelectionSeResponseSet().get(0).getSelectionStatus()
-                                    .getFci().getBytes(),
-                            fci);
-
-                    logger.debug("match event is correct");
-                    // unlock thread
-                    lock.countDown();
-                }
-                event_i++;
+                logger.debug("match event is correct");
+                // unlock thread
+                lock.countDown();
             }
         };
 
@@ -325,19 +295,11 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         final CountDownLatch lock = new CountDownLatch(1);
 
         ObservableReader.ReaderObserver obs = new ObservableReader.ReaderObserver() {
-            int event_i = 1;
-
             @Override
             public void update(ReaderEvent event) {
-                if (event_i == 1) {
-                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
-                            event.getEventType());
-                } else {
-                    // no insertion event should be thrown
-                    Assert.fail();
-                    lock.countDown();// should not be called
-                }
-                event_i++;
+                // no event should be thrown
+                Assert.fail();
+                lock.countDown();// should not be called
             }
         };
 
@@ -384,30 +346,21 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
 
         // add observer
         ObservableReader.ReaderObserver obs = new ObservableReader.ReaderObserver() {
-            int event_i = 1;
-
             @Override
             public void update(ReaderEvent event) {
-                if (event_i == 1) {
-                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
-                            event.getEventType());
-                }
-                if (event_i == 2) {
-                    Assert.assertEquals(event.getReaderName(), virtualReader.getName());
-                    Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
+                Assert.assertEquals(event.getReaderName(), virtualReader.getName());
+                Assert.assertEquals(event.getPluginName(), masterAPI.getPlugin().getName());
 
-                    // an SE_INSERTED event is thrown
-                    Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+                // an SE_INSERTED event is thrown
+                Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
-                    // card has not match
-                    Assert.assertFalse(
-                            ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                    .getSelectionSeResponseSet().get(0).getSelectionStatus()
-                                    .hasMatched());
+                // card has not match
+                Assert.assertFalse(
+                        ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
+                                .getSelectionSeResponseSet().get(0).getSelectionStatus()
+                                .hasMatched());
 
-                    lock.countDown();// should be called
-                }
-                event_i++;
+                lock.countDown();// should be called
             }
         };
 
@@ -452,43 +405,34 @@ public class VirtualReaderEventTest extends VirtualReaderBaseTest {
         final CountDownLatch lock = new CountDownLatch(1);
 
         ObservableReader.ReaderObserver obs = new ObservableReader.ReaderObserver() {
-            int event_i = 1;
-
             @Override
             public void update(ReaderEvent event) {
-                if (event_i == 1) {
-                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
-                            event.getEventType());
+
+                Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+
+                SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
+                        ChannelState.KEEP_OPEN);
+                GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
+                        new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                                new SeSelector.AtrFilter("3B.*"), null, "Test " + "ATR"));
+
+                /* Prepare selector, ignore AbstractMatchingSe here */
+                seSelection.prepareSelection(genericSeSelectionRequest);
+
+                try {
+                    SelectionsResult selectionsResult =
+                            seSelection.processExplicitSelection(virtualReader);
+
+                    AbstractMatchingSe matchingSe =
+                            selectionsResult.getActiveSelection().getMatchingSe();
+
+                    Assert.assertNotNull(matchingSe);
+
+                } catch (KeypleReaderException e) {
+                    Assert.fail("Unexcepted exception");
                 }
-                if (event_i == 2) {
-                    Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
-
-                    SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                            ChannelState.KEEP_OPEN);
-                    GenericSeSelectionRequest genericSeSelectionRequest =
-                            new GenericSeSelectionRequest(new SeSelector(
-                                    SeCommonProtocols.PROTOCOL_ISO14443_4,
-                                    new SeSelector.AtrFilter("3B.*"), null, "Test " + "ATR"));
-
-                    /* Prepare selector, ignore AbstractMatchingSe here */
-                    seSelection.prepareSelection(genericSeSelectionRequest);
-
-                    try {
-                        SelectionsResult selectionsResult =
-                                seSelection.processExplicitSelection(virtualReader);
-
-                        AbstractMatchingSe matchingSe =
-                                selectionsResult.getActiveSelection().getMatchingSe();
-
-                        Assert.assertNotNull(matchingSe);
-
-                    } catch (KeypleReaderException e) {
-                        Assert.fail("Unexcepted exception");
-                    }
-                    // unlock thread
-                    lock.countDown();
-                }
-                event_i++;
+                // unlock thread
+                lock.countDown();
             }
         };
 

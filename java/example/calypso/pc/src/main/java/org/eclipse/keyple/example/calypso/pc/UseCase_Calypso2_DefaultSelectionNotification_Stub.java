@@ -275,11 +275,8 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
                 logger.error(
                         "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
                 break;
-            case AWAITING_SE_INSERTION:
+            case SE_REMOVED:
                 logger.info("There is no PO inserted anymore. Return to the waiting state...");
-                break;
-            case AWAITING_SE_REMOVAL:
-                logger.info("Waiting for PO removal...");
                 break;
             default:
                 break;

@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
-import org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader;
+import org.eclipse.keyple.core.seproxy.plugin.SmartPresenceReader;
 import org.eclipse.keyple.core.seproxy.plugin.ThreadedMonitoringReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent} : SE_INSERTED, SE_REMOVED
  */
 final class StubReaderImpl extends AbstractLocalReader
-        implements StubReader, ThreadedMonitoringReader, SmartInsertionReader, SmartRemovalReader {
+        implements StubReader, ThreadedMonitoringReader, SmartInsertionReader, SmartPresenceReader {
 
     private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
@@ -48,7 +48,6 @@ final class StubReaderImpl extends AbstractLocalReader
      */
     StubReaderImpl(String name) {
         super(StubPlugin.PLUGIN_NAME, name);
-        threadWaitTimeout = 2000; // time between two events
     }
 
     StubReaderImpl(String name, TransmissionMode transmissionMode) {
@@ -205,7 +204,7 @@ final class StubReaderImpl extends AbstractLocalReader
     }
 
     /**
-     * Defined in the {@link org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader} interface,
+     * Defined in the {@link org.eclipse.keyple.core.seproxy.plugin.SmartPresenceReader} interface,
      * this method is called by the monitoring thread to check SE absence
      * 
      * @param timeout the delay in millisecond we wait for a card withdrawing

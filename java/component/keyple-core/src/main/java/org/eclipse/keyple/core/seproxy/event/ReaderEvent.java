@@ -44,16 +44,6 @@ public final class ReaderEvent {
         IO_ERROR("SE Reader IO Error"),
 
         /**
-         * No SE is present, the system is waiting for an insertion.
-         */
-        AWAITING_SE_START_DETECTION("Awaiting start SE detection"),
-
-        /**
-         * No SE is present, the system is waiting for an insertion.
-         */
-        AWAITING_SE_INSERTION("Awaiting SE insertion"),
-
-        /**
          * A SE has been inserted.
          */
         SE_INSERTED("SE insertion"),
@@ -64,9 +54,9 @@ public final class ReaderEvent {
         SE_MATCHED("SE matched"),
 
         /**
-         * The SE is present, the system is awaiting for its removal.
+         * The SE has been removed and is no longer able to communicate with the reader
          */
-        AWAITING_SE_REMOVAL("Awaiting SE removal");
+        SE_REMOVED("SE removed");
 
         /** The event name. */
         private String name;

@@ -52,6 +52,8 @@ import org.slf4j.LoggerFactory;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StubReaderTest extends BaseStubTest {
 
+    // TODO Add tests to check the CLOSE_AND_STOP and CLOSE_AND_CONTINUE behaviors
+    // TODO Add tests to check the setThreadTimeout method and its effect
 
     Logger logger = LoggerFactory.getLogger(StubReaderTest.class);
 
@@ -99,7 +101,7 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(false, reader.isSePresent());
 
         // CountDown lock
-        final CountDownLatch lock = new CountDownLatch(2);
+        final CountDownLatch lock = new CountDownLatch(1);
 
 
         readerObs = new ObservableReader.ReaderObserver() {
@@ -107,24 +109,11 @@ public class StubReaderTest extends BaseStubTest {
             public void update(ReaderEvent event) {
                 Assert.assertEquals(event.getReaderName(), reader.getName());
                 Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
+                Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
-                if (lock.getCount() == 2) {
-                    // the first expected event AWAITING_SE_INSERTION
-                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
-                            event.getEventType());
-                    logger.debug("testWaitInsertion event is correct");
-                    // unlock thread
-                    lock.countDown();
-                } else if (lock.getCount() == 1) {
-                    // the first expected event AWAITING_SE_INSERTION
-                    Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
-                    logger.debug("testInsert event is correct");
-                    // unlock thread
-                    lock.countDown();
-                } else {
-                    logger.debug("Unexpected count value");
-                    Assert.assertEquals(true, false);
-                }
+                logger.debug("testInsert event is correct");
+                // unlock thread
+                lock.countDown();
             }
         };
 
@@ -144,7 +133,7 @@ public class StubReaderTest extends BaseStubTest {
 
     /**
      * Remove SE check : event and se presence
-     *
+     * 
      * @throws InterruptedException
      */
     @Test
@@ -154,9 +143,8 @@ public class StubReaderTest extends BaseStubTest {
         final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
         // CountDown lock
-        final CountDownLatch firstWaitInsertionLock = new CountDownLatch(1);
         final CountDownLatch insertLock = new CountDownLatch(1);
-        final CountDownLatch secondWaitInsertionLock = new CountDownLatch(1);
+        final CountDownLatch removeLock = new CountDownLatch(1);
 
         // add observer
         readerObs = new ObservableReader.ReaderObserver() {
@@ -169,26 +157,16 @@ public class StubReaderTest extends BaseStubTest {
                 if (event_i == 1) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
                     Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
-                            event.getEventType());
-                    firstWaitInsertionLock.countDown();
-                }
-
-                // second event
-                if (event_i == 2) {
-                    Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
                     Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
                     insertLock.countDown();
                 }
 
-                // analyze the third event, should be a SE_REMOVED
-                if (event_i == 3) {
+                // analyze the second event, should be a SE_REMOVED
+                if (event_i == 2) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
                     Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
-                            event.getEventType());
-                    secondWaitInsertionLock.countDown();
+                    Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
+                    removeLock.countDown();
                 }
                 event_i++;
             }
@@ -196,12 +174,6 @@ public class StubReaderTest extends BaseStubTest {
 
         // add observer
         reader.addObserver(readerObs);
-
-        // lock thread for 2 seconds max to wait for the event SE_INSERTED
-        firstWaitInsertionLock.await(2, TimeUnit.SECONDS);
-
-        Assert.assertEquals(0, firstWaitInsertionLock.getCount()); // should be 0 because insertLock
-                                                                   // is countDown by obs
 
         // test
         reader.insertSe(hoplinkSE());
@@ -214,12 +186,11 @@ public class StubReaderTest extends BaseStubTest {
 
         reader.removeSe();
 
-        // lock thread for 2 seconds max to wait for the event AWAITING_SE_INSERTION
-        secondWaitInsertionLock.await(2, TimeUnit.SECONDS);
+        // lock thread for 2 seconds max to wait for the event SE_REMOVED
+        removeLock.await(2, TimeUnit.SECONDS);
 
-        Assert.assertEquals(0, secondWaitInsertionLock.getCount()); // should be 0 because
-                                                                    // waitInsertionLock is
-        // countDown by obs
+        Assert.assertEquals(0, removeLock.getCount()); // should be 0 because removeLock is
+                                                       // countDown by obs
 
         Assert.assertFalse(reader.isSePresent());
 
@@ -227,7 +198,7 @@ public class StubReaderTest extends BaseStubTest {
 
     /**
      * Remove SE check : event and se presence
-     *
+     * 
      * @throws InterruptedException
      */
     @Test
@@ -237,126 +208,10 @@ public class StubReaderTest extends BaseStubTest {
         final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
         // CountDown lock
-        final CountDownLatch firstWaitInsertionLock = new CountDownLatch(1);
         final CountDownLatch firstInsertLock = new CountDownLatch(1);
-        final CountDownLatch secondWaitInsertionLock = new CountDownLatch(1);
+        final CountDownLatch firstRemoveLock = new CountDownLatch(1);
         final CountDownLatch secondInsertLock = new CountDownLatch(1);
-        final CountDownLatch thirdWaitInsertionLock = new CountDownLatch(1);
-
-        // add observer
-        readerObs = new ObservableReader.ReaderObserver() {
-            int event_i = 1;
-
-            @Override
-            public void update(ReaderEvent event) {
-                logger.info("event {}", event.getEventType());
-                // first event
-                if (event_i == 1) {
-                    Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
-                            event.getEventType());
-                    firstWaitInsertionLock.countDown();
-                }
-
-                if (event_i == 2) {
-                    Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
-                    firstInsertLock.countDown();
-                }
-
-                if (event_i == 3) {
-                    Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
-                            event.getEventType());
-                    secondWaitInsertionLock.countDown();
-                }
-                if (event_i == 4) {
-                    Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
-                    secondInsertLock.countDown();
-                }
-                // analyze the third event, should be a AWAITING_SE_INSERTION
-                if (event_i == 5) {
-                    Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
-                            event.getEventType());
-                    thirdWaitInsertionLock.countDown();
-                }
-                event_i++;
-            }
-        };
-
-        // add observer
-        reader.addObserver(readerObs);
-
-        // test first sequence
-        reader.insertSe(hoplinkSE());
-
-        // lock thread for 2 seconds max to wait for the event SE_INSERTED
-        firstWaitInsertionLock.await(2, TimeUnit.SECONDS);
-
-        Assert.assertEquals(0, firstWaitInsertionLock.getCount()); // should be 0 because insertLock
-                                                                   // is countDown by obs
-
-        Thread.sleep(1000);
-
-        // lock thread for 2 seconds max to wait for the event SE_INSERTED
-        firstInsertLock.await(2, TimeUnit.SECONDS);
-        Assert.assertEquals(0, firstInsertLock.getCount()); // should be 0 because insertLock is
-                                                            // countDown by obs
-        Thread.sleep(1000);
-
-        reader.removeSe();
-
-        // lock thread for 2 seconds max to wait for the event AWAITING_SE_INSERTION
-        firstWaitInsertionLock.await(2, TimeUnit.SECONDS);
-        Assert.assertEquals(0, firstWaitInsertionLock.getCount()); // should be 0 because
-                                                                   // waitInsertionLock is
-        // countDown by obs
-
-        // BUG, insert event is not throw without (1)
-        // BUG (1) make thread sleep
-        // BUG, solved by setting a lower threadWaitTimeout (100ms)
-        Thread.sleep(1000);
-
-        // test second sequence
-        reader.insertSe(hoplinkSE());
-
-        // lock thread for 2 seconds max to wait for the event SE_INSERTED
-        secondInsertLock.await(2, TimeUnit.SECONDS);
-
-        Assert.assertEquals(0, secondInsertLock.getCount()); // should be 0 because insertLock is
-                                                             // countDown by obs
-        Thread.sleep(1000);
-        reader.removeSe();
-
-        // lock thread for 2 seconds max to wait for the event AWAITING_SE_INSERTION
-        secondWaitInsertionLock.await(2, TimeUnit.SECONDS);
-        Assert.assertEquals(0, secondWaitInsertionLock.getCount()); // should be 0 because
-                                                                    // waitInsertionLock is
-        // countDown by obs
-
-        Assert.assertFalse(reader.isSePresent());
-
-    }
-
-    // @Test
-    // Is unstable
-    public void A_testInsertRemoveTwiceFast() throws Exception, NoStackTraceThrowable {
-        stubPlugin.plugStubReader("StubReaderTest", true);
-        Assert.assertEquals(1, stubPlugin.getReaders().size());
-        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
-
-        // CountDown lock
-        final CountDownLatch firstInsertLock = new CountDownLatch(1);
-        final CountDownLatch firstWaitInsertionLock = new CountDownLatch(1);
-        final CountDownLatch secondInsertLock = new CountDownLatch(1);
-        final CountDownLatch secondWaitInsertionLock = new CountDownLatch(1);
+        final CountDownLatch secondRemoveLock = new CountDownLatch(1);
 
         // add observer
         readerObs = new ObservableReader.ReaderObserver() {
@@ -377,9 +232,8 @@ public class StubReaderTest extends BaseStubTest {
                 if (event_i == 2) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
                     Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
-                            event.getEventType());
-                    firstWaitInsertionLock.countDown();
+                    Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
+                    firstRemoveLock.countDown();
                 }
                 if (event_i == 3) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
@@ -390,9 +244,105 @@ public class StubReaderTest extends BaseStubTest {
                 if (event_i == 4) {
                     Assert.assertEquals(event.getReaderName(), reader.getName());
                     Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
-                            event.getEventType());
-                    secondWaitInsertionLock.countDown();
+                    Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
+                    secondRemoveLock.countDown();
+                }
+                event_i++;
+            }
+        };
+
+        // add observer
+        reader.addObserver(readerObs);
+
+        // test first sequence
+        reader.insertSe(hoplinkSE());
+
+        Thread.sleep(1000);
+
+        // lock thread for 2 seconds max to wait for the event SE_INSERTED
+        firstInsertLock.await(2, TimeUnit.SECONDS);
+        Assert.assertEquals(0, firstInsertLock.getCount()); // should be 0 because insertLock is
+                                                            // countDown by obs
+        Thread.sleep(1000);
+
+        reader.removeSe();
+
+        // lock thread for 2 seconds max to wait for the event SE_REMOVED
+        firstRemoveLock.await(2, TimeUnit.SECONDS);
+        Assert.assertEquals(0, firstRemoveLock.getCount()); // should be 0 because removeLock is
+                                                            // countDown by obs
+
+        // BUG, insert event is not throw without (1)
+        // BUG (1) make thread sleep
+        // BUG, solved by setting a lower threadWaitTimeout (100ms)
+        Thread.sleep(1000);
+
+        // test second sequence
+        reader.insertSe(hoplinkSE());
+
+        // lock thread for 2 seconds max to wait for the event SE_INSERTED
+        secondInsertLock.await(2, TimeUnit.SECONDS);
+
+        Assert.assertEquals(0, secondInsertLock.getCount()); // should be 0 because insertLock is
+                                                             // countDown by obs
+        Thread.sleep(1000);
+        reader.removeSe();
+
+        // lock thread for 2 seconds max to wait for the event SE_REMOVED
+        secondRemoveLock.await(2, TimeUnit.SECONDS);
+        Assert.assertEquals(0, secondRemoveLock.getCount()); // should be 0 because removeLock is
+                                                             // countDown by obs
+
+        Assert.assertFalse(reader.isSePresent());
+
+    }
+
+    // @Test
+    // Is unstable
+    public void A_testInsertRemoveTwiceFast() throws Exception, NoStackTraceThrowable {
+        stubPlugin.plugStubReader("StubReaderTest", true);
+        Assert.assertEquals(1, stubPlugin.getReaders().size());
+        final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
+
+        // CountDown lock
+        final CountDownLatch firstInsertLock = new CountDownLatch(1);
+        final CountDownLatch firstRemoveLock = new CountDownLatch(1);
+        final CountDownLatch secondInsertLock = new CountDownLatch(1);
+        final CountDownLatch secondRemoveLock = new CountDownLatch(1);
+
+        // add observer
+        readerObs = new ObservableReader.ReaderObserver() {
+            int event_i = 1;
+
+            @Override
+            public void update(ReaderEvent event) {
+                logger.info("event {}", event.getEventType());
+                // first event
+                if (event_i == 1) {
+                    Assert.assertEquals(event.getReaderName(), reader.getName());
+                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+                    firstInsertLock.countDown();
+                }
+
+                // analyze the second event, should be a SE_REMOVED
+                if (event_i == 2) {
+                    Assert.assertEquals(event.getReaderName(), reader.getName());
+                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
+                    firstRemoveLock.countDown();
+                }
+                if (event_i == 3) {
+                    Assert.assertEquals(event.getReaderName(), reader.getName());
+                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+                    secondInsertLock.countDown();
+                }
+                if (event_i == 4) {
+                    Assert.assertEquals(event.getReaderName(), reader.getName());
+                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
+                    Assert.assertEquals(ReaderEvent.EventType.SE_REMOVED, event.getEventType());
+                    secondRemoveLock.countDown();
                 }
                 event_i++;
             }
@@ -412,10 +362,9 @@ public class StubReaderTest extends BaseStubTest {
 
         reader.removeSe();
 
-        // lock thread for 2 seconds max to wait for the event AWAITING_SE_INSERTION
-        firstWaitInsertionLock.await(2, TimeUnit.SECONDS);
-        Assert.assertEquals(0, firstWaitInsertionLock.getCount()); // should be 0 because
-                                                                   // waitInsertionLock is
+        // lock thread for 2 seconds max to wait for the event SE_REMOVED
+        firstRemoveLock.await(2, TimeUnit.SECONDS);
+        Assert.assertEquals(0, firstRemoveLock.getCount()); // should be 0 because removeLock is
         // countDown by obs
 
         // BUG, insert event is not throw without (1)
@@ -432,10 +381,9 @@ public class StubReaderTest extends BaseStubTest {
         // countDown by obs
         reader.removeSe();
 
-        // lock thread for 2 seconds max to wait for the event AWAITING_SE_INSERTION
-        secondWaitInsertionLock.await(2, TimeUnit.SECONDS);
-        Assert.assertEquals(0, secondWaitInsertionLock.getCount()); // should be 0 because
-                                                                    // waitInsertionLock is
+        // lock thread for 2 seconds max to wait for the event SE_REMOVED
+        secondRemoveLock.await(2, TimeUnit.SECONDS);
+        Assert.assertEquals(0, secondRemoveLock.getCount()); // should be 0 because removeLock is
         // countDown by obs
 
         Assert.assertFalse(reader.isSePresent());
@@ -457,63 +405,48 @@ public class StubReaderTest extends BaseStubTest {
                 StubProtocolSetting.STUB_PROTOCOL_SETTING
                         .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
 
-
         // add observer
         readerObs = new ObservableReader.ReaderObserver() {
-            int event_i = 1;
-
             @Override
             public void update(ReaderEvent event) {
-                if (event_i == 1) {
-                    Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
-                            event.getEventType());
+                Assert.assertEquals(event.getReaderName(), reader.getName());
+                Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
+                Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
+                Assert.assertTrue(((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
+                        .getSelectionSeResponseSet().get(0).getSelectionStatus().hasMatched());
+                Assert.assertArrayEquals(
+                        ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
+                                .getSelectionSeResponseSet().get(0).getSelectionStatus().getAtr()
+                                .getBytes(),
+                        hoplinkSE().getATR());
+
+                // retrieve the expected FCI from the Stub SE running the select application command
+                byte[] aid = ByteArrayUtil.fromHex(poAid);
+                byte[] selectApplicationCommand = new byte[6 + aid.length];
+                selectApplicationCommand[0] = (byte) 0x00; // CLA
+                selectApplicationCommand[1] = (byte) 0xA4; // INS
+                selectApplicationCommand[2] = (byte) 0x04; // P1: select by name
+                selectApplicationCommand[3] = (byte) 0x00; // P2: requests the first
+                selectApplicationCommand[4] = (byte) (aid.length); // Lc
+                System.arraycopy(aid, 0, selectApplicationCommand, 5, aid.length); // data
+
+                selectApplicationCommand[5 + aid.length] = (byte) 0x00; // Le
+                byte[] fci = null;
+                try {
+                    fci = hoplinkSE().processApdu(selectApplicationCommand);
+                } catch (KeypleIOReaderException e) {
+                    e.printStackTrace();
                 }
-                if (event_i == 2) {
-                    Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.SE_MATCHED, event.getEventType());
-                    Assert.assertTrue(
-                            ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                    .getSelectionSeResponseSet().get(0).getSelectionStatus()
-                                    .hasMatched());
-                    Assert.assertArrayEquals(
-                            ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                    .getSelectionSeResponseSet().get(0).getSelectionStatus()
-                                    .getAtr().getBytes(),
-                            hoplinkSE().getATR());
 
-                    // retrieve the expected FCI from the Stub SE running the select application
-                    // command
-                    byte[] aid = ByteArrayUtil.fromHex(poAid);
-                    byte[] selectApplicationCommand = new byte[6 + aid.length];
-                    selectApplicationCommand[0] = (byte) 0x00; // CLA
-                    selectApplicationCommand[1] = (byte) 0xA4; // INS
-                    selectApplicationCommand[2] = (byte) 0x04; // P1: select by name
-                    selectApplicationCommand[3] = (byte) 0x00; // P2: requests the first
-                    selectApplicationCommand[4] = (byte) (aid.length); // Lc
-                    System.arraycopy(aid, 0, selectApplicationCommand, 5, aid.length); // data
+                Assert.assertArrayEquals(
+                        ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
+                                .getSelectionSeResponseSet().get(0).getSelectionStatus().getFci()
+                                .getBytes(),
+                        fci);
 
-                    selectApplicationCommand[5 + aid.length] = (byte) 0x00; // Le
-                    byte[] fci = null;
-                    try {
-                        fci = hoplinkSE().processApdu(selectApplicationCommand);
-                    } catch (KeypleIOReaderException e) {
-                        e.printStackTrace();
-                    }
-
-                    Assert.assertArrayEquals(
-                            ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                    .getSelectionSeResponseSet().get(0).getSelectionStatus()
-                                    .getFci().getBytes(),
-                            fci);
-
-                    logger.debug("match event is correct");
-                    // unlock thread
-                    lock.countDown();
-                }
-                event_i++;
+                logger.debug("match event is correct");
+                // unlock thread
+                lock.countDown();
             }
         };
 
@@ -556,10 +489,8 @@ public class StubReaderTest extends BaseStubTest {
         readerObs = new ObservableReader.ReaderObserver() {
             @Override
             public void update(ReaderEvent event) {
-                if (event.getEventType() != ReaderEvent.EventType.AWAITING_SE_INSERTION) {
-                    // no insertion event is thrown
-                    lock.countDown();// should not be called
-                }
+                // no event is thrown
+                lock.countDown();// should not be called
             }
         };
 
@@ -610,33 +541,21 @@ public class StubReaderTest extends BaseStubTest {
 
         // add observer
         readerObs = new ObservableReader.ReaderObserver() {
-            int event_i = 1;
-
             @Override
             public void update(ReaderEvent event) {
-                if (event_i == 1) {
-                    Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
-                    Assert.assertEquals(ReaderEvent.EventType.AWAITING_SE_INSERTION,
-                            event.getEventType());
-                }
+                Assert.assertEquals(event.getReaderName(), reader.getName());
+                Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
 
-                if (event_i == 2) {
-                    Assert.assertEquals(event.getReaderName(), reader.getName());
-                    Assert.assertEquals(event.getPluginName(), stubPlugin.getName());
+                // an SE_INSERTED event is thrown
+                Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
-                    // an SE_INSERTED event is thrown
-                    Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
+                // card has not match
+                Assert.assertFalse(
+                        ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
+                                .getSelectionSeResponseSet().get(0).getSelectionStatus()
+                                .hasMatched());
 
-                    // card has not match
-                    Assert.assertFalse(
-                            ((DefaultSelectionsResponse) event.getDefaultSelectionsResponse())
-                                    .getSelectionSeResponseSet().get(0).getSelectionStatus()
-                                    .hasMatched());
-
-                    lock.countDown();// should be called
-                }
-                event_i++;
+                lock.countDown();// should be called
             }
         };
 
