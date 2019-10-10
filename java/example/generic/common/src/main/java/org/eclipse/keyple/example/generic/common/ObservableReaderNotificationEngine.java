@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.example.generic.common;
 
+import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -64,24 +65,25 @@ public class ObservableReaderNotificationEngine {
         }
 
         public void update(ReaderEvent event) {
-            switch (event.getEventType()) {
-                case SE_INSERTED:
-                case SE_MATCHED:
-                    /*
-                     * informs the underlying layer of the end of the SE processing, in order to
-                     * manage the removal sequence
-                     */
-                    try {
-                        ((ObservableReader) SeProxyService.getInstance()
-                                .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
-                                        .terminate(true);
-                    } catch (KeypleReaderNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (KeyplePluginNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    break;
+            if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED
+                    || event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
+                /**
+                 * Informs the underlying layer of the end of the SE processing, in order to manage
+                 * the removal sequence.
+                 * <p>
+                 * If closing has already been requested, this method will do nothing.
+                 */
+                try {
+                    ((ObservableReader) SeProxyService.getInstance()
+                            .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
+                                    .notifySeProcessed(ChannelState.CLOSE_AND_CONTINUE);
+                } catch (KeypleReaderNotFoundException e) {
+                    e.printStackTrace();
+                } catch (KeyplePluginNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
+
             /* just log the event */
             logger.info("Event: PLUGINNAME = {}, READERNAME = {}, EVENT = {}",
                     event.getPluginName(), event.getReaderName(), event.getEventType().getName());

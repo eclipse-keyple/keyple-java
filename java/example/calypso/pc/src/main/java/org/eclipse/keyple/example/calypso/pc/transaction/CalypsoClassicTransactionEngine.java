@@ -20,7 +20,6 @@ import org.eclipse.keyple.core.selection.*;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -193,7 +192,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AFTER);
+            poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AND_CONTINUE);
 
         } else {
             /*
@@ -252,7 +251,7 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
             /*
              * A ratification command will be sent (CONTACTLESS_MODE).
              */
-            poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AFTER);
+            poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AND_CONTINUE);
 
             logger.info("Parsing Append EventLog file: " + ((AppendRecordRespPars) poTransaction
                     .getResponseParser(appendEventLogParserIndex)).toString());
@@ -361,21 +360,11 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
                 e.printStackTrace();
             }
         }
-        /*
-         * informs the underlying layer of the end of the SE processing, in order to manage the
-         * removal sequence
-         */
-        ((ObservableReader) poReader).terminate(true);
     }
 
     @Override
     public void processSeInsertion() {
         System.out.println("Unexpected SE insertion event");
-        /*
-         * informs the underlying layer of the end of the SE processing, in order to manage the
-         * removal sequence
-         */
-        ((ObservableReader) poReader).terminate(true);
     }
 
     @Override

@@ -243,7 +243,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
                      * with the PO
                      */
                     try {
-                        if (poTransaction.processPoCommands(ChannelState.CLOSE_AFTER)) {
+                        if (poTransaction.processPoCommands(ChannelState.CLOSE_AND_CONTINUE)) {
                             logger.info("The reading of the EventLog has succeeded.");
 
                             /*
@@ -270,39 +270,37 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
                     logger.error(
                             "The selection of the PO has failed. Should not have occurred due to the MATCHED_ONLY selection mode.");
                 }
-
-                /*
-                 * informs the underlying layer of the end of the SE processing, in order to manage
-                 * the removal sequence
-                 */
-                ((ObservableReader) poReader).terminate(true);
                 break;
             case SE_INSERTED:
                 logger.error(
                         "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
-                /*
-                 * informs the underlying layer of the end of the SE processing, in order to manage
-                 * the removal sequence
-                 */
-                try {
-                    ((ObservableReader) SeProxyService.getInstance()
-                            .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
-                                    .terminate(true);
-                } catch (KeypleReaderNotFoundException e) {
-                    e.printStackTrace();
-                } catch (KeyplePluginNotFoundException e) {
-                    e.printStackTrace();
-                }
                 break;
-            case SE_AWAITING_INSERTION:
+            case SE_REMOVED:
                 logger.info("There is no PO inserted anymore. Return to the waiting state...");
-                break;
-            case SE_AWAITING_REMOVAL:
-                logger.info("Waiting for PO removal...");
                 break;
             default:
                 break;
         }
+
+
+        if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED
+                || event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
+            /*
+             * Informs the underlying layer of the end of the SE processing, in order to manage the
+             * removal sequence. <p>If closing has already been requested, this method will do
+             * nothing.
+             */
+            try {
+                ((ObservableReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
+                        .getReader(event.getReaderName()))
+                                .notifySeProcessed(ChannelState.CLOSE_AND_CONTINUE);
+            } catch (KeypleReaderNotFoundException e) {
+                e.printStackTrace();
+            } catch (KeyplePluginNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     /**

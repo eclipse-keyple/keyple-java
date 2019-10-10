@@ -57,18 +57,15 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                 try {
                     ((ObservableReader) SeProxyService.getInstance()
                             .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
-                                    .terminate(true);
+                                    .notifySeProcessed(ChannelState.CLOSE_AND_CONTINUE);
                 } catch (KeypleReaderNotFoundException e) {
                     e.printStackTrace();
                 } catch (KeyplePluginNotFoundException e) {
                     e.printStackTrace();
                 }
                 break;
-            case SE_AWAITING_INSERTION:
+            case SE_REMOVED:
                 System.out.println("\nWaiting for new Calypso PO...");
-                break;
-            case SE_AWAITING_REMOVAL:
-                System.out.println("\nWaiting for PO removal...");
                 break;
             default:
                 System.out.println("IO Error");

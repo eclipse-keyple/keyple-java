@@ -16,18 +16,18 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 /**
  * Interface implemented by the readers able to handle natively the card removal process.
  */
-public interface SmartRemovalReader extends ObservableReader {
+public interface SmartPresenceReader extends ObservableReader {
     /**
      * TODO Check if we really need a timeout parameter Wait until the card disappears.
      * <p>
      * This method must be implemented by the plugin's reader class when it implements the
-     * {@link SmartRemovalReader} interface. The reader implementation must manage the card
+     * {@link SmartPresenceReader} interface. The reader implementation must manage the card
      * withdrawal process itself. (for example by using the analogous waitForCardAbsent method in
      * the case of a plugin based on smartcard.io [PC/SC]).
      * <p>
      * In the case where the reader plugin is not able to handle the card removal process itself
-     * (not implementing the {@link SmartRemovalReader} interface, then it is managed by the
-     * waitForCardAbsentPing method defined in this class.
+     * (not implementing the {@link SmartPresenceReader} interface, then it is managed by the
+     * isSePresentPing method defined in this class.
      * <p>
      * Returns true if a card has disappeared before the end of the provided timeout.
      * <p>

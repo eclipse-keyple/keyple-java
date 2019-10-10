@@ -449,8 +449,8 @@ public final class PoTransaction {
      * ApduRequests with the PO commands.</li>
      * <li>In case the secure session is active, the "cache" of SAM commands is completed with the
      * corresponding Digest Update commands.</li>
-     * <li>If a session is open and channelState is set to CLOSE_AFTER, the current PO session is
-     * aborted</li>
+     * <li>If a session is open and channelState is set to CLOSE_AND_CONTINUE, the current PO
+     * session is aborted</li>
      * <li>Returns the corresponding PO SeResponse.</li>
      * </ul>
      *

@@ -148,9 +148,9 @@ final class AndroidNfcReaderImpl extends AbstractLocalReader
         LOG.info("Received Tag Discovered event");
         try {
             tagProxy = TagProxy.getTagProxy(tag);
-            cardInserted();
+            processCardInsertion();
             // TODO do the removal sequence here?
-            // waitForCardAbsentPing(0);
+            // isSePresentPing(0);
             // cardRemoved();
         } catch (KeypleReaderException e) {
             // print and do nothing
@@ -210,7 +210,7 @@ final class AndroidNfcReaderImpl extends AbstractLocalReader
             if (tagProxy != null) {
                 tagProxy.close();
                 notifyObservers(new ReaderEvent(PLUGIN_NAME, READER_NAME,
-                        ReaderEvent.EventType.SE_AWAITING_INSERTION, null));
+                        ReaderEvent.EventType.SE_REMOVED, null));
                 LOG.info("Disconnected tag : " + printTagId());
             }
         } catch (IOException e) {
@@ -237,11 +237,6 @@ final class AndroidNfcReaderImpl extends AbstractLocalReader
         }
         LOG.debug("Data out : " + ByteArrayUtil.toHex(dataOut));
         return dataOut;
-    }
-
-    @Override
-    public void terminate(boolean waitForRemoval) {
-        // TODO implement
     }
 
     @Override

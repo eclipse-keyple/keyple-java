@@ -219,14 +219,8 @@ public class Demo_Master {
                                                     // event.getReaderName());
 
                                                     break;
-                                                case SE_AWAITING_INSERTION:
-                                                    logger.info("{} SE_AWAITING_INSERTION {} {}",
-                                                            node.getNodeId(), event.getPluginName(),
-                                                            event.getReaderName());
-                                                    break;
-
-                                                case SE_AWAITING_REMOVAL:
-                                                    logger.info("{} SE_AWAITING_REMOVAL {} {}",
+                                                case SE_REMOVED:
+                                                    logger.info("{} SE_REMOVED {} {}",
                                                             node.getNodeId(), event.getPluginName(),
                                                             event.getReaderName());
                                                     break;
@@ -345,7 +339,7 @@ public class Demo_Master {
                  * with the PO
                  */
 
-                if (poTransaction.processPoCommands(ChannelState.CLOSE_AFTER)) {
+                if (poTransaction.processPoCommands(ChannelState.CLOSE_AND_CONTINUE)) {
                     logger.info("{} The reading of the EventLog has succeeded.", node.getNodeId());
 
                     /*
@@ -513,7 +507,7 @@ public class Demo_Master {
                 /*
                  * A ratification command will be sent (CONTACTLESS_MODE).
                  */
-                poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AFTER);
+                poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AND_CONTINUE);
 
                 if (!poProcessStatus) {
                     throw new IllegalStateException("processClosing failure.");

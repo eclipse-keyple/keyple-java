@@ -18,7 +18,7 @@ import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
-import org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader;
+import org.eclipse.keyple.core.seproxy.plugin.SmartPresenceReader;
 import org.eclipse.keyple.core.seproxy.plugin.ThreadedMonitoringReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 final class PcscReaderImpl extends AbstractLocalReader
-        implements PcscReader, ThreadedMonitoringReader, SmartInsertionReader, SmartRemovalReader {
+        implements PcscReader, ThreadedMonitoringReader, SmartInsertionReader, SmartPresenceReader {
 
     private static final Logger logger = LoggerFactory.getLogger(PcscReaderImpl.class);
 
@@ -61,7 +61,6 @@ final class PcscReaderImpl extends AbstractLocalReader
         this.terminal = terminal;
         this.card = null;
         this.channel = null;
-        this.protocolsMap = new HashMap<SeProtocol, String>();
 
         // Using null values to use the standard method for defining default values
         try {
@@ -125,7 +124,7 @@ final class PcscReaderImpl extends AbstractLocalReader
      * @param timeout waiting time in ms
      * @return true if the card is removed within the delay
      */
-    @Override
+    // @Override
     public boolean waitForCardAbsentNative(long timeout) {
         try {
             if (terminal.waitForCardAbsent(timeout)) {
