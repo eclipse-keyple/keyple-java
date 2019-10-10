@@ -416,7 +416,7 @@ public class SamResourceManager {
                         }
                         break;
                     case SE_REMOVED:
-                    case IO_ERROR:
+                    case TIMEOUT_ERROR:
                         removeResource(samReader);
                         break;
                 }

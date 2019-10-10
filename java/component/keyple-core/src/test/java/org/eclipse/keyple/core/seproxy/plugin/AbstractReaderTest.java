@@ -16,11 +16,9 @@ import static org.mockito.Mockito.doAnswer;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.junit.Assert;
@@ -165,12 +163,6 @@ public class AbstractReaderTest extends CoreBaseTest {
             @Override
             protected byte[] getATR() {
                 return new byte[0];
-            }
-
-            @Override
-            protected ApduResponse processExplicitAidSelection(SeSelector.AidSelector aidSelector)
-                    throws KeypleIOReaderException {
-                return null;
             }
 
             @Override

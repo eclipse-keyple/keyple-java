@@ -81,7 +81,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * This method is recommended for non-observable readers.
      * <p>
      * When the card is not present the logical and physical channels status may be refreshed
-     * through a call to the cardRemoved method.
+     * through a call to the processSeRemoved method.
      *
      * @return true if the SE is present
      */
@@ -89,8 +89,12 @@ public abstract class AbstractLocalReader extends AbstractReader {
         if (checkSePresence()) {
             return true;
         } else {
+            /*
+             * if the SE is no longer present but one of the channels is still open, then the
+             * SE_REMOVED notification is performed and the channels are closed.
+             */
             if (isLogicalChannelOpen() || isPhysicalChannelOpen()) {
-                cardRemoved();
+                processSeRemoved();
             }
             return false;
         }
@@ -129,7 +133,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * 
      * @return true if the notification was actually sent to the application, false if not
      */
-    protected final boolean processCardInsertion() {
+    protected final boolean processSeInsertion() {
         boolean presenceNotified = false;
         if (defaultSelectionsRequest == null) {
             /* no default request is defined, just notify the SE insertion */
@@ -187,8 +191,20 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 // in this case the card has been removed or not read correctly, do not throw event
             }
         }
+
+        if (!presenceNotified) {
+            // We close here the physical channel in case it has been opened for a SE outside the
+            // expected SEs
+            try {
+                closePhysicalChannel();
+            } catch (KeypleChannelStateException e) {
+                logger.error("Error while closing physical channel. {}", e.getMessage());
+            }
+        }
+
         return presenceNotified;
     }
+
 
     /**
      * This method is invoked when a SE is removed in the case of an observable reader.
@@ -200,10 +216,10 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * reader only)
      *
      */
-    protected final void cardRemoved() {
+    protected final void processSeRemoved() {
+        closeLogicalAndPhysicalChannels();
         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                 ReaderEvent.EventType.SE_REMOVED, null));
-        closeLogicalAndPhysicalChannels();
     }
 
     /** ==== Physical and logical channels management ====================== */
@@ -231,6 +247,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
      */
     protected abstract byte[] getATR();
 
+    /** ==== Physical and logical channels management ====================== */
+    /* Selection management */
 
     /**
      * This method is dedicated to the case where no FCI data is available in return for the select
@@ -260,6 +278,55 @@ public abstract class AbstractLocalReader extends AbstractReader {
     }
 
     /**
+     * Executes the selection application command and returns the requested data according to
+     * AidSelector attributes.
+     *
+     * @param aidSelector the selection parameters
+     * @return the response to the select application command
+     * @throws KeypleIOReaderException if a reader error occurs
+     */
+    private ApduResponse processExplicitAidSelection(SeSelector.AidSelector aidSelector)
+            throws KeypleIOReaderException {
+        ApduResponse fciResponse;
+        final byte[] aid = aidSelector.getAidToSelect().getValue();
+        if (aid == null) {
+            throw new IllegalArgumentException("AID must not be null for an AidSelector.");
+        }
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] openLogicalChannel => Select Application with AID = {}",
+                    this.getName(), ByteArrayUtil.toHex(aid));
+        }
+        /*
+         * build a get response command the actual length expected by the SE in the get response
+         * command is handled in transmitApdu
+         */
+        byte[] selectApplicationCommand = new byte[6 + aid.length];
+        selectApplicationCommand[0] = (byte) 0x00; // CLA
+        selectApplicationCommand[1] = (byte) 0xA4; // INS
+        selectApplicationCommand[2] = (byte) 0x04; // P1: select by name
+        // P2: b0,b1 define the File occurrence, b2,b3 define the File control information
+        // we use the bitmask defined in the respective enums
+        selectApplicationCommand[3] = (byte) (aidSelector.getFileOccurrence().getIsoBitMask()
+                | aidSelector.getFileControlInformation().getIsoBitMask());
+        selectApplicationCommand[4] = (byte) (aid.length); // Lc
+        System.arraycopy(aid, 0, selectApplicationCommand, 5, aid.length); // data
+        selectApplicationCommand[5 + aid.length] = (byte) 0x00; // Le
+
+        /*
+         * we use here processApduRequest to manage case 4 hack. The successful status codes list
+         * for this command is provided.
+         */
+        fciResponse = processApduRequest(new ApduRequest("Internal Select Application",
+                selectApplicationCommand, true, aidSelector.getSuccessfulSelectionStatusCodes()));
+
+        if (!fciResponse.isSuccessful()) {
+            logger.trace("[{}] openLogicalChannel => Application Selection failed. SELECTOR = {}",
+                    this.getName(), aidSelector);
+        }
+        return fciResponse;
+    }
+
+    /**
      * This abstract method must be implemented by the derived class in order to provide a selection
      * and ATR filtering mechanism.
      * <p>
@@ -269,6 +336,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @param seSelector the SE selector
      * @return the SelectionStatus
      */
+
     /** ==== ATR filtering and application selection by AID ================ */
 
     /**
@@ -907,8 +975,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * Depending on the notification mode, the observer will be notified whenever an SE is inserted,
      * regardless of the selection status, or only if the current SE matches the selection criteria.
      * <p>
-     * In addition, the observation thread will be notified of request to start the SE insertion
-     * monitoring (change from the WAIT_FOR_START_DETECTION state to WAIT_FOR_SE_INSERTION).
+     * In addition, in the case of a {@link ThreadedMonitoringReader} the observation thread will be
+     * notified of request to start the SE insertion monitoring (change from the
+     * WAIT_FOR_START_DETECTION state to WAIT_FOR_SE_INSERTION).
      * <p>
      * An {@link java.lang.IllegalStateException} exception will be thrown if no observers have been
      * recorded for this reader (see startMonitoring).
@@ -922,25 +991,15 @@ public abstract class AbstractLocalReader extends AbstractReader {
             ObservableReader.NotificationMode notificationMode) {
         this.defaultSelectionsRequest = (DefaultSelectionsRequest) defaultSelectionsRequest;
         this.notificationMode = notificationMode;
-        // unleash the monitoring thread to initiate SE detection
-        if (thread != null) {
+        // unleash the monitoring thread to initiate SE detection (if available and needed)
+        if (this instanceof ThreadedMonitoringReader && thread != null) {
             thread.startDetection();
         }
     }
 
-    /* Monitoring thread management methods */
-    private EventThread thread;
-    private static final AtomicInteger threadCount = new AtomicInteger();
+    /** ==== Observability management ======================================================= */
 
-    /**
-     * Thread wait timeout in ms
-     * <p>
-     * This value will be used to avoid infinite waiting time. When set to 0 (default), no timeout
-     * check is performed.
-     * <p>
-     * See setThreadWaitTimeout method.
-     */
-    private long threadWaitTimeout = 0;
+    private static final AtomicInteger threadCount = new AtomicInteger();
 
     /**
      * Add a reader observer.
@@ -1000,6 +1059,28 @@ public abstract class AbstractLocalReader extends AbstractReader {
         }
     }
 
+    /*
+     * ===========================================================================================
+     * Monitoring Thread (used by readers who implement the ThreadedMonitoringReader interface)
+     *
+     * The following fields and methods are dedicated to the plugin readers implementing the
+     * ThreadedMonitoringReader interface
+     * ===========================================================================================
+     */
+
+    private EventThread thread;
+
+    /**
+     * Thread wait timeout in ms
+     * <p>
+     * This value will be used to avoid infinite waiting time. When set to 0 (default), no timeout
+     * check is performed.
+     * <p>
+     * See setThreadWaitTimeout method.
+     */
+    private long threadWaitTimeout = 0;
+
+
     /**
      * Setter to fix the wait timeout in ms.
      * <p>
@@ -1026,7 +1107,61 @@ public abstract class AbstractLocalReader extends AbstractReader {
     }
 
     /**
-     * Thread in charge of reporting live events
+     * Thread in charge of reporting live events about reader events such as card insertion and
+     * removal.
+     *
+     * The thread state machine is necessarily in one of these four states:
+     *
+     * 1. WAIT_FOR_START_DETECTION:
+     *
+     * infinitely waiting for a signal from the application to start SE detection by changing to
+     * WAIT_FOR_SE_INSERTION state. This signal is given by calling the setDefaultSelectionRequest
+     * method. Note: The system always starts directly in the WAIT_FOR_SE_INSERTION state.
+     *
+     * 2. WAIT_FOR_SE_INSERTION:
+     *
+     * awaiting the SE insertion. After insertion, the processSeInsertion method is called.
+     * 
+     * A number of cases arise:
+     *
+     * # A default selection is defined: in this case it is played and its result leads to an event
+     * notification SE_INSERTED or SE_MATCHED or no event (see setDefaultSelectionRequest)
+     *
+     * # There is no default selection: a SE_INSERTED event is then notified.
+     *
+     * In the case where an event has been notified to the application, the state machine changes to
+     * the WAIT_FOR_SE_PROCESSING state otherwise it changes to the WAIT_FOR_SE_REMOVAL state.
+     *
+     * The notification consists in calling the "update" methods of the defined observers. In the
+     * case where several observers have been defined, it is up to the application developer to
+     * ensure that there is no long processing in these methods, by making their execution
+     * asynchronous for example.
+     *
+     * 3. WAIT_FOR_SE_PROCESSING:
+     *
+     * waiting for the end of processing by the application. The end signal is triggered either by a
+     * transmission made with a CLOSE_AND_CONTINUE or CLOSE_AND_AND_STOP parameter, or by an
+     * explicit call to the notifySeProcessed method (if the latter is called when a "CLOSE"
+     * transmission has already been made, it will do nothing, otherwise it will make a pseudo
+     * transmission intended only for closing channels).
+     *
+     * If the instruction given is CLOSE_AND_STOP then the logical and physical channels are closed
+     * immediately and the Machine to state changes to WAIT_FOR_START_DETECTION state.
+     *
+     * If the instruction given is CLOSE_AND_CONTINUE then the state machine changes to
+     * WAIT_FOR_SE_REMOVAL.
+     *
+     * A timeout management is also optionally present in order to avoid a lock in this waiting
+     * state due to a failure of the application that would have prevented it from notifying the end
+     * of SE processing (see setThreadWaitTimeout).
+     *
+     * 4. WAIT_FOR_SE_REMOVAL:
+     *
+     * attente du retrait du SE. À l'issue de cette attente un événement SE_REMOVED est notifié à
+     * l'application et la machine à état passe à l'état WAIT_FOR_SE_INSERTION
+     *
+     * A timeout management is also optionally present in order to avoid a lock in this waiting
+     * state due to a SE forgotten on the reader.
      */
     private class EventThread extends Thread {
         /**
@@ -1108,13 +1243,13 @@ public abstract class AbstractLocalReader extends AbstractReader {
          * </p>
          * <ul>
          * <li>the notification is executed in the same thread (reader monitoring thread): in this
-         * case the seProcessingNotified flag is set when
-         * processCardInsertion/notifyObservers/update ends. The monitoring thread can continue
-         * without having to wait for the end of the SE processing.</li>
+         * case the seProcessingNotified flag is set when processSeInsertion/notifyObservers/update
+         * ends. The monitoring thread can continue without having to wait for the end of the SE
+         * processing.</li>
          * <li>the notification is executed in a separate thread: in this case the
-         * processCardInsertion method will have finished before the end of the SE processing and
-         * the reader monitoring thread is already waiting with the waitForRemovalSync object. Here
-         * we release the waitForRemovalSync object by calling its notify method.</li>
+         * processSeInsertion method will have finished before the end of the SE processing and the
+         * reader monitoring thread is already waiting with the waitForRemovalSync object. Here we
+         * release the waitForRemovalSync object by calling its notify method.</li>
          * </ul>
          */
         void startRemoval(ChannelState channelState) {
@@ -1152,20 +1287,24 @@ public abstract class AbstractLocalReader extends AbstractReader {
                             // interrupted (call to end)
                             while (true) {
                                 synchronized (waitForStartDetectionSync) {
+                                    // sleep a little
                                     waitForStartDetectionSync
                                             .wait(WAIT_FOR_SE_DETECTION_EXIT_LATENCY);
                                 }
                                 if (startDetectionNotified) {
                                     // the application has requested the start of monitoring
                                     monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
+                                    // exit loop
                                     break;
                                 }
                                 if (Thread.interrupted()) {
                                     // a request to stop the thread has been made
                                     running = false;
+                                    // exit loop
                                     break;
                                 }
                             }
+                            // exit switch
                             break;
                         case WAIT_FOR_SE_INSERTION:
                             // We are waiting for the reader to inform us that a card is inserted.
@@ -1174,32 +1313,41 @@ public abstract class AbstractLocalReader extends AbstractReader {
                                         .waitForCardPresent(WAIT_FOR_SE_INSERTION_EXIT_LATENCY)) {
                                     seProcessingNotified = false;
                                     // a SE has been inserted, the following process
-                                    // (processCardInsertion) will end with a SE_INSERTED or
+                                    // (processSeInsertion) will end with a SE_INSERTED or
                                     // SE_MATCHED notification according to the
                                     // DefaultSelectionRequest.
                                     // If a DefaultSelectionRequest is set with the MATCHED_ONLY
                                     // flag and the SE presented does not match, then the
-                                    // processCardInsertion method will return false to indicate
+                                    // processSeInsertion method will return false to indicate
                                     // that this SE can be ignored.
-                                    if (processCardInsertion()) {
+                                    if (processSeInsertion()) {
                                         // Note: the notification to the application was made by
-                                        // processCardInsertion
+                                        // processSeInsertion
+                                        // We'll wait for the end of its processing
                                         monitoringState = MonitoringState.WAIT_FOR_SE_PROCESSING;
-                                        break;
+                                    } else {
+                                        // An unexpected SE has been detected, we wait for its
+                                        // removal
+                                        monitoringState = MonitoringState.WAIT_FOR_SE_REMOVAL;
                                     }
+                                    // exit loop
+                                    break;
                                 }
                                 if (Thread.interrupted()) {
                                     // a request to stop the thread has been made
                                     running = false;
+                                    // exit loop
                                     break;
                                 }
                             }
+                            // exit switch
                             break;
                         case WAIT_FOR_SE_PROCESSING:
                             // loop until notification of the end of the SE processing operation, an
                             // SE withdrawal or a request to stop is made.
                             // An global timeout period is also checked to avoid infinite waiting;
-                            // exceeding the time limit leads to the notification of an IO_ERROR
+                            // exceeding the time limit leads to the notification of an
+                            // TIMEOUT_ERROR
                             // event and stops monitoring
                             startTime = System.currentTimeMillis();
                             while (true) {
@@ -1211,10 +1359,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
                                             monitoringState = MonitoringState.WAIT_FOR_SE_REMOVAL;
                                             break;
                                         case CLOSE_AND_STOP:
-                                            // We notify the application of the SE_REMOVED event.
-                                            notifyObservers(new ReaderEvent(this.pluginName,
-                                                    AbstractLocalReader.this.name,
-                                                    ReaderEvent.EventType.SE_REMOVED, null));
+                                            // We close the channels now and notify the application
+                                            // of the SE_REMOVED event.
+                                            processSeRemoved();
                                             monitoringState =
                                                     MonitoringState.WAIT_FOR_START_DETECTION;
                                             break;
@@ -1222,7 +1369,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                                             throw new IllegalStateException(
                                                     "Unexcepted KEEP_OPEN action.");
                                     }
-                                    monitoringState = MonitoringState.WAIT_FOR_SE_REMOVAL;
+                                    // exit loop
                                     break;
                                 }
                                 if (AbstractLocalReader.this instanceof SmartPresenceReader
@@ -1230,36 +1377,41 @@ public abstract class AbstractLocalReader extends AbstractReader {
                                     // the SE has been removed, we return to the state of waiting
                                     // for insertion
                                     // We notify the application of the SE_REMOVED event.
-                                    notifyObservers(new ReaderEvent(this.pluginName,
-                                            AbstractLocalReader.this.name,
-                                            ReaderEvent.EventType.SE_REMOVED, null));
+                                    processSeRemoved();
                                     monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
+                                    // exit loop
                                     break;
                                 }
                                 if (Thread.interrupted()) {
                                     // a request to stop the thread has been made
                                     running = false;
+                                    // exit loop
                                     break;
                                 }
                                 if (threadWaitTimeout != 0 && System.currentTimeMillis()
                                         - startTime > threadWaitTimeout) {
-                                    // We notify the application of the IO_ERROR event.
+                                    // We notify the application of the TIMEOUT_ERROR event.
                                     notifyObservers(new ReaderEvent(this.pluginName,
                                             AbstractLocalReader.this.name,
-                                            ReaderEvent.EventType.IO_ERROR, null));
+                                            ReaderEvent.EventType.TIMEOUT_ERROR, null));
                                     logger.error(
                                             "The SE's processing time has exceeded the specified limit.");
                                     monitoringState = MonitoringState.WAIT_FOR_START_DETECTION;
+                                    // exit loop
+                                    break;
                                 }
                                 synchronized (waitForSeProcessing) {
+                                    // sleep a little
                                     waitForSeProcessing.wait(WAIT_FOR_SE_PROCESSING_EXIT_LATENCY);
                                 }
                             }
+                            // exit switch
                             break;
                         case WAIT_FOR_SE_REMOVAL:
                             // We are waiting for the reader to inform us when a card is inserted.
                             // An global timeout period is also checked to avoid infinite waiting;
-                            // exceeding the time limit leads to the notification of an IO_ERROR
+                            // exceeding the time limit leads to the notification of an
+                            // TIMEOUT_ERROR
                             // event and stops monitoring
                             startTime = System.currentTimeMillis();
                             while (true) {
@@ -1269,26 +1421,29 @@ public abstract class AbstractLocalReader extends AbstractReader {
                                                         WAIT_FOR_SE_REMOVAL_EXIT_LATENCY))
                                         || (!(AbstractLocalReader.this instanceof SmartPresenceReader))
                                                 && isSePresentPing()) {
-                                    // the SE has been removed, we return to the state of waiting
+                                    // the SE has been removed, we close all channels and return to
+                                    // the state of waiting
                                     // for insertion
                                     // We notify the application of the SE_REMOVED event.
-                                    notifyObservers(new ReaderEvent(this.pluginName,
-                                            AbstractLocalReader.this.name,
-                                            ReaderEvent.EventType.SE_REMOVED, null));
+                                    processSeRemoved();
                                     monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
+                                    // exit loop
                                     break;
                                 }
                                 if (threadWaitTimeout != 0 && System.currentTimeMillis()
                                         - startTime > threadWaitTimeout) {
-                                    // We notify the application of the IO_ERROR event.
+                                    // We notify the application of the TIMEOUT_ERROR event.
                                     notifyObservers(new ReaderEvent(this.pluginName,
                                             AbstractLocalReader.this.name,
-                                            ReaderEvent.EventType.IO_ERROR, null));
+                                            ReaderEvent.EventType.TIMEOUT_ERROR, null));
                                     monitoringState = MonitoringState.WAIT_FOR_START_DETECTION;
                                     logger.error(
                                             "The time limit for the removal of the SE has been exceeded.");
+                                    // exit loop
+                                    break;
                                 }
                             }
+                            // exit switch
                             break;
                     }
                 } catch (InterruptedException ex) {
@@ -1343,56 +1498,5 @@ public abstract class AbstractLocalReader extends AbstractReader {
         thread = null;
         logger.trace("[{}] Observable Reader thread ended.", this.getName());
         super.finalize();
-    }
-
-    /* Selection management */
-
-    /**
-     * Executes the selection application command and returns the requested data according to
-     * AidSelector attributes.
-     *
-     * @param aidSelector the selection parameters
-     * @return the response to the select application command
-     * @throws KeypleIOReaderException if a reader error occurs
-     */
-    protected ApduResponse processExplicitAidSelection(SeSelector.AidSelector aidSelector)
-            throws KeypleIOReaderException {
-        ApduResponse fciResponse;
-        final byte[] aid = aidSelector.getAidToSelect().getValue();
-        if (aid == null) {
-            throw new IllegalArgumentException("AID must not be null for an AidSelector.");
-        }
-        if (logger.isTraceEnabled()) {
-            logger.trace("[{}] openLogicalChannel => Select Application with AID = {}",
-                    this.getName(), ByteArrayUtil.toHex(aid));
-        }
-        /*
-         * build a get response command the actual length expected by the SE in the get response
-         * command is handled in transmitApdu
-         */
-        byte[] selectApplicationCommand = new byte[6 + aid.length];
-        selectApplicationCommand[0] = (byte) 0x00; // CLA
-        selectApplicationCommand[1] = (byte) 0xA4; // INS
-        selectApplicationCommand[2] = (byte) 0x04; // P1: select by name
-        // P2: b0,b1 define the File occurrence, b2,b3 define the File control information
-        // we use the bitmask defined in the respective enums
-        selectApplicationCommand[3] = (byte) (aidSelector.getFileOccurrence().getIsoBitMask()
-                | aidSelector.getFileControlInformation().getIsoBitMask());
-        selectApplicationCommand[4] = (byte) (aid.length); // Lc
-        System.arraycopy(aid, 0, selectApplicationCommand, 5, aid.length); // data
-        selectApplicationCommand[5 + aid.length] = (byte) 0x00; // Le
-
-        /*
-         * we use here processApduRequest to manage case 4 hack. The successful status codes list
-         * for this command is provided.
-         */
-        fciResponse = processApduRequest(new ApduRequest("Internal Select Application",
-                selectApplicationCommand, true, aidSelector.getSuccessfulSelectionStatusCodes()));
-
-        if (!fciResponse.isSuccessful()) {
-            logger.trace("[{}] openLogicalChannel => Application Selection failed. SELECTOR = {}",
-                    this.getName(), aidSelector);
-        }
-        return fciResponse;
     }
 }

@@ -39,9 +39,9 @@ public final class ReaderEvent {
      */
     public enum EventType {
         /**
-         * An io error occurred.
+         * An timeout error occurred.
          */
-        IO_ERROR("SE Reader IO Error"),
+        TIMEOUT_ERROR("SE Reader timeout Error"),
 
         /**
          * A SE has been inserted.

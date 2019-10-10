@@ -294,7 +294,6 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      *        channel (continue to wait for SE or stop)
      */
     public void notifySeProcessed(ChannelState channelState) {
-        logger.trace("Explicit physical channel closing request: {}", channelState);
         if (forceClosing) {
             if (channelState == ChannelState.KEEP_OPEN) {
                 throw new IllegalArgumentException(

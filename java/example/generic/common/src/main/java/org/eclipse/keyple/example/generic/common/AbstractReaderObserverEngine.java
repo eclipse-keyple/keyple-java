@@ -41,71 +41,97 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
     protected abstract void processUnexpectedSeRemoval();
 
 
+    /**
+     * This flag helps to determine whether the SE_REMOVED event was expected or not (case of SE
+     * withdrawal during processing).
+     */
     boolean currentlyProcessingSe = false;
 
-
     public void update(final ReaderEvent event) {
-        /* Run the PO processing asynchronously in a detach thread */
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (event.getEventType() != ReaderEvent.EventType.SE_INSERTED
-                        && logger.isInfoEnabled()) {
-                    logger.info(event.getReaderName());
-                    logger.info("Start the processing of the SE...");
-                }
+        logger.info("New reader event: {}", event.getReaderName());
 
-                switch (event.getEventType()) {
-                    case SE_INSERTED:
+        switch (event.getEventType()) {
+            case SE_INSERTED: {
+                /* Run the PO processing asynchronously in a detach thread */
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
                         currentlyProcessingSe = true;
                         processSeInsertion(); // optional, to process alternative AID selection
+                        /**
+                         * Informs the underlying layer of the end of the SE processing, in order to
+                         * manage the removal sequence.
+                         * <p>
+                         * If closing has already been requested, this method will do nothing.
+                         */
+                        try {
+                            ((ObservableReader) SeProxyService.getInstance()
+                                    .getPlugin(event.getPluginName())
+                                    .getReader(event.getReaderName()))
+                                            .notifySeProcessed(ChannelState.CLOSE_AND_CONTINUE);
+                        } catch (KeypleReaderNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (KeyplePluginNotFoundException e) {
+                            e.printStackTrace();
+                        }
                         currentlyProcessingSe = false;
-                        break;
+                    }
+                });
+                thread.start();
+            }
+                break;
 
-                    case SE_MATCHED:
+            case SE_MATCHED: {
+                /* Run the PO processing asynchronously in a detach thread */
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
                         currentlyProcessingSe = true;
                         processSeMatch(event.getDefaultSelectionsResponse()); // to process the
                                                                               // selected
-                        // application
-                        currentlyProcessingSe = false;
-                        break;
-
-                    case SE_REMOVED:
-                        if (currentlyProcessingSe) {
-                            processUnexpectedSeRemoval(); // to clean current SE processing
-                            logger.error("Unexpected SE Removal");
-                        } else {
-                            processSeRemoval();
-                            if (logger.isInfoEnabled()) {
-                                logger.info("Waiting for a SE...");
-                            }
+                                                                              // application
+                        /**
+                         * Informs the underlying layer of the end of the SE processing, in order to
+                         * manage the removal sequence.
+                         * <p>
+                         * If closing has already been requested, this method will do nothing.
+                         */
+                        try {
+                            ((ObservableReader) SeProxyService.getInstance()
+                                    .getPlugin(event.getPluginName())
+                                    .getReader(event.getReaderName()))
+                                            .notifySeProcessed(ChannelState.CLOSE_AND_CONTINUE);
+                        } catch (KeypleReaderNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (KeyplePluginNotFoundException e) {
+                            e.printStackTrace();
                         }
                         currentlyProcessingSe = false;
-                        break;
-                    default:
-                        logger.error("IO Error");
-                }
+                    }
+                });
+                thread.start();
+            }
+                break;
 
-                if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED
-                        || event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
-                    /**
-                     * Informs the underlying layer of the end of the SE processing, in order to
-                     * manage the removal sequence.
-                     * <p>
-                     * If closing has already been requested, this method will do nothing.
-                     */
-                    try {
-                        ((ObservableReader) SeProxyService.getInstance()
-                                .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
-                                        .notifySeProcessed(ChannelState.CLOSE_AND_CONTINUE);
-                    } catch (KeypleReaderNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (KeyplePluginNotFoundException e) {
-                        e.printStackTrace();
+            case SE_REMOVED:
+                if (currentlyProcessingSe) {
+                    processUnexpectedSeRemoval(); // to clean current SE processing
+                    logger.error("Unexpected SE Removal");
+                } else {
+                    processSeRemoval();
+                    if (logger.isInfoEnabled()) {
+                        logger.info("Waiting for a SE...");
                     }
                 }
-            }
-        });
-        thread.start();
+                currentlyProcessingSe = false;
+                break;
+            case TIMEOUT_ERROR:
+                logger.error(
+                        "Timeout Error: the processing time or the time limit for removing the SE"
+                                + " has been exceeded.");
+                // do the appropriate processing here but do not prevent the return of this update
+                // method (e. g. by
+                // raising an exception)
+        }
     }
 }

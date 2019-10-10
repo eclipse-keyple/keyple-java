@@ -36,6 +36,9 @@ final class PcscReaderImpl extends AbstractLocalReader
     private static final String PROTOCOL_T_CL = "T=CL";
     private static final String PROTOCOL_ANY = "T=0";
 
+    /* timeout monitoring is disabled by default */
+    private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 0;
+
     private final CardTerminal terminal;
 
     private String parameterCardProtocol;
@@ -289,6 +292,18 @@ final class PcscReaderImpl extends AbstractLocalReader
             } else {
                 throw new IllegalArgumentException(
                         "Parameter value not supported " + name + " : " + value);
+            }
+        } else if (name.equals(SETTING_KEY_THREAD_TIMEOUT)) {
+            if (value == null) {
+                setThreadWaitTimeout(SETTING_THREAD_TIMEOUT_DEFAULT);
+            } else {
+                long timeout = Long.parseLong(value);
+
+                if (timeout <= 0) {
+                    throw new IllegalArgumentException(
+                            "Timeout has to be of at least 1ms " + name + value);
+                }
+                setThreadWaitTimeout(timeout);
             }
         } else if (name.equals(SETTING_KEY_DISCONNECT)) {
             if (value == null || value.equals(SETTING_DISCONNECT_RESET)) {
