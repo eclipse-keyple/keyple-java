@@ -117,7 +117,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * <p>
      * e.g. from the monitoring thread in the case of a Pcsc plugin or from the NfcAdapter callback
      * method onTagDiscovered in the case of a Android NFC plugin.
-     * <p>
+     * </p>
      * It will fire an ReaderEvent in the following cases:
      * <ul>
      * <li>SE_INSERTED: if no default selection request was defined</li>
@@ -1072,21 +1072,20 @@ public abstract class AbstractLocalReader extends AbstractReader {
 
     /**
      * Signal from the application to terminate the operations with the current SE.
-     * <p>
      * We handle here two different cases:
-     * <li>
      * <ul>
+     * <li>
      * the notification is executed in the same thread (reader monitoring thread): in this case the
      * seProcessed flag is set when cardInserted/notifyObservers/update ends. The monitoring thread
      * can continue without having to wait for the end of the SE processing.
-     * </ul>
-     * <ul>
+     * </li>
+     * <li>
      * the notification is executed in a separate thread: in this case the cardInserted method will
      * have finished before the end of the SE processing and the reader monitoring thread is already
      * waiting with the waitForRemovalSync object. Here we release the waitForRemovalSync object by
      * calling its notify method.
-     * </ul>
      * </li>
+     * </ul>
      *
      * @param waitForRemoval true indicates that the removal sequence must be performed
      */
