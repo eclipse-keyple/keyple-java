@@ -1246,10 +1246,10 @@ public abstract class AbstractLocalReader extends AbstractReader {
          * case the seProcessingNotified flag is set when processSeInserted/notifyObservers/update
          * ends. The monitoring thread can continue without having to wait for the end of the SE
          * processing.</li>
-         * <li>the notification is executed in a separate thread: in this case the
-         * processSeInserted method will have finished before the end of the SE processing and the
-         * reader monitoring thread is already waiting with the waitForRemovalSync object. Here we
-         * release the waitForRemovalSync object by calling its notify method.</li>
+         * <li>the notification is executed in a separate thread: in this case the processSeInserted
+         * method will have finished before the end of the SE processing and the reader monitoring
+         * thread is already waiting with the waitForRemovalSync object. Here we release the
+         * waitForRemovalSync object by calling its notify method.</li>
          * </ul>
          */
         void startRemovalSequence(ChannelState channelState) {
