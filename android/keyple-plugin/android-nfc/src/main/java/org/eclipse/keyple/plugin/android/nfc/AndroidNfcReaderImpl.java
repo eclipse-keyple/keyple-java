@@ -17,13 +17,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -45,7 +46,7 @@ import android.os.Bundle;
  *
  *
  */
-final class AndroidNfcReaderImpl extends AbstractLocalReader
+final class AndroidNfcReaderImpl extends AbstractObservableLocalReader
         implements AndroidNfcReader {
 
     private static final Logger LOG = LoggerFactory.getLogger(AndroidNfcReaderImpl.class);
@@ -123,6 +124,11 @@ final class AndroidNfcReaderImpl extends AbstractLocalReader
             throw new IllegalArgumentException("Unrecognized parameter " + key + " : " + value);
         }
 
+    }
+
+    @Override
+    public final void startRemovalSequence(ChannelState channelState) {
+        // TODO implement removal sequence management
     }
 
     /**
@@ -219,7 +225,6 @@ final class AndroidNfcReaderImpl extends AbstractLocalReader
         }
         tagProxy = null;
     }
-
 
     @Override
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {

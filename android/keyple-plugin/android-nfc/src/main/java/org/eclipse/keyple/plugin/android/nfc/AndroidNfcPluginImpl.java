@@ -81,16 +81,4 @@ final class AndroidNfcPluginImpl extends AbstractPlugin implements AndroidNfcPlu
         readers.add(AndroidNfcReaderImpl.getInstance());
         return readers;
     }
-
-
-    /**
-     * Return the AndroidNfcReaderImpl whatever is the provided name
-     * 
-     * @param name : name of the reader to retrieve
-     * @return instance of @{@link AndroidNfcReaderImpl}
-     */
-    @Override
-    protected SeReader fetchNativeReader(String name) {
-        return readers.first();
-    }
 }
