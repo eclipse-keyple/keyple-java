@@ -432,7 +432,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                                                 .waitForCardAbsentNative(
                                                         WAIT_FOR_SE_REMOVAL_EXIT_LATENCY))
                                         || (!(AbstractThreadedObservableLocalReader.this instanceof SmartPresenceReader))
-                                                && isSePresentPing()) {
+                                                && !isSePresentPing()) {
                                     // the SE has been removed, we close all channels and return to
                                     // the state of waiting
                                     // for insertion
