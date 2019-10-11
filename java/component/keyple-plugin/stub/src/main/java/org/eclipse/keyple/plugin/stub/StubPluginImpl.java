@@ -16,8 +16,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
-import org.eclipse.keyple.core.seproxy.plugin.ThreadedMonitoringPlugin;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * This class is a singleton, use StubPlugin#getInstance to access it
  *
  */
-final class StubPluginImpl extends AbstractPlugin implements StubPlugin, ThreadedMonitoringPlugin {
+final class StubPluginImpl extends AbstractThreadedObservablePlugin implements StubPlugin {
 
     // private static final StubPlugin uniqueInstance = new StubPlugin();
 

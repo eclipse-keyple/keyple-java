@@ -178,16 +178,6 @@ class RemoteSePluginImpl extends AbstractPlugin implements RemoteSePlugin {
         return new TreeSet<SeReader>();
     }
 
-    /**
-     * Not used
-     */
-    @Override
-    protected SeReader fetchNativeReader(String name) {
-        // should not be call
-        throw new IllegalArgumentException(
-                "fetchNativeReader is not used in this plugin, did you meant to use getReader?");
-    }
-
     @Override
     public Map<String, String> getParameters() {
         return parameters;
