@@ -149,13 +149,19 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
     @Override
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         ResponseAPDU apduResponseData;
-        try {
-            apduResponseData = channel.transmit(new CommandAPDU(apduIn));
-        } catch (CardException e) {
-            throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            // card could have been removed prematurely
-            throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
+
+        if (channel != null) {
+            try {
+                apduResponseData = channel.transmit(new CommandAPDU(apduIn));
+            } catch (CardException e) {
+                throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                // card could have been removed prematurely
+                throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
+            }
+        } else {
+            // could occur if the SE was removed
+            throw new KeypleIOReaderException(this.getName() + ": null channel.");
         }
         return apduResponseData.getBytes();
     }
