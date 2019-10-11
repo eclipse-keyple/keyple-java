@@ -109,10 +109,10 @@ public class AbstractReaderTest extends CoreBaseTest {
      */
 
     /**
-     * Class implementing {@link ThreadedMonitoringReader} to enable thread monitoring
+     * Class extending {@link AbstractThreadedObservableLocalReader} to enable thread monitoring
      */
-    abstract class ThreadedTestReader extends AbstractLocalReader
-            implements ThreadedMonitoringReader, SmartInsertionReader {
+    abstract class ThreadedTestReader extends AbstractThreadedObservableLocalReader
+            implements SmartInsertionReader {
 
         /**
          * Constructor
