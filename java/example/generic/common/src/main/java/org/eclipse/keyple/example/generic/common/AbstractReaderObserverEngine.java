@@ -34,9 +34,9 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
     protected abstract void processSeMatch(
             AbstractDefaultSelectionsResponse defaultSelectionsResponse);
 
-    protected abstract void processSeInsertion(); // alternative AID selection
+    protected abstract void processSeInserted(); // alternative AID selection
 
-    protected abstract void processSeRemoval();
+    protected abstract void processSeRemoved();
 
     protected abstract void processUnexpectedSeRemoval();
 
@@ -57,7 +57,7 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
                     @Override
                     public void run() {
                         currentlyProcessingSe = true;
-                        processSeInsertion(); // optional, to process alternative AID selection
+                        processSeInserted(); // optional, to process alternative AID selection
                         /**
                          * Informs the underlying layer of the end of the SE processing, in order to
                          * manage the removal sequence.
@@ -118,7 +118,7 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
                     processUnexpectedSeRemoval(); // to clean current SE processing
                     logger.error("Unexpected SE Removal");
                 } else {
-                    processSeRemoval();
+                    processSeRemoved();
                     if (logger.isInfoEnabled()) {
                         logger.info("Waiting for a SE...");
                     }

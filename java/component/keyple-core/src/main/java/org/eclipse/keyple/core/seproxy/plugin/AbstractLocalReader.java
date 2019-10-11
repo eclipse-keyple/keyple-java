@@ -133,7 +133,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * 
      * @return true if the notification was actually sent to the application, false if not
      */
-    protected final boolean processSeInsertion() {
+    protected final boolean processSeInserted() {
         boolean presenceNotified = false;
         if (defaultSelectionsRequest == null) {
             /* no default request is defined, just notify the SE insertion */
@@ -671,7 +671,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                              * request the removal sequence when the reader is monitored by a thread
                              */
                             if (thread != null) {
-                                thread.startRemoval(channelState);
+                                thread.startRemovalSequence(channelState);
                             }
                         }
                     }
@@ -717,7 +717,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
             if (this instanceof ThreadedMonitoringReader) {
                 /* request the removal sequence when the reader is monitored by a thread */
                 if (thread != null) {
-                    thread.startRemoval(channelState);
+                    thread.startRemovalSequence(channelState);
                 }
             }
         }
@@ -1120,7 +1120,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *
      * 2. WAIT_FOR_SE_INSERTION:
      *
-     * awaiting the SE insertion. After insertion, the processSeInsertion method is called.
+     * awaiting the SE insertion. After insertion, the processSeInserted method is called.
      * 
      * A number of cases arise:
      *
@@ -1243,16 +1243,16 @@ public abstract class AbstractLocalReader extends AbstractReader {
          * </p>
          * <ul>
          * <li>the notification is executed in the same thread (reader monitoring thread): in this
-         * case the seProcessingNotified flag is set when processSeInsertion/notifyObservers/update
+         * case the seProcessingNotified flag is set when processSeInserted/notifyObservers/update
          * ends. The monitoring thread can continue without having to wait for the end of the SE
          * processing.</li>
          * <li>the notification is executed in a separate thread: in this case the
-         * processSeInsertion method will have finished before the end of the SE processing and the
+         * processSeInserted method will have finished before the end of the SE processing and the
          * reader monitoring thread is already waiting with the waitForRemovalSync object. Here we
          * release the waitForRemovalSync object by calling its notify method.</li>
          * </ul>
          */
-        void startRemoval(ChannelState channelState) {
+        void startRemovalSequence(ChannelState channelState) {
             channelStateAction = channelState;
             seProcessingNotified = true;
             synchronized (waitForSeProcessing) {
@@ -1313,16 +1313,16 @@ public abstract class AbstractLocalReader extends AbstractReader {
                                         .waitForCardPresent(WAIT_FOR_SE_INSERTION_EXIT_LATENCY)) {
                                     seProcessingNotified = false;
                                     // a SE has been inserted, the following process
-                                    // (processSeInsertion) will end with a SE_INSERTED or
+                                    // (processSeInserted) will end with a SE_INSERTED or
                                     // SE_MATCHED notification according to the
                                     // DefaultSelectionRequest.
                                     // If a DefaultSelectionRequest is set with the MATCHED_ONLY
                                     // flag and the SE presented does not match, then the
-                                    // processSeInsertion method will return false to indicate
+                                    // processSeInserted method will return false to indicate
                                     // that this SE can be ignored.
-                                    if (processSeInsertion()) {
+                                    if (processSeInserted()) {
                                         // Note: the notification to the application was made by
-                                        // processSeInsertion
+                                        // processSeInserted
                                         // We'll wait for the end of its processing
                                         monitoringState = MonitoringState.WAIT_FOR_SE_PROCESSING;
                                     } else {

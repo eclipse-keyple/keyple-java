@@ -148,7 +148,7 @@ final class AndroidNfcReaderImpl extends AbstractLocalReader
         LOG.info("Received Tag Discovered event");
         try {
             tagProxy = TagProxy.getTagProxy(tag);
-            processSeInsertion();
+            processSeInserted();
             // TODO do the removal sequence here?
             // isSePresentPing(0);
             // cardRemoved();
