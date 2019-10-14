@@ -13,11 +13,14 @@ package org.eclipse.keyple.plugin.android.nfc;
 
 import android.content.Intent;
 import android.nfc.NfcAdapter;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
 
-public interface AndroidNfcReader extends ObservableReader, NfcAdapter.ReaderCallback  {
+@RequiresApi(api = Build.VERSION_CODES.N)
+public interface AndroidNfcReader extends ObservableReader, NfcAdapter.ReaderCallback, NfcAdapter.OnTagRemovedListener  {
 
     String READER_NAME = "AndroidNfcReaderImpl";
     String PLUGIN_NAME = "AndroidNfcPluginImpl";

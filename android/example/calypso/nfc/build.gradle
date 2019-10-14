@@ -78,7 +78,7 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "org.eclipse.keyple.example.android.nfc"
-        minSdkVersion 19
+        minSdkVersion 24
         targetSdkVersion 26
         versionName project.version
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
