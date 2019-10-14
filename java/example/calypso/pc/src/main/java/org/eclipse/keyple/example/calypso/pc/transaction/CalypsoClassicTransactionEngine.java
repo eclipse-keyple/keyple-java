@@ -363,12 +363,12 @@ public class CalypsoClassicTransactionEngine extends AbstractReaderObserverEngin
     }
 
     @Override
-    public void processSeInsertion() {
+    public void processSeInserted() {
         System.out.println("Unexpected SE insertion event");
     }
 
     @Override
-    public void processSeRemoval() {
+    public void processSeRemoved() {
         System.out.println("SE removal event");
     }
 

@@ -40,9 +40,9 @@ public class SeProxyServiceTest {
     // class to test
     SeProxyService proxyService;
 
-    AbstractPlugin plugin1 = new MockAbstractPlugin(PLUGIN_NAME_1);
+    AbstractPlugin plugin1 = new MockAbstractThreadedPlugin(PLUGIN_NAME_1);
 
-    AbstractPlugin plugin2 = new MockAbstractPlugin(PLUGIN_NAME_2);;
+    AbstractPlugin plugin2 = new MockAbstractThreadedPlugin(PLUGIN_NAME_2);;
 
     @Mock
     AbstractPluginFactory factory1;

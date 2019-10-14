@@ -17,7 +17,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.SEService;
@@ -98,20 +97,6 @@ final class AndroidOmapiPluginImpl extends AbstractPlugin implements AndroidOmap
             return readers;// empty list
         }
 
-    }
-
-    /**
-     * Fetch connected native reader (from third party library) by its name Returns the current
-     * {@link SeReader} if it is already listed.
-     *
-     * @param name reader name to be fetched
-     * @return the list of SeReader objects.
-     * @throws KeypleReaderNotFoundException if reader is not found
-     */
-    @Override
-    protected SeReader fetchNativeReader(String name)
-            throws KeypleReaderNotFoundException {
-        return this.getReader(name);
     }
 
     /**

@@ -246,7 +246,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                         mText.append("Tag removed");
                         break;
 
-                    case IO_ERROR:
+                    case TIMEOUT_ERROR:
                         mText.append("\n ---- \n");
                         mText.setText("Error reading card");
                         break;

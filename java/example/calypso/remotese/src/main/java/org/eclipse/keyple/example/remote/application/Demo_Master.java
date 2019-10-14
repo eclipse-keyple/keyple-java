@@ -225,8 +225,8 @@ public class Demo_Master {
                                                             event.getReaderName());
                                                     break;
 
-                                                case IO_ERROR:
-                                                    logger.info("{} IO_ERROR {} {}",
+                                                case TIMEOUT_ERROR:
+                                                    logger.info("{} TIMEOUT_ERROR {} {}",
                                                             node.getNodeId(), event.getPluginName(),
                                                             event.getReaderName());
                                                     break;

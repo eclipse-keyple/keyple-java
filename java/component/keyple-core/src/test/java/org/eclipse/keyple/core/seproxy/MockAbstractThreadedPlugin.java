@@ -15,14 +15,19 @@ import java.util.Map;
 import java.util.SortedSet;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 
-public class MockAbstractPlugin extends AbstractPlugin {
+public class MockAbstractThreadedPlugin extends AbstractThreadedObservablePlugin {
 
 
-    protected MockAbstractPlugin(String name) {
+    protected MockAbstractThreadedPlugin(String name) {
         super(name);
+    }
+
+    @Override
+    protected SortedSet<String> fetchNativeReadersNames() throws KeypleReaderException {
+        return null;
     }
 
     @Override

@@ -22,7 +22,7 @@ import org.eclipse.keyple.example.calypso.pc.transaction.CalypsoClassicTransacti
 import org.eclipse.keyple.example.generic.pc.ReaderUtilities;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
-import org.eclipse.keyple.plugin.pcsc.PcscReaderSettings;
+import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,12 +74,10 @@ public class Demo_CalypsoClassic_Pcsc {
         logger.info("SAM Reader  NAME = {}", samReader.getName());
 
         /* Set PcSc settings per reader */
-        poReader.setParameter(PcscReaderSettings.SETTING_KEY_LOGGING, "true");
-        poReader.setParameter(PcscReaderSettings.SETTING_KEY_PROTOCOL,
-                PcscReaderSettings.SETTING_PROTOCOL_T1);
-        samReader.setParameter(PcscReaderSettings.SETTING_KEY_LOGGING, "true");
-        samReader.setParameter(PcscReaderSettings.SETTING_KEY_PROTOCOL,
-                PcscReaderSettings.SETTING_PROTOCOL_T0);
+        poReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
+        poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
+        samReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
+        samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
         /*
          * PC/SC card access mode:
@@ -95,10 +93,8 @@ public class Demo_CalypsoClassic_Pcsc {
          * See KEYPLE-CORE.PC.md file to learn more about this point.
          *
          */
-        samReader.setParameter(PcscReaderSettings.SETTING_KEY_MODE,
-                PcscReaderSettings.SETTING_MODE_SHARED);
-        poReader.setParameter(PcscReaderSettings.SETTING_KEY_MODE,
-                PcscReaderSettings.SETTING_MODE_SHARED);
+        samReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
+        poReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
 
         /* Set the PO reader protocol flag */
         poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
@@ -118,6 +114,12 @@ public class Demo_CalypsoClassic_Pcsc {
         ((ObservableReader) poReader).setDefaultSelectionRequest(
                 transactionEngine.preparePoSelection(),
                 ObservableReader.NotificationMode.MATCHED_ONLY);
+
+        /*
+         * sets a maximum time limit of 1 minute for the SE processing and its removal from the
+         * reader after processing
+         */
+        poReader.setParameter(PcscReader.SETTING_KEY_THREAD_TIMEOUT, "60000");
 
         /* Set terminal as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);

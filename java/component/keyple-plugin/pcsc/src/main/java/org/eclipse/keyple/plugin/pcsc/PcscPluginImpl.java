@@ -24,13 +24,12 @@ import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
-import org.eclipse.keyple.core.seproxy.plugin.ThreadedMonitoringPlugin;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class PcscPluginImpl extends AbstractPlugin implements PcscPlugin, ThreadedMonitoringPlugin {
+final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements PcscPlugin {
 
     private static final Logger logger = LoggerFactory.getLogger(PcscPluginImpl.class);
 

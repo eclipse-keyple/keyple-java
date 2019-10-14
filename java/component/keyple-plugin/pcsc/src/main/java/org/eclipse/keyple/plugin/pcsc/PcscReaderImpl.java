@@ -16,18 +16,15 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
-import org.eclipse.keyple.core.seproxy.plugin.SmartPresenceReader;
-import org.eclipse.keyple.core.seproxy.plugin.ThreadedMonitoringReader;
+import org.eclipse.keyple.core.seproxy.plugin.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class PcscReaderImpl extends AbstractLocalReader
-        implements PcscReader, ThreadedMonitoringReader, SmartInsertionReader, SmartPresenceReader {
+final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
+        implements PcscReader, SmartInsertionReader, SmartPresenceReader {
 
     private static final Logger logger = LoggerFactory.getLogger(PcscReaderImpl.class);
 
@@ -35,6 +32,9 @@ final class PcscReaderImpl extends AbstractLocalReader
     private static final String PROTOCOL_T1 = "T=1";
     private static final String PROTOCOL_T_CL = "T=CL";
     private static final String PROTOCOL_ANY = "T=0";
+
+    /* timeout monitoring is disabled by default */
+    private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 0;
 
     private final CardTerminal terminal;
 
@@ -149,13 +149,19 @@ final class PcscReaderImpl extends AbstractLocalReader
     @Override
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         ResponseAPDU apduResponseData;
-        try {
-            apduResponseData = channel.transmit(new CommandAPDU(apduIn));
-        } catch (CardException e) {
-            throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            // card could have been removed prematurely
-            throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
+
+        if (channel != null) {
+            try {
+                apduResponseData = channel.transmit(new CommandAPDU(apduIn));
+            } catch (CardException e) {
+                throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                // card could have been removed prematurely
+                throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
+            }
+        } else {
+            // could occur if the SE was removed
+            throw new KeypleIOReaderException(this.getName() + ": null channel.");
         }
         return apduResponseData.getBytes();
     }
@@ -289,6 +295,18 @@ final class PcscReaderImpl extends AbstractLocalReader
             } else {
                 throw new IllegalArgumentException(
                         "Parameter value not supported " + name + " : " + value);
+            }
+        } else if (name.equals(SETTING_KEY_THREAD_TIMEOUT)) {
+            if (value == null) {
+                setThreadWaitTimeout(SETTING_THREAD_TIMEOUT_DEFAULT);
+            } else {
+                long timeout = Long.parseLong(value);
+
+                if (timeout <= 0) {
+                    throw new IllegalArgumentException(
+                            "Timeout has to be of at least 1ms " + name + value);
+                }
+                setThreadWaitTimeout(timeout);
             }
         } else if (name.equals(SETTING_KEY_DISCONNECT)) {
             if (value == null || value.equals(SETTING_DISCONNECT_RESET)) {
