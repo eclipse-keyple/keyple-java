@@ -50,12 +50,6 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
     /** Contains the name of the plugin */
     protected final String pluginName;
 
-    /** The default DefaultSelectionsRequest to be executed upon SE insertion */
-    protected DefaultSelectionsRequest defaultSelectionsRequest;
-
-    /** Indicate if all SE detected should be notified or only matching SE */
-    protected NotificationMode notificationMode;
-
     /**
      * This flag is used with transmit or transmitSet
      * <p>
@@ -287,7 +281,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      * <p>
      * Do nothing if the closing of the physical channel has already been requested.
      * <p>
-     * Send a request without APDU just to close the physical channel if it has not already been
+     *  Send a request without APDU just to close the physical channel if it has not already been
      * closed.
      * 
      * @param channelState indicates the action to be taken after the closing of the physical

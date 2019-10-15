@@ -66,11 +66,13 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         super.addObserver(observer);
         // if an observer is added to an empty list, start the observation
         if (super.countObservers() == 1) {
-            if (this instanceof AbstractThreadedObservableLocalReader) {
+
+            //needed?
+            //if (this instanceof AbstractThreadedObservableLocalReader) {
                 logger.debug("Start monitoring the reader {}", this.getName());
                 thread = new EventThread(this.getPluginName(), this.getName());
                 thread.start();
-            }
+            //}
         }
     }
 
@@ -87,12 +89,13 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
      */
     public final void removeObserver(ObservableReader.ReaderObserver observer) {
         if (super.countObservers() == 0) {
-            if (this instanceof AbstractThreadedObservableLocalReader) {
+            //needed?
+            //if (this instanceof AbstractThreadedObservableLocalReader) {
                 if (thread != null) {
                     logger.debug("Stop the reader monitoring.");
                     thread.end();
                 }
-            }
+            //}
         }
         super.removeObserver(observer);
     }
@@ -123,7 +126,8 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
             ObservableReader.NotificationMode notificationMode) {
         super.setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
         // unleash the monitoring thread to initiate SE detection (if available and needed)
-        if (this instanceof AbstractThreadedObservableLocalReader && thread != null) {
+        //if (this instanceof AbstractThreadedObservableLocalReader && thread != null) {
+        if (thread != null) {
             thread.startDetection();
         }
     }
