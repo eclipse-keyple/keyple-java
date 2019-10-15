@@ -80,8 +80,8 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
 
             SeSelection seSelection;
 
-            seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                    ChannelState.CLOSE_AND_CONTINUE);
+            seSelection =
+                    new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
 
             /* operate SE selection (change the AID here to adapt it to the SE used for the test) */
             String seAidPrefix = "A000000404012509";
@@ -97,8 +97,8 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
 
             doAndAnalyseSelection(seReader, seSelection, 1);
 
-            seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                    ChannelState.CLOSE_AND_CONTINUE);
+            seSelection =
+                    new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
 
             /* next selection */
             seSelection.prepareSelection(new GenericSeSelectionRequest(new SeSelector(
@@ -111,8 +111,8 @@ public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
 
             doAndAnalyseSelection(seReader, seSelection, 2);
 
-            seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                    ChannelState.CLOSE_AND_CONTINUE);
+            seSelection =
+                    new SeSelection(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
 
 
             /* next selection */

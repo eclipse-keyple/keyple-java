@@ -16,7 +16,7 @@ package org.eclipse.keyple.integration.example.pc.calypso;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -182,7 +182,7 @@ public class Demo_WriteName {
             poTransaction.prepareUpdateRecordCmd(environmentSid, (byte) 0x01, name.getBytes(),
                     "Environment");
 
-            poProcessStatus = poTransaction.processClosing(ChannelState.KEEP_OPEN);
+            poProcessStatus = poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
             if (!poProcessStatus) {
                 throw new IllegalStateException("processClosing failure.");

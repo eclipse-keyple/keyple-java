@@ -145,7 +145,7 @@ public class Demo_Master {
 
                             /* set default selection request */
                             SeSelection seSelection = new SeSelection(
-                                    MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+                                    MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
                             /*
                              * Setting of an AID based selection of a Calypso REV3 PO
@@ -339,7 +339,7 @@ public class Demo_Master {
                  * with the PO
                  */
 
-                if (poTransaction.processPoCommands(ChannelState.CLOSE_AND_CONTINUE)) {
+                if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
                     logger.info("{} The reading of the EventLog has succeeded.", node.getNodeId());
 
                     /*
@@ -507,7 +507,7 @@ public class Demo_Master {
                 /*
                  * A ratification command will be sent (CONTACTLESS_MODE).
                  */
-                poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AND_CONTINUE);
+                poProcessStatus = poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
 
                 if (!poProcessStatus) {
                     throw new IllegalStateException("processClosing failure.");

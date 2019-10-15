@@ -22,7 +22,7 @@ import org.eclipse.keyple.calypso.transaction.PoSelector;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -231,14 +231,14 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                 switch (event.getEventType()) {
                     case SE_MATCHED:
                         executeCommands(event.getDefaultSelectionsResponse());
-                        ((ObservableReader) reader).notifySeProcessed(ChannelState.CLOSE_AND_CONTINUE);
+                        ((ObservableReader) reader).notifySeProcessed();
                         break;
 
                     case SE_INSERTED:
                         mText.append("\n ---- \n");
                         mText.append(
                                 "PO detected but AID didn't match with " + CalypsoClassicInfo.AID);
-                        ((ObservableReader) reader).notifySeProcessed(ChannelState.CLOSE_AND_CONTINUE);
+                        ((ObservableReader) reader).notifySeProcessed();
                         break;
 
                     case SE_REMOVED:
@@ -324,7 +324,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                          * Actual PO communication: send the prepared read order, then close the
                          * channel with the PO
                          */
-                        if (poTransaction.processPoCommands(ChannelState.CLOSE_AND_CONTINUE)) {
+                        if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
                             mText.append("\nTransaction: ");
                             appendColoredText(mText, "SUCCESS\n", Color.GREEN);
 

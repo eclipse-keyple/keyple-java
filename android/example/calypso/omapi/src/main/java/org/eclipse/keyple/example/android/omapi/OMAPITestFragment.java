@@ -22,7 +22,7 @@ import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
@@ -149,7 +149,7 @@ public class OMAPITestFragment extends Fragment {
                      * Prepare a Calypso PO selection
                      */
                     SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                            ChannelState.KEEP_OPEN);
+                            ChannelControl.KEEP_OPEN);
 
                     /*
                      * Setting of an AID based selection of a Calypso REV3 PO
@@ -267,7 +267,7 @@ public class OMAPITestFragment extends Fragment {
                          * Actual PO communication: send the prepared read order, then close the
                          * channel with the PO
                          */
-                        if (poTransaction.processPoCommands(ChannelState.CLOSE_AND_CONTINUE)) {
+                        if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
                             mText.append("The update of the T2 Usage file has succeeded.");
 
                         }

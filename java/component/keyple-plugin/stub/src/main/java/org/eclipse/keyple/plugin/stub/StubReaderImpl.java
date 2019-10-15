@@ -14,7 +14,7 @@ package org.eclipse.keyple.plugin.stub;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.*;
@@ -63,14 +63,14 @@ final class StubReaderImpl extends AbstractThreadedObservableLocalReader
     }
 
     @Override
-    protected void openPhysicalChannel() throws KeypleChannelStateException {
+    protected void openPhysicalChannel() throws KeypleChannelControlException {
         if (se != null) {
             se.openPhysicalChannel();
         }
     }
 
     @Override
-    public void closePhysicalChannel() throws KeypleChannelStateException {
+    public void closePhysicalChannel() throws KeypleChannelControlException {
         if (se != null) {
             se.closePhysicalChannel();
         }

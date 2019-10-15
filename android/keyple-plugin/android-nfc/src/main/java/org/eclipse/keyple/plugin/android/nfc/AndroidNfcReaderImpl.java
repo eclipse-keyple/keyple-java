@@ -17,10 +17,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
@@ -181,17 +181,16 @@ final class AndroidNfcReaderImpl extends AbstractObservableLocalReader
 
     /**
      * Notification by the application when the SE has been processed
-     * <p>The ChannelState parameter indicates the action to be taken: continue searching for SEs or stop searching.
-     * @param channelState CLOSE_AND_CONTINUE or CLOSE_AND_STOP
+     * <p>The ChannelControl parameter indicates the action to be taken: continue searching for SEs or stop searching.
      */
     @Override
-    public final void startRemovalSequence(ChannelState channelState) {
-        LOG.info("Notification received from the application. ChannelState = {}", channelState);
+    public final void startRemovalSequence() {
+        LOG.info("Notification received from the application. PollingMode = {}", currentPollingMode);
         switch (monitoringState) {
             case WAIT_FOR_SE_INSERTION:
                 break;
             case WAIT_FOR_SE_PROCESSING:
-                if(channelState == ChannelState.CLOSE_AND_CONTINUE) {
+                if(currentPollingMode == PollingMode.CONTINUE) {
                     monitoringState = MonitoringState.WAIT_FOR_SE_REMOVAL;
                 } else {
                     //
@@ -252,7 +251,7 @@ final class AndroidNfcReaderImpl extends AbstractObservableLocalReader
     }
 
     @Override
-    protected void openPhysicalChannel() throws KeypleChannelStateException {
+    protected void openPhysicalChannel() throws KeypleChannelControlException {
         if (!checkSePresence()) {
             try {
                 LOG.debug("Connect to tag..");
@@ -262,7 +261,7 @@ final class AndroidNfcReaderImpl extends AbstractObservableLocalReader
             } catch (IOException e) {
                 LOG.error("Error while connecting to Tag ");
                 e.printStackTrace();
-                throw new KeypleChannelStateException("Error while opening physical channel", e);
+                throw new KeypleChannelControlException("Error while opening physical channel", e);
             }
         } else {
             LOG.info("Tag is already connected to : " + printTagId());
@@ -270,7 +269,7 @@ final class AndroidNfcReaderImpl extends AbstractObservableLocalReader
     }
 
     @Override
-    protected void closePhysicalChannel() throws KeypleChannelStateException {
+    protected void closePhysicalChannel() throws KeypleChannelControlException {
         try {
             if (tagProxy != null) {
                 tagProxy.close();
@@ -280,7 +279,7 @@ final class AndroidNfcReaderImpl extends AbstractObservableLocalReader
             }
         } catch (IOException e) {
             LOG.error("Disconnecting error");
-            throw new KeypleChannelStateException("Error while closing physical channel", e);
+            throw new KeypleChannelControlException("Error while closing physical channel", e);
         }
         tagProxy = null;
     }

@@ -14,7 +14,7 @@ package org.eclipse.keyple.core.seproxy.plugin;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleApplicationSelectionException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
@@ -24,6 +24,6 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  */
 public interface SmartSelectionReader extends SeReader {
     ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
-            throws KeypleIOReaderException, KeypleChannelStateException,
+            throws KeypleIOReaderException, KeypleChannelControlException,
             KeypleApplicationSelectionException;
 }

@@ -16,7 +16,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import java.util.*;
 import javax.smartcardio.*;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.message.*;
@@ -153,7 +153,7 @@ public class SmartCardIOReaderTest {
 
         PcscReaderImpl spiedReader = spy(this.reader);
         List<SeResponse> reponseActuelle = spiedReader.transmitSet(seApplicationRequest,
-                MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+                MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
         assertEquals(reponseActuelle.get(0).getApduResponses().size(),
                 seApplicationRequest.iterator().next().getApduRequests().size());
@@ -218,7 +218,7 @@ public class SmartCardIOReaderTest {
         PcscReaderImpl spiedReader = spy(this.reader);
 
         List<SeResponse> reponseActuelle = spiedReader.transmitSet(seApplicationRequest,
-                MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+                MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
         assertNotNull(reponseActuelle.get(0).getSelectionStatus().getFci());
         assertEquals(reponseActuelle.get(0).getApduResponses().size(),
                 seApplicationRequest.iterator().next().getApduRequests().size());

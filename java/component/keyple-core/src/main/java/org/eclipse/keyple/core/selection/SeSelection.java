@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.selection;
 
 import java.util.*;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
@@ -43,26 +43,26 @@ public final class SeSelection {
     private final Set<SeRequest> selectionRequestSet = new LinkedHashSet<SeRequest>();
     private int selectionIndex;
     private MultiSeRequestProcessing multiSeRequestProcessing;
-    private ChannelState channelState;
+    private ChannelControl channelControl;
 
     /**
      * Constructor.
      * 
      * @param multiSeRequestProcessing the multi se processing mode
-     * @param channelState indicates if the channel has to be closed at the end of the processing
+     * @param channelControl indicates if the channel has to be closed at the end of the processing
      */
     public SeSelection(MultiSeRequestProcessing multiSeRequestProcessing,
-            ChannelState channelState) {
+            ChannelControl channelControl) {
         selectionIndex = 0;
         this.multiSeRequestProcessing = multiSeRequestProcessing;
-        this.channelState = channelState;
+        this.channelControl = channelControl;
     }
 
     /**
      * Alternate constructor for standard usages.
      */
     public SeSelection() {
-        this(MultiSeRequestProcessing.FIRST_MATCH, ChannelState.KEEP_OPEN);
+        this(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
     }
 
     /**
@@ -180,7 +180,7 @@ public final class SeSelection {
 
         /* Communicate with the SE to do the selection */
         List<SeResponse> seResponseList = ((ProxyReader) seReader).transmitSet(selectionRequestSet,
-                multiSeRequestProcessing, channelState);
+                multiSeRequestProcessing, channelControl);
 
         return processSelection(new DefaultSelectionsResponse(seResponseList));
     }
@@ -194,6 +194,6 @@ public final class SeSelection {
      */
     public AbstractDefaultSelectionsRequest getSelectionOperation() {
         return (AbstractDefaultSelectionsRequest) (new DefaultSelectionsRequest(selectionRequestSet,
-                multiSeRequestProcessing, channelState));
+                multiSeRequestProcessing, channelControl));
     }
 }

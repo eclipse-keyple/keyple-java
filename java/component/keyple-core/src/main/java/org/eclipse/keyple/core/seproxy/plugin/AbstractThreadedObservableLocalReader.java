@@ -12,7 +12,6 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -67,12 +66,12 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         // if an observer is added to an empty list, start the observation
         if (super.countObservers() == 1) {
 
-            //needed?
-            //if (this instanceof AbstractThreadedObservableLocalReader) {
-                logger.debug("Start monitoring the reader {}", this.getName());
-                thread = new EventThread(this.getPluginName(), this.getName());
-                thread.start();
-            //}
+            // needed?
+            // if (this instanceof AbstractThreadedObservableLocalReader) {
+            logger.debug("Start monitoring the reader {}", this.getName());
+            thread = new EventThread(this.getPluginName(), this.getName());
+            thread.start();
+            // }
         }
     }
 
@@ -89,13 +88,13 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
      */
     public final void removeObserver(ObservableReader.ReaderObserver observer) {
         if (super.countObservers() == 0) {
-            //needed?
-            //if (this instanceof AbstractThreadedObservableLocalReader) {
-                if (thread != null) {
-                    logger.debug("Stop the reader monitoring.");
-                    thread.end();
-                }
-            //}
+            // needed?
+            // if (this instanceof AbstractThreadedObservableLocalReader) {
+            if (thread != null) {
+                logger.debug("Stop the reader monitoring.");
+                thread.end();
+            }
+            // }
         }
         super.removeObserver(observer);
     }
@@ -125,23 +124,24 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
             AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             ObservableReader.NotificationMode notificationMode) {
         super.setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
-        // unleash the monitoring thread to initiate SE detection (if available and needed)
-        //if (this instanceof AbstractThreadedObservableLocalReader && thread != null) {
+    }
+
+    @Override
+    public void startSeDetection(ObservableReader.PollingMode pollingMode) {
+        super.startSeDetection(pollingMode);
+        // unleash the monitoring thread to initiate the SE detection (if available and needed)
         if (thread != null) {
-            thread.startDetection();
+            thread.startSeDetection();
         }
     }
 
-
     /**
      * Initiates the removal sequence
-     * 
-     * @param channelState the action to be taken after doing the removal sequence
      */
     @Override
-    protected final void startRemovalSequence(ChannelState channelState) {
+    protected final void startRemovalSequence() {
         if (thread != null) {
-            thread.startRemovalSequence(channelState);
+            thread.startRemovalSequence();
         }
     }
 
@@ -217,8 +217,6 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         private boolean startDetectionNotified = false;
         private boolean seProcessingNotified = false;
 
-        ChannelState channelStateAction = ChannelState.KEEP_OPEN;
-
         /**
          * Constructor
          *
@@ -243,7 +241,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         /**
          * Makes the current change from WAIT_FOR_START_DETECTION to WAIT_FOR_SE_INSERTION
          */
-        void startDetection() {
+        void startSeDetection() {
             startDetectionNotified = true;
             synchronized (waitForStartDetectionSync) {
                 waitForStartDetectionSync.notify();
@@ -251,9 +249,10 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         }
 
         /**
-         * Makes the current change from WAIT_FOR_SE_PROCESSING to WAIT_FOR_SE_REMOVAL Handle the
-         * signal from the application to terminate the operations with the current SE (ChannelState
-         * set to CLOSE_AND_CONTINUE or CLOSE_AND_STOP).
+         * Makes the current change from WAIT_FOR_SE_PROCESSING to WAIT_FOR_SE_REMOVAL.
+         * <p>
+         * Handle the signal from the application to terminate the operations with the current SE
+         * (ChannelControl set to CLOSE_AFTER).
          * <p>
          * We handle here two different cases:
          * </p>
@@ -268,8 +267,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
          * waitForRemovalSync object by calling its notify method.</li>
          * </ul>
          */
-        void startRemovalSequence(ChannelState channelState) {
-            channelStateAction = channelState;
+        void startRemovalSequence() {
             seProcessingNotified = true;
             synchronized (waitForSeProcessing) {
                 waitForSeProcessing.notify();
@@ -370,20 +368,13 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                                 if (seProcessingNotified) {
                                     // the application has completed the processing, we move to the
                                     // SE
-                                    switch (channelStateAction) {
-                                        case CLOSE_AND_CONTINUE:
-                                            monitoringState = MonitoringState.WAIT_FOR_SE_REMOVAL;
-                                            break;
-                                        case CLOSE_AND_STOP:
-                                            // We close the channels now and notify the application
-                                            // of the SE_REMOVED event.
-                                            processSeRemoved();
-                                            monitoringState =
-                                                    MonitoringState.WAIT_FOR_START_DETECTION;
-                                            break;
-                                        case KEEP_OPEN:
-                                            throw new IllegalStateException(
-                                                    "Unexcepted KEEP_OPEN action.");
+                                    if (currentPollingMode == ObservableReader.PollingMode.CONTINUE) {
+                                        monitoringState = MonitoringState.WAIT_FOR_SE_REMOVAL;
+                                    } else {
+                                        // We close the channels now and notify the application of
+                                        // the SE_REMOVED event.
+                                        processSeRemoved();
+                                        monitoringState = MonitoringState.WAIT_FOR_START_DETECTION;
                                     }
                                     // exit loop
                                     break;
@@ -442,7 +433,14 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                                     // for insertion
                                     // We notify the application of the SE_REMOVED event.
                                     processSeRemoved();
-                                    monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
+                                    if (currentPollingMode == ObservableReader.PollingMode.CONTINUE) {
+                                        monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
+                                    } else {
+                                        // We close the channels now and notify the application of
+                                        // the SE_REMOVED event.
+                                        processSeRemoved();
+                                        monitoringState = MonitoringState.WAIT_FOR_START_DETECTION;
+                                    }
                                     // exit loop
                                     break;
                                 }

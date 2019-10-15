@@ -75,7 +75,7 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
     }
 
     @Override
-    protected void closePhysicalChannel() throws KeypleChannelStateException {
+    protected void closePhysicalChannel() throws KeypleChannelControlException {
         try {
             if (card != null) {
                 if (logging) {
@@ -92,7 +92,7 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
                 }
             }
         } catch (CardException e) {
-            throw new KeypleChannelStateException("Error while closing physical channel", e);
+            throw new KeypleChannelControlException("Error while closing physical channel", e);
         }
     }
 
@@ -384,10 +384,10 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
      * In this case be aware that on some platforms (ex. Windows 8+), the exclusivity is granted for
      * a limited time (ex. 5 seconds). After this delay, the card is automatically resetted.
      * 
-     * @throws KeypleChannelStateException if a reader error occurs
+     * @throws KeypleChannelControlException if a reader error occurs
      */
     @Override
-    protected void openPhysicalChannel() throws KeypleChannelStateException {
+    protected void openPhysicalChannel() throws KeypleChannelControlException {
         // init of the physical SE channel: if not yet established, opening of a new physical
         // channel
         try {
@@ -408,7 +408,7 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
             }
             this.channel = card.getBasicChannel();
         } catch (CardException e) {
-            throw new KeypleChannelStateException("Error while opening Physical Channel", e);
+            throw new KeypleChannelControlException("Error while opening Physical Channel", e);
         }
     }
 

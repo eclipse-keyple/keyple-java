@@ -12,15 +12,15 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 
+import static org.eclipse.keyple.core.seproxy.ChannelControl.CLOSE_AFTER;
 import java.util.List;
 import java.util.Set;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader.NotificationMode;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
@@ -121,14 +121,14 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      * @throws KeypleReaderException if a reader error occurs
      */
     public final List<SeResponse> transmitSet(Set<SeRequest> requestSet,
-            MultiSeRequestProcessing multiSeRequestProcessing, ChannelState channelState)
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws KeypleReaderException {
         if (requestSet == null) {
             throw new IllegalArgumentException("seRequestSet must not be null");
         }
 
         /* sets the forceClosing flag */
-        forceClosing = channelState == ChannelState.KEEP_OPEN;
+        forceClosing = channelControl == ChannelControl.KEEP_OPEN;
 
         List<SeResponse> responseSet;
 
@@ -141,8 +141,8 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
         }
 
         try {
-            responseSet = processSeRequestSet(requestSet, multiSeRequestProcessing, channelState);
-        } catch (KeypleChannelStateException ex) {
+            responseSet = processSeRequestSet(requestSet, multiSeRequestProcessing, channelControl);
+        } catch (KeypleChannelControlException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
@@ -174,7 +174,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
     public final List<SeResponse> transmitSet(Set<SeRequest> requestSet)
             throws KeypleReaderException {
         return transmitSet(requestSet, MultiSeRequestProcessing.FIRST_MATCH,
-                ChannelState.KEEP_OPEN);
+                ChannelControl.KEEP_OPEN);
     }
 
     /**
@@ -184,12 +184,12 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      *
      * @param requestSet the Set of {@link SeRequest} to be processed
      * @param multiSeRequestProcessing the multi se processing mode
-     * @param channelState indicates if the channel has to be closed at the end of the processing
+     * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return the List of {@link SeResponse} (responses to the Set of {@link SeRequest})
      * @throws KeypleReaderException if reader error occurs
      */
     protected abstract List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet,
-            MultiSeRequestProcessing multiSeRequestProcessing, ChannelState channelState)
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws KeypleReaderException;
 
     /**
@@ -201,18 +201,18 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      * As the method is final, it cannot be extended.
      *
      * @param seRequest the request to be transmitted
-     * @param channelState indicates if the channel has to be closed at the end of the processing
+     * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return the received response
      * @throws KeypleReaderException if a reader error occurs
      */
-    public final SeResponse transmit(SeRequest seRequest, ChannelState channelState)
+    public final SeResponse transmit(SeRequest seRequest, ChannelControl channelControl)
             throws KeypleReaderException {
         if (seRequest == null) {
             throw new IllegalArgumentException("seRequest must not be null");
         }
 
         /* sets the forceClosing flag */
-        forceClosing = channelState == ChannelState.KEEP_OPEN;
+        forceClosing = channelControl == ChannelControl.KEEP_OPEN;
 
         SeResponse seResponse;
 
@@ -225,8 +225,8 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
         }
 
         try {
-            seResponse = processSeRequest(seRequest, channelState);
-        } catch (KeypleChannelStateException ex) {
+            seResponse = processSeRequest(seRequest, channelControl);
+        } catch (KeypleChannelControlException ex) {
             long timeStamp = System.nanoTime();
             double elapsedMs = (double) ((timeStamp - this.before) / 100000) / 10;
             this.before = timeStamp;
@@ -256,7 +256,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
     }
 
     public final SeResponse transmit(SeRequest seRequest) throws KeypleReaderException {
-        return transmit(seRequest, ChannelState.KEEP_OPEN);
+        return transmit(seRequest, ChannelControl.KEEP_OPEN);
     }
 
     /**
@@ -265,13 +265,13 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      * This method is handled by transmit.
      *
      * @param seRequest the {@link SeRequest} to be processed
-     * @param channelState a flag indicating if the channel has to be closed after the processing of
-     *        the {@link SeRequest}
+     * @param channelControl a flag indicating if the channel has to be closed after the processing
+     *        of the {@link SeRequest}
      * @return the {@link SeResponse} (responses to the {@link SeRequest})
      * @throws KeypleReaderException if reader error occurs
      */
-    protected abstract SeResponse processSeRequest(SeRequest seRequest, ChannelState channelState)
-            throws KeypleReaderException;
+    protected abstract SeResponse processSeRequest(SeRequest seRequest,
+            ChannelControl channelControl) throws KeypleReaderException;
 
     /** ==== Methods specific to observability ============================= */
 
@@ -281,20 +281,14 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      * <p>
      * Do nothing if the closing of the physical channel has already been requested.
      * <p>
-     *  Send a request without APDU just to close the physical channel if it has not already been
+     * Send a request without APDU just to close the physical channel if it has not already been
      * closed.
      * 
-     * @param channelState indicates the action to be taken after the closing of the physical
-     *        channel (continue to wait for SE or stop)
      */
-    public void notifySeProcessed(ChannelState channelState) {
+    public void notifySeProcessed() {
         if (forceClosing) {
-            if (channelState == ChannelState.KEEP_OPEN) {
-                throw new IllegalArgumentException(
-                        "The physical channel cannot be kept open after the SE processing.");
-            }
             try {
-                processSeRequest(null, channelState);
+                processSeRequest(null, CLOSE_AFTER);
                 logger.trace("Explicit physical channel closing executed.");
             } catch (KeypleReaderException e) {
                 logger.error("KeypleReaderException while terminating." + e.getMessage());

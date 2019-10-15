@@ -20,7 +20,7 @@ import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
@@ -196,7 +196,7 @@ public class UseCase_Calypso3_Rev1Selection_Pcsc {
                  * Actual PO communication: send the prepared read order, then close the channel
                  * with the PO
                  */
-                if (poTransaction.processPoCommands(ChannelState.CLOSE_AND_CONTINUE)) {
+                if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
                     logger.info("The reading of the EventLog has succeeded.");
 
                     /*

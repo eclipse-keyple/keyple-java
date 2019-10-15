@@ -114,8 +114,8 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
          * Provide the SeReader with the selection operation to be processed when a SE is inserted.
          */
         ((ObservableReader) seReader).setDefaultSelectionRequest(
-                seSelection.getSelectionOperation(),
-                ObservableReader.NotificationMode.MATCHED_ONLY);
+                seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY,
+                ObservableReader.PollingMode.CONTINUE);
 
         /* Set the current class as Observer of the first reader */
         ((ObservableReader) seReader).addObserver(this);
@@ -186,8 +186,7 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
              */
             try {
                 ((ObservableReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
-                        .getReader(event.getReaderName()))
-                                .notifySeProcessed(ChannelState.CLOSE_AND_CONTINUE);
+                        .getReader(event.getReaderName())).notifySeProcessed();
             } catch (KeypleReaderNotFoundException e) {
                 e.printStackTrace();
             } catch (KeyplePluginNotFoundException e) {
