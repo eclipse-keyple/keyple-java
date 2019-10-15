@@ -47,6 +47,12 @@ public abstract class AbstractLocalReader extends AbstractReader {
     /** current selection status */
     private SelectionStatus currentSelectionStatus;
 
+    /** The default DefaultSelectionsRequest to be executed upon SE insertion */
+    protected DefaultSelectionsRequest defaultSelectionsRequest;
+
+    /** Indicate if all SE detected should be notified or only matching SE */
+    protected ObservableReader.NotificationMode notificationMode;
+
     /** Timestamp recorder */
     private long before;
 
@@ -128,7 +134,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * <p>
      * It will do nothing if a default selection is defined in MATCHED_ONLY mode but no SE matched
      * the selection.
-     * 
+     *
      * @return true if the notification was actually sent to the application, false if not
      */
     protected final boolean processSeInserted() {
