@@ -6,124 +6,62 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.5.1'
     }
 }
-
-plugins {
-    id "com.diffplug.gradle.spotless" version "3.14.0"
-}
-
-project.group 'org.eclipse.keyple'
-project.version = '0.7.0-SNAPSHOT'
-
 
 apply plugin: 'com.android.application'
-apply from:'../../../../common.gradle'
 
-allprojects {
+project.group 'org.eclipse.keyple'
 
-    configurations.all {
-        // check for updates every build
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    }
-
-    repositories {
-        //to import keyple snapshots
-        maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
-        //to import keyple releases
-        maven { url 'https://oss.sonatype.org/content/repositories/releases' }
-        mavenLocal()
-        mavenCentral()
-        google()
-        jcenter()
-    }
-
-    apply plugin: 'pmd'
-
-    pmd {
-        ruleSets = [
-                "java-basic",
-                "java-braces",
-        ]
-    }
-}
-
-spotless {
-    java {
-        target '**/*.java'
-        licenseHeaderFile '../../../../.build/spotless.license.txt'
-        importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
-        removeUnusedImports()
-        eclipse().configFile '../../../../.build/spotless.eclipseformat.xml'
-    }
-
-    format 'misc', {
-        target '**/*.java', '**/*.gradle', '**/*.yml', '**/*.md'
-        indentWithSpaces()
-        endWithNewline()
-    }
-}
 
 android {
-    signingConfigs {
-        release {
-            keyAlias 'OrangeLabsTest'
-            keyPassword '0rangeLabsTest'
-            storeFile file('/path/to/yourownkeystore')
-            storePassword '0rangeLabs'
-        }
-    }
     compileSdkVersion 26
+    buildToolsVersion '26.0.3'
     defaultConfig {
-        applicationId "org.eclipse.keyple.example.android.omapi"
+        applicationId "org.eclipse.keyple.example.calyspo.android.omapi"
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        signingConfig signingConfigs.release
     }
-
     buildTypes {
         release {
             minifyEnabled false
-            signingConfig signingConfigs.release
-        }
-        debug {
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             debuggable true
-            minifyEnabled false
         }
-
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    buildToolsVersion '26.0.2'
     lintOptions {
         abortOnError false
-    }
-    productFlavors {
     }
     packagingOptions {
         exclude 'META-INF/NOTICE.md'
     }
+
 }
 
 repositories {
     mavenLocal()
+    //to import keyple snapshots
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    //to import keyple releases
+    maven { url 'https://oss.sonatype.org/content/repositories/releases' }
     mavenCentral()
     google()
-    jcenter()
 }
+
 
 dependencies {
     implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
-    
     /*
-   Keyple dependencies
-    */
+    Keyple dependencies
+     */
     //import the last version of keyple-java-core
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
 
@@ -133,24 +71,23 @@ dependencies {
     //import the last version of keyple-java-plugin-omapi
     implementation group: 'org.eclipse.keyple', name: 'keyple-android-plugin-omapi', version: '+'
 
-
     /*
     OMAPI dependencies
      */
     compileOnly files('libs/org.simalliance.openmobileapi.jar')
-
-    /*
-    Android dependencies
-     */
     
+    /*
+    Android components
+     */
     implementation "com.android.support:support-v4:${android_support_version}"
     implementation "com.android.support:appcompat-v7:${android_support_version}"
     implementation "com.android.support:design:${android_support_version}"
     implementation "com.android.support.constraint:constraint-layout:${android_support_constraint_version}"
 
+
     /*
-  Log
-   */
+    Log
+     */
     //slf4j logback for android - https://github.com/tony19/logback-android
     implementation "org.slf4j:slf4j-api:${slf4japi_version}"
     implementation "com.github.tony19:logback-android:${android_logback_version}"
@@ -163,27 +100,4 @@ dependencies {
     androidTestImplementation "com.android.support.test:runner:${android_support_test}"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:${android_support_espresso}"
 
-
 }
-
-//Override signing properties from local file
-def Properties props = new Properties()
-def propFile = new File('signing.properties')
-if (propFile.canRead()){
-    props.load(new FileInputStream(propFile))
-
-    if (props!=null && props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
-            props.containsKey('KEY_ALIAS') && props.containsKey('KEY_PASSWORD')) {
-        android.signingConfigs.release.storeFile = file(props['STORE_FILE'])
-        android.signingConfigs.release.storePassword = props['STORE_PASSWORD']
-        android.signingConfigs.release.keyAlias = props['KEY_ALIAS']
-        android.signingConfigs.release.keyPassword = props['KEY_PASSWORD']
-    } else {
-        println 'signing.properties found but some entries are missing'
-        android.buildTypes.release.signingConfig = null
-    }
-}else {
-    println 'signing.properties not found'
-    android.buildTypes.release.signingConfig = null
-}
-

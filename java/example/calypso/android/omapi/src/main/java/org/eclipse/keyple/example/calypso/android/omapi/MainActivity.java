@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.android.omapi;
+package org.eclipse.keyple.example.calypso.android.omapi;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
