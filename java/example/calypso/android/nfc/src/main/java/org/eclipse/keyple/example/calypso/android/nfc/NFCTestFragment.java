@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.android.nfc;
+package org.eclipse.keyple.example.calypso.android.nfc;
 
 
 
@@ -33,6 +33,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcFragment;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcPluginFactory;
 import org.eclipse.keyple.plugin.android.nfc.AndroidNfcProtocolSettings;
@@ -201,9 +202,9 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
 
         // Define UI components
         View view =
-                inflater.inflate(org.eclipse.keyple.example.android.nfc.R.layout.fragment_nfc_test,
+                inflater.inflate(org.eclipse.keyple.example.calypso.android.nfc.R.layout.fragment_nfc_test,
                         container, false);
-        mText = view.findViewById(org.eclipse.keyple.example.android.nfc.R.id.text);
+        mText = view.findViewById(org.eclipse.keyple.example.calypso.android.nfc.R.id.text);
         mText.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {

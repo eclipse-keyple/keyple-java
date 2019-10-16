@@ -6,17 +6,17 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.5.1'
     }
 }
 
 
-plugins {
-    id "com.diffplug.gradle.spotless" version "3.14.0"
-}
+//plugins {
+//    id "com.diffplug.gradle.spotless" version "3.14.0"
+//}
 
 apply plugin: 'com.android.application'
-apply from:'../../../../common.gradle'
+//apply from:'../../../../common.gradle'
 
 project.group 'org.eclipse.keyple'
 project.version = '0.7.0-SNAPSHOT'
@@ -45,26 +45,26 @@ allprojects {
     }
 }
 
-spotless {
-    java {
-        target '**/*.java'
-
-        licenseHeaderFile '../../../../.build/spotless.license.txt'
-
-        importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
-
-        removeUnusedImports()
-
-        eclipse().configFile '../../../../.build/spotless.eclipseformat.xml'
-    }
-
-    format 'misc', {
-        target '**/*.java', '**/*.gradle', '**/*.yml', '**/*.md'
-
-        indentWithSpaces()
-        endWithNewline()
-    }
-}
+//spotless {
+//    java {
+//        target '**/*.java'
+//
+//        licenseHeaderFile '../../../../.build/spotless.license.txt'
+//
+//        importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
+//
+//        removeUnusedImports()
+//
+//        eclipse().configFile '../../../../.build/spotless.eclipseformat.xml'
+//    }
+//
+//    format 'misc', {
+//        target '**/*.java', '**/*.gradle', '**/*.yml', '**/*.md'
+//
+//        indentWithSpaces()
+//        endWithNewline()
+//    }
+//}
 
 android {
     signingConfigs {
@@ -73,7 +73,7 @@ android {
     }
     compileSdkVersion 26
     defaultConfig {
-        applicationId "org.eclipse.keyple.example.android.nfc"
+        applicationId "org.eclipse.keyple.example.calypso.android.nfc"
         minSdkVersion 19
         targetSdkVersion 26
         versionName project.version
