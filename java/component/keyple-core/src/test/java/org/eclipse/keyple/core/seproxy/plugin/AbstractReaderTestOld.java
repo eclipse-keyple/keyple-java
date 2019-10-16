@@ -37,10 +37,10 @@ import org.slf4j.LoggerFactory;
  *
  * TODO Review this test because the thread start control is no longer relevant.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class AbstractReaderTest extends CoreBaseTest {
+@Deprecated
+public class AbstractReaderTestOld extends CoreBaseTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractReaderTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractReaderTestOld.class);
 
 
     final String PLUGIN_NAME = "abstractPluginTest";
@@ -49,7 +49,7 @@ public class AbstractReaderTest extends CoreBaseTest {
     final ObservableReader.ReaderObserver obs1 = getObserver();
     final ObservableReader.ReaderObserver obs2 = getObserver();
 
-    ThreadedTestReader spyReader;
+    MockThreadedObservableLocalReader spyReader;
 
     CountDownLatch addObserverCall;
     CountDownLatch removeObserverCall;
@@ -67,7 +67,7 @@ public class AbstractReaderTest extends CoreBaseTest {
      * TESTS
      */
 
-    @Test
+    //@Test
     public void testAddObserver() {
         addObserverCall = new CountDownLatch(5);
         removeObserverCall = new CountDownLatch(5);
@@ -78,7 +78,7 @@ public class AbstractReaderTest extends CoreBaseTest {
 
     }
 
-    @Test
+    //@Test
     public void testRemoveObserver() {
         addObserverCall = new CountDownLatch(5);
         removeObserverCall = new CountDownLatch(5);
@@ -90,7 +90,7 @@ public class AbstractReaderTest extends CoreBaseTest {
 
     }
 
-    @Test
+    //@Test
     public void testAddRemoveObserver() {
         addObserverCall = new CountDownLatch(5);
         removeObserverCall = new CountDownLatch(5);
@@ -111,23 +111,22 @@ public class AbstractReaderTest extends CoreBaseTest {
     /**
      * Class extending {@link AbstractThreadedObservableLocalReader} to enable thread monitoring
      */
-    abstract class ThreadedTestReader extends AbstractThreadedObservableLocalReader
+    abstract class MockThreadedObservableLocalReader extends AbstractThreadedObservableLocalReader
             implements SmartInsertionReader {
-
         /**
          * Constructor
          *
          * @param pluginName the name of the plugin that instantiated the reader
          * @param readerName the name of the reader
          */
-        public ThreadedTestReader(String pluginName, String readerName) {
+        public MockThreadedObservableLocalReader(String pluginName, String readerName) {
             super(pluginName, readerName);
         }
     }
 
-    ThreadedTestReader getBlankAbstractReader(String pluginName, String readerName) {
+    MockThreadedObservableLocalReader getBlankAbstractReader(String pluginName, String readerName) {
         /* anonymous subclass of ThreadedTestReader */
-        return new ThreadedTestReader(pluginName, readerName) {
+        return new MockThreadedObservableLocalReader(pluginName, readerName) {
 
             @Override
             public boolean waitForCardPresent(long timeout) {
