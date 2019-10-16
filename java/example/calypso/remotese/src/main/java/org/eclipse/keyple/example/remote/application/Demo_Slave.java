@@ -112,9 +112,7 @@ public class Demo_Slave {
                 }
 
                 @Override
-                public void onConnectFailure() {
-
-                }
+                public void onConnectFailure() {}
             });
             // if slave is client, master is the configured server
             slaveAPI = new SlaveAPI(SeProxyService.getInstance(), node,
@@ -150,7 +148,7 @@ public class Demo_Slave {
             ObservablePlugin.PluginObserver observer = new ObservablePlugin.PluginObserver() {
                 @Override
                 public void update(PluginEvent event) {
-                    logger.info("{} Update - pluginEvent from inline observer", node.getNodeId(),
+                    logger.info("{} Update - pluginEvent from inline observer {}", node.getNodeId(),
                             event);
                 }
             };
