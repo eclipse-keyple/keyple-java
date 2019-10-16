@@ -10,75 +10,20 @@ buildscript {
     }
 }
 
-
-//plugins {
-//    id "com.diffplug.gradle.spotless" version "3.14.0"
-//}
-
 apply plugin: 'com.android.application'
-//apply from:'../../../../common.gradle'
 
 project.group 'org.eclipse.keyple'
-project.version = '0.7.0-SNAPSHOT'
 
-allprojects {
-
-    configurations.all {
-        // check for updates every build
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    }
-
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        google()
-        jcenter()
-    }
-
-    apply plugin: 'pmd'
-
-    pmd {
-        ruleSets = [
-                "java-basic",
-                "java-braces",
-        ]
-    }
-}
-
-//spotless {
-//    java {
-//        target '**/*.java'
-//
-//        licenseHeaderFile '../../../../.build/spotless.license.txt'
-//
-//        importOrder 'java', 'javax', 'org', 'com', 'com.diffplug', ''
-//
-//        removeUnusedImports()
-//
-//        eclipse().configFile '../../../../.build/spotless.eclipseformat.xml'
-//    }
-//
-//    format 'misc', {
-//        target '**/*.java', '**/*.gradle', '**/*.yml', '**/*.md'
-//
-//        indentWithSpaces()
-//        endWithNewline()
-//    }
-//}
 
 android {
-    signingConfigs {
-        config {
-        }
-    }
     compileSdkVersion 26
+    buildToolsVersion '26.0.3'
     defaultConfig {
         applicationId "org.eclipse.keyple.example.calypso.android.nfc"
         minSdkVersion 19
         targetSdkVersion 26
         versionName project.version
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        signingConfig signingConfigs.config
     }
     buildTypes {
         release {
@@ -91,13 +36,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_6
         targetCompatibility JavaVersion.VERSION_1_6
     }
-    buildToolsVersion '26.0.2'
     lintOptions {
         abortOnError false
     }
-    productFlavors {
-    }
-
     packagingOptions {
         exclude 'META-INF/NOTICE.md'
     }
@@ -105,11 +46,11 @@ android {
 }
 
 repositories {
+    mavenLocal()
     //to import keyple snapshots
-    maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     //to import keyple releases
     maven { url 'https://oss.sonatype.org/content/repositories/releases' }
-    mavenLocal()
     mavenCentral()
     google()
 }
