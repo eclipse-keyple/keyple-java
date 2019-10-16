@@ -67,12 +67,12 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         // if an observer is added to an empty list, start the observation
         if (super.countObservers() == 1) {
 
-            //needed?
-            //if (this instanceof AbstractThreadedObservableLocalReader) {
-                logger.debug("Start monitoring the reader {}", this.getName());
-                thread = new EventThread(this.getPluginName(), this.getName());
-                thread.start();
-            //}
+            // needed?
+            // if (this instanceof AbstractThreadedObservableLocalReader) {
+            logger.debug("Start monitoring the reader {}", this.getName());
+            thread = new EventThread(this.getPluginName(), this.getName());
+            thread.start();
+            // }
         }
     }
 
@@ -89,13 +89,13 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
      */
     public final void removeObserver(ObservableReader.ReaderObserver observer) {
         if (super.countObservers() == 0) {
-            //needed?
-            //if (this instanceof AbstractThreadedObservableLocalReader) {
-                if (thread != null) {
-                    logger.debug("Stop the reader monitoring.");
-                    thread.end();
-                }
-            //}
+            // needed?
+            // if (this instanceof AbstractThreadedObservableLocalReader) {
+            if (thread != null) {
+                logger.debug("Stop the reader monitoring.");
+                thread.end();
+            }
+            // }
         }
         super.removeObserver(observer);
     }
@@ -126,7 +126,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
             ObservableReader.NotificationMode notificationMode) {
         super.setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
         // unleash the monitoring thread to initiate SE detection (if available and needed)
-        //if (this instanceof AbstractThreadedObservableLocalReader && thread != null) {
+        // if (this instanceof AbstractThreadedObservableLocalReader && thread != null) {
         if (thread != null) {
             thread.startDetection();
         }
@@ -174,10 +174,10 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         this.threadWaitTimeout = timeout;
     }
 
-    private final int WAIT_FOR_SE_DETECTION_EXIT_LATENCY = 10; // TODO make it configurable
-    private final int WAIT_FOR_SE_INSERTION_EXIT_LATENCY = 10; // TODO make it configurable
-    private final int WAIT_FOR_SE_PROCESSING_EXIT_LATENCY = 10; // TODO make it configurable
-    private final int WAIT_FOR_SE_REMOVAL_EXIT_LATENCY = 10; // TODO make it configurable
+    private final int WAIT_FOR_SE_DETECTION_EXIT_LATENCY = 200; // TODO make it configurable
+    private final int WAIT_FOR_SE_INSERTION_EXIT_LATENCY = 200; // TODO make it configurable
+    private final int WAIT_FOR_SE_PROCESSING_EXIT_LATENCY = 200; // TODO make it configurable
+    private final int WAIT_FOR_SE_REMOVAL_EXIT_LATENCY = 200; // TODO make it configurable
 
     private class EventThread extends Thread {
         /**
@@ -226,7 +226,10 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
          * @param readerName name of the reader who owns this thread
          */
         EventThread(String pluginName, String readerName) {
-            super("observable-reader-events-" + threadCount.addAndGet(1));
+            super("observable-reader-events-" + threadCount.addAndGet(1)
+                    + readerName.replace(" ", ""));
+            logger.debug("Instantiate thread with name {} for reader {}", this.getName(),
+                    readerName);
             setDaemon(true);
             this.pluginName = pluginName;
             this.readerName = readerName;
