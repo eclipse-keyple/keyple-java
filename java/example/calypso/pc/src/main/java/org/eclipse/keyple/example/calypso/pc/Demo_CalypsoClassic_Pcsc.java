@@ -110,11 +110,6 @@ public class Demo_CalypsoClassic_Pcsc {
         /* Assign the readers to the Calypso transaction engine */
         transactionEngine.setReaders(poReader, samReader);
 
-        /* Set the default selection operation */
-        ((ObservableReader) poReader).setDefaultSelectionRequest(
-                transactionEngine.preparePoSelection(),
-                ObservableReader.NotificationMode.MATCHED_ONLY);
-
         /*
          * sets a maximum time limit of 1 minute for the SE processing and its removal from the
          * reader after processing
@@ -123,6 +118,12 @@ public class Demo_CalypsoClassic_Pcsc {
 
         /* Set terminal as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);
+
+        /* Set the default selection operation */
+        ((ObservableReader) poReader).setDefaultSelectionRequest(
+                transactionEngine.preparePoSelection(),
+                ObservableReader.NotificationMode.MATCHED_ONLY,
+                ObservableReader.PollingMode.CONTINUE);
 
         /* Wait for ever (exit with CTRL-C) */
         synchronized (waitForEnd) {

@@ -190,7 +190,7 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Stub {
                  * Actual PO communication: send the prepared read order, then close the channel
                  * with the PO
                  */
-                if (poTransaction.processPoCommands(ChannelState.CLOSE_AND_CONTINUE)) {
+                if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
                     logger.info("The reading of the EventLog has succeeded.");
 
                     /*

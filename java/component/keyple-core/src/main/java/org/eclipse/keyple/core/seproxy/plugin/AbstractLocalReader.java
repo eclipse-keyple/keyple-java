@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.*;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -154,7 +154,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 List<SeResponse> seResponseList =
                         transmitSet(defaultSelectionsRequest.getSelectionSeRequestSet(),
                                 defaultSelectionsRequest.getMultiSeRequestProcessing(),
-                                defaultSelectionsRequest.getChannelState());
+                                defaultSelectionsRequest.getChannelControl());
 
                 for (SeResponse seResponse : seResponseList) {
                     if (seResponse != null && seResponse.getSelectionStatus().hasMatched()) {
@@ -201,7 +201,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
             // expected SEs
             try {
                 closePhysicalChannel();
-            } catch (KeypleChannelStateException e) {
+            } catch (KeypleChannelControlException e) {
                 logger.error("Error while closing physical channel. {}", e.getMessage());
             }
         }
@@ -235,7 +235,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
         closeLogicalChannel();
         try {
             closePhysicalChannel();
-        } catch (KeypleChannelStateException e) {
+        } catch (KeypleChannelControlException e) {
             logger.trace("[{}] Exception occured in closeLogicalAndPhysicalChannels. Message: {}",
                     this.getName(), e.getMessage());
         }
@@ -350,11 +350,11 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return the SelectionStatus containing the actual selection result (ATR and/or FCI and the
      *         matching status flag).
      * @throws KeypleIOReaderException if a reader error occurs
-     * @throws KeypleChannelStateException if a channel state exception occurs
+     * @throws KeypleChannelControlException if a channel control exception occurs
      * @throws KeypleApplicationSelectionException if a selection exception occurs
      */
     protected SelectionStatus openLogicalChannel(SeSelector seSelector)
-            throws KeypleIOReaderException, KeypleChannelStateException,
+            throws KeypleIOReaderException, KeypleChannelControlException,
             KeypleApplicationSelectionException {
         byte[] atr = getATR();
         boolean selectionHasMatched = true;
@@ -435,17 +435,18 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *         the selection process result. When ATR or FCI are not available, they are set to null
      *         but they can't be both null at the same time.
      * @throws KeypleIOReaderException if a reader error occurs
-     * @throws KeypleChannelStateException if a channel state exception occurs
+     * @throws KeypleChannelControlException if a channel control exception occurs
      * @throws KeypleApplicationSelectionException if a selection exception occurs
      */
     protected final SelectionStatus openLogicalChannelAndSelect(SeSelector seSelector)
-            throws KeypleChannelStateException, KeypleIOReaderException,
+            throws KeypleChannelControlException, KeypleIOReaderException,
             KeypleApplicationSelectionException {
 
         SelectionStatus selectionStatus;
 
         if (seSelector == null) {
-            throw new KeypleChannelStateException("Try to open logical channel without selector.");
+            throw new KeypleApplicationSelectionException(
+                    "Try to open logical channel without selector.");
         }
 
         if (!isLogicalChannelOpen()) {
@@ -457,7 +458,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 openPhysicalChannel();
             }
             if (!isPhysicalChannelOpen()) {
-                throw new KeypleChannelStateException("Fail to open physical channel.");
+                throw new KeypleChannelControlException("Fail to open physical channel.");
             }
         }
 
@@ -469,18 +470,18 @@ public abstract class AbstractLocalReader extends AbstractReader {
     /**
      * Attempts to open the physical channel
      *
-     * @throws KeypleChannelStateException if the channel opening fails
+     * @throws KeypleChannelControlException if the channel opening fails
      */
-    protected abstract void openPhysicalChannel() throws KeypleChannelStateException;
+    protected abstract void openPhysicalChannel() throws KeypleChannelControlException;
 
     /**
      * Closes the current physical channel.
      * <p>
      * This method must be implemented by the ProxyReader plugin (e.g. Pcsc/Nfc/Omapi Reader).
      *
-     * @throws KeypleChannelStateException if a reader error occurs
+     * @throws KeypleChannelControlException if a reader error occurs
      */
-    protected abstract void closePhysicalChannel() throws KeypleChannelStateException;
+    protected abstract void closePhysicalChannel() throws KeypleChannelControlException;
 
     /**
      * Tells if the physical channel is open or not
@@ -570,12 +571,12 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *
      * @param requestSet the request set
      * @param multiSeRequestProcessing the multi se processing mode
-     * @param channelState indicates if the channel has to be closed at the end of the processing
+     * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return the response list
      * @throws KeypleIOReaderException if a reader error occurs
      */
     protected final List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet,
-            MultiSeRequestProcessing multiSeRequestProcessing, ChannelState channelState)
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws KeypleReaderException {
 
         boolean requestMatchesProtocol[] = new boolean[requestSet.size()];
@@ -658,7 +659,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 }
                 requestIndex++;
                 if (lastRequestIndex == requestIndex) {
-                    if (!(channelState == ChannelState.KEEP_OPEN)) {
+                    if (!(channelControl == ChannelControl.KEEP_OPEN)) {
                         // close logical channel unconditionally
                         closeLogicalChannel();
                         if (!(this instanceof ObservableReader)
@@ -674,8 +675,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                             /*
                              * request the removal sequence when the reader is monitored by a thread
                              */
-                            ((AbstractObservableLocalReader) this)
-                                    .startRemovalSequence(channelState);
+                            ((AbstractObservableLocalReader) this).startRemovalSequence();
                         }
                     }
                 }
@@ -692,13 +692,13 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *
      * @param seRequest the SeRequest (null if only the closing of the physical channel is
      *        requested)
-     * @param channelState indicates if the channel has to be closed at the end of the processing
+     * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return the SeResponse to the SeRequest
      * @throws KeypleReaderException if a transmission fails
      */
     @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
             "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity", "PMD.ExcessiveMethodLength"})
-    protected final SeResponse processSeRequest(SeRequest seRequest, ChannelState channelState)
+    protected final SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl)
             throws IllegalStateException, KeypleReaderException {
 
         SeResponse seResponse = null;
@@ -708,7 +708,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
             seResponse = processSeRequestLogical(seRequest);
         }
 
-        if (!(channelState == ChannelState.KEEP_OPEN)) {
+        if (!(channelControl == ChannelControl.KEEP_OPEN)) {
             // close logical channel unconditionally
             closeLogicalChannel();
             if (!(this instanceof ObservableReader)
@@ -721,7 +721,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 /*
                  * request the removal sequence when the reader is monitored by a thread
                  */
-                ((AbstractObservableLocalReader) this).startRemovalSequence(channelState);
+                ((AbstractObservableLocalReader) this).startRemovalSequence();
             }
         }
 

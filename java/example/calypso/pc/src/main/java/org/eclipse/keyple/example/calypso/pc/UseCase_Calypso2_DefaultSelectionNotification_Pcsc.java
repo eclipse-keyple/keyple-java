@@ -132,8 +132,8 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
          * Provide the SeReader with the selection operation to be processed when a PO is inserted.
          */
         ((ObservableReader) poReader).setDefaultSelectionRequest(
-                seSelection.getSelectionOperation(),
-                ObservableReader.NotificationMode.MATCHED_ONLY);
+                seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY,
+                ObservableReader.PollingMode.CONTINUE);
 
         /* Set the current class as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(this);
@@ -219,7 +219,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
                  * with the PO
                  */
                 try {
-                    if (poTransaction.processPoCommands(ChannelState.CLOSE_AND_CONTINUE)) {
+                    if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
                         logger.info("The reading of the EventLog has succeeded.");
 
                         /*
@@ -265,8 +265,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Pcsc implements Reade
              */
             try {
                 ((ObservableReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
-                        .getReader(event.getReaderName()))
-                                .notifySeProcessed(ChannelState.CLOSE_AND_CONTINUE);
+                        .getReader(event.getReaderName())).notifySeProcessed();
             } catch (KeypleReaderNotFoundException e) {
                 e.printStackTrace();
             } catch (KeyplePluginNotFoundException e) {

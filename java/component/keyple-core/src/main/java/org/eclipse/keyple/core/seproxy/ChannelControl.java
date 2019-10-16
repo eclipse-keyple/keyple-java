@@ -16,10 +16,9 @@ package org.eclipse.keyple.core.seproxy;
  * transmission
  * <ul>
  * <li>KEEP_OPEN: lefts the physical channel open</li>
- * <li>CLOSE_AND_CONTINUE: closes the physical channel and continues with SE detection</li>
- * <li>CLOSE_AND_STOP: closes the physical channel and stops the SE detection</li>
+ * <li>CLOSE_AFTER: closes the physical channel</li>
  * </ul>
  */
-public enum ChannelState {
-    KEEP_OPEN, CLOSE_AND_CONTINUE, CLOSE_AND_STOP
+public enum ChannelControl {
+    KEEP_OPEN, CLOSE_AFTER
 }

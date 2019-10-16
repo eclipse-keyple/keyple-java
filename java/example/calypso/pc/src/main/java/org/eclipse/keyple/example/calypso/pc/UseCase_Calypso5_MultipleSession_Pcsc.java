@@ -223,7 +223,7 @@ public class UseCase_Calypso5_MultipleSession_Pcsc {
                 /*
                  * A ratification command will be sent (CONTACTLESS_MODE).
                  */
-                poProcessStatus = poTransaction.processClosing(ChannelState.KEEP_OPEN);
+                poProcessStatus = poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
                 if (!poProcessStatus) {
                     throw new IllegalStateException("processClosing failure.");

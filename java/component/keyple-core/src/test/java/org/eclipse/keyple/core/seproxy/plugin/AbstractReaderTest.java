@@ -135,7 +135,7 @@ public class AbstractReaderTest extends CoreBaseTest {
             }
 
             @Override
-            protected void closePhysicalChannel() throws KeypleChannelStateException {
+            protected void closePhysicalChannel() throws KeypleChannelControlException {
 
             }
 
@@ -166,7 +166,7 @@ public class AbstractReaderTest extends CoreBaseTest {
             }
 
             @Override
-            protected void openPhysicalChannel() throws KeypleChannelStateException {
+            protected void openPhysicalChannel() throws KeypleChannelControlException {
 
             }
 

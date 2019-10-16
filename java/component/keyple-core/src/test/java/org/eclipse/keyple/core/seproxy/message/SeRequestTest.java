@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
@@ -150,7 +150,7 @@ public class SeRequestTest {
     static SeRequest getSeRequestSample() {
 
         List<ApduRequest> apdus = getAapduLists();
-        ChannelState channelState = ChannelState.KEEP_OPEN;
+        ChannelControl channelControl = ChannelControl.KEEP_OPEN;
         SeProtocol seProtocol = getASeProtocol();
         Set<Integer> selectionStatusCode = ApduRequestTest.getASuccessFulStatusCode();
 

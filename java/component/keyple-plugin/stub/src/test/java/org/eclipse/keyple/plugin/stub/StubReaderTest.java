@@ -26,12 +26,12 @@ import org.eclipse.keyple.core.selection.AbstractMatchingSe;
 import org.eclipse.keyple.core.selection.AbstractSeSelectionRequest;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.*;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StubReaderTest extends BaseStubTest {
 
-    // TODO Add tests to check the CLOSE_AND_STOP and CLOSE_AND_CONTINUE behaviors
+    // TODO Add tests to check the CONTINUE and STOP behaviors
     // TODO Add tests to check the setThreadTimeout method and its effect
 
     Logger logger = LoggerFactory.getLogger(StubReaderTest.class);
@@ -602,7 +602,7 @@ public class StubReaderTest extends BaseStubTest {
                 Assert.assertEquals(ReaderEvent.EventType.SE_INSERTED, event.getEventType());
 
                 SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.FIRST_MATCH,
-                        ChannelState.KEEP_OPEN);
+                        ChannelControl.KEEP_OPEN);
                 PoSelectionRequest poSelectionRequest =
                         new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                                 new PoSelector.PoAtrFilter("3B.*"), null, "Test" + " ATR"));
@@ -1280,13 +1280,13 @@ public class StubReaderTest extends BaseStubTest {
 
             // override methods to fail open connection
             @Override
-            public void openPhysicalChannel() throws KeypleChannelStateException {
-                throw new KeypleChannelStateException("Impossible to estasblish connection");
+            public void openPhysicalChannel() throws KeypleChannelControlException {
+                throw new KeypleChannelControlException("Impossible to estasblish connection");
             }
 
             @Override
-            public void closePhysicalChannel() throws KeypleChannelStateException {
-                throw new KeypleChannelStateException("Channel is not open");
+            public void closePhysicalChannel() throws KeypleChannelControlException {
+                throw new KeypleChannelControlException("Channel is not open");
             }
 
             @Override

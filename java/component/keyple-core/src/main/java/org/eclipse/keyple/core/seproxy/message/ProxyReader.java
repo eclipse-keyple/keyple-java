@@ -14,7 +14,7 @@ package org.eclipse.keyple.core.seproxy.message;
 
 import java.util.List;
 import java.util.Set;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
@@ -59,20 +59,21 @@ public interface ProxyReader extends SeReader {
      *
      * @param seApplicationRequest the Set of application requests
      * @param multiSeRequestProcessing the multi se processing mode
-     * @param channelState indicates if the channel has to be closed at the end of the transmission
+     * @param channelControl indicates if the channel has to be closed at the end of the
+     *        transmission
      * @return the SE response
      * @throws KeypleReaderException An error occurs during transmit (channel, IO)
      */
     List<SeResponse> transmitSet(Set<SeRequest> seApplicationRequest,
-            MultiSeRequestProcessing multiSeRequestProcessing, ChannelState channelState)
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws KeypleReaderException, IllegalArgumentException;
 
     /**
      * Transmits a Set of {@link SeRequest} (list of {@link SeRequest}) to a SE application and get
      * back the corresponding a List of {@link SeResponse}.
      * <p>
-     * The {@link MultiSeRequestProcessing} and {@link ChannelState} flags are set to their standard
-     * value.
+     * The {@link MultiSeRequestProcessing} and {@link ChannelControl} flags are set to their
+     * standard value.
      *
      * @param seApplicationRequest the Set of application requests
      * @return the SE response
@@ -97,12 +98,12 @@ public interface ProxyReader extends SeReader {
      * processing of the SE request transmission. *
      * 
      * @param seApplicationRequest the SeRequest to transmit
-     * @param channelState a flag to tell if the channel has to be closed at the end
+     * @param channelControl a flag to tell if the channel has to be closed at the end
      * @return SeResponse the response to the SeRequest
      * @throws KeypleReaderException in case of a reader exception
      * @throws IllegalArgumentException if a bad argument is provided
      */
-    SeResponse transmit(SeRequest seApplicationRequest, ChannelState channelState)
+    SeResponse transmit(SeRequest seApplicationRequest, ChannelControl channelControl)
             throws KeypleReaderException, IllegalArgumentException;
 
     /**
@@ -113,7 +114,7 @@ public interface ProxyReader extends SeReader {
      * <p>
      * The {@link SeRequest} is processed and the received {@link SeResponse} is returned.
      * <p>
-     * The {@link ChannelState} flag is set to its standard value.
+     * The {@link ChannelControl} flag is set to its standard value.
      *
      * @param seApplicationRequest the SeRequest to transmit
      * @return SeResponse the response to the SeRequest

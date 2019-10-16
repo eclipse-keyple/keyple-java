@@ -12,7 +12,7 @@
 package org.eclipse.keyple.core.seproxy.event;
 
 import java.util.Set;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 
@@ -25,13 +25,13 @@ public abstract class AbstractDefaultSelectionsRequest {
 
     private final MultiSeRequestProcessing multiSeRequestProcessing;
 
-    private final ChannelState channelState;
+    private final ChannelControl channelControl;
 
     protected AbstractDefaultSelectionsRequest(Set<SeRequest> selectionSeRequestSet,
-            MultiSeRequestProcessing multiSeRequestProcessing, ChannelState channelState) {
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl) {
         this.selectionSeRequestSet = selectionSeRequestSet;
         this.multiSeRequestProcessing = multiSeRequestProcessing;
-        this.channelState = channelState;
+        this.channelControl = channelControl;
     }
 
     protected abstract Set<SeRequest> getSelectionSeRequestSet();
@@ -40,7 +40,7 @@ public abstract class AbstractDefaultSelectionsRequest {
         return multiSeRequestProcessing;
     }
 
-    public ChannelState getChannelState() {
-        return channelState;
+    public ChannelControl getChannelControl() {
+        return channelControl;
     }
 }

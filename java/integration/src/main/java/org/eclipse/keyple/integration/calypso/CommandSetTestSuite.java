@@ -23,7 +23,7 @@ import org.eclipse.keyple.calypso.transaction.CalypsoPo;
 import org.eclipse.keyple.calypso.transaction.PoResource;
 import org.eclipse.keyple.calypso.transaction.PoTransaction;
 import org.eclipse.keyple.calypso.transaction.SecuritySettings;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -74,7 +74,7 @@ public class CommandSetTestSuite {
         poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
                 PoTransaction.SessionAccessLevel.SESSION_LVL_DEBIT, (byte) 0x00, (byte) 0x00);
 
-        poTransaction.processClosing(ChannelState.KEEP_OPEN);
+        poTransaction.processClosing(ChannelControl.KEEP_OPEN);
         /*
          * System.out.println("DataRead#: " +
          * ByteArrayUtil.toHex(dataReadInSession.getApduResponses().get(1).getDataOut()));
@@ -101,7 +101,7 @@ public class CommandSetTestSuite {
                 String.format("SFI=%02X, recnbr=%d", sfi, recordNumber));
         poTransaction.processPoCommandsInSession();
 
-        poTransaction.processClosing(ChannelState.KEEP_OPEN);
+        poTransaction.processClosing(ChannelControl.KEEP_OPEN);
     }
 
 
@@ -120,7 +120,7 @@ public class CommandSetTestSuite {
 
         poTransaction.processPoCommandsInSession();
 
-        poTransaction.processClosing(ChannelState.KEEP_OPEN);
+        poTransaction.processClosing(ChannelControl.KEEP_OPEN);
     }
 
 
@@ -139,7 +139,7 @@ public class CommandSetTestSuite {
 
         poTransaction.processPoCommandsInSession();
 
-        poTransaction.processClosing(ChannelState.KEEP_OPEN);
+        poTransaction.processClosing(ChannelControl.KEEP_OPEN);
     }
 
 
@@ -157,7 +157,7 @@ public class CommandSetTestSuite {
 
         poTransaction.processPoCommandsInSession();
 
-        poTransaction.processClosing(ChannelState.KEEP_OPEN);
+        poTransaction.processClosing(ChannelControl.KEEP_OPEN);
     }
 
 
@@ -452,7 +452,7 @@ public class CommandSetTestSuite {
                     0x01, String.format("SFI=%02X, index=1, decvalue=1",
                             poData.getCountersFileData().getSfi()));
 
-            poTransaction.processClosing(ChannelState.KEEP_OPEN);
+            poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
             counterData[2] = 0x09;
 
@@ -501,7 +501,7 @@ public class CommandSetTestSuite {
                     0xFF, String.format("SFI=%02X, index=1, decvalue=255",
                             poData.getCountersFileData().getSfi()));
 
-            poTransaction.processClosing(ChannelState.KEEP_OPEN);
+            poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
             counterData[2] = (byte) 0xFF;
 
@@ -548,7 +548,7 @@ public class CommandSetTestSuite {
                     recordDataToAppend,
                     String.format("SFI=%02X", poData.getEventFileData().getSfi()));
 
-            poTransaction.processClosing(ChannelState.KEEP_OPEN);
+            poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
             ReadRecordsRespPars readRecordsRespPars = readRecords(
                     (CalypsoPo) poData.getMatchingSe(), poData.getEventFileData().getSfi(),
@@ -599,7 +599,7 @@ public class CommandSetTestSuite {
 
             poTransaction.processPoCommandsInSession();
 
-            poTransaction.processClosing(ChannelState.KEEP_OPEN);
+            poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
             poTransaction = new PoTransaction(
                     new PoResource(TestEngine.poReader, (CalypsoPo) poData.getMatchingSe()),
@@ -610,7 +610,7 @@ public class CommandSetTestSuite {
                     poData.getContractFileData().getSfi(),
                     (byte) poData.getContractFileData().getRecNumb());
 
-            poTransaction.processClosing(ChannelState.KEEP_OPEN);
+            poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
             byte[] dataReadInSession = poTransaction.getOpenRecordDataRead();
 
@@ -647,7 +647,7 @@ public class CommandSetTestSuite {
             poTransaction.processOpening(PoTransaction.ModificationMode.ATOMIC,
                     PoTransaction.SessionAccessLevel.SESSION_LVL_LOAD, (byte) 0x00, (byte) 0x00);
 
-            poTransaction.processClosing(ChannelState.KEEP_OPEN);
+            poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
             poTransaction = new PoTransaction(
                     new PoResource(TestEngine.poReader, (CalypsoPo) poData.getMatchingSe()),
@@ -658,7 +658,7 @@ public class CommandSetTestSuite {
                     poData.getContractFileData().getSfi(),
                     (byte) poData.getContractFileData().getRecNumb());
 
-            poTransaction.processClosing(ChannelState.KEEP_OPEN);
+            poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
             byte[] dataRead = poTransaction.getOpenRecordDataRead();
 

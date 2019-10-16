@@ -57,7 +57,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
                 try {
                     ((ObservableReader) SeProxyService.getInstance()
                             .getPlugin(event.getPluginName()).getReader(event.getReaderName()))
-                                    .notifySeProcessed(ChannelState.CLOSE_AND_CONTINUE);
+                                    .notifySeProcessed();
                 } catch (KeypleReaderNotFoundException e) {
                     e.printStackTrace();
                 } catch (KeyplePluginNotFoundException e) {
@@ -198,7 +198,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         poTransaction.processPoCommandsInSession();
 
-        poTransaction.processClosing(ChannelState.KEEP_OPEN);
+        poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
         System.out.println("\nValidation Successful!");
         System.out.println(
@@ -265,7 +265,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
             System.out.println("No value present in the card. Initiating auto top-up...");
 
-            poTransaction.processClosing(ChannelState.KEEP_OPEN);
+            poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
             poTransaction = new PoTransaction(new PoResource(poReader, detectedPO), samResource,
                     new SecuritySettings());
@@ -301,7 +301,7 @@ public class Demo_ValidationTransaction implements ObservableReader.ReaderObserv
 
         poTransaction.processPoCommandsInSession();
 
-        poTransaction.processClosing(ChannelState.KEEP_OPEN);
+        poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
         System.out.println("\nValidation Successful!");
         System.out.println(

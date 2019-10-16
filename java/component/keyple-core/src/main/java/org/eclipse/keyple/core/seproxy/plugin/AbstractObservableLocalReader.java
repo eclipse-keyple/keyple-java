@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
@@ -65,16 +64,15 @@ import org.slf4j.LoggerFactory;
  * <li>WAIT_FOR_SE_PROCESSING:
  * <p>
  * Waiting for the end of processing by the application. The end signal is triggered either by a
- * transmission made with a CLOSE_AND_CONTINUE or CLOSE_AND_AND_STOP parameter, or by an explicit
- * call to the notifySeProcessed method (if the latter is called when a "CLOSE" transmission has
- * already been made, it will do nothing, otherwise it will make a pseudo transmission intended only
- * for closing channels).
+ * transmission made with a CLOSE_AFTER parameter, or by an explicit call to the notifySeProcessed
+ * method (if the latter is called when a "CLOSE" transmission has already been made, it will do
+ * nothing, otherwise it will make a pseudo transmission intended only for closing channels).
  * <p>
- * If the instruction given is CLOSE_AND_STOP then the logical and physical channels are closed
- * immediately and the Machine to state changes to WAIT_FOR_START_DETECTION state.
+ * If the instruction given when defining the default selection request is STOP then the logical and
+ * physical channels are closed immediately and the Machine to state changes to
+ * WAIT_FOR_START_DETECTION state.
  * <p>
- * If the instruction given is CLOSE_AND_CONTINUE then the state machine changes to
- * WAIT_FOR_SE_REMOVAL.
+ * If the instruction given is CONTINUE then the state machine changes to WAIT_FOR_SE_REMOVAL.
  * <p>
  * A timeout management is also optionally present in order to avoid a lock in this waiting state
  * due to a failure of the application that would have prevented it from notifying the end of SE
@@ -93,6 +91,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     private static final Logger logger =
             LoggerFactory.getLogger(AbstractObservableLocalReader.class);
 
+    protected ObservableReader.PollingMode currentPollingMode = ObservableReader.PollingMode.STOP;
+
     /**
      * Reader constructor
      * <p>
@@ -104,6 +104,23 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      */
     public AbstractObservableLocalReader(String pluginName, String readerName) {
         super(pluginName, readerName);
+    }
+
+    /**
+     * Starts the SE detection. Once activated, the application can be notified of the arrival of an
+     * SE.
+     * <p>
+     * This method must be overloaded by readers depending on the particularity of their management
+     * of the start of SE detection.
+     * <p>
+     * Note: they must call the super method with the argument PollingMode.
+     *
+     * @param pollingMode indicates the action to be followed after processing the SE: if CONTINUE,
+     *        the SE detection is restarted, if STOP, the SE detection is stopped until a new call
+     *        to startSeDetection is made.
+     */
+    public void startSeDetection(ObservableReader.PollingMode pollingMode) {
+        currentPollingMode = pollingMode;
     }
 
     /**
@@ -134,10 +151,38 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         this.notificationMode = notificationMode;
     }
 
+    /**
+     * A combination of defining the default selection request and starting the SE detection.
+     *
+     * @param defaultSelectionsRequest the selection request to be operated
+     * @param notificationMode indicates whether a SE_INSERTED event should be notified even if the
+     *        selection has failed (ALWAYS) or whether the SE insertion should be ignored in this
+     *        case (MATCHED_ONLY).
+     * @param pollingMode indicates the action to be followed after processing the SE: if CONTINUE,
+     *        the SE detection is restarted, if STOP, the SE detection is stopped until a new call
+     *        to startSeDetection is made.
+     */
+    public void setDefaultSelectionRequest(
+            AbstractDefaultSelectionsRequest defaultSelectionsRequest,
+            ObservableReader.NotificationMode notificationMode,
+            ObservableReader.PollingMode pollingMode) {
+        // define the default selection request
+        setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
+        // initiates the SE detection
+        startSeDetection(pollingMode);
+    }
+
     /** The states that the reader monitoring state machine can have */
     protected enum MonitoringState {
         WAIT_FOR_START_DETECTION, WAIT_FOR_SE_INSERTION, WAIT_FOR_SE_PROCESSING, WAIT_FOR_SE_REMOVAL
     }
 
-    protected abstract void startRemovalSequence(ChannelState channelState);
+    /**
+     * This method initiates the SE removal sequence.
+     * <p>
+     * The reader will remain in the WAIT_FOR_SE_REMOVAL state as long as the SE is present. It will
+     * change to the WAIT_FOR_START_DETECTION or WAIT_FOR_SE_INSERTION state depending on what was
+     * set when the detection was started.
+     */
+    protected abstract void startRemovalSequence();
 }
