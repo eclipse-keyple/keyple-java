@@ -22,7 +22,8 @@ android {
         applicationId "org.eclipse.keyple.example.calypso.android.nfc"
         minSdkVersion 19
         targetSdkVersion 26
-        versionName project.version
+        versionCode 1
+        versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
