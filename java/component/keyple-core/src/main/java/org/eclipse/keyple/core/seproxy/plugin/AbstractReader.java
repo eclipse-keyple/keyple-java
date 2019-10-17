@@ -99,7 +99,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      * Compare the name of the current SeReader to the name of the SeReader provided in argument
      *
      * @param seReader a SeReader object
-     * @return true if the names match (The method is needed for the SortedSet lists)
+     * @return 0 if the names match (The method is needed for the SortedSet lists)
      */
     public final int compareTo(SeReader seReader) {
         return this.getName().compareTo(seReader.getName());

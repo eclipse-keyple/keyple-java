@@ -290,8 +290,8 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                     switch (monitoringState) {
                         case WAIT_FOR_START_DETECTION:
                             // We are waiting for the application to start monitoring SE insertions
-                            // with
-                            // the call to setDefaultSelectionRequest.
+                            // with the call to startSeDetection.
+
                             // We notify the application of the current state.
                             // notifyObservers(
                             // new ReaderEvent(this.pluginName, AbstractLocalReader.this.name,
@@ -327,7 +327,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                             // We are waiting for the reader to inform us that a card is inserted.
                             while (true) {
                                 if (((SmartInsertionReader) AbstractThreadedObservableLocalReader.this)
-                                        .waitForCardPresent(WAIT_FOR_SE_INSERTION_EXIT_LATENCY)) {
+                                        .waitForCardPresent(WAIT_FOR_SE_INSERTION_EXIT_LATENCY)) { //OD ; parameter not necessary
                                     seProcessingNotified = false;
                                     // a SE has been inserted, the following process
                                     // (processSeInserted) will end with a SE_INSERTED or
