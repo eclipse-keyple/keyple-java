@@ -275,8 +275,12 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
             disconnect.getResponse();
             ProxyReader nativeReader = findLocalReader(nativeReaderName);
             if (nativeReader instanceof AbstractReader) {
+                logger.debug("Disconnected reader is observable, removing slaveAPI observer");
+
                 // stop propagating the local reader events
                 ((AbstractReader) nativeReader).removeObserver(this);
+            }else{
+                logger.debug("Disconnected reader is not observable");
             }
         } catch (KeypleRemoteException e) {
             throw new KeypleReaderException("An error occurred while calling connectReader", e);

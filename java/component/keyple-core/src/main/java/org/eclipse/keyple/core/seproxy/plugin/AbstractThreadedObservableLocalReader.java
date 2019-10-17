@@ -174,10 +174,10 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         this.threadWaitTimeout = timeout;
     }
 
-    private final int WAIT_FOR_SE_DETECTION_EXIT_LATENCY = 10; // TODO make it configurable
-    private final int WAIT_FOR_SE_INSERTION_EXIT_LATENCY = 10; // TODO make it configurable
-    private final int WAIT_FOR_SE_PROCESSING_EXIT_LATENCY = 10; // TODO make it configurable
-    private final int WAIT_FOR_SE_REMOVAL_EXIT_LATENCY = 10; // TODO make it configurable
+    private final int WAIT_FOR_SE_DETECTION_EXIT_LATENCY = 200; // TODO make it configurable
+    private final int WAIT_FOR_SE_INSERTION_EXIT_LATENCY = 200; // TODO make it configurable
+    private final int WAIT_FOR_SE_PROCESSING_EXIT_LATENCY = 200; // TODO make it configurable
+    private final int WAIT_FOR_SE_REMOVAL_EXIT_LATENCY = 200; // TODO make it configurable
 
     private class EventThread extends Thread {
         /**
@@ -224,7 +224,10 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
          * @param readerName name of the reader who owns this thread
          */
         EventThread(String pluginName, String readerName) {
-            super("observable-reader-events-" + threadCount.addAndGet(1));
+            super("observable-reader-events-" + threadCount.addAndGet(1)
+                    + readerName.replace(" ", ""));
+            logger.debug("Instantiate thread with name {} for reader {}", this.getName(),
+                    readerName);
             setDaemon(true);
             this.pluginName = pluginName;
             this.readerName = readerName;
