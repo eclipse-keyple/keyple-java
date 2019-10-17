@@ -32,7 +32,7 @@ Those examples make use of the Keyple Core library. They demonstrate how to obse
   * PO type detection through the use of the protocol flag mechanism [`Demo_SeProtocolDetection`]
     * Real mode with PC/SC readers (Secure Elements required [Calypso and/or others]) [`Demo_SeProtocolDetection_Pcsc.java`]
     * Simulation mode (virtual Secure Elements included) [`Demo_SeProtocolDetection_Stub.java`]
-  * Use case select next: illustrates the possibility of selecting multiple SE applications using the same AID prefix and P2 standard values to select the first or next occurrence. [`UseCase_SelectNext_Pcsc.java`]
+  * Use case multiple select: illustrates the possibility of selecting multiple SE applications using the same AID prefix and P2 standard values to select the first or next occurrence. [`UseCase_Generic4_SequentialMultiSelection.java`]
   
 Available packages in details:
 --
