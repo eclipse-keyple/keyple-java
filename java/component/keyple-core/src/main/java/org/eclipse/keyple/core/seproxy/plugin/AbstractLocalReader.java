@@ -326,7 +326,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                     "Try to open logical channel without selector.");
         }
 
-        if (!isLogicalChannelOpen()) {
+        if (!logicalChannelIsOpen) {
             /*
              * init of the physical SE channel: if not yet established, opening of a new physical
              * channel
@@ -529,7 +529,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                     // selection.
                     closeLogicalChannel();
                 } else {
-                    if (isLogicalChannelOpen()) {
+                    if (logicalChannelIsOpen) {
                         // the current PO matches the selection case, we stop here.
                         stopProcess = true;
                     }
@@ -632,7 +632,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
         logger.trace("[{}] processSeRequest => Logical channel open = {}", this.getName(),
-                isLogicalChannelOpen());
+                logicalChannelIsOpen);
         /*
          * unless the selector is null, we try to open a logical channel; if the channel was open
          * and the PO is still matching we won't redo the selection and just use the current
@@ -640,7 +640,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
          */
         if (seRequest.getSeSelector() != null) {
             /* check if AID changed if the channel is already open */
-            if (isLogicalChannelOpen() && seRequest.getSeSelector().getAidSelector() != null) {
+            if (logicalChannelIsOpen && seRequest.getSeSelector().getAidSelector() != null) {
                 /*
                  * AID comparison hack: we check here if the initial selection AID matches the
                  * beginning of the AID provided in the SeRequest (coming from FCI data and supposed
@@ -681,7 +681,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
             }
 
             /* open the channel and do the selection if needed */
-            if (!isLogicalChannelOpen()) {
+            if (!logicalChannelIsOpen) {
                 previouslyOpen = false;
 
                 try {
@@ -713,7 +713,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
             }
         } else {
             /* selector is null, we expect that the logical channel was previously opened */
-            if (!isLogicalChannelOpen()) {
+            if (!logicalChannelIsOpen) {
                 throw new IllegalStateException(
                         "[" + this.getName() + "] processSeRequest => No logical channel opened!");
             }
@@ -739,7 +739,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
             }
         }
 
-        return new SeResponse(isLogicalChannelOpen(), previouslyOpen, selectionStatus,
+        return new SeResponse(logicalChannelIsOpen, previouslyOpen, selectionStatus,
                 apduResponseList);
     }
 

@@ -2,9 +2,9 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
+import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,11 +13,11 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -34,8 +34,8 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
     final byte[] AID = ByteArrayUtil.fromHex("00 00 00 00 00");
     final Set<Integer> STATUS_CODE = new HashSet(Arrays.asList(1, 2));
-    final byte[] SUCCESS = ByteArrayUtil.fromHex("90 00");
-    final byte[] FAIL = ByteArrayUtil.fromHex("00 00");
+    final byte[] RESP_SUCCESS = ByteArrayUtil.fromHex("90 00");
+    final byte[] RESP_FAIL = ByteArrayUtil.fromHex("00 00");
 
 
 
@@ -45,6 +45,27 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         logger.info("Test {}", name.getMethodName() + "");
         logger.info("------------------------------");
     }
+
+
+    /** ==== Card presence management ====================================== */
+
+    @Test
+    public void isSePresent_false() throws Exception, NoStackTraceThrowable {
+        AbstractLocalReader r =  getSpy(PLUGIN_NAME,READER_NAME);
+        when(r.checkSePresence()).thenReturn(false);
+        //test
+        Assert.assertFalse(r.isSePresent());
+    }
+
+    @Test
+    public void isSePresent_true() throws Exception, NoStackTraceThrowable {
+        AbstractLocalReader r =  getSpy(PLUGIN_NAME,READER_NAME);
+        when(r.checkSePresence()).thenReturn(true);
+        //test
+        Assert.assertTrue(r.isSePresent());
+    }
+
+
 
 
     /*
@@ -68,6 +89,8 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         SelectionStatus status = r.openLogicalChannel(seSelector);
         Assert.assertEquals(true, status.hasMatched());
 
+        //TODO OD : hard to understand why isLogicalChannelOpen is false after openLogicalChannel
+        Assert.assertEquals(false, r.isLogicalChannelOpen()); //channel is open only when processSeRequest
     }
 
     @Test
@@ -114,7 +137,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     @Test
     public void select_byAid_success() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        when(r.transmitApdu(any(byte[].class))).thenReturn(SUCCESS);
+        when(r.transmitApdu(any(byte[].class))).thenReturn(RESP_SUCCESS);
 
         SeSelector.AidSelector aidSelector = new SeSelector.AidSelector(
                 new SeSelector.AidSelector.IsoAid(AID),
@@ -134,7 +157,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     @Test
     public void select_byAid_fail() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        when(r.transmitApdu(any(byte[].class))).thenReturn(FAIL);
+        when(r.transmitApdu(any(byte[].class))).thenReturn(RESP_FAIL);
 
         SeSelector.AidSelector aidSelector = new SeSelector.AidSelector(
                 new SeSelector.AidSelector.IsoAid(AID),
@@ -159,9 +182,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         //use a SmartSelectionReader object
         BlankSmartSelectionReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
 
-        when(r.openChannelForAid(any(SeSelector.AidSelector.class))).thenReturn(new ApduResponse(SUCCESS, STATUS_CODE));
+        when(r.openChannelForAid(any(SeSelector.AidSelector.class))).thenReturn(new ApduResponse(RESP_SUCCESS, STATUS_CODE));
         when(r.getATR()).thenReturn(ByteArrayUtil.fromHex("0000"));
-        when(r.transmitApdu(any(byte[].class))).thenReturn(SUCCESS);
+        when(r.transmitApdu(any(byte[].class))).thenReturn(RESP_SUCCESS);
 
         SeSelector.AidSelector aidSelector = new SeSelector.AidSelector(
                 new SeSelector.AidSelector.IsoAid(AID),
@@ -190,7 +213,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         //mock ATR to fail
         when(r.getATR()).thenReturn(ByteArrayUtil.fromHex("1000"));
         //mock aid to success
-        when(r.transmitApdu(any(byte[].class))).thenReturn(SUCCESS);
+        when(r.transmitApdu(any(byte[].class))).thenReturn(RESP_SUCCESS);
 
         SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("0000");
         SeSelector.AidSelector aidSelector = new SeSelector.AidSelector(
@@ -230,6 +253,67 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
 
 
 
+    /*
+     * open logical channel
+     */
+
+    @Test(expected = KeypleApplicationSelectionException.class)
+    public void open_channel_null() throws Exception {
+        AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
+        r.openLogicalChannelAndSelect(null);
+        //expected exception
+    }
+
+    @Test
+    public void open_logical_channel_success() throws Exception {
+        AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
+        when(r.getATR()).thenReturn(ByteArrayUtil.fromHex("0000"));
+        SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("0000");
+        when(r.isLogicalChannelOpen()).thenReturn(true);
+        when(r.isPhysicalChannelOpen()).thenReturn(true);
+
+        SeSelector seSelector = new SeSelector( null, atrFilter, null, "anySelector");
+
+        r.openLogicalChannelAndSelect(seSelector);
+        verify(r, times(1)).openLogicalChannel(seSelector);
+    }
+
+    @Test(expected = KeypleChannelControlException.class)
+    public void open_channel_fail() throws Exception {
+        AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
+        when(r.getATR()).thenReturn(ByteArrayUtil.fromHex("0000"));
+        SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("0000");
+        when(r.isLogicalChannelOpen()).thenReturn(false);
+        when(r.isPhysicalChannelOpen()).thenReturn(false);//does not open
+
+        SeSelector seSelector = new SeSelector( null, atrFilter, null, "anySelector");
+
+        r.openLogicalChannelAndSelect(seSelector);
+        verify(r, times(0)).openLogicalChannel(seSelector);
+
+    }
+
+    /*
+     * add Se Protocol Setting
+     */
+
+    @Test
+    public void add_SeProtocolSetting() throws Exception {
+        AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
+        String protocolRule = "any";
+        r.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4, protocolRule);
+        Assert.assertEquals(protocolRule, r.protocolsMap.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    }
+
+    @Test
+    public void set_SeProtocolSetting() throws Exception {
+        AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
+        String protocolRule = "any";
+        Map protocols = new HashMap();
+        protocols.put(SeCommonProtocols.PROTOCOL_ISO14443_4, protocolRule);
+        r.setSeProtocolSetting(protocols);
+        Assert.assertEquals(protocolRule, r.protocolsMap.get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+    }
 
 
 
