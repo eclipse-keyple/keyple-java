@@ -23,4 +23,4 @@ Using the gradle wrapper can be convenient, if is not provided you first need to
 With `<gradle_version>` at 4.5.1 minimum
 
 And then: `./gradlew assembleDebug`
-Or `./gradlew assembleDebug` for Windows users.
+Or `./gradlew.bat assembleDebug` for Windows users.
