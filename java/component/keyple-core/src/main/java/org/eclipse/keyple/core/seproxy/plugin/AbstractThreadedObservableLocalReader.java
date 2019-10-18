@@ -48,7 +48,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         super(pluginName, readerName);
     }
 
-    private static final AtomicInteger threadCount = new AtomicInteger();
+    static final AtomicInteger threadCount = new AtomicInteger();
 
     /**
      * Add a reader observer.
@@ -65,13 +65,9 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         super.addObserver(observer);
         // if an observer is added to an empty list, start the observation
         if (super.countObservers() == 1) {
-
-            // needed?
-            // if (this instanceof AbstractThreadedObservableLocalReader) {
             logger.debug("Start monitoring the reader {}", this.getName());
             thread = new EventThread(this.getPluginName(), this.getName());
             thread.start();
-            // }
         }
     }
 
@@ -87,16 +83,14 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
      * @param observer the observer object
      */
     public final void removeObserver(ObservableReader.ReaderObserver observer) {
+        super.removeObserver(observer);
         if (super.countObservers() == 0) {
-            // needed?
-            // if (this instanceof AbstractThreadedObservableLocalReader) {
             if (thread != null) {
                 logger.debug("Stop the reader monitoring.");
                 thread.end();
+                thread = null;
             }
-            // }
         }
-        super.removeObserver(observer);
     }
 
     /**
@@ -108,6 +102,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         if (thread != null) {
             logger.debug("Stop the reader monitoring.");
             thread.end();
+            thread = null;
         }
     }
 
@@ -199,12 +194,12 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         /**
          * Current reader state
          */
-        private MonitoringState monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
+        private volatile MonitoringState monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
 
         /**
          * previous state (logging purposes)
          */
-        private MonitoringState previousState = MonitoringState.WAIT_FOR_SE_INSERTION;
+        private volatile MonitoringState previousState = MonitoringState.WAIT_FOR_SE_INSERTION;
 
         /**
          * Synchronization objects and flags TODO Improve this mechanism by using classes and
@@ -277,6 +272,15 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
             }
         }
 
+
+        /**
+         * Return monitoring state
+         * @return MonitoringState
+         */
+        MonitoringState getMonitoringState(){
+            return this.monitoringState;
+        }
+
         /**
          * Thread loop
          */
@@ -326,8 +330,8 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                         case WAIT_FOR_SE_INSERTION:
                             // We are waiting for the reader to inform us that a card is inserted.
                             while (true) {
-                                if (((SmartInsertionReader) AbstractThreadedObservableLocalReader.this)
-                                        .waitForCardPresent(WAIT_FOR_SE_INSERTION_EXIT_LATENCY)) { //OD ; parameter not necessary
+                                if (((SmartInsertionReader) AbstractThreadedObservableLocalReader.this)//TODO OD : if object is not SmartInsertionReader?
+                                        .waitForCardPresent(WAIT_FOR_SE_INSERTION_EXIT_LATENCY)) {
                                     seProcessingNotified = false;
                                     // a SE has been inserted, the following process
                                     // (processSeInserted) will end with a SE_INSERTED or
@@ -382,6 +386,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                                     // exit loop
                                     break;
                                 }
+                                //TODO OD : why test instanceof SmartPresenceReader and use isSePresent?
                                 if (AbstractThreadedObservableLocalReader.this instanceof SmartPresenceReader
                                         && !isSePresent()) {
                                     // the SE has been removed, we return to the state of waiting
@@ -516,4 +521,17 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         logger.trace("[{}] Observable Reader thread ended.", this.getName());
         super.finalize();
     }
+
+    /**
+     * Return monitoring state
+     * @return MonitoringState
+     */
+    MonitoringState getMonitoringState(){
+        if(thread!=null){
+            return this.thread.getMonitoringState();
+        }else{
+            return null;
+        }
+    }
+
 }
