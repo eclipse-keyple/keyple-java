@@ -47,12 +47,6 @@ public abstract class AbstractLocalReader extends AbstractReader {
     /** current selection status */
     private SelectionStatus currentSelectionStatus;
 
-    /** The default DefaultSelectionsRequest to be executed upon SE insertion */
-    protected DefaultSelectionsRequest defaultSelectionsRequest;
-
-    /** Indicate if all SE detected should be notified or only matching SE */
-    protected ObservableReader.NotificationMode notificationMode;
-
     /** Timestamp recorder */
     private long before;
 
@@ -89,19 +83,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
      *
      * @return true if the SE is present
      */
-    public final boolean isSePresent() throws NoStackTraceThrowable {
-        if (checkSePresence()) {
-            return true;
-        } else {
-            /*
-             * if the SE is no longer present but one of the channels is still open, then the
-             * SE_REMOVED notification is performed and the channels are closed.
-             */
-            if (isLogicalChannelOpen() || isPhysicalChannelOpen()) {
-                processSeRemoved();
-            }
-            return false;
-        }
+    @Override
+    public boolean isSePresent() throws NoStackTraceThrowable {
+        return checkSePresence();
     }
 
     /**
@@ -117,121 +101,13 @@ public abstract class AbstractLocalReader extends AbstractReader {
      */
     protected abstract boolean checkSePresence() throws NoStackTraceThrowable;
 
-    /**
-     * This method is invoked when a SE is inserted in the case of an observable reader.
-     * <p>
-     * e.g. from the monitoring thread in the case of a Pcsc plugin or from the NfcAdapter callback
-     * method onTagDiscovered in the case of a Android NFC plugin.
-     * <p>
-     * It will fire an ReaderEvent in the following cases:
-     * <ul>
-     * <li>SE_INSERTED: if no default selection request was defined</li>
-     * <li>SE_MATCHED: if a default selection request was defined in any mode and a SE matched the
-     * selection</li>
-     * <li>SE_INSERTED: if a default selection request was defined in ALWAYS mode but no SE matched
-     * the selection (the DefaultSelectionsResponse is however transmitted)</li>
-     * </ul>
-     * <p>
-     * It will do nothing if a default selection is defined in MATCHED_ONLY mode but no SE matched
-     * the selection.
-     *
-     * @return true if the notification was actually sent to the application, false if not
-     */
-    protected final boolean processSeInserted() {
-        boolean presenceNotified = false;
-        if (defaultSelectionsRequest == null) {
-            /* no default request is defined, just notify the SE insertion */
-            notifyObservers(new ReaderEvent(this.pluginName, this.name,
-                    ReaderEvent.EventType.SE_INSERTED, null));
-            presenceNotified = true;
-        } else {
-            /*
-             * a default request is defined, send it a notify according to the notification mode and
-             * the selection status
-             */
-            boolean aSeMatched = false;
-            try {
-                List<SeResponse> seResponseList =
-                        transmitSet(defaultSelectionsRequest.getSelectionSeRequestSet(),
-                                defaultSelectionsRequest.getMultiSeRequestProcessing(),
-                                defaultSelectionsRequest.getChannelControl());
-
-                for (SeResponse seResponse : seResponseList) {
-                    if (seResponse != null && seResponse.getSelectionStatus().hasMatched()) {
-                        aSeMatched = true;
-                        break;
-                    }
-                }
-                if (notificationMode == ObservableReader.NotificationMode.MATCHED_ONLY) {
-                    /* notify only if a SE matched the selection, just ignore if not */
-                    if (aSeMatched) {
-                        notifyObservers(new ReaderEvent(this.pluginName, this.name,
-                                ReaderEvent.EventType.SE_MATCHED,
-                                new DefaultSelectionsResponse(seResponseList)));
-                        presenceNotified = true;
-                    }
-                } else {
-                    if (aSeMatched) {
-                        /* The SE matched, notify an SE_MATCHED event with the received response */
-                        notifyObservers(new ReaderEvent(this.pluginName, this.name,
-                                ReaderEvent.EventType.SE_MATCHED,
-                                new DefaultSelectionsResponse(seResponseList)));
-                    } else {
-                        /*
-                         * The SE didn't match, notify an SE_INSERTED event with the received
-                         * response
-                         */
-                        notifyObservers(new ReaderEvent(this.pluginName, this.name,
-                                ReaderEvent.EventType.SE_INSERTED,
-                                new DefaultSelectionsResponse(seResponseList)));
-                    }
-                    presenceNotified = true;
-                }
-            } catch (KeypleReaderException e) {
-                /* the last transmission failed, close the logical and physical channels */
-                closeLogicalAndPhysicalChannels();
-                logger.debug("An IO Exception occurred while processing the default selection. {}",
-                        e.getMessage());
-                // in this case the card has been removed or not read correctly, do not throw event
-            }
-        }
-
-        if (!presenceNotified) {
-            // We close here the physical channel in case it has been opened for a SE outside the
-            // expected SEs
-            try {
-                closePhysicalChannel();
-            } catch (KeypleChannelControlException e) {
-                logger.error("Error while closing physical channel. {}", e.getMessage());
-            }
-        }
-
-        return presenceNotified;
-    }
-
-
-    /**
-     * This method is invoked when a SE is removed in the case of an observable reader.
-     * <p>
-     * It will also be invoked if isSePresent is called and at least one of the physical or logical
-     * channels is still open (case of a non-observable reader)
-     * <p>
-     * The SE will be notified removed only if it has been previously notified present (observable
-     * reader only)
-     *
-     */
-    protected final void processSeRemoved() {
-        closeLogicalAndPhysicalChannels();
-        notifyObservers(new ReaderEvent(this.pluginName, this.name,
-                ReaderEvent.EventType.SE_REMOVED, null));
-    }
 
     /** ==== Physical and logical channels management ====================== */
 
     /**
      * Close both logical and physical channels
      */
-    private void closeLogicalAndPhysicalChannels() {
+    protected void closeLogicalAndPhysicalChannels() {
         closeLogicalChannel();
         try {
             closePhysicalChannel();
@@ -383,8 +259,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
          */
         if (selectionHasMatched && seSelector.getAidSelector() != null) {
             ApduResponse fciResponse;
+
             if (this instanceof SmartSelectionReader) {
-                fciResponse = ((SmartSelectionReader) this)
+                    fciResponse = ((SmartSelectionReader) this)
                         .openChannelForAid(seSelector.getAidSelector());
             } else {
                 fciResponse = processExplicitAidSelection(seSelector.getAidSelector());
@@ -662,6 +539,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
                     if (!(channelControl == ChannelControl.KEEP_OPEN)) {
                         // close logical channel unconditionally
                         closeLogicalChannel();
+
+                        //OD : couldn't we move this to AbstractObservableLocalReader?
+
                         if (!(this instanceof ObservableReader)
                                 || (((ObservableReader) this).countObservers() == 0)) {
                             /*
@@ -711,6 +591,8 @@ public abstract class AbstractLocalReader extends AbstractReader {
         if (!(channelControl == ChannelControl.KEEP_OPEN)) {
             // close logical channel unconditionally
             closeLogicalChannel();
+
+            //OD : couldn't we move this to AbstractObservableLocalReader?
             if (!(this instanceof ObservableReader)
                     || (((ObservableReader) this).countObservers() == 0)) {
                 /* Not observable/observed: close immediately the physical channel if requested */

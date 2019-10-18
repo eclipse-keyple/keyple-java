@@ -147,13 +147,10 @@ public class SeRequestTest {
      * HELPERS FOR OTHERS TESTS SUITE
      */
 
-    static SeRequest getSeRequestSample() {
+    public static SeRequest getSeRequestSample() {
 
         List<ApduRequest> apdus = getAapduLists();
-        ChannelControl channelControl = ChannelControl.KEEP_OPEN;
-        SeProtocol seProtocol = getASeProtocol();
         Set<Integer> selectionStatusCode = ApduRequestTest.getASuccessFulStatusCode();
-
         return new SeRequest(getSelector(selectionStatusCode), apdus);
 
     }

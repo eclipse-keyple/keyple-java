@@ -23,6 +23,7 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
  * OMAPI readers).
  */
 public interface SmartSelectionReader extends SeReader {
+
     ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
             throws KeypleIOReaderException, KeypleChannelControlException,
             KeypleApplicationSelectionException;

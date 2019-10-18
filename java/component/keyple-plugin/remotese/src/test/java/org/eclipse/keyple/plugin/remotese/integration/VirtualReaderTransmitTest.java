@@ -78,7 +78,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     public void testKOTransmitSet_NoSE() {
 
         try {
-            StubReaderTest.selectSe(virtualReader);
+            StubReaderTest.genericSelectSe(virtualReader);
 
             ((ProxyReader) virtualReader).transmitSet(SampleFactory.getASeRequestSet());
             // should throw KeypleReaderException
@@ -97,7 +97,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
     public void testKOTransmit_NoSE() {
 
         try {
-            StubReaderTest.selectSe(((ProxyReader) virtualReader));
+            StubReaderTest.genericSelectSe(((ProxyReader) virtualReader));
 
             ((ProxyReader) virtualReader).transmit(SampleFactory.getASeRequest());
             // should throw KeypleReaderException
@@ -128,7 +128,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
         Thread.sleep(1000);
 
-        StubReaderTest.selectSe(virtualReader);
+        StubReaderTest.genericSelectSe(virtualReader);
 
         // test N_TIMES transmit with KEEP_OPEN
         for (int i = 0; i < N_TIMES; i++) {
@@ -165,7 +165,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
         // init Request
         Set<SeRequest> requests = StubReaderTest.getNoResponseRequest();
 
-        StubReaderTest.selectSe(virtualReader);
+        StubReaderTest.genericSelectSe(virtualReader);
 
         // test
         ((ProxyReader) virtualReader).transmitSet(requests);
@@ -185,7 +185,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
         Set<SeRequest> seRequestSet = StubReaderTest.getPartialRequestSet(0);
 
         try {
-            StubReaderTest.selectSe(virtualReader);
+            StubReaderTest.genericSelectSe(virtualReader);
 
             ((ProxyReader) virtualReader).transmitSet(seRequestSet);
 
@@ -211,7 +211,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
         Set<SeRequest> seRequestSet = StubReaderTest.getPartialRequestSet(1);
 
         try {
-            StubReaderTest.selectSe(virtualReader);
+            StubReaderTest.genericSelectSe(virtualReader);
 
             ((ProxyReader) virtualReader).transmitSet(seRequestSet);
 
@@ -239,7 +239,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
         // test
         try {
-            StubReaderTest.selectSe(virtualReader);
+            StubReaderTest.genericSelectSe(virtualReader);
 
             ((ProxyReader) virtualReader).transmitSet(seRequestSet);
 
@@ -267,7 +267,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
         // test
         try {
-            StubReaderTest.selectSe(virtualReader);
+            StubReaderTest.genericSelectSe(virtualReader);
 
             ((ProxyReader) virtualReader).transmitSet(seRequestSet);
 
@@ -295,7 +295,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
         // test
         try {
-            StubReaderTest.selectSe(virtualReader);
+            StubReaderTest.genericSelectSe(virtualReader);
 
             ((ProxyReader) virtualReader).transmit(seRequest);
 
@@ -320,7 +320,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
         // test
         try {
-            StubReaderTest.selectSe(virtualReader);
+            StubReaderTest.genericSelectSe(virtualReader);
 
             ((ProxyReader) virtualReader).transmit(seRequest);
 
@@ -345,7 +345,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
         // test
         try {
-            StubReaderTest.selectSe(virtualReader);
+            StubReaderTest.genericSelectSe(virtualReader);
 
             ((ProxyReader) virtualReader).transmit(seRequest);
 
@@ -370,7 +370,7 @@ public class VirtualReaderTransmitTest extends VirtualReaderBaseTest {
 
         try {
             // test
-            StubReaderTest.selectSe(virtualReader);
+            StubReaderTest.genericSelectSe(virtualReader);
 
             ((ProxyReader) virtualReader).transmit(seRequest);
 

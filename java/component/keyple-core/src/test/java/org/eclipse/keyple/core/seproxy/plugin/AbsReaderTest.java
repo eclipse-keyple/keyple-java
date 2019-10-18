@@ -31,12 +31,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TestAbstractReader extends CoreBaseTest {
+public class AbsReaderTest extends CoreBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractReaderTestOld.class);
 
 
-    final String PLUGIN_NAME = "abstractPluginTest";
+    final String PLUGIN_NAME = "AbstractReaderTestP";
     final String READER_NAME = "AbstractReaderTest";
 
 
