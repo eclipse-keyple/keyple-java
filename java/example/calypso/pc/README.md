@@ -3,15 +3,15 @@ Getting Started - Calypso Example
 
 Those examples make use of the Keyple Calypso library. They demonstrate how to select a Calypso application and execute Calypso secure Transaction. We use a PCSC plugin for real smartcard a Stub Plugin to simulates Calypso Secure Element. 
 
-**These examples involve two set of packages**
+**These examples involve several sets of packages**
 
 - Resources common to all Keyple Calypso demonstration examples
 
-      `org.eclipse.keyple.example.calypso.common.transaction`
-      `org.eclipse.keyple.example.calypso.common.postructure`
+      `org.eclipse.keyple.example.common.calypso.pc.transaction`
+      `org.eclipse.keyple.example.common.calypso.postructure`
 - PC platform launchers
 
-      `org.eclipse.keyple.example.calypso.pc`
+      `org.eclipse.keyple.example.calypso.pc.*`
    
 **The purpose of these packages is to demonstrate the use of the Calypso library:**
 
@@ -23,40 +23,39 @@ Those examples make use of the Keyple Calypso library. They demonstrate how to s
 
 Ten launchers can be run independently
 
-  * Classic Calypso Transaction (use of PoSecure session) 
-    * Real mode with PC/SC readers (Calypso Secure Elements required [PO and SAM]) [`Demo_CalypsoClassic_Pcsc.java`]
+  * Classic Calypso Transaction (use of PoSecure session) [`Demo_CalypsoClassic`]
+    * Real mode with PC/SC readers (Calypso Secure Elements required [_PO and SA_]) [`Demo_CalypsoClassic_Pcsc.java`]
     * Simulation mode (Stub Secure Elements included) [`Demo_CalypsoClassic_Stub.java`]
-  * Use case Calypso Authentication: open/close Secure Session only 
+  * Use case Calypso Authentication: open/close Secure Session only [`UseCase_Calypso4_PoAuthentication`]
     * Real mode with PC/SC readers [`UseCase_Calypso4_PoAuthentication_Pcsc.java`]
     * Simulation mode  (Stub Secure Elements included) [`UseCase_Calypso4_PoAuthentication_Stub.java`]
-  * Use case Multiple Session: illustrates the multiple session generation mechanism for managing the sending of modifying commands that exceed the capacity of the session buffer.  [`UseCase_MultipleSession_Pcsc.java`]
-    * Real mode with PC/SC readers
-
-- Use Case ‘Calypso 1’ – Explicit Selection Aid
-    - Scenario:
-        - Check if a ISO 14443-4 SE is in the reader, select a Calypso PO, operate a simple Calypso PO transaction (simple plain read, not involving a Calypso SAM).
-        - ‘Explicit Selection’ means that it is the terminal application which start the SE processing.
-        - PO messages:
-            - A first SE message to select the application in the reader
-            - A second SE message to operate the simple Calypso transaction
-        - Implementations:
-            - For PC/SC plugin: `UseCase_Calypso1_ExplicitSelectionAid_Pcsc`
-            - For Stub plugin: `UseCase_Calypso1_ExplicitSelectionAid_Stub`
+  * Use case Multiple Session: illustrates the multiple session generation mechanism for managing the sending of modifying commands that exceed the capacity of the session buffer.  [`UseCase_Calypso5_MultipleSession`]
+    * Real mode with PC/SC readers [`UseCase_Calypso5_MultipleSession_Pcsc.java`]
+  
+  * Use Case ‘Calypso 1’ – Explicit Selection Aid [`UseCase_Calypso1_ExplicitSelectionAid`]
+    * Check if a ISO 14443-4 SE is in the reader, select a Calypso PO, operate a simple Calypso PO transaction (simple plain read, not involving a Calypso SAM).
+    * _Explicit Selection_ means that it is the terminal application which start the SE processing.
+    * PO messages:
+        * A first SE message to select the application in the reader
+        * A second SE message to operate the simple Calypso transaction
+    * Implementations:
+        * For PC/SC plugin: [`UseCase_Calypso1_ExplicitSelectionAid_Pcsc.java`]
+        * For Stub plugin: [`UseCase_Calypso1_ExplicitSelectionAid_Stub`]
             
-- Use Case ‘Calypso 2’ – Default Selection Notification
-    - Scenario:
-        - Define a default selection of ISO 14443-4 Calypso PO and set it to an observable reader, on SE detection in case the Calypso selection is successful, notify the terminal application with the PO information, then the terminal follows by operating a simple Calypso PO transaction.
-        - ‘Default Selection Notification’ means that the SE processing is automatically started when detected.
-        - PO messages:
-            - A first SE message to notify about the selected Calypso PO
-            - A second SE message to operate the simple Calypso transaction
-        - Implementations:
-            - For PC/SC plugin: `UseCase_Calypso2_DefaultSelectionNotification_Pcsc`
-            - For Stub plugin: `UseCase_Calypso2_DefaultSelectionNotification_Stub`
+  * Use Case ‘Calypso 2’ – Default Selection Notification [`UseCase_Calypso2_DefaultSelectionNotification`]
+    * Define a default selection of ISO 14443-4 Calypso PO and set it to an observable reader, on SE detection in case the Calypso selection is successful, notify the terminal application with the PO information, then the terminal follows by operating a simple Calypso PO transaction.
+    * _Default Selection Notification_ means that the SE processing is automatically started when detected.
+    * PO messages:
+         * A first SE message to notify about the selected Calypso PO
+         * A second SE message to operate the simple Calypso transaction
+    * Implementations:
+         * For PC/SC plugin: [`UseCase_Calypso2_DefaultSelectionNotification_Pcsc.java`]
+         * For Stub plugin: [`UseCase_Calypso2_DefaultSelectionNotification_Stub.java`]
 
-* Available packages in details:
+Available packages in details:
+--
 
-  - `org.eclipse.keyple.example.calypso.common.transaction` and `org.eclipse.keyple.example.calypso.common.postructure`
+  - `org.eclipse.keyple.example.common.calypso.pc.transaction` and `org.eclipse.keyple.example.common.calypso.postructure`
 
 |File|Description|
 |:---|---|
@@ -65,7 +64,7 @@ Ten launchers can be run independently
 |`HoplinkInfo.java`|This class provides Hoplink data elements (files definitions).|
 |`HoplinkTransactionEngine.java`|This class provides all the mechanisms to implement to perform a ticketing scenario with an Hoplink Secure Session.<br>It is independent of the platform.|
 
-  - `org.eclipse.keyple.example.calypso.common.stub.se`
+  - `org.eclipse.keyple.example.common.generic.stub`
 
 |File|Description|
 |:---|---|

@@ -1,0 +1,103 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        google()
+        jcenter()
+
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+    }
+}
+
+apply plugin: 'com.android.application'
+
+project.group 'org.eclipse.keyple'
+
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion '26.0.3'
+    defaultConfig {
+        applicationId "org.eclipse.keyple.example.calyspo.android.omapi"
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable true
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    lintOptions {
+        abortOnError false
+    }
+    packagingOptions {
+        exclude 'META-INF/NOTICE.md'
+    }
+
+}
+
+repositories {
+    mavenLocal()
+    //to import keyple snapshots
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    //to import keyple releases
+    maven { url 'https://oss.sonatype.org/content/repositories/releases' }
+    mavenCentral()
+    google()
+}
+
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], exclude: ['org.simalliance.openmobileapi.jar'], dir: 'libs')
+    /*
+    Keyple dependencies
+     */
+    //import the last version of keyple-java-core
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
+
+    //import the last version of keyple-java-calypso
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
+
+    //import the last version of keyple-java-plugin-omapi
+    implementation group: 'org.eclipse.keyple', name: 'keyple-android-plugin-omapi', version: '+'
+
+    /*
+    OMAPI dependencies
+     */
+    compileOnly files('libs/org.simalliance.openmobileapi.jar')
+    
+    /*
+    Android components
+     */
+    implementation "com.android.support:support-v4:${android_support_version}"
+    implementation "com.android.support:appcompat-v7:${android_support_version}"
+    implementation "com.android.support:design:${android_support_version}"
+    implementation "com.android.support.constraint:constraint-layout:${android_support_constraint_version}"
+
+
+    /*
+    Log
+     */
+    //slf4j logback for android - https://github.com/tony19/logback-android
+    implementation "org.slf4j:slf4j-api:${slf4japi_version}"
+    implementation "com.github.tony19:logback-android:${android_logback_version}"
+
+
+    /*
+    Test
+     */
+    testImplementation "junit:junit:${junit_version}"
+    androidTestImplementation "com.android.support.test:runner:${android_support_test}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:${android_support_espresso}"
+
+}
