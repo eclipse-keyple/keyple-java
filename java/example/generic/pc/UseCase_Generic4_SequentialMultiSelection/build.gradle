@@ -21,9 +21,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
     implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: '+'
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: '+'
 
     implementation "org.slf4j:slf4j-simple:1.7.25"
     implementation "org.slf4j:slf4j-ext:1.7.25"
