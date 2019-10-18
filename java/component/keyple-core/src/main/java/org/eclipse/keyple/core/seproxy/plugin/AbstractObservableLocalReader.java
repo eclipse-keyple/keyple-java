@@ -272,9 +272,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
                 for (SeResponse seResponse : seResponseList) {
                     if (seResponse != null && seResponse.getSelectionStatus().hasMatched()) {
+                        logger.trace("[{}] processSeInserted => a default selection has matched", this.getName());
                         aSeMatched = true;
                         break;
                     }
+                    logger.trace("[{}] processSeInserted => none of {} default selection matched", this.getName(), seResponseList.size());
                 }
                 if (notificationMode == ObservableReader.NotificationMode.MATCHED_ONLY) {
                     /* notify only if a SE matched the selection, just ignore if not */
@@ -283,8 +285,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                                 ReaderEvent.EventType.SE_MATCHED,
                                 new DefaultSelectionsResponse(seResponseList)));
                         presenceNotified = true;
+                    }else{
+                        logger.trace("[{}] processSeInserted => selection hasn't matched do not thrown any event because of MATCHED_ONLY flag");
                     }
                 } else {
+                    //ObservableReader.NotificationMode.ALWAYS
                     if (aSeMatched) {
                         /* The SE matched, notify an SE_MATCHED event with the received response */
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
