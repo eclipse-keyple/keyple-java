@@ -32,8 +32,12 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     final String PLUGIN_NAME = "AbstractLocalReaderTestP";
     final String READER_NAME = "AbstractLocalReaderTest";
 
-    final byte[] AID = ByteArrayUtil.fromHex("00 00 00 00 00");
-    final Set<Integer> STATUS_CODE = new HashSet(Arrays.asList(1, 2));
+    static final String AID = "A000000291A000000191";
+    static final Set<Integer> STATUS_CODE = new HashSet(Arrays.asList(1, 2));
+
+    static final String ATR = "0000";
+
+
     final byte[] RESP_SUCCESS = ByteArrayUtil.fromHex("90 00");
     final byte[] RESP_FAIL = ByteArrayUtil.fromHex("00 00");
 
@@ -76,15 +80,9 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     public void select_byAtr_success() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         //mock ATR
-        when(r.getATR()).thenReturn(ByteArrayUtil.fromHex("0000"));
+        when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
 
-        SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("0000");
-
-        SeSelector seSelector = new SeSelector(
-                null,
-                atrFilter,
-                null,
-                "extraInfo");
+        SeSelector seSelector = getAtrSelector();
 
         SelectionStatus status = r.openLogicalChannel(seSelector);
         Assert.assertEquals(true, status.hasMatched());
@@ -96,16 +94,10 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     @Test
     public void select_byAtr_fail() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        //mock ATR
+        //mock ATR to fail
         when(r.getATR()).thenReturn(ByteArrayUtil.fromHex("1000"));
 
-        SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("0000");
-
-        SeSelector seSelector = new SeSelector(
-                null,
-                atrFilter,
-                null,
-                "extraInfo");
+        SeSelector seSelector = getAtrSelector();
 
         SelectionStatus status = r.openLogicalChannel(seSelector);
         Assert.assertEquals(false, status.hasMatched());
@@ -118,13 +110,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         //mock ATR
         when(r.getATR()).thenReturn(null);
 
-        SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("0000");
-
-        SeSelector seSelector = new SeSelector(
-                null,
-                atrFilter,
-                null,
-                "extraInfo");
+        SeSelector seSelector = getAtrSelector();
 
         r.openLogicalChannel(seSelector);
         //expected exception
@@ -139,16 +125,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         when(r.transmitApdu(any(byte[].class))).thenReturn(RESP_SUCCESS);
 
-        SeSelector.AidSelector aidSelector = new SeSelector.AidSelector(
-                new SeSelector.AidSelector.IsoAid(AID),
-                STATUS_CODE
-        );
-
-        SeSelector seSelector = new SeSelector(
-                null,
-                null,
-                aidSelector,
-                "extraInfo");
+        SeSelector seSelector = getAidSelector();
 
         SelectionStatus status = r.openLogicalChannel(seSelector);
         Assert.assertEquals(true, status.hasMatched());
@@ -159,16 +136,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         when(r.transmitApdu(any(byte[].class))).thenReturn(RESP_FAIL);
 
-        SeSelector.AidSelector aidSelector = new SeSelector.AidSelector(
-                new SeSelector.AidSelector.IsoAid(AID),
-                STATUS_CODE
-        );
-
-        SeSelector seSelector = new SeSelector(
-                null,
-                null,
-                aidSelector,
-                "extraInfo");
+        SeSelector seSelector = getAidSelector();
 
         SelectionStatus status = r.openLogicalChannel(seSelector);
         Assert.assertEquals(false, status.hasMatched());
@@ -183,19 +151,10 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         BlankSmartSelectionReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
 
         when(r.openChannelForAid(any(SeSelector.AidSelector.class))).thenReturn(new ApduResponse(RESP_SUCCESS, STATUS_CODE));
-        when(r.getATR()).thenReturn(ByteArrayUtil.fromHex("0000"));
+        when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
         when(r.transmitApdu(any(byte[].class))).thenReturn(RESP_SUCCESS);
 
-        SeSelector.AidSelector aidSelector = new SeSelector.AidSelector(
-                new SeSelector.AidSelector.IsoAid(AID),
-                STATUS_CODE
-        );
-
-        SeSelector seSelector = new SeSelector(
-                null,
-                null,
-                aidSelector,
-                "extraInfo");
+        SeSelector seSelector = getAidSelector();
 
         SelectionStatus status = r.openLogicalChannel(seSelector);
         Assert.assertEquals(true, status.hasMatched());
@@ -215,7 +174,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         //mock aid to success
         when(r.transmitApdu(any(byte[].class))).thenReturn(RESP_SUCCESS);
 
-        SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("0000");
+        SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
         SeSelector.AidSelector aidSelector = new SeSelector.AidSelector(
                 new SeSelector.AidSelector.IsoAid(AID),
                 STATUS_CODE
@@ -267,12 +226,11 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     @Test
     public void open_logical_channel_success() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        when(r.getATR()).thenReturn(ByteArrayUtil.fromHex("0000"));
-        SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("0000");
+        when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
         when(r.isLogicalChannelOpen()).thenReturn(true);
         when(r.isPhysicalChannelOpen()).thenReturn(true);
 
-        SeSelector seSelector = new SeSelector( null, atrFilter, null, "anySelector");
+        SeSelector seSelector = getAtrSelector();
 
         r.openLogicalChannelAndSelect(seSelector);
         verify(r, times(1)).openLogicalChannel(seSelector);
@@ -281,12 +239,11 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     @Test(expected = KeypleChannelControlException.class)
     public void open_channel_fail() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
-        when(r.getATR()).thenReturn(ByteArrayUtil.fromHex("0000"));
-        SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter("0000");
+        when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
         when(r.isLogicalChannelOpen()).thenReturn(false);
         when(r.isPhysicalChannelOpen()).thenReturn(false);//does not open
 
-        SeSelector seSelector = new SeSelector( null, atrFilter, null, "anySelector");
+        SeSelector seSelector = getAtrSelector();
 
         r.openLogicalChannelAndSelect(seSelector);
         verify(r, times(0)).openLogicalChannel(seSelector);
@@ -338,5 +295,30 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
         BlankSmartSelectionReader r =  Mockito.spy(new BlankSmartSelectionReader(pluginName,readerName));
         return  r;
     }
+
+    static public SeSelector getAidSelector(){
+        SeSelector.AidSelector aidSelector = new SeSelector.AidSelector(
+                new SeSelector.AidSelector.IsoAid(AID),
+                STATUS_CODE
+        );
+
+        return new SeSelector(
+                null,
+                null,
+                aidSelector,
+                "aidSelector : " + AID);
+    }
+
+    static public SeSelector getAtrSelector(){
+
+        SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
+
+        return new SeSelector(
+                null,
+                atrFilter,
+                null,
+                "atrFilter");
+    }
+
 
 }

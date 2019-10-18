@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+import static org.eclipse.keyple.core.seproxy.plugin.AbsLocalReaderSelectionTest.ATR;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -34,10 +35,6 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
 
     static final String PLUGIN_NAME = "AbsLocalReaderTransmitTestP";
     static final String READER_NAME = "AbsLocalReaderTransmitTest";
-    static final String AID = "A000000291A000000191";
-    static final String ATR = "0000";
-    static final Set<Integer> STATUS_CODE = new HashSet(Arrays.asList(1, 2));
-
 
     static final byte[] RESP_SUCCESS = ByteArrayUtil.fromHex("90 00");
     static final byte[] RESP_FAIL = ByteArrayUtil.fromHex("00 00");
@@ -306,16 +303,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
 
         */
 
-        SeSelector.AidSelector aidSelector = new SeSelector.AidSelector(
-                new SeSelector.AidSelector.IsoAid(AID),
-                STATUS_CODE
-        );
-
-        SeSelector selector = new SeSelector(
-                null,
-                null,
-                aidSelector,
-                "aid");
+        SeSelector aidSelector = AbsLocalReaderSelectionTest.getAidSelector();
 
 
         ApduRequest apduOK = new ApduRequest(APDU_SUCCESS, false);
@@ -348,7 +336,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
                 break;
         }
 
-        return new SeRequest(selector, poApduRequestList);
+        return new SeRequest(aidSelector, poApduRequestList);
     }
     /*
      * Partial response: multiple read records commands, one is not defined in the StubSE
