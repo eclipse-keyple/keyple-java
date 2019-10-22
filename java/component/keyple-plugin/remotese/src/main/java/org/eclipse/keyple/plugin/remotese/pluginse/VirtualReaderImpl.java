@@ -220,6 +220,11 @@ final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
     }
 
     @Override
+    public void stopSeDetection() {
+        // TODO implement this method
+    }
+
+    @Override
     public void setDefaultSelectionRequest(
             AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             NotificationMode notificationMode) {
