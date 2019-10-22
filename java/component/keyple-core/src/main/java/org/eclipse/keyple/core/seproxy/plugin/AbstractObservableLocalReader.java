@@ -108,6 +108,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
     protected ObservableReader.PollingMode currentPollingMode = ObservableReader.PollingMode.STOP;
 
+    protected AbstractObservableState state;
+
     /**
      * Reader constructor
      * <p>
@@ -119,6 +121,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      */
     public AbstractObservableLocalReader(String pluginName, String readerName) {
         super(pluginName, readerName);
+        state = getInitState();
     }
 
 
@@ -165,6 +168,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      */
     public void startSeDetection(ObservableReader.PollingMode pollingMode) {
         currentPollingMode = pollingMode;
+        state = state.onStartDetection();
     }//TODO OD : shouldn't this method be in ThreadedObs?
 
     /**
@@ -175,7 +179,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * <p>
      */
     public void stopSeDetection() {
-
+        state = state.onStopDetection();
     }//TODO OD : shouldn't this method be in ThreadedObs?
 
     /**
@@ -239,7 +243,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * change to the WAIT_FOR_START_DETECTION or WAIT_FOR_SE_INSERTION state depending on what was
      * set when the detection was started.
      */
-    protected abstract void startRemovalSequence();
+    protected void startRemovalSequence(){
+        state = state.onSeProcessed();
+    };
 
 
     /**
@@ -269,6 +275,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
             notifyObservers(new ReaderEvent(this.pluginName, this.name,
                     ReaderEvent.EventType.SE_INSERTED, null));
             presenceNotified = true;
+            state = state.onSeInserted();
         } else {
             /*
              * a default request is defined, send it a notify according to the notification mode and
@@ -296,6 +303,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                                 ReaderEvent.EventType.SE_MATCHED,
                                 new DefaultSelectionsResponse(seResponseList)));
                         presenceNotified = true;
+                        state = state.onSeInserted();
                     }else{
                         logger.trace("[{}] processSeInserted => selection hasn't matched do not thrown any event because of MATCHED_ONLY flag");
                     }
@@ -315,6 +323,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                                 ReaderEvent.EventType.SE_INSERTED,
                                 new DefaultSelectionsResponse(seResponseList)));
                     }
+                    state = state.onSeInserted();
                     presenceNotified = true;
                 }
             } catch (KeypleReaderException e) {
@@ -354,5 +363,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         closeLogicalAndPhysicalChannels();
         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                 ReaderEvent.EventType.SE_REMOVED, null));
+        state = state.onSeRemoved();
     }
+
+    abstract protected AbstractObservableState getInitState();
 }
