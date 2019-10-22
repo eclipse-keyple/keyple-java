@@ -65,7 +65,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         super.addObserver(observer);
         // if an observer is added to an empty list, start the observation
         if (super.countObservers() == 1) {
-            instantiateThread();
+            startThread();
         }
     }
 
@@ -100,16 +100,10 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         }
     }
 
-    private void instantiateThread(){
+    private void startThread(){
         logger.debug("Start monitoring the reader {}", this.getName());
         thread = new EventThread(this);
-
-    }
-
-    private void startThread(){
-        if(thread!=null){
-            thread.start();
-        }
+        thread.start();
     }
 
     private void stopThread(){
@@ -140,7 +134,6 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         super.startSeDetection(pollingMode);
         // unleash the monitoring thread to initiate the SE detection (if available and needed)
         if (thread != null) {
-            startThread();
             thread.startSeDetection();
         }
     }
@@ -278,12 +271,12 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         /**
          * Current reader state
          */
-        private volatile MonitoringState monitoringState = MonitoringState.WAIT_FOR_START_DETECTION;
+        private volatile MonitoringState monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
 
         /**
          * previous state (logging purposes)
          */
-        private volatile MonitoringState previousState = MonitoringState.WAIT_FOR_START_DETECTION;
+        private volatile MonitoringState previousState = MonitoringState.WAIT_FOR_SE_INSERTION;
 
         /**
          * Synchronization objects and flags TODO Improve this mechanism by using classes and
