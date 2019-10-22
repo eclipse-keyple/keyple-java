@@ -1,5 +1,21 @@
+/********************************************************************************
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import static org.eclipse.keyple.core.seproxy.plugin.AbsLocalReaderSelectionTest.ATR;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import java.util.*;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
@@ -15,14 +31,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
-
-import static org.eclipse.keyple.core.seproxy.plugin.AbsLocalReaderSelectionTest.ATR;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 
 /**
  * Process Se Request Test for AbstractLocalReader
@@ -56,10 +64,11 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
         // init Request
-        Set<SeRequest> seRequestSet = getPartialRequestSet(reader,0);
+        Set<SeRequest> seRequestSet = getPartialRequestSet(reader, 0);
         try {
             // test
-            reader.processSeRequestSet(seRequestSet, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+            reader.processSeRequestSet(seRequestSet, MultiSeRequestProcessing.PROCESS_ALL,
+                    ChannelControl.CLOSE_AFTER);
             Assert.fail();
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponseSet().size(), 1);
@@ -71,10 +80,11 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     public void transmit_partial_response_set_1() throws Exception {
         AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-        Set<SeRequest> seRequestSet = getPartialRequestSet(reader,1);
+        Set<SeRequest> seRequestSet = getPartialRequestSet(reader, 1);
         try {
             // test
-            reader.processSeRequestSet(seRequestSet, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+            reader.processSeRequestSet(seRequestSet, MultiSeRequestProcessing.PROCESS_ALL,
+                    ChannelControl.CLOSE_AFTER);
             Assert.fail();
 
         } catch (KeypleReaderException ex) {
@@ -91,10 +101,11 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
 
-        Set<SeRequest> seRequestSet = getPartialRequestSet(reader,2);
+        Set<SeRequest> seRequestSet = getPartialRequestSet(reader, 2);
         try {
             // test
-            reader.processSeRequestSet(seRequestSet, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+            reader.processSeRequestSet(seRequestSet, MultiSeRequestProcessing.PROCESS_ALL,
+                    ChannelControl.CLOSE_AFTER);
             Assert.fail();
 
         } catch (KeypleReaderException ex) {
@@ -110,10 +121,11 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
 
-        Set<SeRequest> seRequestSet = getPartialRequestSet(reader,3);
+        Set<SeRequest> seRequestSet = getPartialRequestSet(reader, 3);
         try {
             // test
-            List<SeResponse> responses = reader.processSeRequestSet(seRequestSet, MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
+            List<SeResponse> responses = reader.processSeRequestSet(seRequestSet,
+                    MultiSeRequestProcessing.PROCESS_ALL, ChannelControl.CLOSE_AFTER);
             Assert.assertEquals(3, responses.size());
             Assert.assertEquals(4, responses.get(0).getApduResponses().size());
             Assert.assertEquals(4, responses.get(1).getApduResponses().size());
@@ -128,10 +140,11 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     public void transmit_first_match() throws Exception {
         AbstractLocalReader reader = getSpy(PLUGIN_NAME, READER_NAME);
 
-        Set<SeRequest> seRequestSet = getPartialRequestSet(reader,3);
+        Set<SeRequest> seRequestSet = getPartialRequestSet(reader, 3);
         try {
             // test
-            List<SeResponse> responses = reader.processSeRequestSet(seRequestSet, MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
+            List<SeResponse> responses = reader.processSeRequestSet(seRequestSet,
+                    MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.CLOSE_AFTER);
             Assert.assertEquals(1, responses.size());
             Assert.assertEquals(4, responses.get(0).getApduResponses().size());
         } catch (KeypleReaderException ex) {
@@ -179,7 +192,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
             // test
             reader.processSeRequest(seRequestSet, ChannelControl.CLOSE_AFTER);
             Assert.fail("Should throw exception");
-            
+
         } catch (KeypleReaderException ex) {
             Assert.assertEquals(ex.getSeResponse().getApduResponses().size(), 2);
         }
@@ -192,7 +205,8 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         SeRequest seRequestSet = getPartialRequest(reader, 3);
         try {
             // test
-            SeResponse seResponse = reader.processSeRequest(seRequestSet, ChannelControl.CLOSE_AFTER);
+            SeResponse seResponse =
+                    reader.processSeRequest(seRequestSet, ChannelControl.CLOSE_AFTER);
             Assert.assertEquals(seResponse.getApduResponses().size(), 3);
         } catch (KeypleReaderException ex) {
             Assert.fail("Should not throw exception");
@@ -201,32 +215,24 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
 
 
 
-
-
-
     /*
      * Partial response set: multiple read records commands, one is not defined in the StubSE
      *
      * An Exception will be thrown.
      */
-    static public Set<SeRequest> getPartialRequestSet(AbstractLocalReader r, int scenario) throws KeypleReaderException {
+    static public Set<SeRequest> getPartialRequestSet(AbstractLocalReader r, int scenario)
+            throws KeypleReaderException {
 
         SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
-        SeSelector selector = new SeSelector(
-                SeCommonProtocols.PROTOCOL_ISO14443_4,
-                atrFilter,
-                null,
-                "atr");
+        SeSelector selector =
+                new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, atrFilter, null, "atr");
 
-        SeSelector failSelector = new SeSelector(
-                SeCommonProtocols.PROTOCOL_MIFARE_UL,
-                atrFilter,
-                null,
-                "atr");
+        SeSelector failSelector =
+                new SeSelector(SeCommonProtocols.PROTOCOL_MIFARE_UL, atrFilter, null, "atr");
 
         ApduRequest apduOK = new ApduRequest(APDU_SUCCESS, false);
         ApduRequest apduKO = new ApduRequest(APDU_IOEXC, false);
-        
+
         List<ApduRequest> poApduRequestList1 = new ArrayList<ApduRequest>();
         poApduRequestList1.add(apduOK);
         poApduRequestList1.add(apduOK);
@@ -251,7 +257,7 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
         SeRequest seRequest4 = new SeRequest(failSelector, poApduRequestList1);
 
         /* This SeRequest fails at step 3 */
-        SeRequest seRequest3 = new SeRequest(selector,poApduRequestList3);
+        SeRequest seRequest3 = new SeRequest(selector, poApduRequestList3);
 
         Set<SeRequest> seRequestSets = new LinkedHashSet<SeRequest>();
 
@@ -291,17 +297,14 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
     }
 
 
-    static public SeRequest getPartialRequest(AbstractLocalReader r, int scenario) throws KeypleReaderException {
+    static public SeRequest getPartialRequest(AbstractLocalReader r, int scenario)
+            throws KeypleReaderException {
 
         /*
-        SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR);
-        SeSelector selector = new SeSelector(
-                SeCommonProtocols.PROTOCOL_ISO14443_4,
-                atrFilter,
-                null,
-                "iso");
-
-        */
+         * SeSelector.AtrFilter atrFilter = new SeSelector.AtrFilter(ATR); SeSelector selector = new
+         * SeSelector( SeCommonProtocols.PROTOCOL_ISO14443_4, atrFilter, null, "iso");
+         * 
+         */
 
         SeSelector aidSelector = AbsLocalReaderSelectionTest.getAidSelector();
 
@@ -346,13 +349,15 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
 
     /**
      * Return a basic spy reader that responds to apdu
+     * 
      * @param pluginName
      * @param readerName
-     * @return  basic spy reader
+     * @return basic spy reader
      * @throws KeypleReaderException
      */
-    static public AbstractLocalReader getSpy(String pluginName, String readerName) throws KeypleReaderException {
-        AbstractLocalReader r =  Mockito.spy(new BlankAbstractLocalReader(pluginName,readerName));
+    static public AbstractLocalReader getSpy(String pluginName, String readerName)
+            throws KeypleReaderException {
+        AbstractLocalReader r = Mockito.spy(new BlankAbstractLocalReader(pluginName, readerName));
 
         configure(r);
 
@@ -362,29 +367,32 @@ public class AbsLocalReaderTransmitTest extends CoreBaseTest {
 
     static public void configure(AbstractLocalReader r) throws KeypleReaderException {
 
-        //accept PROTOCOL_ISO14443_4
+        // accept PROTOCOL_ISO14443_4
         when(r.protocolFlagMatches(SeCommonProtocols.PROTOCOL_ISO14443_4)).thenReturn(true);
 
-        //refuse PROTOCOL_MIFARE_UL
+        // refuse PROTOCOL_MIFARE_UL
         when(r.protocolFlagMatches(SeCommonProtocols.PROTOCOL_MIFARE_UL)).thenReturn(false);
 
-        //return art
+        // return art
         when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
 
-        //success apdu
+        // success apdu
         doReturn(RESP_SUCCESS).when(r).transmitApdu(APDU_SUCCESS);
 
-        //fail apdu
+        // fail apdu
         doReturn(RESP_FAIL).when(r).transmitApdu(APDU_FAIL);
 
-        //io exception apdu
-        doThrow(new KeypleIOReaderException("io exception at transmitting " + APDU_IOEXC)).when(r).transmitApdu(APDU_IOEXC);
+        // io exception apdu
+        doThrow(new KeypleIOReaderException("io exception at transmitting " + APDU_IOEXC)).when(r)
+                .transmitApdu(APDU_IOEXC);
 
-        //aid selection
-        doReturn(ByteArrayUtil.fromHex("6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"))
-                .when(r).transmitApdu(ByteArrayUtil.fromHex("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00"));
+        // aid selection
+        doReturn(ByteArrayUtil.fromHex(
+                "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000"))
+                        .when(r).transmitApdu(ByteArrayUtil
+                                .fromHex("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00"));
 
-        //physical channel is open
+        // physical channel is open
         doReturn(true).when(r).isPhysicalChannelOpen();
     }
 

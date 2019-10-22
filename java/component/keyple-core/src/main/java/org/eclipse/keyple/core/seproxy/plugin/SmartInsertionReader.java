@@ -26,5 +26,5 @@ public interface SmartInsertionReader extends ObservableReader {
      *        wait for ever.
      * @return presence status
      */
-    Boolean waitForCardPresent(long timeout);
+    boolean waitForCardPresent(long timeout);
 }

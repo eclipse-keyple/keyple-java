@@ -17,7 +17,6 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.plugin.remotese.exception.KeypleRemoteException;
 import org.eclipse.keyple.plugin.remotese.nativese.INativeReaderService;
@@ -83,8 +82,9 @@ public class RmConnectReaderTx extends RemoteMethodTx<String> {
                             localReader.getName());
                     ((AbstractReader) localReader)
                             .addObserver((ObservableReader.ReaderObserver) slaveAPI);
-                }else{
-                    logger.debug("Connected reader is not observable, do not add observer capabilities to virtual reader");
+                } else {
+                    logger.debug(
+                            "Connected reader is not observable, do not add observer capabilities to virtual reader");
                 }
 
                 // retrieve sessionId from keypleDto

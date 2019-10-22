@@ -16,7 +16,6 @@ import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
@@ -261,7 +260,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
             ApduResponse fciResponse;
 
             if (this instanceof SmartSelectionReader) {
-                    fciResponse = ((SmartSelectionReader) this)
+                fciResponse = ((SmartSelectionReader) this)
                         .openChannelForAid(seSelector.getAidSelector());
             } else {
                 fciResponse = processExplicitAidSelection(seSelector.getAidSelector());
@@ -540,7 +539,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                         // close logical channel unconditionally
                         closeLogicalChannel();
 
-                        //OD : couldn't we move this to AbstractObservableLocalReader?
+                        // OD : couldn't we move this to AbstractObservableLocalReader?
 
                         if (!(this instanceof ObservableReader)
                                 || (((ObservableReader) this).countObservers() == 0)) {
@@ -592,7 +591,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
             // close logical channel unconditionally
             closeLogicalChannel();
 
-            //OD : couldn't we move this to AbstractObservableLocalReader?
+            // OD : couldn't we move this to AbstractObservableLocalReader?
             if (!(this instanceof ObservableReader)
                     || (((ObservableReader) this).countObservers() == 0)) {
                 /* Not observable/observed: close immediately the physical channel if requested */

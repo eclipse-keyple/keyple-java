@@ -23,11 +23,8 @@ import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +64,7 @@ public class AbstractReaderTestOld extends CoreBaseTest {
      * TESTS
      */
 
-    //@Test
+    // @Test
     public void testAddObserver() {
         addObserverCall = new CountDownLatch(5);
         removeObserverCall = new CountDownLatch(5);
@@ -78,7 +75,7 @@ public class AbstractReaderTestOld extends CoreBaseTest {
 
     }
 
-    //@Test
+    // @Test
     public void testRemoveObserver() {
         addObserverCall = new CountDownLatch(5);
         removeObserverCall = new CountDownLatch(5);
@@ -90,7 +87,7 @@ public class AbstractReaderTestOld extends CoreBaseTest {
 
     }
 
-    //@Test
+    // @Test
     public void testAddRemoveObserver() {
         addObserverCall = new CountDownLatch(5);
         removeObserverCall = new CountDownLatch(5);
@@ -129,7 +126,7 @@ public class AbstractReaderTestOld extends CoreBaseTest {
         return new MockThreadedObservableLocalReader(pluginName, readerName) {
 
             @Override
-            public Boolean waitForCardPresent(long timeout) {
+            public boolean waitForCardPresent(long timeout) {
                 return false;
             }
 

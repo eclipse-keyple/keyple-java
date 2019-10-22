@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import java.util.List;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -22,8 +23,6 @@ import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 
 /**
@@ -166,17 +165,15 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      */
     public void startSeDetection(ObservableReader.PollingMode pollingMode) {
         currentPollingMode = pollingMode;
-    }//TODO OD : shouldn't this method be in ThreadedObs?
+    }// TODO OD : shouldn't this method be in ThreadedObs?
 
     /**
      * Stops the SE detection.
      * <p>
      * This method must be overloaded by readers depending on the particularity of their management
      * of the start of SE detection.
-     * <p>
      */
-    public void stopSeDetection() {
-    }//TODO OD : shouldn't this method be in ThreadedObs?
+    public abstract void stopSeDetection(); // TODO OD : shouldn't this method be in ThreadedObs?
 
     /**
      * If defined, the prepared DefaultSelectionRequest will be processed as soon as a SE is
@@ -283,11 +280,13 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
                 for (SeResponse seResponse : seResponseList) {
                     if (seResponse != null && seResponse.getSelectionStatus().hasMatched()) {
-                        logger.trace("[{}] processSeInserted => a default selection has matched", this.getName());
+                        logger.trace("[{}] processSeInserted => a default selection has matched",
+                                this.getName());
                         aSeMatched = true;
                         break;
                     }
-                    logger.trace("[{}] processSeInserted => none of {} default selection matched", this.getName(), seResponseList.size());
+                    logger.trace("[{}] processSeInserted => none of {} default selection matched",
+                            this.getName(), seResponseList.size());
                 }
                 if (notificationMode == ObservableReader.NotificationMode.MATCHED_ONLY) {
                     /* notify only if a SE matched the selection, just ignore if not */
@@ -296,11 +295,12 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                                 ReaderEvent.EventType.SE_MATCHED,
                                 new DefaultSelectionsResponse(seResponseList)));
                         presenceNotified = true;
-                    }else{
-                        logger.trace("[{}] processSeInserted => selection hasn't matched do not thrown any event because of MATCHED_ONLY flag");
+                    } else {
+                        logger.trace(
+                                "[{}] processSeInserted => selection hasn't matched do not thrown any event because of MATCHED_ONLY flag");
                     }
                 } else {
-                    //ObservableReader.NotificationMode.ALWAYS
+                    // ObservableReader.NotificationMode.ALWAYS
                     if (aSeMatched) {
                         /* The SE matched, notify an SE_MATCHED event with the received response */
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
