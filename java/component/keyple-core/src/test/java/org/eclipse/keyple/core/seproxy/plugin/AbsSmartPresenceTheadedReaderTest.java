@@ -43,7 +43,8 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
     //Execute tests 10 times
     @Parameterized.Parameters
     public static Object[][] data() {
-        return new Object[10][0];
+        int x = 0;
+        return new Object[x][0];
     }
 
 

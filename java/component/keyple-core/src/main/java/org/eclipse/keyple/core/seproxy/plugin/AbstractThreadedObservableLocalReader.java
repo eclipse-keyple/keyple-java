@@ -66,6 +66,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         // if an observer is added to an empty list, start the observation
         if (super.countObservers() == 1) {
             instantiateThread();
+            startThread();
         }
     }
 
@@ -140,7 +141,6 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         super.startSeDetection(pollingMode);
         // unleash the monitoring thread to initiate the SE detection (if available and needed)
         if (thread != null) {
-            startThread();
             thread.startSeDetection();
         }
     }

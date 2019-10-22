@@ -38,10 +38,11 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     BlankSmartInsertionTheadedReader r;
 
-    //Execute tests 10 times
+    //Execute tests X times
     @Parameterized.Parameters
     public static Object[][] data() {
-        return new Object[10][0];
+        int x =1 ;
+        return new Object[x][0];
     }
 
 
@@ -270,7 +271,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
         r.addObserver(getObs());
         Thread.sleep(100);
         r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
-        Thread.sleep(100);
+        Thread.sleep(500);
         r.startRemovalSequence();
         Thread.sleep(100);
 
