@@ -108,6 +108,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
     protected ObservableReader.PollingMode currentPollingMode = ObservableReader.PollingMode.STOP;
 
+
     /**
      * Reader constructor
      * <p>
@@ -175,7 +176,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * <p>
      */
     public void stopSeDetection() {
-
     }//TODO OD : shouldn't this method be in ThreadedObs?
 
     /**
@@ -239,7 +239,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * change to the WAIT_FOR_START_DETECTION or WAIT_FOR_SE_INSERTION state depending on what was
      * set when the detection was started.
      */
-    protected abstract void startRemovalSequence();
+    abstract protected void startRemovalSequence();
 
 
     /**
@@ -355,4 +355,5 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                 ReaderEvent.EventType.SE_REMOVED, null));
     }
+
 }
