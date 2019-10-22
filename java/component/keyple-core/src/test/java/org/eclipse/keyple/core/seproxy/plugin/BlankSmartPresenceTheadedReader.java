@@ -13,7 +13,9 @@ public class BlankSmartPresenceTheadedReader extends AbstractThreadedObservableL
 
     private static final Logger logger = LoggerFactory.getLogger(BlankSmartPresenceTheadedReader.class);
 
-    volatile boolean insertedOnlyOnce = false;
+
+    Integer mockDetect;
+    Integer detectCount = 0;
     volatile boolean removedOnlyOnce = false;
 
     /**
@@ -25,8 +27,9 @@ public class BlankSmartPresenceTheadedReader extends AbstractThreadedObservableL
      * @param pluginName the name of the plugin that instantiated the reader
      * @param readerName the name of the reader
      */
-    public BlankSmartPresenceTheadedReader(String pluginName, String readerName) {
+    public BlankSmartPresenceTheadedReader(String pluginName, String readerName, Integer mockDetect) {
         super(pluginName, readerName);
+        this.mockDetect = mockDetect;
     }
 
     @Override
@@ -89,12 +92,8 @@ public class BlankSmartPresenceTheadedReader extends AbstractThreadedObservableL
     }
 
     @Override
-    public boolean waitForCardPresent(long timeout) {
-        if(!insertedOnlyOnce){
-            insertedOnlyOnce = true;
-            return true;
-        }
-
-        return false;
+    public Boolean waitForCardPresent(long timeout) {
+        detectCount++;
+        return detectCount<=mockDetect;
     }
 }

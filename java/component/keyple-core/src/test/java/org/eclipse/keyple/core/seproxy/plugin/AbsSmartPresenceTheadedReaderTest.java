@@ -79,7 +79,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
         Thread.sleep(100);
 
         //does nothing
-        Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getMonitoringState());
+        Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getMonitoringState());
     }
 
     @Test
@@ -89,8 +89,8 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
         doReturn(true).when(r).processSeInserted();
         //use mocked BlankSmartPresenceTheadedReader methods
 
+        r.addObserver(getObs());
         r.startSeDetection(ObservableReader.PollingMode.CONTINUE);//WAIT_FOR_SE_INSERTION
-
         Thread.sleep(100);
 
         r.startRemovalSequence();
@@ -100,22 +100,34 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
     }
 
     @Test
-    public void startRemovalSequence_STOP() throws Exception{
+    public void startRemovalSequence_noping_STOP() throws Exception, NoStackTraceThrowable {
 
         //SE matched
         doReturn(true).when(r).processSeInserted();
-
-        //se inserted
-        doReturn(true).when(r).waitForCardPresent(any(long.class));
-        doReturn(true).when(r).waitForCardAbsentNative(any(long.class));
-
+        doReturn(false).when(r).isSePresentPing();
 
         r.addObserver(getObs());
         r.startSeDetection(ObservableReader.PollingMode.STOP);
         Thread.sleep(100);
 
-        //se removed
-        doReturn(false).when(r).waitForCardPresent(any(long.class));
+        r.startRemovalSequence();
+        Thread.sleep(100);
+
+        Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getMonitoringState());
+    }
+
+
+    @Test
+    public void startRemovalSequence_ping_STOP() throws Exception, NoStackTraceThrowable {
+
+        //SE matched
+        doReturn(true).when(r).processSeInserted();
+//        doReturn(true).when(r).isSePresentPing();
+        doReturn(true).when(r).isSePresent();
+
+        r.addObserver(getObs());
+        r.startSeDetection(ObservableReader.PollingMode.STOP);
+        Thread.sleep(100);
 
         r.startRemovalSequence();
         Thread.sleep(100);
@@ -123,13 +135,12 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
         Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getMonitoringState());
     }
 
-
     /*
      * Helpers
      */
 
     static public BlankSmartPresenceTheadedReader getSmartSpy(String pluginName, String readerName) throws KeypleReaderException {
-        BlankSmartPresenceTheadedReader r =  Mockito.spy(new BlankSmartPresenceTheadedReader(pluginName,readerName));
+        BlankSmartPresenceTheadedReader r =  Mockito.spy(new BlankSmartPresenceTheadedReader(pluginName,readerName,1));
         return  r;
     }
 

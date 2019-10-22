@@ -129,7 +129,7 @@ public class AbstractReaderTestOld extends CoreBaseTest {
         return new MockThreadedObservableLocalReader(pluginName, readerName) {
 
             @Override
-            public boolean waitForCardPresent(long timeout) {
+            public Boolean waitForCardPresent(long timeout) {
                 return false;
             }
 
