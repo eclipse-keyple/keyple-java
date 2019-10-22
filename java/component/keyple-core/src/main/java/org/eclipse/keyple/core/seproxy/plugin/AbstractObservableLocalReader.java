@@ -16,6 +16,7 @@ import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
@@ -337,6 +338,29 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         }
 
         return presenceNotified;
+    }
+
+    /**
+     * Sends a neutral APDU to the SE to check its presence
+     * <p>
+     * This method has to be called regularly until the SE no longer respond.
+     * <p>
+     * Having this method not final allows a reader plugin to implement its own method.
+     * 
+     * @return true if the SE still responds, false if not
+     */
+    protected boolean isSePresentPing() {
+        // APDU sent to check the communication with the PO
+        final byte[] apdu = {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+        // transmits the APDU and checks for the IO exception.
+        try {
+            transmitApdu(apdu);
+        } catch (KeypleIOReaderException e) {
+            logger.trace("[{}] Exception occured in isSePresentPing. Message: {}", this.getName(),
+                    e.getMessage());
+            return false;
+        }
+        return true;
     }
 
 

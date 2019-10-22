@@ -15,7 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -202,36 +201,6 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
     private final int WAIT_FOR_SE_PROCESSING_EXIT_LATENCY = 10; // TODO make it configurable
     private final int WAIT_FOR_SE_REMOVAL_EXIT_LATENCY = 10; // TODO make it configurable
 
-
-    /**
-     * Sends a neutral APDU to the SE to check its presence
-     * <p>
-     * This method has to be called regularly until the SE no longer respond.
-     *
-     * @return true if the SE still responds, false if not
-     */
-    protected boolean isSePresentPing() {
-        // APDU sent to check the communication with the PO
-        final byte[] apdu = {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x00};
-        // transmits the APDU and checks for the IO exception.
-        try {
-            transmitApdu(apdu);
-        } catch (KeypleIOReaderException e) {
-            logger.trace("[{}] Exception occured in isSePresentPing. Message: {}", this.getName(),
-                    e.getMessage());
-            return false;
-        }
-        // in case the communication is successful we sleep a little to avoid too intensive
-        // processing.
-        try {
-            Thread.sleep(30);// TODO OD : shouldn't this be done in the loop that calls
-                             // isSePresentPing?
-        } catch (InterruptedException e) {
-            // forwards the exception upstairs
-            Thread.currentThread().interrupt();
-        }
-        return true;
-    }
 
     /**
      * Called when the class is unloaded. Attempt to do a clean exit.
@@ -517,13 +486,14 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                                 if (this.reader.getThreadWaitTimeout() != 0
                                         && System.currentTimeMillis() - startTime > this.reader
                                                 .getThreadWaitTimeout()) {
+                                    // update the new state before notify (unit test issue)
+                                    monitoringState = MonitoringState.WAIT_FOR_START_DETECTION;
                                     // We notify the application of the TIMEOUT_ERROR event.
                                     notifyObservers(new ReaderEvent(this.reader.getPluginName(),
                                             this.reader.getName(),
                                             ReaderEvent.EventType.TIMEOUT_ERROR, null));
                                     logger.error(
                                             "The SE's processing time has exceeded the specified limit.");
-                                    monitoringState = MonitoringState.WAIT_FOR_START_DETECTION;
                                     // exit loop
                                     break;
                                 }
@@ -563,14 +533,27 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                                     }
                                     // exit loop
                                     break;
+                                } else {
+                                    if (!(AbstractThreadedObservableLocalReader.this instanceof SmartPresenceReader)) {
+                                        // we just send a "ping" APDU and the communication was
+                                        // successful, we sleep a
+                                        // little to avoid too intensive processing.
+                                        try {
+                                            Thread.sleep(30);// TODO JPF: use constant
+                                        } catch (InterruptedException e) {
+                                            // forwards the exception upstairs
+                                            Thread.currentThread().interrupt();
+                                        }
+                                    }
                                 }
                                 if (threadWaitTimeout != 0 && System.currentTimeMillis()
                                         - startTime > threadWaitTimeout) {
+                                    // update the new state before notify (unit test issue)
+                                    monitoringState = MonitoringState.WAIT_FOR_START_DETECTION;
                                     // We notify the application of the TIMEOUT_ERROR event.
                                     notifyObservers(new ReaderEvent(this.reader.getPluginName(),
                                             this.reader.getName(),
                                             ReaderEvent.EventType.TIMEOUT_ERROR, null));
-                                    monitoringState = MonitoringState.WAIT_FOR_START_DETECTION;
                                     logger.warn(
                                             "The time limit for the removal of the SE has been exceeded.");
                                     // exit loop
