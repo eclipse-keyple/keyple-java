@@ -6,20 +6,25 @@ import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader.MonitoringState.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
+@RunWith(Parameterized.class)
 public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AbsSmartInsertionTheadedReaderTest.class);
@@ -28,15 +33,31 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
     final String PLUGIN_NAME = "AbsSmartInsertionTheadedReaderTestP";
     final String READER_NAME = "AbsSmartInsertionTheadedReaderTest";
 
-    Integer threadCount;
+    BlankSmartInsertionTheadedReader r;
+
+    //Execute tests 10 times
+    @Parameterized.Parameters
+    public static Object[][] data() {
+        return new Object[10][0];
+    }
+
 
     @Before
-    public void setUp() {
+    public void setUp() throws KeypleReaderException {
         logger.info("------------------------------");
         logger.info("Test {}", name.getMethodName() + "");
         logger.info("------------------------------");
 
-       threadCount = BlankSmartInsertionTheadedReader.threadCount.get();
+       r = getSmartSpy(PLUGIN_NAME, READER_NAME);
+    }
+
+    /*
+     */
+    @After
+    public void tearDown() throws Throwable {
+            r.clearObservers();
+            r.finalize();
+            r = null;
 
     }
 
@@ -45,23 +66,16 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
      */
     @Test
     public void addObserver() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
-
-        ObservableReader.ReaderObserver obs = new ObservableReader.ReaderObserver() {@Override  public void update(ReaderEvent event) {}};
-
         //add observer
-        r.addObserver(obs);
+        r.addObserver(getObs());
 
         //should the thread start
-        Assert.assertEquals(threadCount+1, BlankSmartInsertionTheadedReader.threadCount.get());
         Assert.assertEquals(1, r.countObservers());
         Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getMonitoringState());
     }
 
     @Test
     public void removeObserver() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
-
         ObservableReader.ReaderObserver obs = getObs();
 
         //add and remove observer
@@ -69,23 +83,17 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
         r.removeObserver(obs);
 
         //should the thread start
-        Assert.assertEquals(threadCount +1, BlankSmartInsertionTheadedReader.threadCount.get());
         Assert.assertEquals(0, r.countObservers());
         Assert.assertEquals(null, r.getMonitoringState());
     }
 
     @Test
     public void clearObservers() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
-
-        ObservableReader.ReaderObserver obs = new ObservableReader.ReaderObserver() {@Override  public void update(ReaderEvent event) {}};
-
         //add and remove observer
         r.addObserver(getObs());
         r.clearObservers();
 
-        //should the thread start
-        Assert.assertEquals(threadCount +1, BlankSmartInsertionTheadedReader.threadCount.get());
+        //should the thread start and stop
         Assert.assertEquals(0, r.countObservers());
         Assert.assertEquals(null, r.getMonitoringState());
     }
@@ -97,15 +105,12 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     @Test
     public void stopSeDetection() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
-
         //do not present any card for this test
         doReturn(false).when(r).waitForCardPresent(any(long.class));
 
         r.addObserver(getObs());
         Thread.sleep(100);
         r.stopSeDetection();
-
         Thread.sleep(100);
 
         Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getMonitoringState());
@@ -113,7 +118,6 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     @Test
     public void startSeDetection() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
         //do not present any card for this test
         doReturn(false).when(r).waitForCardPresent(any(long.class));
 
@@ -130,7 +134,6 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     @Test
     public void seDetected_notMatched() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
 
         doReturn(false).when(r).processSeInserted();
         doReturn(true).when(r).waitForCardPresent(any(long.class));
@@ -148,7 +151,6 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     @Test
     public void seDetected_matched() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
 
         doReturn(true).when(r).processSeInserted();
         doReturn(true).when(r).waitForCardPresent(any(long.class));
@@ -166,7 +168,6 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     @Test
     public void startRemovalSequence() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
 
         doReturn(true).when(r).processSeInserted();
         doReturn(false).when(r).waitForCardPresent(any(long.class));
@@ -182,7 +183,6 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     @Test
     public void startRemovalSequence_CONTINUE() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
 
         doReturn(true).when(r).processSeInserted();
         doReturn(true).when(r).waitForCardPresent(any(long.class));
@@ -199,8 +199,6 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     @Test
     public void startRemovalSequence_STOP() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
-
         doReturn(true).when(r).processSeInserted();
         doReturn(true).when(r).waitForCardPresent(any(long.class));
 
@@ -215,7 +213,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     @Test
     public void seProcessing_timeout() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
+
         CountDownLatch lock = new CountDownLatch(1);
         doReturn(true).when(r).processSeInserted();
         doReturn(true).when(r).waitForCardPresent(any(long.class));
@@ -227,7 +225,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
         Thread.sleep(100);
         r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
-        Thread.sleep(300);
+        lock.await(5000, TimeUnit.MILLISECONDS);
 
         Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getMonitoringState());
         Assert.assertEquals(0 , lock.getCount());
@@ -235,7 +233,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     @Test
     public void seRemoval_timeout() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
+
         CountDownLatch lock = new CountDownLatch(1);
         doReturn(true).when(r).processSeInserted();
         doReturn(true).when(r).waitForCardPresent(any(long.class));
@@ -249,7 +247,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
         r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
         Thread.sleep(100);
         r.startRemovalSequence();
-        Thread.sleep(500);
+        lock.await(5000, TimeUnit.MILLISECONDS);
 
         Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getMonitoringState());
         Assert.assertEquals(0 , lock.getCount());
@@ -257,7 +255,6 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     @Test
     public void seRemoval_sePresence_CONTINUE() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
 
         doReturn(true).when(r).processSeInserted();
         doReturn(true).when(r).waitForCardPresent(any(long.class));
@@ -279,7 +276,6 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     @Test
     public void seRemoval_sePresence_STOP() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
 
         doReturn(true).when(r).processSeInserted();
         doReturn(true).when(r).waitForCardPresent(any(long.class));
@@ -290,9 +286,9 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
         r.addObserver(getObs());
         Thread.sleep(100);
         r.startSeDetection(ObservableReader.PollingMode.STOP);
-        Thread.sleep(100);
 
         doReturn(false).when(r).waitForCardPresent(any(long.class));
+        Thread.sleep(100);
 
         r.startRemovalSequence();
         Thread.sleep(100);
@@ -302,7 +298,6 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     @Test
     public void seRemoval_finalized() throws Throwable {
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
 
         doReturn(true).when(r).processSeInserted();
         doReturn(true).when(r).waitForCardPresent(any(long.class));
@@ -326,7 +321,6 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     @Test
     public void isSePresentPing_true() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
         doReturn(ByteArrayUtil.fromHex("00")).when(r).transmitApdu(any(byte[].class));
 
         Assert.assertEquals(true, r.isSePresentPing());
@@ -334,7 +328,6 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     @Test
     public void isSePresentPing_false() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
         doThrow(new KeypleIOReaderException("ping failed")).when(r).transmitApdu(any(byte[].class));
 
         Assert.assertEquals(false, r.isSePresentPing());
@@ -346,7 +339,6 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
      */
     @Test
     public void noThread() throws Exception{
-        BlankSmartInsertionTheadedReader r = getSmartSpy(PLUGIN_NAME, READER_NAME);
         Assert.assertEquals(null, r.getMonitoringState());
     }
 

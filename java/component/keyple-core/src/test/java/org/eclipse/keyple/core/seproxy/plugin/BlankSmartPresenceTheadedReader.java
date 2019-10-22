@@ -9,9 +9,12 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.Random;
 
-public class BlankSmartInsertionTheadedReader extends AbstractThreadedObservableLocalReader implements SmartInsertionReader {
+public class BlankSmartPresenceTheadedReader extends AbstractThreadedObservableLocalReader implements SmartPresenceReader,SmartInsertionReader {
 
-    private static final Logger logger = LoggerFactory.getLogger(BlankSmartInsertionTheadedReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(BlankSmartPresenceTheadedReader.class);
+
+    volatile boolean insertedOnlyOnce = false;
+    volatile boolean removedOnlyOnce = false;
 
     /**
      * Reader constructor
@@ -22,7 +25,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractThreadedObservable
      * @param pluginName the name of the plugin that instantiated the reader
      * @param readerName the name of the reader
      */
-    public BlankSmartInsertionTheadedReader(String pluginName, String readerName) {
+    public BlankSmartPresenceTheadedReader(String pluginName, String readerName) {
         super(pluginName, readerName);
     }
 
@@ -76,19 +79,22 @@ public class BlankSmartInsertionTheadedReader extends AbstractThreadedObservable
 
     }
 
-    /*
     @Override
-    public boolean waitForCardPresent(long timeout) {
-        // Obtain a number between [0 - 49].
-        int n = new Random().nextInt(10);
-        boolean isCardPresent =  (n==2);
-        logger.trace("is card present {}",isCardPresent);
-        return isCardPresent;
+    public boolean waitForCardAbsentNative(long timeout) {
+        if(!removedOnlyOnce){
+            removedOnlyOnce = true;
+            return true;
+        }
+        return false;
     }
-    */
 
     @Override
     public boolean waitForCardPresent(long timeout) {
+        if(!insertedOnlyOnce){
+            insertedOnlyOnce = true;
+            return true;
+        }
+
         return false;
     }
 }
