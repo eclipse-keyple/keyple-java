@@ -13,6 +13,9 @@ public class BlankSmartInsertionTheadedReader extends AbstractThreadedObservable
 
     private static final Logger logger = LoggerFactory.getLogger(BlankSmartInsertionTheadedReader.class);
 
+    Integer mockDetect;
+    Integer detectCount = 0;
+
     /**
      * Reader constructor
      * <p>
@@ -22,8 +25,9 @@ public class BlankSmartInsertionTheadedReader extends AbstractThreadedObservable
      * @param pluginName the name of the plugin that instantiated the reader
      * @param readerName the name of the reader
      */
-    public BlankSmartInsertionTheadedReader(String pluginName, String readerName) {
+    public BlankSmartInsertionTheadedReader(String pluginName, String readerName, Integer mockDetect) {
         super(pluginName, readerName);
+        this.mockDetect = mockDetect;
     }
 
     @Override
@@ -88,7 +92,8 @@ public class BlankSmartInsertionTheadedReader extends AbstractThreadedObservable
     */
 
     @Override
-    public boolean waitForCardPresent(long timeout) {
-        return false;
+    public Boolean waitForCardPresent(long timeout) {
+        detectCount++;
+        return detectCount<=mockDetect;
     }
 }
