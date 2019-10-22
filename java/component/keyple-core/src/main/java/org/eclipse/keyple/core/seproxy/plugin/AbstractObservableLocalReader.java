@@ -165,7 +165,18 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      */
     public void startSeDetection(ObservableReader.PollingMode pollingMode) {
         currentPollingMode = pollingMode;
-    }
+    }//TODO OD : shouldn't this method be in ThreadedObs?
+
+    /**
+     * Stops the SE detection.
+     * <p>
+     * This method must be overloaded by readers depending on the particularity of their management
+     * of the start of SE detection.
+     * <p>
+     */
+    public void stopSeDetection() {
+
+    }//TODO OD : shouldn't this method be in ThreadedObs?
 
     /**
      * If defined, the prepared DefaultSelectionRequest will be processed as soon as a SE is
