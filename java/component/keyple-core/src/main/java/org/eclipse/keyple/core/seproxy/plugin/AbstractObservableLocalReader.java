@@ -371,17 +371,18 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     abstract protected AbstractObservableState getInitState();
 
 
-    abstract class WaitForSeState extends AbstractObservableState{
-
-        WaitForSeState(AbstractObservableLocalReader reader) {
-            super(MonitoringState.WAIT_FOR_SE_INSERTION, reader);
-        }
-    }
 
     abstract class WaitForStartDetect extends AbstractObservableState{
 
         WaitForStartDetect(AbstractObservableLocalReader reader) {
             super(MonitoringState.WAIT_FOR_START_DETECTION, reader);
+        }
+    }
+
+    abstract class WaitForSeInsertion extends AbstractObservableState{
+
+        WaitForSeInsertion(AbstractObservableLocalReader reader) {
+            super(MonitoringState.WAIT_FOR_SE_INSERTION, reader);
         }
     }
 
