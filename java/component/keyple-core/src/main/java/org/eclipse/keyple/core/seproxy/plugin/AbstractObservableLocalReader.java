@@ -108,6 +108,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
     protected ObservableReader.PollingMode currentPollingMode = ObservableReader.PollingMode.STOP;
 
+    /* Current state of the Observable Reader */
     protected AbstractObservableState state;
 
     /**
@@ -367,4 +368,34 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     }
 
     abstract protected AbstractObservableState getInitState();
+
+
+    abstract class WaitForSeState extends AbstractObservableState{
+
+        WaitForSeState(AbstractObservableLocalReader reader) {
+            super(reader, MonitoringState.WAIT_FOR_SE_INSERTION);
+        }
+    }
+
+    abstract class WaitForStartDetect extends AbstractObservableState{
+
+        WaitForStartDetect(AbstractObservableLocalReader reader) {
+            super(reader, MonitoringState.WAIT_FOR_START_DETECTION);
+        }
+    }
+
+    abstract class WaitForSeRemoval extends AbstractObservableState{
+
+        WaitForSeRemoval(AbstractObservableLocalReader reader) {
+            super(reader, MonitoringState.WAIT_FOR_SE_REMOVAL);
+        }
+    }
+
+    abstract class WaitForSeProcessing extends AbstractObservableState{
+
+        WaitForSeProcessing(AbstractObservableLocalReader reader) {
+            super(reader, MonitoringState.WAIT_FOR_SE_PROCESSING);
+        }
+    }
+
 }
