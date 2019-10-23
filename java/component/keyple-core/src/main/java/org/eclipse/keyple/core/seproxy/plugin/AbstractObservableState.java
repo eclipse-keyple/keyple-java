@@ -2,24 +2,24 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 public abstract class AbstractObservableState {
 
-
-    private AbstractObservableLocalReader.MonitoringState state;//identifier of the state
+    /* Identifier of the state */
+    private AbstractObservableLocalReader.MonitoringState state;
 
     /* Reference to Reader */
-    private AbstractObservableLocalReader reader; //reference to the reader
+    private AbstractObservableLocalReader reader;
 
     /**
-     * Create a new state to
+     * Create a new state with a state identifier
      * @param reader : observable reader this state is attached to
      * @param state : name of the state
      */
-    AbstractObservableState(AbstractObservableLocalReader reader, AbstractObservableLocalReader.MonitoringState state){
+    AbstractObservableState(AbstractObservableLocalReader.MonitoringState state,AbstractObservableLocalReader reader){
         this.reader = reader;
         this.state = state;
     }
 
     /**
-     * Get state name
+     * Get state identifier
      * @return name state
      */
     public AbstractObservableLocalReader.MonitoringState getMonitoringState(){
@@ -51,7 +51,7 @@ public abstract class AbstractObservableState {
     abstract AbstractObservableState onSeProcessed();
 
     /**
-     * HandleSe Removed Event
+     * Handle Se Removed Event
      * @return next state
      */
     abstract AbstractObservableState onSeRemoved();

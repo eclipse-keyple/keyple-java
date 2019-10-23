@@ -374,28 +374,28 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     abstract class WaitForSeState extends AbstractObservableState{
 
         WaitForSeState(AbstractObservableLocalReader reader) {
-            super(reader, MonitoringState.WAIT_FOR_SE_INSERTION);
+            super(MonitoringState.WAIT_FOR_SE_INSERTION, reader);
         }
     }
 
     abstract class WaitForStartDetect extends AbstractObservableState{
 
         WaitForStartDetect(AbstractObservableLocalReader reader) {
-            super(reader, MonitoringState.WAIT_FOR_START_DETECTION);
+            super(MonitoringState.WAIT_FOR_START_DETECTION, reader);
         }
     }
 
     abstract class WaitForSeRemoval extends AbstractObservableState{
 
         WaitForSeRemoval(AbstractObservableLocalReader reader) {
-            super(reader, MonitoringState.WAIT_FOR_SE_REMOVAL);
+            super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader);
         }
     }
 
     abstract class WaitForSeProcessing extends AbstractObservableState{
 
         WaitForSeProcessing(AbstractObservableLocalReader reader) {
-            super(reader, MonitoringState.WAIT_FOR_SE_PROCESSING);
+            super(MonitoringState.WAIT_FOR_SE_PROCESSING, reader);
         }
     }
 
