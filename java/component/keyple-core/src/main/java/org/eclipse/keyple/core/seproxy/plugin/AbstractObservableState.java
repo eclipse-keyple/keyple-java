@@ -2,14 +2,17 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 public abstract class AbstractObservableState {
 
-    protected enum MonitoringState {
-        WAIT_FOR_START_DETECTION, WAIT_FOR_SE_INSERTION, WAIT_FOR_SE_PROCESSING, WAIT_FOR_SE_REMOVAL
+
+    private AbstractObservableLocalReader.MonitoringState state;//identifier of the state
+    private AbstractObservableLocalReader reader; //reference to the reader
+
+    AbstractObservableState(AbstractObservableLocalReader reader, AbstractObservableLocalReader.MonitoringState state){
+        this.reader = reader;
+        this.state = state;
     }
 
-    MonitoringState state;
-
-    AbstractObservableState(MonitoringState state){
-        this.state = state;
+    public AbstractObservableLocalReader.MonitoringState getMonitoringState(){
+        return state;
     }
 
     abstract AbstractObservableState onStartDetection();
@@ -18,4 +21,6 @@ public abstract class AbstractObservableState {
     abstract AbstractObservableState onSeInserted();
     abstract AbstractObservableState onSeProcessed();
     abstract AbstractObservableState onSeRemoved();
+
 }
+
