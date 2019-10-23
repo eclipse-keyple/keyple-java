@@ -65,7 +65,8 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         super.addObserver(observer);
         // if an observer is added to an empty list, start the observation
         if (super.countObservers() == 1) {
-            instantiateThread();
+            //instantiateThread();
+            state = state.onStartDetection();
         }
     }
 
@@ -84,7 +85,8 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         super.removeObserver(observer);
         if (super.countObservers() == 0) {
             if (thread != null) {
-                stopThread();
+                //stopThread();
+                state = state.onStopDetection();
             }
         }
     }
@@ -96,7 +98,8 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
     public final void clearObservers() {
         super.clearObservers();
         if (thread != null) {
-            stopThread();
+            //stopThread();
+            state = state.onStopDetection();
         }
     }
 
@@ -139,19 +142,25 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
     public void startSeDetection(ObservableReader.PollingMode pollingMode) {
         super.startSeDetection(pollingMode);
         // unleash the monitoring thread to initiate the SE detection (if available and needed)
+        /*
         if (thread != null) {
             startThread();
             thread.startSeDetection();
         }
+        */
+        state = state.onStartDetection();
     }
 
     @Override
     public void stopSeDetection() {
         super.stopSeDetection();
         // unleash the monitoring thread to initiate the SE detection (if available and needed)
+        /*
         if (thread != null) {
             thread.stopSeDetection();
         }
+        */
+        state = state.onStopDetection();
     }
 
     /**
@@ -159,9 +168,12 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
      */
     @Override
     protected final void startRemovalSequence() {
+        /*
         if (thread != null) {
             thread.startRemovalSequence();
         }
+        */
+        state = state.onSeProcessed();
     }
 
 
