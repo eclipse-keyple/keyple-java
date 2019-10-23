@@ -367,6 +367,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         state = state.onSeRemoved();
     }
 
+    /* Specify which init state will be used */
     abstract protected AbstractObservableState getInitState();
 
 
