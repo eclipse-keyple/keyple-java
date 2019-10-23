@@ -1,5 +1,19 @@
+/********************************************************************************
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
@@ -10,27 +24,25 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 /**
- * A blank class extending AbstractReader
- * only purpose is to be tested and spied by mockito
+ * A blank class extending AbstractReader only purpose is to be tested and spied by mockito
  */
 public class BlankAbstractReader extends AbstractReader {
 
-    BlankAbstractReader(String pluginName, String readerName){
-        super(pluginName,readerName);
+    BlankAbstractReader(String pluginName, String readerName) {
+        super(pluginName, readerName);
     }
 
     @Override
-    protected List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet, MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl) throws KeypleReaderException {
+    protected List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet,
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
+            throws KeypleReaderException {
         return null;
     }
 
     @Override
-    protected SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl) throws KeypleReaderException {
+    protected SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl)
+            throws KeypleReaderException {
         return null;
     }
 
@@ -60,7 +72,8 @@ public class BlankAbstractReader extends AbstractReader {
     }
 
     @Override
-    public void setParameter(String key, String value) throws IllegalArgumentException, KeypleBaseException {
+    public void setParameter(String key, String value)
+            throws IllegalArgumentException, KeypleBaseException {
 
     }
 }

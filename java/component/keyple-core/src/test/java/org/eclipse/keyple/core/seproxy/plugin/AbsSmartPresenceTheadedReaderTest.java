@@ -1,12 +1,24 @@
+/********************************************************************************
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader.MonitoringState.*;
+import static org.mockito.Mockito.doReturn;
+import java.util.concurrent.CountDownLatch;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,22 +29,14 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader.MonitoringState.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyByte;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-
 /*
  * test the feature of SmartPresence methods
  */
 @RunWith(Parameterized.class)
 public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbsSmartPresenceTheadedReaderTest.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(AbsSmartPresenceTheadedReaderTest.class);
 
 
     final String PLUGIN_NAME = "AbsSmartPresenceTheadedReaderTestP";
@@ -40,10 +44,11 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
 
     BlankSmartPresenceTheadedReader r;
 
-    //Execute tests 10 times
+    // Execute tests 10 times
     @Parameterized.Parameters
     public static Object[][] data() {
-        return new Object[10][0];
+        int x = 0;
+        return new Object[x][0];
     }
 
 
@@ -53,23 +58,23 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
         logger.info("Test {}", name.getMethodName() + "");
         logger.info("------------------------------");
 
-       r = getSmartSpy(PLUGIN_NAME, READER_NAME);
+        r = getSmartSpy(PLUGIN_NAME, READER_NAME);
     }
 
     /*
      */
     @After
     public void tearDown() throws Throwable {
-            r.clearObservers();
-            r.finalize();
-            r = null;
+        r.clearObservers();
+        r.finalize();
+        r = null;
 
     }
 
     @Test
-    public void startRemovalSequence() throws Exception{
+    public void startRemovalSequence() throws Exception {
 
-        //SE matched
+        // SE matched
         doReturn(true).when(r).processSeInserted();
 
         r.addObserver(getObs());
@@ -78,19 +83,19 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
         r.startRemovalSequence();
         Thread.sleep(100);
 
-        //does nothing
+        // does nothing
         Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getMonitoringState());
     }
 
     @Test
     public void startRemovalSequence_CONTINUE() throws Exception, NoStackTraceThrowable {
 
-        //SE matched
+        // SE matched
         doReturn(true).when(r).processSeInserted();
-        //use mocked BlankSmartPresenceTheadedReader methods
+        // use mocked BlankSmartPresenceTheadedReader methods
 
         r.addObserver(getObs());
-        r.startSeDetection(ObservableReader.PollingMode.CONTINUE);//WAIT_FOR_SE_INSERTION
+        r.startSeDetection(ObservableReader.PollingMode.CONTINUE);// WAIT_FOR_SE_INSERTION
         Thread.sleep(100);
 
         r.startRemovalSequence();
@@ -102,7 +107,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
     @Test
     public void startRemovalSequence_noping_STOP() throws Exception, NoStackTraceThrowable {
 
-        //SE matched
+        // SE matched
         doReturn(true).when(r).processSeInserted();
         doReturn(false).when(r).isSePresentPing();
 
@@ -120,9 +125,9 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
     @Test
     public void startRemovalSequence_ping_STOP() throws Exception, NoStackTraceThrowable {
 
-        //SE matched
+        // SE matched
         doReturn(true).when(r).processSeInserted();
-//        doReturn(true).when(r).isSePresentPing();
+        // doReturn(true).when(r).isSePresentPing();
         doReturn(true).when(r).isSePresent();
 
         r.addObserver(getObs());
@@ -139,22 +144,30 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
      * Helpers
      */
 
-    static public BlankSmartPresenceTheadedReader getSmartSpy(String pluginName, String readerName) throws KeypleReaderException {
-        BlankSmartPresenceTheadedReader r =  Mockito.spy(new BlankSmartPresenceTheadedReader(pluginName,readerName,1));
-        return  r;
+    static public BlankSmartPresenceTheadedReader getSmartSpy(String pluginName, String readerName)
+            throws KeypleReaderException {
+        BlankSmartPresenceTheadedReader r =
+                Mockito.spy(new BlankSmartPresenceTheadedReader(pluginName, readerName, 1));
+        return r;
     }
 
 
-    static public ObservableReader.ReaderObserver getObs(){
-        return  new ObservableReader.ReaderObserver() {@Override  public void update(ReaderEvent event) {}};
+    static public ObservableReader.ReaderObserver getObs() {
+        return new ObservableReader.ReaderObserver() {
+            @Override
+            public void update(ReaderEvent event) {}
+        };
     }
 
-    static public ObservableReader.ReaderObserver countDownOnTimeout(final CountDownLatch lock){
-        return  new ObservableReader.ReaderObserver() {@Override  public void update(ReaderEvent event) {
-            if(ReaderEvent.EventType.TIMEOUT_ERROR.equals(event.getEventType())){
-                lock.countDown();
+    static public ObservableReader.ReaderObserver countDownOnTimeout(final CountDownLatch lock) {
+        return new ObservableReader.ReaderObserver() {
+            @Override
+            public void update(ReaderEvent event) {
+                if (ReaderEvent.EventType.TIMEOUT_ERROR.equals(event.getEventType())) {
+                    lock.countDown();
+                }
             }
-        }};
+        };
     }
 
 }

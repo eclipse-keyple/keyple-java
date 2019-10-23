@@ -11,10 +11,12 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import java.util.List;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
@@ -22,8 +24,6 @@ import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 
 /**
@@ -177,7 +177,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * <p>
      * This method must be overloaded by readers depending on the particularity of their management
      * of the start of SE detection.
-     * <p>
      */
     public void stopSeDetection() {
         state = state.onStopDetection();
@@ -291,11 +290,13 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
                 for (SeResponse seResponse : seResponseList) {
                     if (seResponse != null && seResponse.getSelectionStatus().hasMatched()) {
-                        logger.trace("[{}] processSeInserted => a default selection has matched", this.getName());
+                        logger.trace("[{}] processSeInserted => a default selection has matched",
+                                this.getName());
                         aSeMatched = true;
                         break;
                     }
-                    logger.trace("[{}] processSeInserted => none of {} default selection matched", this.getName(), seResponseList.size());
+                    logger.trace("[{}] processSeInserted => none of {} default selection matched",
+                            this.getName(), seResponseList.size());
                 }
                 if (notificationMode == ObservableReader.NotificationMode.MATCHED_ONLY) {
                     /* notify only if a SE matched the selection, just ignore if not */
@@ -309,7 +310,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                         logger.trace("[{}] processSeInserted => selection hasn't matched do not thrown any event because of MATCHED_ONLY flag");
                     }
                 } else {
-                    //ObservableReader.NotificationMode.ALWAYS
+                    // ObservableReader.NotificationMode.ALWAYS
                     if (aSeMatched) {
                         /* The SE matched, notify an SE_MATCHED event with the received response */
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
@@ -347,6 +348,29 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         }
 
         return presenceNotified;
+    }
+
+    /**
+     * Sends a neutral APDU to the SE to check its presence
+     * <p>
+     * This method has to be called regularly until the SE no longer respond.
+     * <p>
+     * Having this method not final allows a reader plugin to implement its own method.
+     *
+     * @return true if the SE still responds, false if not
+     */
+    protected boolean isSePresentPing() {
+        // APDU sent to check the communication with the PO
+        final byte[] apdu = {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+        // transmits the APDU and checks for the IO exception.
+        try {
+            transmitApdu(apdu);
+        } catch (KeypleIOReaderException e) {
+            logger.trace("[{}] Exception occured in isSePresentPing. Message: {}", this.getName(),
+                    e.getMessage());
+            return false;
+        }
+        return true;
     }
 
 

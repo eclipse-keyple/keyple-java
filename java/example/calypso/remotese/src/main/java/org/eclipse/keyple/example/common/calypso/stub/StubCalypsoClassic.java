@@ -1,0 +1,1 @@
+../../../../../../../../../../../../common/src/main/java/org/eclipse/keyple/example/common/calypso/stub/StubCalypsoClassic.java

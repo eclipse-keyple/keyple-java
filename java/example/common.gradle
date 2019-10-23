@@ -1,7 +1,0 @@
-def getDate() {
-    return new Date().format('yyyyMMdd')
-}
-
-ext {
-    timestamp = getDate()
-}

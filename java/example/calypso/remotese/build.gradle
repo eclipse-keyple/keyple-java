@@ -1,66 +1,36 @@
-//project.version = '0.7.0'+'-'+ timestamp+ '-SNAPSHOT'
+plugins {
+    id 'java'
+}
 
-apply plugin: 'java'
-apply plugin:'application'
+group 'org.eclipse.keyple'
 
 sourceCompatibility = 1.6
-targetCompatibility = 1.6
 
-ext {
-    keyple_v = project.hasProperty("keyple_version") ? keyple_version : '+'
-}
-
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'Keyple Example Remote SE',
-                'Implementation-Version': project.version
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://repo.eclipse.org/service/local/repositories/maven_central/content'
     }
-}
-
-
-mainClassName = 'org.eclipse.keyple.example.remote.application.Demo_WebserviceWithRetrofit_MasterServer'
-
-compileJava.doFirst {
-    println project.name + " - Using keyple_version parameter with value " + keyple_v
+    //to import keyple snapshots
+    maven {url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    //to import keyple releases
+    maven { url 'https://oss.sonatype.org/content/repositories/releases' }
 }
 
 dependencies {
-    //import the last version of keyple-java-core
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: keyple_v
+    testCompile group: 'junit', name: 'junit', version: '4.12'
 
-    //import the last version of keyple-java-calypso
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: keyple_v
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-core', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-pcsc', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: '+'
+    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese', version: '+'
 
-    //import the last version of keyple-java-plugin-stub
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-stub', version: keyple_v
+    implementation "org.slf4j:slf4j-simple:1.7.25"
+    implementation "org.slf4j:slf4j-ext:1.7.25"
 
-    //import the last version of keyple-java-plugin-remotese
-    implementation group: 'org.eclipse.keyple', name: 'keyple-java-plugin-remotese', version: keyple_v
+    implementation "com.squareup.retrofit2:retrofit:2.4.0"
+    implementation "com.squareup.retrofit2:converter-gson:2.4.0"
 
-    implementation project(path: ':calypso:example-calypso-pc')
-
-    implementation project(path: ':calypso:example-calypso-common')
-
-    implementation "org.java-websocket:Java-WebSocket:${JavaWebSocket_version}"
-
-    runtime "org.slf4j:slf4j-simple:${slf4jsimple_version}"
-
-    implementation "com.google.code.gson:gson:${gson_version}"
-    
-    implementation "com.squareup.retrofit2:retrofit:${retrofit_version}"
-    implementation "com.squareup.retrofit2:converter-gson:${retrofit_version}"
-    
-    /*
-    Tests
-     */
-
-    // https://mvnrepository.com/artifact/junit/junit
-    testImplementation "junit:junit:${junit_version}"
-
-    // https://mvnrepository.com/artifact/org.mockito/mockito-core
-    testImplementation "org.mockito:mockito-core:${mockitocore_version}"
-}
-
-test {
-    exclude 'org/eclipse/**'
+    implementation "org.java-websocket:Java-WebSocket:1.3.9"
 }

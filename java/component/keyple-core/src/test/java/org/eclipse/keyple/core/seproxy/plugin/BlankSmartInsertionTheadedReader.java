@@ -1,17 +1,28 @@
+/********************************************************************************
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-import java.util.Random;
+public class BlankSmartInsertionTheadedReader extends AbstractThreadedObservableLocalReader
+        implements SmartInsertionReader {
 
-public class BlankSmartInsertionTheadedReader extends AbstractThreadedObservableLocalReader implements SmartInsertionReader {
-
-    private static final Logger logger = LoggerFactory.getLogger(BlankSmartInsertionTheadedReader.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(BlankSmartInsertionTheadedReader.class);
 
     Integer mockDetect;
     Integer detectCount = 0;
@@ -25,7 +36,8 @@ public class BlankSmartInsertionTheadedReader extends AbstractThreadedObservable
      * @param pluginName the name of the plugin that instantiated the reader
      * @param readerName the name of the reader
      */
-    public BlankSmartInsertionTheadedReader(String pluginName, String readerName, Integer mockDetect) {
+    public BlankSmartInsertionTheadedReader(String pluginName, String readerName,
+            Integer mockDetect) {
         super(pluginName, readerName);
         this.mockDetect = mockDetect;
     }
@@ -76,24 +88,20 @@ public class BlankSmartInsertionTheadedReader extends AbstractThreadedObservable
     }
 
     @Override
-    public void setParameter(String key, String value) throws IllegalArgumentException, KeypleBaseException {
+    public void setParameter(String key, String value)
+            throws IllegalArgumentException, KeypleBaseException {
 
     }
 
     /*
-    @Override
-    public boolean waitForCardPresent(long timeout) {
-        // Obtain a number between [0 - 49].
-        int n = new Random().nextInt(10);
-        boolean isCardPresent =  (n==2);
-        logger.trace("is card present {}",isCardPresent);
-        return isCardPresent;
-    }
-    */
+     * @Override public boolean waitForCardPresent(long timeout) { // Obtain a number between [0 -
+     * 49]. int n = new Random().nextInt(10); boolean isCardPresent = (n==2);
+     * logger.trace("is card present {}",isCardPresent); return isCardPresent; }
+     */
 
     @Override
-    public Boolean waitForCardPresent(long timeout) {
+    public boolean waitForCardPresent(long timeout) {
         detectCount++;
-        return detectCount<=mockDetect;
+        return detectCount <= mockDetect;
     }
 }

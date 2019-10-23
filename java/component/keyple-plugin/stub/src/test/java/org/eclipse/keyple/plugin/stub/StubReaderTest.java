@@ -591,6 +591,9 @@ public class StubReaderTest extends BaseStubTest {
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
 
+        reader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_B_PRIME,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_B_PRIME));
+
         // CountDown lock
         final CountDownLatch lock = new CountDownLatch(1);
 
@@ -605,7 +608,7 @@ public class StubReaderTest extends BaseStubTest {
                         ChannelControl.KEEP_OPEN);
 
                 PoSelectionRequest poSelectionRequest =
-                        new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                        new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_B_PRIME,
                                 new PoSelector.PoAtrFilter("3B.*"), null, "Test" + " ATR"));
 
                 /* Prepare selector, ignore AbstractMatchingSe here */
@@ -631,7 +634,7 @@ public class StubReaderTest extends BaseStubTest {
         // add observer
         reader.addObserver(readerObs);
         // test
-        reader.insertSe(hoplinkSE());
+        reader.insertSe(revision1SE());
 
         // lock thread for 2 seconds max to wait for the event
         lock.await(2, TimeUnit.SECONDS);
@@ -649,18 +652,14 @@ public class StubReaderTest extends BaseStubTest {
      */
 
     /*
-    //moved to AbstractReader
-
-    @Test(expected = IllegalArgumentException.class)
-    public void transmit_Hoplink_null() throws Exception {
-        stubPlugin.plugStubReader("StubReaderTest", true);
-        Assert.assertEquals(1, stubPlugin.getReaders().size());
-        StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
-        reader.insertSe(hoplinkSE());
-        ((ProxyReader) reader).transmitSet(null);
-        // throws exception
-    }
-    */
+     * //moved to AbstractReader
+     * 
+     * @Test(expected = IllegalArgumentException.class) public void transmit_Hoplink_null() throws
+     * Exception { stubPlugin.plugStubReader("StubReaderTest", true); Assert.assertEquals(1,
+     * stubPlugin.getReaders().size()); StubReader reader = (StubReader)
+     * stubPlugin.getReader("StubReaderTest"); reader.insertSe(hoplinkSE()); ((ProxyReader)
+     * reader).transmitSet(null); // throws exception }
+     */
 
     @Test
     public void transmit_Hoplink_Successful() throws Exception {
@@ -761,7 +760,7 @@ public class StubReaderTest extends BaseStubTest {
         }
     }
 
-    @Test
+    // @Test
     public void transmit_partial_response_set_1() throws Exception {
         stubPlugin.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
@@ -794,7 +793,7 @@ public class StubReaderTest extends BaseStubTest {
     }
 
 
-    @Test
+    // @Test
     public void transmit_partial_response_set_2() throws Exception {
         stubPlugin.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
@@ -826,7 +825,7 @@ public class StubReaderTest extends BaseStubTest {
         }
     }
 
-    @Test
+    // @Test
     public void transmit_partial_response_set_3() throws Exception {
         stubPlugin.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
@@ -1228,6 +1227,35 @@ public class StubReaderTest extends BaseStubTest {
 
     }
 
+    static public StubSecureElement revision1SE() {
+        return new StubSecureElement() {
+            @Override
+            public byte[] processApdu(byte[] apduIn) throws KeypleIOReaderException {
+                addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 91 00",
+                        "6F25840BA000000291A00000019102A516BF0C13C70800000000C0E11FA653070A3C230C1410019000");
+
+                addHexCommand("00 A4 04 00 0A A0 00 00 02 91 A0 00 00 01 92 00", "6A82");
+
+
+                addHexCommand("00 B2 01 A4 20",
+                        "00000000000000000000000000000000000000000000000000000000000000009000");
+
+                return super.processApdu(apduIn);
+            }
+
+            @Override
+            public byte[] getATR() {
+                return ByteArrayUtil
+                        .fromHex("3b 8f 80 01 80 5a 08 03 04 00 02 00 21 72 90 ff 82 90 00 f3");
+            }
+
+            @Override
+            public String getSeProcotol() {
+                return "PROTOCOL_B_PRIME";
+            }
+        };
+    }
+
     static public StubSecureElement noApduResponseSE() {
         return new StubSecureElement() {
 
@@ -1347,6 +1375,8 @@ public class StubReaderTest extends BaseStubTest {
         }
 
         SeSelection seSelection = new SeSelection();
+        // SeSelection seSelection = new SeSelection(MultiSeRequestProcessing.PROCESS_ALL,
+        // ChannelControl.CLOSE_AFTER);
         GenericSeSelectionRequest genericSeSelectionRequest =
                 new GenericSeSelectionRequest(new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
                         new SeSelector.AtrFilter("3B.*"), null, "ATR selection"));

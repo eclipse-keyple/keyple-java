@@ -93,6 +93,14 @@ public interface ObservableReader extends SeReader {
     void startSeDetection(PollingMode pollingMode);
 
     /**
+     * Stops the SE detection.
+     * <p>
+     * This method must be overloaded by readers depending on the particularity of their management
+     * of the start of SE detection.
+     */
+    void stopSeDetection();
+
+    /**
      * Defines the selection request to be processed when an SE is inserted. Depending on the SE and
      * the notificationMode parameter, a SE_INSERTED, SE_MATCHED or no event at all will be notified
      * to the application observers.

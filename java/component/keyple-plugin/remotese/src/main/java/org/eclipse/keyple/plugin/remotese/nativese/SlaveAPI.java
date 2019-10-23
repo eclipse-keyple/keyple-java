@@ -279,7 +279,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
 
                 // stop propagating the local reader events
                 ((AbstractReader) nativeReader).removeObserver(this);
-            }else{
+            } else {
                 logger.debug("Disconnected reader is not observable");
             }
         } catch (KeypleRemoteException e) {
