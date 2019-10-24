@@ -109,4 +109,9 @@ public class BlankSmartPresenceTheadedReader extends AbstractThreadedObservableL
         detectCount++;
         return detectCount <= mockDetect;
     }
+
+    @Override
+    protected AbstractObservableState.MonitoringState  getInitState() {
+        return null;
+    }
 }

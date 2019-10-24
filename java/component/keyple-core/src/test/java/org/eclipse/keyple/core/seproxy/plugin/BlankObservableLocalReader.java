@@ -11,8 +11,14 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.*;
+import org.eclipse.keyple.core.seproxy.plugin.state.BasicWaitForSeInsertion;
+import org.eclipse.keyple.core.seproxy.plugin.state.BasicWaitForSeProcessing;
+import org.eclipse.keyple.core.seproxy.plugin.state.BasicWaitForSeRemoval;
+import org.eclipse.keyple.core.seproxy.plugin.state.BasicWaitForStartDetect;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
@@ -28,14 +34,21 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
         super(pluginName, readerName);
     }
 
-    @Override
-    public void stopSeDetection() {
 
+    @Override
+    protected AbstractObservableState.MonitoringState getInitState() {
+        return AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING;
     }
 
     @Override
-    protected void startRemovalSequence() {
-
+    protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> initStates() {
+        Map<AbstractObservableState.MonitoringState, AbstractObservableState> states = new
+                HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION, new BasicWaitForSeInsertion(this));
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING, new BasicWaitForSeProcessing(this));
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL, new BasicWaitForSeRemoval(this));
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION, new BasicWaitForStartDetect(this));
+        return states;
     }
 
     @Override

@@ -11,11 +11,19 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeInsertion;
+import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeProcessing;
+import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeRemoval;
+import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForStartDetect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,13 +34,17 @@ import org.slf4j.LoggerFactory;
  * The thread is started when the first observation is added and stopped when the last observation
  * is removed.
  * <p>
- * It manages a machine in a state that conforms to the definitions given in
- * {@link AbstractObservableLocalReader} (see {@link MonitoringState})
+ * It manages a machine in a currentState that conforms to the definitions given in
+ * {@link AbstractObservableLocalReader}
  */
 public abstract class AbstractThreadedObservableLocalReader extends AbstractObservableLocalReader {
     /** logger */
     private static final Logger logger =
             LoggerFactory.getLogger(AbstractThreadedObservableLocalReader.class);
+
+    ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private long timeoutSeInsert = 10000;
+    private long timeoutSeRemoval = 10000;
 
     /**
      * Reader constructor
@@ -45,9 +57,26 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
      */
     public AbstractThreadedObservableLocalReader(String pluginName, String readerName) {
         super(pluginName, readerName);
+
     }
 
-    static final AtomicInteger threadCount = new AtomicInteger();
+    public ExecutorService getExecutorService(){
+        return executorService;
+    }
+
+    @Override
+    protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> initStates() {
+        Map<AbstractObservableState.MonitoringState, AbstractObservableState> states = new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION, new ThreadedWaitForSeInsertion(this, timeoutSeInsert));
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING, new ThreadedWaitForSeProcessing(this));
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL, new ThreadedWaitForSeRemoval(this, timeoutSeRemoval));
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION, new ThreadedWaitForStartDetect(this));
+        return states;
+    }
+
+
+
+    //static final AtomicInteger threadCount = new AtomicInteger();
 
     /**
      * Add a reader observer.
@@ -59,15 +88,15 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
      * does not already exist (when the first observer is added).
      *
      * @param observer the observer object
-     */
     public final void addObserver(ObservableReader.ReaderObserver observer) {
         super.addObserver(observer);
         // if an observer is added to an empty list, start the observation
         if (super.countObservers() == 1) {
             //instantiateThread();
-            state = state.onStartDetection();
+            currentState.onEvent(StateEvent.START_DETECT);
         }
     }
+     */
 
     /**
      * Remove a reader observer.
@@ -79,29 +108,33 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
      * The thread is created if it does not already exist
      *
      * @param observer the observer object
-     */
     public final void removeObserver(ObservableReader.ReaderObserver observer) {
         super.removeObserver(observer);
         if (super.countObservers() == 0) {
-            if (thread != null) {
-                //stopThread();
-                state = state.onStopDetection();
-            }
+
+            //if (thread != null) {
+            //    //stopThread();
+            //}
+
+            currentState.onEvent(StateEvent.STOP_DETECT);
         }
     }
+     */
 
     /**
      * Remove all the observers of the reader
-     */
     @Override
     public final void clearObservers() {
         super.clearObservers();
-        if (thread != null) {
-            //stopThread();
-            state = state.onStopDetection();
-        }
-    }
 
+        //if (thread != null) {
+        //    //stopThread();
+        //}
+
+        currentState.onEvent(StateEvent.STOP_DETECT);
+    }
+     */
+/*
     private void instantiateThread() {
         logger.debug("Start monitoring the reader {}", this.getName());
         thread = new EventThread(this);
@@ -119,7 +152,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         thread.end();
         thread = null;
     }
-
+*/
 
     /**
      * In addition to the processing done by the super method, this method starts the monitoring
@@ -128,56 +161,59 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
      * @param defaultSelectionsRequest the {@link AbstractDefaultSelectionsRequest} to be executed
      *        when a SE is inserted
      * @param notificationMode the notification mode enum (ALWAYS or MATCHED_ONLY)
-     */
     @Override
     public final void setDefaultSelectionRequest(
             AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             ObservableReader.NotificationMode notificationMode) {
         super.setDefaultSelectionRequest(defaultSelectionsRequest, notificationMode);
     }
+ */
 
+    /*
     @Override
     public void startSeDetection(ObservableReader.PollingMode pollingMode) {
         super.startSeDetection(pollingMode);
         // unleash the monitoring thread to initiate the SE detection (if available and needed)
-        /*
-        if (thread != null) {
-            thread.startSeDetection();
-        }
-        */
-        state = state.onStartDetection();
-    }
 
+        //if (thread != null) {
+        //    thread.startSeDetection();
+        //}
+
+        //currentState.onEvent(StateEvent.START_DETECT);
+    }
+    */
+
+    /*
     @Override
     public void stopSeDetection() {
         // unleash the monitoring thread to initiate the SE detection (if available and needed)
-        /*
-        if (thread != null) {
-            thread.stopSeDetection();
-        }
-        */
-        state = state.onStopDetection();
+
+        //if (thread != null) {
+        //    thread.stopSeDetection();
+        //}
+
+        currentState.onEvent(StateEvent.STOP_DETECT);
     }
+    */
 
     /**
      * Initiates the removal sequence
-     */
     @Override
     protected final void startRemovalSequence() {
-        /*
-        if (thread != null) {
-            thread.startRemovalSequence();
-        }
-        */
-        state = state.onSeProcessed();
+
+//        if (thread != null) {
+//            thread.startRemovalSequence();
+//        }
+        currentState.onEvent(StateEvent.SE_PROCESSED);
     }
+     */
 
 
 
     /**
      */
 
-    private EventThread thread;
+    //private EventThread thread;
 
     /**
      * Thread wait timeout in ms
@@ -217,7 +253,6 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
      * Called when the class is unloaded. Attempt to do a clean exit.
      *
      * @throws Throwable a generic exception
-     */
     @Override
     protected void finalize() throws Throwable {
         if (thread != null) {
@@ -227,12 +262,12 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         logger.trace("[{}] Observable Reader thread ended.", this.getName());
         super.finalize();
     }
+     */
 
     /**
-     * Return monitoring state
+     * Return monitoring currentState
      *
      * @return MonitoringState
-     */
     MonitoringState getMonitoringState() {
         if (thread != null) {
             return this.thread.getMonitoringState();
@@ -240,6 +275,17 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
             return null;
         }
     }
+ */
+
+
+
+
+
+
+
+
+
+
 
 
     private class EventThread extends Thread {
@@ -256,14 +302,14 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         private volatile boolean running = true;
 
         /**
-         * Current reader state
-         */
+         * Current reader currentState
         private volatile MonitoringState monitoringState = MonitoringState.WAIT_FOR_START_DETECTION;
+         */
 
         /**
-         * previous state (logging purposes)
-         */
+         * previous currentState (logging purposes)
         private volatile MonitoringState previousState = MonitoringState.WAIT_FOR_START_DETECTION;
+         */
 
         /**
          * Synchronization objects and flags TODO Improve this mechanism by using classes and
@@ -283,8 +329,13 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
          * @param reader, reader that runs this thread
          */
         EventThread(AbstractThreadedObservableLocalReader reader) {
+/*
             super("observable-reader-events-" + threadCount.addAndGet(1)
                     + reader.getName().replace(" ", ""));
+*/
+            super("observable-reader-events-"
+                    + reader.getName().replace(" ", ""));
+
             logger.debug("Instantiate thread with name {} for reader {}", this.getName(),
                     reader.getName());
             setDaemon(true);
@@ -351,13 +402,13 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
 
 
         /**
-         * Return monitoring state
+         * Return monitoring currentState
          *
          * @return MonitoringState
-         */
-        MonitoringState getMonitoringState() {
-            return this.monitoringState;
+        AbstractObservableState.MonitoringState getMonitoringState() {
+            return this.currentState.monitoringState;
         }
+         */
 
         /**
          * Thread loop
@@ -365,16 +416,18 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         public void run() {
             long startTime; // timeout management
             while (running) {
-                logger.trace("Reader state machine: previous {}, new {}", previousState,
+                /*
+                logger.trace("Reader currentState machine: previous {}, new {}", previousState,
                         monitoringState);
                 previousState = monitoringState;
+
                 try {
                     switch (monitoringState) {
                         case WAIT_FOR_START_DETECTION:
                             // We are waiting for the application to start monitoring SE insertions
                             // with the call to startSeDetection.
 
-                            // We notify the application of the current state.
+                            // We notify the application of the current currentState.
                             // notifyObservers(
                             // new ReaderEvent(this.pluginName, AbstractLocalReader.this.name,
                             // ReaderEvent.EventType.AWAITING_SE_START_DETECTION, null));
@@ -477,7 +530,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                                 // TODO OD : why test instanceof SmartPresenceReader and use
                                 // isSePresent?
                                 if (this.reader instanceof SmartPresenceReader && !isSePresent()) {
-                                    // the SE has been removed, we return to the state of waiting
+                                    // the SE has been removed, we return to the currentState of waiting
                                     // for insertion
                                     // We notify the application of the SE_REMOVED event.
                                     processSeRemoved();
@@ -486,7 +539,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                                     break;
                                 } else {
                                     logger.trace(
-                                            "Reader is not SmartPresenceReader : please notify finalize  state of SeProcessing");
+                                            "Reader is not SmartPresenceReader : please notify finalize  currentState of SeProcessing");
                                 }
                                 if (Thread.interrupted()) {
                                     // a request to stop the thread has been made
@@ -497,7 +550,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                                 if (this.reader.getThreadWaitTimeout() != 0
                                         && System.currentTimeMillis() - startTime > this.reader
                                                 .getThreadWaitTimeout()) {
-                                    // update the new state before notify (unit test issue)
+                                    // update the new currentState before notify (unit test issue)
                                     monitoringState = MonitoringState.WAIT_FOR_START_DETECTION;
                                     // We notify the application of the TIMEOUT_ERROR event.
                                     notifyObservers(new ReaderEvent(this.reader.getPluginName(),
@@ -530,7 +583,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                                         || ((!(this.reader instanceof SmartPresenceReader))
                                                 && !this.reader.isSePresentPing())) {
                                     // the SE has been removed, we close all channels and return to
-                                    // the state of waiting
+                                    // the currentState of waiting
                                     // for insertion
                                     // We notify the application of the SE_REMOVED event.
                                     processSeRemoved();
@@ -559,7 +612,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                                 }
                                 if (threadWaitTimeout != 0 && System.currentTimeMillis()
                                         - startTime > threadWaitTimeout) {
-                                    // update the new state before notify (unit test issue)
+                                    // update the new currentState before notify (unit test issue)
                                     monitoringState = MonitoringState.WAIT_FOR_START_DETECTION;
                                     // We notify the application of the TIMEOUT_ERROR event.
                                     notifyObservers(new ReaderEvent(this.reader.getPluginName(),
@@ -582,10 +635,11 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                             this.reader.getName(), e.getMessage());
                     running = false;
                 }
+                    */
+
             }
         }
     }
-
 
 
 }

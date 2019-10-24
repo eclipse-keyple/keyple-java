@@ -267,9 +267,54 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         verify(r, times(1)).closeLogicalAndPhysicalChannels();
     }
 
+    /**
+     * State Machine
+     */
+
+    @Test
+    public void states() throws Exception {
+        AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
+
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
+
+        //start detection
+        r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
+
+        //assert currentState have changed
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
+
+        //stop detection
+        r.stopSeDetection();
+
+        //assert currentState have changed
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
+
+        //start detection
+        //insert SE
+        r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
+        r.processSeInserted();
+
+        //assert currentState have changed
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING, r.getCurrentState().getMonitoringState());
+
+        //SE has been processed
+        r.startRemovalSequence();
+
+        //assert currentState have changed
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL, r.getCurrentState().getMonitoringState());
+
+        r.processSeRemoved();
+
+        //assert currentState have changed
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
+    }
 
 
-    /*
+
+
+
+
+        /*
      * HELPERS
      */
 
@@ -319,10 +364,26 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         };
     }
 
-    static public AbstractObservableLocalReader getSpy(String pluginName, String readerName)
+    static public AbstractObservableLocalReader getBlank(String pluginName, String readerName)
             throws KeypleReaderException {
         AbstractObservableLocalReader r =
+                new BlankObservableLocalReader(pluginName, readerName);
+        return r;
+    }
+
+
+
+    static public AbstractObservableLocalReader getSpy(String pluginName, String readerName){
+        AbstractObservableLocalReader r =
                 Mockito.spy(new BlankObservableLocalReader(pluginName, readerName));
+
+        doReturn(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION).when(r).getInitState();
+
+        doCallRealMethod().when(r).initStates();
+        doCallRealMethod().when(r).getCurrentState();
+        doCallRealMethod().when(r).setCurrentState(any(AbstractObservableState.class));
+        doCallRealMethod().when(r).switchState(any(AbstractObservableState.MonitoringState.class));
+        doCallRealMethod().when(r).startSeDetection(any(ObservableReader.PollingMode.class));
         return r;
     }
 

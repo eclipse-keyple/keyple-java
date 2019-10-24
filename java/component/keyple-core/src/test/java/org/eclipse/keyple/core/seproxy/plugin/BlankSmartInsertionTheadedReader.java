@@ -104,4 +104,9 @@ public class BlankSmartInsertionTheadedReader extends AbstractThreadedObservable
         detectCount++;
         return detectCount <= mockDetect;
     }
+
+    @Override
+    protected AbstractObservableState.MonitoringState getInitState() {
+        return AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
+    }
 }

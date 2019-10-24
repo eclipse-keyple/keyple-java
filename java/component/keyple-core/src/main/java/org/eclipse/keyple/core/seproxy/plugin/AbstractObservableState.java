@@ -2,59 +2,72 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 public abstract class AbstractObservableState {
 
-    /* Identifier of the state */
-    private AbstractObservableLocalReader.MonitoringState state;
+    /** The states that the reader monitoring currentState machine can have */
+    protected enum MonitoringState {
+        WAIT_FOR_START_DETECTION, WAIT_FOR_SE_INSERTION, WAIT_FOR_SE_PROCESSING, WAIT_FOR_SE_REMOVAL
+    }
+
+    /* Identifier of the currentState */
+    protected MonitoringState state;
 
     /* Reference to Reader */
-    private AbstractObservableLocalReader reader;
+    protected AbstractObservableLocalReader reader;
 
     /**
-     * Create a new state with a state identifier
-     * @param reader : observable reader this state is attached to
-     * @param state : name of the state
+     * Create a new currentState with a currentState identifier
+     * @param reader : observable reader this currentState is attached to
+     * @param state : name of the currentState
      */
-    AbstractObservableState(AbstractObservableLocalReader.MonitoringState state,AbstractObservableLocalReader reader){
+    protected AbstractObservableState(MonitoringState state,AbstractObservableLocalReader reader){
         this.reader = reader;
         this.state = state;
     }
 
     /**
-     * Get state identifier
-     * @return name state
+     * Get currentState identifier
+     * @return name currentState
      */
-    public AbstractObservableLocalReader.MonitoringState getMonitoringState(){
+    public MonitoringState getMonitoringState(){
         return state;
     }
 
+
+    protected abstract void onEvent(AbstractObservableLocalReader.StateEvent event);
+
     /**
      * Handle Start Detection Event
-     * @return next state
+     * @return next currentState
+    protected abstract void onStartDetection();
      */
-    abstract AbstractObservableState onStartDetection();
 
     /**
      * Handle Stop Detection Event
-     * @return next state
+     * @return next currentState
+    protected abstract void onStopDetection();
      */
-    abstract AbstractObservableState onStopDetection();
 
     /**
      * Handle Se Inserted Event
-     * @return next state
+     * @return next currentState
+    protected abstract void onSeInserted();
      */
-    abstract AbstractObservableState onSeInserted();
 
     /**
      * Handle Se Processed Event
-     * @return next state
+     * @return next currentState
+    protected abstract void onSeProcessed();
      */
-    abstract AbstractObservableState onSeProcessed();
 
     /**
      * Handle Se Removed Event
-     * @return next state
+     * @return next currentState
+    protected abstract void onSeRemoved();
      */
-    abstract AbstractObservableState onSeRemoved();
+
+    protected abstract void activate();
+    protected abstract void deActivate();
+
+
 
 }
 

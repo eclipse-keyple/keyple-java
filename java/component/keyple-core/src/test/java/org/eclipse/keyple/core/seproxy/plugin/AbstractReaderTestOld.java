@@ -126,6 +126,11 @@ public class AbstractReaderTestOld extends CoreBaseTest {
         return new MockThreadedObservableLocalReader(pluginName, readerName) {
 
             @Override
+            protected AbstractObservableState.MonitoringState getInitState() {
+                return null;
+            }
+
+            @Override
             public boolean waitForCardPresent(long timeout) {
                 return false;
             }

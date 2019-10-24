@@ -11,7 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader.MonitoringState.*;
+import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
+import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
 import static org.mockito.Mockito.doReturn;
 import java.util.concurrent.CountDownLatch;
 import org.eclipse.keyple.core.CoreBaseTest;
@@ -66,7 +67,6 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
     @After
     public void tearDown() throws Throwable {
         r.clearObservers();
-        r.finalize();
         r = null;
 
     }
@@ -84,7 +84,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
         Thread.sleep(100);
 
         // does nothing
-        Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getMonitoringState());
+        Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
     }
 
     @Test
@@ -101,7 +101,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
         r.startRemovalSequence();
         Thread.sleep(100);
 
-        Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getMonitoringState());
+        Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
     }
 
     @Test
@@ -118,7 +118,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
         r.startRemovalSequence();
         Thread.sleep(100);
 
-        Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getMonitoringState());
+        Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
     }
 
 
@@ -137,7 +137,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
         r.startRemovalSequence();
         Thread.sleep(100);
 
-        Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getMonitoringState());
+        Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
     }
 
     /*
