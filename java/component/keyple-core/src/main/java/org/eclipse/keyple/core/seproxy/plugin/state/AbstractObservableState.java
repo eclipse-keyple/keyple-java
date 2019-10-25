@@ -36,6 +36,7 @@ public abstract class AbstractObservableState {
     /**
      * Handle Internal Event
      * Usually state is switched using method reader::switchState
+     * @param event internal event received by reader
      */
     public abstract void onEvent(AbstractObservableLocalReader.InternalEvent event);
 

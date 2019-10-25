@@ -36,7 +36,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
     private static final Logger logger =
             LoggerFactory.getLogger(AbstractThreadedObservableLocalReader.class);
 
-    ExecutorService executorService = Executors.newSingleThreadExecutor();
+    protected ExecutorService executorService;
     private long timeoutSeInsert = 10000;
     private long timeoutSeRemoval = 10000;
 
@@ -50,8 +50,16 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
      * @param readerName the name of the reader
      */
     public AbstractThreadedObservableLocalReader(String pluginName, String readerName) {
-        super(pluginName, readerName);
+        this(pluginName,readerName, Executors.newSingleThreadExecutor());
 
+
+    }
+
+    public AbstractThreadedObservableLocalReader(String pluginName, String readerName, ExecutorService executorService) {
+        super(pluginName, readerName);
+        this.executorService = executorService;
+        /* Init state */
+        switchState(getInitState());
     }
 
     public ExecutorService getExecutorService(){

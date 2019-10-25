@@ -13,10 +13,12 @@ package org.eclipse.keyple.plugin.pcsc;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.plugin.*;
+import org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -56,8 +58,8 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
      * @param pluginName the name of the plugin
      * @param terminal the PC/SC terminal
      */
-    protected PcscReaderImpl(String pluginName, CardTerminal terminal) {
-        super(pluginName, terminal.getName());
+    protected PcscReaderImpl(String pluginName, CardTerminal terminal, ExecutorService executorService) {
+        super(pluginName, terminal.getName(),executorService);
         this.terminal = terminal;
         this.card = null;
         this.channel = null;
@@ -435,5 +437,11 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
                 return TransmissionMode.CONTACTS;
             }
         }
+    }
+
+
+    @Override
+    protected AbstractObservableState.MonitoringState getInitState() {
+        return AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
     }
 }

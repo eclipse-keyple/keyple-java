@@ -28,6 +28,8 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
      */
     public BlankObservableLocalReader(String pluginName, String readerName) {
         super(pluginName, readerName);
+        /* Init state */
+        switchState(getInitState());
     }
 
 

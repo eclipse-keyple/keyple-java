@@ -135,8 +135,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         super(pluginName, readerName);
         states = initStates();
         logger.trace("Instantiate reader with states {}", states.keySet());
-        /* Init state */
-        switchState(getInitState());
     }
 
 
