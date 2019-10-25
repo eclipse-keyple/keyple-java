@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.calypso.pc.UseCase_Calypso1_ExplicitSelectionAid;
+package org.eclipse.keyple.example.calypso.pc.usecase1;
 
 
 import java.io.IOException;
@@ -20,21 +20,21 @@ import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
-import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
-import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
+import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
+import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <h1>Use Case ‘Calypso 1’ – Explicit Selection Aid (PC/SC)</h1>
+ * <h1>Use Case ‘Calypso 1’ – Explicit Selection Aid (Stub)</h1>
  * <ul>
  * <li>
  * <h2>Scenario:</h2>
@@ -54,9 +54,9 @@ import org.slf4j.LoggerFactory;
  * </li>
  * </ul>
  */
-public class UseCase_Calypso1_ExplicitSelectionAid_Pcsc {
+public class ExplicitSelectionAid_Stub {
     protected static final Logger logger =
-            LoggerFactory.getLogger(UseCase_Calypso1_ExplicitSelectionAid_Pcsc.class);
+            LoggerFactory.getLogger(ExplicitSelectionAid_Stub.class);
 
     public static void main(String[] args)
             throws KeypleBaseException, InterruptedException, IOException, NoStackTraceThrowable {
@@ -64,19 +64,32 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Pcsc {
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
-        /* Assign PcscPlugin to the SeProxyService */
-        seProxyService.registerPlugin(new PcscPluginFactory());
+        /* Register Stub plugin in the platform */
+        seProxyService.registerPlugin(new StubPluginFactory());
+        ReaderPlugin stubPlugin = seProxyService.getPlugin(StubPlugin.PLUGIN_NAME);
+
+        /* Plug the PO stub reader. */
+        ((StubPlugin) stubPlugin).plugStubReader("poReader", true);
 
         /*
-         * Get a PO reader ready to work with Calypso PO. Use the getReader helper method from the
-         * CalypsoUtilities class.
+         * Get a PO reader ready to work with Calypso PO.
          */
-        SeReader poReader = CalypsoUtilities.getDefaultPoReader();
+        StubReader poReader = (StubReader) (stubPlugin.getReader("poReader"));
 
         /* Check if the reader exists */
         if (poReader == null) {
             throw new IllegalStateException("Bad PO reader setup");
         }
+
+        poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                StubProtocolSetting.STUB_PROTOCOL_SETTING
+                        .get(SeCommonProtocols.PROTOCOL_ISO14443_4));
+
+        /* Create 'virtual' Calypso PO */
+        StubSecureElement calypsoStubSe = new StubCalypsoClassic();
+
+        logger.info("Insert stub PO.");
+        poReader.insertSe(calypsoStubSe);
 
         logger.info(
                 "=============== UseCase Calypso #1: AID based explicit selection ==================");
@@ -129,8 +142,6 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Pcsc {
             /*
              * Add the selection case to the current selection (we could have added other cases
              * here)
-             *
-             * Ignore the returned index since we have only one selection here.
              */
             seSelection.prepareSelection(poSelectionRequest);
 
@@ -147,10 +158,10 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Pcsc {
                 CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
                 logger.info("The selection of the PO has succeeded.");
 
+                /* Retrieve the parser and the data read from the selection processed */
                 ReadRecordsRespPars readEnvironmentParser = (ReadRecordsRespPars) matchingSelection
                         .getResponseParser(readEnvironmentParserIndex);
 
-                /* Retrieve the data read from the parser updated during the selection process */
                 byte environmentAndHolder[] = (readEnvironmentParser.getRecords())
                         .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
 
@@ -208,6 +219,10 @@ public class UseCase_Calypso1_ExplicitSelectionAid_Pcsc {
         } else {
             logger.error("No PO were detected.");
         }
+
+        logger.info("Remove stub PO.");
+        poReader.removeSe();
+
         System.exit(0);
     }
 }
