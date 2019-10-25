@@ -184,7 +184,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     public void startSeDetection(ObservableReader.PollingMode pollingMode) {
         logger.trace("[{}] startSeDetection => start Se Detection", this.getName());
         currentPollingMode = pollingMode;
-        currentState.onEvent(InternalEvent.START_DETECT);
+        onEvent(InternalEvent.START_DETECT);
     }// TODO OD : shouldn't this method be in ThreadedObs?
 
     /**
@@ -195,7 +195,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      */
     public void stopSeDetection() {
         logger.trace("[{}] stopSeDetection => stop Se Detection", this.getName());
-        currentState.onEvent(InternalEvent.STOP_DETECT);
+        onEvent(InternalEvent.STOP_DETECT);
     }// TODO OD : shouldn't this method be in ThreadedObs?
 
     /**
@@ -257,7 +257,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * depending on what was set when the detection was started.
      */
     protected void startRemovalSequence() {
-        currentState.onEvent(InternalEvent.SE_PROCESSED);
+
+        onEvent(InternalEvent.SE_PROCESSED);
     };
 
 
@@ -406,6 +407,10 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
     abstract protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> initStates();
 
+
+    synchronized public void onEvent(InternalEvent event){
+        this.currentState.onEvent(event);
+    }
 
     /**
      * Set a new current state

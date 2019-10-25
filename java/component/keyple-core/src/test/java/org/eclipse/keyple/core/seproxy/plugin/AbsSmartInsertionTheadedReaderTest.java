@@ -48,7 +48,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
     // Execute tests X times
     @Parameterized.Parameters
     public static Object[][] data() {
-        int x = 10;
+        int x = 0;
         return new Object[x][0];
     }
 

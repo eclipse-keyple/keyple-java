@@ -127,8 +127,6 @@ public class StubReaderTest extends BaseStubTest {
         lock.await(2, TimeUnit.SECONDS);
         Assert.assertEquals(0, lock.getCount()); // should be 0 because countDown is called by
         Assert.assertTrue(reader.isSePresent());
-
-
     }
 
     /**
@@ -174,6 +172,8 @@ public class StubReaderTest extends BaseStubTest {
 
         // add observer
         reader.addObserver(readerObs);
+
+        reader.startSeDetection(ObservableReader.PollingMode.CONTINUE);
 
         // test
         reader.insertSe(hoplinkSE());
@@ -359,6 +359,9 @@ public class StubReaderTest extends BaseStubTest {
 
         // add observer
         reader.addObserver(readerObs);
+
+        //set PollingMode to Continue
+        reader.startSeDetection(ObservableReader.PollingMode.CONTINUE);
 
         // test first sequence
         reader.insertSe(hoplinkSE());
