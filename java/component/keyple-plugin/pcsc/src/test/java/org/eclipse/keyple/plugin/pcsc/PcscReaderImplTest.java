@@ -6,6 +6,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ public class PcscReaderImplTest extends CoreBaseTest {
 
 
     @Test
+    @Ignore
     public void testDetectCard() throws KeypleReaderException, InterruptedException {
         final CountDownLatch insert = new CountDownLatch(1);
         final CountDownLatch remove = new CountDownLatch(1);
