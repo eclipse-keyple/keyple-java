@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.calypso.pc.UseCase_Calypso4_PoAuthentication;
+package org.eclipse.keyple.example.calypso.pc.usecase4;
 
 
 
@@ -56,9 +56,9 @@ import org.slf4j.LoggerFactory;
  * </li>
  * </ul>
  */
-public class UseCase_Calypso4_PoAuthentication_Pcsc {
+public class PoAuthentication_Pcsc {
     private static final Logger logger =
-            LoggerFactory.getLogger(UseCase_Calypso4_PoAuthentication_Pcsc.class);
+            LoggerFactory.getLogger(PoAuthentication_Pcsc.class);
 
     public static void main(String[] args) throws KeypleBaseException, NoStackTraceThrowable {
 
