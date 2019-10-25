@@ -96,7 +96,7 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
         /*
          * ------------ input polling mode is CONTINUE SE has NOT been removed within timeout
          */
-        long timeout = 100l;
+        long timeout = 20l;
         AbstractThreadedObservableLocalReader r =
                 AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
         ThreadedWaitForSeRemoval waitForSeRemoval = new ThreadedWaitForSeRemoval(r, timeout);

@@ -21,8 +21,8 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
     /** logger */
     private static final Logger logger = LoggerFactory.getLogger(ThreadedWaitForSeRemoval.class);
 
-    private FutureTask<Boolean> waitForCardAbsentPing;
-    private FutureTask<Boolean> waitForCardAbsent;
+    private Future<Boolean> waitForCardAbsentPing;
+    private Future<Boolean> waitForCardAbsent;
     private final long timeout;
 
     public ThreadedWaitForSeRemoval(AbstractObservableLocalReader reader, long timeout) {
@@ -34,46 +34,21 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
 
     @Override
     public void activate() {
-        logger.trace("Activate ThreadedWaitForSeRemoval state");
+        logger.debug("Activate ThreadedWaitForSeRemoval {} ", this.state);
         ExecutorService executor =
                 ((AbstractThreadedObservableLocalReader) reader).getExecutorService();
-        try {
+
             if (reader instanceof SmartPresenceReader) {
                 logger.trace("Reader is SmartPresence enabled");
-                waitForCardAbsent = waitForCardAbsent(timeout);
-
-                executor.submit(waitForCardAbsent);
-
-                if (waitForCardAbsent.get()) {// timeout is already managed within the task
-                    onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
-                } else {
-                    // se was not removed within timeout
-                    onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
-                } ;
+                waitForCardAbsent = executor.submit(waitForCardAbsent(timeout));
 
             } else {
                 // reader is not instanceof SmartPresenceReader
                 // poll card with isPresentPing
                 logger.trace("Reader is not SmartPresence enabled");
-                waitForCardAbsentPing = waitForCardAbsentPing();
+                waitForCardAbsentPing = executor.submit(waitForCardAbsentPing(timeout));
 
-                executor.submit(waitForCardAbsentPing);
-
-                if (waitForCardAbsentPing.get(this.timeout, TimeUnit.MILLISECONDS)) {
-                    onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
-                } else {
-                    // se was not removed within timeout
-                    onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
-                } ;
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            // se was not removed within timeout
-            onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
-        }
     }
 
     /**
@@ -81,15 +56,21 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
      * 
      * @return true is the card was removed
      */
-    private FutureTask<Boolean> waitForCardAbsent(final long timeout) {
+    private Callable<Boolean> waitForCardAbsent(final long timeout) {
         logger.trace("Using method waitForCardAbsentNative");
-        return new FutureTask(new Callable<Boolean>() {
+        return new Callable<Boolean>() {
             @Override
-            public Boolean call() throws Exception {
-                return ((SmartPresenceReader) reader).waitForCardAbsentNative(timeout);
-
+            public Boolean call(){
+                if (((SmartPresenceReader) reader).waitForCardAbsentNative(timeout)) {// timeout is already managed within the task
+                    onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
+                    return true;
+                } else {
+                    // se was not removed within timeout
+                    onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
+                    return false;
+                }
             }
-        });
+        };
     }
 
     /**
@@ -97,20 +78,31 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
      * 
      * @return true is the card was removed
      */
-    private FutureTask<Boolean> waitForCardAbsentPing() {
-        logger.trace("Polling method isSePresentPing");
-        return new FutureTask(new Callable<Boolean>() {
+    private Callable<Boolean> waitForCardAbsentPing(final long timeout) {
+        return new Callable<Boolean>() {
+            long counting = 0;
+            long threeshold = 10;
+
             @Override
             public Boolean call() throws Exception {
                 while (true) {
+                    //logger.trace("Polling method isSePresentPing");
                     if (!reader.isSePresentPing()) {
+                        onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
                         return true;
                     }
+
+                    if(counting>timeout){
+                        onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
+                        return false;
+                    }
                     // wait a bit
-                    Thread.sleep(10);
+                    Thread.sleep(threeshold);
+                    counting = counting + threeshold;
+
                 }
             }
-        });
+        };
     }
 
 

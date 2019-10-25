@@ -35,7 +35,7 @@ public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
 
     @Override
     public void activate() {
-        logger.debug("Activate currentState {} ", this.state);
+        logger.debug("Activate ThreadedWaitForSeInsertion {} ", this.state);
         waitForCarPresent = ((AbstractThreadedObservableLocalReader) reader).getExecutorService()
                 .submit(waitForCardPresent(this.timeout));
         // logger.debug("End of activate currentState {} ",this.currentState);
