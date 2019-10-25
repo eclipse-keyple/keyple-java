@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.generic.pc.UseCase_Generic2_DefaultSelectionNotification;
+package org.eclipse.keyple.example.generic.pc.usecase2;
 
 
 import org.eclipse.keyple.core.selection.*;
@@ -50,9 +50,9 @@ import org.slf4j.LoggerFactory;
  * </li>
  * </ul>
  */
-public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements ReaderObserver {
+public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
     protected static final Logger logger =
-            LoggerFactory.getLogger(UseCase_Generic2_DefaultSelectionNotification_Pcsc.class);
+            LoggerFactory.getLogger(DefaultSelectionNotification_Pcsc.class);
     private String seAid = "A0000004040125090101";
     private SeSelection seSelection;
     /**
@@ -62,7 +62,7 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
      */
     private static final Object waitForEnd = new Object();
 
-    public UseCase_Generic2_DefaultSelectionNotification_Pcsc()
+    public DefaultSelectionNotification_Pcsc()
             throws KeypleBaseException, InterruptedException {
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
@@ -184,7 +184,7 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
      */
     public static void main(String[] args) throws InterruptedException, KeypleBaseException {
         /* Create the observable object to handle the SE processing */
-        UseCase_Generic2_DefaultSelectionNotification_Pcsc m =
-                new UseCase_Generic2_DefaultSelectionNotification_Pcsc();
+        DefaultSelectionNotification_Pcsc m =
+                new DefaultSelectionNotification_Pcsc();
     }
 }
