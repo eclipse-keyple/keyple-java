@@ -16,8 +16,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
@@ -27,6 +27,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -271,9 +272,76 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
      * State Machine
      */
 
+
+    @Test
+    public void switchState_sync() throws Exception {
+        AbstractObservableLocalReader r = getBlank(PLUGIN_NAME, READER_NAME);
+
+        //test method
+        r.switchState(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
+
+        //assert result
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
+
+    }
+
+    @Test
+    public void switchState_async_wait() throws Exception {
+        final AbstractObservableLocalReader r = getBlank(PLUGIN_NAME, READER_NAME);
+
+        FutureTask<Boolean> switchState =  new FutureTask(new Callable<Boolean>(){
+            @Override
+            public Boolean call() {
+                logger.trace("Invoke waitForCardPresent asynchronously");
+                try {
+                    Thread.sleep(50);
+                    r.switchState(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+        });
+
+        switchState.run();//run in the same thread
+
+        Thread.sleep(100);
+
+        //assert result
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING, r.getCurrentState().getMonitoringState());
+
+    }
+
+    @Test
+    public void switchState_async_block() throws Exception {
+        final AbstractObservableLocalReader r = getBlank(PLUGIN_NAME, READER_NAME);
+
+        FutureTask<Boolean> switchState =  new FutureTask(new Callable<Boolean>(){
+            @Override
+            public Boolean call() {
+                logger.trace("Invoke waitForCardPresent asynchronously");
+                try {
+                    Thread.sleep(500);
+                    r.switchState(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+        });
+        Future stateSwitched = Executors.newSingleThreadExecutor().submit(switchState);//run in a different thread
+
+        stateSwitched.get(2000, TimeUnit.MILLISECONDS);
+
+        //assert result
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING, r.getCurrentState().getMonitoringState());
+
+    }
+
+
     @Test
     public void states() throws Exception {
-        AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
+        AbstractObservableLocalReader r = getBlank(PLUGIN_NAME, READER_NAME);
 
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
 
@@ -290,9 +358,9 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
 
         //start detection
-        //insert SE
         r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
-        r.processSeInserted();
+        //insert SE
+        r.getCurrentState().onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
 
         //assert currentState have changed
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING, r.getCurrentState().getMonitoringState());
@@ -303,7 +371,8 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         //assert currentState have changed
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL, r.getCurrentState().getMonitoringState());
 
-        r.processSeRemoved();
+        //remove SE
+        r.getCurrentState().onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
 
         //assert currentState have changed
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
@@ -378,12 +447,13 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
                 Mockito.spy(new BlankObservableLocalReader(pluginName, readerName));
 
         doReturn(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION).when(r).getInitState();
-
+/*
         doCallRealMethod().when(r).initStates();
         doCallRealMethod().when(r).getCurrentState();
         doCallRealMethod().when(r).setCurrentState(any(AbstractObservableState.class));
         doCallRealMethod().when(r).switchState(any(AbstractObservableState.MonitoringState.class));
         doCallRealMethod().when(r).startSeDetection(any(ObservableReader.PollingMode.class));
+        */
         return r;
     }
 

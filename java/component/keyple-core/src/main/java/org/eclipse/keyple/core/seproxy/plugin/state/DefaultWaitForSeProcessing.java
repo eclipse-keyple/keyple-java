@@ -2,22 +2,21 @@ package org.eclipse.keyple.core.seproxy.plugin.state;
 
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BasicWaitForSeProcessing extends AbstractObservableState {
+public class DefaultWaitForSeProcessing extends AbstractObservableState {
 
     /** logger */
     private static final Logger logger =
-            LoggerFactory.getLogger(BasicWaitForSeProcessing.class);
+            LoggerFactory.getLogger(DefaultWaitForSeProcessing.class);
 
-    public BasicWaitForSeProcessing(AbstractObservableLocalReader reader) {
+    public DefaultWaitForSeProcessing(AbstractObservableLocalReader reader) {
         super(MonitoringState.WAIT_FOR_SE_PROCESSING, reader);
     }
 
     @Override
-    protected void onEvent(AbstractObservableLocalReader.StateEvent event) {
+    public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
         logger.trace("Event {} received on reader {} in currentState {}", event, reader.getName(), state);
         switch (event){
             case SE_PROCESSED:
@@ -34,8 +33,8 @@ public class BasicWaitForSeProcessing extends AbstractObservableState {
     }
 
     @Override
-    protected void activate() { }
+    public void activate() { }
 
     @Override
-    protected void deActivate() { }
+    public void deActivate() { }
 }

@@ -24,6 +24,7 @@ import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,8 +116,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
     protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> states;
 
-    public enum StateEvent {
-        SE_INSERTED, SE_REMOVED, SE_PROCESSED, START_DETECT, STOP_DETECT, SE_MATCHED
+    /* Internal events */
+    public enum InternalEvent {
+        SE_INSERTED, SE_REMOVED, SE_PROCESSED, START_DETECT, STOP_DETECT, TIME_OUT
     }
 
 
@@ -133,6 +135,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         super(pluginName, readerName);
         states = initStates();
         logger.trace("Instantiate reader with states {}", states.keySet());
+        /* Init state */
         switchState(getInitState());
     }
 
@@ -181,7 +184,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     public void startSeDetection(ObservableReader.PollingMode pollingMode) {
         logger.trace("[{}] startSeDetection => start Se Detection", this.getName());
         currentPollingMode = pollingMode;
-        currentState.onEvent(StateEvent.START_DETECT);
+        currentState.onEvent(InternalEvent.START_DETECT);
     }//TODO OD : shouldn't this method be in ThreadedObs?
 
     /**
@@ -192,7 +195,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      */
     public void stopSeDetection() {
         logger.trace("[{}] stopSeDetection => stop Se Detection", this.getName());
-        currentState.onEvent(StateEvent.STOP_DETECT);
+        currentState.onEvent(InternalEvent.STOP_DETECT);
     }//TODO OD : shouldn't this method be in ThreadedObs?
 
     /**
@@ -254,7 +257,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * set when the detection was started.
      */
     protected void startRemovalSequence(){
-        currentState.onEvent(StateEvent.SE_PROCESSED);
+        currentState.onEvent(InternalEvent.SE_PROCESSED);
     };
 
 
@@ -285,7 +288,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
             notifyObservers(new ReaderEvent(this.pluginName, this.name,
                     ReaderEvent.EventType.SE_INSERTED, null));
             presenceNotified = true;
-            currentState.onEvent(StateEvent.SE_INSERTED);
         } else {
             /*
              * a default request is defined, send it a notify according to the notification mode and
@@ -315,7 +317,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                                 ReaderEvent.EventType.SE_MATCHED,
                                 new DefaultSelectionsResponse(seResponseList)));
                         presenceNotified = true;
-                        currentState.onEvent(StateEvent.SE_MATCHED);
                     }else{
                         logger.trace("[{}] processSeInserted => selection hasn't matched do not thrown any event because of MATCHED_ONLY flag");
                     }
@@ -326,7 +327,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_MATCHED,
                                 new DefaultSelectionsResponse(seResponseList)));
-                        currentState.onEvent(StateEvent.SE_MATCHED);
                     } else {
                         /*
                          * The SE didn't match, notify an SE_INSERTED event with the received
@@ -335,8 +335,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_INSERTED,
                                 new DefaultSelectionsResponse(seResponseList)));
-                        currentState.onEvent(StateEvent.SE_INSERTED);
-
                     }
                     presenceNotified = true;
                 }
@@ -400,7 +398,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         closeLogicalAndPhysicalChannels();
         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                 ReaderEvent.EventType.SE_REMOVED, null));
-        currentState.onEvent(StateEvent.SE_REMOVED);
     }
 
     /* Specify which init currentState will be used */
@@ -409,12 +406,20 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     abstract protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> initStates();
 
 
-    public void setCurrentState(AbstractObservableState state){
+    /**
+     * Set a new current state
+     * @param state : new current state
+     */
+    private void setCurrentState(AbstractObservableState state){
         this.currentState = state;
-        logger.trace("Set currentState {}", this.currentState);
+        //logger.trace("Set currentState {}", this.currentState);
     }
 
-    public void switchState(AbstractObservableState.MonitoringState stateId){
+    /**
+     * Should only be invoked by this reader or its states
+     * @param stateId : next state to activate
+     */
+    synchronized public void switchState(AbstractObservableState.MonitoringState stateId){
 
         if(currentState !=null){
             logger.trace("Switch currentState from {} to {}", this.currentState.getMonitoringState(), stateId);
@@ -426,16 +431,20 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         /*
          * switch and activate currentState
          */
-        setCurrentState(this.states.get(stateId));
+        currentState = this.states.get(stateId);
 
+        //activate the new current state
         currentState.activate();
-
         logger.trace("New currentState {}", currentState);
 
     }
 
-    public AbstractObservableState getCurrentState(){
-        logger.trace("Get currentState {}", this.currentState);
+    /**
+     * Get current state
+     * @return current state
+     */
+    synchronized protected AbstractObservableState getCurrentState(){
+        //logger.trace("Get currentState {}", this.currentState);
         return currentState;
     }
 

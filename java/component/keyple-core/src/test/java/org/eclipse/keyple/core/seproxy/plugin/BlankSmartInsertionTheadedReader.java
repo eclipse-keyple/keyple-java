@@ -13,6 +13,7 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.*;
+import org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
@@ -102,6 +103,11 @@ public class BlankSmartInsertionTheadedReader extends AbstractThreadedObservable
     @Override
     public boolean waitForCardPresent(long timeout) {
         detectCount++;
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return detectCount <= mockDetect;
     }
 

@@ -1,23 +1,22 @@
 package org.eclipse.keyple.core.seproxy.plugin.state;
 
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BasicWaitForStartDetect extends AbstractObservableState {
+public class DefaultWaitForStartDetect extends AbstractObservableState {
 
     /** logger */
     private static final Logger logger =
-            LoggerFactory.getLogger(BasicWaitForStartDetect.class);
+            LoggerFactory.getLogger(DefaultWaitForStartDetect.class);
 
-    public BasicWaitForStartDetect(AbstractObservableLocalReader reader) {
+    public DefaultWaitForStartDetect(AbstractObservableLocalReader reader) {
         super(MonitoringState.WAIT_FOR_START_DETECTION, reader);
     }
 
 
     @Override
-    protected void onEvent(AbstractObservableLocalReader.StateEvent event) {
+    public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
         logger.trace("Event {} received on reader {} in currentState {}", event, reader.getName(), state);
         switch (event){
             case START_DETECT:
@@ -28,12 +27,12 @@ public class BasicWaitForStartDetect extends AbstractObservableState {
     }
 
     @Override
-    protected void activate() {
+    public void activate() {
 
     }
 
     @Override
-    protected void deActivate() {
+    public void deActivate() {
 
     }
 }

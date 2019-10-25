@@ -1,9 +1,11 @@
-package org.eclipse.keyple.core.seproxy.plugin;
+package org.eclipse.keyple.core.seproxy.plugin.state;
+
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
 
 public abstract class AbstractObservableState {
 
     /** The states that the reader monitoring currentState machine can have */
-    protected enum MonitoringState {
+    public enum MonitoringState {
         WAIT_FOR_START_DETECTION, WAIT_FOR_SE_INSERTION, WAIT_FOR_SE_PROCESSING, WAIT_FOR_SE_REMOVAL
     }
 
@@ -31,8 +33,21 @@ public abstract class AbstractObservableState {
         return state;
     }
 
+    /**
+     * Handle Internal Event
+     * Usually state is switched using method reader::switchState
+     */
+    public abstract void onEvent(AbstractObservableLocalReader.InternalEvent event);
 
-    protected abstract void onEvent(AbstractObservableLocalReader.StateEvent event);
+    /**
+     * If needed, state can be activated (for instance for polling mecanism)
+     */
+    public abstract void activate();
+
+    /**
+     * If needed, deactivate state
+     */
+    public abstract void deActivate();
 
     /**
      * Handle Start Detection Event
@@ -64,8 +79,6 @@ public abstract class AbstractObservableState {
     protected abstract void onSeRemoved();
      */
 
-    protected abstract void activate();
-    protected abstract void deActivate();
 
 
 

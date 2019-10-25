@@ -12,13 +12,12 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 
-import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.*;
+import static org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState.MonitoringState.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -50,7 +49,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
     // Execute tests X times
     @Parameterized.Parameters
     public static Object[][] data() {
-        int x = 1;
+        int x = 10;
         return new Object[x][0];
     }
 
@@ -78,7 +77,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
      */
     @Test
     public void addObserver() throws Exception {
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
+        r = getBlank(PLUGIN_NAME, READER_NAME, 0);
 
         // add observer
         r.addObserver(getObs());
@@ -90,7 +89,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     @Test
     public void removeObserver() throws Exception {
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
+        r = getBlank(PLUGIN_NAME, READER_NAME, 0);
         ObservableReader.ReaderObserver obs = getObs();
 
         // add and remove observer
@@ -104,7 +103,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
 
     @Test
     public void clearObservers() throws Exception {
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
+        r = getBlank(PLUGIN_NAME, READER_NAME, 0);
 
         // add and remove observer
         r.addObserver(getObs());
@@ -123,36 +122,50 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
     @Test
     public void startSeDetection() throws Exception {
         // do not present any card for this test
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
+        r = getBlank(PLUGIN_NAME, READER_NAME, 0);
 
         r.addObserver(getObs());
-        //Thread.sleep(100);
-        //r.stopSeDetection();
-        // Thread.sleep(100);
         r.startSeDetection(ObservableReader.PollingMode.STOP);
-        Thread.sleep(100);
 
+        Thread.sleep(500);
         Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
+
+        r.stopSeDetection();
 
     }
 
     @Test
     public void stopSeDetection() throws Exception {
         // do not present any card for this test
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
+        r = getBlank(PLUGIN_NAME, READER_NAME, 0);
 
         r.addObserver(getObs());
-        //Thread.sleep(100);
         r.startSeDetection(ObservableReader.PollingMode.STOP);
-        //Thread.sleep(100);
         r.stopSeDetection();
-        //Thread.sleep(200);
 
         Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
     }
 
+    /*
+     * isSePresentPing
+     */
 
+    @Test
+    public void isSePresentPing_true() throws Exception {
+        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
+        doReturn(ByteArrayUtil.fromHex("00")).when(r).transmitApdu(any(byte[].class));
+        Assert.assertEquals(true, r.isSePresentPing());
+    }
 
+    @Test
+    public void isSePresentPing_false() throws Exception {
+        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
+        doThrow(new KeypleIOReaderException("ping failed")).when(r).transmitApdu(any(byte[].class));
+
+        Assert.assertEquals(false, r.isSePresentPing());
+    }
+
+/*
     @Test
     public void seDetected_notMatched() throws Exception {
 
@@ -182,20 +195,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
         Assert.assertEquals(WAIT_FOR_SE_PROCESSING, r.getCurrentState().getMonitoringState());
     }
 
-    @Test
-    public void startRemovalSequence() throws Exception {
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 1);// present one card once for this test
 
-        doReturn(true).when(r).processSeInserted();
-
-        r.addObserver(getObs());
-        Thread.sleep(100);
-        r.startRemovalSequence();
-        Thread.sleep(100);
-
-        // does nothing
-        Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
-    }
 
     @Test
     public void startRemovalSequence_CONTINUE() throws Exception {
@@ -327,34 +327,9 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
         Assert.assertEquals(null, r.getCurrentState().getMonitoringState());
     }
 
-    /*
-     * isSePresentPing
-     */
-
-    @Test
-    public void isSePresentPing_true() throws Exception {
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
-        doReturn(ByteArrayUtil.fromHex("00")).when(r).transmitApdu(any(byte[].class));
-        Assert.assertEquals(true, r.isSePresentPing());
-    }
-
-    @Test
-    public void isSePresentPing_false() throws Exception {
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
-        doThrow(new KeypleIOReaderException("ping failed")).when(r).transmitApdu(any(byte[].class));
-
-        Assert.assertEquals(false, r.isSePresentPing());
-    }
+*/
 
 
-    /*
-     * Monitoring currentState
-     */
-    @Test
-    public void noThread() throws Exception {
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
-        Assert.assertEquals(null, r.getCurrentState().getMonitoringState());
-    }
 
 
     /*
@@ -362,7 +337,7 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
      */
 
     static public BlankSmartInsertionTheadedReader getSmartSpy(String pluginName, String readerName,
-            Integer mockDetect) throws KeypleReaderException {
+            Integer mockDetect) {
         BlankSmartInsertionTheadedReader r = Mockito
                 .spy(new BlankSmartInsertionTheadedReader(pluginName, readerName, mockDetect));
         return r;

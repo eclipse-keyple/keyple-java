@@ -15,15 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
+
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
-import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeInsertion;
-import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeProcessing;
-import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeRemoval;
-import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForStartDetect;
+import org.eclipse.keyple.core.seproxy.plugin.state.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,10 +61,14 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
     @Override
     protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> initStates() {
         Map<AbstractObservableState.MonitoringState, AbstractObservableState> states = new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION, new ThreadedWaitForSeInsertion(this, timeoutSeInsert));
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING, new ThreadedWaitForSeProcessing(this));
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL, new ThreadedWaitForSeRemoval(this, timeoutSeRemoval));
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION, new ThreadedWaitForStartDetect(this));
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+                new ThreadedWaitForSeInsertion(this, timeoutSeInsert));
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
+                new DefaultWaitForSeProcessing(this));
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
+                new ThreadedWaitForSeRemoval(this, timeoutSeRemoval));
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+                new DefaultWaitForStartDetect(this));
         return states;
     }
 

@@ -91,7 +91,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      * 
      * @return the plugin name String
      */
-    protected final String getPluginName() {
+    public final String getPluginName() {
         return pluginName;
     }
 
