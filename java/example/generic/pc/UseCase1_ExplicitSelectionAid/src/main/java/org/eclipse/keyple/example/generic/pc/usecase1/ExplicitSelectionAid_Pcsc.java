@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.generic.pc.UseCase_Generic1_ExplicitSelectionAid;
+package org.eclipse.keyple.example.generic.pc.usecase1;
 
 
 import java.io.IOException;
@@ -48,9 +48,9 @@ import org.slf4j.LoggerFactory;
  * </li>
  * </ul>
  */
-public class UseCase_Generic1_ExplicitSelectionAid_Pcsc {
+public class ExplicitSelectionAid_Pcsc {
     protected static final Logger logger =
-            LoggerFactory.getLogger(UseCase_Generic1_ExplicitSelectionAid_Pcsc.class);
+            LoggerFactory.getLogger(ExplicitSelectionAid_Pcsc.class);
     private static String seAid = "A0000004040125090101"; /* Here a Calypso AID */
 
 
