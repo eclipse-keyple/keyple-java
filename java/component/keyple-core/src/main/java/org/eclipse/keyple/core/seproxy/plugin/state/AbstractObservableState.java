@@ -1,3 +1,14 @@
+/********************************************************************************
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin.state;
 
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
@@ -17,25 +28,27 @@ public abstract class AbstractObservableState {
 
     /**
      * Create a new currentState with a currentState identifier
+     * 
      * @param reader : observable reader this currentState is attached to
      * @param state : name of the currentState
      */
-    protected AbstractObservableState(MonitoringState state,AbstractObservableLocalReader reader){
+    protected AbstractObservableState(MonitoringState state, AbstractObservableLocalReader reader) {
         this.reader = reader;
         this.state = state;
     }
 
     /**
      * Get currentState identifier
+     * 
      * @return name currentState
      */
-    public MonitoringState getMonitoringState(){
+    public MonitoringState getMonitoringState() {
         return state;
     }
 
     /**
-     * Handle Internal Event
-     * Usually state is switched using method reader::switchState
+     * Handle Internal Event Usually state is switched using method reader::switchState
+     * 
      * @param event internal event received by reader
      */
     public abstract void onEvent(AbstractObservableLocalReader.InternalEvent event);
@@ -52,36 +65,34 @@ public abstract class AbstractObservableState {
 
     /**
      * Handle Start Detection Event
-     * @return next currentState
-    protected abstract void onStartDetection();
+     * 
+     * @return next currentState protected abstract void onStartDetection();
      */
 
     /**
      * Handle Stop Detection Event
-     * @return next currentState
-    protected abstract void onStopDetection();
+     * 
+     * @return next currentState protected abstract void onStopDetection();
      */
 
     /**
      * Handle Se Inserted Event
-     * @return next currentState
-    protected abstract void onSeInserted();
+     * 
+     * @return next currentState protected abstract void onSeInserted();
      */
 
     /**
      * Handle Se Processed Event
-     * @return next currentState
-    protected abstract void onSeProcessed();
+     * 
+     * @return next currentState protected abstract void onSeProcessed();
      */
 
     /**
      * Handle Se Removed Event
-     * @return next currentState
-    protected abstract void onSeRemoved();
+     * 
+     * @return next currentState protected abstract void onSeRemoved();
      */
 
 
 
-
 }
-

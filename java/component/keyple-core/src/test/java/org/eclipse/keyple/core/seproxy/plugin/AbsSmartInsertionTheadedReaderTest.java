@@ -17,7 +17,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import java.util.concurrent.CountDownLatch;
-
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -165,170 +164,124 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
         Assert.assertEquals(false, r.isSePresentPing());
     }
 
-/*
-    @Test
-    public void seDetected_notMatched() throws Exception {
-
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 1);// present one card once for this test
-        doReturn(false).when(r).processSeInserted();
-
-        r.addObserver(getObs());
-        Thread.sleep(100);
-        r.startSeDetection(ObservableReader.PollingMode.STOP);
-        Thread.sleep(100);
-
-        Assert.assertEquals(WAIT_FOR_SE_REMOVAL, r.getCurrentState().getMonitoringState());
-
-    }
-
-    @Test
-    public void seDetected_matched() throws Exception {
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 1);// present one card once for this test
-
-        doReturn(true).when(r).processSeInserted();
-        r.addObserver(getObs());
-        Thread.sleep(100);
-        r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
-
-        Thread.sleep(100);
-
-        Assert.assertEquals(WAIT_FOR_SE_PROCESSING, r.getCurrentState().getMonitoringState());
-    }
-
-
-
-    @Test
-    public void startRemovalSequence_CONTINUE() throws Exception {
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 1);// present one card once for this test
-
-        doReturn(true).when(r).processSeInserted();
-
-        r.addObserver(getObs());
-        Thread.sleep(100);
-        r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
-        Thread.sleep(100);
-        r.startRemovalSequence();
-        Thread.sleep(100);
-
-        Assert.assertEquals(WAIT_FOR_SE_REMOVAL, r.getCurrentState().getMonitoringState());
-    }
-
-    @Test
-    public void startRemovalSequence_STOP() throws Exception {
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 1);// present one card once for this test
-        doReturn(true).when(r).processSeInserted();
-
-        r.addObserver(getObs());
-        r.startSeDetection(ObservableReader.PollingMode.STOP);
-        //Thread.sleep(100);
-        r.startRemovalSequence();
-        //Thread.sleep(100);
-
-        Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
-    }
-
-    @Test
-    public void seProcessing_timeout() throws Exception {
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 1);// present one card once for this test
-        doReturn(true).when(r).processSeInserted();
-
-        CountDownLatch lock = new CountDownLatch(1);
-
-        // configure reader to raise timeout if SeProcessing is too long
-        r.setThreadWaitTimeout(100);
-        // attach observer to detect TIMEOUT_EVENT
-        r.addObserver(countDownOnTimeout(lock));
-
-        // Thread.sleep(100);
-        r.startSeDetection(ObservableReader.PollingMode.STOP);
-        lock.await(5000, TimeUnit.MILLISECONDS);
-
-        Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
-        Assert.assertEquals(0, lock.getCount());
-    }
-
-    @Test
-    public void seRemoval_timeout() throws Exception {
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 1);// present one card once for this test
-
-        CountDownLatch lock = new CountDownLatch(1);
-        doReturn(true).when(r).processSeInserted();
-
-        // configure reader to raise timeout if SeProcessing is too long
-        r.setThreadWaitTimeout(300);
-        // attach observer to detect TIMEOUT_EVENT
-        r.addObserver(countDownOnTimeout(lock));
-
-        Thread.sleep(100);
-        r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
-        Thread.sleep(100);
-        r.startRemovalSequence();
-        lock.await(5000, TimeUnit.MILLISECONDS);
-
-        Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
-        Assert.assertEquals(0, lock.getCount());
-    }
-
-    @Test
-    public void seRemoval_sePresence_CONTINUE() throws Exception {
-
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 1);// present one card once for this test
-        doReturn(true).when(r).processSeInserted();
-
-        // Card removed
-        doThrow(new KeypleIOReaderException("ping failed")).when(r).transmitApdu(any(byte[].class));
-
-        r.addObserver(getObs());
-        //Thread.sleep(100);
-        r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
-        //Thread.sleep(500);
-        r.startRemovalSequence();
-        //Thread.sleep(100);
-
-        Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
-    }
-
-    @Test
-    public void seRemoval_sePresence_STOP() throws Exception {
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 1);// present one card once for this test
-
-        doReturn(true).when(r).processSeInserted();
-        // Card removed
-        doThrow(new KeypleIOReaderException("ping failed")).when(r).transmitApdu(any(byte[].class));
-
-
-        r.addObserver(getObs());
-        Thread.sleep(100);
-        r.startSeDetection(ObservableReader.PollingMode.STOP);
-
-        Thread.sleep(100);
-
-        r.startRemovalSequence();
-        Thread.sleep(100);
-
-        Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
-    }
-
-    @Test
-    public void seRemoval_finalized() throws Throwable {
-        r = getSmartSpy(PLUGIN_NAME, READER_NAME, 1);// present one card once for this test
-
-        doReturn(true).when(r).processSeInserted();
-        // Card removed
-        doThrow(new KeypleIOReaderException("ping failed")).when(r).transmitApdu(any(byte[].class));
-
-
-        r.addObserver(getObs());
-        Thread.sleep(100);
-        r.startSeDetection(ObservableReader.PollingMode.STOP);
-        Thread.sleep(100);
-        r.startRemovalSequence();
-
-        Assert.assertEquals(null, r.getCurrentState().getMonitoringState());
-    }
-
-*/
-
+    /*
+     * @Test public void seDetected_notMatched() throws Exception {
+     * 
+     * r = getSmartSpy(PLUGIN_NAME, READER_NAME, 1);// present one card once for this test
+     * doReturn(false).when(r).processSeInserted();
+     * 
+     * r.addObserver(getObs()); Thread.sleep(100);
+     * r.startSeDetection(ObservableReader.PollingMode.STOP); Thread.sleep(100);
+     * 
+     * Assert.assertEquals(WAIT_FOR_SE_REMOVAL, r.getCurrentState().getMonitoringState());
+     * 
+     * }
+     * 
+     * @Test public void seDetected_matched() throws Exception { r = getSmartSpy(PLUGIN_NAME,
+     * READER_NAME, 1);// present one card once for this test
+     * 
+     * doReturn(true).when(r).processSeInserted(); r.addObserver(getObs()); Thread.sleep(100);
+     * r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
+     * 
+     * Thread.sleep(100);
+     * 
+     * Assert.assertEquals(WAIT_FOR_SE_PROCESSING, r.getCurrentState().getMonitoringState()); }
+     * 
+     * 
+     * 
+     * @Test public void startRemovalSequence_CONTINUE() throws Exception { r =
+     * getSmartSpy(PLUGIN_NAME, READER_NAME, 1);// present one card once for this test
+     * 
+     * doReturn(true).when(r).processSeInserted();
+     * 
+     * r.addObserver(getObs()); Thread.sleep(100);
+     * r.startSeDetection(ObservableReader.PollingMode.CONTINUE); Thread.sleep(100);
+     * r.startRemovalSequence(); Thread.sleep(100);
+     * 
+     * Assert.assertEquals(WAIT_FOR_SE_REMOVAL, r.getCurrentState().getMonitoringState()); }
+     * 
+     * @Test public void startRemovalSequence_STOP() throws Exception { r = getSmartSpy(PLUGIN_NAME,
+     * READER_NAME, 1);// present one card once for this test
+     * doReturn(true).when(r).processSeInserted();
+     * 
+     * r.addObserver(getObs()); r.startSeDetection(ObservableReader.PollingMode.STOP);
+     * //Thread.sleep(100); r.startRemovalSequence(); //Thread.sleep(100);
+     * 
+     * Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState()); }
+     * 
+     * @Test public void seProcessing_timeout() throws Exception { r = getSmartSpy(PLUGIN_NAME,
+     * READER_NAME, 1);// present one card once for this test
+     * doReturn(true).when(r).processSeInserted();
+     * 
+     * CountDownLatch lock = new CountDownLatch(1);
+     * 
+     * // configure reader to raise timeout if SeProcessing is too long r.setThreadWaitTimeout(100);
+     * // attach observer to detect TIMEOUT_EVENT r.addObserver(countDownOnTimeout(lock));
+     * 
+     * // Thread.sleep(100); r.startSeDetection(ObservableReader.PollingMode.STOP); lock.await(5000,
+     * TimeUnit.MILLISECONDS);
+     * 
+     * Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
+     * Assert.assertEquals(0, lock.getCount()); }
+     * 
+     * @Test public void seRemoval_timeout() throws Exception { r = getSmartSpy(PLUGIN_NAME,
+     * READER_NAME, 1);// present one card once for this test
+     * 
+     * CountDownLatch lock = new CountDownLatch(1); doReturn(true).when(r).processSeInserted();
+     * 
+     * // configure reader to raise timeout if SeProcessing is too long r.setThreadWaitTimeout(300);
+     * // attach observer to detect TIMEOUT_EVENT r.addObserver(countDownOnTimeout(lock));
+     * 
+     * Thread.sleep(100); r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
+     * Thread.sleep(100); r.startRemovalSequence(); lock.await(5000, TimeUnit.MILLISECONDS);
+     * 
+     * Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
+     * Assert.assertEquals(0, lock.getCount()); }
+     * 
+     * @Test public void seRemoval_sePresence_CONTINUE() throws Exception {
+     * 
+     * r = getSmartSpy(PLUGIN_NAME, READER_NAME, 1);// present one card once for this test
+     * doReturn(true).when(r).processSeInserted();
+     * 
+     * // Card removed doThrow(new
+     * KeypleIOReaderException("ping failed")).when(r).transmitApdu(any(byte[].class));
+     * 
+     * r.addObserver(getObs()); //Thread.sleep(100);
+     * r.startSeDetection(ObservableReader.PollingMode.CONTINUE); //Thread.sleep(500);
+     * r.startRemovalSequence(); //Thread.sleep(100);
+     * 
+     * Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState()); }
+     * 
+     * @Test public void seRemoval_sePresence_STOP() throws Exception { r = getSmartSpy(PLUGIN_NAME,
+     * READER_NAME, 1);// present one card once for this test
+     * 
+     * doReturn(true).when(r).processSeInserted(); // Card removed doThrow(new
+     * KeypleIOReaderException("ping failed")).when(r).transmitApdu(any(byte[].class));
+     * 
+     * 
+     * r.addObserver(getObs()); Thread.sleep(100);
+     * r.startSeDetection(ObservableReader.PollingMode.STOP);
+     * 
+     * Thread.sleep(100);
+     * 
+     * r.startRemovalSequence(); Thread.sleep(100);
+     * 
+     * Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState()); }
+     * 
+     * @Test public void seRemoval_finalized() throws Throwable { r = getSmartSpy(PLUGIN_NAME,
+     * READER_NAME, 1);// present one card once for this test
+     * 
+     * doReturn(true).when(r).processSeInserted(); // Card removed doThrow(new
+     * KeypleIOReaderException("ping failed")).when(r).transmitApdu(any(byte[].class));
+     * 
+     * 
+     * r.addObserver(getObs()); Thread.sleep(100);
+     * r.startSeDetection(ObservableReader.PollingMode.STOP); Thread.sleep(100);
+     * r.startRemovalSequence();
+     * 
+     * Assert.assertEquals(null, r.getCurrentState().getMonitoringState()); }
+     * 
+     */
 
 
 
@@ -344,13 +297,14 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
     }
 
     static public BlankSmartInsertionTheadedReader getBlank(String pluginName, String readerName,
-                                                               Integer mockDetect) throws KeypleReaderException {
-        BlankSmartInsertionTheadedReader r = new BlankSmartInsertionTheadedReader(pluginName, readerName, mockDetect);
+            Integer mockDetect) throws KeypleReaderException {
+        BlankSmartInsertionTheadedReader r =
+                new BlankSmartInsertionTheadedReader(pluginName, readerName, mockDetect);
         return r;
     }
 
     static public BlankSmartInsertionTheadedReader getMock(String pluginName, String readerName,
-                                                            Integer mockDetect) throws KeypleReaderException {
+            Integer mockDetect) throws KeypleReaderException {
         BlankSmartInsertionTheadedReader r = Mockito.mock(BlankSmartInsertionTheadedReader.class);
         return r;
     }

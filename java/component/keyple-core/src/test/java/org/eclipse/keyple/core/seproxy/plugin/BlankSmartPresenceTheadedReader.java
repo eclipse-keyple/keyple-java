@@ -112,7 +112,7 @@ public class BlankSmartPresenceTheadedReader extends AbstractThreadedObservableL
     }
 
     @Override
-    protected AbstractObservableState.MonitoringState  getInitState() {
+    protected AbstractObservableState.MonitoringState getInitState() {
         return AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
     }
 }

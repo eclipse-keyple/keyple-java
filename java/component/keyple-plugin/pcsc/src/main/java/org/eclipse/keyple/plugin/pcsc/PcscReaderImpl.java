@@ -58,8 +58,9 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
      * @param pluginName the name of the plugin
      * @param terminal the PC/SC terminal
      */
-    protected PcscReaderImpl(String pluginName, CardTerminal terminal, ExecutorService executorService) {
-        super(pluginName, terminal.getName(),executorService);
+    protected PcscReaderImpl(String pluginName, CardTerminal terminal,
+            ExecutorService executorService) {
+        super(pluginName, terminal.getName(), executorService);
         this.terminal = terminal;
         this.card = null;
         this.channel = null;

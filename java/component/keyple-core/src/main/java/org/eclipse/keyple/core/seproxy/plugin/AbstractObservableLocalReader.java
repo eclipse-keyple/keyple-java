@@ -13,7 +13,6 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -51,8 +50,9 @@ import org.slf4j.LoggerFactory;
  * <li>WAIT_FOR_START_DETECTION
  * <p>
  * Infinitely waiting for a signal from the application to start SE detection by changing to
- * WAIT_FOR_SE_INSERTION currentState. This signal is given by calling the setDefaultSelectionRequest
- * method. Note: The system always starts directly in the WAIT_FOR_SE_INSERTION currentState.</li>
+ * WAIT_FOR_SE_INSERTION currentState. This signal is given by calling the
+ * setDefaultSelectionRequest method. Note: The system always starts directly in the
+ * WAIT_FOR_SE_INSERTION currentState.</li>
  * <li>WAIT_FOR_SE_INSERTION
  * <p>
  * Awaiting the SE insertion. After insertion, the processSeInserted method is called.
@@ -64,8 +64,9 @@ import org.slf4j.LoggerFactory;
  *
  * <li>There is no default selection: a SE_INSERTED event is then notified.
  * <p>
- * In the case where an event has been notified to the application, the currentState machine changes to the
- * WAIT_FOR_SE_PROCESSING currentState otherwise it changes to the WAIT_FOR_SE_REMOVAL currentState.</li>
+ * In the case where an event has been notified to the application, the currentState machine changes
+ * to the WAIT_FOR_SE_PROCESSING currentState otherwise it changes to the WAIT_FOR_SE_REMOVAL
+ * currentState.</li>
  * </ul>
  * <p>
  * The notification consists in calling the "update" methods of the defined observers. In the case
@@ -83,18 +84,19 @@ import org.slf4j.LoggerFactory;
  * physical channels are closed immediately and the Machine to currentState changes to
  * WAIT_FOR_START_DETECTION currentState.
  * <p>
- * If the instruction given is CONTINUE then the currentState machine changes to WAIT_FOR_SE_REMOVAL.
+ * If the instruction given is CONTINUE then the currentState machine changes to
+ * WAIT_FOR_SE_REMOVAL.
  * <p>
- * A timeout management is also optionally present in order to avoid a lock in this waiting currentState
- * due to a failure of the application that would have prevented it from notifying the end of SE
- * processing (see setThreadWaitTimeout).</li>
+ * A timeout management is also optionally present in order to avoid a lock in this waiting
+ * currentState due to a failure of the application that would have prevented it from notifying the
+ * end of SE processing (see setThreadWaitTimeout).</li>
  * <li>WAIT_FOR_SE_REMOVAL:
  * <p>
  * Waiting for the SE to be removed. When the SE is removed, a SE_REMOVED event is notified to the
  * application and the currentState machine changes to the WAIT_FOR_SE_INSERTION currentState.
  * <p>
- * A timeout management is also optionally present in order to avoid a lock in this waiting currentState
- * due to a SE forgotten on the reader. *</li>
+ * A timeout management is also optionally present in order to avoid a lock in this waiting
+ * currentState due to a SE forgotten on the reader. *</li>
  * </ol>
  */
 public abstract class AbstractObservableLocalReader extends AbstractLocalReader {
@@ -183,7 +185,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         logger.trace("[{}] startSeDetection => start Se Detection", this.getName());
         currentPollingMode = pollingMode;
         currentState.onEvent(InternalEvent.START_DETECT);
-    }//TODO OD : shouldn't this method be in ThreadedObs?
+    }// TODO OD : shouldn't this method be in ThreadedObs?
 
     /**
      * Stops the SE detection.
@@ -194,7 +196,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     public void stopSeDetection() {
         logger.trace("[{}] stopSeDetection => stop Se Detection", this.getName());
         currentState.onEvent(InternalEvent.STOP_DETECT);
-    }//TODO OD : shouldn't this method be in ThreadedObs?
+    }// TODO OD : shouldn't this method be in ThreadedObs?
 
     /**
      * If defined, the prepared DefaultSelectionRequest will be processed as soon as a SE is
@@ -250,11 +252,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     /**
      * This method initiates the SE removal sequence.
      * <p>
-     * The reader will remain in the WAIT_FOR_SE_REMOVAL currentState as long as the SE is present. It will
-     * change to the WAIT_FOR_START_DETECTION or WAIT_FOR_SE_INSERTION currentState depending on what was
-     * set when the detection was started.
+     * The reader will remain in the WAIT_FOR_SE_REMOVAL currentState as long as the SE is present.
+     * It will change to the WAIT_FOR_START_DETECTION or WAIT_FOR_SE_INSERTION currentState
+     * depending on what was set when the detection was started.
      */
-    protected void startRemovalSequence(){
+    protected void startRemovalSequence() {
         currentState.onEvent(InternalEvent.SE_PROCESSED);
     };
 
@@ -315,8 +317,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                                 ReaderEvent.EventType.SE_MATCHED,
                                 new DefaultSelectionsResponse(seResponseList)));
                         presenceNotified = true;
-                    }else{
-                        logger.trace("[{}] processSeInserted => selection hasn't matched do not thrown any event because of MATCHED_ONLY flag");
+                    } else {
+                        logger.trace(
+                                "[{}] processSeInserted => selection hasn't matched do not thrown any event because of MATCHED_ONLY flag");
                     }
                 } else {
                     // ObservableReader.NotificationMode.ALWAYS
@@ -406,23 +409,26 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
     /**
      * Set a new current state
+     * 
      * @param state : new current state
      */
-    private void setCurrentState(AbstractObservableState state){
+    private void setCurrentState(AbstractObservableState state) {
         this.currentState = state;
-        //logger.trace("Set currentState {}", this.currentState);
+        // logger.trace("Set currentState {}", this.currentState);
     }
 
     /**
      * Should only be invoked by this reader or its states
+     * 
      * @param stateId : next state to activate
      */
-    synchronized public void switchState(AbstractObservableState.MonitoringState stateId){
+    synchronized public void switchState(AbstractObservableState.MonitoringState stateId) {
 
-        if(currentState !=null){
-            logger.trace("Switch currentState from {} to {}", this.currentState.getMonitoringState(), stateId);
+        if (currentState != null) {
+            logger.trace("Switch currentState from {} to {}",
+                    this.currentState.getMonitoringState(), stateId);
             currentState.deActivate();
-        }else{
+        } else {
             logger.debug("Switch to a new currentState {}", stateId);
         }
 
@@ -431,7 +437,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
          */
         currentState = this.states.get(stateId);
 
-        //activate the new current state
+        // activate the new current state
         currentState.activate();
         logger.trace("New currentState {}", currentState);
 
@@ -439,10 +445,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
     /**
      * Get current state
+     * 
      * @return current state
      */
-    synchronized protected AbstractObservableState getCurrentState(){
-        //logger.trace("Get currentState {}", this.currentState);
+    synchronized protected AbstractObservableState getCurrentState() {
+        // logger.trace("Get currentState {}", this.currentState);
         return currentState;
     }
 

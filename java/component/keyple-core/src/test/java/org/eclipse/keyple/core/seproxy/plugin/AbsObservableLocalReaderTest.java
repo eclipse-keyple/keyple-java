@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.*;
-
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
@@ -277,11 +276,12 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     public void switchState_sync() throws Exception {
         AbstractObservableLocalReader r = getBlank(PLUGIN_NAME, READER_NAME);
 
-        //test method
+        // test method
         r.switchState(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
 
-        //assert result
-        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
+        // assert result
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+                r.getCurrentState().getMonitoringState());
 
     }
 
@@ -289,7 +289,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     public void switchState_async_wait() throws Exception {
         final AbstractObservableLocalReader r = getBlank(PLUGIN_NAME, READER_NAME);
 
-        FutureTask<Boolean> switchState =  new FutureTask(new Callable<Boolean>(){
+        FutureTask<Boolean> switchState = new FutureTask(new Callable<Boolean>() {
             @Override
             public Boolean call() {
                 logger.trace("Invoke waitForCardPresent asynchronously");
@@ -303,12 +303,13 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
             }
         });
 
-        switchState.run();//run in the same thread
+        switchState.run();// run in the same thread
 
         Thread.sleep(100);
 
-        //assert result
-        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING, r.getCurrentState().getMonitoringState());
+        // assert result
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
+                r.getCurrentState().getMonitoringState());
 
     }
 
@@ -316,7 +317,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     public void switchState_async_block() throws Exception {
         final AbstractObservableLocalReader r = getBlank(PLUGIN_NAME, READER_NAME);
 
-        FutureTask<Boolean> switchState =  new FutureTask(new Callable<Boolean>(){
+        FutureTask<Boolean> switchState = new FutureTask(new Callable<Boolean>() {
             @Override
             public Boolean call() {
                 logger.trace("Invoke waitForCardPresent asynchronously");
@@ -329,12 +330,15 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
                 return true;
             }
         });
-        Future stateSwitched = Executors.newSingleThreadExecutor().submit(switchState);//run in a different thread
+        Future stateSwitched = Executors.newSingleThreadExecutor().submit(switchState);// run in a
+                                                                                       // different
+                                                                                       // thread
 
         stateSwitched.get(2000, TimeUnit.MILLISECONDS);
 
-        //assert result
-        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING, r.getCurrentState().getMonitoringState());
+        // assert result
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
+                r.getCurrentState().getMonitoringState());
 
     }
 
@@ -343,47 +347,50 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     public void states() throws Exception {
         AbstractObservableLocalReader r = getBlank(PLUGIN_NAME, READER_NAME);
 
-        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+                r.getCurrentState().getMonitoringState());
 
-        //start detection
+        // start detection
         r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
 
-        //assert currentState have changed
-        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
+        // assert currentState have changed
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+                r.getCurrentState().getMonitoringState());
 
-        //stop detection
+        // stop detection
         r.stopSeDetection();
 
-        //assert currentState have changed
-        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
+        // assert currentState have changed
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+                r.getCurrentState().getMonitoringState());
 
-        //start detection
+        // start detection
         r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
-        //insert SE
+        // insert SE
         r.getCurrentState().onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
 
-        //assert currentState have changed
-        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING, r.getCurrentState().getMonitoringState());
+        // assert currentState have changed
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
+                r.getCurrentState().getMonitoringState());
 
-        //SE has been processed
+        // SE has been processed
         r.startRemovalSequence();
 
-        //assert currentState have changed
-        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL, r.getCurrentState().getMonitoringState());
+        // assert currentState have changed
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
+                r.getCurrentState().getMonitoringState());
 
-        //remove SE
+        // remove SE
         r.getCurrentState().onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
 
-        //assert currentState have changed
-        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
+        // assert currentState have changed
+        Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+                r.getCurrentState().getMonitoringState());
     }
 
 
 
-
-
-
-        /*
+    /*
      * HELPERS
      */
 
@@ -435,25 +442,24 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
 
     static public AbstractObservableLocalReader getBlank(String pluginName, String readerName)
             throws KeypleReaderException {
-        AbstractObservableLocalReader r =
-                new BlankObservableLocalReader(pluginName, readerName);
+        AbstractObservableLocalReader r = new BlankObservableLocalReader(pluginName, readerName);
         return r;
     }
 
 
 
-    static public AbstractObservableLocalReader getSpy(String pluginName, String readerName){
+    static public AbstractObservableLocalReader getSpy(String pluginName, String readerName) {
         AbstractObservableLocalReader r =
                 Mockito.spy(new BlankObservableLocalReader(pluginName, readerName));
 
-        doReturn(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION).when(r).getInitState();
-/*
-        doCallRealMethod().when(r).initStates();
-        doCallRealMethod().when(r).getCurrentState();
-        doCallRealMethod().when(r).setCurrentState(any(AbstractObservableState.class));
-        doCallRealMethod().when(r).switchState(any(AbstractObservableState.MonitoringState.class));
-        doCallRealMethod().when(r).startSeDetection(any(ObservableReader.PollingMode.class));
-        */
+        doReturn(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION).when(r)
+                .getInitState();
+        /*
+         * doCallRealMethod().when(r).initStates(); doCallRealMethod().when(r).getCurrentState();
+         * doCallRealMethod().when(r).setCurrentState(any(AbstractObservableState.class));
+         * doCallRealMethod().when(r).switchState(any(AbstractObservableState.MonitoringState.class)
+         * ); doCallRealMethod().when(r).startSeDetection(any(ObservableReader.PollingMode.class));
+         */
         return r;
     }
 

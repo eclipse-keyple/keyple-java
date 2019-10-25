@@ -1,16 +1,25 @@
+/********************************************************************************
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin.state;
 
+import java.util.concurrent.*;
 import org.eclipse.keyple.core.seproxy.plugin.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.*;
-
 public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
 
     /** logger */
-    private static final Logger logger =
-            LoggerFactory.getLogger(ThreadedWaitForSeRemoval.class);
+    private static final Logger logger = LoggerFactory.getLogger(ThreadedWaitForSeRemoval.class);
 
     private FutureTask<Boolean> waitForCardAbsentPing;
     private FutureTask<Boolean> waitForCardAbsent;
@@ -26,58 +35,58 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
     @Override
     public void activate() {
         logger.trace("Activate ThreadedWaitForSeRemoval state");
-        ExecutorService executor = ((AbstractThreadedObservableLocalReader)reader).getExecutorService();
+        ExecutorService executor =
+                ((AbstractThreadedObservableLocalReader) reader).getExecutorService();
         try {
-            if(reader instanceof SmartPresenceReader){
+            if (reader instanceof SmartPresenceReader) {
                 logger.trace("Reader is SmartPresence enabled");
                 waitForCardAbsent = waitForCardAbsent(timeout);
 
                 executor.submit(waitForCardAbsent);
 
-                if(waitForCardAbsent.get()){//timeout is already managed within the task
-                     onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
-                }else{
-                    //se was not removed within timeout
+                if (waitForCardAbsent.get()) {// timeout is already managed within the task
+                    onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
+                } else {
+                    // se was not removed within timeout
                     onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
-                };
+                } ;
 
-            }else{
-                //reader is not instanceof SmartPresenceReader
-                //poll card with isPresentPing
+            } else {
+                // reader is not instanceof SmartPresenceReader
+                // poll card with isPresentPing
                 logger.trace("Reader is not SmartPresence enabled");
                 waitForCardAbsentPing = waitForCardAbsentPing();
 
                 executor.submit(waitForCardAbsentPing);
 
-                if(waitForCardAbsentPing.get(this.timeout, TimeUnit.MILLISECONDS)){
+                if (waitForCardAbsentPing.get(this.timeout, TimeUnit.MILLISECONDS)) {
                     onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
-                }else{
-                    //se was not removed within timeout
+                } else {
+                    // se was not removed within timeout
                     onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
-                };
+                } ;
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (TimeoutException e) {
-            //se was not removed within timeout
+            // se was not removed within timeout
             onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
         }
     }
 
     /**
      * Invoke waitForCardAbsent
+     * 
      * @return true is the card was removed
      */
-    private FutureTask<Boolean> waitForCardAbsent(final long timeout){
+    private FutureTask<Boolean> waitForCardAbsent(final long timeout) {
         logger.trace("Using method waitForCardAbsentNative");
         return new FutureTask(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                return ((SmartPresenceReader) reader)
-                        .waitForCardAbsentNative(
-                                timeout);
+                return ((SmartPresenceReader) reader).waitForCardAbsentNative(timeout);
 
             }
         });
@@ -85,18 +94,19 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
 
     /**
      * Loop on the isSePresentPing method until the SE is removed or timeout is reached
+     * 
      * @return true is the card was removed
      */
-    private FutureTask<Boolean> waitForCardAbsentPing(){
+    private FutureTask<Boolean> waitForCardAbsentPing() {
         logger.trace("Polling method isSePresentPing");
         return new FutureTask(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                while(true){
-                    if(!reader.isSePresentPing()){
+                while (true) {
+                    if (!reader.isSePresentPing()) {
                         return true;
                     }
-                    //wait a bit
+                    // wait a bit
                     Thread.sleep(10);
                 }
             }
@@ -106,10 +116,10 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
 
     @Override
     public void deActivate() {
-        if(waitForCardAbsent!=null && !waitForCardAbsent.isDone()){
+        if (waitForCardAbsent != null && !waitForCardAbsent.isDone()) {
             waitForCardAbsent.cancel(true);
         }
-        if(waitForCardAbsentPing!=null && !waitForCardAbsentPing.isDone()){
+        if (waitForCardAbsentPing != null && !waitForCardAbsentPing.isDone()) {
             waitForCardAbsentPing.cancel(true);
         }
     }

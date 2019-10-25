@@ -40,12 +40,16 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
 
     @Override
     protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> initStates() {
-        Map<AbstractObservableState.MonitoringState, AbstractObservableState> states = new
-                HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION, new DefaultWaitForSeInsertion(this));
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING, new DefaultWaitForSeProcessing(this));
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL, new DefaultWaitForSeRemoval(this));
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION, new DefaultWaitForStartDetect(this));
+        Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
+                new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+                new DefaultWaitForSeInsertion(this));
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
+                new DefaultWaitForSeProcessing(this));
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
+                new DefaultWaitForSeRemoval(this));
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+                new DefaultWaitForStartDetect(this));
         return states;
     }
 

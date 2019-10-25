@@ -1,21 +1,27 @@
+/********************************************************************************
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
+ *
+ * See the NOTICE file(s) distributed with this work for additional information regarding copyright
+ * ownership.
+ *
+ * This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ ********************************************************************************/
 package org.eclipse.keyple.plugin.pcsc;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 public class PcscReaderImplTest extends CoreBaseTest {
 
@@ -41,18 +47,17 @@ public class PcscReaderImplTest extends CoreBaseTest {
         PcscReader reader = (PcscReader) plugin.getReaders().first();
 
         reader.addObserver(onInsertedCountDown(insert));
-        reader.addObserver(onMatchedCountDown(insert));
         reader.addObserver(onRemovedCountDown(remove));
 
         reader.startSeDetection(ObservableReader.PollingMode.CONTINUE);
 
-        logger.info("Waiting 10 seconds for a card...");
+        logger.info("Waiting 10 seconds for the card insertion...");
         insert.await(10, TimeUnit.SECONDS);
         Assert.assertEquals(0, insert.getCount());
         logger.info("Card Inserted.");
 
-        logger.info("Notifying automatically of the processing of the card");
-        logger.info("Waiting 10 seconds to remove the card...");
+        logger.info("Notifying the end of the card processing");
+        logger.info("Waiting 10 seconds for the card removal...");
 
         reader.notifySeProcessed();
         remove.await(10, TimeUnit.SECONDS);
