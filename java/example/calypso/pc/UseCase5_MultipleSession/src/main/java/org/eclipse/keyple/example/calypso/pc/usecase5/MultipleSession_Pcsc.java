@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.calypso.pc.UseCase_Calypso5_MultipleSession;
+package org.eclipse.keyple.example.calypso.pc.usecase5;
 
 
 import org.eclipse.keyple.calypso.transaction.*;
@@ -66,9 +66,9 @@ import org.slf4j.LoggerFactory;
  * </li>
  * </ul>
  */
-public class UseCase_Calypso5_MultipleSession_Pcsc {
+public class MultipleSession_Pcsc {
     private static final Logger logger =
-            LoggerFactory.getLogger(UseCase_Calypso5_MultipleSession_Pcsc.class);
+            LoggerFactory.getLogger(MultipleSession_Pcsc.class);
 
     public static void main(String[] args) throws KeypleBaseException, NoStackTraceThrowable {
 
