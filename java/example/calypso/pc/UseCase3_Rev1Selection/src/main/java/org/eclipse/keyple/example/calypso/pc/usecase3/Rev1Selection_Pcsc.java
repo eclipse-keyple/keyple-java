@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.calypso.pc.UseCase_Calypso3_Rev1Selection;
+package org.eclipse.keyple.example.calypso.pc.usecase3;
 
 
 import java.io.IOException;
@@ -55,9 +55,9 @@ import org.slf4j.LoggerFactory;
  * </li>
  * </ul>
  */
-public class UseCase_Calypso3_Rev1Selection_Pcsc {
+public class Rev1Selection_Pcsc {
     protected static final Logger logger =
-            LoggerFactory.getLogger(UseCase_Calypso3_Rev1Selection_Pcsc.class);
+            LoggerFactory.getLogger(Rev1Selection_Pcsc.class);
     private static String poAtrRegex = ".*";
     private static String poDfRtPath = "2000";
 
