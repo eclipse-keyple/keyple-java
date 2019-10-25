@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.generic.pc.UseCase_Generic3_GroupedMultiSelection;
+package org.eclipse.keyple.example.generic.pc.usecase3;
 
 import java.io.IOException;
 import org.eclipse.keyple.core.selection.*;
@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
  * The UseCase_Generic3_GroupedMultiSelection_Pcsc class illustrates the use of the select next
  * mechanism
  */
-public class UseCase_Generic3_GroupedMultiSelection_Pcsc {
+public class GroupedMultiSelection_Pcsc {
     protected static final Logger logger =
-            LoggerFactory.getLogger(UseCase_Generic3_GroupedMultiSelection_Pcsc.class);
+            LoggerFactory.getLogger(GroupedMultiSelection_Pcsc.class);
 
     public static void main(String[] args)
             throws KeypleBaseException, InterruptedException, IOException, NoStackTraceThrowable {
