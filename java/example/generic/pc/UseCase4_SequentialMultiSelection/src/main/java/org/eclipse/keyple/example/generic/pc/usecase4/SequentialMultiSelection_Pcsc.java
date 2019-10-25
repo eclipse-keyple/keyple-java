@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.example.generic.pc.UseCase_Generic4_SequentialMultiSelection;
+package org.eclipse.keyple.example.generic.pc.usecase4;
 
 import java.io.IOException;
 import org.eclipse.keyple.core.selection.*;
@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
  * The UseCase_Generic3_GroupedMultiSelection_Pcsc class illustrates the use of the select next
  * mechanism
  */
-public class UseCase_Generic4_SequentialMultiSelection_Pcsc {
+public class SequentialMultiSelection_Pcsc {
     protected static final Logger logger =
-            LoggerFactory.getLogger(UseCase_Generic4_SequentialMultiSelection_Pcsc.class);
+            LoggerFactory.getLogger(SequentialMultiSelection_Pcsc.class);
 
     private static void doAndAnalyseSelection(SeReader seReader, SeSelection seSelection, int index)
             throws KeypleReaderException {
