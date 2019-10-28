@@ -40,6 +40,9 @@ public class DefaultWaitForSeProcessing extends AbstractObservableState {
                     this.reader.switchState(MonitoringState.WAIT_FOR_START_DETECTION);
                 }
                 break;
+
+            default:
+                logger.trace("Ignore event");
         }
     }
 

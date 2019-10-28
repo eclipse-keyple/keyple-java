@@ -109,10 +109,10 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
     @Override
     public void deActivate() {
         if (waitForCardAbsent != null && !waitForCardAbsent.isDone()) {
-            waitForCardAbsent.cancel(true);
+            waitForCardAbsent.cancel(true);//TODO not tested
         }
         if (waitForCardAbsentPing != null && !waitForCardAbsentPing.isDone()) {
-            waitForCardAbsentPing.cancel(true);
+            waitForCardAbsentPing.cancel(true);//TODO not tested
         }
     }
 

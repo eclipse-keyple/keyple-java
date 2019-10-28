@@ -47,8 +47,7 @@ public class DefaultWaitForSeInsertion extends AbstractObservableState {
                 break;
 
             default:
-                logger.trace("ignore event");
-
+                logger.trace("Ignore event");
         }
     }
 

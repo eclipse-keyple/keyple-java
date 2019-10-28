@@ -51,7 +51,8 @@ public class DefaultWaitForSeRemoval extends AbstractObservableState {
                         this.reader.getName(), ReaderEvent.EventType.TIMEOUT_ERROR, null));
                 logger.warn("The time limit for the removal of the SE has been exceeded.");
 
-
+            default:
+                logger.trace("Ignore event");
         }
     }
 

@@ -34,6 +34,8 @@ public class DefaultWaitForStartDetect extends AbstractObservableState {
                 reader.switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
                 break;
 
+            default:
+                logger.trace("Ignore event");
         }
     }
 
