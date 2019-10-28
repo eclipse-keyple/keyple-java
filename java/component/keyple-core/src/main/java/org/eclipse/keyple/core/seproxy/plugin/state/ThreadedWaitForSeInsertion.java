@@ -32,7 +32,6 @@ public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
         this.timeout = timeout;
     }
 
-
     @Override
     public void activate() {
         logger.trace("[{}] Activate => ThreadedWaitForSeInsertion", reader.getName());

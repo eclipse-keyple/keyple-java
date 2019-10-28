@@ -30,8 +30,6 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
         this.timeout = timeout;
     }
 
-
-
     @Override
     public void activate() {
         logger.debug("[{}] Activate ThreadedWaitForSeRemoval", this.reader.getName());

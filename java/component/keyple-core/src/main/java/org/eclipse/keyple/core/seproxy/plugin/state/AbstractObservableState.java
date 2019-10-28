@@ -47,6 +47,14 @@ public abstract class AbstractObservableState {
     }
 
     /**
+     * Switch state in the parent reader
+     * @param stateId
+     */
+    protected void switchState(AbstractObservableState.MonitoringState stateId){
+        reader.switchState(stateId);
+    }
+
+    /**
      * Handle Internal Event Usually state is switched using method reader::switchState
      * 
      * @param event internal event received by reader
@@ -63,35 +71,6 @@ public abstract class AbstractObservableState {
      */
     public abstract void deActivate();
 
-    /**
-     * Handle Start Detection Event
-     * 
-     * @return next currentState protected abstract void onStartDetection();
-     */
-
-    /**
-     * Handle Stop Detection Event
-     * 
-     * @return next currentState protected abstract void onStopDetection();
-     */
-
-    /**
-     * Handle Se Inserted Event
-     * 
-     * @return next currentState protected abstract void onSeInserted();
-     */
-
-    /**
-     * Handle Se Processed Event
-     * 
-     * @return next currentState protected abstract void onSeProcessed();
-     */
-
-    /**
-     * Handle Se Removed Event
-     * 
-     * @return next currentState protected abstract void onSeRemoved();
-     */
 
 
 

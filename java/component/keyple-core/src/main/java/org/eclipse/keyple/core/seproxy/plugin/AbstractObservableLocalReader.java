@@ -139,6 +139,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         logger.trace("Instantiate reader with states {}", states.keySet());
     }
 
+    /* Specify which init currentState will be used */
+    abstract protected AbstractObservableState.MonitoringState getInitState();
+
+    abstract protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> initStates();
+
 
     /**
      * Check the presence of a SE
@@ -257,7 +262,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * depending on what was set when the detection was started.
      */
     protected void startRemovalSequence() {
-
+        logger.trace("[{}] startRemovalSequence => start removal sequence of the reader", this.getName());
         onEvent(InternalEvent.SE_PROCESSED);
     };
 
@@ -408,20 +413,19 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                 ReaderEvent.EventType.SE_REMOVED, null));
     }
 
-    /* Specify which init currentState will be used */
-    abstract protected AbstractObservableState.MonitoringState getInitState();
-
-    abstract protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> initStates();
-
-
+    /**
+     * thread safe method to communicate an internal event to this reader
+     * Use this method to inform the reader of external event like a tag discovered or a Se inserted
+     * @param event internal event
+     */
     synchronized public void onEvent(InternalEvent event){
         this.currentState.onEvent(event);
     }
 
 
     /**
-     * Should only be invoked by this reader or its states
-     * 
+     *  thread safe method to switch the state of this reader
+     *  should only be invoked by this reader or its state
      * @param stateId : next state to activate
      */
     synchronized public void switchState(AbstractObservableState.MonitoringState stateId) {
@@ -434,18 +438,13 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         } else {
             logger.debug("[{}] Switch to a new currentState {}", this.getName(),
                     stateId);
-
         }
 
-        /*
-         * switch and activate currentState
-         */
+        //switch currentState
         currentState = this.states.get(stateId);
 
-        // activate the new current state
+        //activate the new current state
         currentState.activate();
-        //logger.trace("New currentState {}", currentState);
-
     }
 
     /**
@@ -454,7 +453,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * @return current state
      */
     synchronized protected AbstractObservableState getCurrentState() {
-        // logger.trace("Get currentState {}", this.currentState);
         return currentState;
     }
 
