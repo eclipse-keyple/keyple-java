@@ -185,7 +185,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         logger.trace("[{}] startSeDetection => start Se Detection", this.getName());
         this.currentPollingMode = pollingMode;
         onEvent(InternalEvent.START_DETECT);
-    }// TODO OD : shouldn't this method be in ThreadedObs?
+    }
 
     /**
      * Stops the SE detection.
@@ -196,7 +196,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     public void stopSeDetection() {
         logger.trace("[{}] stopSeDetection => stop Se Detection", this.getName());
         onEvent(InternalEvent.STOP_DETECT);
-    }// TODO OD : shouldn't this method be in ThreadedObs?
+    }
 
     /**
      * If defined, the prepared DefaultSelectionRequest will be processed as soon as a SE is
@@ -283,8 +283,10 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * @return true if the notification was actually sent to the application, false if not
      */
     public final boolean processSeInserted() {
+        logger.trace("[{}] processSeInserted => process the inserted se", this.getName());
         boolean presenceNotified = false;
         if (defaultSelectionsRequest == null) {
+            logger.trace("[{}] processSeInserted => no default selection request defined, notify SE_INSERTED", this.getName());
             /* no default request is defined, just notify the SE insertion */
             notifyObservers(new ReaderEvent(this.pluginName, this.name,
                     ReaderEvent.EventType.SE_INSERTED, null));
@@ -308,9 +310,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                         aSeMatched = true;
                         break;
                     }
-                    logger.trace("[{}] processSeInserted => none of {} default selection matched",
-                            this.getName(), seResponseList.size());
                 }
+
+
                 if (notificationMode == ObservableReader.NotificationMode.MATCHED_ONLY) {
                     /* notify only if a SE matched the selection, just ignore if not */
                     if (aSeMatched) {
@@ -320,7 +322,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                         presenceNotified = true;
                     } else {
                         logger.trace(
-                                "[{}] processSeInserted => selection hasn't matched do not thrown any event because of MATCHED_ONLY flag");
+                                "[{}] processSeInserted => selection hasn't matched" +
+                                        " do not thrown any event because of MATCHED_ONLY flag");
                     }
                 } else {
                     // ObservableReader.NotificationMode.ALWAYS
@@ -334,6 +337,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                          * The SE didn't match, notify an SE_INSERTED event with the received
                          * response
                          */
+                        logger.trace("[{}] processSeInserted => none of {} default selection matched",
+                                this.getName(), seResponseList.size());
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_INSERTED,
                                 new DefaultSelectionsResponse(seResponseList)));
