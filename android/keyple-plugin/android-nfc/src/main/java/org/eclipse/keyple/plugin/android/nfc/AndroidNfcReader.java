@@ -16,14 +16,22 @@ import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
+import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
 
-@RequiresApi(api = Build.VERSION_CODES.N)
-public interface AndroidNfcReader extends ObservableReader, NfcAdapter.ReaderCallback, NfcAdapter.OnTagRemovedListener  {
+/**
+ * {@link SeReader} to communicate with NFC Tag though
+ * Android {@link NfcAdapter}
+ *
+ * Configure NFCAdapter Protocols with {@link AndroidNfcReaderImpl#setParameter(String, String)}
+ *
+ * Optimized for android 4.4 (API 19) to  6.0 (API 23)
+ */
+public interface AndroidNfcReader extends ObservableReader{
 
     String READER_NAME = "AndroidNfcReaderImpl";
-    String PLUGIN_NAME = "AndroidNfcPluginImpl";
+    String PLUGIN_NAME = AndroidNfcPlugin.PLUGIN_NAME;
 
     String FLAG_READER_SKIP_NDEF_CHECK = "FLAG_READER_SKIP_NDEF_CHECK";
     String FLAG_READER_NO_PLATFORM_SOUNDS = "FLAG_READER_NO_PLATFORM_SOUNDS";

@@ -21,7 +21,7 @@ project.group 'org.eclipse.keyple'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.3'
+    //buildToolsVersion '26.0.3'
     defaultConfig {
         applicationId "org.eclipse.keyple.example.calypso.android.nfc"
         minSdkVersion 19

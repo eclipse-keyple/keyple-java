@@ -25,6 +25,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.SmartPresenceReader;
+import org.eclipse.keyple.core.seproxy.plugin.state.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -40,17 +42,16 @@ import android.os.Looper;
 
 
 /**
- * Implementation of {@link SeReader} to communicate with NFC Tag though
- * Android {@link NfcAdapter}
- *
- * Configure NFCAdapter Protocols with {@link AndroidNfcReaderImpl#setParameter(String, String)}
- *
- *
+ * Implementation of {@link AndroidNfcReader} based on keyple core abstract classes {@link AbstractObservableLocalReader}
+ * and {@link ThreadedWaitForSeRemoval}
  */
 final class AndroidNfcReaderImpl extends AbstractObservableLocalReader
-        implements AndroidNfcReader {
+        implements AndroidNfcReader, NfcAdapter.ReaderCallback  {
 
     private static final Logger LOG = LoggerFactory.getLogger(AndroidNfcReaderImpl.class);
+
+    //timeout to wait for se removal
+    private long WAIT_SE_REMOVAL_TIMEOUT = 5000l;
 
     // Android NFC Adapter
     private NfcAdapter nfcAdapter;
@@ -58,19 +59,17 @@ final class AndroidNfcReaderImpl extends AbstractObservableLocalReader
     // keep state between session if required
     private TagProxy tagProxy;
 
-    // flags for NFCAdapter
-    // private int flags = 0;
     private final Map<String, String> parameters = new HashMap<String, String>();
 
-    private MonitoringState monitoringState;
+
 
     /**
      * Private constructor
      */
     AndroidNfcReaderImpl() {
         super(PLUGIN_NAME, READER_NAME);
-        LOG.info("Init singleton NFC Reader");
-        monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
+        LOG.info("Init NFC Reader");
+        switchState(getInitState());
     }
 
     /**
@@ -85,6 +84,28 @@ final class AndroidNfcReaderImpl extends AbstractObservableLocalReader
      */
     static AndroidNfcReaderImpl getInstance() {
         return SingletonHolder.instance;
+    }
+
+
+    @Override
+    protected AbstractObservableState.MonitoringState getInitState() {
+        return AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
+    }
+
+    @Override
+    protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> initStates() {
+        Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
+                new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+                new DefaultWaitForStartDetect(this));
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+                new DefaultWaitForSeInsertion(this));
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
+                new DefaultWaitForSeProcessing(this));
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
+                new ThreadedWaitForSeRemoval(this, WAIT_SE_REMOVAL_TIMEOUT));
+        return states;
     }
 
     /**
@@ -112,9 +133,9 @@ final class AndroidNfcReaderImpl extends AbstractObservableLocalReader
         LOG.info(READER_NAME,
                 "FLAG_READER_SKIP_NDEF_CHECK:\"int\", FLAG_READER_NO_PLATFORM_SOUNDS:\"int\", FLAG_READER_PRESENCE_CHECK_DELAY:\"int\"");
 
-        Boolean correctParameter = (key.equals(AndroidNfcReaderImpl.FLAG_READER_SKIP_NDEF_CHECK)
+        Boolean correctParameter = (key.equals(AndroidNfcReader.FLAG_READER_SKIP_NDEF_CHECK)
                 && value.equals("1") || value.equals("0"))
-                || (key.equals(AndroidNfcReaderImpl.FLAG_READER_NO_PLATFORM_SOUNDS) && value.equals("1")
+                || (key.equals(AndroidNfcReader.FLAG_READER_NO_PLATFORM_SOUNDS) && value.equals("1")
                         || value.equals("0"))
                 || (key.equals(AndroidNfcReaderImpl.FLAG_READER_PRESENCE_CHECK_DELAY)
                         && Integer.parseInt(value) > -1);
@@ -152,6 +173,21 @@ final class AndroidNfcReaderImpl extends AbstractObservableLocalReader
     public void onTagDiscovered(Tag tag) {
         LOG.info("Received Tag Discovered event");
         //nfcAdapter.ignore(tag, 1000, onTagRemoved, Handler(Looper.getMainLooper()));
+
+        try {
+            tagProxy = TagProxy.getTagProxy(tag);
+            onEvent(InternalEvent.SE_INSERTED);
+
+        } catch (KeypleReaderException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+
+        /*
+
         switch (monitoringState) {
             case WAIT_FOR_SE_INSERTION:
             try {
@@ -177,54 +213,65 @@ final class AndroidNfcReaderImpl extends AbstractObservableLocalReader
             case WAIT_FOR_START_DETECTION:
                 throw new IllegalStateException("Unexpected tag discovered event while being processing a previously discovered tag.");
         }
+        */
     }
 
     /**
      * Notification by the application when the SE has been processed
      * <p>The ChannelControl parameter indicates the action to be taken: continue searching for SEs or stop searching.
      */
-    @Override
-    public final void startRemovalSequence() {
-        LOG.info("Notification received from the application. PollingMode = {}", currentPollingMode);
-        switch (monitoringState) {
-            case WAIT_FOR_SE_INSERTION:
-                break;
-            case WAIT_FOR_SE_PROCESSING:
-                if(currentPollingMode == PollingMode.CONTINUE) {
-                    monitoringState = MonitoringState.WAIT_FOR_SE_REMOVAL;
-                } else {
-                    //
-                    monitoringState = MonitoringState.WAIT_FOR_START_DETECTION;
-                }
-                break;
-            case WAIT_FOR_SE_REMOVAL:
-                break;
-            case WAIT_FOR_START_DETECTION:
-                break;
-        }
-    }
+//    @Override
+//    public final void startRemovalSequence() {
+//        LOG.info("Notification received from the application. PollingMode = {}", currentPollingMode);
+//        onEvent(InternalEvent.SE_PROCESSED);
+//
+//        /*
+//        switch (monitoringState) {
+//            case WAIT_FOR_SE_INSERTION:
+//                break;
+//            case WAIT_FOR_SE_PROCESSING:
+//                if(currentPollingMode == PollingMode.CONTINUE) {
+//                    monitoringState = MonitoringState.WAIT_FOR_SE_REMOVAL;
+//                } else {
+//                    //
+//                    monitoringState = MonitoringState.WAIT_FOR_START_DETECTION;
+//                }
+//                break;
+//            case WAIT_FOR_SE_REMOVAL:
+//                break;
+//            case WAIT_FOR_START_DETECTION:
+//                break;
+//        }
+//        */
+//    }
+
+
 
     /**
      * {@link NfcAdapter} Tag Removal Notification
-     */
     @Override
     public void onTagRemoved() {
         LOG.info("Received Tag Removed event");
-        switch (monitoringState) {
-            case WAIT_FOR_SE_INSERTION:
-                // do nothing, stay in the same state
-                break;
-            case WAIT_FOR_SE_PROCESSING:
-            case WAIT_FOR_SE_REMOVAL:
-                // close channels and notifies the event
-                processSeRemoved();
-                // go back to the "wait for SE insertion" state
-                monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
-                break;
-            case WAIT_FOR_START_DETECTION:
-                throw new IllegalStateException("Unexpected tag removed event while the detection is not started.");
-        }
+        onEvent(InternalEvent.SE_REMOVED);
+
+
+//        switch (monitoringState) {
+//            case WAIT_FOR_SE_INSERTION:
+//                // do nothing, stay in the same state
+//                break;
+//            case WAIT_FOR_SE_PROCESSING:
+//            case WAIT_FOR_SE_REMOVAL:
+//                // close channels and notifies the event
+//                processSeRemoved();
+//                // go back to the "wait for SE insertion" state
+//                monitoringState = MonitoringState.WAIT_FOR_SE_INSERTION;
+//                break;
+//            case WAIT_FOR_START_DETECTION:
+//                throw new IllegalStateException("Unexpected tag removed event while the detection is not started.");
+//        }
+
     }
+     */
 
     /**
      *
