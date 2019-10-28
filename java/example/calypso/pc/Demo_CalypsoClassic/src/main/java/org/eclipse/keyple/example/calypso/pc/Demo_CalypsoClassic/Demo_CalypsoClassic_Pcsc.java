@@ -111,14 +111,9 @@ public class Demo_CalypsoClassic_Pcsc {
         /* Assign the readers to the Calypso transaction engine */
         transactionEngine.setReaders(poReader, samReader);
 
-        /*
-         * sets a maximum time limit of 1 minute for the SE processing and its removal from the
-         * reader after processing
-         */
-        poReader.setParameter(PcscReader.SETTING_KEY_THREAD_TIMEOUT, "60000");
-
         /* Set terminal as Observer of the first reader */
-        ((ObservableReader) poReader).addObserver(transactionEngine);
+        ((ObservableReader) poReader)
+                .addObserver((ObservableReader.ReaderObserver) transactionEngine);
 
         /* Set the default selection operation */
         ((ObservableReader) poReader).setDefaultSelectionRequest(
