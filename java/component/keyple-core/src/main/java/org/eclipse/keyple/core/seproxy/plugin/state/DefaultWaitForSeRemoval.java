@@ -38,14 +38,14 @@ public class DefaultWaitForSeRemoval extends AbstractObservableState {
                 // We notify the application of the SE_REMOVED event.
                 reader.processSeRemoved();
                 if (reader.getPollingMode() == ObservableReader.PollingMode.CONTINUE) {
-                    reader.switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
+                    switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
                 } else {
-                    reader.switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+                    switchState(MonitoringState.WAIT_FOR_START_DETECTION);
                 }
                 break;
 
             case TIME_OUT:
-                reader.switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+                switchState(MonitoringState.WAIT_FOR_START_DETECTION);
                 // We notify the application of the TIMEOUT_ERROR event.
                 reader.notifyObservers(new ReaderEvent(this.reader.getPluginName(),
                         this.reader.getName(), ReaderEvent.EventType.TIMEOUT_ERROR, null));

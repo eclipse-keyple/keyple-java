@@ -31,18 +31,18 @@ public class DefaultWaitForSeInsertion extends AbstractObservableState {
         switch (event) {
             case SE_INSERTED:
                 if (this.reader.processSeInserted()) {
-                    this.reader.switchState(MonitoringState.WAIT_FOR_SE_PROCESSING);
+                    switchState(MonitoringState.WAIT_FOR_SE_PROCESSING);
                 } else {
-                    this.reader.switchState(MonitoringState.WAIT_FOR_SE_REMOVAL);
+                    switchState(MonitoringState.WAIT_FOR_SE_REMOVAL);
                 }
                 break;
 
             case STOP_DETECT:
-                this.reader.switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+                switchState(MonitoringState.WAIT_FOR_START_DETECTION);
                 break;
 
             case TIME_OUT:
-                this.reader.switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
+                switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
                 break;
 
             default:
