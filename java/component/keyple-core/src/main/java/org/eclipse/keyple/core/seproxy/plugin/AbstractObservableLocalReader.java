@@ -286,7 +286,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         logger.trace("[{}] processSeInserted => process the inserted se", this.getName());
         boolean presenceNotified = false;
         if (defaultSelectionsRequest == null) {
-            logger.trace("[{}] processSeInserted => no default selection request defined, notify SE_INSERTED", this.getName());
+            logger.trace(
+                    "[{}] processSeInserted => no default selection request defined, notify SE_INSERTED",
+                    this.getName());
             /* no default request is defined, just notify the SE insertion */
             notifyObservers(new ReaderEvent(this.pluginName, this.name,
                     ReaderEvent.EventType.SE_INSERTED, null));
@@ -321,9 +323,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                                 new DefaultSelectionsResponse(seResponseList)));
                         presenceNotified = true;
                     } else {
-                        logger.trace(
-                                "[{}] processSeInserted => selection hasn't matched" +
-                                        " do not thrown any event because of MATCHED_ONLY flag");
+                        logger.trace("[{}] processSeInserted => selection hasn't matched"
+                                + " do not thrown any event because of MATCHED_ONLY flag");
                     }
                 } else {
                     // ObservableReader.NotificationMode.ALWAYS
@@ -337,7 +338,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                          * The SE didn't match, notify an SE_INSERTED event with the received
                          * response
                          */
-                        logger.trace("[{}] processSeInserted => none of {} default selection matched",
+                        logger.trace(
+                                "[{}] processSeInserted => none of {} default selection matched",
                                 this.getName(), seResponseList.size());
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_INSERTED,
@@ -414,7 +416,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     abstract protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> initStates();
 
 
-    synchronized public void onEvent(InternalEvent event){
+    synchronized public void onEvent(InternalEvent event) {
         this.currentState.onEvent(event);
     }
 
@@ -432,8 +434,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
             currentState.deActivate();
         } else {
-            logger.debug("[{}] Switch to a new currentState {}", this.getName(),
-                    stateId);
+            logger.debug("[{}] Switch to a new currentState {}", this.getName(), stateId);
 
         }
 
@@ -444,7 +445,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
         // activate the new current state
         currentState.activate();
-        //logger.trace("New currentState {}", currentState);
+        // logger.trace("New currentState {}", currentState);
 
     }
 
@@ -461,6 +462,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
     /**
      * Get polling mode
+     * 
      * @return the current polling mode
      */
     public ObservableReader.PollingMode getPollingMode() {
@@ -469,10 +471,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
     /**
      * Get the reader current monitoring state
+     * 
      * @return current monitoring state
      */
-    public AbstractObservableState.MonitoringState getCurrentMonitoringState(){
-        return  this.currentState.getMonitoringState();
+    public AbstractObservableState.MonitoringState getCurrentMonitoringState() {
+        return this.currentState.getMonitoringState();
     }
 
 }

@@ -28,8 +28,8 @@ public class DefaultWaitForSeRemoval extends AbstractObservableState {
 
     @Override
     public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
-        logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(), event,
-                state);
+        logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(),
+                event, state);
         switch (event) {
             case SE_REMOVED:
                 // the SE has been removed, we close all channels and return to

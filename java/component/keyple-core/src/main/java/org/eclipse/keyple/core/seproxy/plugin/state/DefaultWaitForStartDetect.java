@@ -27,8 +27,8 @@ public class DefaultWaitForStartDetect extends AbstractObservableState {
 
     @Override
     public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
-        logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(), event,
-                state);
+        logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(),
+                event, state);
         switch (event) {
             case START_DETECT:
                 reader.switchState(MonitoringState.WAIT_FOR_SE_INSERTION);

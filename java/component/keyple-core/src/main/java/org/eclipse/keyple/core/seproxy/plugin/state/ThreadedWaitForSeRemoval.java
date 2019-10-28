@@ -38,17 +38,18 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
         ExecutorService executor =
                 ((AbstractThreadedObservableLocalReader) reader).getExecutorService();
 
-            if (reader instanceof SmartPresenceReader) {
-                logger.trace("[{}] Reader is SmartPresence enabled ", this.reader.getName());
-                waitForCardAbsent = executor.submit(waitForCardAbsent());
+        if (reader instanceof SmartPresenceReader) {
+            logger.trace("[{}] Reader is SmartPresence enabled ", this.reader.getName());
+            waitForCardAbsent = executor.submit(waitForCardAbsent());
 
-            } else {
-                // reader is not instanceof SmartPresenceReader
-                // poll card with isPresentPing
-                logger.trace("[{}] Reader is not SmartPresence enabled, use isSePresentPing method", this.reader.getName());
-                waitForCardAbsentPing = executor.submit(waitForCardAbsentPing());
+        } else {
+            // reader is not instanceof SmartPresenceReader
+            // poll card with isPresentPing
+            logger.trace("[{}] Reader is not SmartPresence enabled, use isSePresentPing method",
+                    this.reader.getName());
+            waitForCardAbsentPing = executor.submit(waitForCardAbsentPing());
 
-            }
+        }
     }
 
     /**
@@ -61,8 +62,12 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
 
         return new Callable<Boolean>() {
             @Override
-            public Boolean call(){
-                if (((SmartPresenceReader) reader).waitForCardAbsentNative(timeout)) {// timeout is already managed within the task
+            public Boolean call() {
+                if (((SmartPresenceReader) reader).waitForCardAbsentNative(timeout)) {// timeout is
+                                                                                      // already
+                                                                                      // managed
+                                                                                      // within the
+                                                                                      // task
                     onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
                     return true;
                 } else {
@@ -97,14 +102,15 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
                     }
                     retries++;
 
-                    long left = timeout-counting;
+                    long left = timeout - counting;
 
-                    if(left<0){
+                    if (left < 0) {
                         onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
                         return false;
                     }
-                    if(logger.isTraceEnabled()){
-                        logger.trace("[{}] Polling retries :{}, time left {} ms", reader.getName(), retries, left);
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("[{}] Polling retries :{}, time left {} ms", reader.getName(),
+                                retries, left);
 
                     }
                     // wait a bit
@@ -121,10 +127,10 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
     public void deActivate() {
         logger.debug("[{}] deActivate ThreadedWaitForSeRemoval", this.reader.getName());
         if (waitForCardAbsent != null && !waitForCardAbsent.isDone()) {
-            waitForCardAbsent.cancel(true);//TODO not tested
+            waitForCardAbsent.cancel(true);// TODO not tested
         }
         if (waitForCardAbsentPing != null && !waitForCardAbsentPing.isDone()) {
-            waitForCardAbsentPing.cancel(true);//TODO not tested
+            waitForCardAbsentPing.cancel(true);// TODO not tested
         }
     }
 

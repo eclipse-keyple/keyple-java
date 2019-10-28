@@ -255,19 +255,19 @@ public class StubReaderTest extends BaseStubTest {
         // add observer
         reader.addObserver(readerObs);
 
-        //set PollingMode to Continue
+        // set PollingMode to Continue
         reader.startSeDetection(ObservableReader.PollingMode.CONTINUE);
 
         // test first sequence
         reader.insertSe(hoplinkSE());
 
-        //Thread.sleep(200);
+        // Thread.sleep(200);
 
         // lock thread for 2 seconds max to wait for the event SE_INSERTED
         firstInsertLock.await(2, TimeUnit.SECONDS);
         Assert.assertEquals(0, firstInsertLock.getCount()); // should be 0 because insertLock is
                                                             // countDown by obs
-        //Thread.sleep(1000);
+        // Thread.sleep(1000);
 
         reader.notifySeProcessed();
         reader.removeSe();
@@ -280,7 +280,7 @@ public class StubReaderTest extends BaseStubTest {
         // BUG, insert event is not throw without (1)
         // BUG (1) make thread sleep
         // BUG, solved by setting a lower threadWaitTimeout (100ms)
-        //Thread.sleep(1000);
+        // Thread.sleep(1000);
 
         // test second sequence
         reader.insertSe(hoplinkSE());
@@ -294,7 +294,7 @@ public class StubReaderTest extends BaseStubTest {
 
         reader.notifySeProcessed();
 
-        //Thread.sleep(1000);
+        // Thread.sleep(1000);
         reader.removeSe();
 
         // lock thread for 2 seconds max to wait for the event SE_REMOVED
@@ -360,7 +360,7 @@ public class StubReaderTest extends BaseStubTest {
         // add observer
         reader.addObserver(readerObs);
 
-        //set PollingMode to Continue
+        // set PollingMode to Continue
         reader.startSeDetection(ObservableReader.PollingMode.CONTINUE);
 
         // test first sequence

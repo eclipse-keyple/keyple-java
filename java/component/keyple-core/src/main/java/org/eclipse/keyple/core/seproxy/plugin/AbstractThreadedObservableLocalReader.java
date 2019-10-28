@@ -45,6 +45,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
 
     /**
      * Reader constructor
+     * 
      * @param pluginName the name of the plugin that instantiated the reader
      * @param readerName the name of the reader
      */
@@ -55,10 +56,12 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
     }
 
     /**
-     *  Reader constructor
+     * Reader constructor
+     * 
      * @param pluginName the name of the plugin that instantiated the reader
      * @param readerName the name of the reader
-     * @param executorService if needed a executor can be specify, else a embedded single threaded executor will be used
+     * @param executorService if needed a executor can be specify, else a embedded single threaded
+     *        executor will be used
      */
     public AbstractThreadedObservableLocalReader(String pluginName, String readerName,
             ExecutorService executorService) {
@@ -89,11 +92,12 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
 
     /**
      * Sets the value of the delay for the designated timeout
+     * 
      * @param timeout timeout identifier
      * @param value delay in milliseconds
      */
     protected void setTimeout(Timeout timeout, long value) {
-        switch(timeout) {
+        switch (timeout) {
             case SE_INSERTION:
                 timeoutSeInsert = value;
                 break;
