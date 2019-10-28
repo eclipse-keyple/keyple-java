@@ -13,5 +13,12 @@ package org.eclipse.keyple.plugin.android.omapi;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
 
+/**
+ * Communicates with Android readers throught the Open Mobile API see org.simalliance.openmobileapi.Reader
+ *
+ * Instances of this class represent SE readers supported by this device. These readers can be physical devices
+ * or virtual devices. They can be removable or not. They can contain one SE that can or cannot be
+ * removed.
+ */
 public interface AndroidOmapiReader extends SeReader {
 }

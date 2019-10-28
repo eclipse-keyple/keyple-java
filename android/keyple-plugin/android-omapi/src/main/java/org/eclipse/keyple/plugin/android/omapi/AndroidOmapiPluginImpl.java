@@ -23,8 +23,7 @@ import org.simalliance.openmobileapi.SEService;
 import android.util.Log;
 
 /**
- * Loads and configures {@link AndroidOmapiReaderImpl} for each SE Reader in the platform TODO : filters
- * readers to load by parameters with a regex
+ * Loads and configures {@link AndroidOmapiReaderImpl} for each SE Reader in the platform
  */
 final class AndroidOmapiPluginImpl extends AbstractPlugin implements AndroidOmapiPlugin, SEService.CallBack {
 

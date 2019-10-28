@@ -15,6 +15,7 @@ import org.eclipse.keyple.core.seproxy.AbstractPluginFactory;
 import org.eclipse.keyple.core.seproxy.ReaderPlugin;
 
 public final class AndroidOmapiPluginFactory extends AbstractPluginFactory {
+
     @Override
     public String getPluginName() {
         return AndroidOmapiPlugin.PLUGIN_NAME;

@@ -36,11 +36,7 @@ import org.slf4j.LoggerFactory;
 import android.util.Log;
 
 /**
- * Communicates with Android readers throught the Open Mobile API see org.simalliance.openmobileapi.Reader
- *
- * Instances of this class represent SE readers supported by this device. These readers can be physical devices
- * or virtual devices. They can be removable or not. They can contain one SE that can or cannot be
- * removed.
+ * Implementation of the {@link AndroidOmapiReader} based on the {@link AbstractLocalReader}
  */
 final class AndroidOmapiReaderImpl extends AbstractLocalReader implements AndroidOmapiReader, SmartSelectionReader {
 
@@ -98,7 +94,7 @@ final class AndroidOmapiReaderImpl extends AbstractLocalReader implements Androi
     @Override
     protected byte[] getATR() {
         if(session != null) {
-            Log.i(TAG, "Retrieveing ATR from session...");
+            Log.i(TAG, "Retrieving ATR from session...");
             return session.getATR();
         }
         else {
