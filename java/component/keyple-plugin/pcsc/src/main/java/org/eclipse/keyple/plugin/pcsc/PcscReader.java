@@ -33,6 +33,7 @@ public interface PcscReader extends ObservableReader {
     String SETTING_DISCONNECT_UNPOWER = "unpower";
     String SETTING_DISCONNECT_LEAVE = "leave";
     String SETTING_DISCONNECT_EJECT = "eject";
-    String SETTING_KEY_THREAD_TIMEOUT = "thread_wait_timeout";
+    String SETTING_KEY_SE_INSERTION_TIMEOUT = "se_insertion_timeout";
+    String SETTING_KEY_SE_REMOVAL_TIMEOUT = "se_removal_timeout";
     String SETTING_KEY_LOGGING = "logging";
 }
