@@ -461,7 +461,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
     /**
      * Get polling mode
-     * @return
+     * @return the current polling mode
      */
     public ObservableReader.PollingMode getPollingMode() {
         return currentPollingMode;
