@@ -299,18 +299,6 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
                 throw new IllegalArgumentException(
                         "Parameter value not supported " + name + " : " + value);
             }
-        } else if (name.equals(SETTING_KEY_THREAD_TIMEOUT)) {
-            if (value == null) {
-                setThreadWaitTimeout(SETTING_THREAD_TIMEOUT_DEFAULT);
-            } else {
-                long timeout = Long.parseLong(value);
-
-                if (timeout <= 0) {
-                    throw new IllegalArgumentException(
-                            "Timeout has to be of at least 1ms " + name + value);
-                }
-                setThreadWaitTimeout(timeout);
-            }
         } else if (name.equals(SETTING_KEY_DISCONNECT)) {
             if (value == null || value.equals(SETTING_DISCONNECT_RESET)) {
                 cardReset = true;
