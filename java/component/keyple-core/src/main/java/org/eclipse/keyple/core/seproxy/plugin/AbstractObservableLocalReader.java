@@ -111,7 +111,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     /** Indicate if all SE detected should be notified or only matching SE */
     protected ObservableReader.NotificationMode notificationMode;
 
-    protected ObservableReader.PollingMode currentPollingMode = ObservableReader.PollingMode.STOP;
+    protected ObservableReader.PollingMode pollingMode = ObservableReader.PollingMode.STOP;
 
     /* Current currentState of the Observable Reader */
     protected AbstractObservableState currentState;
@@ -183,7 +183,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      */
     public void startSeDetection(ObservableReader.PollingMode pollingMode) {
         logger.trace("[{}] startSeDetection => start Se Detection", this.getName());
-        currentPollingMode = pollingMode;
+        this.pollingMode = pollingMode;
         onEvent(InternalEvent.START_DETECT);
     }// TODO OD : shouldn't this method be in ThreadedObs?
 
@@ -412,15 +412,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         this.currentState.onEvent(event);
     }
 
-    /**
-     * Set a new current state
-     * 
-     * @param state : new current state
-     */
-    private void setCurrentState(AbstractObservableState state) {
-        this.currentState = state;
-        // logger.trace("Set currentState {}", this.currentState);
-    }
 
     /**
      * Should only be invoked by this reader or its states
@@ -459,7 +450,20 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     }
 
 
-    public ObservableReader.PollingMode getCurrentPollingMode() {
-        return currentPollingMode;
+    /**
+     * Get polling mode
+     * @return
+     */
+    public ObservableReader.PollingMode getPollingMode() {
+        return pollingMode;
     }
+
+    /**
+     * Get the reader current monitoring state
+     * @return current monitoring state
+     */
+    public AbstractObservableState.MonitoringState getCurrentMonitoringState(){
+        return  this.currentState.getMonitoringState();
+    }
+
 }

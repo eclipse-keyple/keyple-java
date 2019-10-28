@@ -68,7 +68,7 @@ public class DefaultWaitForSeRemovalTest extends CoreBaseTest {
         AbstractThreadedObservableLocalReader r =
                 AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
         DefaultWaitForSeRemoval waitForSeRemoval = new DefaultWaitForSeRemoval(r);
-        doReturn(ObservableReader.PollingMode.CONTINUE).when(r).getCurrentPollingMode();
+        doReturn(ObservableReader.PollingMode.CONTINUE).when(r).getPollingMode();
 
         /* test */
         waitForSeRemoval.activate();

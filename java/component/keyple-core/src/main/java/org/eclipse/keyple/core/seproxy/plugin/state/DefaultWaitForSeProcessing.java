@@ -31,7 +31,7 @@ public class DefaultWaitForSeProcessing extends AbstractObservableState {
                 state);
         switch (event) {
             case SE_PROCESSED:
-                if (this.reader.getCurrentPollingMode() == ObservableReader.PollingMode.CONTINUE) {
+                if (this.reader.getPollingMode() == ObservableReader.PollingMode.CONTINUE) {
                     this.reader.switchState(MonitoringState.WAIT_FOR_SE_REMOVAL);
                 } else {
                     // We close the channels now and notify the application of

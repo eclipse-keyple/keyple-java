@@ -281,7 +281,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
 
         // assert result
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-                r.getCurrentState().getMonitoringState());
+                r.getCurrentMonitoringState());
 
     }
 
@@ -309,7 +309,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
 
         // assert result
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-                r.getCurrentState().getMonitoringState());
+                r.getCurrentMonitoringState());
 
     }
 
@@ -338,7 +338,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
 
         // assert result
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-                r.getCurrentState().getMonitoringState());
+                r.getCurrentMonitoringState());
 
     }
 
@@ -348,21 +348,21 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         AbstractObservableLocalReader r = getBlank(PLUGIN_NAME, READER_NAME);
 
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-                r.getCurrentState().getMonitoringState());
+                r.getCurrentMonitoringState());
 
         // start detection
         r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
 
         // assert currentState have changed
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                r.getCurrentState().getMonitoringState());
+                r.getCurrentMonitoringState());
 
         // stop detection
         r.stopSeDetection();
 
         // assert currentState have changed
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-                r.getCurrentState().getMonitoringState());
+                r.getCurrentMonitoringState());
 
         // start detection
         r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
@@ -371,21 +371,21 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
 
         // assert currentState have changed
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-                r.getCurrentState().getMonitoringState());
+                r.getCurrentMonitoringState());
 
         // SE has been processed
         r.startRemovalSequence();
 
         // assert currentState have changed
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-                r.getCurrentState().getMonitoringState());
+                r.getCurrentMonitoringState());
 
         // remove SE
         r.getCurrentState().onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
 
         // assert currentState have changed
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                r.getCurrentState().getMonitoringState());
+                r.getCurrentMonitoringState());
     }
 
 

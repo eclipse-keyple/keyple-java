@@ -37,7 +37,7 @@ public class DefaultWaitForSeRemoval extends AbstractObservableState {
                 // for insertion
                 // We notify the application of the SE_REMOVED event.
                 reader.processSeRemoved();
-                if (reader.getCurrentPollingMode() == ObservableReader.PollingMode.CONTINUE) {
+                if (reader.getPollingMode() == ObservableReader.PollingMode.CONTINUE) {
                     reader.switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
                 } else {
                     reader.switchState(MonitoringState.WAIT_FOR_START_DETECTION);
