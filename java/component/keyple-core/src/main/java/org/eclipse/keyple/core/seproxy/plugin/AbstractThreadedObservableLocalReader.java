@@ -35,15 +35,11 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
             LoggerFactory.getLogger(AbstractThreadedObservableLocalReader.class);
 
     protected ExecutorService executorService;
-    private long timeoutSeInsert = 10000;
-    private long timeoutSeRemoval = 10000;
+    private long timeoutSeInsert = 10000;//TODO make this configurable
+    private long timeoutSeRemoval = 10000;//TODO make this configurable
 
     /**
      * Reader constructor
-     * <p>
-     * Force the definition of a name through the use of super method.
-     * <p>
-     *
      * @param pluginName the name of the plugin that instantiated the reader
      * @param readerName the name of the reader
      */
@@ -53,6 +49,12 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
 
     }
 
+    /**
+     *  Reader constructor
+     * @param pluginName the name of the plugin that instantiated the reader
+     * @param readerName the name of the reader
+     * @param executorService if needed a executor can be specify, else a embedded single threaded executor will be used
+     */
     public AbstractThreadedObservableLocalReader(String pluginName, String readerName,
             ExecutorService executorService) {
         super(pluginName, readerName);
@@ -197,44 +199,6 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
     private long threadWaitTimeout = 0;
 
 
-    /**
-     * Setter to fix the wait timeout in ms.
-     * <p>
-     * It is advised to set a relatively high value (e. g. 120000) to avoid disturbing the nominal
-     * operation.
-     *
-     * @param timeout Timeout to use when the monitoring thread is in the WAIT_FOR_SE_PROCESSING and
-     *        WAIT_FOR_SE_REMOVAL states.
-     */
-    protected final void setThreadWaitTimeout(long timeout) {
-        this.threadWaitTimeout = timeout;
-    }
-
-    long getThreadWaitTimeout() {
-        return this.threadWaitTimeout;
-    }
-
-    private final int WAIT_FOR_SE_DETECTION_EXIT_LATENCY = 10; // TODO make it configurable
-    private final int WAIT_FOR_SE_INSERTION_EXIT_LATENCY = 10; // TODO make it configurable
-    private final int WAIT_FOR_SE_PROCESSING_EXIT_LATENCY = 10; // TODO make it configurable
-    private final int WAIT_FOR_SE_REMOVAL_EXIT_LATENCY = 10; // TODO make it configurable
-
-
-    /**
-     * Called when the class is unloaded. Attempt to do a clean exit.
-     *
-     * @throws Throwable a generic exception
-     * @Override protected void finalize() throws Throwable { if (thread != null) { thread.end();
-     *           thread = null; } logger.trace("[{}] Observable Reader thread ended.",
-     *           this.getName()); super.finalize(); }
-     */
-
-    /**
-     * Return monitoring currentState
-     *
-     * @return MonitoringState MonitoringState getMonitoringState() { if (thread != null) { return
-     *         this.thread.getMonitoringState(); } else { return null; } }
-     */
 
 
 
