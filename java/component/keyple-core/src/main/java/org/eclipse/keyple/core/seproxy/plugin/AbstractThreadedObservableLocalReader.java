@@ -35,11 +35,17 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
             LoggerFactory.getLogger(AbstractThreadedObservableLocalReader.class);
 
     protected ExecutorService executorService;
-    private long timeoutSeInsert = 10000;//TODO make this configurable
-    private long timeoutSeRemoval = 10000;//TODO make this configurable
+
+    protected enum Timeout {
+        SE_INSERTION, SE_REMOVAL
+    }
+
+    private long timeoutSeInsert = 10000;// default value
+    private long timeoutSeRemoval = 10000;// default value
 
     /**
      * Reader constructor
+     * 
      * @param pluginName the name of the plugin that instantiated the reader
      * @param readerName the name of the reader
      */
@@ -50,10 +56,12 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
     }
 
     /**
-     *  Reader constructor
+     * Reader constructor
+     * 
      * @param pluginName the name of the plugin that instantiated the reader
      * @param readerName the name of the reader
-     * @param executorService if needed a executor can be specify, else a embedded single threaded executor will be used
+     * @param executorService if needed a executor can be specify, else a embedded single threaded
+     *        executor will be used
      */
     public AbstractThreadedObservableLocalReader(String pluginName, String readerName,
             ExecutorService executorService) {
@@ -82,5 +90,20 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         return states;
     }
 
-
+    /**
+     * Sets the value of the delay for the designated timeout
+     * 
+     * @param timeout timeout identifier
+     * @param value delay in milliseconds
+     */
+    protected void setTimeout(Timeout timeout, long value) {
+        switch (timeout) {
+            case SE_INSERTION:
+                timeoutSeInsert = value;
+                break;
+            case SE_REMOVAL:
+                timeoutSeRemoval = value;
+                break;
+        }
+    }
 }

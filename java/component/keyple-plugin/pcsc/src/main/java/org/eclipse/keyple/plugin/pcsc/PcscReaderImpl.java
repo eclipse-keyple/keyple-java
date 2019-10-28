@@ -35,8 +35,9 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
     private static final String PROTOCOL_T_CL = "T=CL";
     private static final String PROTOCOL_ANY = "T=0";
 
-    /* timeout monitoring is disabled by default */
-    private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 0;
+    /* timeout monitoring timeouts */
+    private static final long SETTING_SE_INSERTION_TIMEOUT_DEFAULT = 10;
+    private static final long SETTING_SE_REMOVAL_TIMEOUT_DEFAULT = 10;
 
     private final CardTerminal terminal;
 
@@ -72,6 +73,8 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
             setParameter(SETTING_KEY_MODE, null);
             setParameter(SETTING_KEY_DISCONNECT, null);
             setParameter(SETTING_KEY_LOGGING, null);
+            setParameter(SETTING_KEY_SE_INSERTION_TIMEOUT, null);
+            setParameter(SETTING_KEY_SE_REMOVAL_TIMEOUT, null);
         } catch (KeypleBaseException ex) {
             // can not fail with null value
         }
@@ -298,6 +301,30 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
             } else {
                 throw new IllegalArgumentException(
                         "Parameter value not supported " + name + " : " + value);
+            }
+        } else if (name.equals(SETTING_KEY_SE_INSERTION_TIMEOUT)) {
+            if (value == null) {
+                setTimeout(Timeout.SE_INSERTION, SETTING_SE_INSERTION_TIMEOUT_DEFAULT);
+            } else {
+                long timeout = Long.parseLong(value);
+
+                if (timeout <= 0) {
+                    throw new IllegalArgumentException(
+                            "Timeout has to be of at least 1ms " + name + value);
+                }
+                setTimeout(Timeout.SE_INSERTION, timeout);
+            }
+        } else if (name.equals(SETTING_KEY_SE_REMOVAL_TIMEOUT)) {
+            if (value == null) {
+                setTimeout(Timeout.SE_REMOVAL, SETTING_SE_REMOVAL_TIMEOUT_DEFAULT);
+            } else {
+                long timeout = Long.parseLong(value);
+
+                if (timeout <= 0) {
+                    throw new IllegalArgumentException(
+                            "Timeout has to be of at least 1ms " + name + value);
+                }
+                setTimeout(Timeout.SE_REMOVAL, timeout);
             }
         } else if (name.equals(SETTING_KEY_DISCONNECT)) {
             if (value == null || value.equals(SETTING_DISCONNECT_RESET)) {

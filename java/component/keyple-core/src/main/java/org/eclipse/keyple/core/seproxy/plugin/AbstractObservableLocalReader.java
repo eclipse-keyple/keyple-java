@@ -262,7 +262,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * depending on what was set when the detection was started.
      */
     protected void startRemovalSequence() {
-        logger.trace("[{}] startRemovalSequence => start removal sequence of the reader", this.getName());
+        logger.trace("[{}] startRemovalSequence => start removal sequence of the reader",
+                this.getName());
         onEvent(InternalEvent.SE_PROCESSED);
     };
 
@@ -291,7 +292,9 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         logger.trace("[{}] processSeInserted => process the inserted se", this.getName());
         boolean presenceNotified = false;
         if (defaultSelectionsRequest == null) {
-            logger.trace("[{}] processSeInserted => no default selection request defined, notify SE_INSERTED", this.getName());
+            logger.trace(
+                    "[{}] processSeInserted => no default selection request defined, notify SE_INSERTED",
+                    this.getName());
             /* no default request is defined, just notify the SE insertion */
             notifyObservers(new ReaderEvent(this.pluginName, this.name,
                     ReaderEvent.EventType.SE_INSERTED, null));
@@ -326,9 +329,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                                 new DefaultSelectionsResponse(seResponseList)));
                         presenceNotified = true;
                     } else {
-                        logger.trace(
-                                "[{}] processSeInserted => selection hasn't matched" +
-                                        " do not thrown any event because of MATCHED_ONLY flag");
+                        logger.trace("[{}] processSeInserted => selection hasn't matched"
+                                + " do not thrown any event because of MATCHED_ONLY flag");
                     }
                 } else {
                     // ObservableReader.NotificationMode.ALWAYS
@@ -342,7 +344,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                          * The SE didn't match, notify an SE_INSERTED event with the received
                          * response
                          */
-                        logger.trace("[{}] processSeInserted => none of {} default selection matched",
+                        logger.trace(
+                                "[{}] processSeInserted => none of {} default selection matched",
                                 this.getName(), seResponseList.size());
                         notifyObservers(new ReaderEvent(this.pluginName, this.name,
                                 ReaderEvent.EventType.SE_INSERTED,
@@ -414,18 +417,20 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     }
 
     /**
-     * thread safe method to communicate an internal event to this reader
-     * Use this method to inform the reader of external event like a tag discovered or a Se inserted
+     * thread safe method to communicate an internal event to this reader Use this method to inform
+     * the reader of external event like a tag discovered or a Se inserted
+     * 
      * @param event internal event
      */
-    synchronized public void onEvent(InternalEvent event){
+    synchronized public void onEvent(InternalEvent event) {
         this.currentState.onEvent(event);
     }
 
 
     /**
-     *  thread safe method to switch the state of this reader
-     *  should only be invoked by this reader or its state
+     * thread safe method to switch the state of this reader should only be invoked by this reader
+     * or its state
+     * 
      * @param stateId : next state to activate
      */
     synchronized public void switchState(AbstractObservableState.MonitoringState stateId) {
@@ -436,14 +441,13 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
             currentState.deActivate();
         } else {
-            logger.debug("[{}] Switch to a new currentState {}", this.getName(),
-                    stateId);
+            logger.debug("[{}] Switch to a new currentState {}", this.getName(), stateId);
         }
 
-        //switch currentState
+        // switch currentState
         currentState = this.states.get(stateId);
 
-        //activate the new current state
+        // activate the new current state
         currentState.activate();
     }
 
@@ -459,7 +463,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
     /**
      * Get polling mode
-     * @return
+     * 
+     * @return the current polling mode
      */
     public ObservableReader.PollingMode getPollingMode() {
         return currentPollingMode;
@@ -467,10 +472,11 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
     /**
      * Get the reader current monitoring state
+     * 
      * @return current monitoring state
      */
-    public AbstractObservableState.MonitoringState getCurrentMonitoringState(){
-        return  this.currentState.getMonitoringState();
+    public AbstractObservableState.MonitoringState getCurrentMonitoringState() {
+        return this.currentState.getMonitoringState();
     }
 
 }

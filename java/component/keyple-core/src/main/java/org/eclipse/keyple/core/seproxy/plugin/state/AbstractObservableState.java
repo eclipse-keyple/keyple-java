@@ -48,9 +48,10 @@ public abstract class AbstractObservableState {
 
     /**
      * Switch state in the parent reader
-     * @param stateId
+     * 
+     * @param stateId the new state
      */
-    protected void switchState(AbstractObservableState.MonitoringState stateId){
+    protected void switchState(AbstractObservableState.MonitoringState stateId) {
         reader.switchState(stateId);
     }
 
@@ -70,7 +71,6 @@ public abstract class AbstractObservableState {
      * If needed, deactivate state
      */
     public abstract void deActivate();
-
 
 
 
