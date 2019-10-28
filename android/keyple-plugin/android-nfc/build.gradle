@@ -222,14 +222,14 @@ dependencies {
     /*
     Tests
      */
-    testImplementation group: 'org.eclipse.keyple', name: 'keyple-java-calypso', version: project.version
+
+    testImplementation "junit:junit:${junit_version}"
 
     /**Power mock**/
     androidTestImplementation "org.mockito:mockito-android:${mockito_android_version}"
     androidTestImplementation "org.powermock:powermock-api-mockito:${powermock_version}"
     androidTestImplementation "org.powermock:powermock-module-junit4:${powermock_version}"
 
-    testImplementation "junit:junit:${junit_version}"
     testImplementation "org.powermock:powermock-api-mockito:${powermock_version}"
     testImplementation "org.powermock:powermock-module-junit4:${powermock_version}"
     /**End of power mock **/
