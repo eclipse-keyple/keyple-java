@@ -111,7 +111,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     /** Indicate if all SE detected should be notified or only matching SE */
     protected ObservableReader.NotificationMode notificationMode;
 
-    protected ObservableReader.PollingMode pollingMode = ObservableReader.PollingMode.STOP;
+    protected ObservableReader.PollingMode currentPollingMode = ObservableReader.PollingMode.STOP;
 
     /* Current currentState of the Observable Reader */
     protected AbstractObservableState currentState;
@@ -183,7 +183,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      */
     public void startSeDetection(ObservableReader.PollingMode pollingMode) {
         logger.trace("[{}] startSeDetection => start Se Detection", this.getName());
-        this.pollingMode = pollingMode;
+        this.currentPollingMode = pollingMode;
         onEvent(InternalEvent.START_DETECT);
     }// TODO OD : shouldn't this method be in ThreadedObs?
 
@@ -455,7 +455,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * @return
      */
     public ObservableReader.PollingMode getPollingMode() {
-        return pollingMode;
+        return currentPollingMode;
     }
 
     /**
