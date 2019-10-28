@@ -26,11 +26,10 @@ public class DefaultWaitForSeInsertion extends AbstractObservableState {
 
     @Override
     public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
-        logger.trace("Event {} received on reader {} in currentState {}", event, reader.getName(),
+        logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(), event,
                 state);
         switch (event) {
             case SE_INSERTED:
-                logger.debug("Se Inserted event received for reader {}", reader.getName());
                 if (this.reader.processSeInserted()) {
                     this.reader.switchState(MonitoringState.WAIT_FOR_SE_PROCESSING);
                 } else {

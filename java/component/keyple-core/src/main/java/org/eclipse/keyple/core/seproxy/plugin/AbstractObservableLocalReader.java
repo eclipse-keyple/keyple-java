@@ -381,6 +381,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         final byte[] apdu = {(byte) 0x00, (byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) 0x00};
         // transmits the APDU and checks for the IO exception.
         try {
+            logger.trace("[{}] Ping SE", this.getName());
             transmitApdu(apdu);
         } catch (KeypleIOReaderException e) {
             logger.trace("[{}] Exception occured in isSePresentPing. Message: {}", this.getName(),
@@ -426,11 +427,14 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     synchronized public void switchState(AbstractObservableState.MonitoringState stateId) {
 
         if (currentState != null) {
-            logger.trace("Switch currentState from {} to {}",
+            logger.debug("[{}] Switch currentState from {} to {}", this.getName(),
                     this.currentState.getMonitoringState(), stateId);
+
             currentState.deActivate();
         } else {
-            logger.debug("Switch to a new currentState {}", stateId);
+            logger.debug("[{}] Switch to a new currentState {}", this.getName(),
+                    stateId);
+
         }
 
         /*
@@ -440,7 +444,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
         // activate the new current state
         currentState.activate();
-        logger.trace("New currentState {}", currentState);
+        //logger.trace("New currentState {}", currentState);
 
     }
 

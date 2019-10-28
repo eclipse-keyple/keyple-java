@@ -28,7 +28,7 @@ public class DefaultWaitForSeRemoval extends AbstractObservableState {
 
     @Override
     public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
-        logger.trace("Event {} received on reader {} in currentState {}", event, reader.getName(),
+        logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(), event,
                 state);
         switch (event) {
             case SE_REMOVED:
@@ -50,6 +50,7 @@ public class DefaultWaitForSeRemoval extends AbstractObservableState {
                 reader.notifyObservers(new ReaderEvent(this.reader.getPluginName(),
                         this.reader.getName(), ReaderEvent.EventType.TIMEOUT_ERROR, null));
                 logger.warn("The time limit for the removal of the SE has been exceeded.");
+                break;
 
             default:
                 logger.trace("Ignore event");

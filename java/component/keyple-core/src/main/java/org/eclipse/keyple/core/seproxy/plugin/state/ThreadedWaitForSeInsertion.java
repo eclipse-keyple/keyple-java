@@ -35,7 +35,7 @@ public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
 
     @Override
     public void activate() {
-        logger.debug("Activate ThreadedWaitForSeInsertion {} ", this.state);
+        logger.trace("[{}] Activate => ThreadedWaitForSeInsertion", reader.getName());
         waitForCarPresent = ((AbstractThreadedObservableLocalReader) reader).getExecutorService()
                 .submit(waitForCardPresent(this.timeout));
         // logger.debug("End of activate currentState {} ",this.currentState);
@@ -46,7 +46,7 @@ public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
         return new Callable<Boolean>() {
             @Override
             public Boolean call() {
-                logger.trace("Invoke waitForCardPresent asynchronously");
+                logger.trace("[{}] Invoke waitForCardPresent asynchronously", reader.getName());
                 if (((SmartInsertionReader) reader).waitForCardPresent(timeout)) {
                     onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
                     return true;
@@ -60,6 +60,7 @@ public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
 
     @Override
     public void deActivate() {
+        logger.trace("[{}] deActivate => ThreadedWaitForSeInsertion", reader.getName());
         if (waitForCarPresent != null && !waitForCarPresent.isDone()) {
             waitForCarPresent.cancel(true);
         }

@@ -34,19 +34,19 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
 
     @Override
     public void activate() {
-        logger.debug("Activate ThreadedWaitForSeRemoval {} ", this.state);
+        logger.debug("[{}] Activate ThreadedWaitForSeRemoval", this.reader.getName());
         ExecutorService executor =
                 ((AbstractThreadedObservableLocalReader) reader).getExecutorService();
 
             if (reader instanceof SmartPresenceReader) {
-                logger.trace("Reader is SmartPresence enabled");
-                waitForCardAbsent = executor.submit(waitForCardAbsent(timeout));
+                logger.trace("[{}] Reader is SmartPresence enabled ", this.reader.getName());
+                waitForCardAbsent = executor.submit(waitForCardAbsent());
 
             } else {
                 // reader is not instanceof SmartPresenceReader
                 // poll card with isPresentPing
-                logger.trace("Reader is not SmartPresence enabled");
-                waitForCardAbsentPing = executor.submit(waitForCardAbsentPing(timeout));
+                logger.trace("[{}] Reader is not SmartPresence enabled, use isSePresentPing method", this.reader.getName());
+                waitForCardAbsentPing = executor.submit(waitForCardAbsentPing());
 
             }
     }
@@ -56,8 +56,9 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
      * 
      * @return true is the card was removed
      */
-    private Callable<Boolean> waitForCardAbsent(final long timeout) {
-        logger.trace("Using method waitForCardAbsentNative");
+    private Callable<Boolean> waitForCardAbsent() {
+        logger.debug("[{}] Using method waitForCardAbsentNative", this.reader.getName());
+
         return new Callable<Boolean>() {
             @Override
             public Boolean call(){
@@ -78,23 +79,33 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
      * 
      * @return true is the card was removed
      */
-    private Callable<Boolean> waitForCardAbsentPing(final long timeout) {
+    private Callable<Boolean> waitForCardAbsentPing() {
+        logger.trace("[{}] waitForCardAbsentPing => Timeout : {} ms", timeout);
+
         return new Callable<Boolean>() {
             long counting = 0;
-            long threeshold = 10;
+            long threeshold = 200;
+            long retries = 0;
 
             @Override
             public Boolean call() throws Exception {
                 while (true) {
-                    //logger.trace("Polling method isSePresentPing");
+                    logger.debug("[{}] Polling from isSePresentPing", reader.getName());
                     if (!reader.isSePresentPing()) {
                         onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
                         return true;
                     }
+                    retries++;
 
-                    if(counting>timeout){
+                    long left = timeout-counting;
+
+                    if(left<0){
                         onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
                         return false;
+                    }
+                    if(logger.isTraceEnabled()){
+                        logger.trace("[{}] Polling retries :{}, time left {} ms", reader.getName(), retries, left);
+
                     }
                     // wait a bit
                     Thread.sleep(threeshold);
@@ -108,6 +119,7 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
 
     @Override
     public void deActivate() {
+        logger.debug("[{}] deActivate ThreadedWaitForSeRemoval", this.reader.getName());
         if (waitForCardAbsent != null && !waitForCardAbsent.isDone()) {
             waitForCardAbsent.cancel(true);//TODO not tested
         }
