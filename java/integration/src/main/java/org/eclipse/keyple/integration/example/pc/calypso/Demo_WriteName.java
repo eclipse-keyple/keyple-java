@@ -16,7 +16,7 @@ package org.eclipse.keyple.integration.example.pc.calypso;
 import org.eclipse.keyple.calypso.command.sam.SamRevision;
 import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.ChannelState;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -73,8 +73,8 @@ public class Demo_WriteName {
 
         SeSelection samSelection = new SeSelection();
 
-        SamSelectionRequest samSelectionRequest = new SamSelectionRequest(
-                new SamSelector(SamRevision.C1, null, "SAM Selection"), ChannelState.KEEP_OPEN);
+        SamSelectionRequest samSelectionRequest =
+                new SamSelectionRequest(new SamSelector(SamRevision.C1, null, "SAM Selection"));
 
         /* Prepare selector, ignore AbstractMatchingSe here */
         samSelection.prepareSelection(samSelectionRequest);
@@ -117,29 +117,27 @@ public class Demo_WriteName {
             String cdLightAid = "315449432E494341"; // AID of the Rev2.4 PO emulating CDLight
 
             // Add Audit C0 AID to the list
-            int auditC0SeIndex = seSelection.prepareSelection(new PoSelectionRequest(
-                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
-                                    PoFileStructureInfo.poAuditC0Aid), null),
-                            "Audit C0"),
-                    ChannelState.KEEP_OPEN));
+            int auditC0SeIndex = seSelection.prepareSelection(new PoSelectionRequest(new PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new PoSelector.PoAidSelector(
+                            new SeSelector.AidSelector.IsoAid(PoFileStructureInfo.poAuditC0Aid),
+                            null),
+                    "Audit C0")));
 
             // Add CLAP AID to the list
-            int clapSe =
-                    seSelection.prepareSelection(new PoSelectionRequest(
-                            new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
-                                            PoFileStructureInfo.clapAid), null),
-                                    "CLAP"),
-                            ChannelState.KEEP_OPEN));
+            int clapSe = seSelection.prepareSelection(new PoSelectionRequest(new PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new PoSelector.PoAidSelector(
+                            new SeSelector.AidSelector.IsoAid(PoFileStructureInfo.clapAid), null),
+                    "CLAP")));
 
             // Add cdLight AID to the list
-            int cdLightSe = seSelection.prepareSelection(new PoSelectionRequest(
-                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.PoAidSelector(new SeSelector.AidSelector.IsoAid(
-                                    PoFileStructureInfo.cdLightAid), null),
-                            "CDLight"),
-                    ChannelState.KEEP_OPEN));
+            int cdLightSe = seSelection.prepareSelection(new PoSelectionRequest(new PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new PoSelector.PoAidSelector(
+                            new SeSelector.AidSelector.IsoAid(PoFileStructureInfo.cdLightAid),
+                            null),
+                    "CDLight")));
 
             SelectionsResult selectionsResult = seSelection.processExplicitSelection(poReader);
             if (!selectionsResult.hasActiveSelection()) {
@@ -184,7 +182,7 @@ public class Demo_WriteName {
             poTransaction.prepareUpdateRecordCmd(environmentSid, (byte) 0x01, name.getBytes(),
                     "Environment");
 
-            poProcessStatus = poTransaction.processClosing(ChannelState.KEEP_OPEN);
+            poProcessStatus = poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
             if (!poProcessStatus) {
                 throw new IllegalStateException("processClosing failure.");

@@ -18,13 +18,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservablePlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,9 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
     private static final Logger logger = LoggerFactory.getLogger(PcscPluginImpl.class);
 
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
+
+    // need to handle executorService because PcscPluginImpl() is called statically
+    static ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     /**
      * singleton instance of SeProxyService
@@ -85,7 +90,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
      * @return connected readers' name list
      * @throws KeypleReaderException if a reader error occurs
      */
-    protected SortedSet<String> fetchNativeReadersNames() throws KeypleReaderException {
+    public SortedSet<String> fetchNativeReadersNames() throws KeypleReaderException {
         SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
         CardTerminals terminals = getCardTerminals();
         try {
@@ -107,9 +112,9 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
     /**
      * Fetch connected native readers (from smartcard.io) and returns a list of corresponding
-     * {@link AbstractObservableReader} {@link AbstractObservableReader} are new instances.
+     * {@link AbstractReader} {@link AbstractReader} are new instances.
      *
-     * @return the list of AbstractObservableReader objects.
+     * @return the list of AbstractReader objects.
      * @throws KeypleReaderException if a reader error occurs
      */
     @Override
@@ -120,7 +125,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
         CardTerminals terminals = getCardTerminals();
         try {
             for (CardTerminal term : terminals.list()) {
-                nativeReaders.add(new PcscReaderImpl(this.getName(), term));
+                nativeReaders.add(new PcscReaderImpl(this.getName(), term, executorService));
             }
         } catch (CardException e) {
             if (e.getCause().toString().contains("SCARD_E_NO_READERS_AVAILABLE")) {
@@ -157,13 +162,13 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
          * parse the current PC/SC readers list to create the ProxyReader(s) associated with new
          * reader(s)
          */
-        AbstractObservableReader reader = null;
+        AbstractReader reader = null;
         CardTerminals terminals = getCardTerminals();
         List<String> terminalList = new ArrayList<String>();
         try {
             for (CardTerminal term : terminals.list()) {
                 if (term.getName().equals(name)) {
-                    reader = new PcscReaderImpl(this.getName(), term);
+                    reader = new PcscReaderImpl(this.getName(), term, executorService);
                 }
             }
         } catch (CardException e) {

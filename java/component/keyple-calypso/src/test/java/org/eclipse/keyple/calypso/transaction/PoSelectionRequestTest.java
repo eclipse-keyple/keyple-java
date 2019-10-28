@@ -17,7 +17,6 @@ import org.eclipse.keyple.calypso.command.po.builder.SelectFileCmdBuild;
 import org.eclipse.keyple.calypso.command.po.parser.ReadDataStructure;
 import org.eclipse.keyple.calypso.command.po.parser.ReadRecordsRespPars;
 import org.eclipse.keyple.calypso.command.po.parser.SelectFileRespPars;
-import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
@@ -50,10 +49,8 @@ public class PoSelectionRequestTest {
     @Before
     public void setUp() throws Exception {
         poSelectionRequest =
-                new PoSelectionRequest(
-                        new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
-                                new PoSelector.PoAtrFilter(".*"), null, "ATR: .*"),
-                        ChannelState.KEEP_OPEN);
+                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4,
+                        new PoSelector.PoAtrFilter(".*"), null, "ATR: .*"));
     }
 
     @Test

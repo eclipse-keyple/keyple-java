@@ -14,11 +14,11 @@ package org.eclipse.keyple.plugin.stub;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.*;
+import org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
@@ -28,7 +28,8 @@ import org.slf4j.LoggerFactory;
  * Simulates communication with a {@link StubSecureElement}. StubReader is observable, it raises
  * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent} : SE_INSERTED, SE_REMOVED
  */
-final class StubReaderImpl extends AbstractThreadedLocalReader implements StubReader {
+final class StubReaderImpl extends AbstractThreadedObservableLocalReader
+        implements StubReader, SmartInsertionReader, SmartPresenceReader {
 
     private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
@@ -45,7 +46,6 @@ final class StubReaderImpl extends AbstractThreadedLocalReader implements StubRe
      */
     StubReaderImpl(String name) {
         super(StubPlugin.PLUGIN_NAME, name);
-        threadWaitTimeout = 2000; // time between two events
     }
 
     StubReaderImpl(String name, TransmissionMode transmissionMode) {
@@ -64,14 +64,14 @@ final class StubReaderImpl extends AbstractThreadedLocalReader implements StubRe
     }
 
     @Override
-    protected void openPhysicalChannel() throws KeypleChannelStateException {
+    protected void openPhysicalChannel() throws KeypleChannelControlException {
         if (se != null) {
             se.openPhysicalChannel();
         }
     }
 
     @Override
-    public void closePhysicalChannel() throws KeypleChannelStateException {
+    public void closePhysicalChannel() throws KeypleChannelControlException {
         if (se != null) {
             se.closePhysicalChannel();
         }
@@ -183,11 +183,11 @@ final class StubReaderImpl extends AbstractThreadedLocalReader implements StubRe
      * 
      * @param timeout the delay in millisecond we wait for a card insertion
      * @return true if the SE is present
-     * @throws NoStackTraceThrowable in case of unplugging the reader
      */
     @Override
-    protected boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable {
-        for (int i = 0; i < timeout / 10; i++) {
+    public boolean waitForCardPresent(long timeout) {
+        // for (int i = 0; i < timeout / 10; i++) {
+        while (true) {
             if (checkSePresence()) {
                 return true;
             }
@@ -197,20 +197,21 @@ final class StubReaderImpl extends AbstractThreadedLocalReader implements StubRe
                 logger.debug("Sleep was interrupted");
             }
         }
-        logger.trace("[{}] no card was inserted", this.getName());
-        return false;
+        // logger.trace("[{}] no card was inserted", this.getName());
+        // return false;
     }
 
     /**
-     * This method is called by the monitoring thread to check SE absence
+     * Defined in the {@link org.eclipse.keyple.core.seproxy.plugin.SmartPresenceReader} interface,
+     * this method is called by the monitoring thread to check SE absence
      * 
      * @param timeout the delay in millisecond we wait for a card withdrawing
      * @return true if the SE is absent
-     * @throws NoStackTraceThrowable in case of unplugging the reader
      */
     @Override
-    protected boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable {
-        for (int i = 0; i < timeout / 10; i++) {
+    public boolean waitForCardAbsentNative(long timeout) {
+        // for (int i = 0; i < timeout / 10; i++) {
+        while (true) {
             if (!checkSePresence()) {
                 logger.trace("[{}] card removed", this.getName());
                 return true;
@@ -221,7 +222,12 @@ final class StubReaderImpl extends AbstractThreadedLocalReader implements StubRe
                 logger.debug("Sleep was interrupted");
             }
         }
-        logger.trace("[{}] no card was removed", this.getName());
-        return false;
+        // logger.trace("[{}] no card was removed", this.getName());
+        // return false;
+    }
+
+    @Override
+    protected AbstractObservableState.MonitoringState getInitState() {
+        return AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
     }
 }

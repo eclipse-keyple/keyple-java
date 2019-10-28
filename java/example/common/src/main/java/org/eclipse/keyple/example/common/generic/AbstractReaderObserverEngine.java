@@ -12,9 +12,12 @@
 package org.eclipse.keyple.example.common.generic;
 
 
+import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,52 +33,102 @@ public abstract class AbstractReaderObserverEngine implements ObservableReader.R
     protected abstract void processSeMatch(
             AbstractDefaultSelectionsResponse defaultSelectionsResponse);
 
-    protected abstract void processSeInsertion(); // alternative AID selection
+    protected abstract void processSeInserted(); // alternative AID selection
 
-    protected abstract void processSeRemoval();
+    protected abstract void processSeRemoved();
 
     protected abstract void processUnexpectedSeRemoval();
 
 
+    /**
+     * This flag helps to determine whether the SE_REMOVED event was expected or not (case of SE
+     * withdrawal during processing).
+     */
     boolean currentlyProcessingSe = false;
 
-
-    public void update(ReaderEvent event) {
-        if (event.getEventType() != ReaderEvent.EventType.SE_INSERTED && logger.isInfoEnabled()) {
-            logger.info(event.getReaderName());
-            logger.info("Start the processing of the SE...");
-        }
+    public void update(final ReaderEvent event) {
+        logger.info("New reader event: {}", event.getReaderName());
 
         switch (event.getEventType()) {
-
-            case SE_INSERTED:
-                currentlyProcessingSe = true;
-                processSeInsertion(); // optional, to process alternative AID selection
-                currentlyProcessingSe = false;
+            case SE_INSERTED: {
+                /* Run the PO processing asynchronously in a detach thread */
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        currentlyProcessingSe = true;
+                        processSeInserted(); // optional, to process alternative AID selection
+                        /**
+                         * Informs the underlying layer of the end of the SE processing, in order to
+                         * manage the removal sequence.
+                         * <p>
+                         * If closing has already been requested, this method will do nothing.
+                         */
+                        try {
+                            ((ObservableReader) SeProxyService.getInstance()
+                                    .getPlugin(event.getPluginName())
+                                    .getReader(event.getReaderName())).notifySeProcessed();
+                        } catch (KeypleReaderNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (KeyplePluginNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        currentlyProcessingSe = false;
+                    }
+                });
+                thread.start();
+            }
                 break;
 
-            case SE_MATCHED:
-                currentlyProcessingSe = true;
-                processSeMatch(event.getDefaultSelectionsResponse()); // to process the selected
-                // application
-                currentlyProcessingSe = false;
+            case SE_MATCHED: {
+                /* Run the PO processing asynchronously in a detach thread */
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        currentlyProcessingSe = true;
+                        processSeMatch(event.getDefaultSelectionsResponse()); // to process the
+                                                                              // selected
+                                                                              // application
+                        /**
+                         * Informs the underlying layer of the end of the SE processing, in order to
+                         * manage the removal sequence.
+                         * <p>
+                         * If closing has already been requested, this method will do nothing.
+                         */
+                        try {
+                            ((ObservableReader) SeProxyService.getInstance()
+                                    .getPlugin(event.getPluginName())
+                                    .getReader(event.getReaderName())).notifySeProcessed();
+                        } catch (KeypleReaderNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (KeyplePluginNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        currentlyProcessingSe = false;
+                    }
+                });
+                thread.start();
+            }
                 break;
 
-            case SE_REMOVAL:
+            case SE_REMOVED:
                 if (currentlyProcessingSe) {
                     processUnexpectedSeRemoval(); // to clean current SE processing
                     logger.error("Unexpected SE Removal");
                 } else {
-                    processSeRemoval();
+                    processSeRemoved();
                     if (logger.isInfoEnabled()) {
                         logger.info("Waiting for a SE...");
                     }
                 }
                 currentlyProcessingSe = false;
                 break;
-            default:
-
-                logger.error("IO Error");
+            case TIMEOUT_ERROR:
+                logger.error(
+                        "Timeout Error: the processing time or the time limit for removing the SE"
+                                + " has been exceeded.");
+                // do the appropriate processing here but do not prevent the return of this update
+                // method (e. g. by
+                // raising an exception)
         }
     }
 }

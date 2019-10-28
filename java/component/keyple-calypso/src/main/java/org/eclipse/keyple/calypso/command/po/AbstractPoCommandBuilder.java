@@ -18,7 +18,6 @@ import org.eclipse.keyple.core.seproxy.message.ApduResponse;
 
 /**
  * Abstract class for all PO command builders.
- * <p>
  */
 public abstract class AbstractPoCommandBuilder<T extends AbstractApduResponseParser>
         extends AbstractIso7816CommandBuilder {

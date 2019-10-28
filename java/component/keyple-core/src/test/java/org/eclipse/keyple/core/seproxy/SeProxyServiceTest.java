@@ -20,7 +20,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservablePlugin;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,9 +40,9 @@ public class SeProxyServiceTest {
     // class to test
     SeProxyService proxyService;
 
-    AbstractObservablePlugin plugin1 = new MockAbstractObservablePlugin(PLUGIN_NAME_1);
+    AbstractPlugin plugin1 = new MockAbstractThreadedPlugin(PLUGIN_NAME_1);
 
-    AbstractObservablePlugin plugin2 = new MockAbstractObservablePlugin(PLUGIN_NAME_2);;
+    AbstractPlugin plugin2 = new MockAbstractThreadedPlugin(PLUGIN_NAME_2);;
 
     @Mock
     AbstractPluginFactory factory1;

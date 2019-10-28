@@ -18,10 +18,11 @@ import java.util.NoSuchElementException;
 
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleApplicationSelectionException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleChannelStateException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractStaticReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.SmartSelectionReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -35,13 +36,9 @@ import org.slf4j.LoggerFactory;
 import android.util.Log;
 
 /**
- * Communicates with Android readers throught the Open Mobile API see org.simalliance.openmobileapi.Reader
- *
- * Instances of this class represent SE readers supported by this device. These readers can be physical devices
- * or virtual devices. They can be removable or not. They can contain one SE that can or cannot be
- * removed.
+ * Implementation of the {@link AndroidOmapiReader} based on the {@link AbstractLocalReader}
  */
-final class AndroidOmapiReaderImpl extends AbstractStaticReader implements AndroidOmapiReader {
+final class AndroidOmapiReaderImpl extends AbstractLocalReader implements AndroidOmapiReader, SmartSelectionReader {
 
     private static final Logger logger =
             LoggerFactory.getLogger(AndroidOmapiReaderImpl.class);
@@ -97,7 +94,7 @@ final class AndroidOmapiReaderImpl extends AbstractStaticReader implements Andro
     @Override
     protected byte[] getATR() {
         if(session != null) {
-            Log.i(TAG, "Retrieveing ATR from session...");
+            Log.i(TAG, "Retrieving ATR from session...");
             return session.getATR();
         }
         else {
@@ -110,10 +107,10 @@ final class AndroidOmapiReaderImpl extends AbstractStaticReader implements Andro
      * @param aidSelector the selection parameters
      * @return a ApduResponse built from the FCI data resulting from the application selection
      * @throws KeypleIOReaderException
-     * @throws KeypleChannelStateException
+     * @throws KeypleChannelControlException
      * @throws KeypleApplicationSelectionException
      */
-    protected ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector) throws KeypleIOReaderException, KeypleChannelStateException, KeypleApplicationSelectionException {
+    public ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector) throws KeypleIOReaderException, KeypleChannelControlException, KeypleApplicationSelectionException {
         if(aidSelector.getAidToSelect() == null) {
             try {
                 openChannel = session.openBasicChannel(null);
@@ -121,7 +118,7 @@ final class AndroidOmapiReaderImpl extends AbstractStaticReader implements Andro
                 e.printStackTrace();
                 throw new KeypleIOReaderException("IOException while opening basic channel.");
             } catch (SecurityException e) {
-                throw new KeypleChannelStateException("Error while opening basic channel, SE_SELECTOR = " +  aidSelector.toString(), e.getCause());
+                throw new KeypleChannelControlException("Error while opening basic channel, SE_SELECTOR = " +  aidSelector.toString(), e.getCause());
             }
 
             if (openChannel == null) {
@@ -143,7 +140,7 @@ final class AndroidOmapiReaderImpl extends AbstractStaticReader implements Andro
                 throw new KeypleApplicationSelectionException(
                         "Error while selecting application : " + ByteArrayUtil.toHex(aidSelector.getAidToSelect().getValue()), e);
             } catch (SecurityException e) {
-                throw new KeypleChannelStateException("Error while opening logical channel, aid :" + ByteArrayUtil.toHex(aidSelector.getAidToSelect().getValue()), e.getCause());
+                throw new KeypleChannelControlException("Error while opening logical channel, aid :" + ByteArrayUtil.toHex(aidSelector.getAidToSelect().getValue()), e.getCause());
             }
 
             if (openChannel == null) {
@@ -164,12 +161,12 @@ final class AndroidOmapiReaderImpl extends AbstractStaticReader implements Andro
     }
 
     @Override
-    public void openPhysicalChannel() throws KeypleChannelStateException {
+    public void openPhysicalChannel() throws KeypleChannelControlException {
         try {
             session = omapiReader.openSession();
         } catch (IOException e) {
             e.printStackTrace();
-            throw new KeypleChannelStateException("IOException while opening physical channel.");
+            throw new KeypleChannelControlException("IOException while opening physical channel.");
         }
     }
 

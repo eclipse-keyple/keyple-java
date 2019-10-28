@@ -17,9 +17,9 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
+import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoClassicTransactionEngine;
 import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
-import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoClassicTransactionEngine;
 import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +75,8 @@ public class Demo_CalypsoClassic_Stub {
         poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_B_PRIME,
                 StubProtocolSetting.STUB_PROTOCOL_SETTING.get(SeCommonProtocols.PROTOCOL_B_PRIME));
 
+        samReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO7816_3, ".*");
+
         /* Assign readers to the Hoplink transaction engine */
         transactionEngine.setReaders(poReader, samReader);
 
@@ -89,7 +91,8 @@ public class Demo_CalypsoClassic_Stub {
         /* Set the default selection operation */
         ((ObservableReader) poReader).setDefaultSelectionRequest(
                 transactionEngine.preparePoSelection(),
-                ObservableReader.NotificationMode.MATCHED_ONLY);
+                ObservableReader.NotificationMode.MATCHED_ONLY,
+                ObservableReader.PollingMode.CONTINUE);
 
         /* Set the transactionEngine as Observer of the PO reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);

@@ -51,6 +51,8 @@ public final class UpdateRecordRespPars extends AbstractPoResponseParser {
 
     /**
      * Instantiates a new UpdateRecordRespPars.
+     * 
+     * @param response the response from the PO
      */
     public UpdateRecordRespPars(ApduResponse response) {
         super(response);

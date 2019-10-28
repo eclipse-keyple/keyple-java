@@ -57,10 +57,21 @@ public interface ObservableReader extends SeReader {
 
         /**
          * This method can be used for reverse lookup purpose
+         *
+         * @param name the enum name
+         * @return the corresponding enum
          */
         public static NotificationMode get(String name) {
             return lookup.get(name);
         }
+    }
+
+    /**
+     * Indicates the action to be taken after processing a SE: continue waiting for the insertion of
+     * a next SE (CONTINUE) or stop and wait for a restart signal (STOP).
+     */
+    enum PollingMode {
+        CONTINUE, STOP
     }
 
     void addObserver(ReaderObserver observer);
@@ -69,9 +80,65 @@ public interface ObservableReader extends SeReader {
 
     void notifyObservers(ReaderEvent event);
 
+    void clearObservers();
+
+    /**
+     * Starts the SE detection. Once activated, the application can be notified of the arrival of an
+     * SE.
+     * 
+     * @param pollingMode indicates the action to be followed after processing the SE: if CONTINUE,
+     *        the SE detection is restarted, if STOP, the SE detection is stopped until a new call
+     *        to startSeDetection is made.
+     */
+    void startSeDetection(PollingMode pollingMode);
+
+    /**
+     * Stops the SE detection.
+     * <p>
+     * This method must be overloaded by readers depending on the particularity of their management
+     * of the start of SE detection.
+     */
+    void stopSeDetection();
+
+    /**
+     * Defines the selection request to be processed when an SE is inserted. Depending on the SE and
+     * the notificationMode parameter, a SE_INSERTED, SE_MATCHED or no event at all will be notified
+     * to the application observers.
+     * 
+     * @param defaultSelectionsRequest the selection request to be operated
+     * @param notificationMode indicates whether a SE_INSERTED event should be notified even if the
+     *        selection has failed (ALWAYS) or whether the SE insertion should be ignored in this
+     *        case (MATCHED_ONLY).
+     */
     void setDefaultSelectionRequest(AbstractDefaultSelectionsRequest defaultSelectionsRequest,
             NotificationMode notificationMode);
 
-    int countObservers();
+    /**
+     * A combination of defining the default selection request and starting the SE detection.
+     * 
+     * @param defaultSelectionsRequest the selection request to be operated
+     * @param notificationMode indicates whether a SE_INSERTED event should be notified even if the
+     *        selection has failed (ALWAYS) or whether the SE insertion should be ignored in this
+     *        case (MATCHED_ONLY).
+     * @param pollingMode indicates the action to be followed after processing the SE: if CONTINUE,
+     *        the SE detection is restarted, if STOP, the SE detection is stopped until a new call
+     *        to startSeDetection is made.
+     */
+    void setDefaultSelectionRequest(AbstractDefaultSelectionsRequest defaultSelectionsRequest,
+            NotificationMode notificationMode, PollingMode pollingMode);
 
+    /**
+     * Signal sent by the application to the reader to indicate the end of the application
+     * processing.
+     * <p>
+     * Depending on whether a request with the indication CLOSE_AFTER has been executed before or
+     * not, a closing message will be sent to the reader in order to proceed with the closing of the
+     * physical channel.
+     * <p>
+     * The action to be continued will be the one defined by the PollingMode used to start the SE
+     * detection.
+     */
+    void notifySeProcessed();
+
+    int countObservers();
 }

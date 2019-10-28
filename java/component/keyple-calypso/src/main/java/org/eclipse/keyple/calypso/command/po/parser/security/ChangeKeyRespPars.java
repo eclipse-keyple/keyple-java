@@ -41,6 +41,8 @@ public class ChangeKeyRespPars extends AbstractPoResponseParser {
 
     /**
      * Instantiates a new ChangeKeyRespPars
+     * 
+     * @param response the response from the PO
      */
     public ChangeKeyRespPars(ApduResponse response) {
         super(response);

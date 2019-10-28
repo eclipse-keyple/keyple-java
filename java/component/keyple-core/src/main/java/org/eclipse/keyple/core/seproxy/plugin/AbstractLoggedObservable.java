@@ -23,8 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Intermediate observable class to handle the logging of AbstractObservableReader and
- * AbstractObservablePlugin
+ * Intermediate observable class to handle the logging of AbstractReader and AbstractPlugin
  * 
  */
 abstract class AbstractLoggedObservable<T> extends Observable<T> implements Nameable, Configurable {
@@ -76,9 +75,9 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
 
     public void removeObserver(final Observer<T> observer) {
 
-        if (this instanceof AbstractObservableReader) {
+        if (this instanceof AbstractReader) {
             logger.trace("[{}] removeObserver => Deleting a reader observer", this.getName());
-        } else if (this instanceof AbstractObservablePlugin) {
+        } else if (this instanceof AbstractPlugin) {
             logger.trace("[{}] removeObserver => Deleting a plugin observer", this.getName());
         }
 
@@ -88,23 +87,23 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
 
 
     /**
-     * This method shall be called only from a SE Proxy plugin or reader implementing
-     * AbstractObservableReader or AbstractObservablePlugin. Push a ReaderEvent / PluginEvent of the
-     * selected AbstractObservableReader / AbstractObservablePlugin to its registered Observer.
+     * This method shall be called only from a SE Proxy plugin or reader implementing AbstractReader
+     * or AbstractPlugin. Push a ReaderEvent / PluginEvent of the selected AbstractReader /
+     * AbstractPlugin to its registered Observer.
      * 
      * @param event the event
      */
 
     public final void notifyObservers(final T event) {
 
-        if (this instanceof AbstractObservableReader) {
+        if (this instanceof AbstractReader) {
             logger.trace(
-                    "[{}] AbstractObservableReader => Notifying a reader event to {} observers. EVENTNAME = {}",
+                    "[{}] AbstractReader => Notifying a reader event to {} observers. EVENTNAME = {}",
                     this.getName(), this.countObservers(),
                     ((ReaderEvent) event).getEventType().getName());
-        } else if (this instanceof AbstractObservablePlugin) {
+        } else if (this instanceof AbstractPlugin) {
             logger.trace(
-                    "[{}] AbstractObservableReader => Notifying a plugin event to {} observers. EVENTNAME = {} ",
+                    "[{}] AbstractReader => Notifying a plugin event to {} observers. EVENTNAME = {} ",
                     this.getName(), this.countObservers(),
                     ((PluginEvent) event).getEventType().getName());
         }

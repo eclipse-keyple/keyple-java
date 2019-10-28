@@ -79,6 +79,7 @@ public final class SeProxyService {
      * Unregister plugin from platform
      * 
      * @param pluginName : plugin name
+     * @return true if the plugin was successfully unregistered
      */
     public boolean unregisterPlugin(String pluginName) {
         ReaderPlugin readerPlugin = null;

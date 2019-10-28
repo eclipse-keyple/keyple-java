@@ -14,6 +14,8 @@ package org.eclipse.keyple.core.seproxy.message;
 
 import java.util.List;
 import java.util.Set;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 
@@ -51,9 +53,27 @@ public interface ProxyReader extends SeReader {
      * flag is set to false, the transmission go on for the next {@link SeRequest}. The channel is
      * left closed.
      * <p>
-     * This method could also fail in case of IO error or wrong card state &rarr; some reader’s
-     * exception (SE missing, IO error, wrong card state, timeout) have to be caught during the
-     * processing of the SE request transmission.
+     * This method could also fail in case of IO error or wrong card currentState &rarr; some
+     * reader’s exception (SE missing, IO error, wrong card currentState, timeout) have to be caught
+     * during the processing of the SE request transmission.
+     *
+     * @param seApplicationRequest the Set of application requests
+     * @param multiSeRequestProcessing the multi se processing mode
+     * @param channelControl indicates if the channel has to be closed at the end of the
+     *        transmission
+     * @return the SE response
+     * @throws KeypleReaderException An error occurs during transmit (channel, IO)
+     */
+    List<SeResponse> transmitSet(Set<SeRequest> seApplicationRequest,
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
+            throws KeypleReaderException, IllegalArgumentException;
+
+    /**
+     * Transmits a Set of {@link SeRequest} (list of {@link SeRequest}) to a SE application and get
+     * back the corresponding a List of {@link SeResponse}.
+     * <p>
+     * The {@link MultiSeRequestProcessing} and {@link ChannelControl} flags are set to their
+     * standard value.
      *
      * @param seApplicationRequest the Set of application requests
      * @return the SE response
@@ -73,10 +93,29 @@ public interface ProxyReader extends SeReader {
      * The logical channel is set according to the keepChannelOpen flag.
      *
      * <p>
-     * This method could also fail in case of IO error or wrong card state &rarr; some reader’s
-     * exception (SE missing, IO error, wrong card state, timeout) have to be caught during the
-     * processing of the SE request transmission. *
+     * This method could also fail in case of IO error or wrong card currentState &rarr; some
+     * reader’s exception (SE missing, IO error, wrong card currentState, timeout) have to be caught
+     * during the processing of the SE request transmission. *
      * 
+     * @param seApplicationRequest the SeRequest to transmit
+     * @param channelControl a flag to tell if the channel has to be closed at the end
+     * @return SeResponse the response to the SeRequest
+     * @throws KeypleReaderException in case of a reader exception
+     * @throws IllegalArgumentException if a bad argument is provided
+     */
+    SeResponse transmit(SeRequest seApplicationRequest, ChannelControl channelControl)
+            throws KeypleReaderException, IllegalArgumentException;
+
+    /**
+     * Transmits a single {@link SeRequest} (list of {@link ApduRequest}) and get back the
+     * corresponding {@link SeResponse}
+     * <p>
+     * The usage of this method is conditioned to the presence of a SE in the selected reader.
+     * <p>
+     * The {@link SeRequest} is processed and the received {@link SeResponse} is returned.
+     * <p>
+     * The {@link ChannelControl} flag is set to its standard value.
+     *
      * @param seApplicationRequest the SeRequest to transmit
      * @return SeResponse the response to the SeRequest
      * @throws KeypleReaderException in case of a reader exception

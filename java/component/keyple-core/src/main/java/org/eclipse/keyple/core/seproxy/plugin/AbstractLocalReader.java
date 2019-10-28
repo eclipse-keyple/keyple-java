@@ -12,10 +12,10 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.*;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeSelector;
-import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * set
  */
 @SuppressWarnings({"PMD.TooManyMethods", "PMD.CyclomaticComplexity"})
-public abstract class AbstractLocalReader extends AbstractObservableReader {
+public abstract class AbstractLocalReader extends AbstractReader {
 
     /** logger */
     private static final Logger logger = LoggerFactory.getLogger(AbstractLocalReader.class);
@@ -40,16 +40,11 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /** logical channel status flag */
     private boolean logicalChannelIsOpen = false;
 
-    private boolean forceGetDataFlag = false;
-
     /** current AID if any */
     private SeSelector.AidSelector.IsoAid aidCurrentlySelected;
 
     /** current selection status */
     private SelectionStatus currentSelectionStatus;
-
-    /** notification status flag used to avoid redundant notifications */
-    private boolean presenceNotified = false;
 
     /** Timestamp recorder */
     private long before;
@@ -83,19 +78,13 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * This method is recommended for non-observable readers.
      * <p>
      * When the card is not present the logical and physical channels status may be refreshed
-     * through a call to the cardRemoved method.
+     * through a call to the processSeRemoved method.
      *
      * @return true if the SE is present
      */
-    public final boolean isSePresent() throws NoStackTraceThrowable {
-        if (checkSePresence()) {
-            return true;
-        } else {
-            if (isLogicalChannelOpen() || isPhysicalChannelOpen()) {
-                cardRemoved();
-            }
-            return false;
-        }
+    @Override
+    public boolean isSePresent() throws NoStackTraceThrowable {
+        return checkSePresence();
     }
 
     /**
@@ -111,111 +100,21 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      */
     protected abstract boolean checkSePresence() throws NoStackTraceThrowable;
 
-    /**
-     * This method is invoked when a SE is inserted in the case of an observable reader.
-     * <p>
-     * e.g. from the monitoring thread in the case of a Pcsc plugin
-     * ({@link AbstractSelectionLocalReader}) or from the NfcAdapter callback method onTagDiscovered
-     * in the case of a Android NFC plugin.
-     * <p>
-     * It will fire an ReaderEvent in the following cases:
-     * <ul>
-     * <li>SE_INSERTED: if no default selection request was defined</li>
-     * <li>SE_MATCHED: if a default selection request was defined in any mode and a SE matched the
-     * selection</li>
-     * <li>SE_INSERTED: if a default selection request was defined in ALWAYS mode but no SE matched
-     * the selection (the DefaultSelectionsResponse is however transmitted)</li>
-     * </ul>
-     * <p>
-     * It will do nothing if a default selection is defined in MATCHED_ONLY mode but no SE matched
-     * the selection.
-     */
-    protected final void cardInserted() {
-        if (defaultSelectionsRequest == null) {
-            /* no default request is defined, just notify the SE insertion */
-            notifyObservers(new ReaderEvent(this.pluginName, this.name,
-                    ReaderEvent.EventType.SE_INSERTED, null));
-            presenceNotified = true;
-        } else {
-            /*
-             * a default request is defined, send it a notify according to the notification mode and
-             * the selection status
-             */
-            boolean aSeMatched = false;
-            try {
-                List<SeResponse> seResponseList =
-                        processSeRequestSet(defaultSelectionsRequest.getSelectionSeRequestSet());
 
-                for (SeResponse seResponse : seResponseList) {
-                    if (seResponse != null && seResponse.getSelectionStatus().hasMatched()) {
-                        aSeMatched = true;
-                        break;
-                    }
-                }
-                if (notificationMode == ObservableReader.NotificationMode.MATCHED_ONLY) {
-                    /* notify only if a SE matched the selection, just ignore if not */
-                    if (aSeMatched) {
-                        notifyObservers(new ReaderEvent(this.pluginName, this.name,
-                                ReaderEvent.EventType.SE_MATCHED,
-                                new DefaultSelectionsResponse(seResponseList)));
-                        presenceNotified = true;
-                    } else {
-                        /* the SE did not match, close the logical channel */
-                        closeLogicalChannel();
-                    }
-                } else {
-                    if (aSeMatched) {
-                        /* The SE matched, notify an SE_MATCHED event with the received response */
-                        notifyObservers(new ReaderEvent(this.pluginName, this.name,
-                                ReaderEvent.EventType.SE_MATCHED,
-                                new DefaultSelectionsResponse(seResponseList)));
-                    } else {
-                        /*
-                         * The SE didn't match, notify an SE_INSERTED event with the received
-                         * response
-                         */
-                        notifyObservers(new ReaderEvent(this.pluginName, this.name,
-                                ReaderEvent.EventType.SE_INSERTED,
-                                new DefaultSelectionsResponse(seResponseList)));
-                    }
-                    presenceNotified = true;
-                }
-            } catch (KeypleReaderException e) {
-                /* the last transmission failed, close the logical channel */
-                closeLogicalChannel();
-                e.printStackTrace();
-                // in this case the card has been removed or not read correctly, do not throw event
-            }
-        }
-    }
+    /** ==== Physical and logical channels management ====================== */
 
     /**
-     * This method is invoked when a SE is removed in the case of an observable reader
-     * ({@link AbstractThreadedLocalReader}).
-     * <p>
-     * It will also be invoked if isSePresent is called and at least one of the physical or logical
-     * channels is still open (case of a non-observable reader)
-     * <p>
-     * The SE will be notified removed only if it has been previously notified present (observable
-     * reader only)
+     * Close both logical and physical channels
      */
-    protected final void cardRemoved() throws NoStackTraceThrowable {
-        if (presenceNotified) {
-            notifyObservers(new ReaderEvent(this.pluginName, this.name,
-                    ReaderEvent.EventType.SE_REMOVAL, null));
-            presenceNotified = false;
-        }
+    protected void closeLogicalAndPhysicalChannels() {
         closeLogicalChannel();
         try {
             closePhysicalChannel();
-        } catch (KeypleChannelStateException e) {
-            logger.trace("[{}] Exception occured in waitForCardAbsent. Message: {}", this.getName(),
-                    e.getMessage());
-            throw new NoStackTraceThrowable();
+        } catch (KeypleChannelControlException e) {
+            logger.trace("[{}] Exception occured in closeLogicalAndPhysicalChannels. Message: {}",
+                    this.getName(), e.getMessage());
         }
     }
-
-    /** ==== Physical and logical channels management ====================== */
 
     /**
      * This abstract method must be implemented by the derived class in order to provide the SE ATR
@@ -227,75 +126,83 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      */
     protected abstract byte[] getATR();
 
-
-    /**
-     * This abstract method must be implemented by the derived class in order to proceed to the
-     * application selection
-     * <p>
-     * Gets application selection data according to
-     * {@link org.eclipse.keyple.core.seproxy.SeSelector.AidSelector} attributes.
-     *
-     * @return a ApduResponse containing the FCI or similar data output from selection application
-     * @throws KeypleIOReaderException if a reader error occurs
-     */
-    protected abstract ApduResponse openChannelForAid(SeSelector.AidSelector aidSelector)
-            throws KeypleIOReaderException, KeypleChannelStateException,
-            KeypleApplicationSelectionException;
-
+    /** ==== Physical and logical channels management ====================== */
+    /* Selection management */
 
     /**
      * This method is dedicated to the case where no FCI data is available in return for the select
      * command.
      * <p>
-     * We force here selection without response and proceed to a get data command to get the
-     * expected FCI.
-     * 
-     * @param aidSelector
+     *
+     * @param aidSelector used to retrieve the successful status codes from the main AidSelector
      * @return a ApduResponse containing the FCI
      */
-    private ApduResponse openChannelForAidHackGetData(SeSelector.AidSelector aidSelector)
-            throws KeypleApplicationSelectionException, KeypleIOReaderException,
-            KeypleChannelStateException {
-        SeSelector.AidSelector noResponseAidSelector = new SeSelector.AidSelector(
-                aidSelector.getAidToSelect(), aidSelector.getSuccessfulSelectionStatusCodes(),
-                aidSelector.getFileOccurrence(),
-                SeSelector.AidSelector.FileControlInformation.NO_RESPONSE);
-        ApduResponse fciResponse = openChannelForAid(noResponseAidSelector);
-        if (fciResponse.isSuccessful()) {
-            byte[] getDataCommand = new byte[4];
-            getDataCommand[0] = (byte) 0x00; // CLA
-            getDataCommand[1] = (byte) 0xCA; // INS
-            getDataCommand[2] = (byte) 0x00; // P1: always 0
-            getDataCommand[3] = (byte) 0x6F; // P2: 0x6F FCI for the current DF
+    private ApduResponse recoverSelectionFciData(SeSelector.AidSelector aidSelector)
+            throws KeypleIOReaderException {
+        ApduResponse fciResponse;
+        // Get Data APDU: CLA, INS, P1: always 0, P2: 0x6F FCI for the current DF, LC: 0
+        byte[] getDataCommand = {(byte) 0x00, (byte) 0xCA, (byte) 0x00, (byte) 0x6F, (byte) 0x00};
 
-            /*
-             * The successful status codes list for this command is provided.
-             */
-            fciResponse = processApduRequest(new ApduRequest("Internal Get Data", getDataCommand,
-                    false, aidSelector.getSuccessfulSelectionStatusCodes()));
+        /*
+         * The successful status codes list for this command is provided.
+         */
+        fciResponse = processApduRequest(new ApduRequest("Internal Get Data", getDataCommand, false,
+                aidSelector.getSuccessfulSelectionStatusCodes()));
 
-            if (!fciResponse.isSuccessful()) {
-                logger.trace("[{}] openChannelForAidHackGetData => Get data failed. SELECTOR = {}",
-                        this.getName(), aidSelector);
-            }
+        if (!fciResponse.isSuccessful()) {
+            logger.trace("[{}] selectionGetData => Get data failed. SELECTOR = {}", this.getName(),
+                    aidSelector);
         }
         return fciResponse;
     }
 
-
     /**
-     * Set the flag that enables the execution of the Get Data hack to get the FCI
-     * <p>
-     * This method should called by the reader plugins that need this specific behavior (ex. OMAPI)
+     * Executes the selection application command and returns the requested data according to
+     * AidSelector attributes.
      *
-     * <p>
-     * The default value for the forceGetDataFlag is false, thus only specific readers plugins
-     * should call this method.
-     * 
-     * @param forceGetDataFlag true or false
+     * @param aidSelector the selection parameters
+     * @return the response to the select application command
+     * @throws KeypleIOReaderException if a reader error occurs
      */
-    protected void setForceGetDataFlag(boolean forceGetDataFlag) {
-        this.forceGetDataFlag = forceGetDataFlag;
+    private ApduResponse processExplicitAidSelection(SeSelector.AidSelector aidSelector)
+            throws KeypleIOReaderException {
+        ApduResponse fciResponse;
+        final byte[] aid = aidSelector.getAidToSelect().getValue();
+        if (aid == null) {
+            throw new IllegalArgumentException("AID must not be null for an AidSelector.");
+        }
+        if (logger.isTraceEnabled()) {
+            logger.trace("[{}] openLogicalChannel => Select Application with AID = {}",
+                    this.getName(), ByteArrayUtil.toHex(aid));
+        }
+        /*
+         * build a get response command the actual length expected by the SE in the get response
+         * command is handled in transmitApdu
+         */
+        byte[] selectApplicationCommand = new byte[6 + aid.length];
+        selectApplicationCommand[0] = (byte) 0x00; // CLA
+        selectApplicationCommand[1] = (byte) 0xA4; // INS
+        selectApplicationCommand[2] = (byte) 0x04; // P1: select by name
+        // P2: b0,b1 define the File occurrence, b2,b3 define the File control information
+        // we use the bitmask defined in the respective enums
+        selectApplicationCommand[3] = (byte) (aidSelector.getFileOccurrence().getIsoBitMask()
+                | aidSelector.getFileControlInformation().getIsoBitMask());
+        selectApplicationCommand[4] = (byte) (aid.length); // Lc
+        System.arraycopy(aid, 0, selectApplicationCommand, 5, aid.length); // data
+        selectApplicationCommand[5 + aid.length] = (byte) 0x00; // Le
+
+        /*
+         * we use here processApduRequest to manage case 4 hack. The successful status codes list
+         * for this command is provided.
+         */
+        fciResponse = processApduRequest(new ApduRequest("Internal Select Application",
+                selectApplicationCommand, true, aidSelector.getSuccessfulSelectionStatusCodes()));
+
+        if (!fciResponse.isSuccessful()) {
+            logger.trace("[{}] openLogicalChannel => Application Selection failed. SELECTOR = {}",
+                    this.getName(), aidSelector);
+        }
+        return fciResponse;
     }
 
     /**
@@ -308,6 +215,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @param seSelector the SE selector
      * @return the SelectionStatus
      */
+
     /** ==== ATR filtering and application selection by AID ================ */
 
     /**
@@ -317,9 +225,11 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @return the SelectionStatus containing the actual selection result (ATR and/or FCI and the
      *         matching status flag).
      * @throws KeypleIOReaderException if a reader error occurs
+     * @throws KeypleChannelControlException if a channel control exception occurs
+     * @throws KeypleApplicationSelectionException if a selection exception occurs
      */
     protected SelectionStatus openLogicalChannel(SeSelector seSelector)
-            throws KeypleIOReaderException, KeypleChannelStateException,
+            throws KeypleIOReaderException, KeypleChannelControlException,
             KeypleApplicationSelectionException {
         byte[] atr = getATR();
         boolean selectionHasMatched = true;
@@ -348,10 +258,23 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
          */
         if (selectionHasMatched && seSelector.getAidSelector() != null) {
             ApduResponse fciResponse;
-            if (!forceGetDataFlag) {
-                fciResponse = openChannelForAid(seSelector.getAidSelector());
+
+            if (this instanceof SmartSelectionReader) {
+                fciResponse = ((SmartSelectionReader) this)
+                        .openChannelForAid(seSelector.getAidSelector());
             } else {
-                fciResponse = openChannelForAidHackGetData(seSelector.getAidSelector());
+                fciResponse = processExplicitAidSelection(seSelector.getAidSelector());
+            }
+
+            if (fciResponse.isSuccessful() && fciResponse.getDataOut().length == 0) {
+                /**
+                 * The selection didn't provide data (e.g. OMAPI), we get the FCI using a Get Data
+                 * command.
+                 * <p>
+                 * The AID selector is provided to handle successful status word in the Get Data
+                 * command.
+                 */
+                fciResponse = recoverSelectionFciData(seSelector.getAidSelector());
             }
 
             /*
@@ -381,29 +304,28 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * If the selection is successful, the logical channel is considered open. On the contrary, if
      * the selection fails, the logical channel remains closed.
      * <p>
-     * This method relies on the abstracts methods openLogicalChannelByAtr and
-     * openLogicalChannelByAid implemented either by {@link AbstractSelectionLocalReader} or by any
-     * other derived class that provides a SE selection mechanism (e.g. OmapiReader).
-     * 
+     *
      * @param seSelector the SE Selector: either the AID of the application to select or an ATR
      *        selection regular expression
      * @return a {@link SelectionStatus} object containing the SE ATR, the SE FCI and a flag giving
      *         the selection process result. When ATR or FCI are not available, they are set to null
      *         but they can't be both null at the same time.
      * @throws KeypleIOReaderException if a reader error occurs
-     * @throws KeypleApplicationSelectionException if the application selection fails
+     * @throws KeypleChannelControlException if a channel control exception occurs
+     * @throws KeypleApplicationSelectionException if a selection exception occurs
      */
     protected final SelectionStatus openLogicalChannelAndSelect(SeSelector seSelector)
-            throws KeypleChannelStateException, KeypleIOReaderException,
+            throws KeypleChannelControlException, KeypleIOReaderException,
             KeypleApplicationSelectionException {
 
         SelectionStatus selectionStatus;
 
         if (seSelector == null) {
-            throw new KeypleChannelStateException("Try to open logical channel without selector.");
+            throw new KeypleApplicationSelectionException(
+                    "Try to open logical channel without selector.");
         }
 
-        if (!isLogicalChannelOpen()) {
+        if (!logicalChannelIsOpen) {
             /*
              * init of the physical SE channel: if not yet established, opening of a new physical
              * channel
@@ -412,7 +334,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 openPhysicalChannel();
             }
             if (!isPhysicalChannelOpen()) {
-                throw new KeypleChannelStateException("Fail to open physical channel.");
+                throw new KeypleChannelControlException("Fail to open physical channel.");
             }
         }
 
@@ -424,18 +346,18 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /**
      * Attempts to open the physical channel
      *
-     * @throws KeypleChannelStateException if the channel opening fails
+     * @throws KeypleChannelControlException if the channel opening fails
      */
-    protected abstract void openPhysicalChannel() throws KeypleChannelStateException;
+    protected abstract void openPhysicalChannel() throws KeypleChannelControlException;
 
     /**
      * Closes the current physical channel.
      * <p>
      * This method must be implemented by the ProxyReader plugin (e.g. Pcsc/Nfc/Omapi Reader).
      *
-     * @throws KeypleChannelStateException if a reader error occurs
+     * @throws KeypleChannelControlException if a reader error occurs
      */
-    protected abstract void closePhysicalChannel() throws KeypleChannelStateException;
+    protected abstract void closePhysicalChannel() throws KeypleChannelControlException;
 
     /**
      * Tells if the physical channel is open or not
@@ -474,7 +396,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * interpreted by reader plugins implementing protocolFlagMatches (e.g. ATR regex for Pcsc
      * plugins, technology name for Nfc plugins, etc).
      */
-    protected Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
+    protected final Map<SeProtocol, String> protocolsMap = new HashMap<SeProtocol, String>();
 
     /**
      * Defines the protocol setting Map to allow SE to be differentiated according to their
@@ -491,7 +413,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
     /**
      * Complete the current setting map with the provided map
      * 
-     * @param protocolSetting
+     * @param protocolSetting the protocol setting map
      */
     public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
         this.protocolsMap.putAll(protocolSetting);
@@ -524,10 +446,13 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * responses pushed in the responseSet object is set to null.
      *
      * @param requestSet the request set
+     * @param multiSeRequestProcessing the multi se processing mode
+     * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return the response list
      * @throws KeypleIOReaderException if a reader error occurs
      */
-    protected final List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet)
+    protected final List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet,
+            MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws KeypleReaderException {
 
         boolean requestMatchesProtocol[] = new boolean[requestSet.size()];
@@ -571,7 +496,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                 if (requestMatchesProtocol[requestIndex]) {
                     logger.debug("[{}] processSeRequestSet => transmit {}", this.getName(),
                             request);
-                    SeResponse response = null;
+                    SeResponse response;
                     try {
                         response = processSeRequestLogical(request);
                     } catch (KeypleReaderException ex) {
@@ -598,30 +523,40 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                      */
                     responses.add(null);
                 }
-                requestIndex++;
-                if (!request.isKeepChannelOpen()) {
-                    if (lastRequestIndex == requestIndex) {
-                        /*
-                         * For the processing of the last SeRequest with a protocolFlag matching the
-                         * SE reader status, if the logical channel doesn't require to be kept open,
-                         * then the physical channel is closed.
-                         */
-                        closePhysicalChannel();
-
-                        logger.debug("[{}] processSeRequestSet => Closing of the physical channel.",
-                                this.getName());
-                    }
+                if (multiSeRequestProcessing == MultiSeRequestProcessing.PROCESS_ALL) {
+                    // multi SeRequest case: just close the logical channel and go on with the next
+                    // selection.
+                    closeLogicalChannel();
                 } else {
-                    if (isLogicalChannelOpen()) {
+                    if (logicalChannelIsOpen) {
+                        // the current PO matches the selection case, we stop here.
                         stopProcess = true;
                     }
-                    /*
-                     * When keepChannelOpen is true, we stop after the first matching request we
-                     * exit the for loop here For the processing of a SeRequest with a protocolFlag
-                     * which matches the current SE reader status, in case it's requested to keep
-                     * the logical channel open, then the other remaining SeRequest are skipped, and
-                     * null SeRequest are returned for them.
-                     */
+                }
+                requestIndex++;
+                if (lastRequestIndex == requestIndex) {
+                    if (!(channelControl == ChannelControl.KEEP_OPEN)) {
+                        // close logical channel unconditionally
+                        closeLogicalChannel();
+
+                        // OD : couldn't we move this to AbstractObservableLocalReader?
+
+                        if (!(this instanceof ObservableReader)
+                                || (((ObservableReader) this).countObservers() == 0)) {
+                            /*
+                             * Not observable/observed: close immediately the physical channel if
+                             * requested
+                             */
+                            closePhysicalChannel();
+                        }
+
+                        if (this instanceof AbstractObservableLocalReader) {
+                            /*
+                             * request the removal sequence when the reader is monitored by a thread
+                             */
+                            ((AbstractObservableLocalReader) this).startRemovalSequence();
+                        }
+                    }
                 }
             }
         }
@@ -634,20 +569,41 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * <p>
      * The physical channel is closed if requested.
      *
-     * @param seRequest the SeRequest
+     * @param seRequest the SeRequest (null if only the closing of the physical channel is
+     *        requested)
+     * @param channelControl indicates if the channel has to be closed at the end of the processing
      * @return the SeResponse to the SeRequest
      * @throws KeypleReaderException if a transmission fails
      */
     @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
             "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity", "PMD.ExcessiveMethodLength"})
-    protected final SeResponse processSeRequest(SeRequest seRequest)
+    protected final SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl)
             throws IllegalStateException, KeypleReaderException {
 
-        SeResponse seResponse = processSeRequestLogical(seRequest);
+        SeResponse seResponse = null;
 
-        /* close the physical channel if CLOSE_AFTER is requested */
-        if (!seRequest.isKeepChannelOpen()) {
-            closePhysicalChannel();
+        /* The SeRequest may be null when we just need to close the physical channel */
+        if (seRequest != null) {
+            seResponse = processSeRequestLogical(seRequest);
+        }
+
+        if (!(channelControl == ChannelControl.KEEP_OPEN)) {
+            // close logical channel unconditionally
+            closeLogicalChannel();
+
+            // OD : couldn't we move this to AbstractObservableLocalReader?
+            if (!(this instanceof ObservableReader)
+                    || (((ObservableReader) this).countObservers() == 0)) {
+                /* Not observable/observed: close immediately the physical channel if requested */
+                closePhysicalChannel();
+            }
+
+            if (this instanceof AbstractObservableLocalReader) {
+                /*
+                 * request the removal sequence when the reader is monitored by a thread
+                 */
+                ((AbstractObservableLocalReader) this).startRemovalSequence();
+            }
         }
 
         return seResponse;
@@ -660,9 +616,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * <p>
      * It opens both physical and logical channels if needed.
      * <p>
-     * The logical channel is closed when CLOSE_AFTER is requested.
+     * The logical channel is closed when requested.
      *
-     * @param seRequest
+     * @param seRequest the {@link SeRequest} to be sent
      * @return seResponse
      * @throws IllegalStateException
      * @throws KeypleReaderException
@@ -675,7 +631,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
         List<ApduResponse> apduResponseList = new ArrayList<ApduResponse>();
 
         logger.trace("[{}] processSeRequest => Logical channel open = {}", this.getName(),
-                isLogicalChannelOpen());
+                logicalChannelIsOpen);
         /*
          * unless the selector is null, we try to open a logical channel; if the channel was open
          * and the PO is still matching we won't redo the selection and just use the current
@@ -683,7 +639,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
          */
         if (seRequest.getSeSelector() != null) {
             /* check if AID changed if the channel is already open */
-            if (isLogicalChannelOpen() && seRequest.getSeSelector().getAidSelector() != null) {
+            if (logicalChannelIsOpen && seRequest.getSeSelector().getAidSelector() != null) {
                 /*
                  * AID comparison hack: we check here if the initial selection AID matches the
                  * beginning of the AID provided in the SeRequest (coming from FCI data and supposed
@@ -724,7 +680,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             }
 
             /* open the channel and do the selection if needed */
-            if (!isLogicalChannelOpen()) {
+            if (!logicalChannelIsOpen) {
                 previouslyOpen = false;
 
                 try {
@@ -756,11 +712,9 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             }
         } else {
             /* selector is null, we expect that the logical channel was previously opened */
-            if (!isLogicalChannelOpen()) {
+            if (!logicalChannelIsOpen) {
                 throw new IllegalStateException(
                         "[" + this.getName() + "] processSeRequest => No logical channel opened!");
-            } else {
-                selectionStatus = null;
             }
         }
 
@@ -776,7 +730,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
                      */
                     logger.debug(
                             "The process has been interrupted, collect Apdu responses collected so far");
-                    closeLogicalChannel();
+                    closeLogicalAndPhysicalChannels();
                     ex.setSeResponse(new SeResponse(false, previouslyOpen, selectionStatus,
                             apduResponseList));
                     throw ex;
@@ -784,12 +738,7 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
             }
         }
 
-        /* close the logical channel if requested */
-        if (!seRequest.isKeepChannelOpen()) {
-            closeLogicalChannel();
-        }
-
-        return new SeResponse(isLogicalChannelOpen(), previouslyOpen, selectionStatus,
+        return new SeResponse(logicalChannelIsOpen, previouslyOpen, selectionStatus,
                 apduResponseList);
     }
 
@@ -895,24 +844,4 @@ public abstract class AbstractLocalReader extends AbstractObservableReader {
      * @throws KeypleIOReaderException if the transmission fails
      */
     protected abstract byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException;
-
-    /** ==== Default selection assignment ================================== */
-
-    /**
-     * If defined, the prepared setDefaultSelectionRequest will be processed as soon as a SE is
-     * inserted. The result of this request set will be added to the reader event.
-     * <p>
-     * Depending on the notification mode, the observer will be notified whenever an SE is inserted,
-     * regardless of the selection status, or only if the current SE matches the selection criteria.
-     *
-     * @param defaultSelectionsRequest the {@link AbstractDefaultSelectionsRequest} to be executed
-     *        when a SE is inserted
-     * @param notificationMode the notification mode enum (ALWAYS or MATCHED_ONLY)
-     */
-    public void setDefaultSelectionRequest(
-            AbstractDefaultSelectionsRequest defaultSelectionsRequest,
-            ObservableReader.NotificationMode notificationMode) {
-        this.defaultSelectionsRequest = (DefaultSelectionsRequest) defaultSelectionsRequest;
-        this.notificationMode = notificationMode;
-    };
 }

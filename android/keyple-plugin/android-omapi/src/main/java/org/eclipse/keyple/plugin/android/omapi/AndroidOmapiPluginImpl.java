@@ -17,17 +17,15 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractStaticPlugin;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractPlugin;
 import org.simalliance.openmobileapi.Reader;
 import org.simalliance.openmobileapi.SEService;
 import android.util.Log;
 
 /**
- * Loads and configures {@link AndroidOmapiReaderImpl} for each SE Reader in the platform TODO : filters
- * readers to load by parameters with a regex
+ * Loads and configures {@link AndroidOmapiReaderImpl} for each SE Reader in the platform
  */
-final class AndroidOmapiPluginImpl extends AbstractStaticPlugin implements AndroidOmapiPlugin, SEService.CallBack {
+final class AndroidOmapiPluginImpl extends AbstractPlugin implements AndroidOmapiPlugin, SEService.CallBack {
 
     private static final String TAG = AndroidOmapiPluginImpl.class.getSimpleName();
 
@@ -98,20 +96,6 @@ final class AndroidOmapiPluginImpl extends AbstractStaticPlugin implements Andro
             return readers;// empty list
         }
 
-    }
-
-    /**
-     * Fetch connected native reader (from third party library) by its name Returns the current
-     * {@link SeReader} if it is already listed.
-     *
-     * @param name reader name to be fetched
-     * @return the list of SeReader objects.
-     * @throws KeypleReaderNotFoundException if reader is not found
-     */
-    @Override
-    protected SeReader fetchNativeReader(String name)
-            throws KeypleReaderNotFoundException {
-        return this.getReader(name);
     }
 
     /**

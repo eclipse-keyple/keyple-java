@@ -12,6 +12,8 @@
 package org.eclipse.keyple.core.selection;
 
 import java.util.*;
+import org.eclipse.keyple.core.seproxy.ChannelControl;
+import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
@@ -40,12 +42,27 @@ public final class SeSelection {
             new ArrayList<AbstractSeSelectionRequest>();
     private final Set<SeRequest> selectionRequestSet = new LinkedHashSet<SeRequest>();
     private int selectionIndex;
+    private MultiSeRequestProcessing multiSeRequestProcessing;
+    private ChannelControl channelControl;
 
     /**
-     * Initializes the SeSelection
+     * Constructor.
+     * 
+     * @param multiSeRequestProcessing the multi se processing mode
+     * @param channelControl indicates if the channel has to be closed at the end of the processing
+     */
+    public SeSelection(MultiSeRequestProcessing multiSeRequestProcessing,
+            ChannelControl channelControl) {
+        selectionIndex = 0;
+        this.multiSeRequestProcessing = multiSeRequestProcessing;
+        this.channelControl = channelControl;
+    }
+
+    /**
+     * Alternate constructor for standard usages.
      */
     public SeSelection() {
-        selectionIndex = 0;
+        this(MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
     }
 
     /**
@@ -162,7 +179,8 @@ public final class SeSelection {
         }
 
         /* Communicate with the SE to do the selection */
-        List<SeResponse> seResponseList = ((ProxyReader) seReader).transmitSet(selectionRequestSet);
+        List<SeResponse> seResponseList = ((ProxyReader) seReader).transmitSet(selectionRequestSet,
+                multiSeRequestProcessing, channelControl);
 
         return processSelection(new DefaultSelectionsResponse(seResponseList));
     }
@@ -175,7 +193,7 @@ public final class SeSelection {
      * @return the {@link DefaultSelectionsRequest} previously prepared with prepareSelection
      */
     public AbstractDefaultSelectionsRequest getSelectionOperation() {
-        return (AbstractDefaultSelectionsRequest) (new DefaultSelectionsRequest(
-                selectionRequestSet));
+        return (AbstractDefaultSelectionsRequest) (new DefaultSelectionsRequest(selectionRequestSet,
+                multiSeRequestProcessing, channelControl));
     }
 }

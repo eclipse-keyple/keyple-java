@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Calypso Networks Association https://www.calypsonet-asso.org/
+ * Copyright (c) 2019 Calypso Networks Association https://www.calypsonet-asso.org/
  *
  * See the NOTICE file(s) distributed with this work for additional information regarding copyright
  * ownership.
@@ -12,8 +12,9 @@
 package org.eclipse.keyple.core.seproxy;
 
 /**
- * indicate if the logical channel should be closed or not at the end of the request transmission
+ * indicates whether the selection process should stop after the first matching or process all
+ * requests in the SeRequest Set
  */
-public enum ChannelState {
-    KEEP_OPEN, CLOSE_AFTER
+public enum MultiSeRequestProcessing {
+    FIRST_MATCH, PROCESS_ALL
 }

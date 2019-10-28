@@ -63,7 +63,7 @@ public final class SeResponse implements Serializable {
     /**
      * Was channel previously open.
      *
-     * @return the previous state of the logical channel.
+     * @return the previous currentState of the logical channel.
      */
     public boolean wasChannelPreviouslyOpen() {
         return channelPreviouslyOpen;

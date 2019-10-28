@@ -171,7 +171,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
      * @return connected readers' name list
      */
     @Override
-    protected SortedSet<String> fetchNativeReadersNames() {
+    public SortedSet<String> fetchNativeReadersNames() {
         if (connectedStubNames.isEmpty()) {
             logger.trace("No reader available.");
         }

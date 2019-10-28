@@ -14,10 +14,7 @@ package org.eclipse.keyple.example.generic.pc.UseCase_Generic1_ExplicitSelection
 
 import java.io.IOException;
 import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
@@ -51,7 +48,7 @@ import org.slf4j.LoggerFactory;
 public class UseCase_Generic1_ExplicitSelectionAid_Pcsc {
     protected static final Logger logger =
             LoggerFactory.getLogger(UseCase_Generic1_ExplicitSelectionAid_Pcsc.class);
-    private static String seAid = "A0000004040125090101"; /* Here a Calypso AID */
+    private static String seAid = "315449432E49434131"; /* Here a Calypso AID */
 
 
     public static void main(String[] args)
@@ -104,13 +101,12 @@ public class UseCase_Generic1_ExplicitSelectionAid_Pcsc {
              * Generic selection: configures a SeSelector with all the desired attributes to make
              * the selection and read additional information afterwards
              */
-            GenericSeSelectionRequest genericSeSelectionRequest =
-                    new GenericSeSelectionRequest(
-                            new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                    new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(
-                                            ByteArrayUtil.fromHex(seAid)), null),
-                                    "AID: " + seAid),
-                            ChannelState.KEEP_OPEN);
+            GenericSeSelectionRequest genericSeSelectionRequest = new GenericSeSelectionRequest(
+                    new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                            new SeSelector.AidSelector(
+                                    new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAid)),
+                                    null),
+                            "AID: " + seAid));
 
             /*
              * Add the selection case to the current selection (we could have added other cases

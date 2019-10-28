@@ -16,16 +16,13 @@ import org.eclipse.keyple.calypso.transaction.*;
 import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
-import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
+import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,13 +123,12 @@ public class UseCase_Calypso5_MultipleSession_Pcsc {
              * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
              * make the selection and read additional information afterwards
              */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.PoAidSelector(
-                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                                    PoSelector.InvalidatedPo.REJECT),
-                            "AID: " + CalypsoClassicInfo.AID),
-                    ChannelState.KEEP_OPEN);
+            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new PoSelector.PoAidSelector(
+                            new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
+                            PoSelector.InvalidatedPo.REJECT),
+                    "AID: " + CalypsoClassicInfo.AID));
 
             /*
              * Add the selection case to the current selection (we could have added other cases
@@ -227,7 +223,7 @@ public class UseCase_Calypso5_MultipleSession_Pcsc {
                 /*
                  * A ratification command will be sent (CONTACTLESS_MODE).
                  */
-                poProcessStatus = poTransaction.processClosing(ChannelState.KEEP_OPEN);
+                poProcessStatus = poTransaction.processClosing(ChannelControl.KEEP_OPEN);
 
                 if (!poProcessStatus) {
                     throw new IllegalStateException("processClosing failure.");

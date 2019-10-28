@@ -65,7 +65,7 @@ public interface SeReader extends Nameable, Configurable, Comparable<SeReader> {
     /**
      * Complete the current setting map with the provided map
      * 
-     * @param protocolSetting
+     * @param protocolSetting the protocol setting map
      */
     void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting);
 

@@ -29,9 +29,9 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
-import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.plugin.remotese.pluginse.MasterAPI;
 import org.eclipse.keyple.plugin.remotese.pluginse.RemoteSePlugin;
 import org.eclipse.keyple.plugin.remotese.pluginse.VirtualReader;
@@ -144,7 +144,8 @@ public class Demo_Master {
                             logger.info("{} Configure SeSelection", node.getNodeId());
 
                             /* set default selection request */
-                            SeSelection seSelection = new SeSelection();
+                            SeSelection seSelection = new SeSelection(
+                                    MultiSeRequestProcessing.FIRST_MATCH, ChannelControl.KEEP_OPEN);
 
                             /*
                              * Setting of an AID based selection of a Calypso REV3 PO
@@ -165,8 +166,7 @@ public class Demo_Master {
                                                     new SeSelector.AidSelector.IsoAid(
                                                             CalypsoClassicInfo.AID),
                                                     null),
-                                            "AID: " + CalypsoClassicInfo.AID),
-                                    ChannelState.KEEP_OPEN);
+                                            "AID: " + CalypsoClassicInfo.AID));
 
                             logger.info("{} Create a PoSelectionRequest", node.getNodeId());
 
@@ -219,13 +219,14 @@ public class Demo_Master {
                                                     // event.getReaderName());
 
                                                     break;
-                                                case SE_REMOVAL:
-                                                    logger.info("{} SE_REMOVAL {} {}",
+                                                case SE_REMOVED:
+                                                    logger.info("{} SE_REMOVED {} {}",
                                                             node.getNodeId(), event.getPluginName(),
                                                             event.getReaderName());
                                                     break;
-                                                case IO_ERROR:
-                                                    logger.info("{} IO_ERROR {} {}",
+
+                                                case TIMEOUT_ERROR:
+                                                    logger.info("{} TIMEOUT_ERROR {} {}",
                                                             node.getNodeId(), event.getPluginName(),
                                                             event.getReaderName());
                                                     break;
@@ -338,7 +339,7 @@ public class Demo_Master {
                  * with the PO
                  */
 
-                if (poTransaction.processPoCommands(ChannelState.CLOSE_AFTER)) {
+                if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
                     logger.info("{} The reading of the EventLog has succeeded.", node.getNodeId());
 
                     /*
@@ -400,13 +401,12 @@ public class Demo_Master {
              * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
              * make the selection and read additional information afterwards
              */
-            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                    new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                            new PoSelector.PoAidSelector(
-                                    new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
-                                    PoSelector.InvalidatedPo.REJECT),
-                            "AID: " + CalypsoClassicInfo.AID),
-                    ChannelState.KEEP_OPEN);
+            PoSelectionRequest poSelectionRequest = new PoSelectionRequest(new PoSelector(
+                    SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                    new PoSelector.PoAidSelector(
+                            new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
+                            PoSelector.InvalidatedPo.REJECT),
+                    "AID: " + CalypsoClassicInfo.AID));
             /*
              * Add the selection case to the current selection (we could have added other cases
              * here)
@@ -507,7 +507,7 @@ public class Demo_Master {
                 /*
                  * A ratification command will be sent (CONTACTLESS_MODE).
                  */
-                poProcessStatus = poTransaction.processClosing(ChannelState.CLOSE_AFTER);
+                poProcessStatus = poTransaction.processClosing(ChannelControl.CLOSE_AFTER);
 
                 if (!poProcessStatus) {
                     throw new IllegalStateException("processClosing failure.");

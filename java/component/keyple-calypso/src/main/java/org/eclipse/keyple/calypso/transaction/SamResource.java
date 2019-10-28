@@ -51,7 +51,7 @@ public class SamResource extends SeResource<CalypsoSam> {
     /**
      * Defines the {@link SamIdentifier} of the current {@link SamResource}
      * 
-     * @param samIdentifier
+     * @param samIdentifier the SAM identifier
      */
     public void setSamIdentifier(SamIdentifier samIdentifier) {
         this.samIdentifier = samIdentifier;
@@ -69,7 +69,7 @@ public class SamResource extends SeResource<CalypsoSam> {
      * The groupe reference can be null or empty to let all group references match but not empty the
      * group reference must match the {@link SamIdentifier} to have the method returning true.
      *
-     * @param samIdentifier
+     * @param samIdentifier the SAM identifier
      * @return true or false according to the result of the correspondence test
      */
     public boolean isSamMatching(SamIdentifier samIdentifier) {

@@ -19,11 +19,11 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.example.common.PcscReadersSettings;
-import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoClassicTransactionEngine;
 import org.eclipse.keyple.example.common.ReaderUtilities;
+import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoClassicTransactionEngine;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
-import org.eclipse.keyple.plugin.pcsc.PcscReaderSettings;
+import org.eclipse.keyple.plugin.pcsc.PcscReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,12 +75,10 @@ public class Demo_CalypsoClassic_Pcsc {
         logger.info("SAM Reader  NAME = {}", samReader.getName());
 
         /* Set PcSc settings per reader */
-        poReader.setParameter(PcscReaderSettings.SETTING_KEY_LOGGING, "true");
-        poReader.setParameter(PcscReaderSettings.SETTING_KEY_PROTOCOL,
-                PcscReaderSettings.SETTING_PROTOCOL_T1);
-        samReader.setParameter(PcscReaderSettings.SETTING_KEY_LOGGING, "true");
-        samReader.setParameter(PcscReaderSettings.SETTING_KEY_PROTOCOL,
-                PcscReaderSettings.SETTING_PROTOCOL_T0);
+        poReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
+        poReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T1);
+        samReader.setParameter(PcscReader.SETTING_KEY_LOGGING, "true");
+        samReader.setParameter(PcscReader.SETTING_KEY_PROTOCOL, PcscReader.SETTING_PROTOCOL_T0);
 
         /*
          * PC/SC card access mode:
@@ -96,10 +94,8 @@ public class Demo_CalypsoClassic_Pcsc {
          * See KEYPLE-CORE.PC.md file to learn more about this point.
          *
          */
-        samReader.setParameter(PcscReaderSettings.SETTING_KEY_MODE,
-                PcscReaderSettings.SETTING_MODE_SHARED);
-        poReader.setParameter(PcscReaderSettings.SETTING_KEY_MODE,
-                PcscReaderSettings.SETTING_MODE_SHARED);
+        samReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
+        poReader.setParameter(PcscReader.SETTING_KEY_MODE, PcscReader.SETTING_MODE_SHARED);
 
         /* Set the PO reader protocol flag */
         poReader.addSeProtocolSetting(SeCommonProtocols.PROTOCOL_ISO14443_4,
@@ -115,13 +111,15 @@ public class Demo_CalypsoClassic_Pcsc {
         /* Assign the readers to the Calypso transaction engine */
         transactionEngine.setReaders(poReader, samReader);
 
+        /* Set terminal as Observer of the first reader */
+        ((ObservableReader) poReader)
+                .addObserver((ObservableReader.ReaderObserver) transactionEngine);
+
         /* Set the default selection operation */
         ((ObservableReader) poReader).setDefaultSelectionRequest(
                 transactionEngine.preparePoSelection(),
-                ObservableReader.NotificationMode.MATCHED_ONLY);
-
-        /* Set terminal as Observer of the first reader */
-        ((ObservableReader) poReader).addObserver(transactionEngine);
+                ObservableReader.NotificationMode.MATCHED_ONLY,
+                ObservableReader.PollingMode.CONTINUE);
 
         /* Wait for ever (exit with CTRL-C) */
         synchronized (waitForEnd) {

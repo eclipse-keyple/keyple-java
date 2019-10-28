@@ -13,14 +13,13 @@ package org.eclipse.keyple.example.generic.pc.UseCase_Generic2_DefaultSelectionN
 
 
 import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.ChannelState;
-import org.eclipse.keyple.core.seproxy.SeProxyService;
-import org.eclipse.keyple.core.seproxy.SeReader;
-import org.eclipse.keyple.core.seproxy.SeSelector;
+import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.ReaderUtilities;
@@ -53,7 +52,7 @@ import org.slf4j.LoggerFactory;
 public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements ReaderObserver {
     protected static final Logger logger =
             LoggerFactory.getLogger(UseCase_Generic2_DefaultSelectionNotification_Pcsc.class);
-    private String seAid = "A0000004040125090101";
+    private String seAid = "315449432E49434131";
     private SeSelection seSelection;
     /**
      * This object is used to freeze the main thread while card operations are handle through the
@@ -101,13 +100,11 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
          * Generic selection: configures a SeSelector with all the desired attributes to make the
          * selection
          */
-        GenericSeSelectionRequest seSelector =
-                new GenericSeSelectionRequest(
-                        new SeSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
-                                new SeSelector.AidSelector(new SeSelector.AidSelector.IsoAid(
-                                        ByteArrayUtil.fromHex(seAid)), null),
-                                "AID: " + seAid),
-                        ChannelState.KEEP_OPEN);
+        GenericSeSelectionRequest seSelector = new GenericSeSelectionRequest(new SeSelector(
+                SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+                new SeSelector.AidSelector(
+                        new SeSelector.AidSelector.IsoAid(ByteArrayUtil.fromHex(seAid)), null),
+                "AID: " + seAid));
 
         /*
          * Add the selection case to the current selection (we could have added other cases here)
@@ -118,8 +115,8 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
          * Provide the SeReader with the selection operation to be processed when a SE is inserted.
          */
         ((ObservableReader) seReader).setDefaultSelectionRequest(
-                seSelection.getSelectionOperation(),
-                ObservableReader.NotificationMode.MATCHED_ONLY);
+                seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY,
+                ObservableReader.PollingMode.CONTINUE);
 
         /* Set the current class as Observer of the first reader */
         ((ObservableReader) seReader).addObserver(this);
@@ -166,16 +163,36 @@ public class UseCase_Generic2_DefaultSelectionNotification_Pcsc implements Reade
                     logger.error(
                             "The selection of the SE has failed. Should not have occurred due to the MATCHED_ONLY selection mode.");
                 }
+                logger.error(
+                        "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
                 break;
             case SE_INSERTED:
                 logger.error(
                         "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
+                logger.error(
+                        "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
                 break;
-            case SE_REMOVAL:
-                logger.info("The SE has been removed.");
+            case SE_REMOVED:
+                logger.info("There is no PO inserted anymore. Return to the waiting state...");
                 break;
             default:
                 break;
+        }
+        if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED
+                || event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
+            /*
+             * Informs the underlying layer of the end of the SE processing, in order to manage the
+             * removal sequence. <p>If closing has already been requested, this method will do
+             * nothing.
+             */
+            try {
+                ((ObservableReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
+                        .getReader(event.getReaderName())).notifySeProcessed();
+            } catch (KeypleReaderNotFoundException e) {
+                e.printStackTrace();
+            } catch (KeyplePluginNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 

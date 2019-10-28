@@ -13,17 +13,20 @@ package org.eclipse.keyple.plugin.pcsc;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.*;
+import org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscReader {
+final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
+        implements PcscReader, SmartInsertionReader, SmartPresenceReader {
 
     private static final Logger logger = LoggerFactory.getLogger(PcscReaderImpl.class);
 
@@ -32,7 +35,9 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
     private static final String PROTOCOL_T_CL = "T=CL";
     private static final String PROTOCOL_ANY = "T=0";
 
-    private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 5000;
+    /* timeout monitoring timeouts */
+    private static final long SETTING_SE_INSERTION_TIMEOUT_DEFAULT = 10;
+    private static final long SETTING_SE_REMOVAL_TIMEOUT_DEFAULT = 10;
 
     private final CardTerminal terminal;
 
@@ -46,7 +51,6 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
 
     private boolean logging;
 
-
     /**
      * This constructor should only be called by PcscPlugin PCSC reader parameters are initialized
      * with their default values as defined in setParameter. See
@@ -55,12 +59,12 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
      * @param pluginName the name of the plugin
      * @param terminal the PC/SC terminal
      */
-    protected PcscReaderImpl(String pluginName, CardTerminal terminal) {
-        super(pluginName, terminal.getName());
+    protected PcscReaderImpl(String pluginName, CardTerminal terminal,
+            ExecutorService executorService) {
+        super(pluginName, terminal.getName(), executorService);
         this.terminal = terminal;
         this.card = null;
         this.channel = null;
-        this.protocolsMap = new HashMap<SeProtocol, String>();
 
         // Using null values to use the standard method for defining default values
         try {
@@ -69,13 +73,15 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
             setParameter(SETTING_KEY_MODE, null);
             setParameter(SETTING_KEY_DISCONNECT, null);
             setParameter(SETTING_KEY_LOGGING, null);
+            setParameter(SETTING_KEY_SE_INSERTION_TIMEOUT, null);
+            setParameter(SETTING_KEY_SE_REMOVAL_TIMEOUT, null);
         } catch (KeypleBaseException ex) {
             // can not fail with null value
         }
     }
 
     @Override
-    protected void closePhysicalChannel() throws KeypleChannelStateException {
+    protected void closePhysicalChannel() throws KeypleChannelControlException {
         try {
             if (card != null) {
                 if (logging) {
@@ -92,7 +98,7 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
                 }
             }
         } catch (CardException e) {
-            throw new KeypleChannelStateException("Error while closing physical channel", e);
+            throw new KeypleChannelControlException("Error while closing physical channel", e);
         }
     }
 
@@ -108,18 +114,24 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
     }
 
     @Override
-    protected boolean waitForCardPresent(long timeout) throws NoStackTraceThrowable {
+    public boolean waitForCardPresent(long timeout) {
         try {
             return terminal.waitForCardPresent(timeout);
         } catch (CardException e) {
             logger.trace("[{}] Exception occured in waitForCardPresent. Message: {}",
                     this.getName(), e.getMessage());
-            throw new NoStackTraceThrowable();
+            return false;
         }
     }
 
-    @Override
-    protected boolean waitForCardAbsent(long timeout) throws NoStackTraceThrowable {
+    /**
+     * Wait for the card absent event from smartcard.io
+     * 
+     * @param timeout waiting time in ms
+     * @return true if the card is removed within the delay
+     */
+    // @Override
+    public boolean waitForCardAbsentNative(long timeout) {
         try {
             if (terminal.waitForCardAbsent(timeout)) {
                 return true;
@@ -127,9 +139,9 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
                 return false;
             }
         } catch (CardException e) {
-            logger.trace("[{}] Exception occured in waitForCardAbsent. Message: {}", this.getName(),
-                    e.getMessage());
-            throw new NoStackTraceThrowable();
+            logger.trace("[{}] Exception occured in waitForCardAbsentNative. Message: {}",
+                    this.getName(), e.getMessage());
+            return false;
         }
     }
 
@@ -143,13 +155,19 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
     @Override
     protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         ResponseAPDU apduResponseData;
-        try {
-            apduResponseData = channel.transmit(new CommandAPDU(apduIn));
-        } catch (CardException e) {
-            throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            // card could have been removed prematurely
-            throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
+
+        if (channel != null) {
+            try {
+                apduResponseData = channel.transmit(new CommandAPDU(apduIn));
+            } catch (CardException e) {
+                throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                // card could have been removed prematurely
+                throw new KeypleIOReaderException(this.getName() + ":" + e.getMessage());
+            }
+        } else {
+            // could occur if the SE was removed
+            throw new KeypleIOReaderException(this.getName() + ": null channel.");
         }
         return apduResponseData.getBytes();
     }
@@ -284,10 +302,9 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
                 throw new IllegalArgumentException(
                         "Parameter value not supported " + name + " : " + value);
             }
-        } else if (name.equals(SETTING_KEY_THREAD_TIMEOUT)) {
-            // TODO use setter
+        } else if (name.equals(SETTING_KEY_SE_INSERTION_TIMEOUT)) {
             if (value == null) {
-                threadWaitTimeout = SETTING_THREAD_TIMEOUT_DEFAULT;
+                setTimeout(Timeout.SE_INSERTION, SETTING_SE_INSERTION_TIMEOUT_DEFAULT);
             } else {
                 long timeout = Long.parseLong(value);
 
@@ -295,8 +312,19 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
                     throw new IllegalArgumentException(
                             "Timeout has to be of at least 1ms " + name + value);
                 }
+                setTimeout(Timeout.SE_INSERTION, timeout);
+            }
+        } else if (name.equals(SETTING_KEY_SE_REMOVAL_TIMEOUT)) {
+            if (value == null) {
+                setTimeout(Timeout.SE_REMOVAL, SETTING_SE_REMOVAL_TIMEOUT_DEFAULT);
+            } else {
+                long timeout = Long.parseLong(value);
 
-                threadWaitTimeout = timeout;
+                if (timeout <= 0) {
+                    throw new IllegalArgumentException(
+                            "Timeout has to be of at least 1ms " + name + value);
+                }
+                setTimeout(Timeout.SE_REMOVAL, timeout);
             }
         } else if (name.equals(SETTING_KEY_DISCONNECT)) {
             if (value == null || value.equals(SETTING_DISCONNECT_RESET)) {
@@ -344,13 +372,6 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
             }
         }
 
-        { // The thread wait timeout
-            if (threadWaitTimeout != SETTING_THREAD_TIMEOUT_DEFAULT) {
-                parameters.put(SETTING_KEY_THREAD_TIMEOUT, Long.toString(threadWaitTimeout));
-            }
-        }
-
-
         return parameters;
     }
 
@@ -381,10 +402,10 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
      * In this case be aware that on some platforms (ex. Windows 8+), the exclusivity is granted for
      * a limited time (ex. 5 seconds). After this delay, the card is automatically resetted.
      * 
-     * @throws KeypleChannelStateException if a reader error occurs
+     * @throws KeypleChannelControlException if a reader error occurs
      */
     @Override
-    protected void openPhysicalChannel() throws KeypleChannelStateException {
+    protected void openPhysicalChannel() throws KeypleChannelControlException {
         // init of the physical SE channel: if not yet established, opening of a new physical
         // channel
         try {
@@ -405,7 +426,7 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
             }
             this.channel = card.getBasicChannel();
         } catch (CardException e) {
-            throw new KeypleChannelStateException("Error while opening Physical Channel", e);
+            throw new KeypleChannelControlException("Error while opening Physical Channel", e);
         }
     }
 
@@ -432,5 +453,11 @@ final class PcscReaderImpl extends AbstractThreadedLocalReader implements PcscRe
                 return TransmissionMode.CONTACTS;
             }
         }
+    }
+
+
+    @Override
+    protected AbstractObservableState.MonitoringState getInitState() {
+        return AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
     }
 }

@@ -22,17 +22,17 @@ public class ReaderEventTest {
     @Test
     public void testReaderEvent() {
         ReaderEvent event =
-                new ReaderEvent("plugin", "reader", ReaderEvent.EventType.IO_ERROR, null);
+                new ReaderEvent("plugin", "reader", ReaderEvent.EventType.TIMEOUT_ERROR, null);
         assertNotNull(event);
     }
 
     @Test
     public void testGetEvent() {
         ReaderEvent event =
-                new ReaderEvent("plugin", "reader", ReaderEvent.EventType.IO_ERROR, null);
+                new ReaderEvent("plugin", "reader", ReaderEvent.EventType.TIMEOUT_ERROR, null);
         assertEquals(event.getReaderName(), "reader");
         assertEquals(event.getPluginName(), "plugin");
-        assertEquals(event.getEventType(), ReaderEvent.EventType.IO_ERROR);
+        assertEquals(event.getEventType(), ReaderEvent.EventType.TIMEOUT_ERROR);
     }
 
 }

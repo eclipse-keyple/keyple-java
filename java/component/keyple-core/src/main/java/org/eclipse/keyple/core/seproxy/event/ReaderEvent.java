@@ -34,13 +34,14 @@ public final class ReaderEvent {
     private final DefaultSelectionsResponse defaultResponseSet;
 
     /**
-     * The different types of reader event
+     * The different types of reader events, reflecting the status of the reader regarding the
+     * presence of the card
      */
     public enum EventType {
         /**
-         * An io error occurred.
+         * An timeout error occurred.
          */
-        IO_ERROR("SE Reader IO Error"),
+        TIMEOUT_ERROR("SE Reader timeout Error"),
 
         /**
          * A SE has been inserted.
@@ -48,14 +49,14 @@ public final class ReaderEvent {
         SE_INSERTED("SE insertion"),
 
         /**
-         * A SE has been inserted and the default requests process has been operated.
+         * A SE has been inserted and the default requests process has been successfully operated.
          */
         SE_MATCHED("SE matched"),
 
         /**
-         * The SE has been removed.
+         * The SE has been removed and is no longer able to communicate with the reader
          */
-        SE_REMOVAL("SE removal");
+        SE_REMOVED("SE removed");
 
         /** The event name. */
         private String name;

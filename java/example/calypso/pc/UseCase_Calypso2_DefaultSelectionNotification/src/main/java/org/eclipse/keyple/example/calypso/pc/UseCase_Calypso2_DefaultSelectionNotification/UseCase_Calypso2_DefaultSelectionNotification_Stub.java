@@ -115,13 +115,12 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
          * Calypso selection: configures a PoSelectionRequest with all the desired attributes to
          * make the selection and read additional information afterwards
          */
-        PoSelectionRequest poSelectionRequest = new PoSelectionRequest(
-                new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
+        PoSelectionRequest poSelectionRequest =
+                new PoSelectionRequest(new PoSelector(SeCommonProtocols.PROTOCOL_ISO14443_4, null,
                         new PoSelector.PoAidSelector(
                                 new SeSelector.AidSelector.IsoAid(CalypsoClassicInfo.AID),
                                 PoSelector.InvalidatedPo.REJECT),
-                        "AID: " + CalypsoClassicInfo.AID),
-                ChannelState.KEEP_OPEN);
+                        "AID: " + CalypsoClassicInfo.AID));
 
         /*
          * Prepare the reading order and keep the associated parser for later use once the selection
@@ -142,8 +141,8 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
          * Provide the SeReader with the selection operation to be processed when a PO is inserted.
          */
         ((ObservableReader) poReader).setDefaultSelectionRequest(
-                seSelection.getSelectionOperation(),
-                ObservableReader.NotificationMode.MATCHED_ONLY);
+                seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY,
+                ObservableReader.PollingMode.CONTINUE);
 
         /* Set the current class as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(this);
@@ -184,6 +183,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
     public void update(ReaderEvent event) {
         switch (event.getEventType()) {
             case SE_MATCHED:
+                SeReader poReader = null;
                 MatchingSelection matchingSelection =
                         seSelection.processDefaultSelection(event.getDefaultSelectionsResponse())
                                 .getActiveSelection();
@@ -191,7 +191,6 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
                 CalypsoPo calypsoPo = (CalypsoPo) matchingSelection.getMatchingSe();
 
                 if (calypsoPo.isSelected()) {
-                    SeReader poReader = null;
                     try {
                         poReader = SeProxyService.getInstance().getPlugin(event.getPluginName())
                                 .getReader(event.getReaderName());
@@ -244,7 +243,7 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
                      * with the PO
                      */
                     try {
-                        if (poTransaction.processPoCommands(ChannelState.CLOSE_AFTER)) {
+                        if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
                             logger.info("The reading of the EventLog has succeeded.");
 
                             /*
@@ -276,12 +275,31 @@ public class UseCase_Calypso2_DefaultSelectionNotification_Stub implements Reade
                 logger.error(
                         "SE_INSERTED event: should not have occurred due to the MATCHED_ONLY selection mode.");
                 break;
-            case SE_REMOVAL:
-                logger.info("The PO has been removed.");
+            case SE_REMOVED:
+                logger.info("There is no PO inserted anymore. Return to the waiting state...");
                 break;
             default:
                 break;
         }
+
+
+        if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED
+                || event.getEventType() == ReaderEvent.EventType.SE_MATCHED) {
+            /*
+             * Informs the underlying layer of the end of the SE processing, in order to manage the
+             * removal sequence. <p>If closing has already been requested, this method will do
+             * nothing.
+             */
+            try {
+                ((ObservableReader) SeProxyService.getInstance().getPlugin(event.getPluginName())
+                        .getReader(event.getReaderName())).notifySeProcessed();
+            } catch (KeypleReaderNotFoundException e) {
+                e.printStackTrace();
+            } catch (KeyplePluginNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     /**
