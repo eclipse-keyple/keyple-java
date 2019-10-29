@@ -38,7 +38,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
 
     // need to handle executorService because PcscPluginImpl() is called statically
-    static ExecutorService executorService = Executors.newFixedThreadPool(10);
+    static ExecutorService executorService = Executors.newFixedThreadPool(5);
 
     /**
      * singleton instance of SeProxyService
