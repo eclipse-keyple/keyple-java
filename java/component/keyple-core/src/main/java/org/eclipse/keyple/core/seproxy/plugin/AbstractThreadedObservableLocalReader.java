@@ -11,13 +11,14 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import org.eclipse.keyple.core.seproxy.plugin.state.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.eclipse.keyple.core.seproxy.plugin.state.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AbstractThreadedObservableLocalReader} class implements monitoring functions for a
@@ -79,14 +80,18 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
     protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> initStates() {
         Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
                 new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new ThreadedWaitForSeInsertion(this, timeoutSeInsert));
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-                new DefaultWaitForSeProcessing(this));
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-                new ThreadedWaitForSeRemoval(this, timeoutSeRemoval));
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
                 new DefaultWaitForStartDetect(this));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+                new ThreadedWaitForSeInsertion(this, timeoutSeInsert,executorService));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
+                new ThreadedWaitForSeProcessing(this, timeoutSeRemoval,executorService));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
+                new ThreadedWaitForSeRemoval(this, timeoutSeRemoval,executorService));
+
         return states;
     }
 
