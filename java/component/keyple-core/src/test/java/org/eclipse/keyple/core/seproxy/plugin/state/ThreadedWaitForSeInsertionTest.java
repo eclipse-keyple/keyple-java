@@ -24,6 +24,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
 
 
@@ -36,6 +39,8 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
     AbstractObservableState waitForInsert;
     AbstractThreadedObservableLocalReader r;
     long timeout;
+    final ExecutorService executorService = Executors.newSingleThreadExecutor();
+
 
     @Before
     public void setUp() {
@@ -46,7 +51,7 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
         timeout = 50l;
 
         r = AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 1);
-        waitForInsert = new ThreadedWaitForSeInsertion(r, timeout);
+        waitForInsert = new ThreadedWaitForSeInsertion(r, timeout,executorService);
     }
 
     @Before
@@ -67,7 +72,7 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
         // se matched
         doReturn(true).when(r).processSeInserted();
 
-        ThreadedWaitForSeInsertion waitForInsert = new ThreadedWaitForSeInsertion(r, timeout);
+        ThreadedWaitForSeInsertion waitForInsert = new ThreadedWaitForSeInsertion(r, timeout,executorService);
 
         /* test */
         waitForInsert.activate();
@@ -88,7 +93,7 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
         // se not matched
         doReturn(false).when(r).processSeInserted();
 
-        ThreadedWaitForSeInsertion waitForInsert = new ThreadedWaitForSeInsertion(r, timeout);
+        ThreadedWaitForSeInsertion waitForInsert = new ThreadedWaitForSeInsertion(r, timeout,executorService);
 
         /* test */
         waitForInsert.activate();
@@ -107,7 +112,7 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
          * input no SE inserted within timeout
          */
         r = AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
-        waitForInsert = new ThreadedWaitForSeInsertion(r, timeout);
+        waitForInsert = new ThreadedWaitForSeInsertion(r, timeout,executorService);
 
         /* test */
         waitForInsert.activate();

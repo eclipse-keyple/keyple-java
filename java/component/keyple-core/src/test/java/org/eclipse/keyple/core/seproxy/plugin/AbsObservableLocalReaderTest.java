@@ -366,6 +366,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
 
         // start detection
         r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
+
         // insert SE
         r.getCurrentState().onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
 

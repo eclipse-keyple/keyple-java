@@ -48,7 +48,7 @@ public class DefaultWaitForSeRemovalTest extends CoreBaseTest {
          * ------------ input polling mode is STOP SE has been removed within timeout
          */
         AbstractThreadedObservableLocalReader r =
-                AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
+                AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
         DefaultWaitForSeRemoval waitForSeRemoval = new DefaultWaitForSeRemoval(r);
 
         /* test */
@@ -66,7 +66,7 @@ public class DefaultWaitForSeRemovalTest extends CoreBaseTest {
          * ------------ input polling mode is CONTINUE SE has been removed within timeout
          */
         AbstractThreadedObservableLocalReader r =
-                AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
+                AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
         DefaultWaitForSeRemoval waitForSeRemoval = new DefaultWaitForSeRemoval(r);
         doReturn(ObservableReader.PollingMode.CONTINUE).when(r).getPollingMode();
 
@@ -85,7 +85,7 @@ public class DefaultWaitForSeRemovalTest extends CoreBaseTest {
          * ------------ input polling mode is CONTINUE SE has NOT been removed within timeout
          */
         AbstractThreadedObservableLocalReader r =
-                AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
+                AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
         DefaultWaitForSeRemoval waitForSeRemoval = new DefaultWaitForSeRemoval(r);
 
         /* test */
