@@ -115,6 +115,8 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
 
     @Override
     public boolean waitForCardPresent(long timeout) {
+        logger.trace("[{}] waitForCardPresent => wait until {} ms.",
+                this.getName(), timeout);
         try {
             return terminal.waitForCardPresent(timeout);
         } catch (CardException e) {
@@ -130,8 +132,10 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
      * @param timeout waiting time in ms
      * @return true if the card is removed within the delay
      */
-    // @Override
+    @Override
     public boolean waitForCardAbsentNative(long timeout) {
+        logger.trace("[{}] waitForCardAbsentNative => wait until {} ms.",
+                this.getName(), timeout);
         try {
             if (terminal.waitForCardAbsent(timeout)) {
                 return true;
