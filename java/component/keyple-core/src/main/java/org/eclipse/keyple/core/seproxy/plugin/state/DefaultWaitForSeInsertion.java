@@ -46,7 +46,8 @@ public class DefaultWaitForSeInsertion extends AbstractObservableState {
                 break;
 
             default:
-                logger.trace("Ignore event");
+                logger.trace("[{}] Ignore =>  Event {} received in currentState {}", reader.getName(),
+                        event, state);
         }
     }
 

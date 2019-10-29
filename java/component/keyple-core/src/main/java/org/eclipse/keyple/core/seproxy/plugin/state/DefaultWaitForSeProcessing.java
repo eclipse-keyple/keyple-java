@@ -41,8 +41,22 @@ public class DefaultWaitForSeProcessing extends AbstractObservableState {
                 }
                 break;
 
+            case SE_REMOVED:
+                // the SE has been removed, we close all channels and return to
+                // the currentState of waiting
+                // for insertion
+                // We notify the application of the SE_REMOVED event.
+                reader.processSeRemoved();
+                if (reader.getPollingMode() == ObservableReader.PollingMode.CONTINUE) {
+                    switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
+                } else {
+                    switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+                }
+                break;
+
             default:
-                logger.trace("Ignore event");
+                logger.trace("[{}] Ignore =>  Event {} received in currentState {}", reader.getName(),
+                        event, state);
         }
     }
 
