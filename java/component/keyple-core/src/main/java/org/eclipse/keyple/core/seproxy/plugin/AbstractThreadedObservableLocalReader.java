@@ -68,16 +68,20 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
             ExecutorService executorService) {
         super(pluginName, readerName);
         this.executorService = executorService;
-        /* Init state */
-        switchState(getInitState());
-    }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
+        /* Init state Machine */
+        states = initStates();
+
+        /* Init first state */
+        switchState(getInitState());
     }
 
     @Override
     protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> initStates() {
+        if(executorService == null){
+            throw new IllegalArgumentException("Executor service has not been initialized");
+        }
+
         Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
                 new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
@@ -104,7 +108,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
     protected void setTimeout(Timeout timeout, long value) {
         switch (timeout) {
             case SE_INSERTION:
-                timeoutSeInsert = value;
+                timeoutSeInsert = value; //TODO the value will not be taken into account because it is a primitive object in the constructor
                 break;
             case SE_REMOVAL:
                 timeoutSeRemoval = value;

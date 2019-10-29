@@ -136,13 +136,12 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      */
     public AbstractObservableLocalReader(String pluginName, String readerName) {
         super(pluginName, readerName);
-        states = initStates();
-        logger.trace("Instantiate reader with states {}", states.keySet());
     }
 
     /* Specify which init currentState will be used */
     abstract protected AbstractObservableState.MonitoringState getInitState();
 
+    /* Initialize the state machine */
     abstract protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> initStates();
 
 
