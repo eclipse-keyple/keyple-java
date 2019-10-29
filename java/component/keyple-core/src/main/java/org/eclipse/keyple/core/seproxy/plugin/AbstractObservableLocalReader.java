@@ -11,8 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import java.util.List;
-import java.util.Map;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -26,6 +24,9 @@ import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -187,7 +188,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      *        to startSeDetection is made.
      */
     public void startSeDetection(ObservableReader.PollingMode pollingMode) {
-        logger.trace("[{}] startSeDetection => start Se Detection", this.getName());
+        logger.trace("[{}] startSeDetection => start Se Detection with pollingMode {}", this.getName(), pollingMode);
         this.currentPollingMode = pollingMode;
         onEvent(InternalEvent.START_DETECT);
     }
