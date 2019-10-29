@@ -11,10 +11,14 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin.state;
 
-import java.util.concurrent.*;
-import org.eclipse.keyple.core.seproxy.plugin.*;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.SmartPresenceReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
 
@@ -24,17 +28,18 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
     private Future<Boolean> waitForCardAbsentPing;
     private Future<Boolean> waitForCardAbsent;
     private final long timeout;
+    private final ExecutorService executor;
 
-    public ThreadedWaitForSeRemoval(AbstractObservableLocalReader reader, long timeout) {
+
+    public ThreadedWaitForSeRemoval(AbstractObservableLocalReader reader, long timeout, ExecutorService executor) {
         super(reader);
         this.timeout = timeout;
+        this.executor = executor;
     }
 
     @Override
     public void activate() {
         logger.debug("[{}] Activate ThreadedWaitForSeRemoval", this.reader.getName());
-        ExecutorService executor =
-                ((AbstractThreadedObservableLocalReader) reader).getExecutorService();
 
         if (reader instanceof SmartPresenceReader) {
             logger.trace("[{}] Reader is SmartPresence enabled ", this.reader.getName());
