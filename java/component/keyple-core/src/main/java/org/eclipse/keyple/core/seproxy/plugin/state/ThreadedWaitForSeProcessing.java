@@ -37,7 +37,7 @@ public class ThreadedWaitForSeProcessing extends DefaultWaitForSeProcessing {
 
     @Override
     public void activate() {
-        logger.debug("[{}] Activate ThreadedWaitForSeProcessing removal background", this.reader.getName());
+        logger.debug("[{}] Activate ThreadedWaitForSeProcessing Removal detector", this.reader.getName());
 
         if (!(reader instanceof SmartPresenceReader)) {
             logger.trace("[{}] Reader is not SmartPresence enabled, can not detect removal event while in WaitForSeProcessing state",
