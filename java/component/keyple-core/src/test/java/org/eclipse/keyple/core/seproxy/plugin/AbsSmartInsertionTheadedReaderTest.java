@@ -297,15 +297,16 @@ public class AbsSmartInsertionTheadedReaderTest extends CoreBaseTest {
     }
 
     static public BlankSmartInsertionTheadedReader getBlank(String pluginName, String readerName,
-            Integer mockDetect) throws KeypleReaderException {
+            Integer mockDetect)  {
         BlankSmartInsertionTheadedReader r =
                 new BlankSmartInsertionTheadedReader(pluginName, readerName, mockDetect);
         return r;
     }
 
     static public BlankSmartInsertionTheadedReader getMock(String pluginName, String readerName,
-            Integer mockDetect) throws KeypleReaderException {
+            Integer mockDetect){
         BlankSmartInsertionTheadedReader r = Mockito.mock(BlankSmartInsertionTheadedReader.class);
+        doReturn("test").when(r).getName();
         return r;
     }
 

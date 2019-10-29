@@ -42,7 +42,7 @@ public class DefaultWaitForSeInsertionTest extends CoreBaseTest {
         logger.info("Test {}", name.getMethodName() + "");
         logger.info("------------------------------");
 
-        r = AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 1);
+        r = AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 1);
         waitForInsert = new DefaultWaitForSeInsertion(r);
 
     }

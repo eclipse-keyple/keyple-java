@@ -144,10 +144,16 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
      * Helpers
      */
 
-    static public BlankSmartPresenceTheadedReader getSmartSpy(String pluginName, String readerName)
-            throws KeypleReaderException {
+    static public BlankSmartPresenceTheadedReader getSmartSpy(String pluginName, String readerName) {
         BlankSmartPresenceTheadedReader r =
                 Mockito.spy(new BlankSmartPresenceTheadedReader(pluginName, readerName, 1));
+        return r;
+    }
+
+    static public BlankSmartPresenceTheadedReader getSmartPresenceMock(String pluginName, String readerName)  {
+        BlankSmartPresenceTheadedReader r =
+                Mockito.mock(BlankSmartPresenceTheadedReader.class);
+        doReturn("test").when(r).getName();
         return r;
     }
 
