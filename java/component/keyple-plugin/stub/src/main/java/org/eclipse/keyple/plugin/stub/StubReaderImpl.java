@@ -13,11 +13,17 @@ package org.eclipse.keyple.plugin.stub;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.*;
+import org.eclipse.keyple.core.seproxy.plugin.state.DefaultWaitForStartDetect;
+import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeInsertion;
+import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeProcessing;
+import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
@@ -27,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * Simulates communication with a {@link StubSecureElement}. StubReader is observable, it raises
  * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent} : SE_INSERTED, SE_REMOVED
  */
-final class StubReaderImpl extends AbstractThreadedObservableLocalReader
+final class StubReaderImpl extends AbstractObservableLocalReader
         implements StubReader, SmartInsertionReader, SmartPresenceReader {
 
     private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
@@ -38,6 +44,12 @@ final class StubReaderImpl extends AbstractThreadedObservableLocalReader
 
     TransmissionMode transmissionMode = TransmissionMode.CONTACTLESS;
 
+
+    private long timeoutSeInsert = 10000;// default value
+    private long timeoutSeRemoval = 10000;// default value
+
+    protected ExecutorService executorService = Executors.newSingleThreadExecutor();
+
     /**
      * Do not use directly
      * 
@@ -45,6 +57,8 @@ final class StubReaderImpl extends AbstractThreadedObservableLocalReader
      */
     StubReaderImpl(String name) {
         super(StubPlugin.PLUGIN_NAME, name);
+
+        stateService = initStateService();
     }
 
     StubReaderImpl(String name, TransmissionMode transmissionMode) {
@@ -225,4 +239,27 @@ final class StubReaderImpl extends AbstractThreadedObservableLocalReader
         // return false;
     }
 
+    @Override
+    protected ObservableReaderStateService initStateService() {
+        if (executorService == null) {
+            throw new IllegalArgumentException("Executor service has not been initialized");
+        }
+
+        Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
+                new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+                new DefaultWaitForStartDetect(this));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+                new ThreadedWaitForSeInsertion(this, timeoutSeInsert, executorService));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
+                new ThreadedWaitForSeProcessing(this, timeoutSeRemoval, executorService));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
+                new ThreadedWaitForSeRemoval(this, timeoutSeRemoval, executorService));
+
+        return new ObservableReaderStateService(this, states,
+                AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION);
+    }
 }
