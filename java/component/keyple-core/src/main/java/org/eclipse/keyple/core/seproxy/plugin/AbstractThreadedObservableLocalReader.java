@@ -11,14 +11,13 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import org.eclipse.keyple.core.seproxy.plugin.state.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.eclipse.keyple.core.seproxy.plugin.state.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AbstractThreadedObservableLocalReader} class implements monitoring functions for a
@@ -64,6 +63,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
      * @param executorService if needed a executor can be specify, else a embedded single threaded
      *        executor will be used
      */
+    @SuppressWarnings("PMD.ConstructorCallsOverridableMethod") // TODO Remove this after correction
     public AbstractThreadedObservableLocalReader(String pluginName, String readerName,
             ExecutorService executorService) {
         super(pluginName, readerName);
@@ -78,7 +78,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
 
     @Override
     protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> initStates() {
-        if(executorService == null){
+        if (executorService == null) {
             throw new IllegalArgumentException("Executor service has not been initialized");
         }
 
@@ -88,13 +88,13 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                 new DefaultWaitForStartDetect(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new ThreadedWaitForSeInsertion(this, timeoutSeInsert,executorService));
+                new ThreadedWaitForSeInsertion(this, timeoutSeInsert, executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-                new ThreadedWaitForSeProcessing(this, timeoutSeRemoval,executorService));
+                new ThreadedWaitForSeProcessing(this, timeoutSeRemoval, executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-                new ThreadedWaitForSeRemoval(this, timeoutSeRemoval,executorService));
+                new ThreadedWaitForSeRemoval(this, timeoutSeRemoval, executorService));
 
         return states;
     }
@@ -108,7 +108,8 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
     protected void setTimeout(Timeout timeout, long value) {
         switch (timeout) {
             case SE_INSERTION:
-                timeoutSeInsert = value; //TODO the value will not be taken into account because it is a primitive object in the constructor
+                timeoutSeInsert = value; // TODO the value will not be taken into account because it
+                                         // is a primitive object in the constructor
                 break;
             case SE_REMOVAL:
                 timeoutSeRemoval = value;
