@@ -55,7 +55,7 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
                 AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
         ThreadedWaitForSeRemoval waitForSeRemoval =
                 new ThreadedWaitForSeRemoval(r, timeout, executorService);
-        doReturn(ObservableReader.PollingMode.STOP).when(r).getPollingMode();
+        doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
         doReturn(false).when(r).isSePresentPing();
 
         /* test */
@@ -81,7 +81,7 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
                 AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
         ThreadedWaitForSeRemoval waitForSeRemoval =
                 new ThreadedWaitForSeRemoval(r, timeout, executorService);
-        doReturn(ObservableReader.PollingMode.CONTINUE).when(r).getPollingMode();
+        doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
         doReturn(false).when(r).isSePresentPing();
 
         /* test */
@@ -131,7 +131,7 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
                 AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
         ThreadedWaitForSeRemoval waitForSeRemoval =
                 new ThreadedWaitForSeRemoval(r, timeout, executorService);
-        doReturn(ObservableReader.PollingMode.STOP).when(r).getPollingMode();
+        doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
         doReturn(true).when(r).waitForCardAbsentNative(timeout);
 
         /* test */
@@ -156,7 +156,7 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
                 AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
         ThreadedWaitForSeRemoval waitForSeRemoval =
                 new ThreadedWaitForSeRemoval(r, timeout, executorService);
-        doReturn(ObservableReader.PollingMode.CONTINUE).when(r).getPollingMode();
+        doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
         doReturn(true).when(r).waitForCardAbsentNative(timeout);
 
         /* test */

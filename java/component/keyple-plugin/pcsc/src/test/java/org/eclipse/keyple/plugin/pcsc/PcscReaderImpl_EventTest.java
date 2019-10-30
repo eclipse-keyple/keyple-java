@@ -55,7 +55,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
         reader.addObserver(onInsertedCountDown(insert));
         reader.addObserver(onRemovedCountDown(remove));
 
-        reader.startSeDetection(ObservableReader.PollingMode.CONTINUE);
+        reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
         logger.info("[{}] Waiting 10 seconds for the card insertion...", reader.getName());
         insert.await(10, TimeUnit.SECONDS);
         Assert.assertEquals(0, insert.getCount());
@@ -90,7 +90,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
         reader.addObserver(onInsertedCountDown(insert));
         reader.addObserver(onRemovedCountDown(remove));
 
-        reader.startSeDetection(ObservableReader.PollingMode.CONTINUE);
+        reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
         logger.info("[{}] Waiting 1 seconds for the card insertion...", reader.getName());
 
         insert.await(1, TimeUnit.SECONDS);
@@ -120,7 +120,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
         reader.addObserver(onInsertedCountDown(insert));
         reader.addObserver(onRemovedCountDown(null));
 
-        reader.startSeDetection(ObservableReader.PollingMode.CONTINUE);
+        reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
 
         insert.await(10, TimeUnit.SECONDS);
 

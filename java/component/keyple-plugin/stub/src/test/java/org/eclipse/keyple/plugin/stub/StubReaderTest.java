@@ -173,7 +173,7 @@ public class StubReaderTest extends BaseStubTest {
         // add observer
         reader.addObserver(readerObs);
 
-        reader.startSeDetection(ObservableReader.PollingMode.CONTINUE);
+        reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
 
         // test
         reader.insertSe(hoplinkSE());
@@ -256,7 +256,7 @@ public class StubReaderTest extends BaseStubTest {
         reader.addObserver(readerObs);
 
         // set PollingMode to Continue
-        reader.startSeDetection(ObservableReader.PollingMode.CONTINUE);
+        reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
 
         // test first sequence
         reader.insertSe(hoplinkSE());
@@ -361,7 +361,7 @@ public class StubReaderTest extends BaseStubTest {
         reader.addObserver(readerObs);
 
         // set PollingMode to Continue
-        reader.startSeDetection(ObservableReader.PollingMode.CONTINUE);
+        reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
 
         // test first sequence
         reader.insertSe(hoplinkSE());

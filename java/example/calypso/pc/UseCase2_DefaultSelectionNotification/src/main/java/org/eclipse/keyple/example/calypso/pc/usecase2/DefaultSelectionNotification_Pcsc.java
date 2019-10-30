@@ -132,7 +132,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
          */
         ((ObservableReader) poReader).setDefaultSelectionRequest(
                 seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY,
-                ObservableReader.PollingMode.CONTINUE);
+                ObservableReader.PollingMode.REPEATING);
 
         /* Set the current class as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(this);

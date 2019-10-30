@@ -71,7 +71,7 @@ public interface ObservableReader extends SeReader {
      * a next SE (CONTINUE) or stop and wait for a restart signal (STOP).
      */
     enum PollingMode {
-        CONTINUE, STOP
+        REPEATING, SINGLESHOT
     }
 
     void addObserver(ReaderObserver observer);

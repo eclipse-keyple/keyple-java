@@ -136,7 +136,7 @@ public class AndroidNfcFragment extends Fragment {
             reader.enableNFCReaderMode(getActivity());
 
             //notify reader that se detection has been launched
-            reader.startSeDetection(ObservableReader.PollingMode.CONTINUE);
+            reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
 
 
         } catch (KeypleReaderException e) {

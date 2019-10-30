@@ -196,7 +196,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+            @Nullable Bundle savedInstanceState) {
 
         // Define UI components
         View view = inflater.inflate(
@@ -215,8 +215,7 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
     }
 
     /**
-     * Catch @{@link AndroidNfcReader} events When a SE is inserted, launch test commands
-     * *
+     * Catch @{@link AndroidNfcReader} events When a SE is inserted, launch test commands *
      *
      * @param event
      */
@@ -236,8 +235,8 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                         break;
 
                     case SE_INSERTED:
-                        mText.append(
-                                "\nPO detected but AID didn't match with " + CalypsoClassicInfo.AID);
+                        mText.append("\nPO detected but AID didn't match with "
+                                + CalypsoClassicInfo.AID);
                         ((ObservableReader) reader).notifySeProcessed();
                         break;
 
@@ -284,12 +283,10 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                 appendHexBuffer(mText, ByteArrayUtil.fromHex(CalypsoClassicInfo.AID));
 
                 /*
-                 * Retrieve the data read from the parser updated during the selection
-                 * process
+                 * Retrieve the data read from the parser updated during the selection process
                  */
-                ReadRecordsRespPars readEnvironmentParser =
-                        (ReadRecordsRespPars) selectionsResult.getActiveSelection()
-                                .getResponseParser(readEnvironmentParserIndex);
+                ReadRecordsRespPars readEnvironmentParser = (ReadRecordsRespPars) selectionsResult
+                        .getActiveSelection().getResponseParser(readEnvironmentParserIndex);
 
                 byte environmentAndHolder[] = (readEnvironmentParser.getRecords())
                         .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
@@ -297,38 +294,35 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                 mText.append("\n-- Environment and Holder file: ");
                 appendHexBuffer(mText, environmentAndHolder);
 
-                appendColoredText(mText, "\n\n2nd PO exchange: read the event log file", Color.BLACK);
-                PoTransaction poTransaction =
-                        new PoTransaction(new PoResource(reader, calypsoPo));
+                appendColoredText(mText, "\n\n2nd PO exchange: read the event log file",
+                        Color.BLACK);
+                PoTransaction poTransaction = new PoTransaction(new PoResource(reader, calypsoPo));
 
                 /*
-                 * Prepare the reading order and keep the associated parser for later use
-                 * once the transaction has been processed.
+                 * Prepare the reading order and keep the associated parser for later use once the
+                 * transaction has been processed.
                  */
-                int readEventLogParserIndex =
-                        poTransaction.prepareReadRecordsCmd(CalypsoClassicInfo.SFI_EventLog,
-                                ReadDataStructure.SINGLE_RECORD_DATA,
-                                CalypsoClassicInfo.RECORD_NUMBER_1,
-                                String.format("EventLog (SFI=%02X, recnbr=%d))",
-                                        CalypsoClassicInfo.SFI_EventLog,
-                                        CalypsoClassicInfo.RECORD_NUMBER_1));
+                int readEventLogParserIndex = poTransaction.prepareReadRecordsCmd(
+                        CalypsoClassicInfo.SFI_EventLog, ReadDataStructure.SINGLE_RECORD_DATA,
+                        CalypsoClassicInfo.RECORD_NUMBER_1,
+                        String.format("EventLog (SFI=%02X, recnbr=%d))",
+                                CalypsoClassicInfo.SFI_EventLog,
+                                CalypsoClassicInfo.RECORD_NUMBER_1));
 
                 /*
-                 * Actual PO communication: send the prepared read order, then close the
-                 * channel with the PO
+                 * Actual PO communication: send the prepared read order, then close the channel
+                 * with the PO
                  */
                 if (poTransaction.processPoCommands(ChannelControl.CLOSE_AFTER)) {
                     mText.append("\n-- Transaction: ");
                     appendColoredText(mText, "SUCCESS", Color.BLUE);
 
                     /*
-                     * Retrieve the data read from the parser updated during the transaction
-                     * process
+                     * Retrieve the data read from the parser updated during the transaction process
                      */
 
-                    ReadRecordsRespPars readEventLogParser =
-                            (ReadRecordsRespPars) poTransaction
-                                    .getResponseParser(readEventLogParserIndex);
+                    ReadRecordsRespPars readEventLogParser = (ReadRecordsRespPars) poTransaction
+                            .getResponseParser(readEventLogParserIndex);
                     byte eventLog[] = (readEventLogParser.getRecords())
                             .get((int) CalypsoClassicInfo.RECORD_NUMBER_1);
 
@@ -336,10 +330,9 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
                     mText.append("\n-- EventLog file:");
                     appendHexBuffer(mText, eventLog);
                 }
-                appendColoredText(mText, "\n\nEnd of the Calypso PO processing.",
-                        Color.BLACK);
+                appendColoredText(mText, "\n\nEnd of the Calypso PO processing.", Color.BLACK);
                 mText.append("\n ----");
-                appendColoredText(mText, "\nYou can remove the card now",                Color.BLUE);
+                appendColoredText(mText, "\nYou can remove the card now", Color.BLUE);
                 mText.append("\n ----");
 
 
@@ -356,7 +349,6 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
             e.fillInStackTrace();
         }
     }
-
 
 
 
@@ -410,8 +402,8 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
     /**
      * Append to tv a text colored according to the provided argument
      *
-     * @param tv    TextView
-     * @param text  string
+     * @param tv TextView
+     * @param text string
      * @param color color value
      */
     private static void appendColoredText(TextView tv, String text, int color) {

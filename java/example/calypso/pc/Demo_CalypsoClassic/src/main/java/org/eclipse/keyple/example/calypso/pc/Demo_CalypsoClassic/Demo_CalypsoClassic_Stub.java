@@ -92,7 +92,7 @@ public class Demo_CalypsoClassic_Stub {
         ((ObservableReader) poReader).setDefaultSelectionRequest(
                 transactionEngine.preparePoSelection(),
                 ObservableReader.NotificationMode.MATCHED_ONLY,
-                ObservableReader.PollingMode.CONTINUE);
+                ObservableReader.PollingMode.REPEATING);
 
         /* Set the transactionEngine as Observer of the PO reader */
         ((ObservableReader) poReader).addObserver(transactionEngine);

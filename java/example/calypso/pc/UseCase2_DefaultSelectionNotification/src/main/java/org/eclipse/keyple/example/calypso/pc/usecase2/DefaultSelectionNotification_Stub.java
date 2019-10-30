@@ -141,7 +141,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
          */
         ((ObservableReader) poReader).setDefaultSelectionRequest(
                 seSelection.getSelectionOperation(), ObservableReader.NotificationMode.MATCHED_ONLY,
-                ObservableReader.PollingMode.CONTINUE);
+                ObservableReader.PollingMode.REPEATING);
 
         /* Set the current class as Observer of the first reader */
         ((ObservableReader) poReader).addObserver(this);

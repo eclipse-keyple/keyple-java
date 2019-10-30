@@ -97,7 +97,7 @@ public class Demo_SeProtocolDetection_Pcsc {
 
         // Set Default selection
         ((ObservableReader) poReader).setDefaultSelectionRequest(observer.prepareSeSelection(),
-                ObservableReader.NotificationMode.ALWAYS, ObservableReader.PollingMode.CONTINUE);
+                ObservableReader.NotificationMode.ALWAYS, ObservableReader.PollingMode.REPEATING);
 
         // wait for Enter key to exit.
         System.out.println("Press Enter to exit");

@@ -111,7 +111,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     /** Indicate if all SE detected should be notified or only matching SE */
     protected ObservableReader.NotificationMode notificationMode;
 
-    protected ObservableReader.PollingMode currentPollingMode = ObservableReader.PollingMode.STOP;
+    protected ObservableReader.PollingMode currentPollingMode =
+            ObservableReader.PollingMode.SINGLESHOT;
 
     /* Current currentState of the Observable Reader */
     protected AbstractObservableState currentState;
