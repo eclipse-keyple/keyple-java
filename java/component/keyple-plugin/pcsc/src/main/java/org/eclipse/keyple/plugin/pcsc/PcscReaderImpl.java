@@ -147,8 +147,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         try {
             return terminal.waitForCardPresent(timeout);
         } catch (CardException e) {
-            throw new KeypleIOReaderException ("[" + this.getName() + "] Exception occurred in waitForCardPresent. " +
-                    "Message: "+ e.getMessage());
+            throw new KeypleIOReaderException(
+                    "[" + this.getName() + "] Exception occurred in waitForCardPresent. "
+                            + "Message: " + e.getMessage());
         }
     }
 
@@ -168,8 +169,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 return false;
             }
         } catch (CardException e) {
-            throw new KeypleIOReaderException ("[" + this.getName() + "] Exception occurred in waitForCardAbsentNative. " +
-                    "Message: "+ e.getMessage());
+            throw new KeypleIOReaderException(
+                    "[" + this.getName() + "] Exception occurred in waitForCardAbsentNative. "
+                            + "Message: " + e.getMessage());
         }
     }
 

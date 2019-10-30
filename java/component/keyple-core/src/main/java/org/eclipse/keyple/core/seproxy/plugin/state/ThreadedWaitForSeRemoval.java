@@ -14,7 +14,6 @@ package org.eclipse.keyple.core.seproxy.plugin.state;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.SmartPresenceReader;
