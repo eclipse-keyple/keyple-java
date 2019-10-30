@@ -230,7 +230,7 @@ final class AndroidNfcReaderImpl extends AbstractThreadedObservableLocalReader
 //            case WAIT_FOR_SE_INSERTION:
 //                break;
 //            case WAIT_FOR_SE_PROCESSING:
-//                if(currentPollingMode == PollingMode.CONTINUE) {
+//                if(currentPollingMode == PollingMode.REPEATING) {
 //                    monitoringState = MonitoringState.WAIT_FOR_SE_REMOVAL;
 //                } else {
 //                    //

@@ -6,6 +6,17 @@ This is the repository for the Java implementation of the 'Eclipse [Keyple](http
 ## Getting started
 Releases and snapshots are available from Maven central repositories.
 
+### Cloning this project
+Examples provided in this project relies on symbolic links to handle their common dependencies. (Please refer to this [file](/java/example/README.md) for more information).
+
+Although symlink support should be provided out of the box for Unix users, **Windows users** should be aware that the git option `core.symlinks` needs to be enabled before [cloning](https://help.github.com/en/articles/cloning-a-repository) this repo. Several solutions can be considered:
+- When installing git for Windows, an option `Enable symbolic links` can be choosen. If it has not been enabled and you want to set it via the installer, a reinstallation is needed
+- If you do not want to reinstall git, this option can be enabled afterward via the command line `git config core.symlinks true`
+- Also, the option can be enabled once only for this specific cloning operation with `git clone -c core.symlinks=true REPO_URL`
+
+It is important to note that for this option to be actually working, the Windows user needs to have the **_SeCreateSymbolicLink_ permission**: a user with admin rights is typically granted with this permission.
+
+
 ### Import keyple components with Gradle
 
 When using gradle, it is fairly simple to import Keyple components into your project. Just add the following statements to your build.gradle file :

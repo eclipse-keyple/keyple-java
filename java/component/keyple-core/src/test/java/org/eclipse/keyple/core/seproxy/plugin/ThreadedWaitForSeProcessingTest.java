@@ -11,7 +11,6 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.*;
 import static org.mockito.Mockito.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,7 +61,7 @@ public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
          * ------------ input polling mode is CONTINUE SE has been processed within timeout
          */
 
-        doReturn(ObservableReader.PollingMode.CONTINUE).when(r).getPollingMode();
+        doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
         doReturn(false).when(r).waitForCardAbsentNative(timeout);
 
         /* test */
@@ -79,7 +78,7 @@ public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
         /*
          * ------------ input polling mode is STOP SE has been REMOVED within timeout
          */
-        doReturn(ObservableReader.PollingMode.STOP).when(r).getPollingMode();
+        doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
         doReturn(true).when(r).waitForCardAbsentNative(timeout);
 
         /* test */
@@ -97,7 +96,7 @@ public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
         /*
          * ------------ input polling mode is CONTINUE SE has been removed within timeout
          */
-        doReturn(ObservableReader.PollingMode.CONTINUE).when(r).getPollingMode();
+        doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
         doReturn(true).when(r).waitForCardAbsentNative(timeout);
 
         /* test */

@@ -24,7 +24,7 @@ Those examples make use of the Keyple Calypso library. They demonstrate how to s
 Ten launchers can be run independently
 
   * Classic Calypso Transaction (use of PoSecure session) [`Demo_CalypsoClassic`]
-    * Real mode with PC/SC readers (Calypso Secure Elements required [_PO and SA_]) [`Demo_CalypsoClassic_Pcsc.java`]
+    * Real mode with PC/SC readers (Calypso Secure Elements required [_PO and SAM_]) [`Demo_CalypsoClassic_Pcsc.java`]
     * Simulation mode (Stub Secure Elements included) [`Demo_CalypsoClassic_Stub.java`]
   * Use case Calypso Authentication: open/close Secure Session only [`UseCase_Calypso4_PoAuthentication`]
     * Real mode with PC/SC readers [`UseCase_Calypso4_PoAuthentication_Pcsc.java`]

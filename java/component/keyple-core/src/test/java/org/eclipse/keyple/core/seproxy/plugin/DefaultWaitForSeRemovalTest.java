@@ -68,7 +68,7 @@ public class DefaultWaitForSeRemovalTest extends CoreBaseTest {
         AbstractObservableLocalReader r =
                 AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
         DefaultWaitForSeRemoval waitForSeRemoval = new DefaultWaitForSeRemoval(r);
-        doReturn(ObservableReader.PollingMode.CONTINUE).when(r).getPollingMode();
+        doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
 
         /* test */
         waitForSeRemoval.activate();

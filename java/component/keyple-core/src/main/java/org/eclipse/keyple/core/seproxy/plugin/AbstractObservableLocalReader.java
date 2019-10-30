@@ -109,7 +109,8 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     /** Indicate if all SE detected should be notified or only matching SE */
     protected ObservableReader.NotificationMode notificationMode;
 
-    protected ObservableReader.PollingMode currentPollingMode = ObservableReader.PollingMode.STOP;
+    protected ObservableReader.PollingMode currentPollingMode =
+            ObservableReader.PollingMode.SINGLESHOT;
 
     /* Internal events */
     public enum InternalEvent {
@@ -418,7 +419,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
     /**
      * switch state
-     * 
+     *
      * @param stateId : new stateId
      */
     protected void switchState(AbstractObservableState.MonitoringState stateId) {

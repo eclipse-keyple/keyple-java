@@ -29,6 +29,7 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
      * @param pluginName the name of the plugin that instantiated the reader
      * @param readerName the name of the reader
      */
+    @SuppressWarnings("PMD.ConstructorCallsOverridableMethod") // TODO Remove this after correction
     public BlankObservableLocalReader(String pluginName, String readerName) {
         super(pluginName, readerName);
 

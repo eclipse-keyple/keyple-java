@@ -119,7 +119,7 @@ public class Demo_CalypsoClassic_Pcsc {
         ((ObservableReader) poReader).setDefaultSelectionRequest(
                 transactionEngine.preparePoSelection(),
                 ObservableReader.NotificationMode.MATCHED_ONLY,
-                ObservableReader.PollingMode.CONTINUE);
+                ObservableReader.PollingMode.REPEATING);
 
         /* Wait for ever (exit with CTRL-C) */
         synchronized (waitForEnd) {
