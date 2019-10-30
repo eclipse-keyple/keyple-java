@@ -11,6 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import java.util.SortedSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
@@ -18,9 +20,6 @@ import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.SortedSet;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * The {@link AbstractThreadedObservablePlugin} class provides the means to observe a plugin

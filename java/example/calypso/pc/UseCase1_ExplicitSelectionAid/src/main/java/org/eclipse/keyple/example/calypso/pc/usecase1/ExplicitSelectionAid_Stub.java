@@ -52,8 +52,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class ExplicitSelectionAid_Stub {
-    protected static final Logger logger =
-            LoggerFactory.getLogger(ExplicitSelectionAid_Stub.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ExplicitSelectionAid_Stub.class);
 
     public static void main(String[] args)
             throws KeypleBaseException, InterruptedException, IOException, NoStackTraceThrowable {

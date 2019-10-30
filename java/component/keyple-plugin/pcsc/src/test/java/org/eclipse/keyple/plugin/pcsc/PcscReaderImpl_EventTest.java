@@ -13,7 +13,6 @@ package org.eclipse.keyple.plugin.pcsc;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
 import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.PluginEvent;
@@ -65,7 +64,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
         logger.info("[{}] Notifying the end of the card processing", reader.getName());
         logger.info("[{}] Waiting 10 seconds for the card removal...", reader.getName());
 
-        //reader.notifySeProcessed();
+        // reader.notifySeProcessed();
         remove.await(10, TimeUnit.SECONDS);
 
         Assert.assertEquals(0, remove.getCount());
@@ -79,7 +78,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
         logger.info("** Insert a card before the test **");
         logger.info("** ***************************** **");
 
-        //TODO does not work
+        // TODO does not work
 
         final CountDownLatch insert = new CountDownLatch(1);
         final CountDownLatch remove = new CountDownLatch(1);
@@ -112,8 +111,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
 
         plugin.addObserver(new ObservablePlugin.PluginObserver() {
             @Override
-            public void update(PluginEvent event) {
-            }
+            public void update(PluginEvent event) {}
         });
 
         PcscReader reader = (PcscReader) plugin.getReaders().first();
@@ -126,11 +124,11 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
 
         insert.await(10, TimeUnit.SECONDS);
 
-        if(insert.getCount() == 0){
+        if (insert.getCount() == 0) {
             logger.info("** *** **");
             logger.info("** WIN **");
             logger.info("** *** **");
-        }else{
+        } else {
             logger.info("** ***  **");
             logger.info("** LOST **");
             logger.info("** ***  **");
@@ -145,7 +143,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
             public void update(ReaderEvent event) {
                 if (event.getEventType() == ReaderEvent.EventType.SE_REMOVED) {
                     logger.info("[{}] Card Removed.", event.getReaderName());
-                    if(lock!=null){
+                    if (lock != null) {
                         lock.countDown();
                     }
                 } ;
@@ -160,7 +158,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
             public void update(ReaderEvent event) {
                 if (event.getEventType() == ReaderEvent.EventType.SE_INSERTED) {
                     logger.info("[{}] Card Inserted.", event.getReaderName());
-                    if(lock!=null){
+                    if (lock != null) {
                         lock.countDown();
                     }
                 } ;

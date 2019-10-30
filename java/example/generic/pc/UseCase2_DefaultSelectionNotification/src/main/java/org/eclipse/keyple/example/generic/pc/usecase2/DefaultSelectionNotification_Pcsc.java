@@ -13,7 +13,6 @@ package org.eclipse.keyple.example.generic.pc.usecase2;
 
 
 import org.eclipse.keyple.core.selection.*;
-import org.eclipse.keyple.core.seproxy.ChannelState;
 import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
@@ -62,8 +61,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
      */
     private static final Object waitForEnd = new Object();
 
-    public DefaultSelectionNotification_Pcsc()
-            throws KeypleBaseException, InterruptedException {
+    public DefaultSelectionNotification_Pcsc() throws KeypleBaseException, InterruptedException {
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
@@ -202,7 +200,6 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
      */
     public static void main(String[] args) throws InterruptedException, KeypleBaseException {
         /* Create the observable object to handle the SE processing */
-        DefaultSelectionNotification_Pcsc m =
-                new DefaultSelectionNotification_Pcsc();
+        DefaultSelectionNotification_Pcsc m = new DefaultSelectionNotification_Pcsc();
     }
 }

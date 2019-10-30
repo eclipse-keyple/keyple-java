@@ -57,8 +57,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class Rev1Selection_Pcsc {
-    protected static final Logger logger =
-            LoggerFactory.getLogger(Rev1Selection_Pcsc.class);
+    protected static final Logger logger = LoggerFactory.getLogger(Rev1Selection_Pcsc.class);
     private static String poAtrRegex = ".*";
     private static String poDfRtPath = "2000";
 

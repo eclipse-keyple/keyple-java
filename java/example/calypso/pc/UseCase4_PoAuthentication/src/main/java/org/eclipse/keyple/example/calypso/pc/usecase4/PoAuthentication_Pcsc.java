@@ -54,8 +54,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class PoAuthentication_Pcsc {
-    private static final Logger logger =
-            LoggerFactory.getLogger(PoAuthentication_Pcsc.class);
+    private static final Logger logger = LoggerFactory.getLogger(PoAuthentication_Pcsc.class);
 
     public static void main(String[] args) throws KeypleBaseException, NoStackTraceThrowable {
 

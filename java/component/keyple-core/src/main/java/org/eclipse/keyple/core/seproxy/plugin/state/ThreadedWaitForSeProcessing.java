@@ -11,14 +11,13 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin.state;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.SmartPresenceReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 public class ThreadedWaitForSeProcessing extends DefaultWaitForSeProcessing {
 
@@ -29,7 +28,8 @@ public class ThreadedWaitForSeProcessing extends DefaultWaitForSeProcessing {
     private final long timeout;
     private final ExecutorService executor;
 
-    public ThreadedWaitForSeProcessing(AbstractObservableLocalReader reader, long timeout, ExecutorService executor) {
+    public ThreadedWaitForSeProcessing(AbstractObservableLocalReader reader, long timeout,
+            ExecutorService executor) {
         super(reader);
         this.timeout = timeout;
         this.executor = executor;
@@ -37,10 +37,12 @@ public class ThreadedWaitForSeProcessing extends DefaultWaitForSeProcessing {
 
     @Override
     public void activate() {
-        logger.debug("[{}] Activate ThreadedWaitForSeProcessing Removal detector", this.reader.getName());
+        logger.debug("[{}] Activate ThreadedWaitForSeProcessing Removal detector",
+                this.reader.getName());
 
         if (!(reader instanceof SmartPresenceReader)) {
-            logger.trace("[{}] Reader is not SmartPresence enabled, can not detect removal event while in WaitForSeProcessing state",
+            logger.trace(
+                    "[{}] Reader is not SmartPresence enabled, can not detect removal event while in WaitForSeProcessing state",
                     this.reader.getName());
             return;
         }

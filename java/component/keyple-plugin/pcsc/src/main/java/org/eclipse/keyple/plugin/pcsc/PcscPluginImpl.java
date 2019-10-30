@@ -171,8 +171,8 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
         try {
             for (CardTerminal term : terminals.list()) {
                 if (term.getName().equals(name)) {
-                    logger.trace("[{}] fetchNativeReader => CardTerminal in new PcscReader: {}", this.getName(),
-                            terminals);
+                    logger.trace("[{}] fetchNativeReader => CardTerminal in new PcscReader: {}",
+                            this.getName(), terminals);
                     reader = new PcscReaderImpl(this.getName(), term, executorService);
                 }
             }

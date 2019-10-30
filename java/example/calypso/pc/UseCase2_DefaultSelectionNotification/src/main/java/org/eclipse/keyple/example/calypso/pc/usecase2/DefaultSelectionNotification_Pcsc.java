@@ -67,8 +67,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
      */
     private static final Object waitForEnd = new Object();
 
-    public DefaultSelectionNotification_Pcsc()
-            throws KeypleBaseException, InterruptedException {
+    public DefaultSelectionNotification_Pcsc() throws KeypleBaseException, InterruptedException {
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
@@ -279,7 +278,6 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
      */
     public static void main(String[] args) throws InterruptedException, KeypleBaseException {
         /* Create the observable object to handle the PO processing */
-        DefaultSelectionNotification_Pcsc m =
-                new DefaultSelectionNotification_Pcsc();
+        DefaultSelectionNotification_Pcsc m = new DefaultSelectionNotification_Pcsc();
     }
 }

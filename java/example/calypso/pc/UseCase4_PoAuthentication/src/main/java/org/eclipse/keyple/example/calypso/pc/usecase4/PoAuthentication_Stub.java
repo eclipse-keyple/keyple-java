@@ -58,8 +58,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class PoAuthentication_Stub {
-    private static final Logger logger =
-            LoggerFactory.getLogger(PoAuthentication_Stub.class);
+    private static final Logger logger = LoggerFactory.getLogger(PoAuthentication_Stub.class);
 
     public static void main(String[] args)
             throws KeypleBaseException, NoStackTraceThrowable, InterruptedException {

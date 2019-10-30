@@ -15,6 +15,8 @@ import static org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableSta
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.plugin.AbsSmartInsertionTheadedReaderTest;
@@ -23,9 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
 
@@ -51,7 +50,7 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
         timeout = 50l;
 
         r = AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 1);
-        waitForInsert = new ThreadedWaitForSeInsertion(r, timeout,executorService);
+        waitForInsert = new ThreadedWaitForSeInsertion(r, timeout, executorService);
     }
 
     @Before
@@ -72,7 +71,8 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
         // se matched
         doReturn(true).when(r).processSeInserted();
 
-        ThreadedWaitForSeInsertion waitForInsert = new ThreadedWaitForSeInsertion(r, timeout,executorService);
+        ThreadedWaitForSeInsertion waitForInsert =
+                new ThreadedWaitForSeInsertion(r, timeout, executorService);
 
         /* test */
         waitForInsert.activate();
@@ -93,7 +93,8 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
         // se not matched
         doReturn(false).when(r).processSeInserted();
 
-        ThreadedWaitForSeInsertion waitForInsert = new ThreadedWaitForSeInsertion(r, timeout,executorService);
+        ThreadedWaitForSeInsertion waitForInsert =
+                new ThreadedWaitForSeInsertion(r, timeout, executorService);
 
         /* test */
         waitForInsert.activate();
@@ -112,7 +113,7 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
          * input no SE inserted within timeout
          */
         r = AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
-        waitForInsert = new ThreadedWaitForSeInsertion(r, timeout,executorService);
+        waitForInsert = new ThreadedWaitForSeInsertion(r, timeout, executorService);
 
         /* test */
         waitForInsert.activate();
