@@ -13,7 +13,10 @@ package org.eclipse.keyple.plugin.pcsc;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import org.eclipse.keyple.core.seproxy.event.ObservablePlugin;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.event.PluginEvent;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.junit.Assert;
@@ -105,8 +108,14 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
 
         final CountDownLatch insert = new CountDownLatch(5);
 
-
         PcscPluginImpl plugin = PcscPluginImpl.getInstance();
+
+        plugin.addObserver(new ObservablePlugin.PluginObserver() {
+            @Override
+            public void update(PluginEvent event) {
+            }
+        });
+
         PcscReader reader = (PcscReader) plugin.getReaders().first();
         logger.info("Working this reader [{}]", reader.getName());
 
@@ -116,6 +125,7 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
         reader.startSeDetection(ObservableReader.PollingMode.CONTINUE);
 
         insert.await(10, TimeUnit.SECONDS);
+
         if(insert.getCount() == 0){
             logger.info("** *** **");
             logger.info("** WIN **");

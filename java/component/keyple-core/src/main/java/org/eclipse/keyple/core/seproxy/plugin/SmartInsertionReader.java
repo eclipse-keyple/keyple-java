@@ -12,6 +12,7 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 
 public interface SmartInsertionReader extends ObservableReader {
     /**
@@ -26,5 +27,5 @@ public interface SmartInsertionReader extends ObservableReader {
      *        wait for ever.
      * @return presence status
      */
-    boolean waitForCardPresent(long timeout);
+    boolean waitForCardPresent(long timeout) throws KeypleIOReaderException;
 }
