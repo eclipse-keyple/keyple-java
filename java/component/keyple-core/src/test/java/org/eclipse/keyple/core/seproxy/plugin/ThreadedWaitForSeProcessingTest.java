@@ -11,6 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
+import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL;
+import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
 import static org.mockito.Mockito.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

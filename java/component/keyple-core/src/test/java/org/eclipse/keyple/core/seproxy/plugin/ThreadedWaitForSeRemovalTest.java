@@ -133,9 +133,6 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
         ThreadedWaitForSeRemoval waitForSeRemoval =
                 new ThreadedWaitForSeRemoval(r, timeout, executorService);
         doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
-        ThreadedWaitForSeRemoval waitForSeRemoval =
-                new ThreadedWaitForSeRemoval(r, timeout, executorService);
-        doReturn(ObservableReader.PollingMode.STOP).when(r).getPollingMode();
         doReturn(true).when(r).waitForCardAbsentNative(timeout);
 
         /* test */
