@@ -11,15 +11,14 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin.state;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
 
@@ -30,7 +29,8 @@ public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
     /** logger */
     private static final Logger logger = LoggerFactory.getLogger(ThreadedWaitForSeInsertion.class);
 
-    public ThreadedWaitForSeInsertion(AbstractObservableLocalReader reader, long timeout, ExecutorService executor) {
+    public ThreadedWaitForSeInsertion(AbstractObservableLocalReader reader, long timeout,
+            ExecutorService executor) {
         super(reader);
         this.timeout = timeout;
         this.executor = executor;
@@ -56,7 +56,9 @@ public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
                         return true;
                     }
                 } catch (KeypleIOReaderException e) {
-                    logger.trace("[{}] waitForCardPresent => Error while polling card with waitForCardPresent", reader.getName());
+                    logger.trace(
+                            "[{}] waitForCardPresent => Error while polling card with waitForCardPresent",
+                            reader.getName());
                     onEvent(AbstractObservableLocalReader.InternalEvent.STOP_DETECT);
                 }
                 onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);

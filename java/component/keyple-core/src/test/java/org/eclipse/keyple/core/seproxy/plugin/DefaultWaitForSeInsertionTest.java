@@ -9,17 +9,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.state;
+package org.eclipse.keyple.core.seproxy.plugin;
 
-import static org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState.MonitoringState.*;
+import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.plugin.AbsSmartInsertionTheadedReaderTest;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.state.DefaultWaitForSeInsertion;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -34,7 +32,7 @@ public class DefaultWaitForSeInsertionTest extends CoreBaseTest {
     final String READER_NAME = "DefaultWaitForSeInsertionTest";
 
     AbstractObservableState waitForInsert;
-    AbstractThreadedObservableLocalReader r;
+    AbstractObservableLocalReader r;
 
     @Before
     public void setUp() {

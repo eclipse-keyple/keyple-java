@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import java.util.List;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
@@ -21,12 +22,8 @@ import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
-import org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -114,16 +111,14 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
     protected ObservableReader.PollingMode currentPollingMode = ObservableReader.PollingMode.STOP;
 
-    /* Current currentState of the Observable Reader */
-    protected AbstractObservableState currentState;
-
-    protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> states;
-
     /* Internal events */
     public enum InternalEvent {
         SE_INSERTED, SE_REMOVED, SE_PROCESSED, START_DETECT, STOP_DETECT, TIME_OUT
     }
 
+    protected ObservableReaderStateService stateService;
+
+    protected abstract ObservableReaderStateService initStateService();
 
     /**
      * Reader constructor
@@ -137,12 +132,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     public AbstractObservableLocalReader(String pluginName, String readerName) {
         super(pluginName, readerName);
     }
-
-    /* Specify which init currentState will be used */
-    abstract protected AbstractObservableState.MonitoringState getInitState();
-
-    /* Initialize the state machine */
-    abstract protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> initStates();
 
 
     /**
@@ -187,9 +176,10 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      *        to startSeDetection is made.
      */
     public void startSeDetection(ObservableReader.PollingMode pollingMode) {
-        logger.trace("[{}] startSeDetection => start Se Detection with pollingMode {}", this.getName(), pollingMode);
+        logger.trace("[{}] startSeDetection => start Se Detection with pollingMode {}",
+                this.getName(), pollingMode);
         this.currentPollingMode = pollingMode;
-        onEvent(InternalEvent.START_DETECT);
+        this.stateService.onEvent(InternalEvent.START_DETECT);
     }
 
     /**
@@ -200,7 +190,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      */
     public void stopSeDetection() {
         logger.trace("[{}] stopSeDetection => stop Se Detection", this.getName());
-        onEvent(InternalEvent.STOP_DETECT);
+        this.stateService.onEvent(InternalEvent.STOP_DETECT);
     }
 
     /**
@@ -264,7 +254,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     protected void startRemovalSequence() {
         logger.trace("[{}] startRemovalSequence => start removal sequence of the reader",
                 this.getName());
-        onEvent(InternalEvent.SE_PROCESSED);
+        this.stateService.onEvent(InternalEvent.SE_PROCESSED);
     };
 
 
@@ -417,51 +407,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
     }
 
     /**
-     * thread safe method to communicate an internal event to this reader Use this method to inform
-     * the reader of external event like a tag discovered or a Se inserted
-     * 
-     * @param event internal event
-     */
-    synchronized public void onEvent(InternalEvent event) {
-        this.currentState.onEvent(event);
-    }
-
-
-    /**
-     * thread safe method to switch the state of this reader should only be invoked by this reader
-     * or its state
-     * 
-     * @param stateId : next state to activate
-     */
-    synchronized public void switchState(AbstractObservableState.MonitoringState stateId) {
-
-        if (currentState != null) {
-            logger.debug("[{}] Switch currentState from {} to {}", this.getName(),
-                    this.currentState.getMonitoringState(), stateId);
-
-            currentState.deActivate();
-        } else {
-            logger.debug("[{}] Switch to a new currentState {}", this.getName(), stateId);
-        }
-
-        // switch currentState
-        currentState = this.states.get(stateId);
-
-        // activate the new current state
-        currentState.activate();
-    }
-
-    /**
-     * Get current state
-     * 
-     * @return current state
-     */
-    synchronized protected AbstractObservableState getCurrentState() {
-        return currentState;
-    }
-
-
-    /**
      * Get polling mode
      * 
      * @return the current polling mode
@@ -470,13 +415,34 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         return currentPollingMode;
     }
 
+
     /**
-     * Get the reader current monitoring state
+     * switch state
      * 
-     * @return current monitoring state
+     * @param stateId : new stateId
+     */
+    protected void switchState(AbstractObservableState.MonitoringState stateId) {
+        this.stateService.switchState(stateId);
+    }
+
+    /**
+     * Get current getMonitoringState
+     * 
+     * @return current getMonitoringState
      */
     public AbstractObservableState.MonitoringState getCurrentMonitoringState() {
-        return this.currentState.getMonitoringState();
+        return this.stateService.getCurrentMonitoringState();
     }
+
+    /**
+     * thread safe method to communicate an internal event to this reader Use this method to inform
+     * the reader of external event like a tag discovered or a Se inserted
+     *
+     * @param event internal event
+     */
+    public void onEvent(InternalEvent event) {
+        this.stateService.onEvent(event);
+    }
+
 
 }

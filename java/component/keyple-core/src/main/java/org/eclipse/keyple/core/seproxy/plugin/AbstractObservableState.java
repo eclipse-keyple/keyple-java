@@ -9,9 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.state;
-
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
+package org.eclipse.keyple.core.seproxy.plugin;
 
 public abstract class AbstractObservableState {
 

@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin;
+package org.eclipse.keyple.core.seproxy.plugin.mock;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +21,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 
@@ -29,7 +30,7 @@ import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
  */
 public class BlankAbstractReader extends AbstractReader {
 
-    BlankAbstractReader(String pluginName, String readerName) {
+    public BlankAbstractReader(String pluginName, String readerName) {
         super(pluginName, readerName);
     }
 

@@ -9,17 +9,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin;
+package org.eclipse.keyple.core.seproxy.plugin.mock;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
+import org.eclipse.keyple.core.seproxy.plugin.ObservableReaderStateService;
+import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
+import org.eclipse.keyple.core.seproxy.plugin.state.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BlankSmartInsertionTheadedReader extends AbstractThreadedObservableLocalReader
+public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalReader
         implements SmartInsertionReader {
 
     private static final Logger logger =
@@ -27,6 +34,9 @@ public class BlankSmartInsertionTheadedReader extends AbstractThreadedObservable
 
     Integer mockDetect;
     Integer detectCount = 0;
+    Long timeoutSeInsert = 10000l;
+    Long timeoutSeRemoval = 10000l;
+    ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     /**
      * Reader constructor
@@ -40,41 +50,65 @@ public class BlankSmartInsertionTheadedReader extends AbstractThreadedObservable
     public BlankSmartInsertionTheadedReader(String pluginName, String readerName,
             Integer mockDetect) {
         super(pluginName, readerName);
-        this.mockDetect = mockDetect;
+
+        stateService = initStateService();
     }
 
     @Override
-    protected boolean checkSePresence() throws NoStackTraceThrowable {
+    final public ObservableReaderStateService initStateService() {
+
+        Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
+                new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+                new DefaultWaitForStartDetect(this));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+                new ThreadedWaitForSeInsertion(this, timeoutSeInsert, executorService));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
+                new ThreadedWaitForSeProcessing(this, timeoutSeRemoval, executorService));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
+                new ThreadedWaitForSeRemoval(this, timeoutSeRemoval, executorService));
+
+
+        return new ObservableReaderStateService(this, states,
+                AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
+    }
+
+
+    @Override
+    public boolean checkSePresence() throws NoStackTraceThrowable {
         return false;
     }
 
     @Override
-    protected byte[] getATR() {
+    public byte[] getATR() {
         return new byte[0];
     }
 
     @Override
-    protected void openPhysicalChannel() throws KeypleChannelControlException {
+    public void openPhysicalChannel() throws KeypleChannelControlException {
 
     }
 
     @Override
-    protected void closePhysicalChannel() throws KeypleChannelControlException {
+    public void closePhysicalChannel() throws KeypleChannelControlException {
 
     }
 
     @Override
-    protected boolean isPhysicalChannelOpen() {
+    public boolean isPhysicalChannelOpen() {
         return false;
     }
 
     @Override
-    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
+    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
         return false;
     }
 
     @Override
-    protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
+    public byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         return new byte[0];
     }
 
@@ -111,8 +145,5 @@ public class BlankSmartInsertionTheadedReader extends AbstractThreadedObservable
         return detectCount <= mockDetect;
     }
 
-    @Override
-    protected AbstractObservableState.MonitoringState getInitState() {
-        return AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
-    }
+
 }

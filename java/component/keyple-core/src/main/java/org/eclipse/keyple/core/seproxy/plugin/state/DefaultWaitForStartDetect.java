@@ -12,6 +12,7 @@
 package org.eclipse.keyple.core.seproxy.plugin.state;
 
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +35,8 @@ public class DefaultWaitForStartDetect extends AbstractObservableState {
                 break;
 
             default:
-                logger.trace("[{}] Ignore =>  Event {} received in currentState {}", reader.getName(),
-                        event, state);
+                logger.trace("[{}] Ignore =>  Event {} received in currentState {}",
+                        reader.getName(), event, state);
         }
     }
 

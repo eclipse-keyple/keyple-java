@@ -9,24 +9,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.state;
+package org.eclipse.keyple.core.seproxy.plugin;
 
-import static org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
-import static org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
+import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
+import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.plugin.*;
+import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartPresenceTheadedReader;
+import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeRemoval;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
 
@@ -52,9 +52,10 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
          * ------------ input polling mode is STOP SE has been removed within timeout
          */
         long timeout = 100l;
-        AbstractThreadedObservableLocalReader r =
+        AbstractObservableLocalReader r =
                 AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
-        ThreadedWaitForSeRemoval waitForSeRemoval = new ThreadedWaitForSeRemoval(r, timeout,executorService);
+        ThreadedWaitForSeRemoval waitForSeRemoval =
+                new ThreadedWaitForSeRemoval(r, timeout, executorService);
         doReturn(ObservableReader.PollingMode.STOP).when(r).getPollingMode();
         doReturn(false).when(r).isSePresentPing();
 
@@ -77,9 +78,10 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
          * ------------ input polling mode is CONTINUE SE has been removed within timeout
          */
         long timeout = 100l;
-        AbstractThreadedObservableLocalReader r =
+        AbstractObservableLocalReader r =
                 AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
-        ThreadedWaitForSeRemoval waitForSeRemoval = new ThreadedWaitForSeRemoval(r, timeout,executorService);
+        ThreadedWaitForSeRemoval waitForSeRemoval =
+                new ThreadedWaitForSeRemoval(r, timeout, executorService);
         doReturn(ObservableReader.PollingMode.CONTINUE).when(r).getPollingMode();
         doReturn(false).when(r).isSePresentPing();
 
@@ -101,9 +103,10 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
          * ------------ input polling mode is CONTINUE SE has NOT been removed within timeout
          */
         long timeout = 1000l;
-        AbstractThreadedObservableLocalReader r =
+        AbstractObservableLocalReader r =
                 AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
-        ThreadedWaitForSeRemoval waitForSeRemoval = new ThreadedWaitForSeRemoval(r, timeout,executorService);
+        ThreadedWaitForSeRemoval waitForSeRemoval =
+                new ThreadedWaitForSeRemoval(r, timeout, executorService);
         doReturn(true).when(r).isSePresentPing();
 
         /* test */
@@ -127,7 +130,8 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
         long timeout = 100l;
         BlankSmartPresenceTheadedReader r =
                 AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
-        ThreadedWaitForSeRemoval waitForSeRemoval = new ThreadedWaitForSeRemoval(r, timeout,executorService);
+        ThreadedWaitForSeRemoval waitForSeRemoval =
+                new ThreadedWaitForSeRemoval(r, timeout, executorService);
         doReturn(ObservableReader.PollingMode.STOP).when(r).getPollingMode();
         doReturn(true).when(r).waitForCardAbsentNative(timeout);
 
@@ -151,7 +155,8 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
         long timeout = 100l;
         BlankSmartPresenceTheadedReader r =
                 AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
-        ThreadedWaitForSeRemoval waitForSeRemoval = new ThreadedWaitForSeRemoval(r, timeout,executorService);
+        ThreadedWaitForSeRemoval waitForSeRemoval =
+                new ThreadedWaitForSeRemoval(r, timeout, executorService);
         doReturn(ObservableReader.PollingMode.CONTINUE).when(r).getPollingMode();
         doReturn(true).when(r).waitForCardAbsentNative(timeout);
 
@@ -175,7 +180,8 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
         long timeout = 100l;
         BlankSmartPresenceTheadedReader r =
                 AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
-        ThreadedWaitForSeRemoval waitForSeRemoval = new ThreadedWaitForSeRemoval(r, timeout,executorService);
+        ThreadedWaitForSeRemoval waitForSeRemoval =
+                new ThreadedWaitForSeRemoval(r, timeout, executorService);
         doReturn(false).when(r).waitForCardAbsentNative(timeout);
 
         /* test */

@@ -14,6 +14,7 @@ package org.eclipse.keyple.core.seproxy.plugin.state;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,8 +54,8 @@ public class DefaultWaitForSeRemoval extends AbstractObservableState {
                 break;
 
             default:
-                logger.trace("[{}] Ignore =>  Event {} received in currentState {}", reader.getName(),
-                        event, state);
+                logger.trace("[{}] Ignore =>  Event {} received in currentState {}",
+                        reader.getName(), event, state);
         }
     }
 

@@ -9,23 +9,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.state;
+package org.eclipse.keyple.core.seproxy.plugin;
 
-import static org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState.MonitoringState.*;
+import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.plugin.AbsSmartInsertionTheadedReaderTest;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractThreadedObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartInsertionTheadedReader;
+import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeInsertion;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
 
@@ -37,7 +36,7 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
     final String READER_NAME = "ThreadedWaitForSeInsertionTest";
 
     AbstractObservableState waitForInsert;
-    AbstractThreadedObservableLocalReader r;
+    BlankSmartInsertionTheadedReader r;
     long timeout;
     final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -48,10 +47,10 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
         logger.info("Test {}", name.getMethodName() + "");
         logger.info("------------------------------");
 
-        timeout = 50l;
+        timeout = 100l;
 
-        r = AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 1);
-        waitForInsert = new ThreadedWaitForSeInsertion(r, timeout,executorService);
+        r = AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 1);
+        waitForInsert = new ThreadedWaitForSeInsertion(r, timeout, executorService);
     }
 
     @Before
@@ -71,8 +70,10 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
          */
         // se matched
         doReturn(true).when(r).processSeInserted();
+        doReturn(true).when(r).waitForCardPresent(timeout);
 
-        ThreadedWaitForSeInsertion waitForInsert = new ThreadedWaitForSeInsertion(r, timeout,executorService);
+        ThreadedWaitForSeInsertion waitForInsert =
+                new ThreadedWaitForSeInsertion(r, timeout, executorService);
 
         /* test */
         waitForInsert.activate();
@@ -92,8 +93,10 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
          */
         // se not matched
         doReturn(false).when(r).processSeInserted();
+        doReturn(true).when(r).waitForCardPresent(timeout);
 
-        ThreadedWaitForSeInsertion waitForInsert = new ThreadedWaitForSeInsertion(r, timeout,executorService);
+        ThreadedWaitForSeInsertion waitForInsert =
+                new ThreadedWaitForSeInsertion(r, timeout, executorService);
 
         /* test */
         waitForInsert.activate();
@@ -111,8 +114,8 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
         /*
          * input no SE inserted within timeout
          */
-        r = AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
-        waitForInsert = new ThreadedWaitForSeInsertion(r, timeout,executorService);
+        r = AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
+        waitForInsert = new ThreadedWaitForSeInsertion(r, timeout, executorService);
 
         /* test */
         waitForInsert.activate();

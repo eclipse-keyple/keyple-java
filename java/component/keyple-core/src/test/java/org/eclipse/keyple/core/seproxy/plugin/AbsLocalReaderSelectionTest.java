@@ -20,6 +20,8 @@ import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.message.*;
+import org.eclipse.keyple.core.seproxy.plugin.mock.BlankAbstractLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartSelectionReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.junit.Assert;
@@ -227,7 +229,6 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     public void open_logical_channel_success() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
-        when(r.isLogicalChannelOpen()).thenReturn(true);
         when(r.isPhysicalChannelOpen()).thenReturn(true);
 
         SeSelector seSelector = getAtrSelector();
@@ -240,7 +241,6 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     public void open_channel_fail() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         when(r.getATR()).thenReturn(ByteArrayUtil.fromHex(ATR));
-        when(r.isLogicalChannelOpen()).thenReturn(false);
         when(r.isPhysicalChannelOpen()).thenReturn(false);// does not open
 
         SeSelector seSelector = getAtrSelector();
@@ -289,14 +289,12 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
      * @return basic spy reader
      * @throws KeypleReaderException
      */
-    static public AbstractLocalReader getSpy(String pluginName, String readerName)
-            throws KeypleReaderException {
+    static public AbstractLocalReader getSpy(String pluginName, String readerName) {
         AbstractLocalReader r = Mockito.spy(new BlankAbstractLocalReader(pluginName, readerName));
         return r;
     }
 
-    static public BlankSmartSelectionReader getSmartSpy(String pluginName, String readerName)
-            throws KeypleReaderException {
+    static public BlankSmartSelectionReader getSmartSpy(String pluginName, String readerName) {
         BlankSmartSelectionReader r =
                 Mockito.spy(new BlankSmartSelectionReader(pluginName, readerName));
         return r;

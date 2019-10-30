@@ -9,11 +9,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin;
+package org.eclipse.keyple.core.seproxy.plugin.mock;
 
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState;
+import org.eclipse.keyple.core.seproxy.plugin.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
@@ -46,37 +46,37 @@ public class BlankSmartPresenceTheadedReader extends AbstractThreadedObservableL
     }
 
     @Override
-    protected boolean checkSePresence() throws NoStackTraceThrowable {
+    public boolean checkSePresence() throws NoStackTraceThrowable {
         return false;
     }
 
     @Override
-    protected byte[] getATR() {
+    public byte[] getATR() {
         return new byte[0];
     }
 
     @Override
-    protected void openPhysicalChannel() throws KeypleChannelControlException {
+    public void openPhysicalChannel() throws KeypleChannelControlException {
 
     }
 
     @Override
-    protected void closePhysicalChannel() throws KeypleChannelControlException {
+    public void closePhysicalChannel() throws KeypleChannelControlException {
 
     }
 
     @Override
-    protected boolean isPhysicalChannelOpen() {
+    public boolean isPhysicalChannelOpen() {
         return false;
     }
 
     @Override
-    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
+    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
         return false;
     }
 
     @Override
-    protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
+    public byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         return new byte[0];
     }
 
@@ -112,7 +112,8 @@ public class BlankSmartPresenceTheadedReader extends AbstractThreadedObservableL
     }
 
     @Override
-    protected AbstractObservableState.MonitoringState getInitState() {
-        return AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
+    public ObservableReaderStateService initStateService() {
+        return new ObservableReaderStateService(this, initStates(),
+                AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION);
     }
 }

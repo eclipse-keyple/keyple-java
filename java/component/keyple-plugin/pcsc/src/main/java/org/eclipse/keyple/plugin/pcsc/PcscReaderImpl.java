@@ -14,18 +14,19 @@ package org.eclipse.keyple.plugin.pcsc;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.plugin.*;
-import org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState;
+import org.eclipse.keyple.core.seproxy.plugin.state.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
+final class PcscReaderImpl extends AbstractObservableLocalReader
         implements PcscReader, SmartInsertionReader, SmartPresenceReader {
 
     private static final Logger logger = LoggerFactory.getLogger(PcscReaderImpl.class);
@@ -49,6 +50,10 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
     private Card card;
     private CardChannel channel;
 
+    private long timeoutSeInsert = 10000;// default value
+    private long timeoutSeRemoval = 10000;// default value
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+
     private boolean logging;
 
     /**
@@ -59,12 +64,13 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
      * @param pluginName the name of the plugin
      * @param terminal the PC/SC terminal
      */
-    protected PcscReaderImpl(String pluginName, CardTerminal terminal,
-            ExecutorService executorService) {
-        super(pluginName, terminal.getName(), executorService);
+    protected PcscReaderImpl(String pluginName, CardTerminal terminal) {
+        super(pluginName, terminal.getName());
         this.terminal = terminal;
         this.card = null;
         this.channel = null;
+
+        this.stateService = initStateService();
 
         // Using null values to use the standard method for defining default values
         try {
@@ -78,6 +84,28 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
         } catch (KeypleBaseException ex) {
             // can not fail with null value
         }
+    }
+
+    @Override
+    public ObservableReaderStateService initStateService() {
+
+        Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
+                new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+                new DefaultWaitForStartDetect(this));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+                new ThreadedWaitForSeInsertion(this, timeoutSeInsert, executorService));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
+                new ThreadedWaitForSeProcessing(this, timeoutSeRemoval, executorService));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
+                new ThreadedWaitForSeRemoval(this, timeoutSeRemoval, executorService));
+
+
+        return new ObservableReaderStateService(this, states,
+                AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
     }
 
     @Override
@@ -115,8 +143,7 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
 
     @Override
     public boolean waitForCardPresent(long timeout) {
-        logger.trace("[{}] waitForCardPresent => wait until {} ms.",
-                this.getName(), timeout);
+        logger.trace("[{}] waitForCardPresent => wait until {} ms.", this.getName(), timeout);
         try {
             return terminal.waitForCardPresent(timeout);
         } catch (CardException e) {
@@ -134,8 +161,7 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
      */
     @Override
     public boolean waitForCardAbsentNative(long timeout) {
-        logger.trace("[{}] waitForCardAbsentNative => wait until {} ms.",
-                this.getName(), timeout);
+        logger.trace("[{}] waitForCardAbsentNative => wait until {} ms.", this.getName(), timeout);
         try {
             if (terminal.waitForCardAbsent(timeout)) {
                 return true;
@@ -308,7 +334,7 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
             }
         } else if (name.equals(SETTING_KEY_SE_INSERTION_TIMEOUT)) {
             if (value == null) {
-                setTimeout(Timeout.SE_INSERTION, SETTING_SE_INSERTION_TIMEOUT_DEFAULT);
+                // TODO error value?
             } else {
                 long timeout = Long.parseLong(value);
 
@@ -316,11 +342,11 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
                     throw new IllegalArgumentException(
                             "Timeout has to be of at least 1ms " + name + value);
                 }
-                setTimeout(Timeout.SE_INSERTION, timeout);
+                timeoutSeInsert = timeout;
             }
         } else if (name.equals(SETTING_KEY_SE_REMOVAL_TIMEOUT)) {
             if (value == null) {
-                setTimeout(Timeout.SE_REMOVAL, SETTING_SE_REMOVAL_TIMEOUT_DEFAULT);
+                // TODO error value?
             } else {
                 long timeout = Long.parseLong(value);
 
@@ -328,7 +354,7 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
                     throw new IllegalArgumentException(
                             "Timeout has to be of at least 1ms " + name + value);
                 }
-                setTimeout(Timeout.SE_REMOVAL, timeout);
+                timeoutSeRemoval = timeout;
             }
         } else if (name.equals(SETTING_KEY_DISCONNECT)) {
             if (value == null || value.equals(SETTING_DISCONNECT_RESET)) {
@@ -390,7 +416,7 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
      * This status may be wrong if the card has been removed.
      * <p>
      * The caller should test the card presence with isSePresent before calling this method.
-     * 
+     *
      * @return true if the physical channel is open
      */
     @Override
@@ -405,7 +431,7 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
      *
      * In this case be aware that on some platforms (ex. Windows 8+), the exclusivity is granted for
      * a limited time (ex. 5 seconds). After this delay, the card is automatically resetted.
-     * 
+     *
      * @throws KeypleChannelControlException if a reader error occurs
      */
     @Override
@@ -460,8 +486,4 @@ final class PcscReaderImpl extends AbstractThreadedObservableLocalReader
     }
 
 
-    @Override
-    protected AbstractObservableState.MonitoringState getInitState() {
-        return AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
-    }
 }

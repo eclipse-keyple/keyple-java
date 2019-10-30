@@ -9,22 +9,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.state;
+package org.eclipse.keyple.core.seproxy.plugin;
 
+import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.*;
+import static org.mockito.Mockito.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.plugin.*;
+import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartPresenceTheadedReader;
+import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeProcessing;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState.MonitoringState.*;
-import static org.mockito.Mockito.*;
 
 public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
 
@@ -48,7 +47,7 @@ public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
 
         timeout = 5000l;
         r = AbsSmartPresenceTheadedReaderTest.getSmartPresenceMock(PLUGIN_NAME, READER_NAME);
-        waitForSeProcessing = new ThreadedWaitForSeProcessing(r, timeout,executorService);
+        waitForSeProcessing = new ThreadedWaitForSeProcessing(r, timeout, executorService);
     }
 
     @Before
@@ -60,10 +59,7 @@ public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
     @Test
     public void waitForProcessed_processed() throws Exception, NoStackTraceThrowable {
         /*
-         * ------------
-         * input
-         * polling mode is CONTINUE
-         * SE has been processed within timeout
+         * ------------ input polling mode is CONTINUE SE has been processed within timeout
          */
 
         doReturn(ObservableReader.PollingMode.CONTINUE).when(r).getPollingMode();
@@ -81,9 +77,7 @@ public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
     @Test
     public void smart_waitForProcessed_STOP() throws Exception, NoStackTraceThrowable {
         /*
-         * ------------ input
-         * polling mode is STOP
-         * SE has been REMOVED within timeout
+         * ------------ input polling mode is STOP SE has been REMOVED within timeout
          */
         doReturn(ObservableReader.PollingMode.STOP).when(r).getPollingMode();
         doReturn(true).when(r).waitForCardAbsentNative(timeout);
@@ -101,10 +95,7 @@ public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
     @Test
     public void smart_waitForProcessed_CONTINUE() throws Exception, NoStackTraceThrowable {
         /*
-         * ------------
-         * input
-         * polling mode is CONTINUE
-         * SE has been removed within timeout
+         * ------------ input polling mode is CONTINUE SE has been removed within timeout
          */
         doReturn(ObservableReader.PollingMode.CONTINUE).when(r).getPollingMode();
         doReturn(true).when(r).waitForCardAbsentNative(timeout);

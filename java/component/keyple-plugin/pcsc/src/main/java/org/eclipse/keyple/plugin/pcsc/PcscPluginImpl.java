@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
@@ -36,9 +34,6 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
     private static final Logger logger = LoggerFactory.getLogger(PcscPluginImpl.class);
 
     private static final long SETTING_THREAD_TIMEOUT_DEFAULT = 1000;
-
-    // need to handle executorService because PcscPluginImpl() is called statically
-    static ExecutorService executorService = Executors.newFixedThreadPool(5);
 
     /**
      * singleton instance of SeProxyService
@@ -128,7 +123,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
         try {
             for (CardTerminal term : terminals.list()) {
 
-                nativeReaders.add(new PcscReaderImpl(this.getName(), term, executorService));
+                nativeReaders.add(new PcscReaderImpl(this.getName(), term));
             }
         } catch (CardException e) {
             if (e.getCause().toString().contains("SCARD_E_NO_READERS_AVAILABLE")) {
@@ -171,9 +166,9 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
         try {
             for (CardTerminal term : terminals.list()) {
                 if (term.getName().equals(name)) {
-                    logger.trace("[{}] fetchNativeReader => CardTerminal in new PcscReader: {}", this.getName(),
-                            terminals);
-                    reader = new PcscReaderImpl(this.getName(), term, executorService);
+                    logger.trace("[{}] fetchNativeReader => CardTerminal in new PcscReader: {}",
+                            this.getName(), terminals);
+                    reader = new PcscReaderImpl(this.getName(), term);
                 }
             }
         } catch (CardException e) {

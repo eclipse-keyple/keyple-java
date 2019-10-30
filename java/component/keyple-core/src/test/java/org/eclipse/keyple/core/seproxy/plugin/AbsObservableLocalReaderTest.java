@@ -23,10 +23,9 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
-import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState;
+import org.eclipse.keyple.core.seproxy.plugin.mock.BlankObservableLocalReader;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,7 +61,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         r.addObserver(onRemovedCountDown(lock));
 
         when(r.checkSePresence()).thenReturn(false);
-        when(r.isLogicalChannelOpen()).thenReturn(true);
+        when(r.isPhysicalChannelOpen()).thenReturn(true);
 
         // test
         Assert.assertFalse(r.isSePresent());
@@ -192,7 +191,6 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
 
         r.setDefaultSelectionRequest(new DefaultSelectionsRequest(selections, multi, channel),
                 mode);
-
 
         // test
         r.processSeInserted();
@@ -368,7 +366,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         r.startSeDetection(ObservableReader.PollingMode.CONTINUE);
 
         // insert SE
-        r.getCurrentState().onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
+        r.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
 
         // assert currentState have changed
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
@@ -382,7 +380,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
                 r.getCurrentMonitoringState());
 
         // remove SE
-        r.getCurrentState().onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
+        r.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
 
         // assert currentState have changed
         Assert.assertEquals(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
@@ -441,8 +439,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         };
     }
 
-    static public AbstractObservableLocalReader getBlank(String pluginName, String readerName)
-            throws KeypleReaderException {
+    static public AbstractObservableLocalReader getBlank(String pluginName, String readerName) {
         AbstractObservableLocalReader r = new BlankObservableLocalReader(pluginName, readerName);
         return r;
     }
@@ -453,8 +450,6 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
         AbstractObservableLocalReader r =
                 Mockito.spy(new BlankObservableLocalReader(pluginName, readerName));
 
-        doReturn(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION).when(r)
-                .getInitState();
         /*
          * doCallRealMethod().when(r).initStates(); doCallRealMethod().when(r).getCurrentState();
          * doCallRealMethod().when(r).setCurrentState(any(AbstractObservableState.class));

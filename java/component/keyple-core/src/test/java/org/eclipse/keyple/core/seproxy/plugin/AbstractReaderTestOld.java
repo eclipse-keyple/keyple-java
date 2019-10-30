@@ -19,7 +19,6 @@ import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.*;
-import org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.junit.Assert;
@@ -125,11 +124,6 @@ public class AbstractReaderTestOld extends CoreBaseTest {
     MockThreadedObservableLocalReader getBlankAbstractReader(String pluginName, String readerName) {
         /* anonymous subclass of ThreadedTestReader */
         return new MockThreadedObservableLocalReader(pluginName, readerName) {
-
-            @Override
-            protected AbstractObservableState.MonitoringState getInitState() {
-                return null;
-            }
 
             @Override
             public boolean waitForCardPresent(long timeout) {

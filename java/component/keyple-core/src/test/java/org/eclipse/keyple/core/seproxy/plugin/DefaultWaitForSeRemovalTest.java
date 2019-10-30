@@ -9,17 +9,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.state;
+package org.eclipse.keyple.core.seproxy.plugin;
 
-import static org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
-import static org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
+import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
+import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.plugin.*;
+import org.eclipse.keyple.core.seproxy.plugin.state.DefaultWaitForSeRemoval;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -47,7 +47,7 @@ public class DefaultWaitForSeRemovalTest extends CoreBaseTest {
         /*
          * ------------ input polling mode is STOP SE has been removed within timeout
          */
-        AbstractThreadedObservableLocalReader r =
+        AbstractObservableLocalReader r =
                 AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
         DefaultWaitForSeRemoval waitForSeRemoval = new DefaultWaitForSeRemoval(r);
 
@@ -65,7 +65,7 @@ public class DefaultWaitForSeRemovalTest extends CoreBaseTest {
         /*
          * ------------ input polling mode is CONTINUE SE has been removed within timeout
          */
-        AbstractThreadedObservableLocalReader r =
+        AbstractObservableLocalReader r =
                 AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
         DefaultWaitForSeRemoval waitForSeRemoval = new DefaultWaitForSeRemoval(r);
         doReturn(ObservableReader.PollingMode.CONTINUE).when(r).getPollingMode();
@@ -84,7 +84,7 @@ public class DefaultWaitForSeRemovalTest extends CoreBaseTest {
         /*
          * ------------ input polling mode is CONTINUE SE has NOT been removed within timeout
          */
-        AbstractThreadedObservableLocalReader r =
+        AbstractObservableLocalReader r =
                 AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
         DefaultWaitForSeRemoval waitForSeRemoval = new DefaultWaitForSeRemoval(r);
 

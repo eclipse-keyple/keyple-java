@@ -11,8 +11,8 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
-import static org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
-import static org.eclipse.keyple.core.seproxy.plugin.state.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
+import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION;
+import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
 import static org.mockito.Mockito.doReturn;
 import java.util.concurrent.CountDownLatch;
 import org.eclipse.keyple.core.CoreBaseTest;
@@ -20,6 +20,7 @@ import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
+import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartPresenceTheadedReader;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -84,7 +85,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
         Thread.sleep(100);
 
         // does nothing
-        Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
+        Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState());
     }
 
     @Test
@@ -101,7 +102,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
         r.startRemovalSequence();
         Thread.sleep(100);
 
-        Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
+        Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentMonitoringState());
     }
 
     @Test
@@ -118,7 +119,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
         r.startRemovalSequence();
         Thread.sleep(100);
 
-        Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
+        Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentMonitoringState());
     }
 
 
@@ -137,22 +138,23 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
         r.startRemovalSequence();
         Thread.sleep(100);
 
-        Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
+        Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentMonitoringState());
     }
 
     /*
      * Helpers
      */
 
-    static public BlankSmartPresenceTheadedReader getSmartSpy(String pluginName, String readerName) {
+    static public BlankSmartPresenceTheadedReader getSmartSpy(String pluginName,
+            String readerName) {
         BlankSmartPresenceTheadedReader r =
                 Mockito.spy(new BlankSmartPresenceTheadedReader(pluginName, readerName, 1));
         return r;
     }
 
-    static public BlankSmartPresenceTheadedReader getSmartPresenceMock(String pluginName, String readerName)  {
-        BlankSmartPresenceTheadedReader r =
-                Mockito.mock(BlankSmartPresenceTheadedReader.class);
+    static public BlankSmartPresenceTheadedReader getSmartPresenceMock(String pluginName,
+            String readerName) {
+        BlankSmartPresenceTheadedReader r = Mockito.mock(BlankSmartPresenceTheadedReader.class);
         doReturn("test").when(r).getName();
         return r;
     }

@@ -9,11 +9,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin;
+package org.eclipse.keyple.core.seproxy.plugin.mock;
 
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.keyple.core.seproxy.exception.*;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
+import org.eclipse.keyple.core.seproxy.plugin.ObservableReaderStateService;
 import org.eclipse.keyple.core.seproxy.plugin.state.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -28,18 +31,13 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
      */
     public BlankObservableLocalReader(String pluginName, String readerName) {
         super(pluginName, readerName);
-        /* Init state */
-        switchState(getInitState());
-    }
 
-
-    @Override
-    protected AbstractObservableState.MonitoringState getInitState() {
-        return AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION;
+        stateService = initStateService();
     }
 
     @Override
-    protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> initStates() {
+    final public ObservableReaderStateService initStateService() {
+
         Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
                 new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
@@ -50,41 +48,44 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
                 new DefaultWaitForSeRemoval(this));
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
                 new DefaultWaitForStartDetect(this));
-        return states;
+
+        return new ObservableReaderStateService(this, states,
+                AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
     }
 
+
     @Override
-    protected boolean checkSePresence() throws NoStackTraceThrowable {
+    public boolean checkSePresence() throws NoStackTraceThrowable {
         return false;
     }
 
     @Override
-    protected byte[] getATR() {
+    public byte[] getATR() {
         return new byte[0];
     }
 
     @Override
-    protected void openPhysicalChannel() throws KeypleChannelControlException {
+    public void openPhysicalChannel() throws KeypleChannelControlException {
 
     }
 
     @Override
-    protected void closePhysicalChannel() throws KeypleChannelControlException {
+    public void closePhysicalChannel() throws KeypleChannelControlException {
 
     }
 
     @Override
-    protected boolean isPhysicalChannelOpen() {
+    public boolean isPhysicalChannelOpen() {
         return false;
     }
 
     @Override
-    protected boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
+    public boolean protocolFlagMatches(SeProtocol protocolFlag) throws KeypleReaderException {
         return false;
     }
 
     @Override
-    protected byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
+    public byte[] transmitApdu(byte[] apduIn) throws KeypleIOReaderException {
         return new byte[0];
     }
 
@@ -103,4 +104,5 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
             throws IllegalArgumentException, KeypleBaseException {
 
     }
+
 }
