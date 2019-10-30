@@ -11,6 +11,7 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin.state;
 
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
 import org.slf4j.Logger;
@@ -49,9 +50,14 @@ public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
             @Override
             public Boolean call() {
                 logger.trace("[{}] Invoke waitForCardPresent asynchronously", reader.getName());
-                if (((SmartInsertionReader) reader).waitForCardPresent(timeout)) {
-                    onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
-                    return true;
+                try {
+                    if (((SmartInsertionReader) reader).waitForCardPresent(timeout)) {
+                        onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
+                        return true;
+                    }
+                } catch (KeypleIOReaderException e) {
+                    logger.trace("[{}] waitForCardPresent => Error while polling card with waitForCardPresent", reader.getName());
+                    onEvent(AbstractObservableLocalReader.InternalEvent.STOP_DETECT);
                 }
                 onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
                 return false;
