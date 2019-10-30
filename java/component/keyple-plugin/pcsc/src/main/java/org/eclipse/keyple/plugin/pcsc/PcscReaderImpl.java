@@ -135,21 +135,20 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
         try {
             return terminal.isCardPresent();
         } catch (CardException e) {
-            logger.trace("[{}] Exception occured in isSePresent. Message: {}", this.getName(),
+            logger.trace("[{}] Exception occurred in isSePresent. Message: {}", this.getName(),
                     e.getMessage());
             throw new NoStackTraceThrowable();
         }
     }
 
     @Override
-    public boolean waitForCardPresent(long timeout) {
+    public boolean waitForCardPresent(long timeout) throws KeypleIOReaderException {
         logger.trace("[{}] waitForCardPresent => wait until {} ms.", this.getName(), timeout);
         try {
             return terminal.waitForCardPresent(timeout);
         } catch (CardException e) {
-            logger.trace("[{}] Exception occured in waitForCardPresent. Message: {}",
-                    this.getName(), e.getMessage());
-            return false;
+            throw new KeypleIOReaderException ("[" + this.getName() + "] Exception occurred in waitForCardPresent. " +
+                    "Message: "+ e.getMessage());
         }
     }
 
@@ -160,7 +159,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
      * @return true if the card is removed within the delay
      */
     @Override
-    public boolean waitForCardAbsentNative(long timeout) {
+    public boolean waitForCardAbsentNative(long timeout) throws KeypleIOReaderException {
         logger.trace("[{}] waitForCardAbsentNative => wait until {} ms.", this.getName(), timeout);
         try {
             if (terminal.waitForCardAbsent(timeout)) {
@@ -169,9 +168,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 return false;
             }
         } catch (CardException e) {
-            logger.trace("[{}] Exception occured in waitForCardAbsentNative. Message: {}",
-                    this.getName(), e.getMessage());
-            return false;
+            throw new KeypleIOReaderException ("[" + this.getName() + "] Exception occurred in waitForCardAbsentNative. " +
+                    "Message: "+ e.getMessage());
         }
     }
 

@@ -14,6 +14,8 @@ package org.eclipse.keyple.core.seproxy.plugin.state;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.SmartPresenceReader;
 import org.slf4j.Logger;
@@ -66,16 +68,21 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
         return new Callable<Boolean>() {
             @Override
             public Boolean call() {
-                if (((SmartPresenceReader) reader).waitForCardAbsentNative(timeout)) {// timeout is
-                                                                                      // already
-                                                                                      // managed
-                                                                                      // within the
-                                                                                      // task
-                    onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
-                    return true;
-                } else {
-                    // se was not removed within timeout
-                    onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
+                try {
+                    if (((SmartPresenceReader) reader).waitForCardAbsentNative(timeout)) {
+                        // timeout is already managed within the task
+                        onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
+                        return true;
+                    } else {
+                        // se was not removed within timeout
+                        onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
+                        return false;
+                    }
+                } catch (KeypleIOReaderException e) {
+                    logger.trace(
+                            "[{}] waitForCardAbsent => Error while polling card with waitForCardAbsent",
+                            reader.getName());
+                    onEvent(AbstractObservableLocalReader.InternalEvent.STOP_DETECT);
                     return false;
                 }
             }

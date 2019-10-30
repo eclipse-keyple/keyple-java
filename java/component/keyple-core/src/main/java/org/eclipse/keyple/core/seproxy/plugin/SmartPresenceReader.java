@@ -12,6 +12,7 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 
 /**
  * Interface implemented by the readers able to handle natively the card removal process.
@@ -36,6 +37,8 @@ public interface SmartPresenceReader extends ObservableReader {
      * @param timeout the delay in millisecond we wait for a card to be withdrawn, a value of zero
      *        means wait for ever.
      * @return presence status
+     * @throws KeypleIOReaderException in the event of a communication failure with the reader
+     *         (disconnection)
      */
-    boolean waitForCardAbsentNative(long timeout);
+    boolean waitForCardAbsentNative(long timeout) throws KeypleIOReaderException;
 }

@@ -26,6 +26,8 @@ public interface SmartInsertionReader extends ObservableReader {
      * @param timeout the delay in millisecond we wait for a card insertion, a value of zero means
      *        wait for ever.
      * @return presence status
+     * @throws KeypleIOReaderException in the event of a communication failure with the reader
+     *         (disconnection)
      */
     boolean waitForCardPresent(long timeout) throws KeypleIOReaderException;
 }

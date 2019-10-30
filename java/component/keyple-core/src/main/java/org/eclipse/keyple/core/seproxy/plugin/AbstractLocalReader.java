@@ -111,7 +111,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
         try {
             closePhysicalChannel();
         } catch (KeypleChannelControlException e) {
-            logger.trace("[{}] Exception occured in closeLogicalAndPhysicalChannels. Message: {}",
+            logger.trace("[{}] Exception occurred in closeLogicalAndPhysicalChannels. Message: {}",
                     this.getName(), e.getMessage());
         }
     }

@@ -60,6 +60,7 @@ public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
                             "[{}] waitForCardPresent => Error while polling card with waitForCardPresent",
                             reader.getName());
                     onEvent(AbstractObservableLocalReader.InternalEvent.STOP_DETECT);
+                    return false;
                 }
                 onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
                 return false;

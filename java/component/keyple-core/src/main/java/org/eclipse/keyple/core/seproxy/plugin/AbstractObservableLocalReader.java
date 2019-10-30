@@ -383,7 +383,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
             logger.trace("[{}] Ping SE", this.getName());
             transmitApdu(apdu);
         } catch (KeypleIOReaderException e) {
-            logger.trace("[{}] Exception occured in isSePresentPing. Message: {}", this.getName(),
+            logger.trace("[{}] Exception occurred in isSePresentPing. Message: {}", this.getName(),
                     e.getMessage());
             return false;
         }
