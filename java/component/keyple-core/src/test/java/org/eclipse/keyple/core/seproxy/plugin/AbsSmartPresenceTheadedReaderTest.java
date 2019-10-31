@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
- * test the feature of SmartPresence methods
+ * test the feature of SmartRemoval methods
  */
 @RunWith(Parameterized.class)
 public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {

@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * {@link org.eclipse.keyple.core.seproxy.event.ReaderEvent} : SE_INSERTED, SE_REMOVED
  */
 final class StubReaderImpl extends AbstractObservableLocalReader
-        implements StubReader, SmartInsertionReader, SmartPresenceReader {
+        implements StubReader, SmartInsertionReader, SmartRemovalReader {
 
     private static final Logger logger = LoggerFactory.getLogger(StubReaderImpl.class);
 
@@ -215,7 +215,7 @@ final class StubReaderImpl extends AbstractObservableLocalReader
     }
 
     /**
-     * Defined in the {@link org.eclipse.keyple.core.seproxy.plugin.SmartPresenceReader} interface,
+     * Defined in the {@link org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader} interface,
      * this method is called by the monitoring thread to check SE absence
      * 
      * @param timeout the delay in millisecond we wait for a card withdrawing

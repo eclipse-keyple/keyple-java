@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.SmartPresenceReader;
+import org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,14 +42,14 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
     public void activate() {
         logger.debug("[{}] Activate ThreadedWaitForSeRemoval", this.reader.getName());
 
-        if (reader instanceof SmartPresenceReader) {
-            logger.trace("[{}] Reader is SmartPresence enabled ", this.reader.getName());
+        if (reader instanceof SmartRemovalReader) {
+            logger.trace("[{}] Reader is SmartRemoval enabled ", this.reader.getName());
             waitForCardAbsent = executor.submit(waitForCardAbsent());
 
         } else {
-            // reader is not instanceof SmartPresenceReader
+            // reader is not instanceof SmartRemovalReader
             // poll card with isPresentPing
-            logger.trace("[{}] Reader is not SmartPresence enabled, use isSePresentPing method",
+            logger.trace("[{}] Reader is not SmartRemoval enabled, use isSePresentPing method",
                     this.reader.getName());
             waitForCardAbsentPing = executor.submit(waitForCardAbsentPing());
 
@@ -68,7 +68,7 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
             @Override
             public Boolean call() {
                 try {
-                    if (((SmartPresenceReader) reader).waitForCardAbsentNative(timeout)) {
+                    if (((SmartRemovalReader) reader).waitForCardAbsentNative(timeout)) {
                         // timeout is already managed within the task
                         onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
                         return true;

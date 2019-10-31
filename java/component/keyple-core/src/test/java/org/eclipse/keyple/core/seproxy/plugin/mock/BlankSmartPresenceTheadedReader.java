@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BlankSmartPresenceTheadedReader extends AbstractThreadedObservableLocalReader
-        implements SmartPresenceReader, SmartInsertionReader {
+        implements SmartRemovalReader, SmartInsertionReader {
 
     private static final Logger logger =
             LoggerFactory.getLogger(BlankSmartPresenceTheadedReader.class);

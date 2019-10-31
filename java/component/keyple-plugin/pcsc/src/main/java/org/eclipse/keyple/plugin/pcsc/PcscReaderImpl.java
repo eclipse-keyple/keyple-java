@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 final class PcscReaderImpl extends AbstractObservableLocalReader
-        implements PcscReader, SmartInsertionReader, SmartPresenceReader {
+        implements PcscReader, SmartInsertionReader, SmartRemovalReader {
 
     private static final Logger logger = LoggerFactory.getLogger(PcscReaderImpl.class);
 

@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.SmartPresenceReader;
+import org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,14 +41,14 @@ public class ThreadedWaitForSeProcessing extends DefaultWaitForSeProcessing {
         logger.debug("[{}] Activate ThreadedWaitForSeProcessing Removal detector",
                 this.reader.getName());
 
-        if (!(reader instanceof SmartPresenceReader)) {
+        if (!(reader instanceof SmartRemovalReader)) {
             logger.trace(
-                    "[{}] Reader is not SmartPresence enabled, can not detect removal event while in WaitForSeProcessing state",
+                    "[{}] Reader is not SmartRemoval enabled, can not detect removal event while in WaitForSeProcessing state",
                     this.reader.getName());
             return;
         }
 
-        logger.trace("[{}] Reader is SmartPresence enabled ", this.reader.getName());
+        logger.trace("[{}] Reader is SmartRemoval enabled ", this.reader.getName());
         waitForCardAbsent = executor.submit(waitForCardAbsent());
     }
 
@@ -64,7 +64,7 @@ public class ThreadedWaitForSeProcessing extends DefaultWaitForSeProcessing {
             @Override
             public Boolean call() {
                 try {
-                    if (((SmartPresenceReader) reader).waitForCardAbsentNative(timeout)) {
+                    if (((SmartRemovalReader) reader).waitForCardAbsentNative(timeout)) {
                         // timeout is already managed within the task
                         onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
                         return true;
