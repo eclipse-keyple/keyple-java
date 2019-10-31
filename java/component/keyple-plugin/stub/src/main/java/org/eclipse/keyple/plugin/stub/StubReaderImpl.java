@@ -20,10 +20,9 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.*;
-import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeInsertion;
-import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeProcessing;
-import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeRemoval;
-import org.eclipse.keyple.core.seproxy.plugin.state.WaitForStartDetect;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartInsertionMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartRemovalMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.state.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
@@ -241,17 +240,20 @@ final class StubReaderImpl extends AbstractObservableLocalReader
 
         Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
                 new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
+
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
                 new WaitForStartDetect(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new ThreadedWaitForSeInsertion(this, executorService));
+                new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this),
+                        executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-                new ThreadedWaitForSeProcessing(this, executorService));
+                new WaitForSeProcessing(this, new SmartRemovalMonitoringJob(this),
+                        executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-                new ThreadedWaitForSeRemoval(this, executorService));
+                new WaitForSeRemoval(this, new SmartRemovalMonitoringJob(this), executorService));
 
         return new ObservableReaderStateService(this, states,
                 AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION);

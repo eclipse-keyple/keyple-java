@@ -28,14 +28,14 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
+public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
 
 
     private static final Logger logger =
-            LoggerFactory.getLogger(ThreadedWaitForSeInsertionTest.class);
+            LoggerFactory.getLogger(WaitForSeInsertionJobExecutorTest.class);
 
-    final String PLUGIN_NAME = "ThreadedWaitForSeInsertionTestP";
-    final String READER_NAME = "ThreadedWaitForSeInsertionTest";
+    final String PLUGIN_NAME = "WaitForSeInsertionJobExecutorTestP";
+    final String READER_NAME = "WaitForSeInsertionJobExecutorTest";
 
     AbstractObservableState waitForInsert;
     BlankSmartInsertionTheadedReader r;
@@ -111,7 +111,7 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
     // * input no SE inserted within timeout
     // */
     // r = AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
-    // waitForInsert = new ThreadedWaitForSeInsertion(r, executorService);
+    // waitForInsert = new WaitForSeInsertion(r, executorService);
     //
     // /* test */
     // waitForInsert.onActivate();

@@ -28,11 +28,10 @@ import org.slf4j.LoggerFactory;
 public class WaitForSeRemovalTest extends CoreBaseTest {
 
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(ThreadedWaitForSeRemovalTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(WaitForSeRemovalTest.class);
 
-    final String PLUGIN_NAME = "ThreadedWaitForSeRemovalTestP";
-    final String READER_NAME = "ThreadedWaitForSeRemovalTest";
+    final String PLUGIN_NAME = "WaitForSeRemovalJobExecutorTestP";
+    final String READER_NAME = "WaitForSeRemovalJobExecutorTest";
 
 
     @Before

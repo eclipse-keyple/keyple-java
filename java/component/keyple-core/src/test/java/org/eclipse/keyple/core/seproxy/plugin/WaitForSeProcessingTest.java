@@ -28,14 +28,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
+public class WaitForSeProcessingTest extends CoreBaseTest {
 
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(ThreadedWaitForSeProcessingTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(WaitForSeProcessingTest.class);
 
-    final String PLUGIN_NAME = "ThreadedWaitForSeProcessingTestP";
-    final String READER_NAME = "ThreadedWaitForSeProcessingTest";
+    final String PLUGIN_NAME = "WaitForSeProcessingTestP";
+    final String READER_NAME = "WaitForSeProcessingTest";
 
     final ExecutorService executorService = Executors.newSingleThreadExecutor();
     BlankSmartPresenceTheadedReader r;

@@ -26,8 +26,7 @@ import org.slf4j.LoggerFactory;
 
 public class WaitForSeInsertionTest extends CoreBaseTest {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(ThreadedWaitForSeRemovalTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(WaitForSeInsertionTest.class);
 
     final String PLUGIN_NAME = "WaitForSeInsertionTestP";
     final String READER_NAME = "WaitForSeInsertionTest";

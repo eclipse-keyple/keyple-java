@@ -30,14 +30,14 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
+public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
 
 
     private static final Logger logger =
-            LoggerFactory.getLogger(ThreadedWaitForSeRemovalTest.class);
+            LoggerFactory.getLogger(WaitForSeRemovalJobExecutorTest.class);
 
-    final String PLUGIN_NAME = "ThreadedWaitForSeRemovalTestP";
-    final String READER_NAME = "ThreadedWaitForSeRemovalTest";
+    final String PLUGIN_NAME = "WaitForSeRemovalJobExecutorTestP";
+    final String READER_NAME = "WaitForSeRemovalJobExecutorTest";
 
     final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -105,8 +105,8 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
     // long timeout = 1000l;
     // AbstractObservableLocalReader r =
     // AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
-    // ThreadedWaitForSeRemoval waitForSeRemoval =
-    // new ThreadedWaitForSeRemoval(r, executorService);
+    // WaitForSeRemoval waitForSeRemoval =
+    // new WaitForSeRemoval(r, executorService);
     // doReturn(true).when(r).isSePresentPing();
     //
     // /* test */
@@ -178,8 +178,8 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
     // long timeout = 100l;
     // BlankSmartPresenceTheadedReader r =
     // AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
-    // ThreadedWaitForSeRemoval waitForSeRemoval =
-    // new ThreadedWaitForSeRemoval(r, executorService);
+    // WaitForSeRemoval waitForSeRemoval =
+    // new WaitForSeRemoval(r, executorService);
     // doReturn(false).when(r).waitForCardAbsentNative(timeout);
     //
     // /* test */
