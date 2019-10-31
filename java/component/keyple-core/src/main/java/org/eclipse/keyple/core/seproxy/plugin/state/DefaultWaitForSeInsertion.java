@@ -42,12 +42,8 @@ public class DefaultWaitForSeInsertion extends AbstractObservableState {
                 switchState(MonitoringState.WAIT_FOR_START_DETECTION);
                 break;
 
-            case TIME_OUT:
-                switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
-                break;
-
             default:
-                logger.trace("[{}] Ignore =>  Event {} received in currentState {}",
+                logger.warn("[{}] Ignore =>  Event {} received in currentState {}",
                         reader.getName(), event, state);
         }
     }

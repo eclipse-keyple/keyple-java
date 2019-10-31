@@ -27,14 +27,12 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
 
     private Future<Boolean> waitForCardAbsentPing;
     private Future<Boolean> waitForCardAbsent;
-    private final long timeout;
     private final ExecutorService executor;
 
 
-    public ThreadedWaitForSeRemoval(AbstractObservableLocalReader reader, long timeout,
+    public ThreadedWaitForSeRemoval(AbstractObservableLocalReader reader,
             ExecutorService executor) {
         super(reader);
-        this.timeout = timeout;
         this.executor = executor;
     }
 
@@ -44,7 +42,7 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
 
         if (reader instanceof SmartRemovalReader) {
             logger.trace("[{}] Reader is SmartRemoval enabled ", this.reader.getName());
-            waitForCardAbsent = executor.submit(waitForCardAbsent());
+            waitForCardAbsent = executor.submit(waitForCardAbsentNative());
 
         } else {
             // reader is not instanceof SmartRemovalReader
@@ -57,29 +55,32 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
     }
 
     /**
-     * Invoke waitForCardAbsent
+     * Invoke waitForCardAbsentNative
      * 
      * @return true is the card was removed
      */
-    private Callable<Boolean> waitForCardAbsent() {
+    private Callable<Boolean> waitForCardAbsentNative() {
         logger.debug("[{}] Using method waitForCardAbsentNative", this.reader.getName());
 
         return new Callable<Boolean>() {
             @Override
             public Boolean call() {
                 try {
-                    if (((SmartRemovalReader) reader).waitForCardAbsentNative(timeout)) {
+                    if (((SmartRemovalReader) reader).waitForCardAbsentNative()) {
                         // timeout is already managed within the task
                         onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
                         return true;
                     } else {
                         // se was not removed within timeout
-                        onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
+                        // onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
+                        logger.trace(
+                                "[{}] waitForCardAbsentNative => return false, task interrupted",
+                                reader.getName());
                         return false;
                     }
                 } catch (KeypleIOReaderException e) {
                     logger.trace(
-                            "[{}] waitForCardAbsent => Error while polling card with waitForCardAbsent",
+                            "[{}] waitForCardAbsentNative => Error while polling card with waitForCardAbsentNative",
                             reader.getName());
                     onEvent(AbstractObservableLocalReader.InternalEvent.STOP_DETECT);
                     return false;
@@ -94,8 +95,6 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
      * @return true is the card was removed
      */
     private Callable<Boolean> waitForCardAbsentPing() {
-        logger.trace("[{}] waitForCardAbsentPing => Timeout : {} ms", timeout);
-
         return new Callable<Boolean>() {
             long counting = 0;
             long threeshold = 200;
@@ -111,16 +110,10 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
                     }
                     retries++;
 
-                    long left = timeout - counting;
 
-                    if (left < 0) {
-                        onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
-                        return false;
-                    }
                     if (logger.isTraceEnabled()) {
                         logger.trace("[{}] Polling retries :{}, time left {} ms", reader.getName(),
-                                retries, left);
-
+                                retries);
                     }
                     // wait a bit
                     Thread.sleep(threeshold);

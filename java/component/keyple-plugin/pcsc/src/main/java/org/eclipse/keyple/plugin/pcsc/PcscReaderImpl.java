@@ -50,8 +50,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     private Card card;
     private CardChannel channel;
 
-    private long timeoutSeInsert = 10000;// default value
-    private long timeoutSeRemoval = 10000;// default value
+    private long insertLatency = 50;// default value
+    private long removalLatency = 50;// default value
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private boolean logging;
@@ -79,8 +79,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             setParameter(SETTING_KEY_MODE, null);
             setParameter(SETTING_KEY_DISCONNECT, null);
             setParameter(SETTING_KEY_LOGGING, null);
-            setParameter(SETTING_KEY_SE_INSERTION_TIMEOUT, null);
-            setParameter(SETTING_KEY_SE_REMOVAL_TIMEOUT, null);
         } catch (KeypleBaseException ex) {
             // can not fail with null value
         }
@@ -95,13 +93,13 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 new DefaultWaitForStartDetect(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new ThreadedWaitForSeInsertion(this, timeoutSeInsert, executorService));
+                new ThreadedWaitForSeInsertion(this, executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-                new ThreadedWaitForSeProcessing(this, timeoutSeRemoval, executorService));
+                new ThreadedWaitForSeProcessing(this, executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-                new ThreadedWaitForSeRemoval(this, timeoutSeRemoval, executorService));
+                new ThreadedWaitForSeRemoval(this, executorService));
 
 
         return new ObservableReaderStateService(this, states,
@@ -142,36 +140,63 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     }
 
     @Override
-    public boolean waitForCardPresent(long timeout) throws KeypleIOReaderException {
-        logger.trace("[{}] waitForCardPresent => wait until {} ms.", this.getName(), timeout);
+    public boolean waitForCardPresent() throws KeypleIOReaderException {
+        logger.trace("[{}] waitForCardPresent => loop with latency of {} ms.", this.getName(),
+                insertLatency);
         try {
-            return terminal.waitForCardPresent(timeout);
+            while (true) {
+                if (terminal.waitForCardPresent(insertLatency)) {
+                    // card inserted
+                    return true;
+                } else {
+                    if (Thread.interrupted()) {
+                        logger.trace("[{}] waitForCardPresent => task has been cancelled");
+                        // task has been cancelled
+                        return false;
+                    }
+                }
+            }
         } catch (CardException e) {
             throw new KeypleIOReaderException(
                     "[" + this.getName() + "] Exception occurred in waitForCardPresent. "
                             + "Message: " + e.getMessage());
+        } catch (Throwable t) {
+            // can or can not happen depending on terminal.waitForCardPresent
+            logger.trace("[{}] waitForCardPresent => Throwable catched", t.getCause());
+            return false;
         }
     }
 
     /**
      * Wait for the card absent event from smartcard.io
      * 
-     * @param timeout waiting time in ms
      * @return true if the card is removed within the delay
      */
     @Override
-    public boolean waitForCardAbsentNative(long timeout) throws KeypleIOReaderException {
-        logger.trace("[{}] waitForCardAbsentNative => wait until {} ms.", this.getName(), timeout);
+    public boolean waitForCardAbsentNative() throws KeypleIOReaderException {
+        logger.trace("[{}] waitForCardAbsentNative => loop with latency of {} ms.", this.getName(),
+                removalLatency);
         try {
-            if (terminal.waitForCardAbsent(timeout)) {
-                return true;
-            } else {
-                return false;
+            while (true) {
+                if (terminal.waitForCardAbsent(removalLatency)) {
+                    // card removed
+                    return true;
+                } else {
+                    if (Thread.interrupted()) {
+                        logger.trace("[{}] waitForCardAbsentNative => task has been cancelled");
+                        // task has been cancelled
+                        return false;
+                    }
+                }
             }
         } catch (CardException e) {
             throw new KeypleIOReaderException(
                     "[" + this.getName() + "] Exception occurred in waitForCardAbsentNative. "
                             + "Message: " + e.getMessage());
+        } catch (Throwable t) {
+            // can or can not happen depending on terminal.waitForCardAbsent
+            logger.trace("[{}] waitForCardAbsentNative => Throwable catched", t.getCause());
+            return false;
         }
     }
 
@@ -331,30 +356,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
             } else {
                 throw new IllegalArgumentException(
                         "Parameter value not supported " + name + " : " + value);
-            }
-        } else if (name.equals(SETTING_KEY_SE_INSERTION_TIMEOUT)) {
-            if (value == null) {
-                // TODO error value?
-            } else {
-                long timeout = Long.parseLong(value);
-
-                if (timeout <= 0) {
-                    throw new IllegalArgumentException(
-                            "Timeout has to be of at least 1ms " + name + value);
-                }
-                timeoutSeInsert = timeout;
-            }
-        } else if (name.equals(SETTING_KEY_SE_REMOVAL_TIMEOUT)) {
-            if (value == null) {
-                // TODO error value?
-            } else {
-                long timeout = Long.parseLong(value);
-
-                if (timeout <= 0) {
-                    throw new IllegalArgumentException(
-                            "Timeout has to be of at least 1ms " + name + value);
-                }
-                timeoutSeRemoval = timeout;
             }
         } else if (name.equals(SETTING_KEY_DISCONNECT)) {
             if (value == null || value.equals(SETTING_DISCONNECT_RESET)) {

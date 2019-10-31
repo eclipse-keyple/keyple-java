@@ -134,7 +134,7 @@ public class AbstractReaderTestOld extends CoreBaseTest {
             }
 
             @Override
-            public boolean waitForCardPresent(long timeout) {
+            public boolean waitForCardPresent() {
                 return false;
             }
 

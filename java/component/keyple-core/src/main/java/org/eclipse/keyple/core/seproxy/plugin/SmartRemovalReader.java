@@ -30,15 +30,13 @@ public interface SmartRemovalReader extends ObservableReader {
      * (not implementing the {@link SmartRemovalReader} interface, then it is managed by the
      * isSePresentPing method defined in this class.
      * <p>
-     * Returns true if a card has disappeared before the end of the provided timeout.
+     * Returns true if a card has disappeared.
      * <p>
-     * Returns false if the SE is still present within the delay.
+     * *
      *
-     * @param timeout the delay in millisecond we wait for a card to be withdrawn, a value of zero
-     *        means wait for ever.
      * @return presence status
      * @throws KeypleIOReaderException in the event of a communication failure with the reader
      *         (disconnection)
      */
-    boolean waitForCardAbsentNative(long timeout) throws KeypleIOReaderException;
+    boolean waitForCardAbsentNative() throws KeypleIOReaderException;
 }

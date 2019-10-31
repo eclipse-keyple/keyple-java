@@ -63,16 +63,19 @@ public class ObservableReaderStateService {
     final synchronized public void switchState(AbstractObservableState.MonitoringState stateId) {
 
         if (currentState != null) {
-            logger.debug("[{}] Switch currentState from {} to {}", this.reader.getName(),
+            logger.trace("[{}] Switch currentState from {} to {}", this.reader.getName(),
                     this.currentState.getMonitoringState(), stateId);
 
             currentState.onDeactivate();
         } else {
-            logger.debug("[{}] Switch to a new currentState {}", this.reader.getName(), stateId);
+            logger.trace("[{}] Switch to a new currentState {}", this.reader.getName(), stateId);
         }
 
         // switch currentState
         currentState = this.states.get(stateId);
+
+        logger.debug("[{}] New currentState {}", this.reader.getName(),
+                currentState.getMonitoringState());
 
         // onActivate the new current state
         currentState.onActivate();

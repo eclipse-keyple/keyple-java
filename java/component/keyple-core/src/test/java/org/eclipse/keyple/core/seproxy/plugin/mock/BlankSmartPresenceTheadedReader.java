@@ -32,9 +32,6 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
     private static final Logger logger =
             LoggerFactory.getLogger(BlankSmartPresenceTheadedReader.class);
 
-    private long timeoutSeInsert = 10000;// default value
-    private long timeoutSeRemoval = 10000;// default value
-
     protected ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     Integer mockDetect;
@@ -108,7 +105,7 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
     }
 
     @Override
-    public boolean waitForCardAbsentNative(long timeout) {
+    public boolean waitForCardAbsentNative() {
         if (!removedOnlyOnce) {
             removedOnlyOnce = true;
             return true;
@@ -117,7 +114,7 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
     }
 
     @Override
-    public boolean waitForCardPresent(long timeout) {
+    public boolean waitForCardPresent() {
         detectCount++;
         return detectCount <= mockDetect;
     }
@@ -132,13 +129,13 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
                 new DefaultWaitForStartDetect(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new ThreadedWaitForSeInsertion(this, timeoutSeInsert, executorService));
+                new ThreadedWaitForSeInsertion(this, executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-                new ThreadedWaitForSeProcessing(this, timeoutSeRemoval, executorService));
+                new ThreadedWaitForSeProcessing(this, executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-                new ThreadedWaitForSeRemoval(this, timeoutSeRemoval, executorService));
+                new ThreadedWaitForSeRemoval(this, executorService));
 
 
         return new ObservableReaderStateService(this, states,

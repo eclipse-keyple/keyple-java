@@ -44,10 +44,6 @@ final class StubReaderImpl extends AbstractObservableLocalReader
 
     TransmissionMode transmissionMode = TransmissionMode.CONTACTLESS;
 
-
-    private long timeoutSeInsert = 10000;// default value
-    private long timeoutSeRemoval = 10000;// default value
-
     protected ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     /**
@@ -194,11 +190,10 @@ final class StubReaderImpl extends AbstractObservableLocalReader
     /**
      * This method is called by the monitoring thread to check SE presence
      * 
-     * @param timeout the delay in millisecond we wait for a card insertion
      * @return true if the SE is present
      */
     @Override
-    public boolean waitForCardPresent(long timeout) {
+    public boolean waitForCardPresent() {
         // for (int i = 0; i < timeout / 10; i++) {
         while (true) {
             if (checkSePresence()) {
@@ -218,11 +213,10 @@ final class StubReaderImpl extends AbstractObservableLocalReader
      * Defined in the {@link org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader} interface,
      * this method is called by the monitoring thread to check SE absence
      * 
-     * @param timeout the delay in millisecond we wait for a card withdrawing
      * @return true if the SE is absent
      */
     @Override
-    public boolean waitForCardAbsentNative(long timeout) {
+    public boolean waitForCardAbsentNative() {
         // for (int i = 0; i < timeout / 10; i++) {
         while (true) {
             if (!checkSePresence()) {
@@ -251,13 +245,13 @@ final class StubReaderImpl extends AbstractObservableLocalReader
                 new DefaultWaitForStartDetect(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new ThreadedWaitForSeInsertion(this, timeoutSeInsert, executorService));
+                new ThreadedWaitForSeInsertion(this, executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-                new ThreadedWaitForSeProcessing(this, timeoutSeRemoval, executorService));
+                new ThreadedWaitForSeProcessing(this, executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-                new ThreadedWaitForSeRemoval(this, timeoutSeRemoval, executorService));
+                new ThreadedWaitForSeRemoval(this, executorService));
 
         return new ObservableReaderStateService(this, states,
                 AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION);

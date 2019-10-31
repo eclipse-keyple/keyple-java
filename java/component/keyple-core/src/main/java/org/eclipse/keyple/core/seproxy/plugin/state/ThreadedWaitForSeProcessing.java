@@ -26,13 +26,11 @@ public class ThreadedWaitForSeProcessing extends DefaultWaitForSeProcessing {
     private static final Logger logger = LoggerFactory.getLogger(ThreadedWaitForSeProcessing.class);
 
     private Future<Boolean> waitForCardAbsent;
-    private final long timeout;
     private final ExecutorService executor;
 
-    public ThreadedWaitForSeProcessing(AbstractObservableLocalReader reader, long timeout,
+    public ThreadedWaitForSeProcessing(AbstractObservableLocalReader reader,
             ExecutorService executor) {
         super(reader);
-        this.timeout = timeout;
         this.executor = executor;
     }
 
@@ -64,13 +62,16 @@ public class ThreadedWaitForSeProcessing extends DefaultWaitForSeProcessing {
             @Override
             public Boolean call() {
                 try {
-                    if (((SmartRemovalReader) reader).waitForCardAbsentNative(timeout)) {
+                    if (((SmartRemovalReader) reader).waitForCardAbsentNative()) {
                         // timeout is already managed within the task
                         onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
                         return true;
                     } else {
                         // se was not removed within timeout
-                        onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
+                        // onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
+                        logger.trace(
+                                "[{}] waitForCardAbsentNative => return false, task interrupted",
+                                reader.getName());
                         return false;
                     }
                 } catch (KeypleIOReaderException e) {
@@ -87,7 +88,7 @@ public class ThreadedWaitForSeProcessing extends DefaultWaitForSeProcessing {
 
     @Override
     public void onDeactivate() {
-        logger.debug("[{}] onDeactivate ThreadedWaitForSeRemoval", this.reader.getName());
+        logger.trace("[{}] onDeactivate ThreadedWaitForSeRemoval", this.reader.getName());
         if (waitForCardAbsent != null && !waitForCardAbsent.isDone()) {
             waitForCardAbsent.cancel(true);// TODO not tested
         }

@@ -87,18 +87,18 @@ public class DefaultWaitForSeInsertionTest extends CoreBaseTest {
         verify(r, times(1)).switchState(WAIT_FOR_SE_REMOVAL);
     }
 
-    @Test
-    public void testTimeout() throws Exception {
-        /*
-         * input no SE inserted within timeout
-         */
-
-        /* test */
-        waitForInsert.onActivate();
-        waitForInsert.onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
-
-        /* Assert */
-        verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
-    }
+    // @Test
+    // public void testTimeout() throws Exception {
+    // /*
+    // * input no SE inserted within timeout
+    // */
+    //
+    // /* test */
+    // waitForInsert.onActivate();
+    // waitForInsert.onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
+    //
+    // /* Assert */
+    // verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
+    // }
 
 }

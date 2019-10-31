@@ -12,7 +12,6 @@
 package org.eclipse.keyple.core.seproxy.plugin.state;
 
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
 import org.slf4j.Logger;
@@ -45,16 +44,16 @@ public class DefaultWaitForSeRemoval extends AbstractObservableState {
                 }
                 break;
 
-            case TIME_OUT:
-                switchState(MonitoringState.WAIT_FOR_START_DETECTION);
-                // We notify the application of the TIMEOUT_ERROR event.
-                reader.notifyObservers(new ReaderEvent(this.reader.getPluginName(),
-                        this.reader.getName(), ReaderEvent.EventType.TIMEOUT_ERROR, null));
-                logger.warn("The time limit for the removal of the SE has been exceeded.");
-                break;
+            // case TIME_OUT:
+            // switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+            // // We notify the application of the TIMEOUT_ERROR event.
+            // reader.notifyObservers(new ReaderEvent(this.reader.getPluginName(),
+            // this.reader.getName(), ReaderEvent.EventType.TIMEOUT_ERROR, null));
+            // logger.warn("The time limit for the removal of the SE has been exceeded.");
+            // break;
 
             default:
-                logger.trace("[{}] Ignore =>  Event {} received in currentState {}",
+                logger.warn("[{}] Ignore =>  Event {} received in currentState {}",
                         reader.getName(), event, state);
         }
     }
