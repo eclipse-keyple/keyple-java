@@ -61,18 +61,17 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
         Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
                 new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-                new DefaultWaitForStartDetect(this));
+                new WaitForStartDetect(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new DefaultWaitForSeInsertion(this, new SmartInsertionMonitoringJob(this),
+                new WaitForSeInsertion(this, new SmartInsertionMonitoringJob(this),
                         executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-                new DefaultWaitForSeProcessing(this));
+                new WaitForSeProcessing(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-                new DefaultWaitForSeRemoval(this, new CardAbsentPingMonitoringJob(this),
-                        executorService));
+                new WaitForSeRemoval(this, new CardAbsentPingMonitoringJob(this), executorService));
 
 
         return new ObservableReaderStateService(this, states,

@@ -12,24 +12,25 @@
 package org.eclipse.keyple.core.seproxy.plugin.state;
 
 import java.util.concurrent.ExecutorService;
+import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.monitor.AbstractMonitoringJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultWaitForSeInsertion extends AbstractObservableState {
+public class WaitForSeRemoval extends AbstractObservableState {
 
     /** logger */
-    private static final Logger logger = LoggerFactory.getLogger(DefaultWaitForSeInsertion.class);
+    private static final Logger logger = LoggerFactory.getLogger(WaitForSeRemoval.class);
 
-    public DefaultWaitForSeInsertion(AbstractObservableLocalReader reader) {
-        super(MonitoringState.WAIT_FOR_SE_INSERTION, reader);
+    public WaitForSeRemoval(AbstractObservableLocalReader reader) {
+        super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader);
     }
 
-    public DefaultWaitForSeInsertion(AbstractObservableLocalReader reader,
+    public WaitForSeRemoval(AbstractObservableLocalReader reader,
             AbstractMonitoringJob monitoringJob, ExecutorService executorService) {
-        super(MonitoringState.WAIT_FOR_SE_INSERTION, reader, monitoringJob, executorService);
+        super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader, monitoringJob, executorService);
     }
 
     @Override
@@ -37,25 +38,26 @@ public class DefaultWaitForSeInsertion extends AbstractObservableState {
         logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(),
                 event, state);
         switch (event) {
-            case SE_INSERTED:
-                // process default selection if any
-                if (this.reader.processSeInserted()) {
-                    switchState(MonitoringState.WAIT_FOR_SE_PROCESSING);
+            case SE_REMOVED:
+                // the SE has been removed, we close all channels and return to
+                // the currentState of waiting
+                // for insertion
+                // We notify the application of the SE_REMOVED event.
+                reader.processSeRemoved();
+                if (reader.getPollingMode() == ObservableReader.PollingMode.REPEATING) {
+                    switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
                 } else {
-                    // if none event was sent to the application, back to SE detection
-                    // stay in the same state
-                    // switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+                    switchState(MonitoringState.WAIT_FOR_START_DETECTION);
                 }
                 break;
 
-            case STOP_DETECT:
-                switchState(MonitoringState.WAIT_FOR_START_DETECTION);
-                break;
-
-            case SE_REMOVED:
-                // SE has been removed during default selection
-                switchState(MonitoringState.WAIT_FOR_START_DETECTION);
-                break;
+            // case TIME_OUT:
+            // switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+            // // We notify the application of the TIMEOUT_ERROR event.
+            // reader.notifyObservers(new ReaderEvent(this.reader.getPluginName(),
+            // this.reader.getName(), ReaderEvent.EventType.TIMEOUT_ERROR, null));
+            // logger.warn("The time limit for the removal of the SE has been exceeded.");
+            // break;
 
             default:
                 logger.warn("[{}] Ignore =>  Event {} received in currentState {}",
@@ -65,7 +67,6 @@ public class DefaultWaitForSeInsertion extends AbstractObservableState {
 
     /*
      * @Override public void onActivate() {}
-     * 
      * 
      * @Override public void onDeactivate() {}
      */

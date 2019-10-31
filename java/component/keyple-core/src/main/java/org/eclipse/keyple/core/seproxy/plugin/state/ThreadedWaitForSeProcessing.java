@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Deprecated
-public class ThreadedWaitForSeProcessing extends DefaultWaitForSeProcessing {
+public class ThreadedWaitForSeProcessing extends WaitForSeProcessing {
 
     /** logger */
     private static final Logger logger = LoggerFactory.getLogger(ThreadedWaitForSeProcessing.class);

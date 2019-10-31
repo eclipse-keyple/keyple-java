@@ -24,7 +24,7 @@ import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartPresenceTheadedReader;
 import org.eclipse.keyple.core.seproxy.plugin.monitor.CardAbsentPingMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartRemovalMonitoringJob;
-import org.eclipse.keyple.core.seproxy.plugin.state.DefaultWaitForSeRemoval;
+import org.eclipse.keyple.core.seproxy.plugin.state.WaitForSeRemoval;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -55,8 +55,8 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
          */
         AbstractObservableLocalReader r =
                 AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
-        DefaultWaitForSeRemoval waitForSeRemoval =
-                new DefaultWaitForSeRemoval(r, new CardAbsentPingMonitoringJob(r), executorService);
+        WaitForSeRemoval waitForSeRemoval =
+                new WaitForSeRemoval(r, new CardAbsentPingMonitoringJob(r), executorService);
         doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
         doReturn(false).when(r).isSePresentPing();
 
@@ -80,8 +80,8 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
          */
         AbstractObservableLocalReader r =
                 AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
-        DefaultWaitForSeRemoval waitForSeRemoval =
-                new DefaultWaitForSeRemoval(r, new CardAbsentPingMonitoringJob(r), executorService);
+        WaitForSeRemoval waitForSeRemoval =
+                new WaitForSeRemoval(r, new CardAbsentPingMonitoringJob(r), executorService);
         doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
         doReturn(false).when(r).isSePresentPing();
 
@@ -129,8 +129,8 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
          */
         BlankSmartPresenceTheadedReader r =
                 AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
-        DefaultWaitForSeRemoval waitForSeRemoval =
-                new DefaultWaitForSeRemoval(r, new SmartRemovalMonitoringJob(r), executorService);
+        WaitForSeRemoval waitForSeRemoval =
+                new WaitForSeRemoval(r, new SmartRemovalMonitoringJob(r), executorService);
         doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
         doReturn(true).when(r).waitForCardAbsentNative();
 
@@ -153,8 +153,8 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
          */
         BlankSmartPresenceTheadedReader r =
                 AbsSmartPresenceTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME);
-        DefaultWaitForSeRemoval waitForSeRemoval =
-                new DefaultWaitForSeRemoval(r, new SmartRemovalMonitoringJob(r), executorService);
+        WaitForSeRemoval waitForSeRemoval =
+                new WaitForSeRemoval(r, new SmartRemovalMonitoringJob(r), executorService);
         doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
         doReturn(true).when(r).waitForCardAbsentNative();
 

@@ -41,13 +41,13 @@ public class BlankObservableLocalReader extends AbstractObservableLocalReader {
         Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
                 new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new DefaultWaitForSeInsertion(this));
+                new WaitForSeInsertion(this));
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-                new DefaultWaitForSeProcessing(this));
+                new WaitForSeProcessing(this));
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-                new DefaultWaitForSeRemoval(this));
+                new WaitForSeRemoval(this));
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-                new DefaultWaitForStartDetect(this));
+                new WaitForStartDetect(this));
 
         return new ObservableReaderStateService(this, states,
                 AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);

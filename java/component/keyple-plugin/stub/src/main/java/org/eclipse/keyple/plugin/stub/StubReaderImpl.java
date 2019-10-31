@@ -20,10 +20,10 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.*;
-import org.eclipse.keyple.core.seproxy.plugin.state.DefaultWaitForStartDetect;
 import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeInsertion;
 import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeProcessing;
 import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeRemoval;
+import org.eclipse.keyple.core.seproxy.plugin.state.WaitForStartDetect;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
@@ -242,7 +242,7 @@ final class StubReaderImpl extends AbstractObservableLocalReader
         Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
                 new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-                new DefaultWaitForStartDetect(this));
+                new WaitForStartDetect(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
                 new ThreadedWaitForSeInsertion(this, executorService));

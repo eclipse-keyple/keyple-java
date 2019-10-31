@@ -79,13 +79,13 @@ final class AndroidNfcReaderImpl extends AbstractObservableLocalReader
                 new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
-                new DefaultWaitForStartDetect(this));
+                new WaitForStartDetect(this));
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new DefaultWaitForSeInsertion(this));
+                new WaitForSeInsertion(this));
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-                new DefaultWaitForSeProcessing(this));
+                new WaitForSeProcessing(this));
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-                new DefaultWaitForSeRemoval(this, new CardAbsentPingMonitoringJob(this), executorService));
+                new WaitForSeRemoval(this, new CardAbsentPingMonitoringJob(this), executorService));
 
         return new ObservableReaderStateService(this, states, AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
     }

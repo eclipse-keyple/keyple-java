@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Deprecated
-public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
+public class ThreadedWaitForSeInsertion extends WaitForSeInsertion {
 
     private Future<Boolean> waitForCarPresent;
     private final ExecutorService executor;

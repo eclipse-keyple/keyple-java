@@ -22,7 +22,7 @@ import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartInsertionTheadedReader;
 import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartInsertionMonitoringJob;
-import org.eclipse.keyple.core.seproxy.plugin.state.DefaultWaitForSeInsertion;
+import org.eclipse.keyple.core.seproxy.plugin.state.WaitForSeInsertion;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -52,8 +52,8 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
         timeout = 100l;
 
         r = AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 1);
-        waitForInsert = new DefaultWaitForSeInsertion(r, new SmartInsertionMonitoringJob(r),
-                executorService);
+        waitForInsert =
+                new WaitForSeInsertion(r, new SmartInsertionMonitoringJob(r), executorService);
     }
 
     @Before

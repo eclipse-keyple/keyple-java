@@ -18,19 +18,19 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.plugin.state.DefaultWaitForSeInsertion;
+import org.eclipse.keyple.core.seproxy.plugin.state.WaitForSeInsertion;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultWaitForSeInsertionTest extends CoreBaseTest {
+public class WaitForSeInsertionTest extends CoreBaseTest {
 
     private static final Logger logger =
             LoggerFactory.getLogger(ThreadedWaitForSeRemovalTest.class);
 
-    final String PLUGIN_NAME = "DefaultWaitForSeInsertionTestP";
-    final String READER_NAME = "DefaultWaitForSeInsertionTest";
+    final String PLUGIN_NAME = "WaitForSeInsertionTestP";
+    final String READER_NAME = "WaitForSeInsertionTest";
 
     AbstractObservableState waitForInsert;
     AbstractObservableLocalReader r;
@@ -42,7 +42,7 @@ public class DefaultWaitForSeInsertionTest extends CoreBaseTest {
         logger.info("------------------------------");
 
         r = AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 1);
-        waitForInsert = new DefaultWaitForSeInsertion(r);
+        waitForInsert = new WaitForSeInsertion(r);
 
     }
 

@@ -19,13 +19,13 @@ import static org.mockito.Mockito.verify;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
-import org.eclipse.keyple.core.seproxy.plugin.state.DefaultWaitForSeRemoval;
+import org.eclipse.keyple.core.seproxy.plugin.state.WaitForSeRemoval;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultWaitForSeRemovalTest extends CoreBaseTest {
+public class WaitForSeRemovalTest extends CoreBaseTest {
 
 
     private static final Logger logger =
@@ -49,7 +49,7 @@ public class DefaultWaitForSeRemovalTest extends CoreBaseTest {
          */
         AbstractObservableLocalReader r =
                 AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
-        DefaultWaitForSeRemoval waitForSeRemoval = new DefaultWaitForSeRemoval(r);
+        WaitForSeRemoval waitForSeRemoval = new WaitForSeRemoval(r);
 
         /* test */
         waitForSeRemoval.onActivate();
@@ -67,7 +67,7 @@ public class DefaultWaitForSeRemovalTest extends CoreBaseTest {
          */
         AbstractObservableLocalReader r =
                 AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
-        DefaultWaitForSeRemoval waitForSeRemoval = new DefaultWaitForSeRemoval(r);
+        WaitForSeRemoval waitForSeRemoval = new WaitForSeRemoval(r);
         doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
 
         /* test */
@@ -86,7 +86,7 @@ public class DefaultWaitForSeRemovalTest extends CoreBaseTest {
     // */
     // AbstractObservableLocalReader r =
     // AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
-    // DefaultWaitForSeRemoval waitForSeRemoval = new DefaultWaitForSeRemoval(r);
+    // WaitForSeRemoval waitForSeRemoval = new WaitForSeRemoval(r);
     //
     // /* test */
     // waitForSeRemoval.onActivate();

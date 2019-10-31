@@ -18,18 +18,18 @@ import org.eclipse.keyple.core.seproxy.plugin.monitor.AbstractMonitoringJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultWaitForStartDetect extends AbstractObservableState {
+public class WaitForSeInsertion extends AbstractObservableState {
 
     /** logger */
-    private static final Logger logger = LoggerFactory.getLogger(DefaultWaitForStartDetect.class);
+    private static final Logger logger = LoggerFactory.getLogger(WaitForSeInsertion.class);
 
-    public DefaultWaitForStartDetect(AbstractObservableLocalReader reader) {
-        super(MonitoringState.WAIT_FOR_START_DETECTION, reader);
+    public WaitForSeInsertion(AbstractObservableLocalReader reader) {
+        super(MonitoringState.WAIT_FOR_SE_INSERTION, reader);
     }
 
-    public DefaultWaitForStartDetect(AbstractObservableLocalReader reader,
+    public WaitForSeInsertion(AbstractObservableLocalReader reader,
             AbstractMonitoringJob monitoringJob, ExecutorService executorService) {
-        super(MonitoringState.WAIT_FOR_START_DETECTION, reader, monitoringJob, executorService);
+        super(MonitoringState.WAIT_FOR_SE_INSERTION, reader, monitoringJob, executorService);
     }
 
     @Override
@@ -37,8 +37,24 @@ public class DefaultWaitForStartDetect extends AbstractObservableState {
         logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(),
                 event, state);
         switch (event) {
-            case START_DETECT:
-                switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
+            case SE_INSERTED:
+                // process default selection if any
+                if (this.reader.processSeInserted()) {
+                    switchState(MonitoringState.WAIT_FOR_SE_PROCESSING);
+                } else {
+                    // if none event was sent to the application, back to SE detection
+                    // stay in the same state
+                    // switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+                }
+                break;
+
+            case STOP_DETECT:
+                switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+                break;
+
+            case SE_REMOVED:
+                // SE has been removed during default selection
+                switchState(MonitoringState.WAIT_FOR_START_DETECTION);
                 break;
 
             default:
@@ -48,12 +64,10 @@ public class DefaultWaitForStartDetect extends AbstractObservableState {
     }
 
     /*
-     * @Override public void onActivate() {
+     * @Override public void onActivate() {}
      * 
-     * }
      * 
-     * @Override public void onDeactivate() {
-     * 
-     * }
+     * @Override public void onDeactivate() {}
      */
+
 }
