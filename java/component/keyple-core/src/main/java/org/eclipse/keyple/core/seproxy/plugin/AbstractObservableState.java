@@ -11,12 +11,21 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.AbstractMonitorJob;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Defines a state behaviour for a {@link AbstractObservableLocalReader} Handles
  * {@link org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader.InternalEvent} that
  * might results on a switch of state.
  */
 public abstract class AbstractObservableState {
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractObservableState.class);
+
 
     /** The states that the reader monitoring currentState machine can have */
     public enum MonitoringState {
@@ -29,9 +38,34 @@ public abstract class AbstractObservableState {
     /* Reference to Reader */
     protected AbstractObservableLocalReader reader;
 
+    protected AbstractMonitorJob monitorJob;
+
+    protected Future monitorEvent;
+
+    protected ExecutorService executorService;
+
+
     /**
-     * Create a new currentState with a currentState identifier
+     * Create a new state with a state identifier and a monitor job
      * 
+     * @param state
+     * @param reader
+     * @param monitorJob
+     * @param executorService
+     */
+    protected AbstractObservableState(MonitoringState state, AbstractObservableLocalReader reader,
+            AbstractMonitorJob monitorJob, ExecutorService executorService) {
+        this.reader = reader;
+        this.state = state;
+        this.monitorJob = monitorJob;
+        this.executorService = executorService;
+
+        monitorJob.setState(this);
+    }
+
+    /**
+     * Create a new state with a state identifier
+     *
      * @param reader : observable reader this currentState is attached to
      * @param state : name of the currentState
      */
@@ -68,12 +102,29 @@ public abstract class AbstractObservableState {
     /**
      * Invoked when activated, a custom behaviour can be added here
      */
-    public abstract void onActivate();
+    public void onActivate() {
+        logger.trace("[{}] onActivate => {}", this.reader.getName(), this.getMonitoringState());
+        // launch the monitorJob is necessary
+        if (monitorJob != null) {
+            if (executorService == null)
+                throw new AssertionError("ExecutorService must be set");
+            monitorEvent = executorService.submit(monitorJob.getMonitorJob());
+        }
+    };
 
     /**
      * Invoked when deactivated
      */
-    public abstract void onDeactivate();
+    public void onDeactivate() {
+        logger.trace("[{}] onDeactivate => {}", this.reader.getName(), this.getMonitoringState());
+        // cancel the monitorJob is necessary
+        if (monitorEvent != null && !monitorEvent.isDone()) {
+            boolean canceled = monitorEvent.cancel(true);
+            logger.trace(
+                    "[{}] onDeactivate => cancel runnable waitForCarPresent by thead interruption {}",
+                    reader.getName(), canceled);
+        }
+    };
 
 
 

@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @RunWith(MockitoJUnitRunner.class)
 public class AbsReaderTest extends CoreBaseTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractReaderTestOld.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbsReaderTest.class);
 
 
     final String PLUGIN_NAME = "AbstractReaderTestP";

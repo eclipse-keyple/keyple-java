@@ -20,6 +20,7 @@ import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
 
     private Future<Boolean> waitForCarPresent;

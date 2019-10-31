@@ -11,9 +11,11 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin.state;
 
+import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.AbstractMonitorJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +26,11 @@ public class DefaultWaitForSeRemoval extends AbstractObservableState {
 
     public DefaultWaitForSeRemoval(AbstractObservableLocalReader reader) {
         super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader);
+    }
+
+    public DefaultWaitForSeRemoval(AbstractObservableLocalReader reader,
+            AbstractMonitorJob monitorJob, ExecutorService executorService) {
+        super(MonitoringState.WAIT_FOR_SE_REMOVAL, reader, monitorJob, executorService);
     }
 
     @Override
@@ -58,10 +65,10 @@ public class DefaultWaitForSeRemoval extends AbstractObservableState {
         }
     }
 
-    @Override
-    public void onActivate() {}
-
-    @Override
-    public void onDeactivate() {}
+    /*
+     * @Override public void onActivate() {}
+     * 
+     * @Override public void onDeactivate() {}
+     */
 
 }

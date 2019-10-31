@@ -20,7 +20,8 @@ import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartInsertionTheadedReader;
-import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeInsertion;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartInsertionMonitorJob;
+import org.eclipse.keyple.core.seproxy.plugin.state.DefaultWaitForSeInsertion;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -50,7 +51,8 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
         timeout = 100l;
 
         r = AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 1);
-        waitForInsert = new ThreadedWaitForSeInsertion(r, executorService);
+        waitForInsert =
+                new DefaultWaitForSeInsertion(r, new SmartInsertionMonitorJob(r), executorService);
     }
 
     @Before
@@ -72,9 +74,6 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
         doReturn(true).when(r).processSeInserted();
         doReturn(true).when(r).waitForCardPresent();
 
-        ThreadedWaitForSeInsertion waitForInsert =
-                new ThreadedWaitForSeInsertion(r, executorService);
-
         /* test */
         waitForInsert.onActivate();
 
@@ -94,9 +93,6 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
         // se not matched
         doReturn(false).when(r).processSeInserted();
         doReturn(true).when(r).waitForCardPresent();
-
-        ThreadedWaitForSeInsertion waitForInsert =
-                new ThreadedWaitForSeInsertion(r, executorService);
 
         /* test */
         waitForInsert.onActivate();

@@ -20,6 +20,7 @@ import org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
 
     /** logger */
@@ -129,10 +130,10 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
     public void onDeactivate() {
         logger.debug("[{}] onDeactivate ThreadedWaitForSeRemoval", this.reader.getName());
         if (waitForCardAbsent != null && !waitForCardAbsent.isDone()) {
-            waitForCardAbsent.cancel(true);// TODO not tested
+            waitForCardAbsent.cancel(true);
         }
         if (waitForCardAbsentPing != null && !waitForCardAbsentPing.isDone()) {
-            waitForCardAbsentPing.cancel(true);// TODO not tested
+            waitForCardAbsentPing.cancel(true);
         }
     }
 

@@ -20,6 +20,8 @@ import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.ObservableReaderStateService;
 import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.CardAbsentPingMonitorJob;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartInsertionMonitorJob;
 import org.eclipse.keyple.core.seproxy.plugin.state.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -55,23 +57,47 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
     @Override
     final public ObservableReaderStateService initStateService() {
 
+
         Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
                 new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
                 new DefaultWaitForStartDetect(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new ThreadedWaitForSeInsertion(this, executorService));
+                new DefaultWaitForSeInsertion(this, new SmartInsertionMonitorJob(this),
+                        executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-                new ThreadedWaitForSeProcessing(this, executorService));
+                new DefaultWaitForSeProcessing(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-                new ThreadedWaitForSeRemoval(this, executorService));
+                new DefaultWaitForSeRemoval(this, new CardAbsentPingMonitorJob(this),
+                        executorService));
 
 
         return new ObservableReaderStateService(this, states,
                 AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
+    }
+
+
+    private Runnable waitForCardPresentFuture() {
+        return new Runnable() {
+            @Override
+            public void run() {
+                logger.trace("[{}] Invoke waitForCardPresent asynchronously",
+                        BlankSmartInsertionTheadedReader.this.getName());
+                try {
+                    if (BlankSmartInsertionTheadedReader.this.waitForCardPresent()) {
+                        onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
+                    }
+                } catch (KeypleIOReaderException e) {
+                    logger.trace(
+                            "[{}] waitForCardPresent => Error while polling card with waitForCardPresent",
+                            BlankSmartInsertionTheadedReader.this.getName());
+                    onEvent(AbstractObservableLocalReader.InternalEvent.STOP_DETECT);
+                }
+            }
+        };
     }
 
 
@@ -133,7 +159,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
      */
 
     @Override
-    public boolean waitForCardPresent() {
+    public boolean waitForCardPresent() throws KeypleIOReaderException {
         detectCount++;
         try {
             Thread.sleep(10);
