@@ -31,9 +31,6 @@ import org.eclipse.keyple.core.seproxy.plugin.state.*;
 public abstract class AbstractThreadedObservableLocalReader extends AbstractObservableLocalReader {
 
     protected ExecutorService executorService = Executors.newSingleThreadExecutor();
-    private long timeoutSeInsert = 10000;// default value
-    private long timeoutSeRemoval = 10000;// default value
-
 
     /**
      * Reader constructor
@@ -66,10 +63,10 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                 new ThreadedWaitForSeInsertion(this, executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-                new ThreadedWaitForSeProcessing(this, timeoutSeRemoval, executorService));
+                new ThreadedWaitForSeProcessing(this, executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-                new ThreadedWaitForSeRemoval(this, timeoutSeRemoval, executorService));
+                new ThreadedWaitForSeRemoval(this, executorService));
 
         return states;
     }

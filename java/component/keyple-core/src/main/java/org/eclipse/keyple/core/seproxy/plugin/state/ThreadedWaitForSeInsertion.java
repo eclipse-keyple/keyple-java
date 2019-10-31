@@ -52,6 +52,10 @@ public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
                     if (((SmartInsertionReader) reader).waitForCardPresent()) {
                         onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
                         return true;
+                    } else {
+                        logger.trace("[{}] waitForCardPresent => return false, task interrupted",
+                                reader.getName());
+                        return false;
                     }
                 } catch (KeypleIOReaderException e) {
                     logger.trace(
@@ -60,8 +64,7 @@ public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
                     onEvent(AbstractObservableLocalReader.InternalEvent.STOP_DETECT);
                     return false;
                 }
-                onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
-                return false;
+                // onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
             }
         };
     }

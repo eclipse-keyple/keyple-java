@@ -48,14 +48,17 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
         PcscReader reader = (PcscReader) plugin.getReaders().first();
         logger.info("Working this reader [{}]", reader.getName());
 
-        reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
-        Thread.sleep(1000);
+        reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+        logger.info("[{}] Waiting 5 seconds for the card insertion and removal...",
+                reader.getName());
+        Thread.sleep(5000);
         reader.stopSeDetection();
         Thread.sleep(1000);
-        reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
-        Thread.sleep(1000);
+        reader.startSeDetection(ObservableReader.PollingMode.REPEATING);
+        logger.info("[{}] Waiting 5 seconds for the card insertion and removal...",
+                reader.getName());
+        Thread.sleep(5000);
         reader.stopSeDetection();
-        Thread.sleep(1000);
         logger.info("End of test");
     }
 

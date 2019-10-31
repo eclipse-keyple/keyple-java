@@ -49,7 +49,7 @@ public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
 
         timeout = 5000l;
         r = AbsSmartPresenceTheadedReaderTest.getSmartPresenceMock(PLUGIN_NAME, READER_NAME);
-        waitForSeProcessing = new ThreadedWaitForSeProcessing(r, timeout, executorService);
+        waitForSeProcessing = new ThreadedWaitForSeProcessing(r, executorService);
     }
 
     @Before
@@ -65,7 +65,7 @@ public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
          */
 
         doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
-        doReturn(false).when(r).waitForCardAbsentNative(timeout);
+        doReturn(false).when(r).waitForCardAbsentNative();
 
         /* test */
         waitForSeProcessing.onActivate();
@@ -82,7 +82,7 @@ public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
          * ------------ input polling mode is STOP SE has been REMOVED within timeout
          */
         doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
-        doReturn(true).when(r).waitForCardAbsentNative(timeout);
+        doReturn(true).when(r).waitForCardAbsentNative();
 
         /* test */
         waitForSeProcessing.onActivate();
@@ -100,7 +100,7 @@ public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
          * ------------ input polling mode is CONTINUE SE has been removed within timeout
          */
         doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
-        doReturn(true).when(r).waitForCardAbsentNative(timeout);
+        doReturn(true).when(r).waitForCardAbsentNative();
 
         /* test */
         waitForSeProcessing.onActivate();

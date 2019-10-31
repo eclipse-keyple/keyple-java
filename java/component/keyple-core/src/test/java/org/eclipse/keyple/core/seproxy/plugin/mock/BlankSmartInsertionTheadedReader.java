@@ -34,8 +34,6 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
 
     Integer mockDetect;
     Integer detectCount = 0;
-    Long timeoutSeInsert = 10000l;
-    Long timeoutSeRemoval = 10000l;
     ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     /**
@@ -63,13 +61,13 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
                 new DefaultWaitForStartDetect(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new ThreadedWaitForSeInsertion(this, timeoutSeInsert, executorService));
+                new ThreadedWaitForSeInsertion(this, executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-                new ThreadedWaitForSeProcessing(this, timeoutSeRemoval, executorService));
+                new ThreadedWaitForSeProcessing(this, executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-                new ThreadedWaitForSeRemoval(this, timeoutSeRemoval, executorService));
+                new ThreadedWaitForSeRemoval(this, executorService));
 
 
         return new ObservableReaderStateService(this, states,
@@ -135,7 +133,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
      */
 
     @Override
-    public boolean waitForCardPresent(long timeout) {
+    public boolean waitForCardPresent() {
         detectCount++;
         try {
             Thread.sleep(10);

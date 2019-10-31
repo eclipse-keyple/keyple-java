@@ -50,7 +50,7 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
         timeout = 100l;
 
         r = AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 1);
-        waitForInsert = new ThreadedWaitForSeInsertion(r, timeout, executorService);
+        waitForInsert = new ThreadedWaitForSeInsertion(r, executorService);
     }
 
     @Before
@@ -70,10 +70,10 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
          */
         // se matched
         doReturn(true).when(r).processSeInserted();
-        doReturn(true).when(r).waitForCardPresent(timeout);
+        doReturn(true).when(r).waitForCardPresent();
 
         ThreadedWaitForSeInsertion waitForInsert =
-                new ThreadedWaitForSeInsertion(r, timeout, executorService);
+                new ThreadedWaitForSeInsertion(r, executorService);
 
         /* test */
         waitForInsert.onActivate();
@@ -93,10 +93,10 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
          */
         // se not matched
         doReturn(false).when(r).processSeInserted();
-        doReturn(true).when(r).waitForCardPresent(timeout);
+        doReturn(true).when(r).waitForCardPresent();
 
         ThreadedWaitForSeInsertion waitForInsert =
-                new ThreadedWaitForSeInsertion(r, timeout, executorService);
+                new ThreadedWaitForSeInsertion(r, executorService);
 
         /* test */
         waitForInsert.onActivate();
@@ -109,22 +109,22 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
 
     }
 
-    @Test
-    public void testTimeout() throws Exception, NoStackTraceThrowable {
-        /*
-         * input no SE inserted within timeout
-         */
-        r = AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
-        waitForInsert = new ThreadedWaitForSeInsertion(r, timeout, executorService);
-
-        /* test */
-        waitForInsert.onActivate();
-
-        Thread.sleep(70l);// wait for timeout
-
-        /* Assert */
-        // Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
-        verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
-    }
+    // @Test
+    // public void testTimeout() throws Exception, NoStackTraceThrowable {
+    // /*
+    // * input no SE inserted within timeout
+    // */
+    // r = AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
+    // waitForInsert = new ThreadedWaitForSeInsertion(r, executorService);
+    //
+    // /* test */
+    // waitForInsert.onActivate();
+    //
+    // Thread.sleep(70l);// wait for timeout
+    //
+    // /* Assert */
+    // // Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
+    // verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
+    // }
 
 }

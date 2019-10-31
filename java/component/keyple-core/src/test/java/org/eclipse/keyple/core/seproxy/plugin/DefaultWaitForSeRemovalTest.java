@@ -79,23 +79,23 @@ public class DefaultWaitForSeRemovalTest extends CoreBaseTest {
         verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
     }
 
-    @Test
-    public void waitForRemoval_Timeout() throws Exception, NoStackTraceThrowable {
-        /*
-         * ------------ input polling mode is CONTINUE SE has NOT been removed within timeout
-         */
-        AbstractObservableLocalReader r =
-                AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
-        DefaultWaitForSeRemoval waitForSeRemoval = new DefaultWaitForSeRemoval(r);
-
-        /* test */
-        waitForSeRemoval.onActivate();
-        waitForSeRemoval.onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
-
-        Thread.sleep(50l);// wait for timeout
-
-        /* Assert */
-        verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
-    }
+    // @Test
+    // public void waitForRemoval_Timeout() throws Exception, NoStackTraceThrowable {
+    // /*
+    // * ------------ input polling mode is CONTINUE SE has NOT been removed within timeout
+    // */
+    // AbstractObservableLocalReader r =
+    // AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
+    // DefaultWaitForSeRemoval waitForSeRemoval = new DefaultWaitForSeRemoval(r);
+    //
+    // /* test */
+    // waitForSeRemoval.onActivate();
+    // waitForSeRemoval.onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
+    //
+    // Thread.sleep(50l);// wait for timeout
+    //
+    // /* Assert */
+    // verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
+    // }
 
 }
