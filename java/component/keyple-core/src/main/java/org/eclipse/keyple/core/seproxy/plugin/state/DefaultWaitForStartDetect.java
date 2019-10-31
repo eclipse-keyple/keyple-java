@@ -41,12 +41,12 @@ public class DefaultWaitForStartDetect extends AbstractObservableState {
     }
 
     @Override
-    public void activate() {
+    public void onActivate() {
 
     }
 
     @Override
-    public void deActivate() {
+    public void onDeactivate() {
 
     }
 }

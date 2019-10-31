@@ -51,7 +51,7 @@ public class DefaultWaitForSeInsertionTest extends CoreBaseTest {
         logger.info("End of Test {}", name.getMethodName() + "");
         logger.info("\"******************************");
 
-        waitForInsert.deActivate();
+        waitForInsert.onDeactivate();
 
     }
 
@@ -63,7 +63,7 @@ public class DefaultWaitForSeInsertionTest extends CoreBaseTest {
         doReturn(true).when(r).processSeInserted();
 
         /* test */
-        waitForInsert.activate();
+        waitForInsert.onActivate();
         waitForInsert.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
 
         /* Assert */
@@ -81,7 +81,7 @@ public class DefaultWaitForSeInsertionTest extends CoreBaseTest {
         doReturn(false).when(r).processSeInserted();
 
         /* test */
-        waitForInsert.activate();
+        waitForInsert.onActivate();
         waitForInsert.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
         /* Assert */
         verify(r, times(1)).switchState(WAIT_FOR_SE_REMOVAL);
@@ -94,7 +94,7 @@ public class DefaultWaitForSeInsertionTest extends CoreBaseTest {
          */
 
         /* test */
-        waitForInsert.activate();
+        waitForInsert.onActivate();
         waitForInsert.onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
 
         /* Assert */

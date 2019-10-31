@@ -11,6 +11,10 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin;
 
+/**
+ * Defines a state behaviour for a {@link AbstractObservableLocalReader}
+ * Handles {@link org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader.InternalEvent} that might results on a switch of state.
+ */
 public abstract class AbstractObservableState {
 
     /** The states that the reader monitoring currentState machine can have */
@@ -61,14 +65,14 @@ public abstract class AbstractObservableState {
     public abstract void onEvent(AbstractObservableLocalReader.InternalEvent event);
 
     /**
-     * If needed, state can be activated (for instance for polling mecanism)
+     * Invoked when activated, a custom behaviour can be added here
      */
-    public abstract void activate();
+    public abstract void onActivate();
 
     /**
-     * If needed, deactivate state
+     * Invoked when deactivated
      */
-    public abstract void deActivate();
+    public abstract void onDeactivate();
 
 
 

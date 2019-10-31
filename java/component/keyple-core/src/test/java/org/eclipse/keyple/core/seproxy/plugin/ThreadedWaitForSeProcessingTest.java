@@ -55,7 +55,7 @@ public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
     @Before
     public void tearDown() {
         logger.info("------------------------------");
-        waitForSeProcessing.deActivate();
+        waitForSeProcessing.onDeactivate();
     }
 
     @Test
@@ -68,7 +68,7 @@ public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
         doReturn(false).when(r).waitForCardAbsentNative(timeout);
 
         /* test */
-        waitForSeProcessing.activate();
+        waitForSeProcessing.onActivate();
         waitForSeProcessing.onEvent(AbstractObservableLocalReader.InternalEvent.SE_PROCESSED);
 
         /* Assert */
@@ -85,7 +85,7 @@ public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
         doReturn(true).when(r).waitForCardAbsentNative(timeout);
 
         /* test */
-        waitForSeProcessing.activate();
+        waitForSeProcessing.onActivate();
 
         Thread.sleep(50l);
 
@@ -103,7 +103,7 @@ public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
         doReturn(true).when(r).waitForCardAbsentNative(timeout);
 
         /* test */
-        waitForSeProcessing.activate();
+        waitForSeProcessing.onActivate();
 
         Thread.sleep(50l);// wait
 

@@ -52,7 +52,7 @@ public class DefaultWaitForSeRemovalTest extends CoreBaseTest {
         DefaultWaitForSeRemoval waitForSeRemoval = new DefaultWaitForSeRemoval(r);
 
         /* test */
-        waitForSeRemoval.activate();
+        waitForSeRemoval.onActivate();
 
         waitForSeRemoval.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
 
@@ -71,7 +71,7 @@ public class DefaultWaitForSeRemovalTest extends CoreBaseTest {
         doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
 
         /* test */
-        waitForSeRemoval.activate();
+        waitForSeRemoval.onActivate();
         waitForSeRemoval.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
 
 
@@ -89,7 +89,7 @@ public class DefaultWaitForSeRemovalTest extends CoreBaseTest {
         DefaultWaitForSeRemoval waitForSeRemoval = new DefaultWaitForSeRemoval(r);
 
         /* test */
-        waitForSeRemoval.activate();
+        waitForSeRemoval.onActivate();
         waitForSeRemoval.onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
 
         Thread.sleep(50l);// wait for timeout

@@ -60,7 +60,7 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
         doReturn(false).when(r).isSePresentPing();
 
         /* test */
-        waitForSeRemoval.activate();
+        waitForSeRemoval.onActivate();
 
         Thread.sleep(50l);
 
@@ -68,7 +68,7 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
         // Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
         verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
 
-        waitForSeRemoval.deActivate();
+        waitForSeRemoval.onDeactivate();
 
     }
 
@@ -86,14 +86,14 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
         doReturn(false).when(r).isSePresentPing();
 
         /* test */
-        waitForSeRemoval.activate();
+        waitForSeRemoval.onActivate();
 
         Thread.sleep(50l);// wait for timeout
 
         /* Assert */
         // Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
         verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
-        waitForSeRemoval.deActivate();
+        waitForSeRemoval.onDeactivate();
 
     }
 
@@ -110,14 +110,14 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
         doReturn(true).when(r).isSePresentPing();
 
         /* test */
-        waitForSeRemoval.activate();
+        waitForSeRemoval.onActivate();
 
         Thread.sleep(2000l);// wait for timeout
 
         /* Assert */
         // Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
         verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
-        waitForSeRemoval.deActivate();
+        waitForSeRemoval.onDeactivate();
 
     }
 
@@ -136,14 +136,14 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
         doReturn(true).when(r).waitForCardAbsentNative(timeout);
 
         /* test */
-        waitForSeRemoval.activate();
+        waitForSeRemoval.onActivate();
 
         Thread.sleep(50l);
 
         /* Assert */
         // Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
         verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
-        waitForSeRemoval.deActivate();
+        waitForSeRemoval.onDeactivate();
 
     }
 
@@ -161,14 +161,14 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
         doReturn(true).when(r).waitForCardAbsentNative(timeout);
 
         /* test */
-        waitForSeRemoval.activate();
+        waitForSeRemoval.onActivate();
 
         Thread.sleep(50l);// wait
 
         /* Assert */
         // Assert.assertEquals(WAIT_FOR_SE_INSERTION, r.getCurrentState().getMonitoringState());
         verify(r, times(1)).switchState(WAIT_FOR_SE_INSERTION);
-        waitForSeRemoval.deActivate();
+        waitForSeRemoval.onDeactivate();
 
     }
 
@@ -185,14 +185,14 @@ public class ThreadedWaitForSeRemovalTest extends CoreBaseTest {
         doReturn(false).when(r).waitForCardAbsentNative(timeout);
 
         /* test */
-        waitForSeRemoval.activate();
+        waitForSeRemoval.onActivate();
 
         Thread.sleep(50l);// wait for timeout
 
         /* Assert */
         // Assert.assertEquals(WAIT_FOR_START_DETECTION, r.getCurrentState().getMonitoringState());
         verify(r, times(1)).switchState(WAIT_FOR_START_DETECTION);
-        waitForSeRemoval.deActivate();
+        waitForSeRemoval.onDeactivate();
 
     }
 

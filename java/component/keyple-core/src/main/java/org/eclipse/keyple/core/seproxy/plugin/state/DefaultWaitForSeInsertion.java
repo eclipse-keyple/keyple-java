@@ -52,36 +52,13 @@ public class DefaultWaitForSeInsertion extends AbstractObservableState {
         }
     }
 
-    /*
-     * @Override protected void onSeInserted() {
-     * logger.debug("Se Inserted event received for reader {}", reader.getName()); if
-     * (this.reader.processSeInserted()) {
-     * this.reader.switchState(MonitoringState.WAIT_FOR_SE_PROCESSING); }else{
-     * this.reader.switchState(MonitoringState.WAIT_FOR_SE_REMOVAL); } }
-     * 
-     * @Override protected void onStartDetection() {
-     * logger.debug("Start Detection event received for reader {}", reader.getName()); }
-     * 
-     * @Override protected void onStopDetection() {
-     * logger.debug("Stop Detection event received for reader {}", reader.getName());
-     * 
-     * }
-     * 
-     * @Override protected void onSeProcessed() {
-     * logger.debug("Se Processed event received for reader {}", reader.getName());
-     * 
-     * }
-     * 
-     * @Override protected void onSeRemoved() {
-     * logger.debug("Se Removed event received for reader {}", reader.getName()); }
-     * 
-     */
+
     @Override
-    public void activate() {}
+    public void onActivate() {}
 
 
     @Override
-    public void deActivate() {}
+    public void onDeactivate() {}
 
 
 }

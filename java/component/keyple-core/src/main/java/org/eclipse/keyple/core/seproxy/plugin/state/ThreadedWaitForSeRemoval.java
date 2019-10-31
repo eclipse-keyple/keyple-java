@@ -39,7 +39,7 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
     }
 
     @Override
-    public void activate() {
+    public void onActivate() {
         logger.debug("[{}] Activate ThreadedWaitForSeRemoval", this.reader.getName());
 
         if (reader instanceof SmartRemovalReader) {
@@ -133,8 +133,8 @@ public class ThreadedWaitForSeRemoval extends DefaultWaitForSeRemoval {
 
 
     @Override
-    public void deActivate() {
-        logger.debug("[{}] deActivate ThreadedWaitForSeRemoval", this.reader.getName());
+    public void onDeactivate() {
+        logger.debug("[{}] onDeactivate ThreadedWaitForSeRemoval", this.reader.getName());
         if (waitForCardAbsent != null && !waitForCardAbsent.isDone()) {
             waitForCardAbsent.cancel(true);// TODO not tested
         }

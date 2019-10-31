@@ -37,7 +37,7 @@ public class ThreadedWaitForSeProcessing extends DefaultWaitForSeProcessing {
     }
 
     @Override
-    public void activate() {
+    public void onActivate() {
         logger.debug("[{}] Activate ThreadedWaitForSeProcessing Removal detector",
                 this.reader.getName());
 
@@ -86,8 +86,8 @@ public class ThreadedWaitForSeProcessing extends DefaultWaitForSeProcessing {
 
 
     @Override
-    public void deActivate() {
-        logger.debug("[{}] deActivate ThreadedWaitForSeRemoval", this.reader.getName());
+    public void onDeactivate() {
+        logger.debug("[{}] onDeactivate ThreadedWaitForSeRemoval", this.reader.getName());
         if (waitForCardAbsent != null && !waitForCardAbsent.isDone()) {
             waitForCardAbsent.cancel(true);// TODO not tested
         }

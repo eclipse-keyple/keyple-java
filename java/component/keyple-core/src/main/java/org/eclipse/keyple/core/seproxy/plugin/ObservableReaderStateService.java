@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Manages the internal state of an AbstractObservableLocalReader Process InternalEvent against the
- * current state
+ * Manages the internal state of an AbstractObservableLocalReader
+ * Process InternalEvent against the current state
  */
 public class ObservableReaderStateService {
 
@@ -44,7 +44,7 @@ public class ObservableReaderStateService {
     }
 
     /**
-     * thread safe method to communicate an internal event to this reader Use this method to inform
+     * Thread safe method to communicate an internal event to this reader Use this method to inform
      * the reader of external event like a tag discovered or a Se inserted
      *
      * @param event internal event
@@ -55,10 +55,10 @@ public class ObservableReaderStateService {
 
 
     /**
-     * thread safe method to switch the state of this reader should only be invoked by this reader
+     * Thread safe method to switch the state of this reader should only be invoked by this reader
      * or its state
      *
-     * @param stateId : next state to activate
+     * @param stateId : next state to onActivate
      */
     final synchronized public void switchState(AbstractObservableState.MonitoringState stateId) {
 
@@ -66,7 +66,7 @@ public class ObservableReaderStateService {
             logger.debug("[{}] Switch currentState from {} to {}", this.reader.getName(),
                     this.currentState.getMonitoringState(), stateId);
 
-            currentState.deActivate();
+            currentState.onDeactivate();
         } else {
             logger.debug("[{}] Switch to a new currentState {}", this.reader.getName(), stateId);
         }
@@ -74,14 +74,14 @@ public class ObservableReaderStateService {
         // switch currentState
         currentState = this.states.get(stateId);
 
-        // activate the new current state
-        currentState.activate();
+        // onActivate the new current state
+        currentState.onActivate();
     }
 
     /**
-     * Get current state
+     * Get reader current state
      *
-     * @return current state
+     * @return reader current state
      */
     final synchronized protected AbstractObservableState getCurrentState() {
         return currentState;

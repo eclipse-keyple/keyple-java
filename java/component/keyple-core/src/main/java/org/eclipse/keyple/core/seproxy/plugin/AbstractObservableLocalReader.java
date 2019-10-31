@@ -117,8 +117,19 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         SE_INSERTED, SE_REMOVED, SE_PROCESSED, START_DETECT, STOP_DETECT, TIME_OUT
     }
 
+    /* Service that handles Internal Events and their impact on the current state of the reader */
     protected ObservableReaderStateService stateService;
 
+
+    /**
+     * Initialize the ObservableReaderStateService with the possible states and their implementation.
+     * ObservableReaderStateService define the initial state.
+     * <p/>
+     * Make sure to initialize the stateService in your reader constructor with
+     * stateService = initStateService()
+     * <p/>
+     * @return initialized state stateService with possible states and the init state
+     */
     protected abstract ObservableReaderStateService initStateService();
 
     /**

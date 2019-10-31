@@ -59,7 +59,7 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
         logger.info("End of Test {}", name.getMethodName() + "");
         logger.info("\"******************************");
 
-        waitForInsert.deActivate();
+        waitForInsert.onDeactivate();
     }
 
 
@@ -76,7 +76,7 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
                 new ThreadedWaitForSeInsertion(r, timeout, executorService);
 
         /* test */
-        waitForInsert.activate();
+        waitForInsert.onActivate();
 
         Thread.sleep(20l);
 
@@ -99,7 +99,7 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
                 new ThreadedWaitForSeInsertion(r, timeout, executorService);
 
         /* test */
-        waitForInsert.activate();
+        waitForInsert.onActivate();
 
         Thread.sleep(20l);
 
@@ -118,7 +118,7 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
         waitForInsert = new ThreadedWaitForSeInsertion(r, timeout, executorService);
 
         /* test */
-        waitForInsert.activate();
+        waitForInsert.onActivate();
 
         Thread.sleep(70l);// wait for timeout
 

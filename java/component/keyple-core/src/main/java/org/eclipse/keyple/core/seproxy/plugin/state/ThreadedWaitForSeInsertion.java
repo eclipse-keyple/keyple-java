@@ -38,10 +38,10 @@ public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
     }
 
     @Override
-    public void activate() {
+    public void onActivate() {
         logger.trace("[{}] Activate => ThreadedWaitForSeInsertion", reader.getName());
         waitForCarPresent = executor.submit(waitForCardPresent(this.timeout));
-        // logger.debug("End of activate currentState {} ",this.currentState);
+        // logger.debug("End of onActivate currentState {} ",this.currentState);
 
     }
 
@@ -70,8 +70,8 @@ public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
 
 
     @Override
-    public void deActivate() {
-        logger.trace("[{}] deActivate => ThreadedWaitForSeInsertion", reader.getName());
+    public void onDeactivate() {
+        logger.trace("[{}] onDeactivate => ThreadedWaitForSeInsertion", reader.getName());
         if (waitForCarPresent != null && !waitForCarPresent.isDone()) {
             waitForCarPresent.cancel(true);
         }
