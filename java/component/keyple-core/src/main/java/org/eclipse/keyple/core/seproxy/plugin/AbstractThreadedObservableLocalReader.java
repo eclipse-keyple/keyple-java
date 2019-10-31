@@ -33,12 +33,6 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractThreadedObservableLocalReader extends AbstractObservableLocalReader {
 
     protected ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-    protected enum Timeout {
-        SE_INSERTION, SE_REMOVAL
-    }
-
-
     private long timeoutSeInsert = 10000;// default value
     private long timeoutSeRemoval = 10000;// default value
 
@@ -82,21 +76,4 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
         return states;
     }
 
-    /**
-     * Sets the value of the delay for the designated timeout
-     * 
-     * @param timeout timeout identifier
-     * @param value delay in milliseconds
-     */
-    protected void setTimeout(Timeout timeout, long value) {
-        switch (timeout) {
-            case SE_INSERTION:
-                timeoutSeInsert = value; // TODO the value will not be taken into account because it
-                                         // is a primitive object in the constructor
-                break;
-            case SE_REMOVAL:
-                timeoutSeRemoval = value;
-                break;
-        }
-    }
 }
