@@ -12,8 +12,9 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 /**
- * Defines a state behaviour for a {@link AbstractObservableLocalReader}
- * Handles {@link org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader.InternalEvent} that might results on a switch of state.
+ * Defines a state behaviour for a {@link AbstractObservableLocalReader} Handles
+ * {@link org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader.InternalEvent} that
+ * might results on a switch of state.
  */
 public abstract class AbstractObservableState {
 

@@ -122,12 +122,13 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
 
     /**
-     * Initialize the ObservableReaderStateService with the possible states and their implementation.
-     * ObservableReaderStateService define the initial state.
+     * Initialize the ObservableReaderStateService with the possible states and their
+     * implementation. ObservableReaderStateService define the initial state.
      * <p/>
-     * Make sure to initialize the stateService in your reader constructor with
-     * stateService = initStateService()
+     * Make sure to initialize the stateService in your reader constructor with stateService =
+     * initStateService()
      * <p/>
+     * 
      * @return initialized state stateService with possible states and the init state
      */
     protected abstract ObservableReaderStateService initStateService();

@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Manages the internal state of an AbstractObservableLocalReader
- * Process InternalEvent against the current state
+ * Manages the internal state of an AbstractObservableLocalReader Process InternalEvent against the
+ * current state
  */
 public class ObservableReaderStateService {
 

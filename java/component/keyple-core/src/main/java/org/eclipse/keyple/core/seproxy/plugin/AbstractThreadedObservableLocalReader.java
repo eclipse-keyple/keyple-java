@@ -16,12 +16,10 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.plugin.state.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * This class implements monitoring functions for a
- * local reader based on a self-managed execution thread.
+ * This class implements monitoring functions for a local reader based on a self-managed execution
+ * thread.
  * <p>
  * The thread is started when the first observation is added and stopped when the last observation
  * is removed.

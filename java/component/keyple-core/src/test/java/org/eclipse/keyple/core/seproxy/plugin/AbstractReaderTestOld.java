@@ -13,7 +13,6 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 
 import static org.mockito.Mockito.doAnswer;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -130,7 +129,8 @@ public class AbstractReaderTestOld extends CoreBaseTest {
 
             @Override
             protected ObservableReaderStateService initStateService() {
-                return new ObservableReaderStateService(this, new HashMap(), AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
+                return new ObservableReaderStateService(this, new HashMap(),
+                        AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
             }
 
             @Override
