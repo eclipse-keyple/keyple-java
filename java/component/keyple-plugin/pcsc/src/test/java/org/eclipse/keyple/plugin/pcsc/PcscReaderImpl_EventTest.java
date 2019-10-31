@@ -39,6 +39,28 @@ public class PcscReaderImpl_EventTest extends CoreBaseTest {
 
     @Test
     @Ignore
+    public void startStopDetection() throws KeypleReaderException, InterruptedException {
+        logger.info("** ************* **");
+        logger.info("** Plug a reader **");
+        logger.info("** ************* **");
+
+        PcscPluginImpl plugin = PcscPluginImpl.getInstance();
+        PcscReader reader = (PcscReader) plugin.getReaders().first();
+        logger.info("Working this reader [{}]", reader.getName());
+
+        reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+        Thread.sleep(1000);
+        reader.stopSeDetection();
+        Thread.sleep(1000);
+        reader.startSeDetection(ObservableReader.PollingMode.SINGLESHOT);
+        Thread.sleep(1000);
+        reader.stopSeDetection();
+        Thread.sleep(1000);
+        logger.info("End of test");
+    }
+
+    @Test
+    @Ignore
     public void testInsertRemoveCard() throws KeypleReaderException, InterruptedException {
         logger.info("** ******************************* **");
         logger.info("** Remove any card before the test **");

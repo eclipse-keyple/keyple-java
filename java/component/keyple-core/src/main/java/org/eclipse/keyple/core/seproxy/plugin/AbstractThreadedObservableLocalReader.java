@@ -63,7 +63,7 @@ public abstract class AbstractThreadedObservableLocalReader extends AbstractObse
                 new DefaultWaitForStartDetect(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new ThreadedWaitForSeInsertion(this, timeoutSeInsert, executorService));
+                new ThreadedWaitForSeInsertion(this, executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
                 new ThreadedWaitForSeProcessing(this, timeoutSeRemoval, executorService));

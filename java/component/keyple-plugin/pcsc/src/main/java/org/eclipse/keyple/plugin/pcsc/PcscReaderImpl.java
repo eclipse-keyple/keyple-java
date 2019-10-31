@@ -50,7 +50,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     private Card card;
     private CardChannel channel;
 
-    private long timeoutSeInsert = 10000;// default value
+    private long insertLatency = 50;// default value
     private long timeoutSeRemoval = 10000;// default value
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -95,7 +95,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 new DefaultWaitForStartDetect(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new ThreadedWaitForSeInsertion(this, timeoutSeInsert, executorService));
+                new ThreadedWaitForSeInsertion(this, executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
                 new ThreadedWaitForSeProcessing(this, timeoutSeRemoval, executorService));
@@ -142,14 +142,29 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     }
 
     @Override
-    public boolean waitForCardPresent(long timeout) throws KeypleIOReaderException {
-        logger.trace("[{}] waitForCardPresent => wait until {} ms.", this.getName(), timeout);
+    public boolean waitForCardPresent() throws KeypleIOReaderException {
+        logger.trace("[{}] waitForCardPresent => wait until {} ms.", this.getName(), insertLatency);
         try {
-            return terminal.waitForCardPresent(timeout);
+            while (true) {
+                if (terminal.waitForCardPresent(insertLatency)) {
+                    // card inserted
+                    return true;
+                } else {
+                    if (Thread.interrupted()) {
+                        logger.trace("[{}] waitForCardPresent => task has been cancelled");
+                        // task has been cancelled
+                        return false;
+                    }
+                }
+            }
         } catch (CardException e) {
             throw new KeypleIOReaderException(
                     "[" + this.getName() + "] Exception occurred in waitForCardPresent. "
                             + "Message: " + e.getMessage());
+        } catch (Throwable t) {
+            // can or can not happen depending on terminal.waitForCardPresent
+            logger.trace("[{}] waitForCardPresent => Throwable catched", t.getCause());
+            return false;
         }
     }
 
@@ -163,6 +178,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     public boolean waitForCardAbsentNative(long timeout) throws KeypleIOReaderException {
         logger.trace("[{}] waitForCardAbsentNative => wait until {} ms.", this.getName(), timeout);
         try {
+
             if (terminal.waitForCardAbsent(timeout)) {
                 return true;
             } else {
@@ -342,7 +358,7 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                     throw new IllegalArgumentException(
                             "Timeout has to be of at least 1ms " + name + value);
                 }
-                timeoutSeInsert = timeout;
+                insertLatency = timeout;
             }
         } else if (name.equals(SETTING_KEY_SE_REMOVAL_TIMEOUT)) {
             if (value == null) {

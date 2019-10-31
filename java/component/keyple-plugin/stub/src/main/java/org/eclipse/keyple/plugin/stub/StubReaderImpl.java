@@ -194,11 +194,10 @@ final class StubReaderImpl extends AbstractObservableLocalReader
     /**
      * This method is called by the monitoring thread to check SE presence
      * 
-     * @param timeout the delay in millisecond we wait for a card insertion
      * @return true if the SE is present
      */
     @Override
-    public boolean waitForCardPresent(long timeout) {
+    public boolean waitForCardPresent() {
         // for (int i = 0; i < timeout / 10; i++) {
         while (true) {
             if (checkSePresence()) {
@@ -251,7 +250,7 @@ final class StubReaderImpl extends AbstractObservableLocalReader
                 new DefaultWaitForStartDetect(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new ThreadedWaitForSeInsertion(this, timeoutSeInsert, executorService));
+                new ThreadedWaitForSeInsertion(this, executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
                 new ThreadedWaitForSeProcessing(this, timeoutSeRemoval, executorService));

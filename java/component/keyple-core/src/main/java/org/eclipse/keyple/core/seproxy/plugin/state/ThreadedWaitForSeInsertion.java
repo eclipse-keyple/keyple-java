@@ -23,16 +23,14 @@ import org.slf4j.LoggerFactory;
 public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
 
     private Future<Boolean> waitForCarPresent;
-    private final long timeout;
     private final ExecutorService executor;
 
     /** logger */
     private static final Logger logger = LoggerFactory.getLogger(ThreadedWaitForSeInsertion.class);
 
-    public ThreadedWaitForSeInsertion(AbstractObservableLocalReader reader, long timeout,
+    public ThreadedWaitForSeInsertion(AbstractObservableLocalReader reader,
             ExecutorService executor) {
         super(reader);
-        this.timeout = timeout;
         this.executor = executor;
 
     }
@@ -40,18 +38,18 @@ public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
     @Override
     public void onActivate() {
         logger.trace("[{}] Activate => ThreadedWaitForSeInsertion", reader.getName());
-        waitForCarPresent = executor.submit(waitForCardPresent(this.timeout));
+        waitForCarPresent = executor.submit(waitForCardPresent());
         // logger.debug("End of onActivate currentState {} ",this.currentState);
 
     }
 
-    private Callable<Boolean> waitForCardPresent(final long timeout) {
+    private Callable<Boolean> waitForCardPresent() {
         return new Callable<Boolean>() {
             @Override
             public Boolean call() {
                 logger.trace("[{}] Invoke waitForCardPresent asynchronously", reader.getName());
                 try {
-                    if (((SmartInsertionReader) reader).waitForCardPresent(timeout)) {
+                    if (((SmartInsertionReader) reader).waitForCardPresent()) {
                         onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
                         return true;
                     }
@@ -73,7 +71,10 @@ public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
     public void onDeactivate() {
         logger.trace("[{}] onDeactivate => ThreadedWaitForSeInsertion", reader.getName());
         if (waitForCarPresent != null && !waitForCarPresent.isDone()) {
-            waitForCarPresent.cancel(true);
+            boolean canceled = waitForCarPresent.cancel(true);
+            logger.trace(
+                    "[{}] onDeactivate => cancel runnable waitForCarPresent by thead interruption {}",
+                    reader.getName(), canceled);
         }
     }
 
