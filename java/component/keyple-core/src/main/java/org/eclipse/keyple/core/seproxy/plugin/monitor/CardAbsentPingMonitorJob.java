@@ -49,7 +49,6 @@ public class CardAbsentPingMonitorJob extends AbstractMonitorJob {
                         // wait a bit
                         Thread.sleep(threeshold);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
                     counting = counting + threeshold;
 
