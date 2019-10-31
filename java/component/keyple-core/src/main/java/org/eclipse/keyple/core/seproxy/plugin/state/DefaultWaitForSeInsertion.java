@@ -38,14 +38,22 @@ public class DefaultWaitForSeInsertion extends AbstractObservableState {
                 event, state);
         switch (event) {
             case SE_INSERTED:
+                // process default selection if any
                 if (this.reader.processSeInserted()) {
                     switchState(MonitoringState.WAIT_FOR_SE_PROCESSING);
                 } else {
-                    switchState(MonitoringState.WAIT_FOR_SE_REMOVAL);
+                    // if none event was sent to the application, back to SE detection
+                    // stay in the same state
+                    // switchState(MonitoringState.WAIT_FOR_START_DETECTION);
                 }
                 break;
 
             case STOP_DETECT:
+                switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+                break;
+
+            case SE_REMOVED:
+                // SE has been removed during default selection
                 switchState(MonitoringState.WAIT_FOR_START_DETECTION);
                 break;
 

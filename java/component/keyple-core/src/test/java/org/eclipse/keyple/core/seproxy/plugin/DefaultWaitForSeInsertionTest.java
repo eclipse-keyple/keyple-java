@@ -12,6 +12,7 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -76,7 +77,7 @@ public class DefaultWaitForSeInsertionTest extends CoreBaseTest {
     @Test
     public void testInsertSe_Notmatched() throws Exception {
         /*
-         * input SE inserted SE doesnt matched
+         * input SE inserted SE doesnt matched Back to Detection
          */
         doReturn(false).when(r).processSeInserted();
 
@@ -84,7 +85,9 @@ public class DefaultWaitForSeInsertionTest extends CoreBaseTest {
         waitForInsert.onActivate();
         waitForInsert.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
         /* Assert */
-        verify(r, times(1)).switchState(WAIT_FOR_SE_REMOVAL);
+
+        // stay in same state
+        verify(r, times(0)).switchState(any(AbstractObservableState.MonitoringState.class));
     }
 
     // @Test

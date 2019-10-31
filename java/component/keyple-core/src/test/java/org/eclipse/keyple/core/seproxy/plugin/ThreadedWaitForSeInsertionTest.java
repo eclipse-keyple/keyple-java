@@ -12,6 +12,7 @@
 package org.eclipse.keyple.core.seproxy.plugin;
 
 import static org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState.MonitoringState.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -100,9 +101,8 @@ public class ThreadedWaitForSeInsertionTest extends CoreBaseTest {
         Thread.sleep(20l);
 
         /* Assert */
-        // Assert.assertEquals(WAIT_FOR_SE_REMOVAL, r.getCurrentState().getMonitoringState());
-        verify(r, times(1)).switchState(WAIT_FOR_SE_REMOVAL);
-
+        // stay in same state
+        verify(r, times(0)).switchState(any(AbstractObservableState.MonitoringState.class));
     }
 
     // @Test
