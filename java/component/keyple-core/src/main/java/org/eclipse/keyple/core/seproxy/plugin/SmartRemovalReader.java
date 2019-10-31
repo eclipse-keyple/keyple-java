@@ -19,7 +19,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
  */
 public interface SmartRemovalReader extends ObservableReader {
     /**
-     * TODO Check if we really need a timeout parameter Wait until the card disappears.
+     * Wait until the card disappears.
      * <p>
      * This method must be implemented by the plugin's reader class when it implements the
      * {@link SmartRemovalReader} interface. The reader implementation must manage the card
