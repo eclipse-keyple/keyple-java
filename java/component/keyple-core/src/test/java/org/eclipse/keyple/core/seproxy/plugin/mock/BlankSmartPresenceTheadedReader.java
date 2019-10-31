@@ -11,20 +11,32 @@
  ********************************************************************************/
 package org.eclipse.keyple.core.seproxy.plugin.mock;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.plugin.*;
+import org.eclipse.keyple.core.seproxy.plugin.state.DefaultWaitForStartDetect;
+import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeInsertion;
+import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeProcessing;
+import org.eclipse.keyple.core.seproxy.plugin.state.ThreadedWaitForSeRemoval;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BlankSmartPresenceTheadedReader extends AbstractThreadedObservableLocalReader
+public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalReader
         implements SmartRemovalReader, SmartInsertionReader {
 
     private static final Logger logger =
             LoggerFactory.getLogger(BlankSmartPresenceTheadedReader.class);
 
+    private long timeoutSeInsert = 10000;// default value
+    private long timeoutSeRemoval = 10000;// default value
+
+    protected ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     Integer mockDetect;
     Integer detectCount = 0;
@@ -113,7 +125,24 @@ public class BlankSmartPresenceTheadedReader extends AbstractThreadedObservableL
 
     @Override
     public ObservableReaderStateService initStateService() {
-        return new ObservableReaderStateService(this, initStates(),
+
+
+        Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
+                new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+                new DefaultWaitForStartDetect(this));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+                new ThreadedWaitForSeInsertion(this, timeoutSeInsert, executorService));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
+                new ThreadedWaitForSeProcessing(this, timeoutSeRemoval, executorService));
+
+        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
+                new ThreadedWaitForSeRemoval(this, timeoutSeRemoval, executorService));
+
+
+        return new ObservableReaderStateService(this, states,
                 AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION);
     }
 }

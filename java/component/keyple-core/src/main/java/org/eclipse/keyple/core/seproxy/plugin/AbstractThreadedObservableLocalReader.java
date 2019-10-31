@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AbstractThreadedObservableLocalReader} class implements monitoring functions for a
+ * This class implements monitoring functions for a
  * local reader based on a self-managed execution thread.
  * <p>
  * The thread is started when the first observation is added and stopped when the last observation
@@ -29,10 +29,8 @@ import org.slf4j.LoggerFactory;
  * It manages a machine in a currentState that conforms to the definitions given in
  * {@link AbstractObservableLocalReader}
  */
+@Deprecated
 public abstract class AbstractThreadedObservableLocalReader extends AbstractObservableLocalReader {
-    /** logger */
-    private static final Logger logger =
-            LoggerFactory.getLogger(AbstractThreadedObservableLocalReader.class);
 
     protected ExecutorService executorService = Executors.newSingleThreadExecutor();
 

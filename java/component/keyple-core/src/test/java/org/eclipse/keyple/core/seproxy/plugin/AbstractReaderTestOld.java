@@ -13,6 +13,8 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 
 import static org.mockito.Mockito.doAnswer;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import org.eclipse.keyple.core.CoreBaseTest;
@@ -106,9 +108,9 @@ public class AbstractReaderTestOld extends CoreBaseTest {
      */
 
     /**
-     * Class extending {@link AbstractThreadedObservableLocalReader} to enable thread monitoring
+     * Class extending {@link AbstractObservableLocalReader} to enable thread monitoring
      */
-    abstract class MockThreadedObservableLocalReader extends AbstractThreadedObservableLocalReader
+    abstract class MockThreadedObservableLocalReader extends AbstractObservableLocalReader
             implements SmartInsertionReader {
         /**
          * Constructor
@@ -124,6 +126,12 @@ public class AbstractReaderTestOld extends CoreBaseTest {
     MockThreadedObservableLocalReader getBlankAbstractReader(String pluginName, String readerName) {
         /* anonymous subclass of ThreadedTestReader */
         return new MockThreadedObservableLocalReader(pluginName, readerName) {
+
+
+            @Override
+            protected ObservableReaderStateService initStateService() {
+                return new ObservableReaderStateService(this, new HashMap(), AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
+            }
 
             @Override
             public boolean waitForCardPresent(long timeout) {

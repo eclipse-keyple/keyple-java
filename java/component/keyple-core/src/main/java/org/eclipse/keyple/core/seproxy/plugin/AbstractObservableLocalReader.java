@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * channel opening (ObservableReader.NotificationMode.MATCHED_ONLY).
  * <p>
  * The monitoring of these events is either directly implemented by the plugin (e. g. Android NFC
- * plugin) or implemented using the child class {@link AbstractThreadedObservableLocalReader}
+ * plugin)
  * <p>
  * The event management implements a currentState machine that is composed of four states.
  * <ol>
@@ -204,12 +204,6 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
      * Depending on the notification mode, the observer will be notified whenever an SE is inserted,
      * regardless of the selection status, or only if the current SE matches the selection criteria.
      * <p>
-     * In addition, in the case of a {@link AbstractThreadedObservableLocalReader} the observation
-     * thread will be notified of request to start the SE insertion monitoring (change from the
-     * WAIT_FOR_START_DETECTION currentState to WAIT_FOR_SE_INSERTION).
-     * <p>
-     * An {@link java.lang.IllegalStateException} exception will be thrown if no observers have been
-     * recorded for this reader (see startMonitoring).
      *
      * @param defaultSelectionsRequest the {@link AbstractDefaultSelectionsRequest} to be executed
      *        when a SE is inserted
