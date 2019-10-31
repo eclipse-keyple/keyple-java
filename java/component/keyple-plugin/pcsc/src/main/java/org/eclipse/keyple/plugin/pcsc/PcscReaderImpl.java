@@ -46,9 +46,10 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     private Card card;
     private CardChannel channel;
 
-    //  the latency delay value (in ms) determines the maximum time during which the waitForCardPresent and
-    //  waitForCardPresent blocking functions will execute. This will correspond to the capacity to react to
-    //  the interrupt signal of the thread (see cancel method of the Future object)
+    // the latency delay value (in ms) determines the maximum time during which the
+    // waitForCardPresent and waitForCardPresent blocking functions will execute.
+    // This will correspond to the capacity to react to the interrupt signal of
+    // the thread (see cancel method of the Future object)
     private long insertLatency = 50;
     private long removalLatency = 50;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
