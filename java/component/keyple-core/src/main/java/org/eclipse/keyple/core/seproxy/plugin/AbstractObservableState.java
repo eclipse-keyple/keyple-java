@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.AbstractMonitorJob;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.AbstractMonitoringJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ public abstract class AbstractObservableState {
     /* Reference to Reader */
     protected AbstractObservableLocalReader reader;
 
-    protected AbstractMonitorJob monitorJob;
+    protected AbstractMonitoringJob monitoringJob;
 
     protected Future monitorEvent;
 
@@ -48,19 +48,20 @@ public abstract class AbstractObservableState {
     /**
      * Create a new state with a state identifier and a monitor job
      * 
-     * @param state
-     * @param reader
-     * @param monitorJob
-     * @param executorService
+     * @param state the state identifier
+     * @param reader the current reader
+     * @param monitoringJob the job to be executed in background (may be null if no background job
+     *        is required)
+     * @param executorService the executor service
      */
     protected AbstractObservableState(MonitoringState state, AbstractObservableLocalReader reader,
-            AbstractMonitorJob monitorJob, ExecutorService executorService) {
+            AbstractMonitoringJob monitoringJob, ExecutorService executorService) {
         this.reader = reader;
         this.state = state;
-        this.monitorJob = monitorJob;
+        this.monitoringJob = monitoringJob;
         this.executorService = executorService;
 
-        monitorJob.setState(this);
+        monitoringJob.setState(this);
     }
 
     /**
@@ -104,11 +105,11 @@ public abstract class AbstractObservableState {
      */
     public void onActivate() {
         logger.trace("[{}] onActivate => {}", this.reader.getName(), this.getMonitoringState());
-        // launch the monitorJob is necessary
-        if (monitorJob != null) {
+        // launch the monitoringJob is necessary
+        if (monitoringJob != null) {
             if (executorService == null)
                 throw new AssertionError("ExecutorService must be set");
-            monitorEvent = executorService.submit(monitorJob.getMonitorJob());
+            monitorEvent = executorService.submit(monitoringJob.getMonitoringJob());
         }
     };
 
@@ -117,7 +118,7 @@ public abstract class AbstractObservableState {
      */
     public void onDeactivate() {
         logger.trace("[{}] onDeactivate => {}", this.reader.getName(), this.getMonitoringState());
-        // cancel the monitorJob is necessary
+        // cancel the monitoringJob is necessary
         if (monitorEvent != null && !monitorEvent.isDone()) {
             boolean canceled = monitorEvent.cancel(true);
             logger.trace(

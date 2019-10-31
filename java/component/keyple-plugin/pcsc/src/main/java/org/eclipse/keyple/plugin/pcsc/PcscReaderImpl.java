@@ -19,8 +19,8 @@ import java.util.regex.Pattern;
 import javax.smartcardio.*;
 import org.eclipse.keyple.core.seproxy.exception.*;
 import org.eclipse.keyple.core.seproxy.plugin.*;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartInsertionMonitorJob;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartRemovalMonitorJob;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartInsertionMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartRemovalMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.state.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -95,15 +95,15 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                 new DefaultWaitForStartDetect(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new DefaultWaitForSeInsertion(this, new SmartInsertionMonitorJob(this),
+                new DefaultWaitForSeInsertion(this, new SmartInsertionMonitoringJob(this),
                         executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
-                new DefaultWaitForSeProcessing(this, new SmartRemovalMonitorJob(this),
+                new DefaultWaitForSeProcessing(this, new SmartRemovalMonitoringJob(this),
                         executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-                new DefaultWaitForSeRemoval(this, new SmartRemovalMonitorJob(this),
+                new DefaultWaitForSeRemoval(this, new SmartRemovalMonitoringJob(this),
                         executorService));
 
 

@@ -21,7 +21,7 @@ import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartPresenceTheadedReader;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartRemovalMonitorJob;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartRemovalMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.state.DefaultWaitForSeProcessing;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,8 +50,8 @@ public class ThreadedWaitForSeProcessingTest extends CoreBaseTest {
 
         timeout = 5000l;
         r = AbsSmartPresenceTheadedReaderTest.getSmartPresenceMock(PLUGIN_NAME, READER_NAME);
-        waitForSeProcessing =
-                new DefaultWaitForSeProcessing(r, new SmartRemovalMonitorJob(r), executorService);
+        waitForSeProcessing = new DefaultWaitForSeProcessing(r, new SmartRemovalMonitoringJob(r),
+                executorService);
     }
 
     @Before

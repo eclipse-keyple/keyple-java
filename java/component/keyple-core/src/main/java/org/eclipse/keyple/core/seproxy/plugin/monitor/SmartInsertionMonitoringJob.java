@@ -13,39 +13,33 @@ package org.eclipse.keyple.core.seproxy.plugin.monitor;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader;
+import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SmartRemovalMonitorJob extends AbstractMonitorJob {
+public class SmartInsertionMonitoringJob extends AbstractMonitoringJob {
 
-    private static final Logger logger = LoggerFactory.getLogger(SmartRemovalMonitorJob.class);
+    private static final Logger logger = LoggerFactory.getLogger(SmartInsertionMonitoringJob.class);
 
-    SmartRemovalReader reader;
+    SmartInsertionReader reader;
 
-    public SmartRemovalMonitorJob(SmartRemovalReader reader) {
+    public SmartInsertionMonitoringJob(SmartInsertionReader reader) {
         this.reader = reader;
     }
 
     @Override
-    public Runnable getMonitorJob() {
+    public Runnable getMonitoringJob() {
         return new Runnable() {
             @Override
             public void run() {
+                logger.trace("[{}] Invoke waitForCardPresent asynchronously", reader.getName());
                 try {
-                    if (reader.waitForCardAbsentNative()) {
-                        // timeout is already managed within the task
-                        state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
-                    } else {
-                        // se was not removed within timeout
-                        // onEvent(AbstractObservableLocalReader.InternalEvent.TIME_OUT);
-                        logger.trace(
-                                "[{}] waitForCardAbsentNative => return false, task interrupted",
-                                reader.getName());
+                    if (reader.waitForCardPresent()) {
+                        state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_INSERTED);
                     }
                 } catch (KeypleIOReaderException e) {
                     logger.trace(
-                            "[{}] waitForCardAbsent => Error while polling card with waitForCardAbsent",
+                            "[{}] waitForCardPresent => Error while polling card with waitForCardPresent",
                             reader.getName());
                     state.onEvent(AbstractObservableLocalReader.InternalEvent.STOP_DETECT);
                 }

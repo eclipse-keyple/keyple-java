@@ -13,11 +13,11 @@ package org.eclipse.keyple.core.seproxy.plugin.monitor;
 
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
 
-public abstract class AbstractMonitorJob {
+public abstract class AbstractMonitoringJob {
 
     AbstractObservableState state;
 
-    abstract public Runnable getMonitorJob();
+    abstract public Runnable getMonitoringJob();
 
     public void setState(AbstractObservableState state) {
         this.state = state;

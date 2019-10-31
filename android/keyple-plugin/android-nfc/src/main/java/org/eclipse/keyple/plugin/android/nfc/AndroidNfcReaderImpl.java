@@ -25,8 +25,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.ObservableReaderStateService;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.CardAbsentPingMonitorJob;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartRemovalMonitorJob;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.CardAbsentPingMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartRemovalMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.state.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
@@ -85,7 +85,7 @@ final class AndroidNfcReaderImpl extends AbstractObservableLocalReader
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
                 new DefaultWaitForSeProcessing(this));
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-                new DefaultWaitForSeRemoval(this, new CardAbsentPingMonitorJob(this), executorService));
+                new DefaultWaitForSeRemoval(this, new CardAbsentPingMonitoringJob(this), executorService));
 
         return new ObservableReaderStateService(this, states, AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
     }

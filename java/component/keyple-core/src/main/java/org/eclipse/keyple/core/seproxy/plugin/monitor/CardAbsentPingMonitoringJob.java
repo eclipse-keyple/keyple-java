@@ -15,18 +15,18 @@ import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CardAbsentPingMonitorJob extends AbstractMonitorJob {
+public class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
 
-    private static final Logger logger = LoggerFactory.getLogger(CardAbsentPingMonitorJob.class);
+    private static final Logger logger = LoggerFactory.getLogger(CardAbsentPingMonitoringJob.class);
 
     AbstractObservableLocalReader reader;
 
-    public CardAbsentPingMonitorJob(AbstractObservableLocalReader reader) {
+    public CardAbsentPingMonitoringJob(AbstractObservableLocalReader reader) {
         this.reader = reader;
     }
 
     @Override
-    public Runnable getMonitorJob() {
+    public Runnable getMonitoringJob() {
         return new Runnable() {
             long counting = 0;
             long threeshold = 200;

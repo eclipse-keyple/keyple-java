@@ -20,8 +20,8 @@ import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.ObservableReaderStateService;
 import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.CardAbsentPingMonitorJob;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartInsertionMonitorJob;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.CardAbsentPingMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartInsertionMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.state.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -64,14 +64,14 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
                 new DefaultWaitForStartDetect(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
-                new DefaultWaitForSeInsertion(this, new SmartInsertionMonitorJob(this),
+                new DefaultWaitForSeInsertion(this, new SmartInsertionMonitoringJob(this),
                         executorService));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
                 new DefaultWaitForSeProcessing(this));
 
         states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
-                new DefaultWaitForSeRemoval(this, new CardAbsentPingMonitorJob(this),
+                new DefaultWaitForSeRemoval(this, new CardAbsentPingMonitoringJob(this),
                         executorService));
 
 
