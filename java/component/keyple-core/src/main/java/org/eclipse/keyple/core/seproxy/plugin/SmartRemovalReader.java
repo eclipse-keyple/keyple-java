@@ -19,6 +19,7 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
  */
 public interface SmartRemovalReader extends ObservableReader {
     /**
+     * Wait until the card disappears.
      * <p>
      * This method must be implemented by the plugin's reader class when it implements the
      * {@link SmartRemovalReader} interface. The reader implementation must manage the card
@@ -32,7 +33,7 @@ public interface SmartRemovalReader extends ObservableReader {
      * Returns true if a card has disappeared.
      * <p>
      * *
-     * 
+     *
      * @return presence status
      * @throws KeypleIOReaderException in the event of a communication failure with the reader
      *         (disconnection)

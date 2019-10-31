@@ -77,7 +77,7 @@ public class ThreadedWaitForSeInsertion extends DefaultWaitForSeInsertion {
         if (waitForCarPresent != null && !waitForCarPresent.isDone()) {
             boolean canceled = waitForCarPresent.cancel(true);
             logger.trace(
-                    "[{}] onDeactivate => cancel runnable waitForCarPresent by thead interruption {}",
+                    "[{}] onDeactivate => cancel runnable waitForCarPresent by thread interruption {}",
                     reader.getName(), canceled);
         }
     }

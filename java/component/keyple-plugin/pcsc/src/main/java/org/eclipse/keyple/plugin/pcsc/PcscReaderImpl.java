@@ -36,10 +36,6 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     private static final String PROTOCOL_T_CL = "T=CL";
     private static final String PROTOCOL_ANY = "T=0";
 
-    /* timeout monitoring timeouts */
-    private static final long SETTING_SE_INSERTION_TIMEOUT_DEFAULT = 10;
-    private static final long SETTING_SE_REMOVAL_TIMEOUT_DEFAULT = 10;
-
     private final CardTerminal terminal;
 
     private String parameterCardProtocol;
@@ -50,8 +46,12 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     private Card card;
     private CardChannel channel;
 
-    private long insertLatency = 50;// default value
-    private long removalLatency = 50;// default value
+    // the latency delay value (in ms) determines the maximum time during which the
+    // waitForCardPresent and waitForCardPresent blocking functions will execute.
+    // This will correspond to the capacity to react to the interrupt signal of
+    // the thread (see cancel method of the Future object)
+    private long insertLatency = 50;
+    private long removalLatency = 50;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private boolean logging;
