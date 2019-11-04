@@ -59,6 +59,10 @@ public class WaitForSeRemoval extends AbstractObservableState {
             // logger.warn("The time limit for the removal of the SE has been exceeded.");
             // break;
 
+            case STOP_DETECT:
+                switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+                break;
+
             default:
                 logger.warn("[{}] Ignore =>  Event {} received in currentState {}",
                         reader.getName(), event, state);

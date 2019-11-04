@@ -62,6 +62,11 @@ public class WaitForSeProcessing extends AbstractObservableState {
                 }
                 break;
 
+
+            case STOP_DETECT:
+                switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+                break;
+
             default:
                 logger.warn("[{}] Ignore =>  Event {} received in currentState {}",
                         reader.getName(), event, state);
