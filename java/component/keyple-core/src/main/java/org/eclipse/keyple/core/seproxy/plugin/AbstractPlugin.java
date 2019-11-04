@@ -49,7 +49,7 @@ public abstract class AbstractPlugin extends AbstractLoggedObservable<PluginEven
             try {
                 readers = initNativeReaders();
             } catch (KeypleReaderException e) {
-                e.printStackTrace();
+                logger.error("Could not instantiate readers in plugin constructor {}", e);
             }
         }
     }
@@ -62,6 +62,7 @@ public abstract class AbstractPlugin extends AbstractLoggedObservable<PluginEven
      * 
      * @return the current reader list, can be null if the
      */
+    @Override
     public final SortedSet<SeReader> getReaders() throws KeypleReaderException {
         if (readers == null) {
             throw new KeypleReaderException("List of readers has not been initialized");
@@ -103,6 +104,7 @@ public abstract class AbstractPlugin extends AbstractLoggedObservable<PluginEven
      * @param plugin a {@link ReaderPlugin} object
      * @return true if the names match (The method is needed for the SortedSet lists)
      */
+    @Override
     public final int compareTo(ReaderPlugin plugin) {
         return this.getName().compareTo(plugin.getName());
     }
@@ -114,6 +116,7 @@ public abstract class AbstractPlugin extends AbstractLoggedObservable<PluginEven
      * @return the reader
      * @throws KeypleReaderNotFoundException if the wanted reader is not found
      */
+    @Override
     public final SeReader getReader(String name) throws KeypleReaderNotFoundException {
         for (SeReader reader : readers) {
             if (reader.getName().equals(name)) {

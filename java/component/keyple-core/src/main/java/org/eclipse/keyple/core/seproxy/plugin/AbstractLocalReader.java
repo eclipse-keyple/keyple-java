@@ -415,6 +415,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * 
      * @param protocolSetting the protocol setting map
      */
+    @Override
     public void setSeProtocolSetting(Map<SeProtocol, String> protocolSetting) {
         this.protocolsMap.putAll(protocolSetting);
     }
@@ -451,12 +452,14 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return the response list
      * @throws KeypleIOReaderException if a reader error occurs
      */
+    @Override
     protected final List<SeResponse> processSeRequestSet(Set<SeRequest> requestSet,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws KeypleReaderException {
 
         boolean requestMatchesProtocol[] = new boolean[requestSet.size()];
-        int requestIndex = 0, lastRequestIndex;
+        int requestIndex = 0;
+        int lastRequestIndex;
 
         // Determine which requests are matching the current ATR
         // All requests without selector are considered matching
@@ -534,8 +537,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
                     }
                 }
                 requestIndex++;
-                if (lastRequestIndex == requestIndex) {
-                    if (!(channelControl == ChannelControl.KEEP_OPEN)) {
+                if (lastRequestIndex == requestIndex
+                        && channelControl != ChannelControl.KEEP_OPEN) {
+
                         // close logical channel unconditionally
                         closeLogicalChannel();
 
@@ -557,7 +561,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
                             ((AbstractObservableLocalReader) this).startRemovalSequence();
                         }
                     }
-                }
+
             }
         }
         return responses;
@@ -577,6 +581,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      */
     @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
             "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity", "PMD.ExcessiveMethodLength"})
+    @Override
     protected final SeResponse processSeRequest(SeRequest seRequest, ChannelControl channelControl)
             throws IllegalStateException, KeypleReaderException {
 
@@ -587,7 +592,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
             seResponse = processSeRequestLogical(seRequest);
         }
 
-        if (!(channelControl == ChannelControl.KEEP_OPEN)) {
+        if (channelControl != ChannelControl.KEEP_OPEN) {
             // close logical channel unconditionally
             closeLogicalChannel();
 

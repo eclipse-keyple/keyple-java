@@ -33,6 +33,7 @@ class RmConnectReaderExecutor implements RemoteMethodExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(RmConnectReaderExecutor.class);
 
+    @Override
     public RemoteMethod getMethodName() {
         return RemoteMethod.READER_DISCONNECT;
     }

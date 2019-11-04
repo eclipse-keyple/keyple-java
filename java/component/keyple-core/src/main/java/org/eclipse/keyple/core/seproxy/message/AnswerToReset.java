@@ -19,7 +19,7 @@ import java.util.Arrays;
  * (May be enhanced to provide analysis methods)
  */
 public class AnswerToReset {
-    private byte[] atrBytes;
+    final private byte[] atrBytes;
 
     public AnswerToReset(byte[] atrBytes) {
         this.atrBytes = atrBytes;
@@ -29,6 +29,7 @@ public class AnswerToReset {
         return atrBytes;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == this) {
             return true;
@@ -40,7 +41,7 @@ public class AnswerToReset {
         AnswerToReset atr = (AnswerToReset) o;
         return Arrays.equals(atr.getBytes(), this.atrBytes);
     }
-
+    @Override
     public int hashCode() {
         int hash = 17;
         hash = 19 * hash + (atrBytes == null ? 0 : Arrays.hashCode(atrBytes));

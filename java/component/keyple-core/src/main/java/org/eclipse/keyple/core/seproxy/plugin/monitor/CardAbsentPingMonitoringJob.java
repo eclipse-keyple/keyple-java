@@ -42,7 +42,7 @@ public class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
                     retries++;
 
                     if (logger.isTraceEnabled()) {
-                        logger.trace("[{}] Polling retries :{}, time left {} ms", reader.getName(),
+                        logger.trace("[{}] Polling retries : {}", reader.getName(),
                                 retries);
                     }
                     try {

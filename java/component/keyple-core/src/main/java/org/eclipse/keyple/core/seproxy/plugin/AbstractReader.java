@@ -103,6 +103,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      * @param seReader a SeReader object
      * @return 0 if the names match (The method is needed for the SortedSet lists)
      */
+    @Override
     public final int compareTo(SeReader seReader) {
         return this.getName().compareTo(seReader.getName());
     }
@@ -122,6 +123,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      * @return responseSet the response set
      * @throws KeypleReaderException if a reader error occurs
      */
+    @Override
     public final List<SeResponse> transmitSet(Set<SeRequest> requestSet,
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws KeypleReaderException {
@@ -173,6 +175,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
         return responseSet;
     }
 
+    @Override
     public final List<SeResponse> transmitSet(Set<SeRequest> requestSet)
             throws KeypleReaderException {
         return transmitSet(requestSet, MultiSeRequestProcessing.FIRST_MATCH,
@@ -207,6 +210,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      * @return the received response
      * @throws KeypleReaderException if a reader error occurs
      */
+    @Override
     public final SeResponse transmit(SeRequest seRequest, ChannelControl channelControl)
             throws KeypleReaderException {
         if (seRequest == null) {
@@ -257,6 +261,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
         return seResponse;
     }
 
+    @Override
     public final SeResponse transmit(SeRequest seRequest) throws KeypleReaderException {
         return transmit(seRequest, ChannelControl.KEEP_OPEN);
     }
@@ -293,7 +298,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
                 processSeRequest(null, CLOSE_AFTER);
                 logger.trace("Explicit physical channel closing executed.");
             } catch (KeypleReaderException e) {
-                logger.error("KeypleReaderException while terminating." + e.getMessage());
+                logger.error("KeypleReaderException while terminating. {}", e.getMessage());
             }
         } else {
             logger.trace("Explicit physical channel closing already requested.");

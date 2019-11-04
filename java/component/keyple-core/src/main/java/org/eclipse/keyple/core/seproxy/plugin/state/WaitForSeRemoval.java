@@ -67,6 +67,7 @@ public class WaitForSeRemoval extends AbstractObservableState {
             default:
                 logger.warn("[{}] Ignore =>  Event {} received in currentState {}",
                         reader.getName(), event, state);
+                break;
         }
     }
 

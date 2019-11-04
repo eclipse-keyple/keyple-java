@@ -27,6 +27,7 @@ class RmReaderEventExecutor implements RemoteMethodExecutor {
 
     private final RemoteSePluginImpl remoteSePlugin;
 
+    @Override
     public RemoteMethod getMethodName() {
         return RemoteMethod.READER_EVENT;
     }

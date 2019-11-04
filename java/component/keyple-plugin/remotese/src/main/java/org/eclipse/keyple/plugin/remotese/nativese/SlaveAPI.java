@@ -297,6 +297,7 @@ public class SlaveAPI implements INativeReaderService, DtoHandler, ObservableRea
      * @return found reader if any
      * @throws KeypleReaderNotFoundException if not reader were found with this name
      */
+    @Override
     public ProxyReader findLocalReader(String nativeReaderName)
             throws KeypleReaderNotFoundException {
         logger.trace("Find local reader by name {} in {} plugin(s)", nativeReaderName,

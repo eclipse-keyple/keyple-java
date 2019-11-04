@@ -152,7 +152,7 @@ public final class SeProxyService {
     public String getVersion() {
         try {
             // load keyple core property file
-            InputStream propertiesIs = this.getClass().getClassLoader()
+            InputStream propertiesIs = Thread.currentThread().getContextClassLoader()
                     .getResourceAsStream("META-INF/keyple-core.properties");
             Properties prop = new Properties();
             prop.load(propertiesIs);
@@ -160,8 +160,9 @@ public final class SeProxyService {
             if (version != null) {
                 return version;
             }
+            propertiesIs.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Keyple core properties file not found in META_INF");
         }
 
         return "no-version-found";

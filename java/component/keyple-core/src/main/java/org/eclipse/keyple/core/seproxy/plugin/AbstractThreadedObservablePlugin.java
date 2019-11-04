@@ -68,6 +68,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
      *
      * @param observer the observer object
      */
+    @Override
     public final void addObserver(ObservablePlugin.PluginObserver observer) {
         super.addObserver(observer);
         if (this instanceof AbstractThreadedObservablePlugin) {
@@ -89,6 +90,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
      *
      * @param observer the observer object
      */
+    @Override
     public final void removeObserver(ObservablePlugin.PluginObserver observer) {
         super.removeObserver(observer);
         if (super.countObservers() == 0) {
@@ -129,7 +131,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
      * {@link org.eclipse.keyple.core.seproxy.SeReader} Insertion, removal, and access operations
      * safely execute concurrently by multiple threads.
      */
-    private SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
+    final private SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
 
     /**
      * Thread in charge of reporting live events
@@ -150,6 +152,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
             this.interrupt();
         }
 
+        @Override
         public void run() {
             SortedSet<String> changedReaderNames = new ConcurrentSkipListSet<String>();
             try {
@@ -224,11 +227,9 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
                     Thread.sleep(threadWaitTimeout);
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
                 logger.warn("[{}] An exception occurred while monitoring plugin: {}, cause {}",
                         this.pluginName, e.getMessage(), e.getCause());
             } catch (KeypleReaderException e) {
-                e.printStackTrace();
                 logger.warn("[{}] An exception occurred while monitoring plugin: {}, cause {}",
                         this.pluginName, e.getMessage(), e.getCause());
             }

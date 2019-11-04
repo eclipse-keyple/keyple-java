@@ -29,7 +29,7 @@ public final class SeResponse implements Serializable {
      * is defined as true by the SE reader in case a logical channel was already open with the
      * target SE application.
      */
-    private boolean channelPreviouslyOpen;
+    final private boolean channelPreviouslyOpen;
 
     /**
      * true if the channel is open
@@ -42,7 +42,7 @@ public final class SeResponse implements Serializable {
      * could contain a group of APDUResponse returned by the selected SE application on the SE
      * reader.
      */
-    private List<ApduResponse> apduResponses;
+    final private List<ApduResponse> apduResponses;
 
     /**
      * the constructor called by a ProxyReader during the processing of the ‘transmit’ method.

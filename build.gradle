@@ -77,7 +77,7 @@ allprojects {
         // 3. Change recommended. Behavior is confusing, perhaps buggy, and/or against standards/best practices.
         // 4. Change optional. Behavior is not likely to be buggy, but more just flies in the face of standards/style/good taste.
         // 5. Change highly optional. Nice to have, such as a consistent naming policy for package/class/fields…
-        rulePriority = 1
+        rulePriority = 3
     }
 }
 

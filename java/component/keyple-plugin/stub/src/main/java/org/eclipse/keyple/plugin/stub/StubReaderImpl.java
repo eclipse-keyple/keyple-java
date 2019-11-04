@@ -170,7 +170,7 @@ final class StubReaderImpl extends AbstractObservableLocalReader
             try {
                 closePhysicalChannel();
             } catch (KeypleReaderException e) {
-                e.printStackTrace();
+                logger.error("Error while closing channel reader", e);
             }
         }
         if (_se != null) {

@@ -275,9 +275,9 @@ public class SamResourceManager {
                     samReader = SeProxyService.getInstance().getPlugin(event.getPluginName())
                             .getReader(readerName);
                 } catch (KeyplePluginNotFoundException e) {
-                    e.printStackTrace();
+                    logger.error("Plugin not found {}", event.getPluginName());
                 } catch (KeypleReaderNotFoundException e) {
-                    e.printStackTrace();
+                    logger.error("Reader not found {}", readerName);
                 }
                 switch (event.getEventType()) {
                     case READER_CONNECTED:
@@ -300,7 +300,7 @@ public class SamResourceManager {
                                 /* Shared mode */
                                 samReader.setParameter("mode", "shared");
                             } catch (KeypleBaseException e) {
-                                e.printStackTrace();
+                                logger.error("Wrong parameter", e);
                             }
 
                             if (samReader instanceof ObservableReader && readerObserver != null) {
@@ -317,9 +317,10 @@ public class SamResourceManager {
                                         }
                                     }
                                 } catch (NoStackTraceThrowable noStackTraceThrowable) {
-                                    noStackTraceThrowable.printStackTrace();
+                                    //noStackTraceThrowable.printStackTrace();
+                                    logger.error("Error in reader", noStackTraceThrowable);
                                 } catch (KeypleReaderException e) {
-                                    e.printStackTrace();
+                                    logger.error("Error in reader", e);
                                 }
                             }
                         } else {

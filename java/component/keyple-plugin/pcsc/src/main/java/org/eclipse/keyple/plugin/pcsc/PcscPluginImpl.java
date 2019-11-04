@@ -85,6 +85,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
      * @return connected readers' name list
      * @throws KeypleReaderException if a reader error occurs
      */
+    @Override
     public SortedSet<String> fetchNativeReadersNames() throws KeypleReaderException {
         SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
         CardTerminals terminals = getCardTerminals();
@@ -162,7 +163,6 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
          */
         AbstractReader reader = null;
         CardTerminals terminals = getCardTerminals();
-        List<String> terminalList = new ArrayList<String>();
         try {
             for (CardTerminal term : terminals.list()) {
                 if (term.getName().equals(name)) {

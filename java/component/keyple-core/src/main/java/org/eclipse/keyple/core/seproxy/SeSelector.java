@@ -239,6 +239,7 @@ public class SeSelector {
          *
          * @return a string
          */
+        @Override
         public String toString() {
             return String.format("AID:%s, OCCURRENCE:%s",
                     aidToSelect == null ? "null" : ByteArrayUtil.toHex(aidToSelect.getValue()),
@@ -307,6 +308,7 @@ public class SeSelector {
          *
          * @return a string
          */
+        @Override
         public String toString() {
             return String.format("ATR regex:%s", atrRegex.length() != 0 ? atrRegex : "empty");
         }

@@ -45,6 +45,8 @@ public class WaitForSeInsertion extends AbstractObservableState {
                     // if none event was sent to the application, back to SE detection
                     // stay in the same state
                     // switchState(MonitoringState.WAIT_FOR_START_DETECTION);
+                    logger.trace("[{}] onEvent => Inserted SE hasn't matched" ,
+                            reader.getName());
                 }
                 break;
 
@@ -60,6 +62,7 @@ public class WaitForSeInsertion extends AbstractObservableState {
             default:
                 logger.warn("[{}] Ignore =>  Event {} received in currentState {}",
                         reader.getName(), event, state);
+                break;
         }
     }
 

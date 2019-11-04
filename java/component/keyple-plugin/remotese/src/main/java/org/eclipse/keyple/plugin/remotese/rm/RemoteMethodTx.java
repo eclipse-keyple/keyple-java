@@ -116,6 +116,7 @@ public abstract class RemoteMethodTx<T> {
         final RemoteMethodTx thisInstance = this;
 
         Thread asyncSend = new Thread() {
+            @Override
             public void run() {
                 try {
                     send(new RemoteMethodTxCallback<T>() {

@@ -51,7 +51,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
         return new TreeSet<String>(readerPool.keySet());
     }
 
-
+    @Override
     public SeReader plugStubPoolReader(String groupReference, String readerName,
             StubSecureElement se) {
         try {
@@ -73,7 +73,7 @@ final class StubPoolPluginImpl implements StubPoolPlugin {
         }
     }
 
-
+    @Override
     public void unplugStubPoolReader(String groupReference) {
         try {
             // get reader

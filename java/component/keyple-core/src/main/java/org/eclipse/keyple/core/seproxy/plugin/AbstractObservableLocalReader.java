@@ -326,8 +326,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                                 new DefaultSelectionsResponse(seResponseList)));
                         presenceNotified = true;
                     } else {
-                        logger.trace("[{}] processSeInserted => selection hasn't matched"
-                                + " do not thrown any event because of MATCHED_ONLY flag");
+                        logger.trace("[{}] processSeInserted => selection hasn't matched  do not thrown any event because of MATCHED_ONLY flag", this.getName());
                     }
                 } else {
                     // ObservableReader.NotificationMode.ALWAYS

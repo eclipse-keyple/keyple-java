@@ -106,7 +106,9 @@ public abstract class AbstractObservableState {
      * Invoked when activated, a custom behaviour can be added here
      */
     public void onActivate() {
-        logger.trace("[{}] onActivate => {}", this.reader.getName(), this.getMonitoringState());
+        logger.trace("[{}] onActivate => {}",
+                this.reader.getName(), this.getMonitoringState());
+
         // launch the monitoringJob is necessary
         if (monitoringJob != null) {
             if (executorService == null)
@@ -119,7 +121,9 @@ public abstract class AbstractObservableState {
      * Invoked when deactivated
      */
     public void onDeactivate() {
-        logger.trace("[{}] onDeactivate => {}", this.reader.getName(), this.getMonitoringState());
+        logger.trace("[{}] onDeactivate => {}",
+                this.reader.getName(), this.getMonitoringState());
+
         // cancel the monitoringJob is necessary
         if (monitorEvent != null && !monitorEvent.isDone()) {
             boolean canceled = monitorEvent.cancel(true);

@@ -48,6 +48,7 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
      *
      * @return the reader name string
      */
+    @Override
     public final String getName() {
         return name;
     }
@@ -57,7 +58,7 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
      * 
      * @param observer Observer to notify
      */
-
+    @Override
     public void addObserver(final Observer<T> observer) {
 
         logger.trace("[{}] addObserver => Adding '{}' as an observer of '{}'.",
@@ -72,7 +73,7 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
      * 
      * @param observer Observer to stop notifying
      */
-
+    @Override
     public void removeObserver(final Observer<T> observer) {
 
         if (this instanceof AbstractReader) {
@@ -93,7 +94,7 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
      * 
      * @param event the event
      */
-
+    @Override
     public final void notifyObservers(final T event) {
 
         if (this instanceof AbstractReader) {
@@ -122,6 +123,7 @@ abstract class AbstractLoggedObservable<T> extends Observable<T> implements Name
      * @throws KeypleBaseException This method can fail when disabling the exclusive mode as it's
      *         executed instantly
      */
+    @Override
     public final void setParameters(Map<String, String> parameters)
             throws IllegalArgumentException, KeypleBaseException {
         for (Map.Entry<String, String> en : parameters.entrySet()) {
