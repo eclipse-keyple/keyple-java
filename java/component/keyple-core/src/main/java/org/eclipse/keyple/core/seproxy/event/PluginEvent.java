@@ -32,12 +32,12 @@ public final class PluginEvent {
     /**
      * The name of the plugin handling the reader that produced the event
      */
-    private final String pluginName;
+    final private String pluginName;
 
     /**
      * The name of the readers involved
      */
-    private SortedSet<String> readerNames = new TreeSet<String>();
+    final private SortedSet<String> readerNames = new TreeSet<String>();
 
     /**
      * The different types of reader event
