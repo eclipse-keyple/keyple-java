@@ -100,7 +100,7 @@ class WskServer extends WebSocketServer implements ServerNode {
 
                     // LOOP pass DTO and get DTO Response is any
                     TransportDto transportDto =
-                            dtoHandler.onDTO(new WskTransportDTO(keypleDto, conn, thisServer));
+                            dtoHandler.onDTO(new WskTransportDTO(keypleDto, conn));
 
 
                     thisServer.sendDTO(transportDto);

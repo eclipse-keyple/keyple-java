@@ -59,7 +59,7 @@ public class WskClient extends WebSocketClient implements ClientNode {
 
                 // process dto
                 TransportDto transportDto =
-                        dtoHandler.onDTO(new WskTransportDTO(dto, null, thisClient));
+                        dtoHandler.onDTO(new WskTransportDTO(dto, null));
 
                 // there is a response/request to send back
                 if (!KeypleDtoHelper.isNoResponse(transportDto.getKeypleDTO())) {

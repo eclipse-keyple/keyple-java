@@ -28,7 +28,6 @@ class WskTransportDTO implements TransportDto {
 
     final private KeypleDto dto;
     final private WebSocket socketWeb;
-    private DtoSender wskNode;
 
 
     public WskTransportDTO(KeypleDto dto, WebSocket socketWeb) {
@@ -39,7 +38,6 @@ class WskTransportDTO implements TransportDto {
     public WskTransportDTO(KeypleDto dto, WebSocket socketWeb, DtoSender wskNode) {
         this.dto = dto;
         this.socketWeb = socketWeb;
-        this.wskNode = wskNode;
     }
 
     @Override

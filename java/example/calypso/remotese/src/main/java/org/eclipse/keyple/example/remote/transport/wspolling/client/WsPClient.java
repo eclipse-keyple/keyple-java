@@ -31,7 +31,12 @@ import com.google.gson.JsonObject;
 
 /**
  * Rest client, polls server, based on java.net client and multi threads
+ *
+ * @Deprecated
+ *
+ * Use {@link org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPollingRetrofitFactory} instead
  */
+@Deprecated
 public class WsPClient implements ClientNode {
 
 
