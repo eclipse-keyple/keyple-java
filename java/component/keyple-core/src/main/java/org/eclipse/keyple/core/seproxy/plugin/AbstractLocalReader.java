@@ -455,7 +455,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
             MultiSeRequestProcessing multiSeRequestProcessing, ChannelControl channelControl)
             throws KeypleReaderException {
 
-        boolean requestMatchesProtocol[] = new boolean[requestSet.size()];
+        boolean[] requestMatchesProtocol = new boolean[requestSet.size()];
         int requestIndex = 0, lastRequestIndex;
 
         // Determine which requests are matching the current ATR
@@ -754,7 +754,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return APDU response
      * @throws KeypleIOReaderException Exception faced
      */
-    protected final ApduResponse processApduRequest(ApduRequest apduRequest)
+    private ApduResponse processApduRequest(ApduRequest apduRequest)
             throws KeypleIOReaderException {
         ApduResponse apduResponse;
         if (logger.isTraceEnabled()) {

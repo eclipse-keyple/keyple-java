@@ -70,7 +70,7 @@ final class VirtualReaderImpl extends AbstractReader implements VirtualReader {
         this.parameters = options;
         logger.info(
                 "A new virtual reader was created with name:{}, sessionId:{}, transmissionMode:{}, options:{}",
-                name, session, transmissionMode, options);
+                this.getName(), session, transmissionMode, options);
     }
 
     /**

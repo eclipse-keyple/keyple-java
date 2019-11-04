@@ -26,13 +26,13 @@ public class ObservableReaderStateService {
             LoggerFactory.getLogger(ObservableReaderStateService.class);
 
     /* AbstractObservableLocalReader to manage event and states */
-    AbstractObservableLocalReader reader;
+    private final AbstractObservableLocalReader reader;
 
     /* Map of all instantiated states possible */
-    protected Map<AbstractObservableState.MonitoringState, AbstractObservableState> states;
+    private final Map<AbstractObservableState.MonitoringState, AbstractObservableState> states;
 
     /* Current currentState of the Observable Reader */
-    protected AbstractObservableState currentState;
+    private AbstractObservableState currentState;
 
 
     public ObservableReaderStateService(AbstractObservableLocalReader reader,

@@ -104,12 +104,12 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
 
 
     /** The default DefaultSelectionsRequest to be executed upon SE insertion */
-    protected DefaultSelectionsRequest defaultSelectionsRequest;
+    private DefaultSelectionsRequest defaultSelectionsRequest;
 
     /** Indicate if all SE detected should be notified or only matching SE */
-    protected ObservableReader.NotificationMode notificationMode;
+    private ObservableReader.NotificationMode notificationMode;
 
-    protected ObservableReader.PollingMode currentPollingMode =
+    private ObservableReader.PollingMode currentPollingMode =
             ObservableReader.PollingMode.SINGLESHOT;
 
     /* Internal events */
@@ -262,7 +262,7 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
         logger.trace("[{}] startRemovalSequence => start removal sequence of the reader",
                 this.getName());
         this.stateService.onEvent(InternalEvent.SE_PROCESSED);
-    };
+    }
 
 
     /**
@@ -326,8 +326,10 @@ public abstract class AbstractObservableLocalReader extends AbstractLocalReader 
                                 new DefaultSelectionsResponse(seResponseList)));
                         presenceNotified = true;
                     } else {
-                        logger.trace("[{}] processSeInserted => selection hasn't matched"
-                                + " do not thrown any event because of MATCHED_ONLY flag");
+                        logger.trace(
+                                "[{}] processSeInserted => selection hasn't matched"
+                                        + " do not thrown any event because of MATCHED_ONLY flag",
+                                this.getName());
                     }
                 } else {
                     // ObservableReader.NotificationMode.ALWAYS

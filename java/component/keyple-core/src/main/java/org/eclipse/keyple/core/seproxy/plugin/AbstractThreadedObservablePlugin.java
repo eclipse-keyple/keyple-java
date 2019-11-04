@@ -129,7 +129,7 @@ public abstract class AbstractThreadedObservablePlugin extends AbstractPlugin {
      * {@link org.eclipse.keyple.core.seproxy.SeReader} Insertion, removal, and access operations
      * safely execute concurrently by multiple threads.
      */
-    private SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
+    private final SortedSet<String> nativeReadersNames = new ConcurrentSkipListSet<String>();
 
     /**
      * Thread in charge of reporting live events
