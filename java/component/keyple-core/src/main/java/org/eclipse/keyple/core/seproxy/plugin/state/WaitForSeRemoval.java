@@ -60,6 +60,7 @@ public class WaitForSeRemoval extends AbstractObservableState {
             // break;
 
             case STOP_DETECT:
+                reader.processSeRemoved();
                 switchState(MonitoringState.WAIT_FOR_START_DETECTION);
                 break;
 
@@ -68,11 +69,5 @@ public class WaitForSeRemoval extends AbstractObservableState {
                         reader.getName(), event, state);
         }
     }
-
-    /*
-     * @Override public void onActivate() {}
-     * 
-     * @Override public void onDeactivate() {}
-     */
 
 }
