@@ -61,7 +61,9 @@ public abstract class AbstractObservableState {
         this.monitoringJob = monitoringJob;
         this.executorService = executorService;
 
-        monitoringJob.setState(this);
+        if(monitoringJob != null) {
+            monitoringJob.setState(this);
+        }
     }
 
     /**
