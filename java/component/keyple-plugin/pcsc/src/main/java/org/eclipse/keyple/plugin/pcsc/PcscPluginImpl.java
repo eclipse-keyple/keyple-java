@@ -13,8 +13,6 @@ package org.eclipse.keyple.plugin.pcsc;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -42,8 +40,6 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
     private static TerminalFactory factory;
 
-    private boolean logging = false;
-
     private PcscPluginImpl() {
         super(PLUGIN_NAME);
     }
@@ -65,18 +61,6 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
     @Override
     public void setParameter(String key, String value) throws IllegalArgumentException {
 
-    }
-
-    /**
-     * Enable the logging
-     *
-     * @param logging If logging is enabled
-     * @return Same instance (fluent setter)
-     * @deprecated
-     */
-    public PcscPluginImpl setLogging(boolean logging) {
-        this.logging = logging;
-        return this;
     }
 
     /**
@@ -162,7 +146,6 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
          */
         AbstractReader reader = null;
         CardTerminals terminals = getCardTerminals();
-        List<String> terminalList = new ArrayList<String>();
         try {
             for (CardTerminal term : terminals.list()) {
                 if (term.getName().equals(name)) {
@@ -184,7 +167,7 @@ final class PcscPluginImpl extends AbstractThreadedObservablePlugin implements P
 
     private CardTerminals getCardTerminals() {
         try {
-            Class pcscterminal = null;
+            Class pcscterminal;
             pcscterminal = Class.forName("sun.security.smartcardio.PCSCTerminals");
             Field contextId = pcscterminal.getDeclaredField("contextId");
             contextId.setAccessible(true);
