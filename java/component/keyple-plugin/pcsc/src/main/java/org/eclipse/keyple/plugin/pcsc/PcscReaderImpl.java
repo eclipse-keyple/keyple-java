@@ -52,9 +52,9 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     // waitForCardPresent and waitForCardPresent blocking functions will execute.
     // This will correspond to the capacity to react to the interrupt signal of
     // the thread (see cancel method of the Future object)
-    private long insertLatency = 50;
-    private long removalLatency = 50;
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final long insertLatency = 50;
+    private final long removalLatency = 50;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private boolean logging;
 
@@ -154,7 +154,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                     return true;
                 } else {
                     if (Thread.interrupted()) {
-                        logger.trace("[{}] waitForCardPresent => task has been cancelled");
+                        logger.trace("[{}] waitForCardPresent => task has been cancelled",
+                                this.getName());
                         // task has been cancelled
                         return false;
                     }
@@ -166,7 +167,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                             + "Message: " + e.getMessage());
         } catch (Throwable t) {
             // can or can not happen depending on terminal.waitForCardPresent
-            logger.trace("[{}] waitForCardPresent => Throwable catched", t.getCause());
+            logger.trace("[{}] waitForCardPresent => Throwable catched {}", this.getName(),
+                    t.getCause());
             return false;
         }
     }
@@ -187,7 +189,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                     return true;
                 } else {
                     if (Thread.interrupted()) {
-                        logger.trace("[{}] waitForCardAbsentNative => task has been cancelled");
+                        logger.trace("[{}] waitForCardAbsentNative => task has been cancelled",
+                                this.getName());
                         // task has been cancelled
                         return false;
                     }
@@ -199,7 +202,8 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
                             + "Message: " + e.getMessage());
         } catch (Throwable t) {
             // can or can not happen depending on terminal.waitForCardAbsent
-            logger.trace("[{}] waitForCardAbsentNative => Throwable catched", t.getCause());
+            logger.trace("[{}] waitForCardAbsentNative => Throwable catched {}", this.getName(),
+                    t.getCause());
             return false;
         }
     }

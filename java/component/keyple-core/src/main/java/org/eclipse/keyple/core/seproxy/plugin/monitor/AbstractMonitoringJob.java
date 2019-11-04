@@ -21,5 +21,5 @@ public abstract class AbstractMonitoringJob {
 
     public void setState(AbstractObservableState state) {
         this.state = state;
-    };
+    }
 }

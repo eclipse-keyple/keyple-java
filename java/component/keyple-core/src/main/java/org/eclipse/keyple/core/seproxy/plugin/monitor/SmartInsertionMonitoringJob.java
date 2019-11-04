@@ -21,7 +21,7 @@ public class SmartInsertionMonitoringJob extends AbstractMonitoringJob {
 
     private static final Logger logger = LoggerFactory.getLogger(SmartInsertionMonitoringJob.class);
 
-    SmartInsertionReader reader;
+    private final SmartInsertionReader reader;
 
     public SmartInsertionMonitoringJob(SmartInsertionReader reader) {
         this.reader = reader;

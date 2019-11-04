@@ -21,7 +21,7 @@ public class SmartRemovalMonitoringJob extends AbstractMonitoringJob {
 
     private static final Logger logger = LoggerFactory.getLogger(SmartRemovalMonitoringJob.class);
 
-    SmartRemovalReader reader;
+    private final SmartRemovalReader reader;
 
     public SmartRemovalMonitoringJob(SmartRemovalReader reader) {
         this.reader = reader;

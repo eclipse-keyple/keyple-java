@@ -19,7 +19,7 @@ public class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
 
     private static final Logger logger = LoggerFactory.getLogger(CardAbsentPingMonitoringJob.class);
 
-    AbstractObservableLocalReader reader;
+    private final AbstractObservableLocalReader reader;
 
     public CardAbsentPingMonitoringJob(AbstractObservableLocalReader reader) {
         this.reader = reader;
@@ -28,15 +28,15 @@ public class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
     @Override
     public Runnable getMonitoringJob() {
         return new Runnable() {
-            long counting = 0;
-            long threeshold = 200;
+            long threshold = 200;
             long retries = 0;
 
             @Override
             public void run() {
+                logger.debug("[{}] Polling from isSePresentPing", reader.getName());
                 while (true) {
-                    logger.debug("[{}] Polling from isSePresentPing", reader.getName());
                     if (!reader.isSePresentPing()) {
+                        logger.debug("[{}] The SE stopped responding", reader.getName());
                         state.onEvent(AbstractObservableLocalReader.InternalEvent.SE_REMOVED);
                     }
                     retries++;
@@ -47,14 +47,11 @@ public class CardAbsentPingMonitoringJob extends AbstractMonitoringJob {
                     }
                     try {
                         // wait a bit
-                        Thread.sleep(threeshold);
-                    } catch (InterruptedException e) {
+                        Thread.sleep(threshold);
+                    } catch (InterruptedException ignored) {
                     }
-                    counting = counting + threeshold;
-
                 }
             }
-
         };
     }
 
