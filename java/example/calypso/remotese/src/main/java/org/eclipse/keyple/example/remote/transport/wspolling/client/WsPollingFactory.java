@@ -25,7 +25,9 @@ import org.slf4j.LoggerFactory;
  *
  * @Deprecated
  *
- * Use {@link org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPollingRetrofitFactory} instead
+ *             Use
+ *             {@link org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPollingRetrofitFactory}
+ *             instead
  */
 @Deprecated
 @SuppressWarnings("PMD.AvoidUsingHardCodedIP")

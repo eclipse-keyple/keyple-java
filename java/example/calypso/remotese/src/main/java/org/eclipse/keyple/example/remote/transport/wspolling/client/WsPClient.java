@@ -34,7 +34,9 @@ import com.google.gson.JsonObject;
  *
  * @Deprecated
  *
- * Use {@link org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPollingRetrofitFactory} instead
+ *             Use
+ *             {@link org.eclipse.keyple.example.remote.transport.wspolling.client_retrofit.WsPollingRetrofitFactory}
+ *             instead
  */
 @Deprecated
 public class WsPClient implements ClientNode {

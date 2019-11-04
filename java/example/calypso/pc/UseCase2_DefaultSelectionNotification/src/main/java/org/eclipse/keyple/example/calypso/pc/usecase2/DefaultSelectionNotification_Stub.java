@@ -67,8 +67,7 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
      */
     private static final Object waitForEnd = new Object();
 
-    public DefaultSelectionNotification_Stub()
-            throws KeypleBaseException, InterruptedException {
+    public DefaultSelectionNotification_Stub() throws KeypleBaseException, InterruptedException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
@@ -289,7 +288,6 @@ public class DefaultSelectionNotification_Stub implements ReaderObserver {
      */
     public static void main(String[] args) throws InterruptedException, KeypleBaseException {
         /* Create the observable object to handle the PO processing */
-        DefaultSelectionNotification_Stub m =
-                new DefaultSelectionNotification_Stub();
+        DefaultSelectionNotification_Stub m = new DefaultSelectionNotification_Stub();
     }
 }

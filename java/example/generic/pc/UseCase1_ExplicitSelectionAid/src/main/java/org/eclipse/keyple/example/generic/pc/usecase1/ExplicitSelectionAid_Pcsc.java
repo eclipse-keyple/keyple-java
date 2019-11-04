@@ -49,8 +49,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class ExplicitSelectionAid_Pcsc {
-    protected static final Logger logger =
-            LoggerFactory.getLogger(ExplicitSelectionAid_Pcsc.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ExplicitSelectionAid_Pcsc.class);
     private static String seAid = "A0000004040125090101"; /* Here a Calypso AID */
 
 
