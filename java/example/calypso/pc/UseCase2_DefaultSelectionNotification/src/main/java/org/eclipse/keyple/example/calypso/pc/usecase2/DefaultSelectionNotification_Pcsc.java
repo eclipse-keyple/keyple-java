@@ -30,8 +30,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderNotFoundException;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
-import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
+import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,8 +70,7 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
      */
     private static final Object waitForEnd = new Object();
 
-    public DefaultSelectionNotification_Pcsc()
-            throws KeypleBaseException, InterruptedException {
+    public DefaultSelectionNotification_Pcsc() throws KeypleBaseException, InterruptedException {
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();
 
@@ -264,7 +263,6 @@ public class DefaultSelectionNotification_Pcsc implements ReaderObserver {
      */
     public static void main(String[] args) throws InterruptedException, KeypleBaseException {
         /* Create the observable object to handle the PO processing */
-        DefaultSelectionNotification_Pcsc m =
-                new DefaultSelectionNotification_Pcsc();
+        DefaultSelectionNotification_Pcsc m = new DefaultSelectionNotification_Pcsc();
     }
 }

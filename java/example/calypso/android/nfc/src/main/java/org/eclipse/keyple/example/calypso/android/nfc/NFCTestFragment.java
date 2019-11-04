@@ -201,9 +201,9 @@ public class NFCTestFragment extends Fragment implements ObservableReader.Reader
             @Nullable Bundle savedInstanceState) {
 
         // Define UI components
-        View view =
-                inflater.inflate(org.eclipse.keyple.example.calypso.android.nfc.R.layout.fragment_nfc_test,
-                        container, false);
+        View view = inflater.inflate(
+                org.eclipse.keyple.example.calypso.android.nfc.R.layout.fragment_nfc_test,
+                container, false);
         mText = view.findViewById(org.eclipse.keyple.example.calypso.android.nfc.R.id.text);
         mText.setOnLongClickListener(new View.OnLongClickListener() {
             @Override

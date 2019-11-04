@@ -26,10 +26,10 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
+import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.example.common.calypso.postructure.CalypsoClassicInfo;
 import org.eclipse.keyple.example.common.calypso.stub.StubCalypsoClassic;
 import org.eclipse.keyple.example.common.calypso.stub.StubSamCalypsoClassic;
-import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
 import org.eclipse.keyple.plugin.stub.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,8 +61,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class PoAuthentication_Stub {
-    private static final Logger logger =
-            LoggerFactory.getLogger(PoAuthentication_Stub.class);
+    private static final Logger logger = LoggerFactory.getLogger(PoAuthentication_Stub.class);
 
     public static void main(String[] args)
             throws KeypleBaseException, NoStackTraceThrowable, InterruptedException {

@@ -96,7 +96,8 @@ public class MainActivity extends AppCompatActivity {
      * Configure Navigation Drawer
      */
     private void setupNavDrawer() {
-        mDrawerLayout = findViewById(org.eclipse.keyple.example.calypso.android.nfc.R.id.drawer_layout);
+        mDrawerLayout =
+                findViewById(org.eclipse.keyple.example.calypso.android.nfc.R.id.drawer_layout);
 
         // Drawer configuration
         NavigationView navigationView =
