@@ -317,7 +317,7 @@ public class SamResourceManager {
                                         }
                                     }
                                 } catch (NoStackTraceThrowable noStackTraceThrowable) {
-                                    //noStackTraceThrowable.printStackTrace();
+                                    // noStackTraceThrowable.printStackTrace();
                                     logger.error("Error in reader", noStackTraceThrowable);
                                 } catch (KeypleReaderException e) {
                                     logger.error("Error in reader", e);

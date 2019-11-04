@@ -130,6 +130,7 @@ final class StubPluginImpl extends AbstractThreadedObservablePlugin implements S
 
 
     }
+
     @Override
     public void unplugStubReader(String name, Boolean synchronous) throws KeypleReaderException {
 

@@ -540,27 +540,27 @@ public abstract class AbstractLocalReader extends AbstractReader {
                 if (lastRequestIndex == requestIndex
                         && channelControl != ChannelControl.KEEP_OPEN) {
 
-                        // close logical channel unconditionally
-                        closeLogicalChannel();
+                    // close logical channel unconditionally
+                    closeLogicalChannel();
 
-                        // OD : couldn't we move this to AbstractObservableLocalReader?
+                    // OD : couldn't we move this to AbstractObservableLocalReader?
 
-                        if (!(this instanceof ObservableReader)
-                                || (((ObservableReader) this).countObservers() == 0)) {
-                            /*
-                             * Not observable/observed: close immediately the physical channel if
-                             * requested
-                             */
-                            closePhysicalChannel();
-                        }
-
-                        if (this instanceof AbstractObservableLocalReader) {
-                            /*
-                             * request the removal sequence when the reader is monitored by a thread
-                             */
-                            ((AbstractObservableLocalReader) this).startRemovalSequence();
-                        }
+                    if (!(this instanceof ObservableReader)
+                            || (((ObservableReader) this).countObservers() == 0)) {
+                        /*
+                         * Not observable/observed: close immediately the physical channel if
+                         * requested
+                         */
+                        closePhysicalChannel();
                     }
+
+                    if (this instanceof AbstractObservableLocalReader) {
+                        /*
+                         * request the removal sequence when the reader is monitored by a thread
+                         */
+                        ((AbstractObservableLocalReader) this).startRemovalSequence();
+                    }
+                }
 
             }
         }

@@ -41,6 +41,7 @@ public class AnswerToReset {
         AnswerToReset atr = (AnswerToReset) o;
         return Arrays.equals(atr.getBytes(), this.atrBytes);
     }
+
     @Override
     public int hashCode() {
         int hash = 17;
