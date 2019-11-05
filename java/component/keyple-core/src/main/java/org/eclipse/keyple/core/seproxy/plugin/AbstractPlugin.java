@@ -169,6 +169,7 @@ public abstract class AbstractPlugin extends Observable<PluginEvent>
         logger.trace("[{}] removeObserver => Deleting a plugin observer", this.getName());
         super.removeObserver(observer);
     }
+
     /**
      * This method shall be called only from a SE Proxy plugin implementing AbstractPlugin. Push a
      * PluginEvent of the selected AbstractPlugin to its registered Observer.
