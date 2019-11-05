@@ -13,11 +13,15 @@ package org.eclipse.keyple.core.seproxy.plugin.monitor;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
 import org.eclipse.keyple.core.seproxy.plugin.SmartRemovalReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SmartRemovalMonitoringJob extends AbstractMonitoringJob {
+/**
+ * Detect the SE removal thanks to the method {@link SmartRemovalReader#waitForCardAbsentNative()}
+ */
+public class SmartRemovalMonitoringJob implements MonitoringJob {
 
     private static final Logger logger = LoggerFactory.getLogger(SmartRemovalMonitoringJob.class);
 
@@ -28,7 +32,7 @@ public class SmartRemovalMonitoringJob extends AbstractMonitoringJob {
     }
 
     @Override
-    public Runnable getMonitoringJob() {
+    public Runnable getMonitoringJob(final AbstractObservableState state) {
         return new Runnable() {
             @Override
             public void run() {

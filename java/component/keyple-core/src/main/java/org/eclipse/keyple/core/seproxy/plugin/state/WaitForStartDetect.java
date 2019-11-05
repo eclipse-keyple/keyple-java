@@ -14,7 +14,7 @@ package org.eclipse.keyple.core.seproxy.plugin.state;
 import java.util.concurrent.ExecutorService;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.AbstractMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.MonitoringJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ public class WaitForStartDetect extends AbstractObservableState {
     }
 
     public WaitForStartDetect(AbstractObservableLocalReader reader,
-            AbstractMonitoringJob monitoringJob, ExecutorService executorService) {
+                              MonitoringJob monitoringJob, ExecutorService executorService) {
         super(MonitoringState.WAIT_FOR_START_DETECTION, reader, monitoringJob, executorService);
     }
 

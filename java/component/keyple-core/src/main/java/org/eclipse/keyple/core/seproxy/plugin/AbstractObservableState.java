@@ -13,7 +13,7 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.AbstractMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.monitor.MonitoringJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ public abstract class AbstractObservableState {
     /* Reference to Reader */
     protected AbstractObservableLocalReader reader;
 
-    protected AbstractMonitoringJob monitoringJob;
+    protected MonitoringJob monitoringJob;
 
     protected Future monitorEvent;
 
@@ -55,15 +55,11 @@ public abstract class AbstractObservableState {
      * @param executorService the executor service
      */
     protected AbstractObservableState(MonitoringState state, AbstractObservableLocalReader reader,
-            AbstractMonitoringJob monitoringJob, ExecutorService executorService) {
+                                      MonitoringJob monitoringJob, ExecutorService executorService) {
         this.reader = reader;
         this.state = state;
         this.monitoringJob = monitoringJob;
         this.executorService = executorService;
-
-        if (monitoringJob != null) {
-            monitoringJob.setState(this);
-        }
     }
 
     /**
@@ -112,7 +108,7 @@ public abstract class AbstractObservableState {
         if (monitoringJob != null) {
             if (executorService == null)
                 throw new AssertionError("ExecutorService must be set");
-            monitorEvent = executorService.submit(monitoringJob.getMonitoringJob());
+            monitorEvent = executorService.submit(monitoringJob.getMonitoringJob(this));
         }
     };
 
