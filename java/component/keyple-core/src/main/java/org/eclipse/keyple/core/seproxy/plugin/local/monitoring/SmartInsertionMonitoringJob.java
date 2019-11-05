@@ -9,12 +9,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.monitor;
+package org.eclipse.keyple.core.seproxy.plugin.local.monitoring;
 
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
-import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
+import org.eclipse.keyple.core.seproxy.plugin.local.MonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.local.SmartInsertionReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

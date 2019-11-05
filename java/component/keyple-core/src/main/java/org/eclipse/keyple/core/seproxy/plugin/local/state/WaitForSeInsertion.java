@@ -9,12 +9,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin.state;
+package org.eclipse.keyple.core.seproxy.plugin.local.state;
 
 import java.util.concurrent.ExecutorService;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.MonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
+import org.eclipse.keyple.core.seproxy.plugin.local.MonitoringJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +30,8 @@ public class WaitForSeInsertion extends AbstractObservableState {
         super(MonitoringState.WAIT_FOR_SE_INSERTION, reader);
     }
 
-    public WaitForSeInsertion(AbstractObservableLocalReader reader,
-                              MonitoringJob monitoringJob, ExecutorService executorService) {
+    public WaitForSeInsertion(AbstractObservableLocalReader reader, MonitoringJob monitoringJob,
+            ExecutorService executorService) {
         super(MonitoringState.WAIT_FOR_SE_INSERTION, reader, monitoringJob, executorService);
     }
 

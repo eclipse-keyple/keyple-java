@@ -9,18 +9,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin;
+package org.eclipse.keyple.core.seproxy.plugin.local;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.MonitoringJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Defines a state behaviour for a {@link AbstractObservableLocalReader} Handles
- * {@link org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader.InternalEvent} that
- * might results on a switch of state.
+ * {@link AbstractObservableLocalReader.InternalEvent} that might results on a switch of state.
  */
 public abstract class AbstractObservableState {
 
@@ -44,7 +42,7 @@ public abstract class AbstractObservableState {
     /* Result of the background job if any */
     protected Future monitoringEvent;
 
-    /* Executor service used to execute MonitoringJob*/
+    /* Executor service used to execute MonitoringJob */
     protected ExecutorService executorService;
 
 
@@ -58,7 +56,7 @@ public abstract class AbstractObservableState {
      * @param executorService the executor service
      */
     protected AbstractObservableState(MonitoringState state, AbstractObservableLocalReader reader,
-                                      MonitoringJob monitoringJob, ExecutorService executorService) {
+            MonitoringJob monitoringJob, ExecutorService executorService) {
         this.reader = reader;
         this.state = state;
         this.monitoringJob = monitoringJob;

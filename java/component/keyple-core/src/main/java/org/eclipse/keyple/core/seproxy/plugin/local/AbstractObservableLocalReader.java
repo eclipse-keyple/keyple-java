@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  ********************************************************************************/
-package org.eclipse.keyple.core.seproxy.plugin;
+package org.eclipse.keyple.core.seproxy.plugin.local;
 
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * plugin)
  * <p>
  *
- *     TODO : refactor this part
+ * TODO : refactor this part
  *
  * The event management implements a currentState machine that is composed of four states.
  * <ol>

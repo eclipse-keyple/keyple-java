@@ -295,6 +295,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
     public void notifySeProcessed() {
         if (forceClosing) {
             try {
+                // close the physical channel thanks to CLOSE_AFTER flag
                 processSeRequest(null, CLOSE_AFTER);
                 logger.trace("Explicit physical channel closing executed.");
             } catch (KeypleReaderException e) {
