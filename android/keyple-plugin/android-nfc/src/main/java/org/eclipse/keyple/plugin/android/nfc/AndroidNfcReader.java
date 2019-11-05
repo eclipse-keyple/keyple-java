@@ -13,12 +13,9 @@ package org.eclipse.keyple.plugin.android.nfc;
 
 import android.content.Intent;
 import android.nfc.NfcAdapter;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.plugin.SmartInsertionReader;
 
 /**
  * {@link SeReader} to communicate with NFC Tag though
