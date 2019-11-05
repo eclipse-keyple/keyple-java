@@ -14,18 +14,23 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import static org.eclipse.keyple.core.seproxy.ChannelControl.CLOSE_AFTER;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader.ReaderObserver;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
+import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
+import org.eclipse.keyple.core.util.Configurable;
+import org.eclipse.keyple.core.util.Nameable;
+import org.eclipse.keyple.core.util.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +45,8 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 
-public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEvent>
-        implements ProxyReader {
+public abstract class AbstractReader extends Observable<ReaderEvent>
+        implements ProxyReader, Nameable, Configurable {
 
     /** logger */
     private static final Logger logger = LoggerFactory.getLogger(AbstractReader.class);
@@ -52,6 +57,9 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
     /** Contains the name of the plugin */
     protected final String pluginName;
 
+    /** The reader name (must be unique) */
+    protected final String name;
+
     /**
      * This flag is used with transmit or transmitSet
      * <p>
@@ -61,7 +69,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      */
     private boolean forceClosing = true;
 
-    /** ==== Constructor =================================================== */
+    /* ==== Constructor =================================================== */
 
     /**
      * Reader constructor
@@ -71,10 +79,10 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      * Initialize the time measurement
      *
      * @param pluginName the name of the plugin that instantiated the reader
-     * @param readerName the name of the reader
+     * @param name the name of the reader
      */
-    protected AbstractReader(String pluginName, String readerName) {
-        super(readerName);
+    protected AbstractReader(String pluginName, String name) {
+        this.name = name;
         this.pluginName = pluginName;
         this.before = System.nanoTime(); /*
                                           * provides an initial value for measuring the
@@ -83,7 +91,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
                                           */
     }
 
-    /** ==== Utility methods =============================================== */
+    /* ==== Utility methods =============================================== */
 
     /**
      * Gets the name of plugin provided in the constructor.
@@ -98,6 +106,16 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
     }
 
     /**
+     * Gets the reader name
+     *
+     * @return the reader name string
+     */
+    @Override
+    public final String getName() {
+        return name;
+    }
+
+    /**
      * Compare the name of the current SeReader to the name of the SeReader provided in argument
      *
      * @param seReader a SeReader object
@@ -108,7 +126,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
         return this.getName().compareTo(seReader.getName());
     }
 
-    /** ==== High level communication API ================================== */
+    /* ==== High level communication API ================================== */
 
     /**
      * Execute the transmission of a list of {@link SeRequest} and returns a list of
@@ -280,7 +298,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
     protected abstract SeResponse processSeRequest(SeRequest seRequest,
             ChannelControl channelControl) throws KeypleReaderException;
 
-    /** ==== Methods specific to observability ============================= */
+    /* ==== Methods specific to observability ============================= */
 
     /**
      * Allows the application to signal the end of processing and thus proceed with the removal
@@ -315,6 +333,8 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      * @param observer the observer object
      */
     public void addObserver(ReaderObserver observer) {
+        logger.trace("[{}] addObserver => Adding '{}' as an observer of '{}'.",
+                this.getClass().getSimpleName(), observer.getClass().getSimpleName(), name);
         super.addObserver(observer);
     }
 
@@ -326,6 +346,42 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      * @param observer the observer object
      */
     public void removeObserver(ReaderObserver observer) {
+        logger.trace("[{}] removeObserver => Deleting a reader observer", this.getName());
         super.removeObserver(observer);
+    }
+
+    /**
+     * This method shall be called only from a SE Proxy reader implementing AbstractReader. Push a
+     * ReaderEvent of the selected AbstractReader to its registered Observer.
+     *
+     * @param event the event
+     */
+    @Override
+    public final void notifyObservers(final ReaderEvent event) {
+
+        logger.trace(
+                "[{}] AbstractReader => Notifying a reader event to {} observers. EVENTNAME = {}",
+                this.getName(), this.countObservers(), event.getEventType().getName());
+
+        setChanged();
+
+        super.notifyObservers(event);
+    }
+
+    /**
+     * Set a list of parameters on a reader.
+     * <p>
+     * See {@link #setParameter(String, String)} for more details
+     *
+     * @param parameters the new parameters
+     * @throws KeypleBaseException This method can fail when disabling the exclusive mode as it's
+     *         executed instantly
+     */
+    @Override
+    public final void setParameters(Map<String, String> parameters)
+            throws IllegalArgumentException, KeypleBaseException {
+        for (Map.Entry<String, String> en : parameters.entrySet()) {
+            setParameter(en.getKey(), en.getValue());
+        }
     }
 }
