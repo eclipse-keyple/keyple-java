@@ -13,12 +13,13 @@ package org.eclipse.keyple.core.seproxy.plugin;
 
 import java.util.List;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.event.DefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequestImpl;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.slf4j.Logger;

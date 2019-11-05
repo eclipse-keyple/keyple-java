@@ -18,7 +18,7 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsRequest;
 import org.eclipse.keyple.core.seproxy.event.AbstractDefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequest;
+import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsRequestImpl;
 import org.eclipse.keyple.core.seproxy.message.DefaultSelectionsResponse;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -140,7 +140,7 @@ public final class SeSelection {
      * Selection cases that have not matched the current SE are set to null.
      *
      * @param defaultSelectionsResponse the response from the reader to the
-     *        {@link DefaultSelectionsRequest}
+     *        {@link DefaultSelectionsRequestImpl}
      * @return the {@link SelectionsResult} containing the result of all prepared selection cases,
      *         including {@link AbstractMatchingSe} and {@link SeResponse}.
      */
@@ -186,14 +186,14 @@ public final class SeSelection {
     }
 
     /**
-     * The SelectionOperation is the DefaultSelectionsRequest to process in ordered to select a SE
+     * The SelectionOperation is the DefaultSelectionsRequestImpl to process in ordered to select a SE
      * among others through the selection process. This method is useful to build the prepared
      * selection to be executed by a reader just after a SE insertion.
      * 
-     * @return the {@link DefaultSelectionsRequest} previously prepared with prepareSelection
+     * @return the {@link DefaultSelectionsRequestImpl} previously prepared with prepareSelection
      */
     public AbstractDefaultSelectionsRequest getSelectionOperation() {
-        return (AbstractDefaultSelectionsRequest) (new DefaultSelectionsRequest(selectionRequestSet,
+        return (DefaultSelectionsRequest) (new DefaultSelectionsRequestImpl(selectionRequestSet,
                 multiSeRequestProcessing, channelControl));
     }
 }
