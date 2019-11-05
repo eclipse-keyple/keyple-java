@@ -292,7 +292,7 @@ public abstract class AbstractReader extends AbstractLoggedObservable<ReaderEven
      * closed.
      * 
      */
-    public void notifySeProcessed() {
+    final public void notifySeProcessed() {
         if (forceClosing) {
             try {
                 // close the physical channel thanks to CLOSE_AFTER flag
