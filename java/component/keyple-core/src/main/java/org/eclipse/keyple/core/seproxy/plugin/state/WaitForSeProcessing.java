@@ -19,6 +19,9 @@ import org.eclipse.keyple.core.seproxy.plugin.monitor.MonitoringJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Wait for Se Processing State
+ */
 public class WaitForSeProcessing extends AbstractObservableState {
 
     /** logger */
@@ -37,6 +40,10 @@ public class WaitForSeProcessing extends AbstractObservableState {
     public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
         logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(),
                 event, state);
+
+        /*
+         * Process InternalEvent
+         */
         switch (event) {
             case SE_PROCESSED:
                 if (this.reader.getPollingMode() == ObservableReader.PollingMode.REPEATING) {

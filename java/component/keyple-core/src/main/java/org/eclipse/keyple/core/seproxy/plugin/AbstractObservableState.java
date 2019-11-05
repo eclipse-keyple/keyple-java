@@ -38,10 +38,13 @@ public abstract class AbstractObservableState {
     /* Reference to Reader */
     protected AbstractObservableLocalReader reader;
 
+    /* Background job definition if any */
     protected MonitoringJob monitoringJob;
 
-    protected Future monitorEvent;
+    /* Result of the background job if any */
+    protected Future monitoringEvent;
 
+    /* Executor service used to execute MonitoringJob*/
     protected ExecutorService executorService;
 
 
@@ -108,7 +111,7 @@ public abstract class AbstractObservableState {
         if (monitoringJob != null) {
             if (executorService == null)
                 throw new AssertionError("ExecutorService must be set");
-            monitorEvent = executorService.submit(monitoringJob.getMonitoringJob(this));
+            monitoringEvent = executorService.submit(monitoringJob.getMonitoringJob(this));
         }
     };
 
@@ -119,8 +122,8 @@ public abstract class AbstractObservableState {
         logger.trace("[{}] onDeactivate => {}", this.reader.getName(), this.getMonitoringState());
 
         // cancel the monitoringJob is necessary
-        if (monitorEvent != null && !monitorEvent.isDone()) {
-            boolean canceled = monitorEvent.cancel(true);
+        if (monitoringEvent != null && !monitoringEvent.isDone()) {
+            boolean canceled = monitoringEvent.cancel(true);
             logger.trace(
                     "[{}] onDeactivate => cancel runnable waitForCarPresent by thead interruption {}",
                     reader.getName(), canceled);

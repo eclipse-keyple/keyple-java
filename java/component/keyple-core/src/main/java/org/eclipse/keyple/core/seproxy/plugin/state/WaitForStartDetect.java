@@ -18,6 +18,10 @@ import org.eclipse.keyple.core.seproxy.plugin.monitor.MonitoringJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+/**
+ * Wait for Start SE Detection
+ */
 public class WaitForStartDetect extends AbstractObservableState {
 
     /** logger */
@@ -36,6 +40,10 @@ public class WaitForStartDetect extends AbstractObservableState {
     public void onEvent(AbstractObservableLocalReader.InternalEvent event) {
         logger.trace("[{}] onEvent => Event {} received in currentState {}", reader.getName(),
                 event, state);
+
+        /*
+         * Process InternalEvent
+         */
         switch (event) {
             case START_DETECT:
                 switchState(MonitoringState.WAIT_FOR_SE_INSERTION);
@@ -48,13 +56,4 @@ public class WaitForStartDetect extends AbstractObservableState {
         }
     }
 
-    /*
-     * @Override public void onActivate() {
-     * 
-     * }
-     * 
-     * @Override public void onDeactivate() {
-     * 
-     * }
-     */
 }
