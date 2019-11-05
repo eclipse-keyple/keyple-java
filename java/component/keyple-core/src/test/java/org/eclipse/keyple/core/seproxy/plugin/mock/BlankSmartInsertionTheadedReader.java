@@ -101,7 +101,7 @@ public class BlankSmartInsertionTheadedReader extends AbstractObservableLocalRea
 
 
     @Override
-    public boolean checkSePresence() throws NoStackTraceThrowable {
+    public boolean checkSePresence() {
         return false;
     }
 

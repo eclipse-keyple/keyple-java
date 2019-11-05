@@ -316,9 +316,8 @@ public class SamResourceManager {
                                             localSamResources.add(createSamResource(samReader));
                                         }
                                     }
-                                } catch (NoStackTraceThrowable noStackTraceThrowable) {
-                                    // noStackTraceThrowable.printStackTrace();
-                                    logger.error("Error in reader", noStackTraceThrowable);
+                                } catch (KeypleIOReaderException e) {
+                                    logger.error("Error in reader", e);
                                 } catch (KeypleReaderException e) {
                                     logger.error("Error in reader", e);
                                 }

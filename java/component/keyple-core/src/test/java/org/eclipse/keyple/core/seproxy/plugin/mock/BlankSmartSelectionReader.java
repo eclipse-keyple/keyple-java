@@ -28,7 +28,7 @@ public class BlankSmartSelectionReader extends AbstractLocalReader implements Sm
     }
 
     @Override
-    public boolean checkSePresence() throws NoStackTraceThrowable {
+    public boolean checkSePresence() {
         return false;
     }
 

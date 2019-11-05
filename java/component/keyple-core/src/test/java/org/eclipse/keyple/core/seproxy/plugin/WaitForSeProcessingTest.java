@@ -19,7 +19,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartPresenceTheadedReader;
 import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartRemovalMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.state.WaitForSeProcessing;
@@ -60,7 +59,7 @@ public class WaitForSeProcessingTest extends CoreBaseTest {
     }
 
     @Test
-    public void waitForProcessed_processed() throws Exception, NoStackTraceThrowable {
+    public void waitForProcessed_processed() throws Exception {
         /*
          * ------------ input polling mode is CONTINUE SE has been processed within timeout
          */
@@ -78,7 +77,7 @@ public class WaitForSeProcessingTest extends CoreBaseTest {
     }
 
     @Test
-    public void smart_waitForProcessed_STOP() throws Exception, NoStackTraceThrowable {
+    public void smart_waitForProcessed_STOP() throws Exception {
         /*
          * ------------ input polling mode is STOP SE has been REMOVED within timeout
          */
@@ -96,7 +95,7 @@ public class WaitForSeProcessingTest extends CoreBaseTest {
     }
 
     @Test
-    public void smart_waitForProcessed_CONTINUE() throws Exception, NoStackTraceThrowable {
+    public void smart_waitForProcessed_CONTINUE() throws Exception {
         /*
          * ------------ input polling mode is CONTINUE SE has been removed within timeout
          */

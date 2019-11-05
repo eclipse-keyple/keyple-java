@@ -83,7 +83,7 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * @return true if the SE is present
      */
     @Override
-    public boolean isSePresent() throws NoStackTraceThrowable {
+    public boolean isSePresent() throws KeypleIOReaderException {
         return checkSePresence();
     }
 
@@ -96,9 +96,9 @@ public abstract class AbstractLocalReader extends AbstractReader {
      * This method is invoked by isSePresent.
      *
      * @return true if the SE is present
-     * @throws NoStackTraceThrowable exception without stack trace
+     * @throws KeypleIOReaderException if error while reading SE
      */
-    protected abstract boolean checkSePresence() throws NoStackTraceThrowable;
+    protected abstract boolean checkSePresence() throws KeypleIOReaderException;
 
 
     /** ==== Physical and logical channels management ====================== */

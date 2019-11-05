@@ -21,7 +21,6 @@ import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
@@ -55,7 +54,7 @@ public class ExplicitSelectionAid_Pcsc {
     protected static final Logger logger = LoggerFactory.getLogger(ExplicitSelectionAid_Pcsc.class);
 
     public static void main(String[] args)
-            throws KeypleBaseException, InterruptedException, IOException, NoStackTraceThrowable {
+            throws KeypleBaseException, InterruptedException, IOException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();

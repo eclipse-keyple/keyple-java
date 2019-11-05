@@ -133,13 +133,13 @@ final class PcscReaderImpl extends AbstractObservableLocalReader
     }
 
     @Override
-    protected boolean checkSePresence() throws NoStackTraceThrowable {
+    protected boolean checkSePresence() throws KeypleIOReaderException {
         try {
             return terminal.isCardPresent();
         } catch (CardException e) {
             logger.trace("[{}] Exception occurred in isSePresent. Message: {}", this.getName(),
                     e.getMessage());
-            throw new NoStackTraceThrowable();
+            throw new KeypleIOReaderException("Exception occurred in isSePresent", e);
         }
     }
 

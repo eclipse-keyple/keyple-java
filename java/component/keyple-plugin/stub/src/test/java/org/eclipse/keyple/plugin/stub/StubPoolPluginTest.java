@@ -11,12 +11,9 @@
  ********************************************************************************/
 package org.eclipse.keyple.plugin.stub;
 
-
-
 import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.exception.KeyplePluginNotFoundException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -47,8 +44,7 @@ public class StubPoolPluginTest extends BaseStubTest {
      * Plug a pool reader
      */
     @Test
-    public void plugStubPoolReader_success()
-            throws InterruptedException, KeypleReaderException, NoStackTraceThrowable {
+    public void plugStubPoolReader_success() throws InterruptedException, KeypleReaderException {
         StubPoolPluginImpl stubPoolPlugin =
                 (StubPoolPluginImpl) new StubPoolPluginFactory(new StubPluginFactory())
                         .getPluginInstance();

@@ -25,7 +25,7 @@ public class BlankAbstractLocalReader extends AbstractLocalReader {
     }
 
     @Override
-    public boolean checkSePresence() throws NoStackTraceThrowable {
+    public boolean checkSePresence() {
         return false;
     }
 

@@ -19,7 +19,6 @@ import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartPresenceTheadedReader;
 import org.junit.After;
 import org.junit.Assert;
@@ -89,7 +88,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
     }
 
     @Test
-    public void startRemovalSequence_CONTINUE() throws Exception, NoStackTraceThrowable {
+    public void startRemovalSequence_CONTINUE() throws Exception {
 
         // SE matched
         doReturn(true).when(r).processSeInserted();
@@ -106,7 +105,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
     }
 
     @Test
-    public void startRemovalSequence_noping_STOP() throws Exception, NoStackTraceThrowable {
+    public void startRemovalSequence_noping_STOP() throws Exception {
 
         // SE matched
         doReturn(true).when(r).processSeInserted();
@@ -124,7 +123,7 @@ public class AbsSmartPresenceTheadedReaderTest extends CoreBaseTest {
 
 
     @Test
-    public void startRemovalSequence_ping_STOP() throws Exception, NoStackTraceThrowable {
+    public void startRemovalSequence_ping_STOP() throws Exception {
 
         // SE matched
         doReturn(true).when(r).processSeInserted();

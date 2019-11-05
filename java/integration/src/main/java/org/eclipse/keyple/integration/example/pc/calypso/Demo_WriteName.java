@@ -22,7 +22,6 @@ import org.eclipse.keyple.core.seproxy.SeReader;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.integration.IntegrationUtils;
 import org.eclipse.keyple.integration.calypso.PoFileStructureInfo;
@@ -37,7 +36,7 @@ public class Demo_WriteName {
 
     private static final Logger logger = LoggerFactory.getLogger(Demo_WriteName.class);
 
-    public static void main(String[] args) throws KeypleBaseException, NoStackTraceThrowable {
+    public static void main(String[] args) throws KeypleBaseException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();

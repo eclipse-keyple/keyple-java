@@ -20,7 +20,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.CoreBaseTest;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartPresenceTheadedReader;
 import org.eclipse.keyple.core.seproxy.plugin.monitor.CardAbsentPingMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartRemovalMonitoringJob;
@@ -49,12 +48,16 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
     }
 
     @Test
-    public void waitForRemoval_STOP() throws Exception, NoStackTraceThrowable {
+    public void waitForRemoval_STOP() throws Exception {
         /*
-         * ------------ input polling mode is STOP SE has been removed within timeout
+         * ------------ input
+         *
+         * polling mode is SINGLESHOT
+         *
+         * SE has been removed
          */
         AbstractObservableLocalReader r =
-                AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
+                AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
         WaitForSeRemoval waitForSeRemoval =
                 new WaitForSeRemoval(r, new CardAbsentPingMonitoringJob(r), executorService);
         doReturn(ObservableReader.PollingMode.SINGLESHOT).when(r).getPollingMode();
@@ -74,12 +77,12 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
     }
 
     @Test
-    public void waitForRemoval_CONTINUE() throws Exception, NoStackTraceThrowable {
+    public void waitForRemoval_CONTINUE() throws Exception {
         /*
          * ------------ input polling mode is CONTINUE SE has been removed within timeout
          */
         AbstractObservableLocalReader r =
-                AbsSmartInsertionTheadedReaderTest.getSmartSpy(PLUGIN_NAME, READER_NAME, 0);
+                AbsSmartInsertionTheadedReaderTest.getMock(PLUGIN_NAME, READER_NAME, 0);
         WaitForSeRemoval waitForSeRemoval =
                 new WaitForSeRemoval(r, new CardAbsentPingMonitoringJob(r), executorService);
         doReturn(ObservableReader.PollingMode.REPEATING).when(r).getPollingMode();
@@ -123,7 +126,7 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
 
 
     @Test
-    public void smart_waitForRemoval_STOP() throws Exception, NoStackTraceThrowable {
+    public void smart_waitForRemoval_STOP() throws Exception {
         /*
          * ------------ input polling mode is STOP SE has been removed within timeout
          */
@@ -147,7 +150,7 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
     }
 
     @Test
-    public void smart_waitForRemoval_CONTINUE() throws Exception, NoStackTraceThrowable {
+    public void smart_waitForRemoval_CONTINUE() throws Exception {
         /*
          * ------------ input polling mode is CONTINUE SE has been removed within timeout
          */
@@ -171,7 +174,7 @@ public class WaitForSeRemovalJobExecutorTest extends CoreBaseTest {
     }
 
     // @Test
-    // public void smart_waitForRemoval_Timeout() throws Exception, NoStackTraceThrowable {
+    // public void smart_waitForRemoval_Timeout() throws Exception {
     // /*
     // * ------------ input SE has NOT been removed within timeout
     // */

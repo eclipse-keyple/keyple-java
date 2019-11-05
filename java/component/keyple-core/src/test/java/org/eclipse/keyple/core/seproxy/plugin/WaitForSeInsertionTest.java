@@ -17,7 +17,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.plugin.state.WaitForSeInsertion;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +55,7 @@ public class WaitForSeInsertionTest extends CoreBaseTest {
     }
 
     @Test
-    public void insertSe_matched() throws Exception, NoStackTraceThrowable {
+    public void insertSe_matched() throws Exception {
         /*
          * input SE inserted SE matched
          */

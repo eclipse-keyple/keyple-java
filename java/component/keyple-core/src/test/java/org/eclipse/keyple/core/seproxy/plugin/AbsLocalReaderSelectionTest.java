@@ -65,7 +65,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     /** ==== Card presence management ====================================== */
 
     @Test
-    public void isSePresent_false() throws Exception, NoStackTraceThrowable {
+    public void isSePresent_false() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         when(r.checkSePresence()).thenReturn(false);
         // test
@@ -73,7 +73,7 @@ public class AbsLocalReaderSelectionTest extends CoreBaseTest {
     }
 
     @Test
-    public void isSePresent_true() throws Exception, NoStackTraceThrowable {
+    public void isSePresent_true() throws Exception {
         AbstractLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         when(r.checkSePresence()).thenReturn(true);
         // test

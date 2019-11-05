@@ -23,7 +23,6 @@ import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.event.ObservableReader;
 import org.eclipse.keyple.core.seproxy.event.ReaderEvent;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankObservableLocalReader;
 import org.junit.Assert;
@@ -54,7 +53,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
 
 
     @Test
-    public void isSePresent_false() throws Exception, NoStackTraceThrowable {
+    public void isSePresent_false() throws Exception {
         AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
 
         final CountDownLatch lock = new CountDownLatch(1);
@@ -74,7 +73,7 @@ public class AbsObservableLocalReaderTest extends CoreBaseTest {
     }
 
     @Test
-    public void isSePresent_true() throws Exception, NoStackTraceThrowable {
+    public void isSePresent_true() throws Exception {
         AbstractObservableLocalReader r = getSpy(PLUGIN_NAME, READER_NAME);
         when(r.checkSePresence()).thenReturn(true);
 

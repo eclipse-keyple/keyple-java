@@ -53,7 +53,7 @@ public class BlankSmartPresenceTheadedReader extends AbstractObservableLocalRead
     }
 
     @Override
-    public boolean checkSePresence() throws NoStackTraceThrowable {
+    public boolean checkSePresence() {
         return false;
     }
 

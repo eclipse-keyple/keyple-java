@@ -34,7 +34,6 @@ import org.eclipse.keyple.core.seproxy.event.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.*;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -92,7 +91,7 @@ public class StubReaderTest extends BaseStubTest {
      * @throws InterruptedException
      */
     @Test
-    public void testInsert() throws Exception, NoStackTraceThrowable {
+    public void testInsert() throws Exception {
 
         stubPlugin.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
@@ -135,7 +134,7 @@ public class StubReaderTest extends BaseStubTest {
      * @throws InterruptedException
      */
     @Test
-    public void testRemove() throws Exception, NoStackTraceThrowable {
+    public void testRemove() throws Exception {
         stubPlugin.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
@@ -203,7 +202,7 @@ public class StubReaderTest extends BaseStubTest {
      * @throws InterruptedException
      */
     @Test
-    public void A_testInsertRemoveTwice() throws Exception, NoStackTraceThrowable {
+    public void A_testInsertRemoveTwice() throws Exception {
         stubPlugin.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");
@@ -308,7 +307,7 @@ public class StubReaderTest extends BaseStubTest {
 
     // should not be unstable
     @Test
-    public void A_testInsertRemoveTwiceFast() throws Exception, NoStackTraceThrowable {
+    public void A_testInsertRemoveTwiceFast() throws Exception {
         stubPlugin.plugStubReader("StubReaderTest", true);
         Assert.assertEquals(1, stubPlugin.getReaders().size());
         final StubReader reader = (StubReader) stubPlugin.getReader("StubReaderTest");

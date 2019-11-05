@@ -30,7 +30,6 @@ import org.eclipse.keyple.core.seproxy.SeProxyService;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.ProxyReader;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
@@ -156,9 +155,8 @@ public class Tool_LoadKeys {
      * 
      * @param args
      * @throws KeypleBaseException
-     * @throws NoStackTraceThrowable
      */
-    public static void main(String[] args) throws KeypleBaseException, NoStackTraceThrowable {
+    public static void main(String[] args) throws KeypleBaseException {
         // the unlocking data must be set to the expected value
         final String UNLOCK_DATA = "00112233445566778899AABBCCDDEEFF";
 

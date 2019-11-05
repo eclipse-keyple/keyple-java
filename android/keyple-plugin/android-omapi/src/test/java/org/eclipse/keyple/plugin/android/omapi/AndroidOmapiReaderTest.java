@@ -19,7 +19,6 @@ import java.util.*;
 import org.eclipse.keyple.core.seproxy.SeSelector;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.ApduRequest;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
@@ -72,12 +71,12 @@ public class AndroidOmapiReaderTest {
     }
 
     @Test
-    public void isSEPresent() throws NoStackTraceThrowable {
+    public void isSEPresent()  {
         Assert.assertEquals(true, reader.isSePresent());
     }
 
     @Test
-    public void getParameters() throws NoStackTraceThrowable {
+    public void getParameters() {
         Assert.assertNotNull(reader.getParameters());
     }
 

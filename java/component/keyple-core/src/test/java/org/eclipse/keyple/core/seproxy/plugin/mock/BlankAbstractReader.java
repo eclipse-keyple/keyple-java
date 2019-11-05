@@ -18,7 +18,6 @@ import org.eclipse.keyple.core.seproxy.ChannelControl;
 import org.eclipse.keyple.core.seproxy.MultiSeRequestProcessing;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.message.SeRequest;
 import org.eclipse.keyple.core.seproxy.message.SeResponse;
 import org.eclipse.keyple.core.seproxy.plugin.AbstractReader;
@@ -48,7 +47,7 @@ public class BlankAbstractReader extends AbstractReader {
     }
 
     @Override
-    public boolean isSePresent() throws NoStackTraceThrowable {
+    public boolean isSePresent() {
         return false;
     }
 

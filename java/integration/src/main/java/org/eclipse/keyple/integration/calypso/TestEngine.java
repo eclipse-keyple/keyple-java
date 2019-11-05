@@ -20,8 +20,8 @@ import org.eclipse.keyple.core.selection.MatchingSelection;
 import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
+import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.plugin.pcsc.PcscPluginFactory;
 import org.eclipse.keyple.plugin.pcsc.PcscProtocolSetting;
@@ -119,7 +119,7 @@ public class TestEngine {
             if (!samReader.isSePresent()) {
                 throw new IllegalStateException("No SAM present in the reader.");
             }
-        } catch (NoStackTraceThrowable noStackTraceThrowable) {
+        } catch (KeypleIOReaderException e) {
             throw new KeypleReaderException("Exception raised while checking SE presence.");
         }
 

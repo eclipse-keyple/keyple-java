@@ -18,7 +18,6 @@ import org.eclipse.keyple.core.selection.SeSelection;
 import org.eclipse.keyple.core.selection.SelectionsResult;
 import org.eclipse.keyple.core.seproxy.*;
 import org.eclipse.keyple.core.seproxy.exception.KeypleBaseException;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.util.ByteArrayUtil;
 import org.eclipse.keyple.example.common.calypso.pc.transaction.CalypsoUtilities;
@@ -66,7 +65,7 @@ import org.slf4j.LoggerFactory;
 public class MultipleSession_Pcsc {
     private static final Logger logger = LoggerFactory.getLogger(MultipleSession_Pcsc.class);
 
-    public static void main(String[] args) throws KeypleBaseException, NoStackTraceThrowable {
+    public static void main(String[] args) throws KeypleBaseException {
 
         /* Get the instance of the SeProxyService (Singleton pattern) */
         SeProxyService seProxyService = SeProxyService.getInstance();

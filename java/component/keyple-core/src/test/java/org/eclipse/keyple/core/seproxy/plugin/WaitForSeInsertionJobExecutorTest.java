@@ -19,7 +19,6 @@ import static org.mockito.Mockito.verify;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.CoreBaseTest;
-import org.eclipse.keyple.core.seproxy.exception.NoStackTraceThrowable;
 import org.eclipse.keyple.core.seproxy.plugin.mock.BlankSmartInsertionTheadedReader;
 import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartInsertionMonitoringJob;
 import org.eclipse.keyple.core.seproxy.plugin.state.WaitForSeInsertion;
@@ -67,7 +66,7 @@ public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
 
 
     @Test
-    public void insertSe_matched() throws Exception, NoStackTraceThrowable {
+    public void insertSe_matched() throws Exception {
         /*
          * input SE inserted SE matched
          */
@@ -87,7 +86,7 @@ public class WaitForSeInsertionJobExecutorTest extends CoreBaseTest {
     }
 
     @Test
-    public void testInsertSe_Notmatched() throws Exception, NoStackTraceThrowable {
+    public void testInsertSe_Notmatched() throws Exception {
         /*
          * input SE inserted SE doesnt matched
          */
