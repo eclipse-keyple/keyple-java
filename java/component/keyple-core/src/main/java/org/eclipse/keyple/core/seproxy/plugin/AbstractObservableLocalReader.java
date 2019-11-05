@@ -42,6 +42,9 @@ import org.slf4j.LoggerFactory;
  * The monitoring of these events is either directly implemented by the plugin (e. g. Android NFC
  * plugin)
  * <p>
+ *
+ *     TODO : refactor this part
+ *
  * The event management implements a currentState machine that is composed of four states.
  * <ol>
  * <li>WAIT_FOR_START_DETECTION
