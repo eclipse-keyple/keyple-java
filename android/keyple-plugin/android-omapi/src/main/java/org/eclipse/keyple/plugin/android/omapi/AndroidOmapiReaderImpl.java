@@ -21,8 +21,8 @@ import org.eclipse.keyple.core.seproxy.exception.KeypleApplicationSelectionExcep
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.message.*;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.SmartSelectionReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.SmartSelectionReader;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;

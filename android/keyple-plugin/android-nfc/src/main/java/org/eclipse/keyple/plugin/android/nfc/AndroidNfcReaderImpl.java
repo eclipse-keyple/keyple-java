@@ -22,12 +22,15 @@ import java.util.concurrent.Executors;
 import org.eclipse.keyple.core.seproxy.exception.KeypleChannelControlException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleIOReaderException;
 import org.eclipse.keyple.core.seproxy.exception.KeypleReaderException;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableLocalReader;
-import org.eclipse.keyple.core.seproxy.plugin.AbstractObservableState;
-import org.eclipse.keyple.core.seproxy.plugin.ObservableReaderStateService;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.CardAbsentPingMonitoringJob;
-import org.eclipse.keyple.core.seproxy.plugin.monitor.SmartRemovalMonitoringJob;
-import org.eclipse.keyple.core.seproxy.plugin.state.*;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableLocalReader;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState;
+import org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState;
+import org.eclipse.keyple.core.seproxy.plugin.local.ObservableReaderStateService;
+import org.eclipse.keyple.core.seproxy.plugin.local.monitoring.CardAbsentPingMonitoringJob;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeInsertion;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeProcessing;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForSeRemoval;
+import org.eclipse.keyple.core.seproxy.plugin.local.state.WaitForStartDetect;
 import org.eclipse.keyple.core.seproxy.protocol.SeCommonProtocols;
 import org.eclipse.keyple.core.seproxy.protocol.SeProtocol;
 import org.eclipse.keyple.core.seproxy.protocol.TransmissionMode;
@@ -39,6 +42,8 @@ import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
+
+import static org.eclipse.keyple.core.seproxy.plugin.local.AbstractObservableState.MonitoringState.*;
 
 
 /**
@@ -75,19 +80,19 @@ final class AndroidNfcReaderImpl extends AbstractObservableLocalReader
     @Override
     protected ObservableReaderStateService initStateService() {
 
-        Map<AbstractObservableState.MonitoringState, AbstractObservableState> states =
-                new HashMap<AbstractObservableState.MonitoringState, AbstractObservableState>();
+        Map<MonitoringState, AbstractObservableState> states =
+                new HashMap<MonitoringState, AbstractObservableState>();
 
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION,
+        states.put(WAIT_FOR_START_DETECTION,
                 new WaitForStartDetect(this));
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_INSERTION,
+        states.put(WAIT_FOR_SE_INSERTION,
                 new WaitForSeInsertion(this));
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_PROCESSING,
+        states.put(WAIT_FOR_SE_PROCESSING,
                 new WaitForSeProcessing(this));
-        states.put(AbstractObservableState.MonitoringState.WAIT_FOR_SE_REMOVAL,
+        states.put(WAIT_FOR_SE_REMOVAL,
                 new WaitForSeRemoval(this, new CardAbsentPingMonitoringJob(this), executorService));
 
-        return new ObservableReaderStateService(this, states, AbstractObservableState.MonitoringState.WAIT_FOR_START_DETECTION);
+        return new ObservableReaderStateService(this, states, WAIT_FOR_START_DETECTION);
     }
 
     /**
